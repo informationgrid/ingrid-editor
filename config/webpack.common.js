@@ -61,7 +61,7 @@ module.exports = {
       { test: /\.scss$/, include: helpers.root( 'app' ), loaders: ['raw', 'postcss', 'sass' ] },
 
       // support for .html as raw text
-      // {test: /\.html$/, loader: 'raw-loader', exclude: [ helpers.root( 'index.html' ), helpers.root( 'node_modules' ) ]}
+      {test: /\.html$/, loader: 'raw-loader', exclude: [ helpers.root( 'index.html' ), helpers.root( 'node_modules' ) ]}
 
     ]
   },

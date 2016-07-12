@@ -1,6 +1,9 @@
 import { bootstrap }                            from '@angular/platform-browser-dynamic';
 import { disableDeprecatedForms, provideForms } from '@angular/forms';
 
+import "../sample.css";
+import "../styles.css";
+
 import { AppComponent } from './app.component';
 
 bootstrap(AppComponent, [
