@@ -1,0 +1,25 @@
+<div [formGroup]="form" [ngClass]="question.domClass">
+  <label [attr.for]="question.key">{{question.label}}</label>
+
+  <div [ngSwitch]="question.controlType">
+
+    <input *ngSwitchCase="'textbox'" [formControlName]="question.key"
+            [id]="question.key" [type]="question.type" [(ngModel)]="value">
+
+    <select [id]="question.key" *ngSwitchCase="'dropdown'" [formControlName]="question.key" [(ngModel)]="value">
+      <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>
+    </select>
+
+  </div> 
+
+  <div class="errorMessage" *ngIf="!isValid">{{question.label}} is required</div>
+  <div class="errorMessage" *ngIf="!isValid">Message: {{form.controls[question.key].errors.message}}</div>
+
+</div>
+
+
+<!-- 
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+-->
