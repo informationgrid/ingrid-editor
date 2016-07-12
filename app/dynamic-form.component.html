@@ -1,8 +1,9 @@
 <div>
   <form (ngSubmit)="onSubmit()" [formGroup]="form">
 
-    <div *ngFor="let question of questions" class="form-row">
-      <df-question [question]="question" [form]="form" [value]="data[question.key]"></df-question>
+    <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}" [ngClass]="{hasChildren: field.children, padding: !field.children}">
+      <df-question *ngFor="let child of field.children" [field]="child" [form]="form" [value]="data[child.key]" class="padding {{child.domClass}}"></df-question>
+      <df-question *ngIf="!field.children" [field]="field" [form]="form" [value]="data[field.key]"></df-question>
     </div>
 
     <div class="form-row">
@@ -16,10 +17,3 @@
 </div>
 
 <button (click)="load()">Load</button>
-
-
-<!-- 
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
--->

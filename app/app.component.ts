@@ -1,24 +1,24 @@
 import { Component }       from '@angular/core';
 
 import { DynamicFormComponent }     from './dynamic-form.component';
-import { QuestionService } from './services/question.service';
+import {FormularService} from "./services/formular.service";
 
 @Component({
   selector: 'my-app',
   template: `
     <div>
-      <h2>Job Application for Heroes</h2>
-      <dynamic-form [questions]="questions"></dynamic-form>
+      <h2>UVP</h2>
+      <dynamic-form [fields]="fields"></dynamic-form>
     </div>
   `,
   directives: [DynamicFormComponent],
-  providers:  [QuestionService]
+  providers:  [FormularService]
 })
 export class AppComponent {
-  questions: any[];
+  fields: any[];
 
-  constructor(service: QuestionService) {
-    this.questions = service.getQuestions();
+  constructor(service: FormularService) {
+    this.fields = service.getFields();
   }
 }
 

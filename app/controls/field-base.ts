@@ -1,4 +1,4 @@
-export class QuestionBase<T>{
+export class FieldBase<T>{
   value: T;
   key: string;
   label: string;
@@ -7,6 +7,7 @@ export class QuestionBase<T>{
   controlType: string;
   validator;
   domClass: string;
+  padding: boolean;
 
   constructor(options: {
       value?: T,
@@ -16,7 +17,8 @@ export class QuestionBase<T>{
       order?: number,
       controlType?: string,
       domClass?: string,
-      validator
+      padding?: boolean,
+      validator?
     } = {}) {
     this.value = options.value;
     this.key = options.key || '';
@@ -24,14 +26,8 @@ export class QuestionBase<T>{
     this.required = !!options.required;
     this.order = options.order === undefined ? 1 : options.order;
     this.controlType = options.controlType || '';
+    this.padding = options.padding || null;
     this.validator = options.validator || null;
-    this.domClass = options.domClass || null;
+    this.domClass = options.domClass || 'full';
   }
 }
-
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/

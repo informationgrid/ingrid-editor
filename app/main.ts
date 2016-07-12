@@ -1,7 +1,7 @@
 import { bootstrap }                            from '@angular/platform-browser-dynamic';
 import { disableDeprecatedForms, provideForms } from '@angular/forms';
 
-import "../sample.css";
+import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "../styles.css";
 
 import { AppComponent } from './app.component';
@@ -12,9 +12,3 @@ bootstrap(AppComponent, [
 ])
 .catch((err: any) => console.error(err));
 
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/

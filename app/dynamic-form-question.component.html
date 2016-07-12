@@ -1,25 +1,25 @@
-<div [formGroup]="form" [ngClass]="question.domClass">
-  <label [attr.for]="question.key">{{question.label}}</label>
+<div [formGroup]="form">
+  <label [attr.for]="field.key">{{field.label}}</label>
 
-  <div [ngSwitch]="question.controlType">
+  <div [ngSwitch]="field.controlType">
 
-    <input *ngSwitchCase="'textbox'" [formControlName]="question.key"
-            [id]="question.key" [type]="question.type" [(ngModel)]="value">
+    <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
+            [id]="field.key" [type]="field.type" [(ngModel)]="value">
 
-    <select [id]="question.key" *ngSwitchCase="'dropdown'" [formControlName]="question.key" [(ngModel)]="value">
-      <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>
+    <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key" [(ngModel)]="value">
+      <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
     </select>
+
+    <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key" [(ngModel)]="value">
+    </textarea>
+
+    <!--<div *ngFor="let child of field.children">
+      <df-question [field]="child" [form]="form" [value]="child[child.key]"></df-question>
+    </div>-->
 
   </div> 
 
-  <div class="errorMessage" *ngIf="!isValid">{{question.label}} is required</div>
-  <div class="errorMessage" *ngIf="!isValid">Message: {{form.controls[question.key].errors.message}}</div>
+  <div class="errorMessage" *ngIf="!isValid">{{field.label}} is required</div>
+  <div class="errorMessage" *ngIf="!isValid">Message: {{form.controls[field.key].errors.message}}</div>
 
 </div>
-
-
-<!-- 
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
--->
