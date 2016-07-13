@@ -2,6 +2,7 @@ import { Component }       from '@angular/core';
 
 import { DynamicFormComponent }     from './dynamic-form.component';
 import {FormularService} from "./services/formular.service";
+import {BehavioursDefault} from "./services/behaviours";
 
 @Component({
   selector: 'my-app',
@@ -12,7 +13,7 @@ import {FormularService} from "./services/formular.service";
     </div>
   `,
   directives: [DynamicFormComponent],
-  providers:  [FormularService]
+  providers:  [FormularService, BehavioursDefault]
 })
 export class AppComponent {
   fields: any[];

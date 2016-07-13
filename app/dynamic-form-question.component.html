@@ -4,22 +4,17 @@
   <div [ngSwitch]="field.controlType">
 
     <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
-            [id]="field.key" [type]="field.type" [(ngModel)]="value">
+            [id]="field.key" [type]="field.type" [ngModel]="value[field.key]">
 
-    <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key" [(ngModel)]="value">
+    <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key" [ngModel]="value[field.key]">
       <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
     </select>
 
-    <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key" [(ngModel)]="value">
+    <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key" [ngModel]="value[field.key]">
     </textarea>
-
-    <!--<div *ngFor="let child of field.children">
-      <df-question [field]="child" [form]="form" [value]="child[child.key]"></df-question>
-    </div>-->
 
   </div> 
 
-  <div class="errorMessage" *ngIf="!isValid">{{field.label}} is required</div>
-  <div class="errorMessage" *ngIf="!isValid">Message: {{form.controls[field.key].errors.message}}</div>
+  <!--<div class="errorMessage" *ngIf="!isValid">Message: {{form.controls[field.key].errors.message}}</div>-->
 
 </div>

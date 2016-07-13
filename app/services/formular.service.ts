@@ -9,6 +9,8 @@ import {Container} from "../controls/container";
 @Injectable()
 export class FormularService {
 
+  data = {};
+
   // Todo: get from a remote source of question metadata
   // Todo: make asynchronous
   getFields() {
@@ -66,18 +68,42 @@ export class FormularService {
         key: 'map',
         label: 'Karte',
         domClass: 'half',
-        rows: 20,
+        rows: 17,
         order: 5
       }),
 
       new TextboxField({
         key: 'categories',
         label: 'Kategorien',
-        order: 10
+        order: 30
       })
 
     ];
 
     return questions.sort((a, b) => a.order - b.order);
+  }
+
+  getLoadedData() {
+    return this.data;
+  }
+
+  loadData(id: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let data = {};
+      if (id === '0') {
+        data = Object.assign( {}, {
+          taskId: "1234567",
+          title: "Meine erste UVP",
+          description: "Hier ist eine Beschreibung."
+        } );
+      } else if (id === '1') {
+        data = Object.assign( {}, {
+          taskId: "98765",
+          title: "Meine zweite UVP",
+          description: "Noch eine Beschreibung."
+        } );
+      }
+      setTimeout(()=> resolve(data));
+    });
   }
 }

@@ -2,8 +2,8 @@
   <form (ngSubmit)="onSubmit()" [formGroup]="form">
 
     <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}" [ngClass]="{hasChildren: field.children, padding: !field.children}">
-      <df-question *ngFor="let child of field.children" [field]="child" [form]="form" [value]="data[child.key]" class="padding {{child.domClass}}"></df-question>
-      <df-question *ngIf="!field.children" [field]="field" [form]="form" [value]="data[field.key]"></df-question>
+      <df-question *ngFor="let child of field.children" [field]="child" [form]="form" [value]="data" class="padding {{child.domClass}}"></df-question>
+      <df-question *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></df-question>
     </div>
 
     <div class="form-row">
@@ -16,4 +16,13 @@
   </div>
 </div>
 
-<button (click)="load()">Load</button>
+<button (click)="load('0')">Load 1</button>
+<button (click)="load('1')">Load 2</button>
+<!--<button (click)="bindToEvent()">Bind to Event</button>-->
+
+
+<div *ngFor="let behaviour of behaviours" class="checkbox half">
+  <label>
+    <input type="checkbox" (click)="toggleBehaviour($event)" [checked]="behaviour.defaultActive" value="{{behaviour.id}}"> {{behaviour.title}}
+  </label>
+</div>

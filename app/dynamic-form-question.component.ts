@@ -15,7 +15,6 @@ export class DynamicFormQuestionComponent {
   @Input() value: string;
 
   get isValid() {
-    debugger;
     return this.form.controls[this.field.key].valid;
   }
 }
