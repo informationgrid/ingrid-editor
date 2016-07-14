@@ -13,7 +13,7 @@ export interface Behaviour {
 @Injectable()
 export class BehavioursDefault {
 
-  constructor(private eventManager: EventManager) {
+  constructor(private eventManager: EventManager, private formService: FormularService) {
   }
 
   eventHandlers: any = {};
@@ -21,19 +21,27 @@ export class BehavioursDefault {
   behaviours: Behaviour[] = [
     {
       id: "clickAndChangeTitle",
-      title: "Click and change title",
+      title: "Click and change title + onSave validator",
       description: "",
       defaultActive: true,
       _eventHandler: null,
-      register: function(form) {
+      register: function (form) {
         var taskEl = document.querySelector( '#taskId' );
-        this.eventHandlers['clickAndChangeTitle'] = this.eventManager.addEventListener( taskEl, 'click', function () {
+        this.eventHandlers['clickAndChangeTitle'] = {listeners: [], subscribers: []};
+        this.eventHandlers['clickAndChangeTitle'].listeners.push( this.eventManager.addEventListener( taskEl, 'click', function () {
           console.log( 'Element was clicked' );
-          form.controls['title'].updateValue( "remotely updated" );
-        } );
+          // form.controls['mainInfo.title'].updateValue( "remotely updated" );
+          form.find(['mainInfo', 'title']).updateValue( "remotely updated" );
+        } ) );
+
+        this.eventHandlers['clickAndChangeTitle'].subscribers.push( this.formService.onBeforeSave.asObservable().subscribe( message => {
+          message.errors.push( {id: 'taskId', error: 'I don\'t like this ID'} );
+          console.log( 'in observer' );
+        } ) );
       },
-      unregister: function() {
-        this.eventHandlers['clickAndChangeTitle']();
+      unregister: function () {
+        this.eventHandlers['clickAndChangeTitle'].listeners.forEach( l => l() );
+        this.eventHandlers['clickAndChangeTitle'].subscribers.forEach( s => s.unsubscribe() );
       }
     },
     {
@@ -45,11 +53,12 @@ export class BehavioursDefault {
       register: (form) => {
         this.eventHandlers['mapAndChangeTitle'] = form.controls['map'].valueChanges.subscribe( function (val) {
           if (val === 'map') {
-            form.controls['title'].updateValue( 'Map was entered' );
+            // form.controls['title'].updateValue( 'Map was entered' );
+            form.find(['mainInfo', 'title']).updateValue( 'Map was entered' );
           }
         } );
       },
-      unregister: function() {
+      unregister: function () {
         this.eventHandlers['mapAndChangeTitle'].unsubscribe();
       }
     }

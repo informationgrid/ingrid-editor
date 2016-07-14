@@ -1,28 +1,33 @@
 <div>
-  <form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <form (ngSubmit)="onSubmit()" [formGroup]="form">
 
-    <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}" [ngClass]="{hasChildren: field.children, padding: !field.children}">
-      <df-question *ngFor="let child of field.children" [field]="child" [form]="form" [value]="data" class="padding {{child.domClass}}"></df-question>
-      <df-question *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></df-question>
+        <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"
+             [ngClass]="{hasChildren: field.children, padding: !field.children}">
+            <fieldset *ngIf="field.children">
+                <df-question *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey" [form]="form" [value]="data" class="padding {{child.domClass}}"></df-question>
+            </fieldset>
+            <df-question *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></df-question>
+        </div>
+
+        <div class="form-row">
+            <button type="submit" [disabled]="!form.valid">Save</button>
+        </div>
+    </form>
+
+    <div *ngIf="payLoad" class="form-row">
+        <strong>Saved the following values</strong><br>{{payLoad}}
     </div>
-
-    <div class="form-row">
-      <button type="submit" [disabled]="!form.valid">Save</button>
-    </div>
-  </form>
-
-  <div *ngIf="payLoad" class="form-row">
-    <strong>Saved the following values</strong><br>{{payLoad}}
-  </div>
 </div>
 
 <button (click)="load('0')">Load 1</button>
 <button (click)="load('1')">Load 2</button>
 <!--<button (click)="bindToEvent()">Bind to Event</button>-->
 
-
-<div *ngFor="let behaviour of behaviours" class="checkbox half">
-  <label>
-    <input type="checkbox" (click)="toggleBehaviour($event)" [checked]="behaviour.defaultActive" value="{{behaviour.id}}"> {{behaviour.title}}
-  </label>
+<div class="form-inline">
+    <div *ngFor="let behaviour of behaviours" class="checkbox full">
+        <label>
+            <input type="checkbox" (click)="toggleBehaviour($event)" [checked]="behaviour.defaultActive"
+                   value="{{behaviour.id}}"> {{behaviour.title}}
+        </label>
+    </div>
 </div>

@@ -6,6 +6,7 @@ import {FieldBase} from "./controls/field-base";
 import {BehaviourService} from "./services/behaviour.service";
 import {FormularService} from "./services/formular.service";
 import {Behaviour} from "./services/behaviours";
+import {EventEmitter} from "@angular/platform-browser";
 
 interface FormData {
   taskId?: string;
@@ -24,7 +25,7 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
   @Input() fields: FieldBase<any>[] = [];
   form: FormGroup;
   payLoad = '';
-  data: FormData = {};
+  data: FormData = { mainInfo: {} };
   behaviours: Behaviour[];
 
   constructor(private qcs: QuestionControlService, private behaviourService: BehaviourService,
@@ -42,13 +43,17 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
 
   onSubmit() {
     this.payLoad = JSON.stringify( this.form.value );
+    console.log( 'before emit' );
+    let errors = [];
+    this.formularService.onBeforeSave.emit({ data: this.form.value, errors: errors });
+    console.log( 'after emit', errors );
   }
 
   load(id) {
     // since data always stays the same there's no change detection if we load the same data again
     // even if we already have changed the formular
     // since loading will be async, we only have to reset the data first
-    this.data = {};
+    this.data = { mainInfo: {} };
     this.formularService.loadData( id ).then(data => this.data = data);
   }
 

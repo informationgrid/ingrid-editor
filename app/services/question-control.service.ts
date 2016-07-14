@@ -10,16 +10,21 @@ export class QuestionControlService {
 
   toFormGroup(questions: FieldBase<any>[] ) {
     let group: any = {};
-
+    debugger;
     questions.forEach(question => {
       if (question instanceof Container) {
+        let subGroup = question.useGroupKey ? {} : group;
         question.children.forEach(child => {
-          group[child.key] = this._addValidator(child);
-        })
+          subGroup[child.key] = this._addValidator(child);
+        });
+        if (question.useGroupKey) {
+          group[question.useGroupKey] = new FormGroup(subGroup);
+        }
       } else {
         group[question.key] = this._addValidator(question);
       }
     });
+    
     return new FormGroup(group);
   }
 

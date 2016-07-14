@@ -22,7 +22,7 @@ df-question {
   display: inline-block;
 }
 
-dynamic-form input, dynamic-form textarea {
+dynamic-form input[type=text], dynamic-form textarea {
   width: 100%;
 }
 

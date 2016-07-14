@@ -5,11 +5,14 @@ import {TextareaField} from "../controls/field-textarea";
 import {DropdownField} from "../controls/field-dropdown";
 import {TextboxField} from "../controls/field-textbox";
 import {Container} from "../controls/container";
+import {EventEmitter} from "@angular/core";
 
 @Injectable()
 export class FormularService {
 
   data = {};
+
+  onBeforeSave: EventEmitter = new EventEmitter();
 
   // Todo: get from a remote source of question metadata
   // Todo: make asynchronous
@@ -37,6 +40,7 @@ export class FormularService {
       }),*/
 
       new Container({
+        useGroupKey: 'mainInfo',
         domClass: 'half',
         children: [
           new TextboxField({
@@ -92,15 +96,19 @@ export class FormularService {
       let data = {};
       if (id === '0') {
         data = Object.assign( {}, {
-          taskId: "1234567",
-          title: "Meine erste UVP",
-          description: "Hier ist eine Beschreibung."
+          mainInfo: {
+            taskId: "1234567",
+            title: "Meine erste UVP",
+            description: "Hier ist eine Beschreibung."
+          }
         } );
       } else if (id === '1') {
         data = Object.assign( {}, {
-          taskId: "98765",
-          title: "Meine zweite UVP",
-          description: "Noch eine Beschreibung."
+          mainInfo: {
+            taskId: "98765",
+            title: "Meine zweite UVP",
+            description: "Noch eine Beschreibung."
+          }
         } );
       }
       setTimeout(()=> resolve(data));

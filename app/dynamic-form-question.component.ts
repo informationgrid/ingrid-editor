@@ -13,6 +13,7 @@ export class DynamicFormQuestionComponent {
   @Input() field: FieldBase<any>;
   @Input() form: FormGroup;
   @Input() value: string;
+  @Input() parentKey: string = null;
 
   get isValid() {
     return this.form.controls[this.field.key].valid;

@@ -6,7 +6,7 @@ export class TextboxField extends FieldBase<string> {
 
   constructor(options: {} = {}) {
     super(options);
-    this.type = options['type'] || '';
+    this.type = options['type'] || 'text';
   }
 }
 

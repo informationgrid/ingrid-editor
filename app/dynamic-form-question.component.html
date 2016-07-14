@@ -1,20 +1,41 @@
 <div [formGroup]="form">
-  <label [attr.for]="field.key">{{field.label}}</label>
+    <label [attr.for]="field.key">{{field.label}}</label>
 
-  <div [ngSwitch]="field.controlType">
+    <div *ngIf="parentKey">
+        <div [ngSwitch]="field.controlType" [formGroupName]="parentKey">
 
-    <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
-            [id]="field.key" [type]="field.type" [ngModel]="value[field.key]">
+            <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
+                   [id]="field.key" [type]="field.type" [ngModel]="value[parentKey][field.key]">
 
-    <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key" [ngModel]="value[field.key]">
-      <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
-    </select>
+            <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key"
+                    [ngModel]="value[parentKey][field.key]">
+                <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
+            </select>
 
-    <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key" [ngModel]="value[field.key]">
-    </textarea>
+            <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"
+                      [ngModel]="value[parentKey][field.key]">
+            </textarea>
 
-  </div> 
+        </div>
+    </div>
+    <div *ngIf="!parentKey">
+        <div [ngSwitch]="field.controlType">
 
-  <!--<div class="errorMessage" *ngIf="!isValid">Message: {{form.controls[field.key].errors.message}}</div>-->
+            <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
+                   [id]="field.key" [type]="field.type" [ngModel]="value[field.key]">
+
+            <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key"
+                    [ngModel]="value[field.key]">
+                <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
+            </select>
+
+            <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"
+                      [ngModel]="value[field.key]">
+            </textarea>
+
+        </div>
+    </div>
+
+    <!--<div class="errorMessage" *ngIf="!isValid">Message: {{form.controls[field.key].errors.message}}</div>-->
 
 </div>
