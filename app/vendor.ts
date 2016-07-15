@@ -26,3 +26,6 @@ require('rxjs/add/operator/mergeMap');
 import "@angular/platform-browser";
 import "@angular/router";
 import "@angular/core";
+
+import "../node_modules/jquery/dist/jquery.min";
+import "script!primeui/primeui-ng-all.min.js";

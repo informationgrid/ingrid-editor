@@ -30,3 +30,8 @@ dynamic-form input[type=text], dynamic-form textarea {
   display: inline-block;
   vertical-align: top;
 }
+
+p-dataTable {
+  width: 100%;
+  height: 100px;
+}

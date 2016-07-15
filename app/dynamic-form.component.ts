@@ -7,17 +7,26 @@ import {BehaviourService} from "./services/behaviour.service";
 import {FormularService} from "./services/formular.service";
 import {Behaviour} from "./services/behaviours";
 import {EventEmitter} from "@angular/platform-browser";
+import {DataTable, Button, Column} from "primeng/primeng";
+import {TableFormDirective} from "./directives/table-form-group.directive";
+import {CustomInput} from "./table/table.component";
 
 interface FormData {
   taskId?: string;
   title?: string;
 }
 
+interface Car {
+  vin;
+  year;
+  brand;
+  color;
+}
 
 @Component( {
   selector: 'dynamic-form',
   template: require( './dynamic-form.component.html' ),
-  directives: [DynamicFormQuestionComponent, REACTIVE_FORM_DIRECTIVES],
+  directives: [DynamicFormQuestionComponent, REACTIVE_FORM_DIRECTIVES, CustomInput],
   providers: [QuestionControlService, BehaviourService]
 } )
 export class DynamicFormComponent implements OnInit, AfterViewInit {
@@ -27,6 +36,7 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
   payLoad = '';
   data: FormData = { mainInfo: {} };
   behaviours: Behaviour[];
+  cars: Car[] = [];
 
   constructor(private qcs: QuestionControlService, private behaviourService: BehaviourService,
   private formularService: FormularService) {
@@ -38,12 +48,13 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): any {
-    this.behaviourService.apply(this.form);
+    // this.behaviourService.apply(this.form);
   }
 
   onSubmit() {
+    debugger;
     this.payLoad = JSON.stringify( this.form.value );
-    console.log( 'before emit' );
+    console.log( 'before emit', this.form );
     let errors = [];
     this.formularService.onBeforeSave.emit({ data: this.form.value, errors: errors });
     console.log( 'after emit', errors );

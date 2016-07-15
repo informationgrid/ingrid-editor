@@ -16,6 +16,10 @@
                       [ngModel]="value[parentKey][field.key]">
             </textarea>
 
+            <custom-input *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key"
+                      [ngModel]="value[parentKey][field.key]">
+            </custom-input>
+
         </div>
     </div>
     <div *ngIf="!parentKey">
@@ -32,6 +36,10 @@
             <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"
                       [ngModel]="value[field.key]">
             </textarea>
+
+            <custom-input *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key"
+                          [ngModel]="value[field.key]">
+            </custom-input>
 
         </div>
     </div>

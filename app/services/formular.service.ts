@@ -6,6 +6,7 @@ import {DropdownField} from "../controls/field-dropdown";
 import {TextboxField} from "../controls/field-textbox";
 import {Container} from "../controls/container";
 import {EventEmitter} from "@angular/core";
+import {TableField} from "../controls/field-table";
 
 @Injectable()
 export class FormularService {
@@ -67,7 +68,6 @@ export class FormularService {
         ]
       }),
 
-
       new TextareaField({
         key: 'map',
         label: 'Karte',
@@ -76,7 +76,7 @@ export class FormularService {
         order: 5
       }),
 
-      new TextboxField({
+      new TableField({
         key: 'categories',
         label: 'Kategorien',
         order: 30
@@ -100,7 +100,25 @@ export class FormularService {
             taskId: "1234567",
             title: "Meine erste UVP",
             description: "Hier ist eine Beschreibung."
-          }
+          },
+          categories: [
+            {
+              vin: '1234',
+              year: 1985,
+              brand: 'BMW',
+              color: 'white'
+            },{
+              vin: '343',
+              year: 1981,
+              brand: 'Opel',
+              color: 'black'
+            },{
+              vin: '2352',
+              year: 1989,
+              brand: 'Audi',
+              color: 'blue'
+            }
+          ]
         } );
       } else if (id === '1') {
         data = Object.assign( {}, {
@@ -108,7 +126,8 @@ export class FormularService {
             taskId: "98765",
             title: "Meine zweite UVP",
             description: "Noch eine Beschreibung."
-          }
+          },
+          categories: []
         } );
       }
       setTimeout(()=> resolve(data));
