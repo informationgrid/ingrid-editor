@@ -16,9 +16,9 @@
                       [ngModel]="value[parentKey][field.key]">
             </textarea>
 
-            <custom-input *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key"
+            <data-table *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key" [columns]="field.columns"
                       [ngModel]="value[parentKey][field.key]">
-            </custom-input>
+            </data-table>
 
         </div>
     </div>
@@ -37,9 +37,9 @@
                       [ngModel]="value[field.key]">
             </textarea>
 
-            <custom-input *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key"
+            <data-table *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key" [columns]="field.columns"
                           [ngModel]="value[field.key]">
-            </custom-input>
+            </data-table>
 
         </div>
     </div>

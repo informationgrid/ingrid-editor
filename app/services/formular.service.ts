@@ -78,7 +78,13 @@ export class FormularService {
 
       new TableField({
         key: 'categories',
-        label: 'Kategorien',
+        label: 'Autos',
+        columns: [
+          { id: 'vin', label: 'Vintage', editable: true },
+          { id: 'year', label: 'Jahr', editable: false },
+          { id: 'brand', label: 'Marke', editable: true },
+          { id: 'color', label: 'Farbe', editable: true }
+        ],
         order: 30
       })
 

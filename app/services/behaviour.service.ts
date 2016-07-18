@@ -22,7 +22,8 @@ export class BehaviourService {
       if (behaviour.defaultActive) {
         // we need to run code in this context
         // TODO: add parameters for behaviour
-        behaviour.register.call( this.defaultBehaves, form );
+        // behaviour.register.call( this.defaultBehaves, form );
+        behaviour.register( form );
       }
     } );
   }
@@ -30,18 +31,13 @@ export class BehaviourService {
   enable(id: string, form: FormGroup) {
     this.behaviours.some( behaviour => {
       if (behaviour.id === id) {
-        behaviour.register.call( this.defaultBehaves, form );
+        behaviour.register( form );
         return true;
       }
     });
   }
 
   disable(id: string) {
-    this.behaviours.some( behaviour => {
-      if (behaviour.id === id) {
-        behaviour.unregister.call( this.defaultBehaves );
-        return true;
-      }
-    });
+    this.defaultBehaves.unregister( id );
   }
 }

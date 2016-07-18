@@ -6,21 +6,11 @@ import {FieldBase} from "./controls/field-base";
 import {BehaviourService} from "./services/behaviour.service";
 import {FormularService} from "./services/formular.service";
 import {Behaviour} from "./services/behaviours";
-import {EventEmitter} from "@angular/platform-browser";
-import {DataTable, Button, Column} from "primeng/primeng";
-import {TableFormDirective} from "./directives/table-form-group.directive";
 import {CustomInput} from "./table/table.component";
 
 interface FormData {
   taskId?: string;
   title?: string;
-}
-
-interface Car {
-  vin;
-  year;
-  brand;
-  color;
 }
 
 @Component( {
@@ -36,23 +26,23 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
   payLoad = '';
   data: FormData = { mainInfo: {} };
   behaviours: Behaviour[];
-  cars: Car[] = [];
 
   constructor(private qcs: QuestionControlService, private behaviourService: BehaviourService,
   private formularService: FormularService) {
   }
 
+  //noinspection JSUnusedGlobalSymbols
   ngOnInit() {
     this.form = this.qcs.toFormGroup( this.fields );
     this.behaviours = this.behaviourService.behaviours;
   }
 
+  //noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
-    // this.behaviourService.apply(this.form);
+    this.behaviourService.apply(this.form);
   }
 
   onSubmit() {
-    debugger;
     this.payLoad = JSON.stringify( this.form.value );
     console.log( 'before emit', this.form );
     let errors = [];
@@ -69,8 +59,7 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
   }
 
   toggleBehaviour(event: MouseEvent) {
-    debugger;
-    let target = event.target;
+    let target = <HTMLInputElement>event.target;
     target.checked ? this.behaviourService.enable(target.value, this.form) : this.behaviourService.disable(target.value);
   }
 }

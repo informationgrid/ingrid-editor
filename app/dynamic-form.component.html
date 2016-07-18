@@ -12,17 +12,6 @@
         <div class="form-row">
             <button type="submit" [disabled]="!form.valid">Save</button>
         </div>
-
-        <!-- DATA TABLE TEST-->
-        <!--<h3 class="first">Basic</h3>
-        <p-dataTable [editable]="true" [formGroupName]="'cars'" [value]="data['cars']">
-            <p-column field="vin" header="Vin" [formControlName]="'vin'" [editable]="true"></p-column>
-            <p-column field="year" header="Year" [editable]="true"></p-column>
-            <p-column field="brand" header="Brand" [editable]="true"></p-column>
-            <p-column field="color" header="Color" [editable]="true"></p-column>
-        </p-dataTable>-->
-
-        <!--<custom-input [formControlName]="'cars'" [ngModel]="data.cars"></custom-input>-->
     </form>
 
     <div *ngIf="payLoad" class="form-row">

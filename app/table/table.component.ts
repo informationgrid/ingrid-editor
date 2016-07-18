@@ -1,9 +1,7 @@
-import {Component, forwardRef} from "@angular/core";
+import {Component, forwardRef, Input} from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, REACTIVE_FORM_DIRECTIVES} from "@angular/forms";
 import {Column, DataTable} from "primeng/primeng";
-
-const noop = () => {
-};
+import {TableColumn} from "../controls/field-table";
 
 const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -11,35 +9,31 @@ const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   multi: true
 };
 
+
+// more info here: http://almerosteyn.com/2016/04/linkup-custom-control-to-ngcontrol-ngmodel
 @Component( {
-  selector: 'custom-input',
+  selector: 'data-table',
   template: `
       <div class="form-group">
-        <!--<label><ng-content></ng-content>
-          <input class="form-control" 
-                 [(ngModel)]="value" 
-                 (blur)="onTouched()">
-        </label>-->
-        <p-dataTable [editable]="true" [value]="value">
-            <p-column field="vin" header="Vin" [editable]="true"></p-column>
-            <p-column field="year" header="Year" [editable]="true"></p-column>
-            <p-column field="brand" header="Brand" [editable]="true"></p-column>
-            <p-column field="color" header="Color" [editable]="true"></p-column>
+        <p-dataTable [editable]="true" [value]="value" (onEditComplete)="_onChangeCallback(value)">
+            <p-column *ngFor="let col of columns" [field]="col.id" [header]="col.label" [editable]="col.editable"></p-column>
         </p-dataTable>
       </div>
   `,
-  directives: [REACTIVE_FORM_DIRECTIVES, DataTable, Column, ],
+  directives: [REACTIVE_FORM_DIRECTIVES, DataTable, Column],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 } )
 export class CustomInput implements ControlValueAccessor {
+
+  @Input() columns: TableColumn[];
 
   //The internal data model
   private _value: any = '';
 
   //Placeholders for the callbacks
-  private _onTouchedCallback: () => void = noop;
+  private _onTouchedCallback: () => void;
 
-  private _onChangeCallback: (_: any) => void = noop;
+  private _onChangeCallback: (x: any) => void;
 
   //get accessor
   get value(): any {
@@ -55,6 +49,7 @@ export class CustomInput implements ControlValueAccessor {
   }
 
   //Set touched on blur
+  //noinspection JSUnusedGlobalSymbols
   onTouched() {
     this._onTouchedCallback();
   }
