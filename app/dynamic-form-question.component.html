@@ -5,19 +5,19 @@
         <div [ngSwitch]="field.controlType" [formGroupName]="parentKey">
 
             <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
-                   [id]="field.key" [type]="field.type" [ngModel]="value[parentKey][field.key]">
+                   [id]="field.key" [type]="field.type" [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
 
             <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key"
-                    [ngModel]="value[parentKey][field.key]">
+                    [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
                 <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
             </select>
 
             <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"
-                      [ngModel]="value[parentKey][field.key]">
+                      [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
             </textarea>
 
             <data-table *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key" [columns]="field.columns"
-                      [ngModel]="value[parentKey][field.key]">
+                        [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
             </data-table>
 
         </div>

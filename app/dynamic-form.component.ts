@@ -24,7 +24,6 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
   @Input() fields: FieldBase<any>[] = [];
   form: FormGroup;
   payLoad = '';
-  // data: FormData = { mainInfo: {} };
   data: FormData = {};
   behaviours: Behaviour[];
 
@@ -64,7 +63,6 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
     // since data always stays the same there's no change detection if we load the same data again
     // even if we already have changed the formular
     // since loading will be async, we only have to reset the data first
-    // this.data = { mainInfo: {} };
     this.data = {};
     this.formularService.loadData( id ).then(data => this.data = data);
   }

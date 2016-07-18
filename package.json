@@ -1,8 +1,8 @@
 {
-  "name": "dynamic-forms-test",
+  "name": "ige-remastered",
   "version": "1.0.0",
-  "description": "",
-  "main": "systemjs.config.js",
+  "description": "The new InGrid-Editor based on Angular2",
+  "main": "index.html",
   "scripts": {
     "test": "karma start",
     "dev": "webpack-dev-server --progress --colors --hot --inline"
@@ -30,7 +30,6 @@
   "devDependencies": {
     "angular2-template-loader": "^0.4.0",
     "autoprefixer": "^6.3.7",
-    "awesome-typescript-loader": "^1.1.1",
     "copy-webpack-plugin": "^3.0.1",
     "css-loader": "^0.23.1",
     "extract-text-webpack-plugin": "^1.0.1",
