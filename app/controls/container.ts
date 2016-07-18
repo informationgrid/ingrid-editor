@@ -5,7 +5,11 @@ export class Container extends FieldBase<string> {
   children: any[];
   useGroupKey: string;
 
-  constructor(options: {} = {}) {
+  constructor(options: {
+    domClass?: string,
+    children?: any[],
+    useGroupKey?: string
+  } = {}) {
     super(options);
     this.children = options['children'] || [];
     this.useGroupKey = options['useGroupKey'] || null;

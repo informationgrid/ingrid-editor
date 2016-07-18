@@ -5,7 +5,7 @@ export class FieldBase<T>{
   required: boolean;
   order: number;
   controlType: string;
-  validator;
+  validator: any;
   domClass: string;
   padding: boolean;
 
@@ -18,7 +18,7 @@ export class FieldBase<T>{
       controlType?: string,
       domClass?: string,
       padding?: boolean,
-      validator?
+      validator?: any
     } = {}) {
     this.value = options.value;
     this.key = options.key || '';

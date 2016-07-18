@@ -28,7 +28,7 @@ export class QuestionControlService {
     return new FormGroup( group );
   }
 
-  _addValidator(field) {
+  _addValidator(field: any) {
     return field.validator ? new FormControl( field.value || '', field.validator ) :
       field.required ? new FormControl( field.value || '', Validators.required )
         : new FormControl( field.value || '' );

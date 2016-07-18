@@ -1,7 +1,7 @@
 import { Component }       from '@angular/core';
 
 import { DynamicFormComponent }     from './dynamic-form.component';
-import {FormularService} from "./services/formular.service";
+import {FormularService} from "./services/formular/formular.service";
 import {BehavioursDefault} from "./services/behaviours";
 
 @Component({

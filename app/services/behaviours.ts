@@ -1,13 +1,17 @@
-import {FormularService} from "./formular.service";
+import {FormularService} from "./formular/formular.service";
 import {EventManager} from "@angular/platform-browser";
 import {Injectable} from "@angular/core";
 import {Subscription} from "rxjs/Rx";
+import {Form, FormControl} from "@angular/forms";
+import {TextboxField} from "../controls/field-textbox";
 export interface Behaviour {
   id: string,
   title: string,
   description: string,
   defaultActive: boolean,
-  register: (any) => void
+  register: (_: any) => void,
+  controls?: any[],
+  outer?: any
 }
 
 @Injectable()
@@ -23,25 +27,47 @@ export class BehavioursDefault {
    */
   eventHandlers: any = {};
 
+  /**
+   * Initialize the containers for storing listeners and subscribers for a behaviour.
+   * @param id
+   */
   initHandler(id: string) {
     this.eventHandlers[id] = {listeners: [], subscribers: []};
   }
 
+  /**
+   * Add a listener to a given behaviour.
+   * @param id
+   * @param listener
+   */
   addListener= function (id: string, listener: Function) {
     if (!this.eventHandlers[id]) this.initHandler(id);
     this.eventHandlers[id].listeners.push(listener);
   };
 
-  addSubscriber = function (id, subscriber: Subscription) {
+  /**
+   * Add subsciber to a given behaviour.
+   * @param id
+   * @param subscriber
+   */
+  addSubscriber = function (id: string, subscriber: Subscription) {
     if (!this.eventHandlers[id]) this.initHandler(id);
     this.eventHandlers[id].subscribers.push(subscriber);
   };
 
-  unregister = function (id) {
-    this.eventHandlers[id].listeners.forEach( l => l() );
-    this.eventHandlers[id].subscribers.forEach( s => s.unsubscribe() );
+  /**
+   * Unregister all listeners and subsribers to a given behaviour.
+   * @param id
+   */
+  unregister = function (id: string) {
+    this.eventHandlers[id].listeners.forEach( (l: Function) => l() );
+    this.eventHandlers[id].subscribers.forEach( (s: Subscription) => s.unsubscribe() );
   };
 
+  /**
+   * The definition of all behaviours.
+   * @type {{id: string; title: string; description: string; defaultActive: boolean; outer: BehavioursDefault; register: ((form)=>any)}[]}
+   */
   behaviours: Behaviour[] = [
     {
       id: "clickAndChangeTitle",
@@ -60,7 +86,7 @@ export class BehavioursDefault {
         );
 
         this.outer.addSubscriber(this.id,
-          this.outer.formService.onBeforeSave.asObservable().subscribe( message => {
+          this.outer.formService.onBeforeSave.asObservable().subscribe( (message: any) => {
             message.errors.push( {id: 'taskId', error: 'I don\'t like this ID'} );
             console.log( 'in observer' );
           } )
@@ -74,18 +100,39 @@ export class BehavioursDefault {
       defaultActive: true,
       outer: this,
       register: function(form) {
-        let handler = this.outer.eventHandlers[this.id] = {listeners: [], subscribers: []};
-        handler.subscribers.push(
-          form.controls['map'].valueChanges.subscribe( function (val) {
+        this.outer.addSubscriber(this.id,
+          form.controls['map'].valueChanges.subscribe( function (val: string) {
             if (val === 'map') {
               form.find( ['mainInfo', 'title'] ).updateValue( 'Map was entered' );
             }
-          } ),
-          form.controls['categories'].valueChanges.subscribe( function (val) {
+          } )
+        );
+
+        this.outer.addSubscriber(this.id,
+          form.controls['categories'].valueChanges.subscribe( function (val: string) {
             console.log( 'categories changed: ', val );
           } )
         );
       }
+    },
+    {
+      id: "addControl",
+      title: "Add control to form",
+      description: "",
+      defaultActive: true,
+      outer: this,
+      register: function (form: Form) {
+
+        // form.addControl(new FormControl('dynamic'))
+      },
+      controls: [
+        new TextboxField({
+          key: 'behaviourField',
+          label: 'Dynamic Behaviour Field',
+          // domClass: 'half',
+          order: 0
+        })
+      ]
     }
   ];
 }

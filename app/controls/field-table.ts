@@ -3,6 +3,7 @@ import {FieldBase} from "./field-base";
 export interface TableColumn {
   id: string;
   label: string;
+  editable?: boolean;
 }
 
 export class TableField extends FieldBase<string> {
@@ -14,7 +15,7 @@ export class TableField extends FieldBase<string> {
     columns: TableColumn[],
     label?: string,
     order?: number
-  } = {}) {
+  }) {
     super(options);
     this.columns = options['columns'] || [];
   }

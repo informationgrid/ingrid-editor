@@ -22,7 +22,6 @@ export class BehaviourService {
       if (behaviour.defaultActive) {
         // we need to run code in this context
         // TODO: add parameters for behaviour
-        // behaviour.register.call( this.defaultBehaves, form );
         behaviour.register( form );
       }
     } );

@@ -1,28 +1,29 @@
-var webpack = require('webpack');
-var webpackMerge = require('webpack-merge');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var commonConfig = require('./webpack.common.js');
-var helpers = require('./../helpers');
-
-const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
-
-module.exports = webpackMerge(commonConfig, {
+module.exports = {
     devtool: 'inline-source-map',
 
-    output: {
-        path: helpers.root('dist'),
-        publicPath: '/',
-        filename: '[name].bundle.js',
-        // sourceMapFilename: '[name].map',
-        chunkFilename: '[id].chunk.js'
+    resolve: {
+        extensions: ['', '.ts', '.js']
     },
 
-    plugins: [
-        // new ExtractTextPlugin('styles.css'),
-        new webpack.DefinePlugin({
-            'process.env': {
-                'ENV': JSON.stringify(ENV)
+    module: {
+        loaders: [
+            {
+                test: /\.ts$/,
+                loaders: ['ts', 'angular2-template-loader']
+            },
+            {
+                test: /\.html$/,
+                loader: 'html'
+
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
+                loader: 'null'
+            },
+            {
+                test: /\.css$/,
+                loader: 'null'
             }
-        })
-    ]
-});
+        ]
+    }
+};

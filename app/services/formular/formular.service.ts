@@ -1,19 +1,18 @@
 import { Injectable }       from '@angular/core';
 
-import {FieldBase} from "../controls/field-base";
-import {TextareaField} from "../controls/field-textarea";
-import {DropdownField} from "../controls/field-dropdown";
-import {TextboxField} from "../controls/field-textbox";
-import {Container} from "../controls/container";
+import {FieldBase} from "../../controls/field-base";
+import {TextareaField} from "../../controls/field-textarea";
+import {TextboxField} from "../../controls/field-textbox";
+import {Container} from "../../controls/container";
 import {EventEmitter} from "@angular/core";
-import {TableField} from "../controls/field-table";
+import {TableField} from "../../controls/field-table";
 
 @Injectable()
 export class FormularService {
 
   data = {};
 
-  onBeforeSave: EventEmitter = new EventEmitter();
+  onBeforeSave: EventEmitter<any> = new EventEmitter();
 
   // Todo: get from a remote source of question metadata
   // Todo: make asynchronous
