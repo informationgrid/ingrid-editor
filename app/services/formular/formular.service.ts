@@ -1,11 +1,11 @@
 import { Injectable }       from '@angular/core';
 
-import {FieldBase} from "../../controls/field-base";
-import {TextareaField} from "../../controls/field-textarea";
-import {TextboxField} from "../../controls/field-textbox";
-import {Container} from "../../controls/container";
-import {EventEmitter} from "@angular/core";
-import {TableField} from "../../controls/field-table";
+import {FieldBase} from '../../form/controls/field-base';
+import {TextareaField} from '../../form/controls/field-textarea';
+import {TextboxField} from '../../form/controls/field-textbox';
+import {Container} from '../../form/controls/container';
+import {EventEmitter} from '@angular/core';
+import {TableField} from '../../form/controls/field-table';
 
 @Injectable()
 export class FormularService {
@@ -18,9 +18,9 @@ export class FormularService {
   // Todo: make asynchronous
   getFields() {
 
-    var data = {
+    let data = {
       brave: {
-        type: "DropDown"
+        type: 'DropDown'
 
       }
     };
@@ -92,9 +92,9 @@ export class FormularService {
     return questions.sort((a, b) => a.order - b.order);
   }
 
-  getLoadedData() {
+  /*getLoadedData() {
     return this.data;
-  }
+  }*/
 
   loadData(id: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -102,9 +102,9 @@ export class FormularService {
       if (id === '0') {
         data = Object.assign( {}, {
           mainInfo: {
-            taskId: "1234567",
-            title: "Meine erste UVP",
-            description: "Hier ist eine Beschreibung."
+            taskId: '1234567',
+            title: 'Meine erste UVP',
+            description: 'Hier ist eine Beschreibung.'
           },
           categories: [
             {
@@ -112,12 +112,12 @@ export class FormularService {
               year: 1985,
               brand: 'BMW',
               color: 'white'
-            },{
+            }, {
               vin: '343',
               year: 1981,
               brand: 'Opel',
               color: 'black'
-            },{
+            }, {
               vin: '2352',
               year: 1989,
               brand: 'Audi',
@@ -128,14 +128,14 @@ export class FormularService {
       } else if (id === '1') {
         data = Object.assign( {}, {
           mainInfo: {
-            taskId: "98765",
-            title: "Meine zweite UVP",
-            description: "Noch eine Beschreibung."
+            taskId: '98765',
+            title: 'Meine zweite UVP',
+            description: 'Noch eine Beschreibung.'
           },
           categories: []
         } );
       }
-      setTimeout(()=> resolve(data));
+      setTimeout(() => resolve(data));
     });
   }
 }

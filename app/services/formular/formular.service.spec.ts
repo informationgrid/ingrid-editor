@@ -9,7 +9,7 @@ describe( 'Formular', () => {
   } );
   it( 'should load data', (done: () => void) => {
 
-    myFormularService.loadData( "1" ).then( (data) => {
+    myFormularService.loadData( '1' ).then( (data) => {
       expect( data.mainInfo ).toEqual( objectContaining( {taskId: '98765'} ) );
       done();
     } );
@@ -17,9 +17,16 @@ describe( 'Formular', () => {
 
   it( 'should load other data, too', (done: () => void) => {
 
-    myFormularService.loadData( "0" ).then( (data) => {
+    myFormularService.loadData( '0' ).then( (data) => {
       expect( data.mainInfo ).toEqual( objectContaining( {taskId: '1234567'} ) );
       done();
     } );
   } );
+
+  it( 'should save form data' );
+
+  it( 'should validate data' );
+
+  it( 'should show form in multiple languages' );
+
 } );

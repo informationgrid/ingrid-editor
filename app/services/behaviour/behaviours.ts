@@ -1,17 +1,17 @@
-import {FormularService} from "./formular/formular.service";
-import {EventManager} from "@angular/platform-browser";
-import {Injectable} from "@angular/core";
-import {Subscription} from "rxjs/Rx";
-import {Form, FormControl} from "@angular/forms";
-import {TextboxField} from "../controls/field-textbox";
+import {FormularService} from '../formular/formular.service';
+import {EventManager} from '@angular/platform-browser';
+import {Injectable} from '@angular/core';
+import {Subscription} from 'rxjs/Rx';
+import {Form} from '@angular/forms';
+import {TextboxField} from '../../form/controls/field-textbox';
 export interface Behaviour {
-  id: string,
-  title: string,
-  description: string,
-  defaultActive: boolean,
-  register: (_: any) => void,
-  controls?: any[],
-  outer?: any
+  id: string;
+  title: string;
+  description: string;
+  defaultActive: boolean;
+  register: (_: any) => void;
+  controls?: any[];
+  outer?: any;
 }
 
 @Injectable()
@@ -40,23 +40,23 @@ export class BehavioursDefault {
    * @param id
    * @param listener
    */
-  addListener= function (id: string, listener: Function) {
-    if (!this.eventHandlers[id]) this.initHandler(id);
-    this.eventHandlers[id].listeners.push(listener);
+  addListener = function (id: string, listener: Function) {
+    if (!this.eventHandlers[id]) this.initHandler( id );
+    this.eventHandlers[id].listeners.push( listener );
   };
 
   /**
-   * Add subsciber to a given behaviour.
+   * Add subscriber to a given behaviour.
    * @param id
    * @param subscriber
    */
   addSubscriber = function (id: string, subscriber: Subscription) {
-    if (!this.eventHandlers[id]) this.initHandler(id);
-    this.eventHandlers[id].subscribers.push(subscriber);
+    if (!this.eventHandlers[id]) this.initHandler( id );
+    this.eventHandlers[id].subscribers.push( subscriber );
   };
 
   /**
-   * Unregister all listeners and subsribers to a given behaviour.
+   * Unregister all listeners and subscribers to a given behaviour.
    * @param id
    */
   unregister = function (id: string) {
@@ -66,26 +66,26 @@ export class BehavioursDefault {
 
   /**
    * The definition of all behaviours.
-   * @type {{id: string; title: string; description: string; defaultActive: boolean; outer: BehavioursDefault; register: ((form)=>any)}[]}
+   * @type {{id: string; title: string; description: string; defaultActive: boolean; outer: BehavioursDefault; register: Function}[]}
    */
   behaviours: Behaviour[] = [
     {
-      id: "clickAndChangeTitle",
-      title: "Click and change title + onSave validator",
-      description: "",
+      id: 'clickAndChangeTitle',
+      title: 'Click and change title + onSave validator',
+      description: '',
       defaultActive: true,
       outer: this,
       register: function (form) {
         debugger;
-        var taskEl = <HTMLElement>document.querySelector( '#taskId' );
-        this.outer.addListener(this.id,
+        let taskEl = <HTMLElement>document.querySelector( '#taskId' );
+        this.outer.addListener( this.id,
           this.outer.eventManager.addEventListener( taskEl, 'click', function () {
             console.log( 'Element was clicked' );
-            form.find( ['mainInfo', 'title'] ).updateValue( "remotely updated" );
+            form.find( ['mainInfo', 'title'] ).updateValue( 'remotely updated' );
           } )
         );
 
-        this.outer.addSubscriber(this.id,
+        this.outer.addSubscriber( this.id,
           this.outer.formService.onBeforeSave.asObservable().subscribe( (message: any) => {
             message.errors.push( {id: 'taskId', error: 'I don\'t like this ID'} );
             console.log( 'in observer' );
@@ -94,13 +94,13 @@ export class BehavioursDefault {
       }
     },
     {
-      id: "mapAndChangeTitle",
-      title: "Enter map and change title",
-      description: "",
+      id: 'mapAndChangeTitle',
+      title: 'Enter map and change title',
+      description: '',
       defaultActive: true,
       outer: this,
-      register: function(form) {
-        this.outer.addSubscriber(this.id,
+      register: function (form) {
+        this.outer.addSubscriber( this.id,
           form.controls['map'].valueChanges.subscribe( function (val: string) {
             if (val === 'map') {
               form.find( ['mainInfo', 'title'] ).updateValue( 'Map was entered' );
@@ -108,7 +108,7 @@ export class BehavioursDefault {
           } )
         );
 
-        this.outer.addSubscriber(this.id,
+        this.outer.addSubscriber( this.id,
           form.controls['categories'].valueChanges.subscribe( function (val: string) {
             console.log( 'categories changed: ', val );
           } )
@@ -116,9 +116,9 @@ export class BehavioursDefault {
       }
     },
     {
-      id: "addControl",
-      title: "Add control to form",
-      description: "",
+      id: 'addControl',
+      title: 'Add control to form',
+      description: '',
       defaultActive: true,
       outer: this,
       register: function (form: Form) {
@@ -126,12 +126,12 @@ export class BehavioursDefault {
         // form.addControl(new FormControl('dynamic'))
       },
       controls: [
-        new TextboxField({
+        new TextboxField( {
           key: 'behaviourField',
           label: 'Dynamic Behaviour Field',
           // domClass: 'half',
           order: 0
-        })
+        } )
       ]
     }
   ];

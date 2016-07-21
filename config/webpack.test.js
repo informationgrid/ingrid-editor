@@ -9,7 +9,7 @@ module.exports = {
         loaders: [
             {
                 test: /\.ts$/,
-                loaders: ['ts', 'angular2-template-loader']
+                loaders: ['ts?transpileOnly=true,configFileName=tsconfig.webpack.json', 'angular2-template-loader']
             },
             {
                 test: /\.html$/,

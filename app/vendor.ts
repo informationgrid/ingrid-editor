@@ -3,6 +3,11 @@ import 'es6-shim';
 import 'es6-promise';
 import 'es7-reflect-metadata';
 import 'zone.js/dist/zone';
+import '@angular/platform-browser';
+import '@angular/router';
+import '@angular/core';
+import '../node_modules/jquery/dist/jquery.min';
+import 'script!primeui/primeui-ng-all.min.js';
 
 if ('production' === process.env.ENV) {
   // Production
@@ -23,9 +28,3 @@ require('rxjs/add/operator/mergeMap');
 
 // For vendors for example jQuery, Lodash, angular2-jwt just import them anywhere in your app
 // Also see custom-typings.d.ts as you also need to do `typings install x` where `x` is your module
-import "@angular/platform-browser";
-import "@angular/router";
-import "@angular/core";
-
-import "../node_modules/jquery/dist/jquery.min";
-import "script!primeui/primeui-ng-all.min.js";

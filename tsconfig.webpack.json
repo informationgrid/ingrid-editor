@@ -9,7 +9,7 @@
     "removeComments": false,
     "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noEmit": true
+    "noEmit": false
   },
   "exclude": ["node_modules"]
 }

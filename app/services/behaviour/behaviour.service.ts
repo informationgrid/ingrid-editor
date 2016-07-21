@@ -1,6 +1,6 @@
-import {Injectable} from "@angular/core";
-import {FormGroup} from "@angular/forms";
-import {BehavioursDefault, Behaviour} from "./behaviours";
+import {Injectable} from '@angular/core';
+import {FormGroup} from '@angular/forms';
+import {BehavioursDefault, Behaviour} from './behaviours';
 
 @Injectable()
 export class BehaviourService {
@@ -8,7 +8,7 @@ export class BehaviourService {
   behaviours: Behaviour[];
 
   constructor(private defaultBehaves: BehavioursDefault) {
-    //eval(require( 'raw!./behaviours.js' ));
+    // eval(require( 'raw!./behaviours.js' ));
     this.behaviours = defaultBehaves.behaviours;
   }
 

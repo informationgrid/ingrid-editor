@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core';
-import { FormGroup, REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
+import {Component, Input} from '@angular/core';
+import {FormGroup, REACTIVE_FORM_DIRECTIVES} from '@angular/forms';
 import {NgClass} from '@angular/common';
-import {FieldBase} from "./controls/field-base";
-import {CustomInput} from "./table/table.component";
+import {FieldBase} from './controls/field-base';
+import {CustomInput} from './table/table.component';
 
 
 @Component({
@@ -16,7 +16,7 @@ export class DynamicFormQuestionComponent {
   @Input() value: string;
   @Input() parentKey: string = null;
 
-  get isValid() {
+  /*get isValid() {
     return this.form.controls[this.field.key].valid;
-  }
+  }*/
 }

@@ -1,12 +1,12 @@
-import {Component, Input, OnInit, AfterViewInit} from "@angular/core";
-import {FormGroup, REACTIVE_FORM_DIRECTIVES} from "@angular/forms";
-import {DynamicFormQuestionComponent} from "./dynamic-form-question.component";
-import {QuestionControlService} from "./services/question-control.service";
-import {FieldBase} from "./controls/field-base";
-import {BehaviourService} from "./services/behaviour.service";
-import {FormularService} from "./services/formular/formular.service";
-import {Behaviour} from "./services/behaviours";
-import {CustomInput} from "./table/table.component";
+import {Component, Input, OnInit, AfterViewInit} from '@angular/core';
+import {FormGroup, REACTIVE_FORM_DIRECTIVES} from '@angular/forms';
+import {DynamicFormQuestionComponent} from './dynamic-form-question.component';
+import {QuestionControlService} from '../services/question-control.service';
+import {FieldBase} from './controls/field-base';
+import {BehaviourService} from '../services/behaviour/behaviour.service';
+import {FormularService} from '../services/formular/formular.service';
+import {Behaviour} from '../services/behaviour/behaviours';
+import {CustomInput} from './table/table.component';
 
 interface FormData {
   taskId?: string;
@@ -31,7 +31,7 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
   private formularService: FormularService) {
   }
 
-  //noinspection JSUnusedGlobalSymbols
+  // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
     this.behaviours = this.behaviourService.behaviours;
     debugger;
@@ -46,7 +46,7 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
     this.form = this.qcs.toFormGroup( this.fields );
   }
 
-  //noinspection JSUnusedGlobalSymbols
+  // noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
     this.behaviourService.apply(this.form);
   }

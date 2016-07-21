@@ -29,7 +29,7 @@ module.exports = {
       // Support for .ts files.
       {
         test: /\.ts$/,
-        loader: 'ts?transpileOnly=true',
+        loader: 'ts?transpileOnly=true,configFileName=tsconfig.webpack.json',
         // 'awesome-typescript-loader',
         exclude: [ /\.(spec|e2e)\.ts$/, helpers.root( 'node_modules' ) ]
       },

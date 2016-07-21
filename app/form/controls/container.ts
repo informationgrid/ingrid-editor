@@ -1,4 +1,4 @@
-import {FieldBase} from "./field-base";
+import {FieldBase} from './field-base';
 
 export class Container extends FieldBase<string> {
   controlType = 'container';
@@ -15,4 +15,3 @@ export class Container extends FieldBase<string> {
     this.useGroupKey = options['useGroupKey'] || null;
   }
 }
-

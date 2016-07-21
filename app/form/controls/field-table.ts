@@ -1,4 +1,4 @@
-import {FieldBase} from "./field-base";
+import {FieldBase} from './field-base';
 
 export interface TableColumn {
   id: string;

@@ -1,8 +1,7 @@
-import { Component }       from '@angular/core';
-
-import { DynamicFormComponent }     from './dynamic-form.component';
-import {FormularService} from "./services/formular/formular.service";
-import {BehavioursDefault} from "./services/behaviours";
+import {Component} from '@angular/core';
+import {DynamicFormComponent} from './form/dynamic-form.component';
+import {FormularService} from './services/formular/formular.service';
+import {BehavioursDefault} from './services/behaviour/behaviours';
 
 @Component({
   selector: 'my-app',
@@ -22,10 +21,3 @@ export class AppComponent {
     this.fields = service.getFields();
   }
 }
-
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/
