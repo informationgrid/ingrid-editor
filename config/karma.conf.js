@@ -24,15 +24,21 @@ module.exports = function (config) {
             noInfo: true
         },
 
-        plugins: ['karma-junit-reporter'],
+        plugins: ['karma-jasmine', 'karma-phantomjs-launcher', 'karma-junit-reporter', 'karma-webpack', 'karma-sourcemap-loader'],
 
         reporters: ['progress', 'junit'],
-        port: 9876,
+
+        junitReporter: {
+            outputFile: 'reports/test-results-karma.xml',
+            suite: ''
+        },
+
+        port: 9875,
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatch: true,
         browsers: ['PhantomJS'],
-        singleRun: false
+        singleRun: true
     };
 
     config.set(_config);
