@@ -24,7 +24,9 @@ module.exports = function (config) {
             noInfo: true
         },
 
-        reporters: ['progress'],
+        plugins: ['karma-junit-reporter'],
+
+        reporters: ['progress', 'junit'],
         port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
