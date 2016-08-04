@@ -39,25 +39,25 @@ export class FormularService {
         order: 4
       }),*/
 
-      new Container({
+      new Container( {
         useGroupKey: 'mainInfo',
         domClass: 'half',
         children: [
-          new TextboxField({
+          new TextboxField( {
             key: 'taskId',
             label: 'Vorhabensnummer',
             // domClass: 'half',
             order: 1
           }),
 
-          new TextboxField({
+          new TextboxField( {
             key: 'title',
             label: 'Titel',
             // domClass: 'half',
             order: 10
           }),
 
-          new TextareaField({
+          new TextareaField( {
             key: 'description',
             label: 'Beschreibung',
             // domClass: 'half',
@@ -67,7 +67,7 @@ export class FormularService {
         ]
       }),
 
-      new TextareaField({
+      new TextareaField( {
         key: 'map',
         label: 'Karte',
         domClass: 'half',
@@ -75,7 +75,7 @@ export class FormularService {
         order: 5
       }),
 
-      new TableField({
+      new TableField( {
         key: 'categories',
         label: 'Autos',
         columns: [
@@ -89,17 +89,17 @@ export class FormularService {
 
     ];
 
-    return questions.sort((a, b) => a.order - b.order);
+    return questions.sort(( a, b ) => a.order - b.order );
   }
 
   /*getLoadedData() {
     return this.data;
   }*/
 
-  loadData(id: string): Promise<any> {
-    return new Promise((resolve, reject) => {
+  loadData( id: string ): Promise<any> {
+    return new Promise(( resolve, reject ) => {
       let data = {};
-      if (id === '0') {
+      if ( id === '0' ) {
         data = Object.assign( {}, {
           mainInfo: {
             taskId: '1234567',
@@ -124,8 +124,8 @@ export class FormularService {
               color: 'blue'
             }
           ]
-        } );
-      } else if (id === '1') {
+        });
+      } else if ( id === '1' ) {
         data = Object.assign( {}, {
           mainInfo: {
             taskId: '98765',
@@ -133,9 +133,9 @@ export class FormularService {
             description: 'Noch eine Beschreibung.'
           },
           categories: []
-        } );
+        });
       }
-      setTimeout(() => resolve(data));
+      setTimeout(() => resolve( data ) );
     });
   }
 }

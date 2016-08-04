@@ -4,6 +4,7 @@
   "description": "The new InGrid-Editor based on Angular2",
   "main": "index.html",
   "scripts": {
+    "prepare": "typings install",
     "test": "karma start",
     "dev": "webpack-dev-server --progress --colors --hot --inline"
   },
@@ -22,6 +23,7 @@
     "es6-shim": "0.35.1",
     "es7-reflect-metadata": "^1.6.0",
     "font-awesome": "^4.6.3",
+    "jquery": "^3.1.0",
     "primeng": "^1.0.0-beta.9",
     "primeui": "^4.1.12",
     "rxjs": "^5.0.0-beta.10",
