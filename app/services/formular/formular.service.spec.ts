@@ -30,49 +30,6 @@ describe( 'Formular', () => {
   it( 'should show form in multiple languages' );
 
 
-
-  describe( 'Formular fields', () => {
-
-    xit( 'should create a text field', () => {
-
-    });
-
-    xit( 'should create a text area', () => {
-
-    });
-
-    xit( 'should create a select box', () => {
-
-    });
-
-    xit( 'should create a combo box', () => {
-
-    });
-
-    xit( 'should create a checkbox', () => {
-
-    });
-
-    xit( 'should create a radio button group', () => {
-
-    });
-
-    xit( 'should create a table', () => {
-
-    });
-
-    xit( 'should create a date field', () => {
-
-    });
-
-    xit( 'should create a nested field', () => {
-
-    });
-
-  });
-
-
-
   describe( 'Text field', () => {
 
     xit( 'should be defined mandatory', () => {

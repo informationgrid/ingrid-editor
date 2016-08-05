@@ -6,6 +6,9 @@ import {TextboxField} from '../../form/controls/field-textbox';
 import {Container} from '../../form/controls/container';
 import {EventEmitter} from '@angular/core';
 import {TableField} from '../../form/controls/field-table';
+import {DropdownField} from '../../form/controls/field-dropdown';
+import {CheckboxField} from '../../form/controls/field-checkbox';
+import {RadioField} from '../../form/controls/field-radio';
 
 @Injectable()
 export class FormularService {
@@ -27,7 +30,7 @@ export class FormularService {
 
     let questions: FieldBase<any>[] = [
 
-      /*new DropdownField({
+      new DropdownField({
         key: 'brave',
         label: 'Bravery Rating',
         options: [
@@ -36,8 +39,8 @@ export class FormularService {
           {key: 'good',   value: 'Good'},
           {key: 'unproven', value: 'Unproven'}
         ],
-        order: 4
-      }),*/
+        order: 100
+      }),
 
       new Container( {
         useGroupKey: 'mainInfo',
@@ -85,7 +88,33 @@ export class FormularService {
           { id: 'color', label: 'Farbe', editable: true }
         ],
         order: 30
-      })
+      }),
+
+      new TextboxField( {
+        key: 'date',
+        label: 'Datum',
+        domClass: 'half',
+        order: 89,
+        type: 'date'
+      } ),
+
+      new CheckboxField( {
+        key: 'isOpenData',
+        label: 'Open Data',
+        domClass: 'half',
+        order: 90
+      } ),
+
+      new RadioField( {
+        key: 'gender',
+        label: 'Gender',
+        domClass: 'half',
+        order: 91,
+        options: [
+          { label: 'male', value: 'm' },
+          { label: 'female', value: 'f' }
+        ]
+      } )
 
     ];
 
@@ -106,6 +135,10 @@ export class FormularService {
             title: 'Meine erste UVP',
             description: 'Hier ist eine Beschreibung.'
           },
+          brave: 'good',
+          gender: 'm',
+          isOpenData: true,
+          isOpenData2: true,
           categories: [
             {
               vin: '1234',

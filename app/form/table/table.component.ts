@@ -1,7 +1,7 @@
 import {Component, forwardRef, Input} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, REACTIVE_FORM_DIRECTIVES} from '@angular/forms';
 import {Column, DataTable} from 'primeng/primeng';
-import {TableColumn} from '../controlsx/field-table';
+import {TableColumn} from '../controls/field-table';
 
 const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,

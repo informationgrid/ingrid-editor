@@ -7,6 +7,9 @@
             <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
                    [id]="field.key" [type]="field.type" [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
 
+            <input *ngSwitchCase="'checkbox'" [formControlName]="field.key"
+                   [id]="field.key" type="checkbox" [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
+
             <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key"
                     [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
                 <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
@@ -26,7 +29,17 @@
         <div [ngSwitch]="field.controlType">
 
             <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
-                   [id]="field.key" [type]="field.type" [ngModel]="value[field.key]">
+                   [id]="field.key" [attr.type]="field.type" [ngModel]="value[field.key]">
+
+            <input *ngSwitchCase="'checkbox'" [formControlName]="field.key"
+                   [id]="field.key" type="checkbox" [ngModel]="value[field.key]">
+
+            <!-- TODO: https://github.com/pleerock/ng2-radio-group -->
+            <span *ngSwitchCase="'radio'">
+                <span *ngFor="let opt of field.options">
+                    <input [formControlName]="field.key" [attr.name]="field.key" type="radio" [ngModel]="value[field.key]"> {{opt.label}}
+                </span>
+            </span>
 
             <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key"
                     [ngModel]="value[field.key]">

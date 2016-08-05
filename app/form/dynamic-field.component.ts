@@ -6,14 +6,14 @@ import {CustomInput} from './table/table.component';
 
 
 @Component({
-  selector: 'df-question',
-  template: require('./dynamic-form-question.component.html'),
+  selector: 'dyn-field',
+  template: require('./dynamic-field.component.html'),
   directives: [REACTIVE_FORM_DIRECTIVES, NgClass, CustomInput]
 })
-export class DynamicFormQuestionComponent {
+export class DynamicFieldComponent {
   @Input() field: FieldBase<any>;
   @Input() form: FormGroup;
-  @Input() value: string;
+  @Input() value: any;
   @Input() parentKey: string = null;
 
   /*get isValid() {

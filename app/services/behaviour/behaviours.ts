@@ -9,7 +9,7 @@ export interface Behaviour {
   title: string;
   description: string;
   defaultActive: boolean;
-  register: (_: any) => void;
+  register: (_: any, eventManager: EventManager) => void;
   controls?: any[];
   outer?: any;
 }

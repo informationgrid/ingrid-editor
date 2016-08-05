@@ -13,12 +13,12 @@
   padding: 0 10px 0 0;
 }
 
-df-question {
+dyn-field {
   padding-bottom: 10px;
   display: block;
 }
 
-.hasChildren df-question {
+.hasChildren dyn-field {
   display: inline-block;
 }
 

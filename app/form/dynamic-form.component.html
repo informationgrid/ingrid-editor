@@ -4,9 +4,9 @@
         <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"
              [ngClass]="{hasChildren: field.children, padding: !field.children}">
             <fieldset *ngIf="field.children">
-                <df-question *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey" [form]="form" [value]="data" class="padding {{child.domClass}}"></df-question>
+                <dyn-field *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey" [form]="form" [value]="data" class="padding {{child.domClass}}"></dyn-field>
             </fieldset>
-            <df-question *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></df-question>
+            <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></dyn-field>
         </div>
 
         <div class="form-row">
