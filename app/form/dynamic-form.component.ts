@@ -5,7 +5,7 @@ import {QuestionControlService} from '../services/question-control.service';
 import {FieldBase} from './controls/field-base';
 import {BehaviourService} from '../services/behaviour/behaviour.service';
 import {FormularService} from '../services/formular/formular.service';
-import {Behaviour} from '../services/behaviour/behaviours';
+import {Behaviour, BehavioursDefault} from '../services/behaviour/behaviours';
 import {CustomInput} from './table/table.component';
 
 interface FormData {
@@ -17,11 +17,11 @@ interface FormData {
   selector: 'dynamic-form',
   template: require( './dynamic-form.component.html' ),
   directives: [DynamicFieldComponent, REACTIVE_FORM_DIRECTIVES, CustomInput],
-  providers: [QuestionControlService, BehaviourService]
+  providers: [QuestionControlService, BehaviourService, FormularService, BehavioursDefault]
 } )
 export class DynamicFormComponent implements OnInit, AfterViewInit {
 
-  @Input() fields: FieldBase<any>[] = [];
+  fields: FieldBase<any>[] = [];
   form: FormGroup;
   payLoad = '';
   data: FormData = {};
@@ -29,6 +29,7 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
 
   constructor(private qcs: QuestionControlService, private behaviourService: BehaviourService,
               private formularService: FormularService) {
+    this.fields = formularService.getFields();
   }
 
   // noinspection JSUnusedGlobalSymbols

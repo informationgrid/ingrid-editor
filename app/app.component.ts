@@ -1,23 +1,21 @@
 import {Component} from '@angular/core';
-import {DynamicFormComponent} from './form/dynamic-form.component';
-import {FormularService} from './services/formular/formular.service';
-import {BehavioursDefault} from './services/behaviour/behaviours';
+import {ROUTER_DIRECTIVES} from '@angular/router';
+import {MenuComponent} from './menu/menu.component';
 
-@Component({
+@Component( {
   selector: 'my-app',
   template: `
     <div>
       <h2>UVP</h2>
-      <dynamic-form [fields]="fields"></dynamic-form>
+      <!-- MENU -->
+      <menu></menu>
+      
+      <!-- PAGES -->
+      <router-outlet></router-outlet>
     </div>
   `,
-  directives: [DynamicFormComponent],
-  providers:  [FormularService, BehavioursDefault]
-})
+  directives: [ROUTER_DIRECTIVES, MenuComponent]
+} )
 export class AppComponent {
-  fields: any[];
 
-  constructor(service: FormularService) {
-    this.fields = service.getFields();
-  }
 }

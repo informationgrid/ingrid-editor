@@ -8,10 +8,12 @@ import '../node_modules/ag-grid/dist/styles/theme-blue.css';
 
 import '../styles.css';
 import {AppComponent} from './app.component';
+import {appRouterProviders} from './router';
 
 bootstrap(AppComponent, [
   disableDeprecatedForms(),
-  provideForms()
+  provideForms(),
+  appRouterProviders
 ])
 .catch((err: any) => console.error(err));
 
