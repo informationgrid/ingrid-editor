@@ -1,4 +1,4 @@
-import { Injectable }       from '@angular/core';
+import {Injectable}       from '@angular/core';
 
 import {FieldBase} from '../../form/controls/field-base';
 import {TextareaField} from '../../form/controls/field-textarea';
@@ -30,17 +30,17 @@ export class FormularService {
 
     let questions: FieldBase<any>[] = [
 
-      new DropdownField({
+      new DropdownField( {
         key: 'brave',
         label: 'Bravery Rating',
         options: [
-          {key: 'solid',  value: 'Solid'},
-          {key: 'great',  value: 'Great'},
-          {key: 'good',   value: 'Good'},
+          {key: 'solid', value: 'Solid'},
+          {key: 'great', value: 'Great'},
+          {key: 'good', value: 'Good'},
           {key: 'unproven', value: 'Unproven'}
         ],
         order: 100
-      }),
+      } ),
 
       new Container( {
         useGroupKey: 'mainInfo',
@@ -51,14 +51,14 @@ export class FormularService {
             label: 'Vorhabensnummer',
             // domClass: 'half',
             order: 1
-          }),
+          } ),
 
           new TextboxField( {
             key: 'title',
             label: 'Titel',
             // domClass: 'half',
             order: 10
-          }),
+          } ),
 
           new TextareaField( {
             key: 'description',
@@ -66,9 +66,9 @@ export class FormularService {
             // domClass: 'half',
             rows: 10,
             order: 20
-          }),
+          } ),
         ]
-      }),
+      } ),
 
       new TextareaField( {
         key: 'map',
@@ -76,19 +76,19 @@ export class FormularService {
         domClass: 'half',
         rows: 17,
         order: 5
-      }),
+      } ),
 
       new TableField( {
         key: 'categories',
         label: 'Autos',
         columns: [
-          { id: 'vin', label: 'Vintage', editable: true },
-          { id: 'year', label: 'Jahr', editable: false },
-          { id: 'brand', label: 'Marke', editable: true },
-          { id: 'color', label: 'Farbe', editable: true }
+          {headerName: 'Vintage', field: 'vin', editable: true},
+          {headerName: 'Jahr', field: 'year', editable: true},
+          {headerName: 'Marke', field: 'brand'},
+          {headerName: 'Farbe', field: 'color'}
         ],
         order: 30
-      }),
+      } ),
 
       new TextboxField( {
         key: 'date',
@@ -111,24 +111,24 @@ export class FormularService {
         domClass: 'half',
         order: 91,
         options: [
-          { label: 'male', value: 'm' },
-          { label: 'female', value: 'f' }
+          {label: 'male', value: 'm'},
+          {label: 'female', value: 'f'}
         ]
       } )
 
     ];
 
-    return questions.sort(( a, b ) => a.order - b.order );
+    return questions.sort( (a, b) => a.order - b.order );
   }
 
   /*getLoadedData() {
     return this.data;
   }*/
 
-  loadData( id: string ): Promise<any> {
-    return new Promise(( resolve, reject ) => {
+  loadData(id: string): Promise<any> {
+    return new Promise( (resolve, reject) => {
       let data = {};
-      if ( id === '0' ) {
+      if (id === '0') {
         data = Object.assign( {}, {
           mainInfo: {
             taskId: '1234567',
@@ -137,6 +137,7 @@ export class FormularService {
           },
           brave: 'good',
           gender: 'm',
+          date: '1978-10-10', // new Date(),
           isOpenData: true,
           isOpenData2: true,
           categories: [
@@ -157,8 +158,8 @@ export class FormularService {
               color: 'blue'
             }
           ]
-        });
-      } else if ( id === '1' ) {
+        } );
+      } else if (id === '1') {
         data = Object.assign( {}, {
           mainInfo: {
             taskId: '98765',
@@ -166,9 +167,9 @@ export class FormularService {
             description: 'Noch eine Beschreibung.'
           },
           categories: []
-        });
+        } );
       }
-      setTimeout(() => resolve( data ) );
-    });
+      setTimeout( () => resolve( data ) );
+    } );
   }
 }

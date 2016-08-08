@@ -6,8 +6,6 @@ import 'zone.js/dist/zone';
 import '@angular/platform-browser';
 import '@angular/router';
 import '@angular/core';
-import '../node_modules/jquery/dist/jquery.min';
-import 'script!primeui/primeui-ng-all.min.js';
 
 if ('production' === process.env.ENV) {
   // Production

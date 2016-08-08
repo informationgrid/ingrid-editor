@@ -1,7 +1,8 @@
 import {Component, forwardRef, Input} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, REACTIVE_FORM_DIRECTIVES} from '@angular/forms';
-import {Column, DataTable} from 'primeng/primeng';
 import {TableColumn} from '../controls/field-table';
+import {AgGridNg2} from 'ag-grid-ng2';
+import {GridOptions} from 'ag-grid';
 
 const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -15,17 +16,33 @@ const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   selector: 'data-table',
   template: `
       <div class="form-group">
-        <p-dataTable [editable]="true" [value]="value" (onEditComplete)="_onChangeCallback(value)">
-            <p-column *ngFor="let col of columns" [field]="col.id" [header]="col.label" [editable]="col.editable"></p-column>
-        </p-dataTable>
+        <ag-grid-ng2 #agGrid style="width: 100%; height: 120px;" class="ag-blue"
+
+             [gridOptions]="gridOptions"
+             [columnDefs]="columns"
+             [rowData]="value"
+
+             enableColResize
+             suppressHorizontalScroll
+             enableSorting
+             singleClickEdit
+             rowHeight="22">
+        </ag-grid-ng2>
       </div>
   `,
-  directives: [REACTIVE_FORM_DIRECTIVES, DataTable, Column],
+  directives: [REACTIVE_FORM_DIRECTIVES, AgGridNg2],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 } )
 export class CustomInput implements ControlValueAccessor {
 
   @Input() columns: TableColumn[];
+  private rowData: any[] = [];
+  private columnDefs: any[];
+  gridOptions: GridOptions = {
+    columnDefs: this.columnDefs,
+    rowData: null,
+    enableColResize: true
+  };
 
   // The internal data model
   private _value: any = '';
@@ -34,6 +51,10 @@ export class CustomInput implements ControlValueAccessor {
   private _onTouchedCallback: () => void;
 
   private _onChangeCallback: (x: any) => void;
+
+  ngAfterViewInit(): any {
+    this.gridOptions.api.sizeColumnsToFit();
+  }
 
   // get accessor
   get value(): any {
