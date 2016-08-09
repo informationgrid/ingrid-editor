@@ -1,0 +1,4 @@
+<h1>Plugins</h1>
+<div *ngFor="let plugin of plugins">
+    <input type="checkbox" (change)="togglePlugin(plugin)"> {{plugin.name}}
+</div>

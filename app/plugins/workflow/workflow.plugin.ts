@@ -1,9 +1,25 @@
-import { Plugin } from '../plugin';
+import {Plugin} from '../plugin';
+import {Inject} from '@angular/core';
+import {FormToolbarService} from '../../form/toolbar/form-toolbar.service';
 
 export class WorkflowPlugin implements Plugin {
   id = 'plugin.workflow';
+  name = 'Workflow';
+
+  constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService) {
+  }
 
   register() {
+    this.formToolbarService.addButton( {
+      tooltip: 'Send to QA', cssClasses: 'glyphicon glyphicon-apple', eventId: 'SEND_TO_QA'
+    } );
+    
+    this.formToolbarService.toolbarEvent$.subscribe( eventId => {
+      if (eventId === 'SEND_TO_QA') {
+        this.sendToQA();
+      }
+    } );
+
     // disable publish plugin / buttons
 
     // add button for send to QA (non-QA)
@@ -15,6 +31,10 @@ export class WorkflowPlugin implements Plugin {
     // add action for buttons
 
     // display state in tree/document
+  }
+
+  sendToQA() {
+    console.log( 'Send to QA' );
   }
 
 }

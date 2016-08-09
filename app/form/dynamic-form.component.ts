@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, AfterViewInit} from '@angular/core';
+import {Component, OnInit, AfterViewInit} from '@angular/core';
 import {FormGroup, REACTIVE_FORM_DIRECTIVES} from '@angular/forms';
 import {DynamicFieldComponent} from './dynamic-field.component';
 import {QuestionControlService} from '../services/question-control.service';
@@ -7,6 +7,7 @@ import {BehaviourService} from '../services/behaviour/behaviour.service';
 import {FormularService} from '../services/formular/formular.service';
 import {Behaviour, BehavioursDefault} from '../services/behaviour/behaviours';
 import {CustomInput} from './table/table.component';
+import {FormToolbarComponent} from './toolbar/form-toolbar.component';
 
 interface FormData {
   taskId?: string;
@@ -16,7 +17,7 @@ interface FormData {
 @Component( {
   selector: 'dynamic-form',
   template: require( './dynamic-form.component.html' ),
-  directives: [DynamicFieldComponent, REACTIVE_FORM_DIRECTIVES, CustomInput],
+  directives: [DynamicFieldComponent, REACTIVE_FORM_DIRECTIVES, FormToolbarComponent, CustomInput],
   providers: [QuestionControlService, BehaviourService, FormularService, BehavioursDefault]
 } )
 export class DynamicFormComponent implements OnInit, AfterViewInit {

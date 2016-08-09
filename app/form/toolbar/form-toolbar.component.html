@@ -1,0 +1,5 @@
+<div class="btn-toolbar" role="toolbar" aria-label="Form-Toolbar">
+    <div class="btn-group btn-group-sm" role="group" aria-label="...">
+        <button *ngFor="let button of buttons" class="btn btn-sm btn-default {{button.cssClasses}}" [title]="button.tooltip" (click)="sendEvent(button.eventId)"></button>
+    </div>
+</div>
