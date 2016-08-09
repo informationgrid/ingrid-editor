@@ -14,9 +14,6 @@ export class BehaviourService {
   constructor(private defaultBehaves: BehavioursDefault, private eventManager: EventManager) {
     // eval(require( 'raw!./behaviours.js' ));
     this.behaviours = defaultBehaves.behaviours;
-  }
-
-  apply(form: FormGroup) {
 
     // load user behaviours
     let $script = require( 'scriptjs' );
@@ -24,38 +21,61 @@ export class BehaviourService {
       console.log( 'loaded additional behaviours' );
       this.behaviours.push( ...additionalBehaviours );
 
-      // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
-
-      this.behaviours.forEach( behaviour => {
-        if (!behaviour.title) return;
-
-        if (behaviour.defaultActive) {
-          // we need to run code in this context
-          // TODO: add parameters for behaviour
-          behaviour.register( form, this.eventManager );
-        }
+      this.behaviours.forEach( (behaviour) => {
+        behaviour.isActive = behaviour.defaultActive;
       } );
     } );
   }
 
-  enable(id: string, form: FormGroup) {
+  apply(form: FormGroup) {
+
+    // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
+    this.behaviours.forEach( behaviour => {
+      if (!behaviour.title) return;
+
+      if (behaviour.isActive) {
+        // we need to run code in this context
+        // TODO: add parameters for behaviour
+        behaviour.register( form, this.eventManager );
+      }
+    } );
+  }
+
+  enable(id: string) {
     this.behaviours.some( behaviour => {
       if (behaviour.id === id) {
-        behaviour.register( form, this.eventManager );
+        // behaviour.register( form, this.eventManager );
+        behaviour.isActive = true;
         return true;
       }
     } );
   }
 
   disable(id: string) {
-    this.defaultBehaves.unregister( id );
+    this.behaviours.some( behaviour => {
+      if (behaviour.id === id) {
+        behaviour.isActive = false;
+        return true;
+      }
+    } );
+    // this.defaultBehaves.unregister( id );
   }
 
-/*  addDynamicBehaviours = function () {
-    let addBeh = require( 'bundle!./additionalBehaviours.js' );
-    addBeh( function (data: Function) {
-      console.log( 'other loaded behaviours: ', data() );
+  /*
+    register(id: string, form: FormGroup) {
+      this.behaviours.some( behaviour => {
+        if (behaviour.id === id) {
+          behaviour.register( form, this.eventManager );
+          return true;
+        }
+      } );
+    }*/
 
-    } );
-  };*/
+  /*  addDynamicBehaviours = function () {
+      let addBeh = require( 'bundle!./additionalBehaviours.js' );
+      addBeh( function (data: Function) {
+        console.log( 'other loaded behaviours: ', data() );
+
+      } );
+    };*/
 }

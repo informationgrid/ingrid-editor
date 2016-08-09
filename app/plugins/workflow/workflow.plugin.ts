@@ -2,18 +2,21 @@ import {Plugin} from '../plugin';
 import {Inject} from '@angular/core';
 import {FormToolbarService} from '../../form/toolbar/form-toolbar.service';
 
-export class WorkflowPlugin implements Plugin {
+export class WorkflowPlugin extends Plugin {
   id = 'plugin.workflow';
   name = 'Workflow';
 
   constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService) {
+    super();
   }
 
   register() {
+    super.register();
+
     this.formToolbarService.addButton( {
-      tooltip: 'Send to QA', cssClasses: 'glyphicon glyphicon-apple', eventId: 'SEND_TO_QA'
+      tooltip: 'Send to QA', cssClasses: 'glyphicon glyphicon-star', eventId: 'SEND_TO_QA'
     } );
-    
+
     this.formToolbarService.toolbarEvent$.subscribe( eventId => {
       if (eventId === 'SEND_TO_QA') {
         this.sendToQA();

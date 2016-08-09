@@ -9,6 +9,7 @@ export interface Behaviour {
   title: string;
   description: string;
   defaultActive: boolean;
+  isActive?: boolean;
   register: (_: any, eventManager: EventManager) => void;
   controls?: any[];
   outer?: any;
@@ -76,7 +77,6 @@ export class BehavioursDefault {
       defaultActive: true,
       outer: this,
       register: function (form) {
-        debugger;
         let taskEl = <HTMLElement>document.querySelector( '#taskId' );
         this.outer.addListener( this.id,
           this.outer.eventManager.addEventListener( taskEl, 'click', function () {
@@ -120,10 +120,7 @@ export class BehavioursDefault {
       title: 'Add control to form',
       description: '',
       defaultActive: true,
-      outer: this,
       register: function (form: Form) {
-
-        // form.addControl(new FormControl('dynamic'))
       },
       controls: [
         new TextboxField( {

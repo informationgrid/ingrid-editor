@@ -18,7 +18,7 @@ interface FormData {
   selector: 'dynamic-form',
   template: require( './dynamic-form.component.html' ),
   directives: [DynamicFieldComponent, REACTIVE_FORM_DIRECTIVES, FormToolbarComponent, CustomInput],
-  providers: [QuestionControlService, BehaviourService, FormularService, BehavioursDefault]
+  providers: [QuestionControlService]
 } )
 export class DynamicFormComponent implements OnInit, AfterViewInit {
 
@@ -36,7 +36,6 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
     this.behaviours = this.behaviourService.behaviours;
-    debugger;
     this.behaviours.forEach( (behave) => {
       if (behave.controls) {
         behave.controls.forEach( (additionalField => {
@@ -67,10 +66,5 @@ export class DynamicFormComponent implements OnInit, AfterViewInit {
     // since loading will be async, we only have to reset the data first
     this.data = {};
     this.formularService.loadData( id ).then( data => this.data = data );
-  }
-
-  toggleBehaviour(event: MouseEvent) {
-    let target = <HTMLInputElement>event.target;
-    target.checked ? this.behaviourService.enable( target.value, this.form ) : this.behaviourService.disable( target.value );
   }
 }

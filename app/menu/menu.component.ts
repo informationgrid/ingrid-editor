@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ROUTER_DIRECTIVES} from '@angular/router';
-import {MenuService} from '../services/menu/menu.service';
+import {MenuService} from './menu.service';
+import {MenuItem} from 'ag-grid';
 
 @Component( {
   moduleId: module.id,
@@ -10,19 +11,16 @@ import {MenuService} from '../services/menu/menu.service';
 } )
 export class MenuComponent implements OnInit {
 
-  routes = [
-    {name: 'Dashboard', path: '/dashboard'},
-    {name: 'Form', path: '/form'},
-    {name: 'Plugins', path: '/plugins'}
-  ];
+  routes: MenuItem[] = [];
 
   constructor(private menuService: MenuService) {
+    this.routes = this.menuService.menuItems;
   }
 
   ngOnInit() {
-    this.menuService.menu$.subscribe( (item) => {
+    this.menuService.menu$.subscribe( () => {
       console.log( 'menu has changed' );
-      this.routes.push( item );
+      this.routes = this.menuService.menuItems;
     } );
   }
 

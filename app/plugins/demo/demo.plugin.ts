@@ -1,12 +1,12 @@
 import {Plugin} from '../plugin';
 import {MenuService} from '../../menu/menu.service';
-import {StatisticComponent} from './statistic.component';
 import {Inject, Injectable} from '@angular/core';
+import {DemoComponent} from './demo.component';
 
 @Injectable()
-export class StatisticPlugin extends Plugin {
-  id = 'plugin.statistic';
-  _name = 'Statistic Plugin';
+export class DemoPlugin extends Plugin {
+  id = 'plugin.demo';
+  _name = 'Demo Plugin';
 
   constructor(@Inject( MenuService ) private menuService: MenuService) {
     super();
@@ -20,6 +20,12 @@ export class StatisticPlugin extends Plugin {
     super.register();
 
     // add menu item
-    this.menuService.addMenuItem( 'Statistic', 'statistic', StatisticComponent );
+    this.menuService.addMenuItem( 'Demo', 'demo', DemoComponent );
   };
+
+  unregister() {
+    super.unregister();
+
+    this.menuService.removeMenuItem( 'demo' );
+  }
 }

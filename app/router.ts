@@ -8,6 +8,7 @@ const routes: RouterConfig = [
   {path: 'form', component: DynamicFormComponent},
   {path: 'plugins', component: PluginsComponent},
   {path: '', component: DynamicFormComponent}
+  // {path: '**', component: DashboardComponent}
 ];
 
 export const appRouterProviders = [

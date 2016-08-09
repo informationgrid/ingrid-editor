@@ -10,8 +10,16 @@
 //     - might not be flexible enough, see UVP example!!!
 //     - or should it be realised as a plugin?
 
-export interface Plugin {
+export abstract class Plugin {
   id: string;
   name: string;
-  register(): void;
+  isActive: boolean;
+
+  register(): void {
+    this.isActive = true;
+  }
+
+  unregister(): void {
+    this.isActive = false;
+  }
 }

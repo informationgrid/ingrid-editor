@@ -7,7 +7,7 @@
         {
             id: 'addBehaviour1',
             title: 'My user behaviour 1',
-            defaultActive: true,
+            defaultActive: false,
             register: function (form, eventManager) {
                 var taskEl = document.querySelector( '#taskId' );
                 eventManager.addEventListener( taskEl, 'click', function () {

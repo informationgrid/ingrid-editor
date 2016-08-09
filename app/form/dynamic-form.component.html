@@ -24,13 +24,3 @@
 
 <button (click)="load('0')">Load 1</button>
 <button (click)="load('1')">Load 2</button>
-<!--<button (click)="bindToEvent()">Bind to Event</button>-->
-
-<div class="form-inline">
-    <div *ngFor="let behaviour of behaviours" class="checkbox full">
-        <label>
-            <input type="checkbox" (click)="toggleBehaviour($event)" [checked]="behaviour.defaultActive"
-                   value="{{behaviour.id}}"> {{behaviour.title}}
-        </label>
-    </div>
-</div>

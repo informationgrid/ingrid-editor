@@ -1,9 +1,11 @@
 import { Plugin } from '../plugin';
 
-export class PublishPlugin implements Plugin {
+export class PublishPlugin extends Plugin {
   id = 'plugin.publish';
 
   register() {
+    super.register();
+
     // add button to toolbar for publish action
 
     // add action for button

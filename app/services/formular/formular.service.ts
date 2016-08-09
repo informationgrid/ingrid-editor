@@ -21,14 +21,7 @@ export class FormularService {
   // Todo: make asynchronous
   getFields() {
 
-    let data = {
-      brave: {
-        type: 'DropDown'
-
-      }
-    };
-
-    let questions: FieldBase<any>[] = [
+    let fields: FieldBase<any>[] = [
 
       new DropdownField( {
         key: 'brave',
@@ -118,7 +111,7 @@ export class FormularService {
 
     ];
 
-    return questions.sort( (a, b) => a.order - b.order );
+    return fields.sort( (a, b) => a.order - b.order );
   }
 
   /*getLoadedData() {
