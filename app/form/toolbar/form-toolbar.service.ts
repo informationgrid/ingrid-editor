@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, Observer} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 export interface ToolbarItem {
   tooltip: string;
@@ -10,22 +10,39 @@ export interface ToolbarItem {
 @Injectable()
 export class FormToolbarService {
 
-  toolbar$: Observable<ToolbarItem>;
-  toolbarObserver: Observer<ToolbarItem>;
+  toolbar$: Subject<ToolbarItem>;
 
-  toolbarEvent$: Observable<string>;
-  toolbarEventObserver: Observer<string>;
+  toolbarEvent$: Subject<string>;
 
   _buttons: ToolbarItem[] = [
+    {tooltip: 'New', cssClasses: 'glyphicon glyphicon-file', eventId: 'NEW_DOC'},
+    {tooltip: 'Load', cssClasses: 'glyphicon glyphicon-folder-open', eventId: 'LOAD'},
     {tooltip: 'Save', cssClasses: 'glyphicon glyphicon-save', eventId: 'SAVE'},
     {tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT'},
     {tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-remove', eventId: 'DELETE'}
   ];
 
   constructor() {
-    this.toolbar$ = new Observable<ToolbarItem>( (observer: any) => this.toolbarObserver = observer );
-    this.toolbarEvent$ = new Observable<string>( (observer: any) => this.toolbarEventObserver = observer );
+    this.toolbar$ = new Subject<ToolbarItem>();
+    this.toolbarEvent$ = new Subject<string>(); // new Observable<string>( (observer: any) => this.toolbarEventObserver = observer );
   }
+
+  /**
+   * Get an observable to subscribe to events from the toolbar.
+   * @returns {Observable<string>}
+   */
+  getEventObserver() {
+    return this.toolbarEvent$.asObservable();
+  }
+
+  /**
+   * Get an observable to subscribe to changes to the toolbar (e.g. new button)
+   * @returns {Observable<string>}
+   */
+  getItemObserver() {
+    return this.toolbarEvent$.asObservable();
+  }
+
 
   get buttons(): ToolbarItem[] {
     return this._buttons;
@@ -33,12 +50,11 @@ export class FormToolbarService {
 
   addButton(button: ToolbarItem, pos?: number) {
     this._buttons.push( button );
-    this.toolbarObserver.next( button );
-    console.log( 'NOT IMPLEMENTED YET' );
+    this.toolbar$.next( button );
   }
 
   sendEvent(eventId: string) {
-    this.toolbarEventObserver.next( eventId );
+    this.toolbarEvent$.next( eventId );
   }
 
 

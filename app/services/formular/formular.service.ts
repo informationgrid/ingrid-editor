@@ -1,128 +1,52 @@
-import {Injectable}       from '@angular/core';
-
+import {Injectable} from '@angular/core';
 import {FieldBase} from '../../form/controls/field-base';
-import {TextareaField} from '../../form/controls/field-textarea';
-import {TextboxField} from '../../form/controls/field-textbox';
-import {Container} from '../../form/controls/container';
-import {EventEmitter} from '@angular/core';
-import {TableField} from '../../form/controls/field-table';
-import {DropdownField} from '../../form/controls/field-dropdown';
-import {CheckboxField} from '../../form/controls/field-checkbox';
-import {RadioField} from '../../form/controls/field-radio';
+import {Subject} from 'rxjs';
+import {profile as UVP_profile} from './uvp/uvp.profile';
+import {profile as ISO_profile} from './iso/iso.profile';
+
+interface FormFields {
+  _profile: string;
+}
 
 @Injectable()
 export class FormularService {
 
   data = {};
 
-  onBeforeSave: EventEmitter<any> = new EventEmitter();
+  beforeSave: Subject<any> = new Subject<any>();
+
+  currentProfile: string;
 
   // Todo: get from a remote source of question metadata
   // Todo: make asynchronous
-  getFields() {
+  getFields(profile: string) {
 
-    let fields: FieldBase<any>[] = [
+    // TODO: choose correct profile for data to be displayed
+    let fields: FieldBase<any>[];
 
-      new DropdownField( {
-        key: 'brave',
-        label: 'Bravery Rating',
-        options: [
-          {key: 'solid', value: 'Solid'},
-          {key: 'great', value: 'Great'},
-          {key: 'good', value: 'Good'},
-          {key: 'unproven', value: 'Unproven'}
-        ],
-        order: 100
-      } ),
+    if (profile === 'UVP') fields = UVP_profile;
+    else if (profile === 'ISO') fields = ISO_profile;
 
-      new Container( {
-        useGroupKey: 'mainInfo',
-        domClass: 'half',
-        children: [
-          new TextboxField( {
-            key: 'taskId',
-            label: 'Vorhabensnummer',
-            // domClass: 'half',
-            order: 1
-          } ),
+    this.currentProfile = profile;
 
-          new TextboxField( {
-            key: 'title',
-            label: 'Titel',
-            // domClass: 'half',
-            order: 10
-          } ),
-
-          new TextareaField( {
-            key: 'description',
-            label: 'Beschreibung',
-            // domClass: 'half',
-            rows: 10,
-            order: 20
-          } ),
-        ]
-      } ),
-
-      new TextareaField( {
-        key: 'map',
-        label: 'Karte',
-        domClass: 'half',
-        rows: 17,
-        order: 5
-      } ),
-
-      new TableField( {
-        key: 'categories',
-        label: 'Autos',
-        columns: [
-          {headerName: 'Vintage', field: 'vin', editable: true},
-          {headerName: 'Jahr', field: 'year', editable: true},
-          {headerName: 'Marke', field: 'brand'},
-          {headerName: 'Farbe', field: 'color'}
-        ],
-        order: 30
-      } ),
-
-      new TextboxField( {
-        key: 'date',
-        label: 'Datum',
-        domClass: 'half',
-        order: 89,
-        type: 'date'
-      } ),
-
-      new CheckboxField( {
-        key: 'isOpenData',
-        label: 'Open Data',
-        domClass: 'half',
-        order: 90
-      } ),
-
-      new RadioField( {
-        key: 'gender',
-        label: 'Gender',
-        domClass: 'half',
-        order: 91,
-        options: [
-          {label: 'male', value: 'm'},
-          {label: 'female', value: 'f'}
-        ]
-      } )
-
-    ];
-
-    return fields.sort( (a, b) => a.order - b.order );
+    // return a copy of our fields (immutable data!)
+    return fields.sort( (a, b) => a.order - b.order ).slice( 0 );
   }
 
   /*getLoadedData() {
     return this.data;
   }*/
 
+  getNewDocument(profile: string) {
+    return {};
+  }
+
   loadData(id: string): Promise<any> {
     return new Promise( (resolve, reject) => {
-      let data = {};
+      let data: FormFields = {_profile: 'UVP'};
       if (id === '0') {
         data = Object.assign( {}, {
+          _profile: 'UVP',
           mainInfo: {
             taskId: '1234567',
             title: 'Meine erste UVP',
@@ -154,15 +78,18 @@ export class FormularService {
         } );
       } else if (id === '1') {
         data = Object.assign( {}, {
-          mainInfo: {
-            taskId: '98765',
-            title: 'Meine zweite UVP',
-            description: 'Noch eine Beschreibung.'
-          },
-          categories: []
+          _profile: 'ISO',
+          title: 'Meine erste ISO',
+          description: 'Noch eine Beschreibung.'
         } );
       }
-      setTimeout( () => resolve( data ) );
+      setTimeout( () => {
+        resolve( data );
+      } );
     } );
+  }
+
+  saveData() {
+    console.log( 'TEST: save data' );
   }
 }

@@ -1,3 +1,6 @@
+var CopyWebpackPlugin = require( 'copy-webpack-plugin' );
+var helpers = require( './../helpers' );
+
 module.exports = {
     devtool: 'inline-source-map',
 
@@ -25,5 +28,10 @@ module.exports = {
                 loader: 'null'
             }
         ]
-    }
+    },
+    plugins: [
+        new CopyWebpackPlugin( [
+            {from: helpers.root('app/services/behaviour/additionalBehaviours.js'), to: helpers.root('build')}
+        ] )
+    ]
 };

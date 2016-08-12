@@ -13,7 +13,10 @@ class BehaviourMock {
       title: 'Dummy',
       description: 'This is a dummy behaviour',
       defaultActive: true,
+      forProfile: 'UVP',
       register: function (form) {
+      },
+      unregister: function () {
       }
     },
     new OpenDataBehaviour()

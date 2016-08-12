@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 import {MenuComponent} from './menu/menu.component';
 import {MenuService} from './menu/menu.service';
@@ -10,6 +10,8 @@ import {DemoPlugin} from './plugins/demo/demo.plugin';
 import {BehaviourService} from './services/behaviour/behaviour.service';
 import {BehavioursDefault} from './services/behaviour/behaviours';
 import {FormularService} from './services/formular/formular.service';
+
+// enableProdMode();
 
 @Component( {
   selector: 'my-app',
@@ -26,12 +28,23 @@ import {FormularService} from './services/formular/formular.service';
     </div>
   `,
   directives: [ROUTER_DIRECTIVES, MenuComponent],
-  providers: [MenuService, PluginsService, FormToolbarService, StatisticPlugin, WorkflowPlugin, DemoPlugin, BehaviourService, BehavioursDefault, FormularService]
+  providers: [MenuService, PluginsService, FormToolbarService, StatisticPlugin, WorkflowPlugin, DemoPlugin, BehaviourService, BehavioursDefault, FormularService],
+  entryComponents: []
 } )
-export class AppComponent {
+export class AppComponent implements OnInit {
 
-  constructor() {
+  constructor(private pluginsService: PluginsService) {
   }
 
+  ngOnInit() {
+    let plugins = this.pluginsService.getPlugins();
+    console.log( 'got plugins:', plugins );
+    plugins
+      .filter( plugin => plugin.isActive )
+      .forEach( plugin => {
+        console.log( 'register plugin: ' + plugin.name );
+        plugin.register();
+      } );
+  }
 
 }

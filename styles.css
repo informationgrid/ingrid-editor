@@ -2,6 +2,19 @@ body {
   padding-top: 50px;
 }
 
+form-toolbar {
+  position: fixed;
+  top: 50px;
+}
+
+form-toolbar + div {
+  padding-top: 30px;
+}
+
+.navbar-default .navbar-nav>li>a:focus, nav a.active, nav a:focus.active {
+  background-color: #ececec;
+}
+
 .full {
   width: 100%;
 }

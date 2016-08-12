@@ -7,6 +7,7 @@ export class CheckboxField extends FieldBase<string> {
   constructor(options: {} = {}) {
     super(options);
     // this.type = options['type'] || 'text';
+    this.hideLabel = options['hideLabel'] || true;
   }
 }
 

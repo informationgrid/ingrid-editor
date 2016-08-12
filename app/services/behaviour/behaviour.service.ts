@@ -11,33 +11,42 @@ export class BehaviourService {
 
   behaviours: Behaviour[];
 
+  initialized: Promise<any>;
+
   constructor(private defaultBehaves: BehavioursDefault, private eventManager: EventManager) {
     // eval(require( 'raw!./behaviours.js' ));
     this.behaviours = defaultBehaves.behaviours;
 
     // load user behaviours
     let $script = require( 'scriptjs' );
-    $script( './behaviours/additionalBehaviours.js', () => {
-      console.log( 'loaded additional behaviours' );
-      this.behaviours.push( ...additionalBehaviours );
+    this.initialized = new Promise( (resolve, reject) => {
+      $script( './behaviours/additionalBehaviours.js', () => {
+        console.log( 'loaded additional behaviours' );
+        // TODO: activate again!
+        this.behaviours.push( ...additionalBehaviours );
 
-      this.behaviours.forEach( (behaviour) => {
-        behaviour.isActive = behaviour.defaultActive;
+        this.behaviours.forEach( (behaviour) => {
+          behaviour.isActive = behaviour.defaultActive;
+        } );
+        resolve();
       } );
     } );
   }
 
-  apply(form: FormGroup) {
+  apply(form: FormGroup, profile: string) {
+    this.initialized.then( () => {
+      // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
+      this.behaviours
+        .filter( beh => beh.isActive && beh.forProfile === profile )
+        .forEach( behaviour => {
+          if (!behaviour.title) return;
 
-    // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
-    this.behaviours.forEach( behaviour => {
-      if (!behaviour.title) return;
-
-      if (behaviour.isActive) {
-        // we need to run code in this context
-        // TODO: add parameters for behaviour
-        behaviour.register( form, this.eventManager );
-      }
+          if (behaviour.isActive) {
+            // we need to run code in this context
+            // TODO: add parameters for behaviour
+            behaviour.register( form, this.eventManager );
+          }
+        } );
     } );
   }
 
@@ -59,6 +68,14 @@ export class BehaviourService {
       }
     } );
     // this.defaultBehaves.unregister( id );
+  }
+
+  unregisterAll() {
+    this.behaviours
+      .filter( beh => beh.isActive ) // && beh.forProfile === profile )
+      .forEach( behaviour => {
+        behaviour.unregister();
+      } );
   }
 
   /*

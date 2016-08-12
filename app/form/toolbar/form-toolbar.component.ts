@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormToolbarService, ToolbarItem} from './form-toolbar.service';
 
 @Component( {
-  moduleId: module.id,
   selector: 'form-toolbar',
   template: require( './form-toolbar.component.html' )
 } )

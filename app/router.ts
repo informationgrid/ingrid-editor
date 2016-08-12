@@ -1,16 +1,17 @@
-import {provideRouter, RouterConfig} from '@angular/router';
+import {Routes, RouterModule} from '@angular/router';
 import {DashboardComponent} from './+dashboard/dashboard.component';
-import {PluginsComponent} from './plugins/plugins.component';
 import {DynamicFormComponent} from './form/dynamic-form.component';
 
-const routes: RouterConfig = [
+const routes: Routes = [
   {path: 'dashboard', component: DashboardComponent},
   {path: 'form', component: DynamicFormComponent},
-  {path: 'plugins', component: PluginsComponent},
-  {path: '', component: DynamicFormComponent}
-  // {path: '**', component: DashboardComponent}
+  {path: 'form/:id', component: DynamicFormComponent},
+  {path: 'plugins', loadChildren: 'plugins/plugins.module'},
+  {path: '', redirectTo: '/form', pathMatch: 'full'}
 ];
 
-export const appRouterProviders = [
-  provideRouter( routes )
+export const appRoutingProviders: any[] = [
+
 ];
+
+export const routing = RouterModule.forRoot(routes);

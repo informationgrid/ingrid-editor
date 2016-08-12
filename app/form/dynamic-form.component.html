@@ -1,6 +1,6 @@
 <form-toolbar></form-toolbar>
 <div>
-    <form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
 
         <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"
              [ngClass]="{hasChildren: field.children, padding: !field.children}">

@@ -8,6 +8,7 @@ export class FieldBase<T>{
   validator: any;
   domClass: string;
   padding: boolean;
+  hideLabel: boolean;
 
   constructor(options: {
       value?: T,
@@ -18,7 +19,8 @@ export class FieldBase<T>{
       controlType?: string,
       domClass?: string,
       padding?: boolean,
-      validator?: any
+      validator?: any,
+      hideLabel?: boolean
     } = {}) {
     this.value = options.value;
     this.key = options.key || '';
@@ -29,5 +31,6 @@ export class FieldBase<T>{
     this.padding = options.padding || null;
     this.validator = options.validator || null;
     this.domClass = options.domClass || 'full';
+    this.hideLabel = options.hideLabel || false;
   }
 }

@@ -1,21 +1,24 @@
 <div [formGroup]="form">
-    <label [attr.for]="field.key">{{field.label}}</label>
+    <label *ngIf="!field.hideLabel" [attr.for]="field.key">{{field.label}}</label>
 
     <div *ngIf="parentKey">
         <div [ngSwitch]="field.controlType" [formGroupName]="parentKey">
 
-            <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
-                   [id]="field.key" [type]="field.type" [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
+            <input *ngSwitchCase="'textbox'" [formControlName]="field.key" class="form-control"
+                   [id]="field.key" [type]="field.type"
+                   [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
 
             <input *ngSwitchCase="'checkbox'" [formControlName]="field.key"
-                   [id]="field.key" type="checkbox" [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
+                   [id]="field.key" type="checkbox"
+                   [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
 
-            <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key"
+            <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key" class="form-control"
                     [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
                 <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
             </select>
 
             <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"
+                      class="form-control"
                       [ngModel]="value[parentKey] ? value[parentKey][field.key] : undefined">
             </textarea>
 
@@ -28,31 +31,38 @@
     <div *ngIf="!parentKey">
         <div [ngSwitch]="field.controlType">
 
-            <input *ngSwitchCase="'textbox'" [formControlName]="field.key"
+            <input *ngSwitchCase="'textbox'" [formControlName]="field.key" class="form-control"
                    [id]="field.key" [attr.type]="field.type" [ngModel]="value[field.key]">
 
-            <input *ngSwitchCase="'checkbox'" [formControlName]="field.key"
-                   [id]="field.key" type="checkbox" [ngModel]="value[field.key]">
+            <div *ngSwitchCase="'checkbox'" class="checkbox">
+                <label>
+                    <input [formControlName]="field.key" [id]="field.key" type="checkbox" [ngModel]="value[field.key]"> {{field.label}}
+                </label>
+            </div>
 
             <!-- TODO: https://github.com/pleerock/ng2-radio-group -->
             <span *ngSwitchCase="'radio'">
-                <span *ngFor="let opt of field.options">
-                    <input [formControlName]="field.key" [attr.name]="field.key" type="radio" [ngModel]="value[field.key]"> {{opt.label}}
-                </span>
+                <label *ngFor="let opt of field.options" class="radio-inline">
+                    <input [formControlName]="field.key" [attr.name]="field.key" type="radio"
+                           [ngModel]="value[field.key]"> {{opt.label}}
+                </label>
             </span>
 
-            <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key"
+            <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key" class="form-control"
                     [ngModel]="value[field.key]">
                 <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
             </select>
 
             <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"
+                      class="form-control"
                       [ngModel]="value[field.key]">
             </textarea>
 
             <data-table *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key" [columns]="field.columns"
-                          [ngModel]="value[field.key]">
+                        [ngModel]="value[field.key]">
             </data-table>
+
+            <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height"></leaflet>
 
         </div>
     </div>
