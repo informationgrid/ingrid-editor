@@ -1,6 +1,7 @@
 # Installation
 
 > npm install
+> npm typings install
 
 # Test
 
@@ -9,6 +10,10 @@
 # Development Mode
 
 > npm run dev
+
+# Add Typing
+
+> typings install dt~geojson --global
 
 
 # Concepts

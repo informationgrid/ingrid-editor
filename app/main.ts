@@ -17,11 +17,16 @@ import {DynamicFormComponent} from './form/dynamic-form.component';
 import {PluginsModule} from './plugins/plugins.module';
 import {StatisticComponent} from './plugins/statistic/statistic.component';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {TranslateModule} from 'ng2-translate/ng2-translate';
+import {HttpModule} from '@angular/http';
 
 @NgModule( {
   declarations: [DashboardComponent, DynamicFormComponent, AppComponent, StatisticComponent], // directives, components, and pipes owned by this NgModule
-  imports: [BrowserModule, FormsModule, PluginsModule, routing],
-  providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, {provide: LocationStrategy, useClass: HashLocationStrategy}], // additional providers
+  imports: [BrowserModule, HttpModule, FormsModule, PluginsModule, routing, TranslateModule.forRoot()],
+  providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, {
+    provide: LocationStrategy,
+    useClass: HashLocationStrategy
+  }], // additional providers
   entryComponents: [StatisticComponent],
   bootstrap: [AppComponent]
 } )
@@ -29,8 +34,7 @@ class IgeModule {
 }
 
 // Ahead of Time compile
-// platformBrowser().bootstrapModuleFactory( MyAppModuleNgFactory );
+// platformBrowser().bootstrapModuleFactory( IgeModuleNgFactory );
 
 // JIT compile long form
 platformBrowserDynamic().bootstrapModule( IgeModule );
-

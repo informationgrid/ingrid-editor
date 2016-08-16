@@ -10,6 +10,7 @@ import {DemoPlugin} from './plugins/demo/demo.plugin';
 import {BehaviourService} from './services/behaviour/behaviour.service';
 import {BehavioursDefault} from './services/behaviour/behaviours';
 import {FormularService} from './services/formular/formular.service';
+import {TranslateService} from 'ng2-translate/src/translate.service';
 
 // enableProdMode();
 
@@ -33,7 +34,12 @@ import {FormularService} from './services/formular/formular.service';
 } )
 export class AppComponent implements OnInit {
 
-  constructor(private pluginsService: PluginsService) {
+  constructor(private pluginsService: PluginsService, translate: TranslateService) {
+    // this language will be used as a fallback when a translation isn't found in the current language
+    translate.setDefaultLang( 'en' );
+
+    // the lang to use, if the lang isn't available, it will use the current loader to get them
+    translate.use( 'de' );
   }
 
   ngOnInit() {
