@@ -4,7 +4,7 @@ import {TableColumn} from '../controls/field-table';
 import {AgGridNg2} from 'ag-grid-ng2';
 import {GridOptions} from 'ag-grid';
 
-const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
+export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef( () => CustomInput ),
   multi: true

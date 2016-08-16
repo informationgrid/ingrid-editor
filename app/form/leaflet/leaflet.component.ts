@@ -1,18 +1,11 @@
-import {OnInit, AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild} from '@angular/core';
 
 @Component( {
   selector: 'leaflet',
-  template: '<div #leaflet></div>',
-  styles: [`
-    #map {
-      height: 300px;
-      width: 100%;
-    }
-  `]
-
+  template: '<div #leaflet></div>'
 } )
-export class LeafletComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('leaflet') leaflet: ElementRef;
+export class LeafletComponent implements AfterViewInit, OnDestroy {
+  @ViewChild( 'leaflet' ) leaflet: ElementRef;
   private leafletReference: L.Map;
 
   @Input() options: L.Map.MapOptions;
@@ -21,14 +14,11 @@ export class LeafletComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor() {
   }
 
-  ngOnInit() {
-  }
-
   ngAfterViewInit() {
-    debugger;
     this.leaflet.nativeElement.style.height = this.height + 'px';
+    this.leaflet.nativeElement.style.width = '100%';
     this.leafletReference = L.map( this.leaflet.nativeElement, this.options );
-    this.leafletReference._onResize();
+    // this.leafletReference._onResize();
   }
 
   /**
@@ -38,7 +28,6 @@ export class LeafletComponent implements OnInit, AfterViewInit, OnDestroy {
    * https://github.com/angular/angular/issues/1618
    */
   public ngOnDestroy(): void {
-    debugger;
     this.leafletReference.remove();
     this.leaflet.nativeElement.remove();
   }

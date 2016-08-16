@@ -27,7 +27,9 @@ module.exports = webpackMerge(commonConfig, {
         new webpack.dependencies.LabeledModulesPlugin(),
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+            mangle: false // needed for RC5
+        }),
         new ExtractTextPlugin('styles.css'),
         new CopyWebpackPlugin( [
             {from: helpers.root('app/behaviours/additionalBehaviours.js'), to: helpers.root('dist/behaviours')}

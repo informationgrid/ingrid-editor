@@ -9,6 +9,9 @@ require('zone.js/dist/jasmine-patch');
 require('zone.js/dist/async-test');
 require('zone.js/dist/fake-async-test');
 
+require('leaflet');
+require('../app/behaviours/additionalBehaviours');
+
 var appContext = require.context('../app', true, /\.spec\.ts/);
 
 appContext.keys().forEach(appContext);
