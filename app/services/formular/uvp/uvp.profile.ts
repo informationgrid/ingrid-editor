@@ -6,8 +6,8 @@ import {
   TableField,
   Container,
   DropdownField
-} from '../../../form/controls/index';
-import {MapField} from '../../../form/controls/field-map';
+} from '../../../+form/controls/index';
+import {MapField} from '../../../+form/controls/field-map';
 
 export var profile = [
 

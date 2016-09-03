@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {FormToolbarService} from '../../form/toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../+form/toolbar/form-toolbar.service';
 
 export interface DocumentInterface {
   id: string;

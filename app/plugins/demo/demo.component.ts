@@ -1,5 +1,5 @@
 import {Component, OnInit, Inject} from '@angular/core';
-import {FormToolbarService} from '../../form/toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../+form/toolbar/form-toolbar.service';
 import {FormularService} from '../../services/formular/formular.service';
 
 @Component( {

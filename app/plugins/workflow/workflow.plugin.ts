@@ -1,6 +1,6 @@
 import {Plugin} from '../plugin';
 import {Inject} from '@angular/core';
-import {FormToolbarService} from '../../form/toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../+form/toolbar/form-toolbar.service';
 
 export class WorkflowPlugin extends Plugin {
   id = 'plugin.workflow';

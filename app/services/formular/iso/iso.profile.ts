@@ -1,4 +1,4 @@
-import {TextboxField, TextareaField} from '../../../form/controls/index';
+import {TextboxField, TextareaField} from '../../../+form/controls/index';
 
 export var profile = [
 

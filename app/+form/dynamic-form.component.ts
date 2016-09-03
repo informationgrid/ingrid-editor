@@ -1,6 +1,6 @@
 import {Component, OnInit, AfterViewInit, OnDestroy} from "@angular/core";
 import {FormGroup} from "@angular/forms";
-import {QuestionControlService} from "../services/question-control.service";
+import {FormControlService} from "../services/form-control.service";
 import {FieldBase} from "./controls/field-base";
 import {BehaviourService} from "../services/behaviour/behaviour.service";
 import {FormularService} from "../services/formular/formular.service";
@@ -17,7 +17,7 @@ interface FormData {
 @Component({
   selector: 'dynamic-form',
   template: require('./dynamic-form.component.html'),
-  providers: [QuestionControlService]
+  providers: [FormControlService]
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
@@ -28,7 +28,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   behaviours: Behaviour[];
   observers: Subscription[] = [];
 
-  constructor(private qcs: QuestionControlService, private behaviourService: BehaviourService,
+  constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private route: ActivatedRoute) {
 

@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {FieldBase} from '../form/controls/field-base';
-import {Container} from '../form/controls/container';
+import {FieldBase} from '../+form/controls/field-base';
+import {Container} from '../+form/controls/container';
 
 @Injectable()
-export class QuestionControlService {
+export class FormControlService {
   constructor() {
   }
 

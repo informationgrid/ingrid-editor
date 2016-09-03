@@ -2,7 +2,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DynamicFieldComponent} from './dynamic-field.component';
 import {FieldBase} from './controls/field-base';
 import {TextboxField} from './controls/field-textbox';
-import {QuestionControlService} from '../services/question-control.service';
+import {QuestionControlService} from '../services/form-control.service';
 import {TextareaField} from './controls/field-textarea';
 import {DropdownField} from './controls/field-dropdown';
 import {TableField} from './controls/field-table';

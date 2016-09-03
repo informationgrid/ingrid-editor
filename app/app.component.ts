@@ -4,7 +4,7 @@ import {MenuService} from './menu/menu.service';
 import {PluginsService} from './plugins/plugins.service';
 import {StatisticPlugin} from './plugins/statistic/statistic.plugin';
 import {WorkflowPlugin} from './plugins/workflow/workflow.plugin';
-import {FormToolbarService} from './form/toolbar/form-toolbar.service';
+import {FormToolbarService} from './+form/toolbar/form-toolbar.service';
 import {DemoPlugin} from './plugins/demo/demo.plugin';
 import {BehaviourService} from './services/behaviour/behaviour.service';
 import {BehavioursDefault} from './services/behaviour/behaviours';
