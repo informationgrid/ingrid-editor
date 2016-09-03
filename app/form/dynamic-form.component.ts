@@ -1,27 +1,24 @@
-import {Component, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
-import {FormGroup, REACTIVE_FORM_DIRECTIVES} from '@angular/forms';
-import {DynamicFieldComponent} from './dynamic-field.component';
-import {QuestionControlService} from '../services/question-control.service';
-import {FieldBase} from './controls/field-base';
-import {BehaviourService} from '../services/behaviour/behaviour.service';
-import {FormularService} from '../services/formular/formular.service';
-import {Behaviour} from '../services/behaviour/behaviours';
-import {FormToolbarComponent} from './toolbar/form-toolbar.component';
-import {FormToolbarService} from './toolbar/form-toolbar.service';
-import {Subscription} from 'rxjs';
-import {ActivatedRoute} from '@angular/router';
+import {Component, OnInit, AfterViewInit, OnDestroy} from "@angular/core";
+import {FormGroup} from "@angular/forms";
+import {QuestionControlService} from "../services/question-control.service";
+import {FieldBase} from "./controls/field-base";
+import {BehaviourService} from "../services/behaviour/behaviour.service";
+import {FormularService} from "../services/formular/formular.service";
+import {Behaviour} from "../services/behaviour/behaviours";
+import {FormToolbarService} from "./toolbar/form-toolbar.service";
+import {Subscription} from "rxjs";
+import {ActivatedRoute} from "@angular/router";
 
 interface FormData {
   taskId?: string;
   title?: string;
 }
 
-@Component( {
+@Component({
   selector: 'dynamic-form',
-  template: require( './dynamic-form.component.html' ),
-  directives: [DynamicFieldComponent, REACTIVE_FORM_DIRECTIVES, FormToolbarComponent],
+  template: require('./dynamic-form.component.html'),
   providers: [QuestionControlService]
-} )
+})
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   fields: FieldBase<any>[] = [];
@@ -35,31 +32,31 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private route: ActivatedRoute) {
 
-    let loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe( eventId => {
-      console.log( 'generic toolbar handler' );
+    let loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
+      console.log('generic toolbar handler');
       if (eventId === 'LOAD') {
-        this.load( '0' );
+        this.load('0');
       } else if (eventId === 'SAVE') {
         this.save();
       } else if (eventId === 'NEW_DOC') {
         this.new();
       }
-    } );
+    });
 
-    this.observers.push( loadSaveSubscriber );
+    this.observers.push(loadSaveSubscriber);
 
-    this.route.params.subscribe( params => {
+    this.route.params.subscribe(params => {
       let id = params['id'];
-      this.load( id );
-    } );
+      this.load(id);
+    });
   }
 
   ngOnDestroy() {
-    console.log( 'destroy' );
-    this.observers.forEach( observer => observer.unsubscribe() );
+    console.log('destroy');
+    this.observers.forEach(observer => observer.unsubscribe());
     this.behaviourService.behaviours
-      .filter( behave => behave.isActive )
-      .forEach( behave => behave.unregister() );
+      .filter(behave => behave.isActive)
+      .forEach(behave => behave.unregister());
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -72,18 +69,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSubmit() {
-    this.payLoad = JSON.stringify( this.form.value );
-    console.log( 'before emit', this.form );
+    this.payLoad = JSON.stringify(this.form.value);
+    console.log('before emit', this.form);
     let errors: any[] = [];
     // this.formularService.onBeforeSave.emit( {data: this.form.value, errors: errors} );
-    this.formularService.beforeSave.next( {data: this.form.value, errors: errors} );
-    console.log( 'after emit', errors );
+    this.formularService.beforeSave.next({data: this.form.value, errors: errors});
+    console.log('after emit', errors);
   }
 
   new() {
     let profile = 'ISO';
     if (this.formularService.currentProfile !== profile) {
-      this.switchProfile( profile );
+      this.switchProfile(profile);
     }
     this.data = {};
   }
@@ -93,56 +90,56 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // even if we already have changed the formular
     // since loading will be async, we only have to reset the data first
     this.data = {};
-    this.formularService.loadData( id ).then( data => {
+    this.formularService.loadData(id).then(data => {
       let profile = data._profile;
       if (this.formularService.currentProfile !== profile) {
-        this.switchProfile( profile );
+        this.switchProfile(profile);
       }
       this.data = data;
-    } );
+    });
   }
 
   save() {
     let errors: string[] = [];
-    alert( 'This form is valid: ' + this.form.valid );
+    alert('This form is valid: ' + this.form.valid);
     this.formularService.saveData();
   }
 
   switchProfile(profile: string) {
     this.behaviourService.unregisterAll();
-    this.fields = this.formularService.getFields( profile );
+    this.fields = this.formularService.getFields(profile);
     // this.fields.sort( (a, b) => a.order - b.order );
 
     // add controls from active behaviours
     this.behaviours = this.behaviourService.behaviours;
     this.behaviours
-      .filter( behave => behave.isActive && behave.forProfile === profile )
-      .forEach( (behave) => {
+      .filter(behave => behave.isActive && behave.forProfile === profile)
+      .forEach((behave) => {
         if (behave.controls) {
-          behave.controls.forEach( (additionalField => {
-            this.fields.push( additionalField );
-          }) );
+          behave.controls.forEach((additionalField => {
+            this.fields.push(additionalField);
+          }));
         }
-      } );
+      });
 
-    this.form = this.qcs.toFormGroup( this.fields );
-    setTimeout( () => {
+    this.form = this.qcs.toFormGroup(this.fields);
+    setTimeout(() => {
       /*let map = new L.Map( 'map', {
-        zoomControl: false,
-        center: new L.LatLng( 40.731253, -73.996139 ),
-        zoom: 12,
-        minZoom: 4,
-        maxZoom: 19,
-        layers: [new L.TileLayer( "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
-        } )]
-      } );
+       zoomControl: false,
+       center: new L.LatLng( 40.731253, -73.996139 ),
+       zoom: 12,
+       minZoom: 4,
+       maxZoom: 19,
+       layers: [new L.TileLayer( "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+       } )]
+       } );
 
-      L.control.zoom( {position: 'topright'} ).addTo( map );
-      // L.control.layers(this.mapService.baseMaps).addTo(map);
-      L.control.scale().addTo( map );*/
+       L.control.zoom( {position: 'topright'} ).addTo( map );
+       // L.control.layers(this.mapService.baseMaps).addTo(map);
+       L.control.scale().addTo( map );*/
 
-      this.behaviourService.apply( this.form, profile );
-    } );
+      this.behaviourService.apply(this.form, profile);
+    });
   }
 }

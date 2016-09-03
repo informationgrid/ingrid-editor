@@ -1,13 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {ROUTER_DIRECTIVES} from '@angular/router';
-import {MenuService} from './menu.service';
-import {MenuItem} from 'ag-grid';
+import {Component, OnInit} from "@angular/core";
+import {MenuService} from "./menu.service";
+import {MenuItem} from "ag-grid";
 
-@Component( {
+@Component({
   selector: 'main-menu',
-  template: require( './menu.component.html' ),
-  directives: [ROUTER_DIRECTIVES]
-} )
+  template: require('./menu.component.html')
+})
 export class MenuComponent implements OnInit {
 
   routes: MenuItem[] = [];
@@ -17,10 +15,10 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.menuService.menu$.asObservable().subscribe( () => {
-      console.log( 'menu has changed' );
+    this.menuService.menu$.asObservable().subscribe(() => {
+      console.log('menu has changed');
       this.routes = this.menuService.menuItems;
-    } );
+    });
   }
 
 

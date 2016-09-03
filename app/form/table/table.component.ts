@@ -1,18 +1,17 @@
-import {Component, forwardRef, Input} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR, REACTIVE_FORM_DIRECTIVES} from '@angular/forms';
-import {TableColumn} from '../controls/field-table';
-import {AgGridNg2} from 'ag-grid-ng2';
-import {GridOptions} from 'ag-grid';
+import {Component, forwardRef, Input} from "@angular/core";
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {TableColumn} from "../controls/field-table";
+import {GridOptions} from "ag-grid";
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef( () => CustomInput ),
+  useExisting: forwardRef(() => CustomInput),
   multi: true
 };
 
 
 // more info here: http://almerosteyn.com/2016/04/linkup-custom-control-to-ngcontrol-ngmodel
-@Component( {
+@Component({
   selector: 'data-table',
   template: `
       <div class="form-group">
@@ -30,9 +29,8 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
         </ag-grid-ng2>
       </div>
   `,
-  directives: [REACTIVE_FORM_DIRECTIVES, AgGridNg2],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
-} )
+})
 export class CustomInput implements ControlValueAccessor {
 
   @Input() columns: TableColumn[];
@@ -65,7 +63,7 @@ export class CustomInput implements ControlValueAccessor {
   set value(v: any) {
     if (v !== this._value) {
       this._value = v;
-      this._onChangeCallback( v );
+      this._onChangeCallback(v);
     }
   }
 

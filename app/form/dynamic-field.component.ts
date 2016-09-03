@@ -1,15 +1,11 @@
-import {Component, Input} from '@angular/core';
-import {FormGroup, REACTIVE_FORM_DIRECTIVES} from '@angular/forms';
-import {NgClass} from '@angular/common';
-import {FieldBase} from './controls/field-base';
-import {CustomInput} from './table/table.component';
-import {LeafletComponent} from './leaflet/leaflet.component';
+import {Component, Input} from "@angular/core";
+import {FormGroup} from "@angular/forms";
+import {FieldBase} from "./controls/field-base";
 
 
 @Component({
   selector: 'dyn-field',
-  template: require('./dynamic-field.component.html'),
-  directives: [REACTIVE_FORM_DIRECTIVES, NgClass, CustomInput, LeafletComponent]
+  template: require('./dynamic-field.component.html')
 })
 export class DynamicFieldComponent {
   @Input() field: FieldBase<any>;
@@ -18,6 +14,6 @@ export class DynamicFieldComponent {
   @Input() parentKey: string = null;
 
   /*get isValid() {
-    return this.form.controls[this.field.key].valid;
-  }*/
+   return this.form.controls[this.field.key].valid;
+   }*/
 }

@@ -17,13 +17,14 @@ module.exports = {
 
   resolve: {
     extensions: [ '', '.ts', '.js', '.css', '.scss' ]
+    // mainFields: ["module", "main", "browser"]
   },
 
   module: {
     preLoaders: [
       // { test: /\.ts$/, loader: 'tslint-loader', exclude: [ helpers.root('node_modules') ] },
       // TODO(gdi2290): `exclude: [ helpers.root('node_modules/rxjs') ]` fixed with rxjs 5 beta.3 release
-      {test: /\.js$/, loader: "source-map-loader", exclude: [ helpers.root( 'node_modules/rxjs' ), helpers.root('node_modules/primeng') ]}
+      // 0{test: /\.js$/, loader: "source-map-loader", exclude: [ helpers.root( 'node_modules/rxjs' ), helpers.root('node_modules/primeng') ]}
     ],
     loaders: [
       // Support for .ts files.
@@ -49,7 +50,7 @@ module.exports = {
       {
         test: /\.css$/,
         exclude: helpers.root( 'app' ),
-        loader: ExtractTextPlugin.extract( 'style', 'css?postcss' )
+        loader: ExtractTextPlugin.extract( { fallbackLoader: 'style', loader: 'css?postcss' } )
       },
       // all css required in src/app files will be merged in js files
       {test: /\.css$/, include: helpers.root( 'app' ), loader: 'raw!postcss'},

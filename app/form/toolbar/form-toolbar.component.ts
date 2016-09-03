@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {FormToolbarService, ToolbarItem} from './form-toolbar.service';
 
 @Component( {

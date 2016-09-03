@@ -1,5 +1,7 @@
 import {AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild} from '@angular/core';
 
+declare var L:any;
+
 @Component( {
   selector: 'leaflet',
   template: '<div #leaflet></div>'

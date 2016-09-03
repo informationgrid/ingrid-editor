@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {ROUTER_DIRECTIVES} from '@angular/router';
 import {MenuComponent} from './menu/menu.component';
 import {MenuService} from './menu/menu.service';
 import {PluginsService} from './plugins/plugins.service';
@@ -28,7 +27,6 @@ import {TranslateService} from 'ng2-translate/src/translate.service';
       <!--<button (click)="addMenuItem('dynamic Item')">Add menu item</button>-->
     </div>
   `,
-  directives: [ROUTER_DIRECTIVES, MenuComponent],
   providers: [MenuService, PluginsService, FormToolbarService, StatisticPlugin, WorkflowPlugin, DemoPlugin, BehaviourService, BehavioursDefault, FormularService],
   entryComponents: []
 } )
