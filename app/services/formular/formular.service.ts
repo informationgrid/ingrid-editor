@@ -74,7 +74,8 @@ export class FormularService {
               brand: 'Audi',
               color: 'blue'
             }
-          ]
+          ],
+          repeatableFields: []
         } );
       } else if (id === '1') {
         data = Object.assign( {}, {

@@ -6,6 +6,7 @@
              [ngClass]="{hasChildren: field.children, padding: !field.children}">
             <fieldset *ngIf="field.children">
                 <dyn-field *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey" [form]="form" [value]="data" class="padding {{child.domClass}}"></dyn-field>
+                <button *ngIf="field.isRepeatable" (click)="data[field.useGroupKey].push({})" type="button" class="pull-right btn btn-default">ADD</button>
             </fieldset>
             <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></dyn-field>
         </div>

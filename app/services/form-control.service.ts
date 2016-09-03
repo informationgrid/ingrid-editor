@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators, FormArray} from '@angular/forms';
 import {FieldBase} from '../+form/controls/field-base';
 import {Container} from '../+form/controls/container';
 
@@ -11,13 +11,21 @@ export class FormControlService {
   toFormGroup(questions: FieldBase<any>[]) {
     let group: any = {};
     questions.forEach( question => {
+      debugger;
       if (question instanceof Container) {
         let subGroup = question.useGroupKey ? {} : group;
+        //if (question.isRepeatable) {
+        //  subGroup = [{}];
+        //}
         question.children.forEach( child => {
-          subGroup[child.key] = this._addValidator( child );
+          //if (question.isRepeatable) {
+          //  subGroup[0][child.key] = this._addValidator( child );
+          //} else {
+            subGroup[child.key] = this._addValidator( child );
+          //}
         } );
         if (question.useGroupKey) {
-          group[question.useGroupKey] = new FormGroup( subGroup );
+          group[question.useGroupKey] = question.isRepeatableXXX ? new FormArray([new FormGroup(subGroup)]) : new FormGroup( subGroup );
         }
       } else {
         group[question.key] = this._addValidator( question );
