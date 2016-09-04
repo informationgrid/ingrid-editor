@@ -1,7 +1,8 @@
 <div [formGroup]="form">
     <label *ngIf="!field.hideLabel" [attr.for]="field.key">{{field.label}}</label>
 
-    <div *ngIf="parentKey">
+    <div *ngIf="parentKey || parentKey == 0">
+        <p>has parent</p>
         <div [ngSwitch]="field.controlType" [formGroupName]="parentKey">
 
             <input *ngSwitchCase="'textbox'" [formControlName]="field.key" class="form-control"
@@ -30,7 +31,6 @@
     </div>
     <div *ngIf="!parentKey">
         <div [ngSwitch]="field.controlType">
-
             <input *ngSwitchCase="'textbox'" [formControlName]="field.key" class="form-control"
                    [id]="field.key" [attr.type]="field.type" [ngModel]="value[field.key]">
 
@@ -63,7 +63,6 @@
             </data-table>
 
             <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height"></leaflet>
-
         </div>
     </div>
 

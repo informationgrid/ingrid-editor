@@ -11,21 +11,32 @@ export class FormControlService {
   toFormGroup(questions: FieldBase<any>[]) {
     let group: any = {};
     questions.forEach( question => {
-      debugger;
       if (question instanceof Container) {
-        let subGroup = question.useGroupKey ? {} : group;
-        //if (question.isRepeatable) {
-        //  subGroup = [{}];
-        //}
-        question.children.forEach( child => {
-          //if (question.isRepeatable) {
-          //  subGroup[0][child.key] = this._addValidator( child );
-          //} else {
-            subGroup[child.key] = this._addValidator( child );
-          //}
-        } );
+        let result = null;
+
+        if (question.isRepeatable) {
+          let array = [];
+          question.children.forEach(groups => {
+            let subGroup = question.useGroupKey ? {} : group;
+            groups.forEach(child => {
+              subGroup[child.key] = this._addValidator(child);
+            });
+            array.push(new FormGroup(subGroup));
+          });
+          result = new FormArray(array);
+        } else {
+          let subGroup = question.useGroupKey ? {} : group;
+          question.children.forEach(child => {
+            //if (question.isRepeatable) {
+            //  subGroup[0][child.key] = this._addValidator( child );
+            //} else {
+            subGroup[child.key] = this._addValidator(child);
+            //}
+          });
+          result = new FormGroup(subGroup);
+        }
         if (question.useGroupKey) {
-          group[question.useGroupKey] = question.isRepeatableXXX ? new FormArray([new FormGroup(subGroup)]) : new FormGroup( subGroup );
+          group[question.useGroupKey] = result;
         }
       } else {
         group[question.key] = this._addValidator( question );

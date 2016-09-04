@@ -5,8 +5,21 @@
         <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"
              [ngClass]="{hasChildren: field.children, padding: !field.children}">
             <fieldset *ngIf="field.children">
-                <dyn-field *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey" [form]="form" [value]="data" class="padding {{child.domClass}}"></dyn-field>
-                <button *ngIf="field.isRepeatable" (click)="data[field.useGroupKey].push({})" type="button" class="pull-right btn btn-default">ADD</button>
+                <div *ngIf="!field.isRepeatable">
+                    <dyn-field *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey"
+                               [form]="form" [value]="data" class="padding {{child.domClass}}"></dyn-field>
+                </div>
+                <div *ngIf="field.isRepeatable">
+                    <div [formArrayName]="field.useGroupKey">
+                        <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i">
+                            <dyn-field *ngFor="let child of groups" [field]="child"
+                               [form]="form.controls[field.useGroupKey].controls[i]" [value]="data" class="padding {{child.domClass}}"></dyn-field>
+                        </div>
+                    </div>
+                    <button (click)="addArrayGroup(field.useGroupKey)" type="button"
+                            class="pull-right btn btn-default">ADD
+                    </button>
+                </div>
             </fieldset>
             <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></dyn-field>
         </div>
@@ -14,11 +27,8 @@
         <div class="form-row">
             <button type="submit" [disabled]="!form.valid">Save</button>
         </div>
+        <strong>Saved the following values</strong><br>{{form.value | json}}
     </form>
-
-    <div *ngIf="payLoad" class="form-row">
-        <strong>Saved the following values</strong><br>{{payLoad}}
-    </div>
 
 
 </div>

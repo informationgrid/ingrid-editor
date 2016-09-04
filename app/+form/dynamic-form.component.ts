@@ -8,6 +8,7 @@ import {Behaviour} from "../services/behaviour/behaviours";
 import {FormToolbarService} from "./toolbar/form-toolbar.service";
 import {Subscription} from "rxjs";
 import {ActivatedRoute} from "@angular/router";
+import {Container} from "./controls/container";
 
 interface FormData {
   taskId?: string;
@@ -139,7 +140,21 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
        // L.control.layers(this.mapService.baseMaps).addTo(map);
        L.control.scale().addTo( map );*/
 
-      this.behaviourService.apply(this.form, profile);
+      // TODO: this.behaviourService.apply(this.form, profile);
     });
+  }
+
+  addArrayGroup(name: string) {
+    debugger;
+    let group: Container = this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
+    let newGroupArray = [];
+    group.children[0].forEach(c => newGroupArray.push(Object.assign({}, c)));
+    group.children.push(
+      newGroupArray
+    );
+    let additionalFormGroup = this.qcs.toFormGroup(newGroupArray);
+    this.form.controls[name].controls.push(additionalFormGroup);
+    // this.form = this.qcs.toFormGroup(this.fields);
+    console.log(group);
   }
 }

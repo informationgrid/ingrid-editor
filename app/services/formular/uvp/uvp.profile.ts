@@ -1,17 +1,15 @@
 import {
-  RadioField,
   CheckboxField,
-  TextboxField,
-  TextareaField,
   TableField,
+  TextareaField,
+  TextboxField,
   Container,
-  DropdownField
+  DropdownField,
+  RadioField
 } from "../../../+form/controls/index";
 import {MapField} from "../../../+form/controls/field-map";
-import {RepeatableFields} from "../../../+form/controls/field-repeatable";
 
 export var profile = [
-
   new DropdownField({
     key: 'brave',
     label: 'Bravery Rating',
@@ -23,6 +21,7 @@ export var profile = [
     ],
     order: 100
   }),
+
 
   new Container({
     useGroupKey: 'mainInfo',
@@ -76,7 +75,7 @@ export var profile = [
   new Container({
     useGroupKey: 'repeatableFields',
     isRepeatable: true,
-    children: [
+    children: [[
       new TextboxField({
         key: 'repeat1',
         label: 'Repeat 1',
@@ -89,7 +88,7 @@ export var profile = [
         domClass: 'half',
         order: 2
       })
-    ]
+    ]]
   }),
 
   new TableField({
@@ -129,5 +128,4 @@ export var profile = [
       {label: 'female', value: 'f'}
     ]
   })
-
 ];
