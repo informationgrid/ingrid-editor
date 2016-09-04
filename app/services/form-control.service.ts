@@ -8,25 +8,25 @@ export class FormControlService {
   constructor() {
   }
 
-  toFormGroup(questions: FieldBase<any>[]) {
+  toFormGroup(fields: FieldBase<any>[]) {
     let group: any = {};
-    questions.forEach( question => {
-      if (question instanceof Container) {
-        let result = null;
+    fields.forEach( field => {
+      if (field instanceof Container) {
+        let result: any = null;
 
-        if (question.isRepeatable) {
-          let array = [];
-          question.children.forEach(groups => {
-            let subGroup = question.useGroupKey ? {} : group;
-            groups.forEach(child => {
+        if (field.isRepeatable) {
+          let array: any[] = [];
+          field.children.forEach(groups => {
+            let subGroup = field.useGroupKey ? {} : group;
+            groups.forEach((child: any) => {
               subGroup[child.key] = this._addValidator(child);
             });
             array.push(new FormGroup(subGroup));
           });
           result = new FormArray(array);
         } else {
-          let subGroup = question.useGroupKey ? {} : group;
-          question.children.forEach(child => {
+          let subGroup = field.useGroupKey ? {} : group;
+          field.children.forEach(child => {
             //if (question.isRepeatable) {
             //  subGroup[0][child.key] = this._addValidator( child );
             //} else {
@@ -35,11 +35,11 @@ export class FormControlService {
           });
           result = new FormGroup(subGroup);
         }
-        if (question.useGroupKey) {
-          group[question.useGroupKey] = result;
+        if (field.useGroupKey) {
+          group[field.useGroupKey] = result;
         }
       } else {
-        group[question.key] = this._addValidator( question );
+        group[field.key] = this._addValidator( field );
       }
     } );
 

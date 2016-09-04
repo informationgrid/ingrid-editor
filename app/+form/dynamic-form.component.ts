@@ -1,5 +1,5 @@
 import {Component, OnInit, AfterViewInit, OnDestroy} from "@angular/core";
-import {FormGroup} from "@angular/forms";
+import {FormGroup, FormArray} from "@angular/forms";
 import {FormControlService} from "../services/form-control.service";
 import {FieldBase} from "./controls/field-base";
 import {BehaviourService} from "../services/behaviour/behaviour.service";
@@ -101,6 +101,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   save() {
+    debugger;
     let errors: string[] = [];
     alert('This form is valid: ' + this.form.valid);
     this.formularService.saveData();
@@ -146,15 +147,24 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   addArrayGroup(name: string) {
     debugger;
-    let group: Container = this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
-    let newGroupArray = [];
-    group.children[0].forEach(c => newGroupArray.push(Object.assign({}, c)));
+    let group = <Container>this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
+    let newGroupArray: any[] = [];
+    group.children[0].forEach((c: any) => newGroupArray.push(Object.assign({}, c)));
     group.children.push(
       newGroupArray
     );
+
     let additionalFormGroup = this.qcs.toFormGroup(newGroupArray);
-    this.form.controls[name].controls.push(additionalFormGroup);
-    // this.form = this.qcs.toFormGroup(this.fields);
-    console.log(group);
+    let formArray = <FormArray>this.form.controls[name];
+    // set link to parent so that we are updated correctly
+    additionalFormGroup.setParent(formArray);
+    formArray.controls.push(additionalFormGroup);
+  }
+
+  removeArrayGroup(name: string, pos: number) {
+    let group = <Container>this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
+    group.children.splice(pos, 1);
+    let ctrls = <FormArray>this.form.controls[name];
+    ctrls.removeAt(pos);
   }
 }

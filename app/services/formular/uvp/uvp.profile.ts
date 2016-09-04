@@ -74,6 +74,7 @@ export var profile = [
 
   new Container({
     useGroupKey: 'repeatableFields',
+    label: 'My repeatable Fields',
     isRepeatable: true,
     children: [[
       new TextboxField({

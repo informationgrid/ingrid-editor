@@ -11,7 +11,11 @@
                 </div>
                 <div *ngIf="field.isRepeatable">
                     <div [formArrayName]="field.useGroupKey">
-                        <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i">
+                        <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i" class="well">
+                            <div class="panel-heading">
+                                <span>{{field.label}}</span>
+                                <button class="glyphicon glyphicon-remove pull-right" *ngIf="form.controls[field.useGroupKey].controls.length > 1" (click)="removeArrayGroup(field.useGroupKey, i)"></button>
+                            </div>
                             <dyn-field *ngFor="let child of groups" [field]="child"
                                [form]="form.controls[field.useGroupKey].controls[i]" [value]="data" class="padding {{child.domClass}}"></dyn-field>
                         </div>

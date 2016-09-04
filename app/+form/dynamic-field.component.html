@@ -2,7 +2,6 @@
     <label *ngIf="!field.hideLabel" [attr.for]="field.key">{{field.label}}</label>
 
     <div *ngIf="parentKey || parentKey == 0">
-        <p>has parent</p>
         <div [ngSwitch]="field.controlType" [formGroupName]="parentKey">
 
             <input *ngSwitchCase="'textbox'" [formControlName]="field.key" class="form-control"
