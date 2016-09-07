@@ -3,7 +3,7 @@
     <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
 
         <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"
-             [ngClass]="{hasChildren: field.children, padding: !field.children}">
+             [ngClass]="{hasChildren: field.children, padding: !field.children || field.isRepeatable}">
             <fieldset *ngIf="field.children">
                 <div *ngIf="!field.isRepeatable">
                     <dyn-field *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey"
@@ -11,13 +11,19 @@
                 </div>
                 <div *ngIf="field.isRepeatable">
                     <div [formArrayName]="field.useGroupKey">
-                        <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i" class="well">
+                        <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i"
+                             class="panel panel-default">
                             <div class="panel-heading">
                                 <span>{{field.label}}</span>
-                                <button class="glyphicon glyphicon-remove pull-right" *ngIf="form.controls[field.useGroupKey].controls.length > 1" (click)="removeArrayGroup(field.useGroupKey, i)"></button>
+                                <button class="close pull-right" aria-label="Close"
+                                        *ngIf="form.controls[field.useGroupKey].controls.length > 1"
+                                        (click)="removeArrayGroup(field.useGroupKey, i)"><span aria-hidden="true">&times;</span></button>
                             </div>
-                            <dyn-field *ngFor="let child of groups" [field]="child"
-                               [form]="form.controls[field.useGroupKey].controls[i]" [value]="data" class="padding {{child.domClass}}"></dyn-field>
+                            <div class="panel-body">
+                                <dyn-field *ngFor="let child of groups" [field]="child"
+                                           [form]="form.controls[field.useGroupKey].controls[i]" [value]="data[field.useGroupKey] ? data[field.useGroupKey][i] : {}"
+                                           class="padding {{child.domClass}}"></dyn-field>
+                            </div>
                         </div>
                     </div>
                     <button (click)="addArrayGroup(field.useGroupKey)" type="button"

@@ -75,7 +75,29 @@ export class FormularService {
               color: 'blue'
             }
           ],
-          repeatableFields: []
+          repeatableFields: [
+            {
+              repeat1: 'Text von Repeat 1',
+              repeat2: 'Text von Repeat 2',
+              repeatTable: [
+                {
+                  type: 'PDF',
+                  url: 'http://xxx.de',
+                  date: '10.10.1978'
+                }
+              ]
+            }, {
+              repeat1: 'Text von Repeat 2-1',
+              repeat2: 'Text von Repeat 2-2',
+              repeatTable: [
+                {
+                  type: 'XML',
+                  url: 'http://yyy.de',
+                  date: '13.06.1988'
+                }
+              ]
+            }
+          ]
         } );
       } else if (id === '1') {
         data = Object.assign( {}, {

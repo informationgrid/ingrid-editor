@@ -88,6 +88,16 @@ export var profile = [
         label: 'Repeat 2',
         domClass: 'half',
         order: 2
+      }),
+      new TableField({
+        key: 'repeatTable',
+        label: 'Anträge',
+        columns: [
+          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'URL', field: 'url', editable: true},
+          {headerName: 'Datum', field: 'date', editable: true}
+        ],
+        order: 3
       })
     ]]
   }),
