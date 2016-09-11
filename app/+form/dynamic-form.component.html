@@ -1,5 +1,11 @@
 <form-toolbar></form-toolbar>
-<div>
+<div class="notifyWrapper" [class.active]="saving">
+    <div class="tn-box tn-box-color-1">
+        <p>Your settings have been saved successfully!</p>
+        <div class="tn-progress"></div>
+    </div>
+</div>
+<div class="formWrapper">
     <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
 
         <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"

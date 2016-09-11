@@ -5,6 +5,9 @@ body {
 form-toolbar {
   position: fixed;
   top: 50px;
+  width: 100%;
+  background-color: #ececec;
+  padding: 4px;
 }
 
 form-toolbar + div {
