@@ -30,28 +30,29 @@ export class FormularService {
     this.currentProfile = profile;
 
     // return a copy of our fields (immutable data!)
-    return fields.sort( (a, b) => a.order - b.order ).slice( 0 );
+    return fields.sort((a, b) => a.order - b.order).slice(0);
   }
 
   /*getLoadedData() {
-    return this.data;
-  }*/
+   return this.data;
+   }*/
 
   getNewDocument(profile: string) {
     return {};
   }
 
   loadData(id: string): Promise<any> {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       let data: FormFields = {_profile: 'UVP'};
       if (id === '0') {
-        data = Object.assign( {}, {
+        data = Object.assign({}, {
           _profile: 'UVP',
           mainInfo: {
             taskId: '1234567',
             title: 'Meine erste UVP',
             description: 'Hier ist eine Beschreibung.'
           },
+          bbox: { x: 53.55, y: 9.99 },
           brave: 'good',
           gender: 'm',
           date: '1978-10-10', // new Date(),
@@ -98,21 +99,44 @@ export class FormularService {
               ]
             }
           ]
-        } );
+        });
       } else if (id === '1') {
-        data = Object.assign( {}, {
+        data = Object.assign({}, {
           _profile: 'ISO',
           title: 'Meine erste ISO',
           description: 'Noch eine Beschreibung.'
-        } );
+        });
+      } else if (id === '2') {
+        data = Object.assign({}, {
+          _profile: 'UVP',
+          mainInfo: {
+            taskId: '343424',
+            title: 'Meine zweite UVP',
+            description: 'Hier ist andere eine Beschreibung.'
+          },
+          bbox: { x: 50.11, y: 8.68 },
+          repeatableFields: [
+            {
+              repeat1: 'Other Text von Repeat 1',
+              repeat2: 'Other Text von Repeat 2',
+              repeatTable: [
+                {
+                  type: 'XML',
+                  url: 'http://zzz.de',
+                  date: '10.11.2016'
+                }
+              ]
+            }
+          ]
+        });
       }
-      setTimeout( () => {
-        resolve( data );
-      } );
-    } );
+      setTimeout(() => {
+        resolve(data);
+      });
+    });
   }
 
   saveData() {
-    console.log( 'TEST: save data' );
+    console.log('TEST: save data');
   }
 }

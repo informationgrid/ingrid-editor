@@ -1,55 +1,69 @@
+<!-- Toolbar -->
 <form-toolbar></form-toolbar>
+
+<!-- Notification -->
 <div class="notifyWrapper" [class.active]="saving">
     <div class="tn-box tn-box-color-1">
         <p>Your settings have been saved successfully!</p>
         <div class="tn-progress"></div>
     </div>
 </div>
-<div class="formWrapper">
-    <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
 
-        <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"
-             [ngClass]="{hasChildren: field.children, padding: !field.children || field.isRepeatable}">
-            <fieldset *ngIf="field.children">
-                <div *ngIf="!field.isRepeatable">
-                    <dyn-field *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey"
-                               [form]="form" [value]="data" class="padding {{child.domClass}}"></dyn-field>
-                </div>
-                <div *ngIf="field.isRepeatable">
-                    <div [formArrayName]="field.useGroupKey">
-                        <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i"
-                             class="panel panel-default">
-                            <div class="panel-heading">
-                                <span>{{field.label}}</span>
-                                <button class="close pull-right" aria-label="Close"
-                                        *ngIf="form.controls[field.useGroupKey].controls.length > 1"
-                                        (click)="removeArrayGroup(field.useGroupKey, i)"><span
-                                        aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="panel-body">
-                                <dyn-field *ngFor="let child of groups" [field]="child"
-                                           [form]="form.controls[field.useGroupKey].controls[i]"
-                                           [value]="data[field.useGroupKey] ? data[field.useGroupKey][i] : {}"
-                                           class="padding {{child.domClass}}"></dyn-field>
+<div class="splitWrapper">
+    <!-- exchangable sidebar -->
+    <div id="sidebar" class="split split-horizontal">
+        <ul>
+            <li><a routerLink="/form/0">UVP-Dokument 1</a></li>
+            <li><a routerLink="/form/2">UVP-Dokument 2</a></li>
+            <li><a routerLink="/form/1">ISO-Dokument 1</a></li>
+        </ul>
+    </div>
+
+    <!-- The form -->
+    <div id="form" class="split split-horizontal formWrapper">
+        <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
+
+            <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"
+                 [ngClass]="{hasChildren: field.children, padding: !field.children || field.isRepeatable}">
+                <fieldset *ngIf="field.children">
+                    <div *ngIf="!field.isRepeatable">
+                        <dyn-field *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey"
+                                   [form]="form" [value]="data" class="padding {{child.domClass}}"></dyn-field>
+                    </div>
+                    <div *ngIf="field.isRepeatable">
+                        <div [formArrayName]="field.useGroupKey">
+                            <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i"
+                                 class="panel panel-default">
+                                <div class="panel-heading">
+                                    <span>{{field.label}}</span>
+                                    <button class="close pull-right" aria-label="Close"
+                                            *ngIf="form.controls[field.useGroupKey].controls.length > 1"
+                                            (click)="removeArrayGroup(field.useGroupKey, i)"><span
+                                            aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="panel-body">
+                                    <dyn-field *ngFor="let child of groups" [field]="child"
+                                               [form]="form.controls[field.useGroupKey].controls[i]"
+                                               [value]="data[field.useGroupKey] ? data[field.useGroupKey][i] : {}"
+                                               class="padding {{child.domClass}}"></dyn-field>
+                                </div>
                             </div>
                         </div>
+                        <button (click)="addArrayGroup(field.useGroupKey)" type="button"
+                                class="pull-right btn btn-default">ADD
+                        </button>
                     </div>
-                    <button (click)="addArrayGroup(field.useGroupKey)" type="button"
-                            class="pull-right btn btn-default">ADD
-                    </button>
-                </div>
-            </fieldset>
-            <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></dyn-field>
-        </div>
+                </fieldset>
+                <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></dyn-field>
+            </div>
 
-        <div class="form-row">
-            <button type="submit" [disabled]="!form.valid">Save</button>
-        </div>
-        <strong>Saved the following values</strong><br>{{form.value | json}}
-    </form>
+            <strong>Saved the following values</strong><br>{{form.value | json}}
+        </form>
 
 
+    </div>
 </div>
+
 <modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">
     <modal-content>
         <div class="radio" *ngFor="let type of docTypes">
@@ -59,7 +73,3 @@
         </div>
     </modal-content>
 </modal>
-
-
-<button (click)="load('0')">Load 1</button>
-<button (click)="load('1')">Load 2</button>

@@ -9,6 +9,8 @@ import {FormToolbarService} from "./toolbar/form-toolbar.service";
 import {Subscription} from "rxjs";
 import {ActivatedRoute} from "@angular/router";
 import {Container} from "./controls/container";
+import {Split} from "../../node_modules/split.js/split";
+import {MapField} from "./controls/field-map";
 
 interface FormData {
   taskId?: string;
@@ -20,7 +22,7 @@ interface FormData {
   template: require('./dynamic-form.component.html'),
   styles: [`
     .formWrapper {
-        padding-top: 40px;
+        /*padding-top: 40px;*/
     }
     
     .notifyWrapper {
@@ -61,6 +63,7 @@ interface FormData {
       99% { opacity: 0; transform: translateY(-30px);}
       100% { opacity: 0; }
     }
+  
   `],
   providers: [FormControlService]
 })
@@ -120,6 +123,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
+    Split(['#sidebar', '#form'], {
+      gutterSize: 8,
+      sizes: [10, 90],
+      minSize: [200]
+    });
   }
 
   onSubmit() {
@@ -162,6 +170,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       // set correct number of repeatable fields
       this.updateRepeatableFields(data);
+
+      this.setBoundingBox(data.bbox);
+
       this.data = data;
     });
   }
@@ -213,18 +224,32 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  setBoundingBox(bbox: any) {
+    if (!bbox) return;
+
+    let map: MapField[] = this.fields.filter(pField => (<MapField>pField).options);
+    map.forEach(m => m.options.center = new L.LatLng(bbox.x, bbox.y));
+  }
+
   updateRepeatableFields(data: any) {
     // set repeatable fields according to loaded data
     let repeatFields = this.fields.filter(pField => (<Container>pField).isRepeatable);
     repeatFields.forEach((repeatField: Container) => {
       debugger;
+      this.resetArrayGroup(repeatField.useGroupKey);
       let repeatSize = data[repeatField.useGroupKey] ? data[repeatField.useGroupKey].length : 0;
       for (let i = 1; i < repeatSize; i++) this.addArrayGroup(repeatField.useGroupKey);
     });
   }
 
+  resetArrayGroup(name: string) {
+    let group = <Container>this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
+    while (group.children.length > 1) group.children.pop();
+    let formArray = <FormArray>this.form.controls[name];
+    while (formArray.length > 1) formArray.removeAt(formArray.length - 1);
+  }
+
   addArrayGroup(name: string) {
-    debugger;
     let group = <Container>this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
     let newGroupArray: any[] = [];
     group.children[0].forEach((c: any) => newGroupArray.push(Object.assign({}, c)));
