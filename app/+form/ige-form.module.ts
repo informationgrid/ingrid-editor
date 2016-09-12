@@ -8,9 +8,10 @@ import {LeafletComponent} from "./leaflet/leaflet.component";
 import {CustomInput} from "./table/table.component";
 import {AgGridNg2} from "ag-grid-ng2";
 import {routing} from "./ige-form.routing";
+import {ModalModule} from "ng2-modal";
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, routing],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule],
   declarations: [FormToolbarComponent,DynamicFieldComponent, CustomInput, LeafletComponent, DynamicFormComponent, AgGridNg2],
   exports: []
 })

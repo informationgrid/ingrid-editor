@@ -23,11 +23,13 @@
                                 <span>{{field.label}}</span>
                                 <button class="close pull-right" aria-label="Close"
                                         *ngIf="form.controls[field.useGroupKey].controls.length > 1"
-                                        (click)="removeArrayGroup(field.useGroupKey, i)"><span aria-hidden="true">&times;</span></button>
+                                        (click)="removeArrayGroup(field.useGroupKey, i)"><span
+                                        aria-hidden="true">&times;</span></button>
                             </div>
                             <div class="panel-body">
                                 <dyn-field *ngFor="let child of groups" [field]="child"
-                                           [form]="form.controls[field.useGroupKey].controls[i]" [value]="data[field.useGroupKey] ? data[field.useGroupKey][i] : {}"
+                                           [form]="form.controls[field.useGroupKey].controls[i]"
+                                           [value]="data[field.useGroupKey] ? data[field.useGroupKey][i] : {}"
                                            class="padding {{child.domClass}}"></dyn-field>
                             </div>
                         </div>
@@ -48,6 +50,16 @@
 
 
 </div>
+<modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">
+    <modal-content>
+        <div class="radio" *ngFor="let type of docTypes">
+            <label>
+                <input name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="type.id"> {{type.label}}
+            </label>
+        </div>
+    </modal-content>
+</modal>
+
 
 <button (click)="load('0')">Load 1</button>
 <button (click)="load('1')">Load 2</button>

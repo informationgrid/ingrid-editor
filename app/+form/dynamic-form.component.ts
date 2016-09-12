@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, OnDestroy} from "@angular/core";
+import {Component, OnInit, AfterViewInit, OnDestroy, ViewRef, ViewChild} from "@angular/core";
 import {FormGroup, FormArray} from "@angular/forms";
 import {FormControlService} from "../services/form-control.service";
 import {FieldBase} from "./controls/field-base";
@@ -66,6 +66,8 @@ interface FormData {
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
+  @ViewChild('newDocModal') newDocModal;
+
   fields: FieldBase<any>[] = [];
   form: FormGroup;
   payLoad = '';
@@ -73,6 +75,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   behaviours: Behaviour[];
   observers: Subscription[] = [];
   saving = false;
+  choiceNewDoc: string = 'UVP';
+
+  docTypes = [
+    {id: 'UVP', label: 'UVP'},
+    {id: 'ISO', label: 'ISO'}
+  ];
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
@@ -85,7 +93,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       } else if (eventId === 'SAVE') {
         this.save();
       } else if (eventId === 'NEW_DOC') {
-        this.new();
+        this.newDoc();
       }
     });
 
@@ -123,12 +131,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('after emit', errors);
   }
 
-  new() {
-    let profile = 'ISO';
+  newDoc() {
+    this.newDocModal.open();
+  }
+
+  prepareNewDoc() {
+    debugger;
+    let profile = this.choiceNewDoc;
     if (this.formularService.currentProfile !== profile) {
       this.switchProfile(profile);
     }
     this.data = {};
+    this.newDocModal.close();
   }
 
   load(id: string) {
@@ -155,7 +169,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   save() {
     debugger;
     this.saving = true;
-    setTimeout( () => this.saving = false, 3000 );
+    setTimeout(() => this.saving = false, 3000);
     let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
     this.formularService.saveData();
@@ -201,11 +215,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   updateRepeatableFields(data: any) {
     // set repeatable fields according to loaded data
-    let repeatFields = this.fields.filter( pField => (<Container>pField).isRepeatable );
-    repeatFields.forEach( (repeatField: Container) => {
+    let repeatFields = this.fields.filter(pField => (<Container>pField).isRepeatable);
+    repeatFields.forEach((repeatField: Container) => {
       debugger;
       let repeatSize = data[repeatField.useGroupKey] ? data[repeatField.useGroupKey].length : 0;
-      for (let i=1; i<repeatSize; i++) this.addArrayGroup(repeatField.useGroupKey);
+      for (let i = 1; i < repeatSize; i++) this.addArrayGroup(repeatField.useGroupKey);
     });
   }
 
