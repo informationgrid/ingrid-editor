@@ -9,6 +9,8 @@ import {
 } from "../../../+form/controls/index";
 import {MapField} from "../../../+form/controls/field-map";
 
+import {LatLng, TileLayer} from "leaflet";
+
 export var profile = [
   new DropdownField({
     key: 'brave',
@@ -52,24 +54,21 @@ export var profile = [
   }),
 
   new MapField({
-    key: 'map',
+    key: 'bbox',
     label: 'Karte',
     domClass: 'half',
     height: 370,
     options: {
       zoomControl: true,
-      center: new L.LatLng(40.731253, -73.996139),
+      center: new LatLng(40.731253, -73.996139),
       zoom: 12,
       minZoom: 4,
       maxZoom: 19,
-      layers: [new L.TileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      layers: [new TileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       })]
     },
-    settings: {},
-    tileDef: new L.TileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
-    })
+    settings: {}
   }),
 
   new Container({

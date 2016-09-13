@@ -9,9 +9,11 @@ import {CustomInput} from "./table/table.component";
 import {AgGridNg2} from "ag-grid-ng2";
 import {routing} from "./ige-form.routing";
 import {ModalModule} from "ng2-modal";
+import {StorageService} from "../services/storage/storage.service";
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule],
+  providers: [StorageService],
   declarations: [FormToolbarComponent,DynamicFieldComponent, CustomInput, LeafletComponent, DynamicFormComponent, AgGridNg2],
   exports: []
 })

@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
-import {FormToolbarService} from '../../+form/toolbar/form-toolbar.service';
+import {Injectable} from "@angular/core";
 
 export interface DocumentInterface {
   id: string;
 
+}
+
+interface FormFields {
+  _profile: string;
 }
 
 @Injectable()
@@ -12,16 +15,18 @@ export class StorageService {
   constructor() {
   }
 
-  load(id: string) {
-    return new Promise( (resolve, reject) => {
-      let data = {};
+  loadData(id: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let data: FormFields = {_profile: 'UVP'};
       if (id === '0') {
-        data = Object.assign( {}, {
+        data = Object.assign({}, {
+          _profile: 'UVP',
           mainInfo: {
             taskId: '1234567',
             title: 'Meine erste UVP',
             description: 'Hier ist eine Beschreibung.'
           },
+          bbox: {x: 53.55, y: 9.99},
           brave: 'good',
           gender: 'm',
           date: '1978-10-10', // new Date(),
@@ -44,26 +49,70 @@ export class StorageService {
               brand: 'Audi',
               color: 'blue'
             }
+          ],
+          repeatableFields: [
+            {
+              repeat1: 'Text von Repeat 1',
+              repeat2: 'Text von Repeat 2',
+              repeatTable: [
+                {
+                  type: 'PDF',
+                  url: 'http://xxx.de',
+                  date: '10.10.1978'
+                }
+              ]
+            }, {
+              repeat1: 'Text von Repeat 2-1',
+              repeat2: 'Text von Repeat 2-2',
+              repeatTable: [
+                {
+                  type: 'XML',
+                  url: 'http://yyy.de',
+                  date: '13.06.1988'
+                }
+              ]
+            }
           ]
-        } );
+        });
       } else if (id === '1') {
-        data = Object.assign( {}, {
+        data = Object.assign({}, {
+          _profile: 'ISO',
+          title: 'Meine erste ISO',
+          description: 'Noch eine Beschreibung.'
+        });
+      } else if (id === '2') {
+        data = Object.assign({}, {
+          _profile: 'UVP',
           mainInfo: {
-            taskId: '98765',
+            taskId: '343424',
             title: 'Meine zweite UVP',
-            description: 'Noch eine Beschreibung.'
+            description: 'Hier ist andere eine Beschreibung.'
           },
-          categories: []
-        } );
+          bbox: {x: 50.11, y: 8.68},
+          repeatableFields: [
+            {
+              repeat1: 'Other Text von Repeat 1',
+              repeat2: 'Other Text von Repeat 2',
+              repeatTable: [
+                {
+                  type: 'XML',
+                  url: 'http://zzz.de',
+                  date: '10.11.2016'
+                }
+              ]
+            }
+          ]
+        });
       }
-      setTimeout( () => resolve( data ) );
-    } );
+      setTimeout(() => {
+        resolve(data);
+      });
+    });
   }
 
-  save(document: DocumentInterface) {
-    console.log( 'DEMO: save document' );
+  saveData() {
+    console.log('TEST: save data');
   }
-
 
   // FIXME: this should be added with a plugin
   publish() {

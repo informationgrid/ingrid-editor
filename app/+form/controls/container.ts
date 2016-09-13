@@ -10,7 +10,8 @@ export class Container extends FieldBase<string> {
     domClass?: string,
     isRepeatable?: boolean,
     children?: any[],
-    useGroupKey?: string
+    useGroupKey?: string,
+    label?: string
   } = {}) {
     super(options);
     this.children = options['children'] || [];

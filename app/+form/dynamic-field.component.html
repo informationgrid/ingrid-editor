@@ -61,7 +61,7 @@
                         [ngModel]="value[field.key]">
             </data-table>
 
-            <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height"></leaflet>
+            <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [bbox]="value[field.key]"></leaflet>
         </div>
     </div>
 

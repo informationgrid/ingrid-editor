@@ -1,15 +1,20 @@
-import {AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {
+  AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, OnChanges,
+  SimpleChanges
+} from '@angular/core';
+import {LatLng, Map} from 'leaflet';
 
-@Component( {
+@Component({
   selector: 'leaflet',
   template: '<div #leaflet></div>'
-} )
-export class LeafletComponent implements AfterViewInit, OnDestroy {
-  @ViewChild( 'leaflet' ) leaflet: ElementRef;
+})
+export class LeafletComponent implements AfterViewInit, OnDestroy, OnChanges {
+  @ViewChild('leaflet') leaflet: ElementRef;
   private leafletReference: L.Map;
 
-  @Input() options: L.Map.MapOptions;
+  @Input() options: Map.MapOptions;
   @Input() height: number;
+  @Input() bbox: any;
 
   constructor() {
   }
@@ -17,7 +22,9 @@ export class LeafletComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.leaflet.nativeElement.style.height = this.height + 'px';
     this.leaflet.nativeElement.style.width = '100%';
-    this.leafletReference = L.map( this.leaflet.nativeElement, this.options );
+
+    if (this.bbox) this.options.center = new LatLng(this.bbox.x, this.bbox.y);
+    this.leafletReference = L.map(this.leaflet.nativeElement, this.options);
     // this.leafletReference._onResize();
   }
 
@@ -32,4 +39,9 @@ export class LeafletComponent implements AfterViewInit, OnDestroy {
     this.leaflet.nativeElement.remove();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.leafletReference && this.bbox) {
+      this.leafletReference.setView(new LatLng(this.bbox.x, this.bbox.y) );
+    }
+  }
 }

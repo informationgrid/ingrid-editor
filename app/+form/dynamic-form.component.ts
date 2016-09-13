@@ -10,7 +10,7 @@ import {Subscription} from "rxjs";
 import {ActivatedRoute} from "@angular/router";
 import {Container} from "./controls/container";
 import {Split} from "../../node_modules/split.js/split";
-import {MapField} from "./controls/field-map";
+import {StorageService} from "../services/storage/storage.service";
 
 interface FormData {
   taskId?: string;
@@ -69,7 +69,7 @@ interface FormData {
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild('newDocModal') newDocModal;
+  @ViewChild('newDocModal') newDocModal: any;
 
   fields: FieldBase<any>[] = [];
   form: FormGroup;
@@ -87,7 +87,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
-              private route: ActivatedRoute) {
+              private storageService: StorageService, private route: ActivatedRoute) {
 
     let loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
       console.log('generic toolbar handler');
@@ -162,7 +162,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.data = {};
 
 
-    this.formularService.loadData(id).then(data => {
+    this.storageService.loadData(id).then(data => {
       let profile = data._profile;
       // switch to the right profile depending on the data
       if (this.formularService.currentProfile !== profile) {
@@ -170,8 +170,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       // set correct number of repeatable fields
       this.updateRepeatableFields(data);
-
-      this.setBoundingBox(data.bbox);
 
       this.data = data;
     });
@@ -183,7 +181,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => this.saving = false, 3000);
     let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
-    this.formularService.saveData();
+    this.storageService.saveData();
   }
 
   switchProfile(profile: string) {
@@ -222,13 +220,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // TODO: this.behaviourService.apply(this.form, profile);
     });
-  }
-
-  setBoundingBox(bbox: any) {
-    if (!bbox) return;
-
-    let map: MapField[] = this.fields.filter(pField => (<MapField>pField).options);
-    map.forEach(m => m.options.center = new L.LatLng(bbox.x, bbox.y));
   }
 
   updateRepeatableFields(data: any) {
