@@ -15,7 +15,8 @@ export class MenuService {
   _menuItems: MenuItem[] = [
     {name: 'Dashboard', path: '/dashboard'},
     {name: 'Form', path: '/form'},
-    {name: 'Plugins', path: '/plugins'}
+    {name: 'Plugins', path: '/plugins'},
+    {name: 'Fields', path: '/fields'}
   ];
 
   constructor(private router: Router) {

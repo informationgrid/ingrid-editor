@@ -5,6 +5,7 @@ const routes: Routes = [
   {path: 'form', loadChildren: '+form/ige-form.module'},
   {path: 'form/:id', loadChildren: '+form/ige-form.module'},
   {path: 'plugins', loadChildren: 'plugins/plugins.module'},
+  {path: 'fields', loadChildren: '+fields/fields.module'},
   {path: '', redirectTo: '/form', pathMatch: 'full'}
 ];
 

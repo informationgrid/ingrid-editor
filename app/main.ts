@@ -19,10 +19,11 @@ import {HttpModule} from "@angular/http";
 import {MenuComponent} from "./menu/menu.component";
 import {IgeFormModule} from "./+form/ige-form.module";
 import {DashboardModule} from "./+dashboard/dashboard.module";
+import {FieldsModule} from "./+fields/fields.module";
 
 @NgModule({
   declarations: [AppComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
-  imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, PluginsModule, routing, TranslateModule.forRoot()],
+  imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, PluginsModule, routing, TranslateModule.forRoot()],
   providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, {
     provide: LocationStrategy,
     useClass: HashLocationStrategy
