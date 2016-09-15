@@ -6,15 +6,16 @@ import {ReactiveFormsModule, FormsModule} from "@angular/forms";
 import {DynamicFormComponent} from "./dynamic-form.component";
 import {LeafletComponent} from "./leaflet/leaflet.component";
 import {CustomInput} from "./table/table.component";
-import {AgGridNg2} from "ag-grid-ng2";
 import {routing} from "./ige-form.routing";
 import {ModalModule} from "ng2-modal";
-import {StorageService} from "../services/storage/storage.service";
+import {BrowserComponent} from "./sidebars/browser/browser.component";
+import {AgGridModule} from "ag-grid-ng2";
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule],
-  providers: [StorageService],
-  declarations: [FormToolbarComponent,DynamicFieldComponent, CustomInput, LeafletComponent, DynamicFormComponent, AgGridNg2],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule, AgGridModule.forRoot()],
+  // providers: [StorageService],
+  declarations: [FormToolbarComponent, DynamicFieldComponent, CustomInput, BrowserComponent, LeafletComponent, DynamicFormComponent],
   exports: []
 })
-export class IgeFormModule {}
+export class IgeFormModule {
+}
