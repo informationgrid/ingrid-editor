@@ -4,7 +4,7 @@
 <!-- Notification -->
 <div class="notifyWrapper" [class.active]="saving">
     <div class="tn-box tn-box-color-1">
-        <p>Your settings have been saved successfully!</p>
+        <p>This form has been saved successfully!</p>
         <div class="tn-progress"></div>
     </div>
 </div>
@@ -12,24 +12,34 @@
 <div class="splitWrapper">
     <!-- exchangable sidebar -->
     <div id="sidebar" class="split split-horizontal">
-        <ul>
-            <li><a routerLink="/form/0">UVP-Dokument 1</a></li>
-            <li><a routerLink="/form/2">UVP-Dokument 2</a></li>
-            <li><a routerLink="/form/1">ISO-Dokument 1</a></li>
-        </ul>
+        <sidebar></sidebar>
     </div>
 
     <!-- The form -->
     <div id="form" class="split split-horizontal formWrapper">
         <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
 
+            <!-- RENDER ALL FIELDS -->
             <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"
                  [ngClass]="{hasChildren: field.children, padding: !field.children || field.isRepeatable}">
+
+                <!-- SIMPLE FIELD -->
+                <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></dyn-field>
+
+                <!-- COMPLEX FIELD -->
                 <fieldset *ngIf="field.children">
+
+                    <!-- CONTAINER FOR NESTED FIELDS -->
                     <div *ngIf="!field.isRepeatable">
-                        <dyn-field *ngFor="let child of field.children" [field]="child" [parentKey]="field.useGroupKey"
-                                   [form]="form" [value]="data" class="padding {{child.domClass}}"></dyn-field>
+                        <div [formGroupName]="field.useGroupKey">
+                            <dyn-field *ngFor="let child of field.children" [field]="child"
+                                       [form]="form.controls[field.useGroupKey]" [value]="data[field.useGroupKey]"
+                                       class="padding {{child.domClass}}">
+                            </dyn-field>
+                        </div>
                     </div>
+
+                    <!-- REPEATABLE FIELDS -->
                     <div *ngIf="field.isRepeatable">
                         <div [formArrayName]="field.useGroupKey">
                             <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i"
@@ -45,7 +55,8 @@
                                     <dyn-field *ngFor="let child of groups" [field]="child"
                                                [form]="form.controls[field.useGroupKey].controls[i]"
                                                [value]="data[field.useGroupKey] ? data[field.useGroupKey][i] : {}"
-                                               class="padding {{child.domClass}}"></dyn-field>
+                                               class="padding {{child.domClass}}">
+                                    </dyn-field>
                                 </div>
                             </div>
                         </div>
@@ -54,10 +65,12 @@
                         </button>
                     </div>
                 </fieldset>
-                <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></dyn-field>
+
             </div>
 
+
             <strong>Form contains the following values</strong><br>{{form.value | json}}
+            <p>Form is valid: {{form.valid}}</p>
         </form>
 
 

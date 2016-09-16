@@ -20,51 +20,7 @@ interface FormData {
 @Component({
   selector: 'dynamic-form',
   template: require('./dynamic-form.component.html'),
-  styles: [`
-    .formWrapper {
-        /*padding-top: 40px;*/
-    }
-    
-    .notifyWrapper {
-        width: 100%;
-        text-align: center;
-        position: fixed;
-        top: 50px;
-        z-index: 10000;
-        display: none;
-        opacity: 0;
-    }
-    .tn-box {
-      display: inline-block;
-      width: 360px;
-      padding: 15px;
-      text-align: center;
-      border-radius: 5px;
-        box-shadow: 
-        0 1px 1px rgba(0,0,0,0.1), 
-        inset 0 1px 0 rgba(255,255,255,0.6);  
-      cursor: default;
-    }
-    
-    .tn-box-color-1{
-      background: #ffe691;
-      border: 1px solid #f6db7b;
-    }
-    
-    .notifyWrapper.active {
-      display: block;
-      animation: fadeOut 2s linear forwards;
-    }
-    
-    @keyframes fadeOut {
-      0% 	{ opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; transform: translateY(0px);}
-      99% { opacity: 0; transform: translateY(-30px);}
-      100% { opacity: 0; }
-    }
-  
-  `],
+  styles: [require('./dynamic-form.component.css')],
   providers: [FormControlService]
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -119,6 +75,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
     this.formularService.currentProfile = null;
+
+    // TODO: emit current form value on demand
+    // register to an publisher in the form/storage service and send the value of this form
+    // this can be used for publis, revert, detail, compare, ...
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -157,9 +117,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // since data always stays the same there's no change detection if we load the same data again
     // even if we already have changed the formular
     // since loading will be async, we only have to reset the data first
+    debugger;
 
     // TODO: use form.reset() which should work now!
-    this.data = {};
+    // this.data = {};
 
 
     this.storageService.loadData(id).then(data => {
@@ -177,6 +138,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   save() {
     debugger;
+    console.log('valid:', this.form.valid);
     this.saving = true;
     setTimeout(() => this.saving = false, 3000);
     let errors: string[] = [];
@@ -218,7 +180,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
        // L.control.layers(this.mapService.baseMaps).addTo(map);
        L.control.scale().addTo( map );*/
 
-      // TODO: this.behaviourService.apply(this.form, profile);
+      this.behaviourService.apply(this.form, profile);
     });
   }
 

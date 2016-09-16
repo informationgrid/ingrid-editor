@@ -11,7 +11,6 @@ export class DynamicFieldComponent {
   @Input() field: FieldBase<any>;
   @Input() form: FormGroup;
   @Input() value: any;
-  @Input() parentKey: string = null;
 
   /*get isValid() {
    return this.form.controls[this.field.key].valid;

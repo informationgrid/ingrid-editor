@@ -4,10 +4,11 @@ import {PluginsComponent} from './plugins.component';
 import {PluginsService} from './plugins.service';
 import {routing} from './plugins.routing';
 import {DemoComponent} from './demo/demo.component';
+import {PublishPlugin} from "./publish/publish.plugin";
 @NgModule( {
   imports: [CommonModule, routing],
   declarations: [PluginsComponent, DemoComponent],
-  providers: [PluginsService],
+  providers: [PluginsService, PublishPlugin],
   entryComponents: [DemoComponent]
 } )
 export class PluginsModule {

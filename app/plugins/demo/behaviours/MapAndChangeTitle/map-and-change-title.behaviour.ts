@@ -18,13 +18,14 @@ export class MapAndChangeTitleBehaviour extends BaseBehaviour implements Behavio
   }
 
   register(form: FormGroup, eventManager: EventManager) {
-    this.addSubscriber(
-      form.controls['map'].valueChanges.subscribe( function (val: string) {
-        if (val === 'map') {
+    debugger;
+    /*this.addSubscriber(
+      form.controls['bbox'].valueChanges.subscribe( function (val: string) {
+        if (val === 'bbox') {
           form.get( ['mainInfo', 'title'] ).setValue( 'Map was entered' );
         }
       } )
-    );
+    );*/
     this.addSubscriber(
       form.controls['categories'].valueChanges.subscribe( function (val: string) {
         console.log( 'categories changed: ', val );

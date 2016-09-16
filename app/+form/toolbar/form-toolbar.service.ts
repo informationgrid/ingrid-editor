@@ -16,7 +16,7 @@ export class FormToolbarService {
 
   _buttons: ToolbarItem[] = [
     {tooltip: 'New', cssClasses: 'glyphicon glyphicon-file', eventId: 'NEW_DOC'},
-    {tooltip: 'Load', cssClasses: 'glyphicon glyphicon-folder-open', eventId: 'LOAD'},
+    // {tooltip: 'Load', cssClasses: 'glyphicon glyphicon-folder-open', eventId: 'LOAD'},
     {tooltip: 'Save', cssClasses: 'glyphicon glyphicon-save', eventId: 'SAVE'},
     {tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT'},
     {tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-remove', eventId: 'DELETE'}

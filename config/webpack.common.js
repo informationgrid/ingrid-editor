@@ -79,6 +79,11 @@ module.exports = {
       "window.moment": "moment"
     }),
     new webpack.IgnorePlugin(/^\.\/locale$/, [/moment$/]),
+    //  the following plugin is needed to avoid a warning when running app
+    new webpack.ContextReplacementPlugin(
+        /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+        __dirname
+    ),
     new ExtractTextPlugin( "styles.css" ),
     new webpack.optimize.CommonsChunkPlugin( {
       name: ['main', 'vendor']

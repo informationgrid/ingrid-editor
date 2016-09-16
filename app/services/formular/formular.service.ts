@@ -1,15 +1,12 @@
-import {Injectable} from '@angular/core';
-import {FieldBase} from '../../+form/controls/field-base';
-import {Subject} from 'rxjs';
-import {profile as UVP_profile} from './uvp/uvp.profile';
-import {profile as ISO_profile} from './iso/iso.profile';
+import {Injectable} from "@angular/core";
+import {FieldBase} from "../../+form/controls/field-base";
+import {profile as UVP_profile} from "./uvp/uvp.profile";
+import {profile as ISO_profile} from "./iso/iso.profile";
 
 @Injectable()
 export class FormularService {
 
   data = {};
-
-  beforeSave: Subject<any> = new Subject<any>();
 
   currentProfile: string;
 

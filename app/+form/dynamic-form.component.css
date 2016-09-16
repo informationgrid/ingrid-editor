@@ -1,0 +1,54 @@
+.formWrapper {
+    /*padding-top: 40px;*/
+}
+
+.notifyWrapper {
+    width: 100%;
+    text-align: center;
+    position: fixed;
+    top: 50px;
+    z-index: 10000;
+    display: none;
+    opacity: 0;
+}
+
+.tn-box {
+    display: inline-block;
+    width: 360px;
+    padding: 15px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    cursor: default;
+}
+
+.tn-box-color-1 {
+    background: #ffe691;
+    border: 1px solid #f6db7b;
+}
+
+.notifyWrapper.active {
+    display: block;
+    animation: fadeOut 2s linear forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    99% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    100% {
+        opacity: 0;
+    }
+}

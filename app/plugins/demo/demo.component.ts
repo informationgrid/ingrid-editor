@@ -1,12 +1,12 @@
-import {Component, OnInit, Inject} from '@angular/core';
-import {FormToolbarService} from '../../+form/toolbar/form-toolbar.service';
-import {FormularService} from '../../services/formular/formular.service';
+import {Component, OnInit, Inject} from "@angular/core";
+import {FormToolbarService} from "../../+form/toolbar/form-toolbar.service";
+import {StorageService} from "../../services/storage/storage.service";
 
 @Component( {
   template: require( './demo.component.html' )
 } )
 export class DemoComponent implements OnInit {
-  constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService, private formularService: FormularService) {
+  constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService, private storageService: StorageService) {
   }
 
   ngOnInit() {
@@ -26,7 +26,7 @@ export class DemoComponent implements OnInit {
   }
 
   addBeforeSaveSubscriber() {
-    this.formularService.beforeSave.asObservable().subscribe( data => {
+    this.storageService.beforeSave.asObservable().subscribe( data => {
       console.log( 'received data:', data );
       data.errors.push( {error: 'I DID IT!', id: 'someId'} );
     } );

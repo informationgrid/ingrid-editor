@@ -20,11 +20,13 @@ import {MenuComponent} from "./menu/menu.component";
 import {IgeFormModule} from "./+form/ige-form.module";
 import {DashboardModule} from "./+dashboard/dashboard.module";
 import {FieldsModule} from "./+fields/fields.module";
+import {FormToolbarService} from "./+form/toolbar/form-toolbar.service";
+import {StorageService} from "./services/storage/storage.service";
 
 @NgModule({
   declarations: [AppComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
   imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, PluginsModule, routing, TranslateModule.forRoot()],
-  providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, {
+  providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, FormToolbarService, StorageService, {
     provide: LocationStrategy,
     useClass: HashLocationStrategy
   }], // additional providers

@@ -1,4 +1,5 @@
 import {Injectable} from "@angular/core";
+import {Subject} from "rxjs";
 
 export interface DocumentInterface {
   id: string;
@@ -11,6 +12,8 @@ interface FormFields {
 
 @Injectable()
 export class StorageService {
+
+  beforeSave: Subject<any> = new Subject<any>();
 
   constructor() {
   }
@@ -112,11 +115,21 @@ export class StorageService {
 
   saveData() {
     console.log('TEST: save data');
+    let data = { errors: [] };
+    this.beforeSave.next(data);
+    console.log( 'After validation:', data );
   }
 
   // FIXME: this should be added with a plugin
   publish() {
-
+    console.log( 'PUBLISHING' );
+    let data = { errors: [] };
+    this.beforeSave.next(data);
+    console.log( 'After validation:', data );
   }
 
+  revert() {
+    console.log( 'REVERTING' );
+
+  }
 }
