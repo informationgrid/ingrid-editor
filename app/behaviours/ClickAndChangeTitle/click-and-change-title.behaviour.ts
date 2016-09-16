@@ -27,13 +27,12 @@ export class ClickAndChangeTitleBehaviour extends BaseBehaviour implements Behav
         form.get(['mainInfo', 'title']).setValue('remotely updated by behaviour');
       })
     );
-    console.log('behaviour storageService:', this.storageService);
-    // debugger;
-    /*this.addSubscriber(
+
+    this.addSubscriber(
       this.storageService.beforeSave.asObservable().subscribe((message: any) => {
         message.errors.push({id: 'taskId', error: 'I don\'t like this ID'});
         console.log('in observer');
       })
-    );*/
+    );
   }
 }

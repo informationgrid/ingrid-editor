@@ -2,9 +2,11 @@ import {FormularService} from '../formular/formular.service';
 import {EventManager} from '@angular/platform-browser';
 import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {ClickAndChangeTitleBehaviour} from '../../behaviours/ClickAndChangeTitle/click-and-change-title.behaviour';
+import {ClickAndChangeTitleBehaviour} from '../../behaviours';
 import {MapAndChangeTitleBehaviour} from '../../plugins/demo/behaviours/MapAndChangeTitle/map-and-change-title.behaviour';
 import {AddControlBehaviour} from '../../plugins/demo/behaviours/AddControl/addControl.behaviour';
+import {StorageService} from "../storage/storage.service";
+
 export interface Behaviour {
   id: string;
   title: string;
@@ -21,7 +23,7 @@ export interface Behaviour {
 @Injectable()
 export class BehavioursDefault {
 
-  constructor(private formService: FormularService) {
+  constructor(private formService: FormularService, private storageService: StorageService) {
   }
 
   /**
@@ -29,7 +31,7 @@ export class BehavioursDefault {
    * @type {{id: string; title: string; description: string; defaultActive: boolean; outer: BehavioursDefault; register: Function}[]}
    */
   behaviours: Behaviour[] = [
-    new ClickAndChangeTitleBehaviour( this.formService ),
+    new ClickAndChangeTitleBehaviour( this.storageService ),
     new MapAndChangeTitleBehaviour( this.formService ),
     new AddControlBehaviour( this.formService )
   ];
