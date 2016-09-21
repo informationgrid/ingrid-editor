@@ -1,5 +1,6 @@
 var webpackConfig = require('./webpack.test');
 
+
 module.exports = function (config) {
     var _config = {
         basePath: '',
@@ -24,21 +25,13 @@ module.exports = function (config) {
             noInfo: true
         },
 
-        plugins: ['karma-jasmine', 'karma-phantomjs-launcher', 'karma-junit-reporter', 'karma-webpack', 'karma-sourcemap-loader'],
-
-        reporters: ['progress', 'junit'],
-
-        junitReporter: {
-            outputFile: 'reports/test-results-karma.xml',
-            suite: ''
-        },
-
-        port: 9875,
+        reporters: ['progress'],
+        port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
-        autoWatch: true,
+        autoWatch: false,
         browsers: ['PhantomJS'],
-        singleRun: false
+        singleRun: true
     };
 
     config.set(_config);

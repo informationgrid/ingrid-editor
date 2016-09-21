@@ -115,7 +115,7 @@ export class StorageService {
 
   saveData() {
     console.log('TEST: save data');
-    let data = { errors: [] };
+    let data: any = { errors: [] };
     this.beforeSave.next(data);
     console.log( 'After validation:', data );
   }
@@ -123,7 +123,7 @@ export class StorageService {
   // FIXME: this should be added with a plugin
   publish() {
     console.log( 'PUBLISHING' );
-    let data = { errors: [] };
+    let data: any = { errors: [] };
     this.beforeSave.next(data);
     console.log( 'After validation:', data );
   }

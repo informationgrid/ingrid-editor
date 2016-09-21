@@ -90,14 +90,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onSubmit() {
+  /*onSubmit() {
     this.payLoad = JSON.stringify(this.form.value);
     console.log('before emit', this.form);
     let errors: any[] = [];
     // this.formularService.onBeforeSave.emit( {data: this.form.value, errors: errors} );
-    this.formularService.beforeSave.next({data: this.form.value, errors: errors});
+    this.storageService.beforeSave.next({data: this.form.value, errors: errors});
     console.log('after emit', errors);
-  }
+  }*/
 
   newDoc() {
     this.newDocModal.open();

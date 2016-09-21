@@ -1,29 +1,8 @@
-import {
-  CheckboxField,
-  TableField,
-  TextareaField,
-  TextboxField,
-  Container,
-  DropdownField,
-  RadioField
-} from "../../../+form/controls/index";
+import {TableField, TextareaField, TextboxField, Container} from "../../../+form/controls/index";
 import {MapField} from "../../../+form/controls/field-map";
-
 import {LatLng, TileLayer} from "leaflet";
 
-export var profile = [
-  new DropdownField({
-    key: 'brave',
-    label: 'Bravery Rating',
-    options: [
-      {key: 'solid', value: 'Solid'},
-      {key: 'great', value: 'Great'},
-      {key: 'good', value: 'Good'},
-      {key: 'unproven', value: 'Unproven'}
-    ],
-    order: 100
-  }),
-
+export let profile = [
 
   new Container({
     useGroupKey: 'mainInfo',
@@ -71,71 +50,132 @@ export var profile = [
     settings: {}
   }),
 
+
+  new TableField({
+    key: 'categories',
+    label: 'Kategorien',
+    columns: [
+      {headerName: 'Kategorie', field: 'category', editable: true}
+    ],
+    order: 2
+  }),
+
   new Container({
-    useGroupKey: 'repeatableFields',
-    label: 'My repeatable Fields',
+    useGroupKey: 'publicDisplay',
+    label: 'Öffentliche Auslegung',
     isRepeatable: true,
+    order: 10,
     children: [[
       new TextboxField({
-        key: 'repeat1',
-        label: 'Repeat 1',
-        domClass: 'half',
-        order: 1
-      }),
-      new TextboxField({
-        key: 'repeat2',
-        label: 'Repeat 2',
-        domClass: 'half',
-        order: 2
+        key: 'date',
+        label: 'Datum',
+        // domClass: 'half',
+        type: 'date'
       }),
       new TableField({
-        key: 'repeatTable',
-        label: 'Anträge',
+        key: 'constructionInfo',
+        label: 'Auslegungsinformationen',
         columns: [
+          {headerName: 'Titel', field: 'title', editable: true},
+          {headerName: 'Link', field: 'link', editable: true},
           {headerName: 'Typ', field: 'type', editable: true},
-          {headerName: 'URL', field: 'url', editable: true},
-          {headerName: 'Datum', field: 'date', editable: true}
-        ],
-        order: 3
+          {headerName: 'Größe', field: 'size', editable: true},
+          {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+        ]
+      }),
+      new TableField({
+        key: 'applicationDocs',
+        label: 'Antragsunterlagen',
+        columns: [
+          {headerName: 'Titel', field: 'title', editable: true},
+          {headerName: 'Link', field: 'link', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Größe', field: 'size', editable: true},
+          {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+        ]
+      }),
+      new TableField({
+        key: 'reportsAndRecommendations',
+        label: 'Berichte und Empfehlungen',
+        columns: [
+          {headerName: 'Titel', field: 'title', editable: true},
+          {headerName: 'Link', field: 'link', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Größe', field: 'size', editable: true},
+          {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+        ]
+      }),
+      new TableField({
+        key: 'additionalDocs',
+        label: 'Weitere Unterlagen',
+        columns: [
+          {headerName: 'Titel', field: 'title', editable: true},
+          {headerName: 'Link', field: 'link', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Größe', field: 'size', editable: true},
+          {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+        ]
       })
     ]]
   }),
 
-  new TableField({
-    key: 'categories',
-    label: 'Autos',
-    columns: [
-      {headerName: 'Vintage', field: 'vin', editable: true},
-      {headerName: 'Jahr', field: 'year', editable: true},
-      {headerName: 'Marke', field: 'brand'},
-      {headerName: 'Farbe', field: 'color'}
-    ],
-    order: 30
+
+  new Container({
+    useGroupKey: 'publicHearingDates',
+    label: 'Erörterungstermin',
+    isRepeatable: true,
+    order: 15,
+    children: [[
+      new TextboxField({
+        key: 'date',
+        label: 'Datum',
+        // domClass: 'half',
+        type: 'date'
+      }),
+      new TableField({
+        key: 'announcements',
+        label: 'Bekanntmachung',
+        columns: [
+          {headerName: 'Titel', field: 'title', editable: true},
+          {headerName: 'Link', field: 'link', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Größe', field: 'size', editable: true},
+          {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+        ]
+      })
+    ]]
   }),
 
-  new TextboxField({
-    key: 'date',
-    label: 'Datum',
-    domClass: 'half',
-    order: 89,
-    type: 'date'
-  }),
-
-  new CheckboxField({
-    key: 'isOpenData',
-    label: 'Open Data',
-    domClass: 'half',
-    order: 90
-  }),
-
-  new RadioField({
-    key: 'gender',
-    label: 'Gender',
-    domClass: 'half',
-    order: 91,
-    options: [
-      {label: 'male', value: 'm'},
-      {label: 'female', value: 'f'}
-    ]
+  new Container({
+    useGroupKey: 'approvalDecisions',
+    label: 'Zulassungsentscheidung',
+    isRepeatable: true,
+    order: 20,
+    children: [[
+      new TextboxField({
+        key: 'date',
+        label: 'Datum',
+        // domClass: 'half',
+        type: 'date'
+      }),
+      new TextareaField({
+        key: 'paymentDecision',
+        label: 'Zahlungsentscheidung',
+        // domClass: 'half',
+        rows: 5
+      }),
+      new TableField({
+        key: 'constructionInfo',
+        label: 'Auslegungsinformationen',
+        columns: [
+          {headerName: 'Titel', field: 'title', editable: true},
+          {headerName: 'Link', field: 'link', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Größe', field: 'size', editable: true},
+          {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+        ]
+      })
+    ]]
   })
+
 ];

@@ -1,3 +1,4 @@
+var webpack = require( 'webpack' );
 var CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 var helpers = require( './../helpers' );
 
@@ -12,12 +13,11 @@ module.exports = {
         loaders: [
             {
                 test: /\.ts$/,
-                loaders: ['ts?transpileOnly=true,configFileName=tsconfig.webpack.json', 'angular2-template-loader']
+                loaders: ['awesome-typescript-loader', 'angular2-template-loader']
             },
             {
                 test: /\.html$/,
                 loader: 'html'
-
             },
             {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
@@ -25,11 +25,23 @@ module.exports = {
             },
             {
                 test: /\.css$/,
+                exclude: helpers.root('src', 'app'),
                 loader: 'null'
-            }
+            },
+            {
+                test: /\.css$/,
+                include: helpers.root('src', 'app'),
+                loader: 'raw'
+            },
+            // Support for *.json files.
+            {test: /\.json$/, loader: 'json-loader', exclude: [ helpers.root( 'node_modules' ) ]}
         ]
     },
     plugins: [
+        new webpack.ContextReplacementPlugin(
+            /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+            __dirname
+        ),
         new CopyWebpackPlugin( [
             {from: helpers.root('app/services/behaviour/additionalBehaviours.js'), to: helpers.root('build')}
         ] )
