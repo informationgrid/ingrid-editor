@@ -7,7 +7,8 @@
     "prepare": "typings install",
     "test": "karma start --singleRun=true",
     "dev": "webpack-dev-server --progress --hot --inline",
-    "prod": "webpack --config config/webpack.prod.js --progress --profile --bail"
+    "prod": "webpack --config config/webpack.prod.js --progress --profile --bail",
+    "server": "cd server && node index.js"
   },
   "author": "",
   "license": "ISC",

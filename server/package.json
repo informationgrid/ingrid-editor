@@ -1,0 +1,22 @@
+{
+  "name": "ige-remastered-api",
+  "version": "1.0.0",
+  "description": "Necessary API to support requests from IGE remastered",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "npm install",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "swagger"
+  ],
+  "license": "Apache-2.0",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "connect": "^3.2.0",
+    "js-yaml": "^3.3.0",
+    "mongodb": "^2.2.10",
+    "swagger-tools": "0.10.1"
+  }
+}

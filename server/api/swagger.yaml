@@ -1,0 +1,96 @@
+---
+swagger: "2.0"
+info:
+  description: "Necessary API to support requests from IGE remastered"
+  version: "1.0.0"
+  title: "IGE remastered API"
+host: "localhost"
+basePath: "/v1"
+schemes:
+- "http"
+- "https"
+produces:
+- "application/json"
+paths:
+  /dataset/{id}:
+    get:
+      tags:
+      - "Datasets"
+      summary: "A complete dataset"
+      description: "Retrieve a dataset by a given ID."
+      operationId: "getByID"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the dataset."
+        required: true
+        type: "string"
+      - name: "publish"
+        in: "query"
+        description: "If we want to get the published version then this parameter\
+          \ has to be set to true."
+        required: false
+        type: "boolean"
+      responses:
+        200:
+          description: "The dataset with the given ID."
+          schema:
+            $ref: "#/definitions/Dataset"
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "Datasets"
+    post:
+      tags:
+      - "Datasets"
+      summary: "Set a complete dataset"
+      description: "xxx"
+      operationId: "set"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the dataset."
+        required: true
+        type: "string"
+      - in: "body"
+        name: "data"
+        description: "The dataset to be stored."
+        required: true
+        schema:
+          $ref: "#/definitions/Dataset"
+      - name: "publish"
+        in: "query"
+        description: "If we want to store the published version then this parameter\
+          \ has to be set to true."
+        required: false
+        type: "boolean"
+      responses:
+        200:
+          description: "The stored dataset, which might contain additional storage\
+            \ information."
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "Datasets"
+definitions:
+  Dataset:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        description: "Unique identifier"
+      description:
+        type: "string"
+        description: "Description of the dataset."
+  Error:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+      fields:
+        type: "string"
