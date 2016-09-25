@@ -1,35 +1,30 @@
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule} from "@angular/forms";
 import {DynamicFieldComponent} from "./dynamic-field.component";
-import {FieldBase} from "./controls/field-base";
-import {TextboxField} from "./controls/field-textbox";
-import {TextareaField} from "./controls/field-textarea";
-import {DropdownField} from "./controls/field-dropdown";
-import {TableField} from "./controls/field-table";
-import {CheckboxField} from "./controls/field-checkbox";
-import {RadioField} from "./controls/field-radio";
-import {TestBed} from "@angular/core/testing/test_bed";
+import {TestBed} from "@angular/core/testing";
+import {TextboxField, FieldBase, TextareaField, DropdownField, CheckboxField, TableField, RadioField} from "./controls";
 import {By} from "@angular/platform-browser";
-import {FormularService} from "../services/formular/formular.service";
 import {FormControlService} from "../services/form-control.service";
+import {AgGridModule} from "ag-grid-ng2";
+import {CustomInput} from "./table/table.component";
+import {LeafletComponent} from "./leaflet/leaflet.component";
 
-let fixture: any, comp: any, el: any;
 
 describe('Formular fields', () => {
 
+  let fixture: any, comp: any, el: any;
   let formFieldService = new FormControlService();
   // jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DynamicFieldComponent],
-      imports: [FormsModule, ReactiveFormsModule],
+      declarations: [DynamicFieldComponent, CustomInput, LeafletComponent],
+      imports: [ReactiveFormsModule, AgGridModule.forRoot()],
       // providers: [FormularService]
     });
 
     // create component and test fixture
     fixture = TestBed.createComponent(DynamicFieldComponent);
 
-    console.log( 'fixture is:', fixture );
     // get test component from the fixture
     comp = fixture.componentInstance;
 
@@ -37,26 +32,25 @@ describe('Formular fields', () => {
 
   // specs
   it('should create a text field', () => {
-    console.log( 'Test start', fixture );
     let textfield: FieldBase<any> = new TextboxField({
-      key: 'ctrl1',
-      label: 'Titel of ctrl1'
-    });
+     key: 'ctrl1',
+     label: 'Titel of ctrl1'
+     });
 
-    /*let element = fixture.debugElement;
+    let element = fixture.debugElement;
 
-    comp.form = formFieldService.toFormGroup([textfield]);
-    comp.field = textfield;
-    comp.value = {ctrl1: 'This is a textbox'};
+     comp.form = formFieldService.toFormGroup([textfield]);
+     comp.field = textfield;
+     comp.value = {ctrl1: 'This is a textbox'};
 
-    // fixture.autoDetectChanges( true );
-    fixture.detectChanges(); // trigger change detection
+     // fixture.autoDetectChanges( true );
+     fixture.detectChanges(); // trigger change detection
 
-    expect(element.query(By.css('label')).nativeElement.innerText).toBe('Titel of ctrl1');
-    expect(element.query(By.css('input')).nativeElement.value).toBe('This is a textbox');*/
+     expect(element.query(By.css('label')).nativeElement.innerText).toBe('Titel of ctrl1');
+     expect(element.query(By.css('input')).nativeElement.value).toBe('This is a textbox');
   });
 
-  xit('should create a text area', () => {
+  it('should create a text area', () => {
     // let fixture = TestBed.createComponent(DynamicFieldComponent);
     fixture.whenStable().then(() => {
       let textareaField: FieldBase<any> = new TextareaField({
@@ -80,7 +74,7 @@ describe('Formular fields', () => {
     });
   });
 
-  xit('should create a text area with a defined number of rows', () => {
+  it('should create a text area with a defined number of rows', () => {
     // let fixture = TestBed.createComponent(DynamicFieldComponent);
     fixture.whenStable().then(() => {
       let textareaField: FieldBase<any> = new TextareaField({
@@ -101,7 +95,7 @@ describe('Formular fields', () => {
     });
   });
 
-  xit('should create a select box', () => {
+  it('should create a select box', () => {
     // let fixture = TestBed.createComponent(DynamicFieldComponent);
     fixture.whenStable().then(() => {
       let selectField: FieldBase<any> = new DropdownField({
@@ -137,7 +131,7 @@ describe('Formular fields', () => {
     });
   });
 
-  xit('should create a checkbox', () => {
+  it('should create a checkbox', () => {
     // let fixture = TestBed.createComponent(DynamicFieldComponent);
     fixture.whenStable().then(() => {
       let checkboxField: FieldBase<any> = new CheckboxField({
@@ -198,7 +192,7 @@ describe('Formular fields', () => {
    })));*/
   // });
 
-  xit('should create a table', () => {
+  it('should create a table', () => {
     let fixture = TestBed.createComponent(DynamicFieldComponent);
     fixture.whenStable().then(() => {
       let selectField: FieldBase<any> = new TableField({
@@ -240,7 +234,7 @@ describe('Formular fields', () => {
     }, (error) => fail('test failes'));
   });
 
-  xit('should create a date field', () => {
+  it('should create a date field', () => {
     let fixture = TestBed.createComponent(DynamicFieldComponent);
     fixture.whenStable().then(() => {
       let textfield: FieldBase<any> = new TextboxField({

@@ -123,7 +123,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.data = {};
 
 
-    this.storageService.loadData(id).then(data => {
+    this.storageService.loadData(id).subscribe(data => {
       let profile = data._profile;
       // switch to the right profile depending on the data
       if (this.formularService.currentProfile !== profile) {
@@ -143,7 +143,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => this.saving = false, 3000);
     let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
-    this.storageService.saveData();
+    let data = this.form.value;
+    // attach profile type to data, which is not reflected in form directly by value
+    data._id = this.data._id;
+    data._profile = this.formularService.currentProfile;
+    this.storageService.saveData(data);
   }
 
   switchProfile(profile: string) {

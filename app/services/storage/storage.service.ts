@@ -1,5 +1,6 @@
 import {Injectable} from "@angular/core";
-import {Subject} from "rxjs";
+import {Subject, Observable} from "rxjs";
+import {Http} from "@angular/http";
 
 export interface DocumentInterface {
   id: string;
@@ -15,11 +16,19 @@ export class StorageService {
 
   beforeSave: Subject<any> = new Subject<any>();
 
-  constructor() {
+  constructor(private http: Http) {
   }
 
-  loadData(id: string): Promise<any> {
-    return new Promise((resolve, reject) => {
+  findDocuments() {
+    return this.http.get('http://localhost:8080/v1/datasets/find?query=&fields=_id,_profile,mainInfo.title')
+      .map(resp => resp.json());
+  }
+
+  loadData(id: string): Observable<any> {
+    return this.http.get('http://localhost:8080/v1/dataset/' + id)
+      .map(resp => resp.json());
+
+/*    return new Promise((resolve, reject) => {
       let data: FormFields = {_profile: 'UVP'};
       if (id === '0') {
         data = Object.assign({}, {
@@ -110,26 +119,33 @@ export class StorageService {
       setTimeout(() => {
         resolve(data);
       });
-    });
+    });*/
   }
 
-  saveData() {
+  saveData(data: any) {
     console.log('TEST: save data');
-    let data: any = { errors: [] };
-    this.beforeSave.next(data);
-    console.log( 'After validation:', data );
+    let errors: any = {errors: []};
+    this.beforeSave.next(errors);
+    console.log('After validation:', errors);
+    var response = this.http.post('http://localhost:8080/v1/dataset/1', data)
+      .catch((err: any) => {
+        console.error('Error: ', err);
+        return Observable.throw(err);
+      });
+    console.log('Response:', response);
+    response.subscribe(res => console.log('received:', res));
   }
 
   // FIXME: this should be added with a plugin
   publish() {
-    console.log( 'PUBLISHING' );
-    let data: any = { errors: [] };
+    console.log('PUBLISHING');
+    let data: any = {errors: []};
     this.beforeSave.next(data);
-    console.log( 'After validation:', data );
+    console.log('After validation:', data);
   }
 
   revert() {
-    console.log( 'REVERTING' );
+    console.log('REVERTING');
 
   }
 }

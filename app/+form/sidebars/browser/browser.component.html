@@ -8,8 +8,6 @@
         </span>
     </div>
     <ul>
-        <li><a routerLink="/form/0">UVP-Dokument 1</a></li>
-        <li><a routerLink="/form/2">UVP-Dokument 2</a></li>
-        <li><a routerLink="/form/1">ISO-Dokument 1</a></li>
+        <li *ngFor="let entry of entries"><a routerLink="/form/{{entry._id}}">{{entry['mainInfo.title']}}</a></li>
     </ul>
 </div>

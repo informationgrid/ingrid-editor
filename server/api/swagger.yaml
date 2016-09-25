@@ -12,7 +12,58 @@ schemes:
 produces:
 - "application/json"
 paths:
+  /datasets/find:
+    get:
+      tags:
+      - "Datasets"
+      summary: ...
+      description: ""
+      operationId: find
+      parameters:
+      - name: "query"
+        in: "query"
+        description: ""
+        required: true
+        type: "string"
+      - name: "fields"
+        in: "query"
+        description: ""
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Datasets found
+      x-swagger-router-controller: "Datasets"
   /dataset/{id}:
+    options:
+      tags:
+      - "Datasets"
+      summary: ...
+      description: ""
+      operationId: getByIDOperation
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the dataset."
+        required: true
+        type: "string"
+      - name: "publish"
+        in: "query"
+        description: "If we want to get the published version then this parameter\
+          \ has to be set to true."
+        required: false
+        type: "boolean"
+      responses:
+        '200':
+          description: Dataset updated.
+        '405':
+          description: Invalid input
+      x-swagger-router-controller: "Datasets"
     get:
       tags:
       - "Datasets"

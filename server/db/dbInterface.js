@@ -20,6 +20,13 @@ var closeDB = function () {
     db.close();
 };
 
+var findDocuments = function (query) {
+    // Get the documents collection
+    var collection = db.collection('documents');
+    // Find some documents
+    return collection.find().toArray();
+};
+
 var getDocument = function (id) {
     // Get the documents collection
     var collection = db.collection('documents');
@@ -54,5 +61,6 @@ module.exports = {
     closeDB: closeDB,
     insertDocument: insertDocument,
     updateDocument: updateDocument,
-    getDocument: getDocument
+    getDocument: getDocument,
+    findDocuments: findDocuments
 };
