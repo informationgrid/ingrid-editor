@@ -2,6 +2,10 @@ import {TableField, TextareaField, TextboxField, Container} from "../../../+form
 import {MapField} from "../../../+form/controls/field-map";
 import {LatLng, TileLayer} from "leaflet";
 
+let linkDocTypes = {
+  values: ['PDF', 'XML', 'ZIP', 'TXT', 'andere']
+};
+
 export let profile = [
 
   new Container({
@@ -78,7 +82,7 @@ export let profile = [
         columns: [
           {headerName: 'Titel', field: 'title', editable: true},
           {headerName: 'Link', field: 'link', editable: true},
-          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
           {headerName: 'Größe', field: 'size', editable: true},
           {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
         ]
@@ -89,7 +93,7 @@ export let profile = [
         columns: [
           {headerName: 'Titel', field: 'title', editable: true},
           {headerName: 'Link', field: 'link', editable: true},
-          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
           {headerName: 'Größe', field: 'size', editable: true},
           {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
         ]
@@ -100,7 +104,7 @@ export let profile = [
         columns: [
           {headerName: 'Titel', field: 'title', editable: true},
           {headerName: 'Link', field: 'link', editable: true},
-          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
           {headerName: 'Größe', field: 'size', editable: true},
           {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
         ]
@@ -111,7 +115,7 @@ export let profile = [
         columns: [
           {headerName: 'Titel', field: 'title', editable: true},
           {headerName: 'Link', field: 'link', editable: true},
-          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
           {headerName: 'Größe', field: 'size', editable: true},
           {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
         ]
@@ -138,7 +142,7 @@ export let profile = [
         columns: [
           {headerName: 'Titel', field: 'title', editable: true},
           {headerName: 'Link', field: 'link', editable: true},
-          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
           {headerName: 'Größe', field: 'size', editable: true},
           {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
         ]
@@ -170,7 +174,7 @@ export let profile = [
         columns: [
           {headerName: 'Titel', field: 'title', editable: true},
           {headerName: 'Link', field: 'link', editable: true},
-          {headerName: 'Typ', field: 'type', editable: true},
+          {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
           {headerName: 'Größe', field: 'size', editable: true},
           {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
         ]

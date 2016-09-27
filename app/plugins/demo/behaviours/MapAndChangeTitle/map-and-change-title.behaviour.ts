@@ -18,7 +18,6 @@ export class MapAndChangeTitleBehaviour extends BaseBehaviour implements Behavio
   }
 
   register(form: FormGroup, eventManager: EventManager) {
-    debugger;
     /*this.addSubscriber(
       form.controls['bbox'].valueChanges.subscribe( function (val: string) {
         if (val === 'bbox') {

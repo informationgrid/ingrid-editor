@@ -105,7 +105,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   prepareNewDoc() {
-    debugger;
     let profile = this.choiceNewDoc;
     if (this.formularService.currentProfile !== profile) {
       this.switchProfile(profile);
@@ -118,7 +117,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // since data always stays the same there's no change detection if we load the same data again
     // even if we already have changed the formular
     // since loading will be async, we only have to reset the data first
-    debugger;
 
     if (id === undefined) return;
     // TODO: use form.reset() which should work now!
@@ -139,7 +137,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   save() {
-    debugger;
     console.log('valid:', this.form.valid);
     this.saving = true;
     setTimeout(() => this.saving = false, 3000);
@@ -197,7 +194,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // set repeatable fields according to loaded data
     let repeatFields = this.fields.filter(pField => (<Container>pField).isRepeatable);
     repeatFields.forEach((repeatField: Container) => {
-      debugger;
       this.resetArrayGroup(repeatField.useGroupKey);
       let repeatSize = data[repeatField.useGroupKey] ? data[repeatField.useGroupKey].length : 0;
       for (let i = 1; i < repeatSize; i++) this.addArrayGroup(repeatField.useGroupKey);
@@ -212,6 +208,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   addArrayGroup(name: string) {
+    debugger;
     let group = <Container>this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
     let newGroupArray: any[] = [];
     group.children[0].forEach((c: any) => newGroupArray.push(Object.assign({}, c)));
@@ -224,6 +221,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // set link to parent so that we are updated correctly
     additionalFormGroup.setParent(formArray);
     formArray.controls.push(additionalFormGroup);
+    this.data[name].push({});
   }
 
   removeArrayGroup(name: string, pos: number) {

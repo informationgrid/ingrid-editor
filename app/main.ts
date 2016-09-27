@@ -2,7 +2,7 @@ import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "../node_modules/font-awesome/css/font-awesome.min.css";
 import "../node_modules/ag-grid/dist/styles/ag-grid.css";
-import "../node_modules/ag-grid/dist/styles/theme-blue.css";
+import "../node_modules/ag-grid/dist/styles/theme-fresh.css";
 import "../node_modules/leaflet/dist/leaflet.css";
 import "../styles.css";
 import {AppComponent} from "./app.component";
