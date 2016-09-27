@@ -8,15 +8,22 @@ import {StorageService} from "../../../services/storage/storage.service";
 export class BrowserComponent implements OnInit {
 
   entries: any[] = [];
+  searchString: string = '';
 
   constructor(private storageService: StorageService) {
+    // TODO: register on save event to reload data in case a new document was added or a title was changed
+    storageService.afterSave.asObservable().subscribe( () => {
+      this.query();
+    })
   }
 
   ngOnInit() {
-    // TODO: register on save event to reload data in case a new document was added or a title was changed
+    this.query();
+  }
 
+  query() {
     // initially show all documents
-    this.storageService.findDocuments().subscribe(docs => this.entries = docs.filter(doc => doc._profile !== undefined));
+    this.storageService.findDocuments(this.searchString).subscribe(docs => this.entries = docs.filter((doc: any) => doc._profile !== undefined));
   }
 
 }

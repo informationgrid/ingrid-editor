@@ -1,13 +1,15 @@
 <div>
     <div class="input-group col-md-12">
-        <input type="text" class="  search-query form-control" placeholder="Search"/>
+        <input type="text" class="search-query form-control" placeholder="Search" (keyup.enter)="query()" [(ngModel)]="searchString"/>
         <span class="input-group-btn">
-            <button class="btn btn-primary" type="button">
+            <button class="btn btn-primary" type="button" (click)="query()">
                 <span class=" glyphicon glyphicon-search"></span>
             </button>
         </span>
     </div>
-    <ul>
-        <li *ngFor="let entry of entries"><a routerLink="/form/{{entry._id}}">{{entry['mainInfo.title']}}</a></li>
+    <ul class="list-group">
+        <li *ngFor="let entry of entries" class="list-group-item">
+            <a routerLink="/form/{{entry._id}}">{{entry['mainInfo.title']}}</a>
+        </li>
     </ul>
 </div>

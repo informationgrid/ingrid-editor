@@ -78,7 +78,7 @@ exports.getByIDOperation = function(args, res, next) {
    **/
   // no response value expected for this operation
   res.end();
-}
+};
 
 exports.set = function(args, res, next) {
   /**
@@ -92,6 +92,7 @@ exports.set = function(args, res, next) {
   var id = args.id.value;
   var doc = args.data.value;
   db.updateDocument(doc).then(function (result) {
+    db.updateFullIndexSearch();
     console.log('Inserted doc', result);
     res.end(JSON.stringify({_id: result}, null, 2))
   }).catch(function (err) {
@@ -99,5 +100,5 @@ exports.set = function(args, res, next) {
     // no response value expected for this operation
     res.end();
   });
-}
+};
 

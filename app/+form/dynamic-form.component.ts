@@ -13,6 +13,7 @@ import {Split} from "../../node_modules/split.js/split";
 import {StorageService} from "../services/storage/storage.service";
 
 interface FormData {
+  _id?: string,
   taskId?: string;
   title?: string;
 }
@@ -109,7 +110,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.formularService.currentProfile !== profile) {
       this.switchProfile(profile);
     }
-    this.data = {};
+    this.data = {mainInfo: {taskId: 999}};
     this.newDocModal.close();
   }
 
@@ -119,6 +120,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // since loading will be async, we only have to reset the data first
     debugger;
 
+    if (id === undefined) return;
     // TODO: use form.reset() which should work now!
     // this.data = {};
 
@@ -168,6 +170,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
     this.form = this.qcs.toFormGroup(this.fields);
+
+    this.formularService.currentProfile = profile;
+
     setTimeout(() => {
       /*let map = new L.Map( 'map', {
        zoomControl: false,

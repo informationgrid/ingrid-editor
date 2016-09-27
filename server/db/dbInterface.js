@@ -24,7 +24,11 @@ var findDocuments = function (query) {
     // Get the documents collection
     var collection = db.collection('documents');
     // Find some documents
-    return collection.find().toArray();
+    if (query.trim().length > 0) {
+        return collection.find({ $text: { $search: query}}).toArray();
+    } else {
+        return collection.find().toArray();
+    }
 };
 
 var getDocument = function (id) {
@@ -56,11 +60,18 @@ var updateDocument = function (doc) {
     }
 };
 
+var updateFullIndexSearch = function() {
+    // TODO: update full index search
+    var collection = db.collection('documents');
+    collection.ensureIndex({"$**": "text"}, {name: "fullText"})
+};
+
 module.exports = {
     connect: connect,
     closeDB: closeDB,
     insertDocument: insertDocument,
     updateDocument: updateDocument,
     getDocument: getDocument,
-    findDocuments: findDocuments
+    findDocuments: findDocuments,
+    updateFullIndexSearch: updateFullIndexSearch
 };
