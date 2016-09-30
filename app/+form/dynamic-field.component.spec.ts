@@ -155,7 +155,7 @@ describe('Formular fields', () => {
     });
   });
 
-  xit('should create a radio button group (BUG: formControlName cannot be the same for all radio buttons)', () => {
+  it('should create a radio button group with initial state', () => {
     let fixture = TestBed.createComponent(DynamicFieldComponent);
     fixture.whenStable().then(() => {
       let radioField: FieldBase<any> = new RadioField({
@@ -176,9 +176,20 @@ describe('Formular fields', () => {
 
       fixture.detectChanges(); // trigger change detection
       expect(element.query(By.css('label')).nativeElement.innerText).toBe('Gender');
-      let radio = element.query(By.css('input')).nativeElement;
-      expect(radio.value).toBe('f');
-      expect(radio.checked).toBe(true);
+      let radios = element.queryAll(By.css('input'));
+      let radioMale = radios[0].nativeElement;
+      let radioFemale = radios[1].nativeElement;
+      expect(comp.form.value.ctrlRadio).toBe('f');
+      expect(radioMale.checked).toBe(false);
+      expect(radioFemale.checked).toBe(true);
+
+      // set other radio button and check form
+      radioMale.checked = true;
+
+      fixture.detectChanges(); // trigger change detection
+      expect(radioMale.checked).toBe(true);
+      expect(radioFemale.checked).toBe(false);
+      expect(comp.form.value.ctrlRadio).toBe('m');
     });
   });
 

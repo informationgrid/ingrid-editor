@@ -4,6 +4,8 @@ export interface TableColumn {
   field: string;
   headerName: string;
   editable?: boolean;
+  cellEditor?: string;
+  cellEditorParams?: any;
 }
 
 export class TableField extends FieldBase<string> {

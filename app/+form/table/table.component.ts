@@ -17,7 +17,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   selector: 'data-table',
   template: `
       <div class="form-group">
-        <ag-grid-ng2 #agGrid style="width: 100%; height: 160px;" class="ag-fresh"
+        <ag-grid-ng2 #agGrid style="width: 100%;" [style.height]="gridHeight + 'px'" class="ag-fresh"
 
              [gridOptions]="gridOptions"
              [columnDefs]="columns"
@@ -26,7 +26,8 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
              enableColResize
              suppressHorizontalScroll
              rowSelection="multiple"
-             enableSorting>
+             enableSorting
+             rowHeight="22">
         </ag-grid-ng2>
       </div>
   `,
@@ -35,13 +36,15 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
 export class CustomInput implements ControlValueAccessor {
 
   @Input() columns: TableColumn[];
-  private rowData: any[] = [];
+  // @Input() dataValue: any[];
   private columnDefs: any[];
   gridOptions: GridOptions = {
     columnDefs: this.columnDefs,
     rowData: null,
     enableColResize: true
   };
+
+  gridHeight: number = 22*4 + 3 + 5;
 
   // The internal data model
   private _value: any[] = [{}];
@@ -62,44 +65,32 @@ export class CustomInput implements ControlValueAccessor {
 
   // get accessor
   get value(): any {
-    console.log( '.', this._value );
-    if (!this._value) return [];
-    let result = [];
-    for (let i=0; i<this._value.length; i++) {
-      if (i !== this._value.length-1) result.push(this._value[i]);
-    }
-    return result; // === undefined ? [{}] : this._value;
+    // console.log( '.', this._value );
+    return this._value;
   };
 
-  // set accessor including call the onchange callback
-  set value(v: any) {
-    if (v !== this._value) {
-      this._value = v;
-      // add an empty row for additional data
-      // this._value.push({});
-      this._onChangeCallback(v);
-    }
-  }
-
   handleChange(grid: AgGridNg2) {
-    console.log( 'changed ', arguments );
-    let rowData: any[] = [];
+    // console.log( 'changed ', arguments );
+    let nonEmptyRowData: any[] = [];
     let hasEmptyRow: boolean = false;
     grid.api.forEachNode( function(node) {
-      if (values(node.data).length === 0) hasEmptyRow = true;
-      rowData.push(node.data);
+      if (values(node.data).length === 0) {
+        hasEmptyRow = true;
+      } else {
+        nonEmptyRowData.push(node.data);
+      }
     });
-    console.log('Row Data:');
-    console.log(rowData);
-    debugger;
-    this._value = rowData;
-    this._onChangeCallback(rowData);
+    // console.log('Row Data:');
+    // console.log(nonEmptyRowData);
+    this._onChangeCallback(nonEmptyRowData.slice());
 
+    nonEmptyRowData.push({});
+    this._value = nonEmptyRowData;
     // if no empty row is present then add one
-    if (!hasEmptyRow) {
-      this.gridOptions.api.addItems([{}]);
-      this._value.push({});
-    }
+    // if (!hasEmptyRow) {
+    //   this.gridOptions.api.addItems([{}]);
+    //   this._value.push({});
+    // }
   }
 
   // Set touched on blur
@@ -110,7 +101,15 @@ export class CustomInput implements ControlValueAccessor {
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    this._value = value;
+    debugger;
+    // console.log( '* -> ', value );
+    if (value instanceof Array) {
+      // value.push({});
+      this._value = value;
+    } else {
+      this._value = [{}];
+    }
+    // this._value = value;
   }
 
   // From ControlValueAccessor interface

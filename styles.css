@@ -94,3 +94,14 @@ p-dataTable {
   height: 100%;
   float: left;
 }
+
+.ag-body-viewport {
+  -webkit-overflow-scrolling: touch;
+}
+
+sidebar .list-group-item {
+  cursor: pointer;
+}
+sidebar .list-group-item:hover {
+  background-color: #ececec;
+}

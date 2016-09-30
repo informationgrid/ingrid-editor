@@ -124,6 +124,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
     this.storageService.loadData(id).subscribe(data => {
+      console.log( 'loaded data:', data );
       let profile = data._profile;
       // switch to the right profile depending on the data
       if (this.formularService.currentProfile !== profile) {

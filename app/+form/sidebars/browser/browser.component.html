@@ -8,8 +8,9 @@
         </span>
     </div>
     <ul class="list-group">
-        <li *ngFor="let entry of entries" class="list-group-item">
-            <a routerLink="/form/{{entry._id}}">{{entry['mainInfo.title']}}</a>
+        <li *ngFor="let entry of entries" class="list-group-item" (click)="open(entry._id)" [class.active]="selectedId === entry._id">
+            <span class="badge">{{entry._profile}}</span>
+            {{showTitle(entry)}}
         </li>
     </ul>
 </div>

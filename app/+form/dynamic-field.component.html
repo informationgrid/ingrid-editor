@@ -22,7 +22,8 @@
         <span *ngSwitchCase="'radio'">
             <label *ngFor="let opt of field.options" class="radio-inline">
                 <input [formControlName]="field.key" [attr.name]="field.key" type="radio"
-                       [ngModel]="value[field.key]"> {{opt.label}}
+                       [value]="opt.value"
+                       ngModel> {{opt.label}}
             </label>
         </span>
 
