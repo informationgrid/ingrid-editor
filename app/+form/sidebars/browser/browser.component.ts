@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {StorageService} from "../../../services/storage/storage.service";
-import {Router} from "@angular/router";
+// import {StorageService} from '../../../services/storage/storage.service';
+import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
+import {Router} from '@angular/router';
 
-@Component({
+@Component( {
   selector: 'sidebar',
   template: require('./browser.component.html')
 })
@@ -16,7 +17,7 @@ export class BrowserComponent implements OnInit {
     // TODO: register on save event to reload data in case a new document was added or a title was changed
     storageService.afterSave.asObservable().subscribe( () => {
       this.query();
-    })
+    } );
   }
 
   ngOnInit() {
@@ -25,12 +26,12 @@ export class BrowserComponent implements OnInit {
 
   query() {
     // initially show all documents
-    this.storageService.findDocuments(this.searchString).subscribe(docs => this.entries = docs.filter((doc: any) => doc._profile !== undefined));
+    this.storageService.findDocuments( this.searchString ).subscribe( docs => this.entries = docs.filter( (doc: any) => doc._profile !== undefined ) );
   }
 
   open(id: string) {
     this.selectedId = id;
-    this.router.navigate(['/form', id]);
+    this.router.navigate( ['/form', id] );
   }
 
   showTitle(entry: any) {

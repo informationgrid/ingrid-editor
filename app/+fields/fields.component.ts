@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormularService} from "../services/formular/formular.service";
+import {FormularService} from '../services/formular/formular.service';
 
 @Component({
   template: require('./fields.component.html')

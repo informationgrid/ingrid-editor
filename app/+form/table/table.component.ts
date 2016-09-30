@@ -74,7 +74,7 @@ export class CustomInput implements ControlValueAccessor {
     let nonEmptyRowData: any[] = [];
     let hasEmptyRow: boolean = false;
     grid.api.forEachNode( function(node) {
-      if (values(node.data).length === 0) {
+      if (values(node.data).join('').length === 0) {
         hasEmptyRow = true;
       } else {
         nonEmptyRowData.push(node.data);

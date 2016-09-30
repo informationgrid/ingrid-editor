@@ -21,11 +21,6 @@ module.exports = {
   },
 
   module: {
-    preLoaders: [
-      // { test: /\.ts$/, loader: 'tslint-loader', exclude: [ helpers.root('node_modules') ] },
-      // TODO(gdi2290): `exclude: [ helpers.root('node_modules/rxjs') ]` fixed with rxjs 5 beta.3 release
-      // 0{test: /\.js$/, loader: "source-map-loader", exclude: [ helpers.root( 'node_modules/rxjs' ), helpers.root('node_modules/primeng') ]}
-    ],
     loaders: [
       // Support for .ts files.
       {
@@ -65,10 +60,6 @@ module.exports = {
       {test: /\.html$/, loader: 'raw-loader', exclude: [ helpers.root( 'index.html' ), helpers.root( 'node_modules' ) ]}
 
     ]
-  },
-
-  postcss: function () {
-    return [ autoprefixer ];
   },
 
   plugins: [

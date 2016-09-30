@@ -1,19 +1,18 @@
-import {Component, OnInit, AfterViewInit, OnDestroy, ViewRef, ViewChild} from "@angular/core";
-import {FormGroup, FormArray} from "@angular/forms";
-import {FormControlService} from "../services/form-control.service";
-import {FieldBase} from "./controls/field-base";
-import {BehaviourService} from "../services/behaviour/behaviour.service";
-import {FormularService} from "../services/formular/formular.service";
-import {Behaviour} from "../services/behaviour/behaviours";
-import {FormToolbarService} from "./toolbar/form-toolbar.service";
-import {Subscription} from "rxjs";
-import {ActivatedRoute} from "@angular/router";
-import {Container} from "./controls/container";
-import {Split} from "../../node_modules/split.js/split";
-import {StorageService} from "../services/storage/storage.service";
+import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
+import {FormGroup, FormArray} from '@angular/forms';
+import {FormControlService} from '../services/form-control.service';
+import {FieldBase, Container} from './controls';
+import {BehaviourService} from '../services/behaviour/behaviour.service';
+import {FormularService} from '../services/formular/formular.service';
+import {Behaviour} from '../services/behaviour/behaviours';
+import {FormToolbarService} from './toolbar/form-toolbar.service';
+import {Subscription} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
+import {Split} from '../../node_modules/split.js/split';
+import {StorageDummyService as StorageService} from '../services/storage/storage.dummy.service';
 
 interface FormData {
-  _id?: string,
+  _id?: string;
   taskId?: string;
   title?: string;
 }
@@ -48,9 +47,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     let loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
       console.log('generic toolbar handler');
-      if (eventId === 'LOAD') {
-        this.load('0');
-      } else if (eventId === 'SAVE') {
+      if (eventId === 'SAVE') {
         this.save();
       } else if (eventId === 'NEW_DOC') {
         this.newDoc();
@@ -121,6 +118,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (id === undefined) return;
     // TODO: use form.reset() which should work now!
     // this.data = {};
+    if (this.form) this.form.reset();
 
 
     this.storageService.loadData(id).subscribe(data => {

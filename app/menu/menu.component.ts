@@ -1,6 +1,6 @@
-import {Component, OnInit} from "@angular/core";
-import {MenuService} from "./menu.service";
-import {MenuItem} from "ag-grid";
+import {Component, OnInit} from '@angular/core';
+import {MenuService} from './menu.service';
+import {MenuItem} from 'ag-grid';
 
 @Component({
   selector: 'main-menu',
