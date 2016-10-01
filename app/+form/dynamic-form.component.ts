@@ -9,7 +9,8 @@ import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {Split} from '../../node_modules/split.js/split';
-import {StorageDummyService as StorageService} from '../services/storage/storage.dummy.service';
+// import {StorageDummyService as StorageService} from '../services/storage/storage.dummy.service';
+import {StorageService} from '../services/storage/storage.service';
 
 interface FormData {
   _id?: string;
@@ -26,6 +27,7 @@ interface FormData {
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('newDocModal') newDocModal: any;
+  @ViewChild('deleteConfirmModal') deleteConfirmModal: any;
 
   fields: FieldBase<any>[] = [];
   form: FormGroup;
@@ -34,6 +36,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   behaviours: Behaviour[];
   observers: Subscription[] = [];
   saving = false;
+  error = false;
   choiceNewDoc: string = 'UVP';
 
   docTypes = [
@@ -51,6 +54,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.save();
       } else if (eventId === 'NEW_DOC') {
         this.newDoc();
+      } else if (eventId === 'DELETE') {
+        this.deleteDoc();
       }
     });
 
@@ -137,15 +142,31 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   save() {
     console.log('valid:', this.form.valid);
-    this.saving = true;
-    setTimeout(() => this.saving = false, 3000);
+
     let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
     let data = this.form.value;
     // attach profile type to data, which is not reflected in form directly by value
     data._id = this.data._id;
     data._profile = this.formularService.currentProfile;
-    this.storageService.saveData(data);
+    this.storageService.saveData(data).then(res => {
+      this.data._id = res._id;
+      this.saving = true;
+      setTimeout(() => this.saving = false, 3000);
+    }, (err) => {
+      this.error = err;
+      setTimeout(() => this.error = false, 5000);
+    });
+  }
+
+  deleteDoc() {
+    this.deleteConfirmModal.open();
+  }
+
+  doDelete() {
+    this.storageService.delete(this.data._id);
+    this.deleteConfirmModal.close();
+    this.form.reset();
   }
 
   switchProfile(profile: string) {

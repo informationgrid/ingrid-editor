@@ -23,7 +23,7 @@
             <label *ngFor="let opt of field.options" class="radio-inline">
                 <input [formControlName]="field.key" [attr.name]="field.key" type="radio"
                        [value]="opt.value"
-                       ngModel> {{opt.label}}
+                       [ngModel]="value[field.key]"> {{opt.label}}
             </label>
         </span>
 

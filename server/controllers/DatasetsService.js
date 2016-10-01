@@ -20,16 +20,15 @@ exports.find = function(args, res, next) {
         var subFields = field.split('.');
         var value = null;
         if (subFields.length > 1) {
-          var value = doc;
+          value = doc;
           subFields.forEach(function (sub) {
             if (value === undefined) {
-              value = undefined;
               return;
             }
             value = value[sub];
           });
         } else {
-          value = doc[field];
+          value = doc ? doc[field] : undefined;
         }
 
         if (value !== undefined) {
@@ -39,13 +38,12 @@ exports.find = function(args, res, next) {
       result.push(obj);
     });
     res.setHeader('Content-Type', 'application/json');
-    // res.status(200).json(dataset);
     res.end(JSON.stringify(result, null, 2))
 
   }, function (err) {
     console.error('nothing found:', err);
-    res.end();
-
+    res.statusCode = 404;
+    res.end(err.message);
   });
 };
 
@@ -57,7 +55,9 @@ exports.getByID = function(args, res, next) {
   **/
 
   var id = args.id.value;
-  db.getDocument(id).then(function (doc) {
+  var publishedVersion = args.publish.value;
+
+  db.getDocument(id, publishedVersion).then(function (doc) {
     console.log('FOUND', doc);
     res.setHeader('Content-Type', 'application/json');
     // res.status(200).json(dataset);
@@ -65,10 +65,10 @@ exports.getByID = function(args, res, next) {
 
   }, function (err) {
     console.error('not found:', err);
-    res.end();
-
+    res.statusCode = 404;
+    res.end(err.message);
   });
-}
+};
 
 exports.getByIDOperation = function(args, res, next) {
   /**
@@ -91,14 +91,28 @@ exports.set = function(args, res, next) {
 
   var id = args.id.value;
   var doc = args.data.value;
-  db.updateDocument(doc).then(function (result) {
+  var publishedVersion = args.publish.value;
+
+  db.updateDocument(doc, publishedVersion).then(function (result) {
     db.updateFullIndexSearch();
-    console.log('Inserted doc', result);
+    // console.log('Inserted doc', result);
     res.end(JSON.stringify({_id: result}, null, 2))
   }).catch(function (err) {
     console.error('Error during db operation:', err);
     // no response value expected for this operation
-    res.end();
+    res.statusCode = 404;
+    res.end(err.message);
   });
 };
 
+exports.deleteById = function (args, res, next) {
+  var id = args.id.value;
+
+  db.deleteDocument(id).then(function (result) {
+    res.end();
+  }, function (err) {
+    res.statusCode = 500;
+    res.end(err.message);
+  });
+
+};

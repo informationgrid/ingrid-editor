@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {Subject, Observable} from "rxjs";
+import {Subject, Observable, Subscription} from "rxjs";
 import {Http} from "@angular/http";
 
 export interface DocumentInterface {
@@ -16,6 +16,7 @@ export class StorageService {
 
   beforeSave: Subject<any> = new Subject<any>();
   afterSave: Subject<any> = new Subject<any>();
+  datasetsChanged: Subject<any> = new Subject<any>();
 
   constructor(private http: Http) {
   }
@@ -123,19 +124,28 @@ export class StorageService {
      });*/
   }
 
-  saveData(data: any) {
+  saveData(data: any): Promise<any> {
     console.log('TEST: save data');
     let errors: any = {errors: []};
     this.beforeSave.next(errors);
     console.log('After validation:', errors);
-    let response = this.http.post('http://localhost:8080/v1/dataset/1', data)
-      .catch((err: any) => {
-        console.error('Error: ', err);
-        return Observable.throw(err);
+    return new Promise((resolve, reject) => {
+      let response = this.http.post('http://localhost:8080/v1/dataset/1', data)
+        .catch((err: any) => {
+          console.error('Error: ', err);
+          return Observable.throw(err);
+        });
+      console.log('Response:', response);
+      response.subscribe(res => {
+        console.log('received:', res);
+        data._id = res.json()._id;
+        this.afterSave.next(data);
+        this.datasetsChanged.next();
+        resolve(data);
+      }, err => {
+        reject(err);
       });
-    console.log('Response:', response);
-    response.subscribe(res => console.log('received:', res));
-    this.afterSave.next();
+    });
   }
 
   // FIXME: this should be added with a plugin
@@ -144,10 +154,24 @@ export class StorageService {
     let data: any = {errors: []};
     this.beforeSave.next(data);
     console.log('After validation:', data);
+    this.datasetsChanged.next();
+  }
+
+  delete(id: string): Observable<any> {
+    let response = this.http.delete('http://localhost:8080/v1/dataset/' + id)
+      .catch((err: any) => {
+        console.error('Error: ', err);
+        return Observable.throw(err);
+      });
+
+    response.subscribe(res => {
+      console.log( 'ok, res' );
+      this.datasetsChanged.next();
+    });
   }
 
   revert() {
     console.log('REVERTING');
-
+    this.datasetsChanged.next();
   }
 }

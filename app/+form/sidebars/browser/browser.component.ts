@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-// import {StorageService} from '../../../services/storage/storage.service';
-import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
-import {Router} from '@angular/router';
+import {StorageService} from '../../../services/storage/storage.service';
+// import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
+import {Router, ActivatedRoute} from '@angular/router';
 
 @Component( {
   selector: 'sidebar',
@@ -13,11 +13,15 @@ export class BrowserComponent implements OnInit {
   searchString: string = '';
   selectedId: string;
 
-  constructor(private storageService: StorageService, private router: Router) {
-    // TODO: register on save event to reload data in case a new document was added or a title was changed
-    storageService.afterSave.asObservable().subscribe( () => {
+  constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute) {
+    this.route.params.subscribe(params => {
+      this.selectedId = params['id'];
+    });
+
+    storageService.datasetsChanged.asObservable().subscribe( () => {
       this.query();
     } );
+
   }
 
   ngOnInit() {

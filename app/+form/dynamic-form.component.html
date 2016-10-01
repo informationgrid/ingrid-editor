@@ -8,6 +8,12 @@
         <div class="tn-progress"></div>
     </div>
 </div>
+<div class="notifyWrapper" [class.active]="error">
+    <div class="tn-box tn-box-color-1">
+        <p>An error occured: {{error}}</p>
+        <div class="tn-progress"></div>
+    </div>
+</div>
 
 <div class="splitWrapper">
     <!-- exchangable sidebar -->
@@ -84,5 +90,11 @@
                 <input name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="type.id"> {{type.label}}
             </label>
         </div>
+    </modal-content>
+</modal>
+
+<modal #deleteConfirmModal title="Löschen" cancelButtonLabel="Nein" submitButtonLabel="Ja" (onSubmit)="doDelete()">
+    <modal-content>
+        <p>Möchten Sie wirklich diesen Datensatz löschen?</p>
     </modal-content>
 </modal>

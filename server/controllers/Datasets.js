@@ -20,3 +20,7 @@ module.exports.getByIDOperation = function getByIDOperation (req, res, next) {
 module.exports.set = function set (req, res, next) {
   Datasets.set(req.swagger.params, res, next);
 };
+
+module.exports.deleteById = function deleteById (req, res, next) {
+  Datasets.deleteById(req.swagger.params, res, next);
+};

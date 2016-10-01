@@ -56,7 +56,7 @@ export class CustomInput implements ControlValueAccessor {
 
   ngAfterViewInit(): any {
     this.gridOptions.api.sizeColumnsToFit();
-    this.gridOptions.api.addItems([{}]);
+    // this.gridOptions.api.addItems([{}]);
 
     this.gridOptions.api.addEventListener('cellValueChanged', (grid: any) => this.handleChange(grid));
     this.gridOptions.api.hideOverlay();
