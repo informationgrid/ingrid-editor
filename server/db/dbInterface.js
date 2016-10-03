@@ -20,6 +20,16 @@ var closeDB = function () {
     db.close();
 };
 
+var _setPublishedState = function (dataset) {
+    if (dataset.published && dataset.draft) {
+        return "PW";
+    } else if (dataset.published) {
+        return "P";
+    } else {
+        return "W";
+    }
+};
+
 var findDocuments = function (query) {
     // Get the documents collection
     var collection = db.collection('documents');
@@ -29,9 +39,11 @@ var findDocuments = function (query) {
             // set the id inside the document
             if (res.draft) {
                 res.draft._id = res._id;
+                res.draft._state = _setPublishedState(res);
                 return res.draft;
             } else {
                 res.published._id = res._id;
+                res.published._state = _setPublishedState(res);
                 return res.published;
             }
         });
@@ -49,21 +61,34 @@ var getDocument = function (id, publishedVersion) {
     var collection = db.collection('documents');
     // Find some documents
     return collection.findOne({'_id': new ObjectID(id)}).then(function (data) {
-        if (publishedVersion && data.published) {
-            // only return the published version if it exists
+        if (publishedVersion === true) {
+            if (data.published) {
+                // only return the published version if it exists
 
-            // add id for the client
-            data.published._id = id;
-            return data.published;
+                // add id for the client
+                data.published._id = id;
+                data.published._state = _setPublishedState(data);
+                return data.published;
+            } else { return null; }
         } else {
             // since no published version exists return null or the draft version
             // if we requested it
 
-            // add id for the client
-            data.draft._id = id;
-            return publishedVersion ? null : data.draft;
+            if (data.draft) {
+                // add id for the client
+                _addInfo(data.draft, data, id);
+                return data.draft;
+            } else {
+                _addInfo(data.published, data, id);
+                return data.published;
+            }
         }
     });
+};
+
+var _addInfo = function (doc, data, id) {
+    doc._id = id;
+    doc._state = _setPublishedState(data);
 };
 //
 // var insertDocument = function (doc, publishedVersion) {
@@ -119,6 +144,22 @@ var updateDocument = function (doc, publishedVersion) {
     }
 };
 
+var revert = function (id) {
+    var collection = db.collection('documents');
+
+    return collection.findOne({'_id': new ObjectID(id)}).then(function (data) {
+        // only revert if published version exists
+        if (!data.published) throw new Error('Dataset cannot be reverted, since it does not have a published version.');
+
+        data.draft = null;
+        return collection.updateOne({_id: data._id}, data).then(function () {
+            data.published._id = id;
+            data.published._state = _setPublishedState(data);
+            return data.published;
+        });
+    });
+};
+
 var deleteDocument = function(id) {
     var collection = db.collection('documents');
 
@@ -139,5 +180,6 @@ module.exports = {
     getDocument: getDocument,
     findDocuments: findDocuments,
     updateFullIndexSearch: updateFullIndexSearch,
-    deleteDocument: deleteDocument
+    deleteDocument: deleteDocument,
+    revert: revert
 };

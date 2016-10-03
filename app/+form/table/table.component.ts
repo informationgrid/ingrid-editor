@@ -101,7 +101,6 @@ export class CustomInput implements ControlValueAccessor {
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    debugger;
     // console.log( '* -> ', value );
     if (value instanceof Array) {
       // value.push({});

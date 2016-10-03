@@ -22,7 +22,7 @@ export class StorageService {
   }
 
   findDocuments(query: string) {
-    return this.http.get('http://localhost:8080/v1/datasets/find?query=' + query + '&fields=_id,_profile,mainInfo.title,title')
+    return this.http.get('http://localhost:8080/v1/datasets/find?query=' + query + '&fields=_id,_profile,_state,mainInfo.title,title')
       .map(resp => resp.json());
   }
 
@@ -131,10 +131,7 @@ export class StorageService {
     console.log('After validation:', errors);
     return new Promise((resolve, reject) => {
       let response = this.http.post('http://localhost:8080/v1/dataset/1', data)
-        .catch((err: any) => {
-          console.error('Error: ', err);
-          return Observable.throw(err);
-        });
+        .catch(this._handleError);
       console.log('Response:', response);
       response.subscribe(res => {
         console.log('received:', res);
@@ -149,20 +146,28 @@ export class StorageService {
   }
 
   // FIXME: this should be added with a plugin
-  publish() {
+  publish(data: any) {
     console.log('PUBLISHING');
-    let data: any = {errors: []};
-    this.beforeSave.next(data);
+    let errors: any = {errors: []};
+    this.beforeSave.next(errors);
     console.log('After validation:', data);
+    let response = this.http.post('http://localhost:8080/v1/dataset/1?publish=true', data)
+      .catch(this._handleError);
+    console.log('Response:', response);
+    response.subscribe(res => {
+      console.log('received:', res);
+      data._id = res.json()._id;
+      this.afterSave.next(data);
+      this.datasetsChanged.next();
+    }, err => {
+      console.error( 'error:', err );
+    });
     this.datasetsChanged.next();
   }
 
-  delete(id: string): Observable<any> {
+  delete(id: string): any {
     let response = this.http.delete('http://localhost:8080/v1/dataset/' + id)
-      .catch((err: any) => {
-        console.error('Error: ', err);
-        return Observable.throw(err);
-      });
+      .catch(this._handleError);
 
     response.subscribe(res => {
       console.log( 'ok, res' );
@@ -170,8 +175,20 @@ export class StorageService {
     });
   }
 
-  revert() {
+  revert(id: string): Observable<any> {
     console.log('REVERTING');
-    this.datasetsChanged.next();
+    return this.http.post('http://localhost:8080/v1/dataset/' + id + '?revert=true', null)
+      .do( () => this.datasetsChanged.next() )
+      .catch(this._handleError);
+
+    // return response.subscribe(res => {
+    //   console.log( 'ok, res' );
+    //   this.datasetsChanged.next();
+    // });
+  }
+
+  _handleError(err: any) {
+    console.error('Error: ', err);
+    return Observable.throw(err);
   }
 }

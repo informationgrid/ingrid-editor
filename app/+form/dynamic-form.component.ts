@@ -82,6 +82,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // TODO: emit current form value on demand
     // register to an publisher in the form/storage service and send the value of this form
     // this can be used for publis, revert, detail, compare, ...
+    this.formularService.formDataSubject.asObservable().subscribe( (container: any) => {
+      Object.assign(container, this.form.value);
+      container._id = this.data._id;
+      container._profile = this.formularService.currentProfile;
+    });
+
+    this.storageService.datasetsChanged.asObservable().subscribe(() => this.load(this.data._id));
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -121,10 +128,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // since loading will be async, we only have to reset the data first
 
     if (id === undefined) return;
-    // TODO: use form.reset() which should work now!
-    // this.data = {};
-    if (this.form) this.form.reset();
-
+    // TODO: use form.reset() which should work now! but data also has to be reset otherwise form elements won't be updated
+    if (this.form) {
+      this.form.reset();
+      this.data = this.form.value; // this._prepareInitialData(this.form);
+    }
 
     this.storageService.loadData(id).subscribe(data => {
       console.log( 'loaded data:', data );
@@ -139,6 +147,20 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.data = data;
     });
   }
+
+  /*_prepareInitialData(form: FormGroup): any {
+    let data = {};
+    for (let key in form.controls) {
+      let ctrl = form.controls[key];
+      if (ctrl instanceof FormGroup) {
+        data[ctrl.useGroupKey] = {};
+        for (let groupKey in ctrl.controls) {
+          data[ctrl.useGroupKey][groupKey] = '';
+        }
+      }
+    }
+    return data;
+  }*/
 
   save() {
     console.log('valid:', this.form.valid);

@@ -2,6 +2,7 @@ import { Plugin } from '../plugin';
 import {FormToolbarService} from "../../+form/toolbar/form-toolbar.service";
 import {Inject} from "@angular/core";
 import {StorageService} from "../../services/storage/storage.service";
+import {FormularService} from "../../services/formular/formular.service";
 
 export class PublishPlugin extends Plugin {
   id = 'plugin.publish';
@@ -12,6 +13,7 @@ export class PublishPlugin extends Plugin {
   }
 
   constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService,
+              @Inject( FormularService ) private formService: FormularService,
               @Inject( StorageService ) private storageService: StorageService) {
     super();
     this.isActive = true;
@@ -58,11 +60,16 @@ export class PublishPlugin extends Plugin {
   }
 
   publish() {
-    this.storageService.publish();
+    let formData = this.formService.requestFormValues();
+
+    this.storageService.publish(formData);
   }
 
   revert() {
-    this.storageService.revert();
+    let formData = this.formService.requestFormValues();
+    this.storageService.revert(formData._id).subscribe(null, err => {
+      console.log( 'Error when reverting data', err );
+    });
   }
 
   // presentInDoc() { }

@@ -16,11 +16,14 @@ import {HttpModule} from '@angular/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {MenuComponent} from './menu/menu.component';
+import {BehavioursDefault} from "./services/behaviour/behaviours";
+import {BehaviourService} from "./services/behaviour/behaviour.service";
+import {FormularService} from "./services/formular/formular.service";
 
 @NgModule( {
   declarations: [AppComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
   imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, PluginsModule, routing, TranslateModule.forRoot()],
-  providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, FormToolbarService, StorageService, StorageDummyService, {
+  providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, FormToolbarService, FormularService, StorageService, StorageDummyService, BehaviourService, BehavioursDefault, {
     provide: LocationStrategy,
     useClass: HashLocationStrategy
   }], // additional providers

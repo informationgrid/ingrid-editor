@@ -86,23 +86,37 @@ exports.set = function(args, res, next) {
    * id (String)
    * data (Dataset)
    * publish (Boolean)
+   * revert (Boolean)
    **/
   console.log('Store dataset');
 
   var id = args.id.value;
   var doc = args.data.value;
   var publishedVersion = args.publish.value;
+  var revert = args.revert ? args.revert.value : false;
 
-  db.updateDocument(doc, publishedVersion).then(function (result) {
-    db.updateFullIndexSearch();
-    // console.log('Inserted doc', result);
-    res.end(JSON.stringify({_id: result}, null, 2))
-  }).catch(function (err) {
-    console.error('Error during db operation:', err);
-    // no response value expected for this operation
-    res.statusCode = 404;
-    res.end(err.message);
-  });
+  if (revert) {
+    db.revert(id).then(function (doc) {
+      res.end(JSON.stringify(doc, null, 2));
+    }).catch(function (err) {
+      console.error('Error during revert operation:', err);
+      // no response value expected for this operation
+      res.statusCode = 404;
+      res.end(err.message);
+    });
+  } else {
+
+    db.updateDocument(doc, publishedVersion).then(function (result) {
+      db.updateFullIndexSearch();
+      // console.log('Inserted doc', result);
+      res.end(JSON.stringify({_id: result}, null, 2))
+    }).catch(function (err) {
+      console.error('Error during db operation:', err);
+      // no response value expected for this operation
+      res.statusCode = 404;
+      res.end(err.message);
+    });
+  }
 };
 
 exports.deleteById = function (args, res, next) {

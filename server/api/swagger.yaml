@@ -58,6 +58,11 @@ paths:
           \ has to be set to true."
         required: false
         type: "boolean"
+      - name: "revert"
+        in: "query"
+        description: "Delete the draft version and make the published version the current one."
+        required: false
+        type: "boolean"
       responses:
         '200':
           description: Dataset updated.
@@ -114,6 +119,11 @@ paths:
         in: "query"
         description: "If we want to store the published version then this parameter\
           \ has to be set to true."
+        required: false
+        type: "boolean"
+      - name: "revert"
+        in: "query"
+        description: "Delete the draft version and make the published version the current one."
         required: false
         type: "boolean"
       responses:

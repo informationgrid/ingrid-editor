@@ -27,7 +27,7 @@ import {TranslateService} from 'ng2-translate/src/translate.service';
       <!--<button (click)="addMenuItem('dynamic Item')">Add menu item</button>-->
     </div>
   `,
-  providers: [MenuService, PluginsService, StatisticPlugin, WorkflowPlugin, DemoPlugin, BehaviourService, BehavioursDefault, FormularService],
+  providers: [MenuService, PluginsService, StatisticPlugin, WorkflowPlugin, DemoPlugin],
   entryComponents: []
 } )
 export class AppComponent implements OnInit {
