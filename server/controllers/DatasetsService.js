@@ -101,7 +101,7 @@ exports.set = function(args, res, next) {
     }).catch(function (err) {
       console.error('Error during revert operation:', err);
       // no response value expected for this operation
-      res.statusCode = 404;
+      res.statusCode = 500;
       res.end(err.message);
     });
   } else {

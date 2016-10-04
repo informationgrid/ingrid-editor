@@ -3,6 +3,7 @@ import {FormToolbarService} from "../../+form/toolbar/form-toolbar.service";
 import {Inject} from "@angular/core";
 import {StorageService} from "../../services/storage/storage.service";
 import {FormularService} from "../../services/formular/formular.service";
+import {ModalService} from "../../services/modal/modal.service";
 
 export class PublishPlugin extends Plugin {
   id = 'plugin.publish';
@@ -14,6 +15,7 @@ export class PublishPlugin extends Plugin {
 
   constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService,
               @Inject( FormularService ) private formService: FormularService,
+              @Inject( ModalService ) private modalService: ModalService,
               @Inject( StorageService ) private storageService: StorageService) {
     super();
     this.isActive = true;
@@ -28,15 +30,6 @@ export class PublishPlugin extends Plugin {
       tooltip: 'Publish', cssClasses: 'glyphicon glyphicon-check', eventId: 'PUBLISH'
     } );
 
-    // add event handler when publishing
-    // TODO: register to form/storage service to request current form data
-    //       how?
-    this.formToolbarService.toolbarEvent$.subscribe( eventId => {
-      if (eventId === 'PUBLISH') {
-        this.publish();
-      }
-    } );
-
     // add button to toolbar for revert action
     this.formToolbarService.addButton( {
       tooltip: 'Revert', cssClasses: 'glyphicon glyphicon-step-backward', eventId: 'REVERT'
@@ -46,6 +39,8 @@ export class PublishPlugin extends Plugin {
     this.formToolbarService.toolbarEvent$.subscribe( eventId => {
       if (eventId === 'REVERT') {
         this.revert();
+      } else if (eventId === 'PUBLISH') {
+        this.publish();
       }
     } );
 
@@ -69,6 +64,7 @@ export class PublishPlugin extends Plugin {
     let formData = this.formService.requestFormValues();
     this.storageService.revert(formData._id).subscribe(null, err => {
       console.log( 'Error when reverting data', err );
+      this.modalService.showError(err.text());
     });
   }
 

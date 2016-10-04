@@ -105,3 +105,8 @@ sidebar .list-group-item {
 sidebar .list-group-item:hover {
   background-color: #ececec;
 }
+
+.error .modal-header {
+  background-color: #a94442;
+  color: #ffffff;
+}

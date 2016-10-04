@@ -11,6 +11,8 @@ import {ActivatedRoute} from '@angular/router';
 import {Split} from '../../node_modules/split.js/split';
 // import {StorageDummyService as StorageService} from '../services/storage/storage.dummy.service';
 import {StorageService} from '../services/storage/storage.service';
+import {ModalService} from "../services/modal/modal.service";
+import {Modal} from "ng2-modal";
 
 interface FormData {
   _id?: string;
@@ -26,12 +28,11 @@ interface FormData {
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild('newDocModal') newDocModal: any;
-  @ViewChild('deleteConfirmModal') deleteConfirmModal: any;
+  @ViewChild('newDocModal') newDocModal: Modal;
+  @ViewChild('deleteConfirmModal') deleteConfirmModal: Modal;
 
   fields: FieldBase<any>[] = [];
   form: FormGroup;
-  payLoad = '';
   data: FormData = {};
   behaviours: Behaviour[];
   observers: Subscription[] = [];
@@ -39,14 +40,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   error = false;
   choiceNewDoc: string = 'UVP';
 
-  docTypes = [
-    {id: 'UVP', label: 'UVP'},
-    {id: 'ISO', label: 'ISO'}
-  ];
-
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
-              private storageService: StorageService, private route: ActivatedRoute) {
+              private storageService: StorageService,
+              private route: ActivatedRoute) {
 
     let loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
       console.log('generic toolbar handler');

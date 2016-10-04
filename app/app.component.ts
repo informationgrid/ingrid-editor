@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MenuComponent} from './menu/menu.component';
 import {MenuService} from './menu/menu.service';
 import {PluginsService} from './plugins/plugins.service';
@@ -10,6 +10,8 @@ import {BehaviourService} from './services/behaviour/behaviour.service';
 import {BehavioursDefault} from './services/behaviour/behaviours';
 import {FormularService} from './services/formular/formular.service';
 import {TranslateService} from 'ng2-translate/src/translate.service';
+import {Modal} from "ng2-modal";
+import {ModalService} from "./services/modal/modal.service";
 
 // enableProdMode();
 
@@ -26,18 +28,36 @@ import {TranslateService} from 'ng2-translate/src/translate.service';
       <!-- TEST -->
       <!--<button (click)="addMenuItem('dynamic Item')">Add menu item</button>-->
     </div>
+    
+    
+    <modal #errorModal modalClass="error" title="Fehler" submitButtonLabel="Ok" (onSubmit)="errorModal.close()">
+        <modal-content>
+            <p>Es ist ein Fehler aufgetreten:</p>
+            <p class="text-danger">{{dynDialog.errorMessage}}</p>
+        </modal-content>
+    </modal>
   `,
   providers: [MenuService, PluginsService, StatisticPlugin, WorkflowPlugin, DemoPlugin],
   entryComponents: []
 } )
 export class AppComponent implements OnInit {
 
-  constructor(private pluginsService: PluginsService, translate: TranslateService) {
+  @ViewChild('errorModal') errorModal: Modal;
+
+  dynDialog = { errorMessage: '' };
+
+  constructor(private pluginsService: PluginsService, translate: TranslateService, private modalService: ModalService) {
     // this language will be used as a fallback when a translation isn't found in the current language
     translate.setDefaultLang( 'en' );
 
     // the lang to use, if the lang isn't available, it will use the current loader to get them
     translate.use( 'de' );
+
+
+    this.modalService.errorDialog$.subscribe((content) => {
+      this.dynDialog.errorMessage = content.message;
+      this.errorModal.open();
+    })
   }
 
   ngOnInit() {

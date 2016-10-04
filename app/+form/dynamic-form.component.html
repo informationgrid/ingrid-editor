@@ -85,7 +85,7 @@
 
 <modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">
     <modal-content>
-        <div class="radio" *ngFor="let type of docTypes">
+        <div class="radio" *ngFor="let type of formularService.docTypes">
             <label>
                 <input name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="type.id"> {{type.label}}
             </label>
@@ -98,3 +98,4 @@
         <p>Möchten Sie wirklich diesen Datensatz löschen?</p>
     </modal-content>
 </modal>
+

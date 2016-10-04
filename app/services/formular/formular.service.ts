@@ -13,6 +13,11 @@ export class FormularService {
 
   formDataSubject = new Subject<any>();
 
+  docTypes = [
+    {id: 'UVP', label: 'UVP'},
+    {id: 'ISO', label: 'ISO'}
+  ];
+
   // Todo: get from a remote source of question metadata
   // Todo: make asynchronous
   getFields(profile: string) {
