@@ -2,6 +2,9 @@ import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {BehavioursDefault, Behaviour} from './behaviours';
 import {EventManager} from '@angular/platform-browser';
+import {Http, Response} from "@angular/http";
+import {ModalService} from "../modal/modal.service";
+import {Observable} from "rxjs";
 
 // the variable containing additional behaviours is global!
 declare var additionalBehaviours: any;
@@ -13,7 +16,8 @@ export class BehaviourService {
 
   initialized: Promise<any>;
 
-  constructor(private defaultBehaves: BehavioursDefault, private eventManager: EventManager) {
+  constructor(private defaultBehaves: BehavioursDefault, private eventManager: EventManager,
+      private http: Http, private modalService: ModalService) {
     // eval(require( 'raw!./behaviours.js' ));
     this.behaviours = defaultBehaves.behaviours;
 
@@ -24,17 +28,24 @@ export class BehaviourService {
         console.log( 'loaded additional behaviours' );
         // TODO: activate again!
         this.behaviours.push( ...additionalBehaviours );
-
-        this.behaviours.forEach( (behaviour) => {
-          behaviour.isActive = behaviour.defaultActive;
-        } );
-        resolve();
+        this.http.get('http://localhost:8080/v1/behaviours').toPromise().then((response: Response) => {
+          let storedBehaviours = response.json();
+          this.behaviours.forEach( (behaviour) => {
+            let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id);
+            behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+          } );
+          resolve();
+        }).catch((err: Error) => {
+          this.modalService.showError(err.message);
+          resolve();
+        });
       } );
     } );
   }
 
   apply(form: FormGroup, profile: string) {
-    this.initialized.then( () => {
+    // debugger;
+    // this.initialized.then( () => {
       // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
       this.behaviours
         .filter( beh => beh.isActive && beh.forProfile === profile )
@@ -47,7 +58,18 @@ export class BehaviourService {
             behaviour.register( form, this.eventManager );
           }
         } );
-    } );
+    // } );
+  }
+
+  saveBehaviour(behaviour: Behaviour) {
+    let stripped = {
+      _id: behaviour.id,
+      active: behaviour.isActive
+    };
+    this.http.post('http://localhost:8080/v1/behaviours', stripped).toPromise().catch( err => {
+      this.modalService.showError(err);
+      return Observable.throw(err);
+    });
   }
 
   enable(id: string) {
@@ -55,6 +77,8 @@ export class BehaviourService {
       if (behaviour.id === id) {
         // behaviour.register( form, this.eventManager );
         behaviour.isActive = true;
+        // save changed behaviour
+        this.saveBehaviour(behaviour);
         return true;
       }
     } );
@@ -64,10 +88,10 @@ export class BehaviourService {
     this.behaviours.some( behaviour => {
       if (behaviour.id === id) {
         behaviour.isActive = false;
+        this.saveBehaviour(behaviour);
         return true;
       }
     } );
-    // this.defaultBehaves.unregister( id );
   }
 
   unregisterAll() {

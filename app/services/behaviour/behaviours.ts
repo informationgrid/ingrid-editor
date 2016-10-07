@@ -6,6 +6,7 @@ import {ClickAndChangeTitleBehaviour} from '../../behaviours';
 import {MapAndChangeTitleBehaviour} from '../../plugins/demo/behaviours/MapAndChangeTitle/map-and-change-title.behaviour';
 import {AddControlBehaviour} from '../../plugins/demo/behaviours/AddControl/addControl.behaviour';
 import {StorageService} from "../storage/storage.service";
+import {ShowDateInSectionBehaviour} from "../../behaviours/ShowDateInSection/show-date-in-section.behaviour";
 
 export interface Behaviour {
   id: string;
@@ -33,6 +34,7 @@ export class BehavioursDefault {
   behaviours: Behaviour[] = [
     new ClickAndChangeTitleBehaviour( this.storageService ),
     new MapAndChangeTitleBehaviour( this.formService ),
-    new AddControlBehaviour( this.formService )
+    new AddControlBehaviour( this.formService ),
+    new ShowDateInSectionBehaviour( this.storageService )
   ];
 }

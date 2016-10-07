@@ -21,7 +21,7 @@
         <!-- RADIO BUTTON-->
         <span *ngSwitchCase="'radio'">
             <label *ngFor="let opt of field.options" class="radio-inline">
-                <input [formControlName]="field.key" [attr.name]="field.key" type="radio"
+                <input [formControlName]="field.key" type="radio"
                        [value]="opt.value"
                        [ngModel]="value[field.key]"> {{opt.label}}
             </label>
@@ -45,8 +45,8 @@
         </data-table>
 
         <!-- LEAFLET-->
-        <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height"
-                 [bbox]="value[field.key]"></leaflet>
+        <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [formControlName]="field.key"
+                 [ngModel]="value[field.key]"></leaflet>
     </div>
 
     <!--<div class="errorMessage" *ngIf="!isValid">Message: {{form.controls[field.key].errors.message}}</div>-->

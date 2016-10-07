@@ -1,16 +1,19 @@
-<h1>Plugins</h1>
-<div *ngFor="let plugin of plugins" class="checkbox">
-    <label>
-        <input #plug type="checkbox" (change)="togglePlugin(plugin, plug.checked)" [checked]="plugin.isActive">
-        {{plugin.name}}
-    </label>
-</div>
+<div class="container">
 
-<h1>Behaviours</h1>
-<div *ngFor="let behaviour of behaviours" class="checkbox full">
-    <label>
-        <input #checkBehave type="checkbox" (click)="toggleBehaviour(checkBehave.value, checkBehave.checked)"
-               [checked]="behaviour.isActive"
-               value="{{behaviour.id}}"> {{behaviour.title}}
-    </label>
+    <h1>Plugins</h1>
+    <div *ngFor="let plugin of plugins" class="checkbox">
+        <label>
+            <input #plug type="checkbox" (change)="togglePlugin(plugin, plug.checked)" [checked]="plugin.isActive">
+            {{plugin.name}}
+        </label>
+    </div>
+
+    <h1>Behaviours</h1>
+    <div *ngFor="let behaviour of behaviours" class="checkbox full">
+        <label>
+            <input #checkBehave type="checkbox" (click)="toggleBehaviour(checkBehave.value, checkBehave.checked)"
+                   [checked]="behaviour.isActive"
+                   value="{{behaviour.id}}"> {{behaviour.title}}
+        </label>
+    </div>
 </div>

@@ -14,7 +14,7 @@ import {StorageService} from '../services/storage/storage.service';
 import {ModalService} from "../services/modal/modal.service";
 import {Modal} from "ng2-modal";
 
-interface FormData {
+interface FormData extends Object {
   _id?: string;
   taskId?: string;
   title?: string;
@@ -39,28 +39,33 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   saving = false;
   error = false;
   choiceNewDoc: string = 'UVP';
+  expandedField = {};
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
-              private storageService: StorageService,
+              private storageService: StorageService, private modalService: ModalService,
               private route: ActivatedRoute) {
 
     let loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
-      console.log('generic toolbar handler');
+      console.log('generic toolbar handler', eventId);
       if (eventId === 'SAVE') {
         this.save();
       } else if (eventId === 'NEW_DOC') {
         this.newDoc();
       } else if (eventId === 'DELETE') {
         this.deleteDoc();
+      } else if (eventId === 'PRINT') {
+        this.modalService.showError('Die Detailansicht ist noch nicht implementiert.');
       }
     });
 
     this.observers.push(loadSaveSubscriber);
 
-    this.route.params.subscribe(params => {
-      let id = params['id'];
-      this.load(id);
+    this.behaviourService.initialized.then(() => {
+      this.route.params.subscribe(params => {
+        let id = params['id'];
+        this.load(id);
+      });
     });
   }
 
@@ -92,7 +97,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): any {
     Split(['#sidebar', '#form'], {
       gutterSize: 8,
-      sizes: [10, 90],
+      sizes: [25, 75],
       minSize: [200]
     });
   }
@@ -134,14 +139,43 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storageService.loadData(id).subscribe(data => {
       console.log( 'loaded data:', data );
       let profile = data._profile;
+      let profileSwitched = false;
+
       // switch to the right profile depending on the data
       if (this.formularService.currentProfile !== profile) {
         this.switchProfile(profile);
+        profileSwitched = true;
       }
       // set correct number of repeatable fields
       this.updateRepeatableFields(data);
 
       this.data = data;
+
+      // if the profile has switched then wait for repaint so that behaviours can find necessary elements
+      if (profileSwitched) {
+        setTimeout(() => {
+          /*let map = new L.Map( 'map', {
+           zoomControl: false,
+           center: new L.LatLng( 40.731253, -73.996139 ),
+           zoom: 12,
+           minZoom: 4,
+           maxZoom: 19,
+           layers: [new L.TileLayer( "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+           attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+           } )]
+           } );
+
+           L.control.zoom( {position: 'topright'} ).addTo( map );
+           // L.control.layers(this.mapService.baseMaps).addTo(map);
+           L.control.scale().addTo( map );*/
+
+          this.behaviourService.apply(this.form, profile);
+          this.storageService.afterLoadAndSet.next(data);
+        });
+      } else {
+        // emit event after behaviours have been initialized
+        this.storageService.afterLoadAndSet.next(data);
+      }
     });
   }
 
@@ -209,24 +243,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.formularService.currentProfile = profile;
 
-    setTimeout(() => {
-      /*let map = new L.Map( 'map', {
-       zoomControl: false,
-       center: new L.LatLng( 40.731253, -73.996139 ),
-       zoom: 12,
-       minZoom: 4,
-       maxZoom: 19,
-       layers: [new L.TileLayer( "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
-       } )]
-       } );
-
-       L.control.zoom( {position: 'topright'} ).addTo( map );
-       // L.control.layers(this.mapService.baseMaps).addTo(map);
-       L.control.scale().addTo( map );*/
-
-      this.behaviourService.apply(this.form, profile);
-    });
   }
 
   updateRepeatableFields(data: any) {
@@ -247,7 +263,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   addArrayGroup(name: string) {
-    debugger;
     let group = <Container>this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
     let newGroupArray: any[] = [];
     group.children[0].forEach((c: any) => newGroupArray.push(Object.assign({}, c)));

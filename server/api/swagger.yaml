@@ -12,6 +12,40 @@ schemes:
 produces:
 - "application/json"
 paths:
+  /behaviours:
+    options:
+      summary: ""
+      description: ""
+      operationId: options
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Options for this operation are returned.
+    get:
+      summary: ""
+      description: ""
+      operationId: get
+      responses:
+        '200':
+          description: Behaviours are returned.
+    post:
+      summary: ""
+      description: ""
+      operationId: set
+      parameters:
+        - name: "behaviour"
+          in: "body"
+          description: ""
+          required: true
+          schema:
+            $ref: "#/definitions/Behaviour"
+      responses:
+        '200':
+          description: Behaviours have been set.
+    x-swagger-router-controller: "Behaviours"
   /datasets/find:
     get:
       tags:
@@ -165,6 +199,12 @@ definitions:
       _profile:
         type: "string"
         description: "Description of the dataset."
+  Behaviour:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        description: "Unique identifier"
   Error:
     type: "object"
     properties:

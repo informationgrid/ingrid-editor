@@ -172,6 +172,19 @@ var updateFullIndexSearch = function() {
     collection.ensureIndex({"$**": "text"}, {name: "fullText"})
 };
 
+
+var getBehaviours = function () {
+    var collection = db.collection('behaviours');
+    // get all behaviours
+    return collection.find({}).toArray();
+};
+
+var setBehaviour = function (behaviour) {
+    var collection = db.collection('behaviours');
+    // get all behaviours
+    return collection.updateOne({_id: behaviour._id}, behaviour, {upsert: true});
+};
+
 module.exports = {
     connect: connect,
     closeDB: closeDB,
@@ -181,5 +194,8 @@ module.exports = {
     findDocuments: findDocuments,
     updateFullIndexSearch: updateFullIndexSearch,
     deleteDocument: deleteDocument,
-    revert: revert
+    revert: revert,
+
+    getBehaviours: getBehaviours,
+    setBehaviour: setBehaviour
 };

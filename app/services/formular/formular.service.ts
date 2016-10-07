@@ -21,7 +21,6 @@ export class FormularService {
   // Todo: get from a remote source of question metadata
   // Todo: make asynchronous
   getFields(profile: string) {
-
     // TODO: choose correct profile for data to be displayed
     let fields: FieldBase<any>[];
 

@@ -1,29 +1,82 @@
 import {
   AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, OnChanges,
-  SimpleChanges
+  SimpleChanges, forwardRef
 } from '@angular/core';
 import {LatLng, Map} from 'leaflet';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+
+
+export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => LeafletComponent),
+  multi: true
+};
+
 
 @Component({
   selector: 'leaflet',
-  template: '<div #leaflet></div>'
+  template: `
+    <div #leaflet></div>
+    <div class="fieldContainer half">
+        <input type="text" class="form-control" [(ngModel)]="_bbox.lat" (change)="handleChange()">
+    </div>
+    <div class="fieldContainer half">
+        <input type="text" class="form-control" [(ngModel)]="_bbox.lon" (change)="handleChange()">
+    </div>
+  `,
+  providers: [LEAFLET_CONTROL_VALUE_ACCESSOR]
 })
-export class LeafletComponent implements AfterViewInit, OnDestroy, OnChanges {
+export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
+
   @ViewChild('leaflet') leaflet: ElementRef;
   private leafletReference: L.Map;
 
   @Input() options: Map.MapOptions;
   @Input() height: number;
-  @Input() bbox: any;
+  // @Input() bbox: any;
+
+  private _onChangeCallback: (x: any) => void;
+  private _bbox: any = {};
+
 
   constructor() {
+  }
+
+  get bbox(): any {
+    return this._bbox;
+  }
+
+  writeValue(value: any): void {
+    if (!value) {
+      this._bbox = {
+        lat: 50,
+        lon: 12
+      }
+    } else {
+      this._bbox = value;
+    }
+    if (this.leafletReference && this.bbox) {
+      this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
+    }
+  }
+
+  registerOnChange(fn: any): void {
+    this._onChangeCallback = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+  }
+
+  handleChange() {
+    this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
+    this._onChangeCallback(this._bbox);
   }
 
   ngAfterViewInit() {
     this.leaflet.nativeElement.style.height = this.height + 'px';
     this.leaflet.nativeElement.style.width = '100%';
 
-    if (this.bbox) this.options.center = new LatLng(this.bbox.x, this.bbox.y);
+    if (this.bbox) this.options.center = new LatLng(this.bbox.lat, this.bbox.lon);
     this.leafletReference = L.map(this.leaflet.nativeElement, this.options);
     // this.leafletReference._onResize();
   }
@@ -39,9 +92,4 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.leaflet.nativeElement.remove();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (this.leafletReference && this.bbox) {
-      this.leafletReference.setView(new LatLng(this.bbox.x, this.bbox.y) );
-    }
-  }
 }
