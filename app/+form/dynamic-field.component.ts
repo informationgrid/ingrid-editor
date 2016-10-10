@@ -15,4 +15,16 @@ export class DynamicFieldComponent {
   /*get isValid() {
    return this.form.controls[this.field.key].valid;
    }*/
+
+  showError(errors: any) {
+    if (!errors) return;
+
+    let allErrors: string[] = [];
+    Object.keys(errors).forEach( (key: string) => {
+      if (!errors[key].valid) {
+        allErrors.push(errors[key].error);
+      }
+    });
+    return allErrors.join('<br>');
+  }
 }

@@ -110,3 +110,7 @@ sidebar .list-group-item:hover {
   background-color: #a94442;
   color: #ffffff;
 }
+
+.pubished-working-label {
+  background: linear-gradient(-90deg, #f0ad4e 50%, #337ab7 50%);
+}

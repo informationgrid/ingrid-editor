@@ -1,8 +1,5 @@
-import {
-  AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, OnChanges,
-  SimpleChanges, forwardRef
-} from '@angular/core';
-import {LatLng, Map} from 'leaflet';
+import {AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, forwardRef} from "@angular/core";
+import {LatLng, Map} from "leaflet";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 
 
@@ -19,8 +16,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
     <div #leaflet></div>
     <div class="fieldContainer half">
         <input type="text" class="form-control" [(ngModel)]="_bbox.lat" (change)="handleChange()">
-    </div>
-    <div class="fieldContainer half">
+    </div><div class="fieldContainer half"> <!-- white space between divs would create an unwanted gap!!! -->
         <input type="text" class="form-control" [(ngModel)]="_bbox.lon" (change)="handleChange()">
     </div>
   `,
@@ -33,7 +29,6 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
 
   @Input() options: Map.MapOptions;
   @Input() height: number;
-  // @Input() bbox: any;
 
   private _onChangeCallback: (x: any) => void;
   private _bbox: any = {};
@@ -79,6 +74,14 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     if (this.bbox) this.options.center = new LatLng(this.bbox.lat, this.bbox.lon);
     this.leafletReference = L.map(this.leaflet.nativeElement, this.options);
     // this.leafletReference._onResize();
+
+    this.leafletReference.on('moveend', () => {
+      let bounds = this.leafletReference.getBounds();
+      let center = bounds.getCenter();
+      // console.debug( 'bounds:', center );
+      this._bbox.lat = center.lat;
+      this._bbox.lon = center.lng;
+    });
   }
 
   /**

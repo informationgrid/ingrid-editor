@@ -7,6 +7,8 @@ import {MapAndChangeTitleBehaviour} from '../../plugins/demo/behaviours/MapAndCh
 import {AddControlBehaviour} from '../../plugins/demo/behaviours/AddControl/addControl.behaviour';
 import {StorageService} from "../storage/storage.service";
 import {ShowDateInSectionBehaviour} from "../../behaviours/ShowDateInSection/show-date-in-section.behaviour";
+import {OpenDataBehaviour} from "../../behaviours/OpenData/open-data.behaviour";
+import {TitleValidatorBehaviour} from "../../behaviours/TitleValidator/title-validator.behaviour";
 
 export interface Behaviour {
   id: string;
@@ -34,7 +36,9 @@ export class BehavioursDefault {
   behaviours: Behaviour[] = [
     new ClickAndChangeTitleBehaviour( this.storageService ),
     new MapAndChangeTitleBehaviour( this.formService ),
+    new OpenDataBehaviour(this.storageService),
     new AddControlBehaviour( this.formService ),
-    new ShowDateInSectionBehaviour( this.storageService )
+    new ShowDateInSectionBehaviour( this.storageService ),
+    new TitleValidatorBehaviour( this.storageService )
   ];
 }

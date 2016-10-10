@@ -1,4 +1,4 @@
-import {TextboxField, TextareaField, TableField, RadioField} from "../../../+form/controls/index";
+import {TextboxField, TextareaField, TableField, RadioField, CheckboxField} from "../../../+form/controls/index";
 import {FormControl} from "@angular/forms";
 
 export var profile = [
@@ -7,12 +7,7 @@ export var profile = [
     key: 'title',
     label: 'Titel',
     // domClass: 'half',
-    order: 10,
-    validator: function (fc: FormControl) {
-      return fc.value === 'top' ? null : {
-        validateTop: { valid: false }
-      };
-    }
+    order: 10
   } ),
 
   new TextareaField( {
@@ -23,12 +18,20 @@ export var profile = [
     order: 20
   } ),
 
+  new CheckboxField( {
+    key: 'isOpenData',
+    label: 'Open Data',
+    domClass: 'half',
+    order: 25
+  }),
+
   new RadioField({
-    key: 'myRadio',
-    label: 'Gender',
+    key: 'isConform',
+    domClass: 'half',
+    order: 26,
     options: [
-      {label: 'male', value: 'm'},
-      {label: 'female', value: 'f'}
+      {label: 'konform', value: 'conform'},
+      {label: 'nicht konform', value: 'not_conform'}
     ]
   }),
 

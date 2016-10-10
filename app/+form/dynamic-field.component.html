@@ -47,8 +47,9 @@
         <!-- LEAFLET-->
         <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [formControlName]="field.key"
                  [ngModel]="value[field.key]"></leaflet>
+
+        <div class="alert alert-danger" *ngIf="form.controls[field.key].invalid">{{showError(form.controls[field.key].errors)}}</div>
     </div>
 
-    <!--<div class="errorMessage" *ngIf="!isValid">Message: {{form.controls[field.key].errors.message}}</div>-->
 
 </div>

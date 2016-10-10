@@ -40,7 +40,7 @@ export let profile = [
     key: 'bbox',
     label: 'Karte',
     domClass: 'half',
-    height: 370,
+    height: 340,
     options: {
       zoomControl: true,
       center: new LatLng(40.731253, -73.996139),

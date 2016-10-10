@@ -136,47 +136,40 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.data = this.form.value; // this._prepareInitialData(this.form);
     }
 
+    debugger;
+
     this.storageService.loadData(id).subscribe(data => {
-      console.log( 'loaded data:', data );
+      console.log('loaded data:', data);
       let profile = data._profile;
-      let profileSwitched = false;
+      // let profileSwitched = false;
 
       // switch to the right profile depending on the data
       if (this.formularService.currentProfile !== profile) {
         this.switchProfile(profile);
-        profileSwitched = true;
+        // profileSwitched = true;
+        // set data delayed so that form can build up in DOM and events can register
+        setTimeout( () => {
+          this.behaviourService.apply(this.form, profile);
+          // after profile switch inform the subscribers about it to recognize initial data set
+          this.storageService.afterProfileSwitch.next(data);
+          // setTimeout(() => this.setData(data), 1000 );
+          this.setData(data);
+        }, 0 );
+      } else {
+        setTimeout( () => {
+          this.setData(data);
+        });
       }
+    });
+  }
+
+  setData(data: any) {
       // set correct number of repeatable fields
       this.updateRepeatableFields(data);
 
+      this.storageService.afterLoadAndSet.next(data);
       this.data = data;
 
-      // if the profile has switched then wait for repaint so that behaviours can find necessary elements
-      if (profileSwitched) {
-        setTimeout(() => {
-          /*let map = new L.Map( 'map', {
-           zoomControl: false,
-           center: new L.LatLng( 40.731253, -73.996139 ),
-           zoom: 12,
-           minZoom: 4,
-           maxZoom: 19,
-           layers: [new L.TileLayer( "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
-           attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
-           } )]
-           } );
-
-           L.control.zoom( {position: 'topright'} ).addTo( map );
-           // L.control.layers(this.mapService.baseMaps).addTo(map);
-           L.control.scale().addTo( map );*/
-
-          this.behaviourService.apply(this.form, profile);
-          this.storageService.afterLoadAndSet.next(data);
-        });
-      } else {
-        // emit event after behaviours have been initialized
-        this.storageService.afterLoadAndSet.next(data);
-      }
-    });
   }
 
   /*_prepareInitialData(form: FormGroup): any {
@@ -240,6 +233,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
     this.form = this.qcs.toFormGroup(this.fields);
+
+    this.form.reset();
+    this.data = this.form.value;
 
     this.formularService.currentProfile = profile;
 

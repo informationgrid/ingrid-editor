@@ -17,9 +17,11 @@ export class StorageService {
   beforeSave: Subject<any> = new Subject<any>();
   afterSave: Subject<any> = new Subject<any>();
   afterLoadAndSet: Subject<any> = new Subject<any>();
+  afterProfileSwitch: Subject<any> = new Subject<any>();
   datasetsChanged: Subject<any> = new Subject<any>();
 
   afterLoadAndSet$ = this.afterLoadAndSet.asObservable();
+  afterProfileSwitch$ = this.afterProfileSwitch.asObservable();
 
   constructor(private http: Http) {}
 
