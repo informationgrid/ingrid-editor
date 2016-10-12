@@ -18,7 +18,7 @@ export class AddControlBehaviour extends BaseBehaviour implements Behaviour {
     new TextboxField( {
       key: 'behaviourField',
       label: 'Dynamic Behaviour Field',
-      order: 0
+      order: 30
     } )
   ];
 

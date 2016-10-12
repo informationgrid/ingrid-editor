@@ -22,6 +22,7 @@ export class TitleValidatorBehaviour extends BaseBehaviour implements Behaviour 
     this.addSubscriber(
       this.storageService.afterProfileSwitch$.subscribe( () => {
         form.controls['title'].validator = function (fc: FormControl) {
+          console.log( 'VALIDATING ...', fc.value === 'top' );
           return fc.value === 'top' ? null : {
             validateTop: { valid: false, error: 'Text should be "top"' }
           };

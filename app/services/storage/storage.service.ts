@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {Subject, Observable, Subscription} from "rxjs";
 import {Http} from "@angular/http";
+import {ModalService} from "../modal/modal.service";
 
 export interface DocumentInterface {
   id: string;
@@ -23,7 +24,7 @@ export class StorageService {
   afterLoadAndSet$ = this.afterLoadAndSet.asObservable();
   afterProfileSwitch$ = this.afterProfileSwitch.asObservable();
 
-  constructor(private http: Http) {}
+  constructor(private http: Http, private modalService: ModalService) {}
 
   findDocuments(query: string) {
     return this.http.get('http://localhost:8080/v1/datasets/find?query=' + query + '&fields=_id,_profile,_state,mainInfo.title,title')
@@ -37,9 +38,9 @@ export class StorageService {
 
   saveData(data: any): Promise<any> {
     console.log('TEST: save data');
-    let errors: any = {errors: []};
-    this.beforeSave.next(errors);
-    console.log('After validation:', errors);
+    // let errors: any = {errors: []};
+    // this.beforeSave.next(errors);
+    // console.log('After validation:', errors);
     return new Promise((resolve, reject) => {
       let response = this.http.post('http://localhost:8080/v1/dataset/1', data)
         .catch(this._handleError);
@@ -62,6 +63,11 @@ export class StorageService {
     let errors: any = {errors: []};
     this.beforeSave.next(errors);
     console.log('After validation:', data);
+    let formInvalid = errors.errors.filter( err => err.invalid)[0];
+    if (formInvalid && formInvalid.invalid) {
+      this.modalService.showError('Der Datensatz kann nicht veröffentlicht werden.');
+      return;
+    }
     let response = this.http.post('http://localhost:8080/v1/dataset/1?publish=true', data)
       .catch(this._handleError);
     console.log('Response:', response);
@@ -73,7 +79,6 @@ export class StorageService {
     }, err => {
       console.error( 'error:', err );
     });
-    this.datasetsChanged.next();
   }
 
   delete(id: string): any {

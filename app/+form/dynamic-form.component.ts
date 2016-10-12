@@ -85,9 +85,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // register to an publisher in the form/storage service and send the value of this form
     // this can be used for publis, revert, detail, compare, ...
     this.formularService.formDataSubject.asObservable().subscribe( (container: any) => {
-      Object.assign(container, this.form.value);
-      container._id = this.data._id;
-      container._profile = this.formularService.currentProfile;
+      container.form = this.form;
+      container.value = {
+        _id: this.data._id,
+        _profile: this.formularService.currentProfile
+      };
+      Object.assign(container.value, this.form.value);
     });
 
     this.storageService.datasetsChanged.asObservable().subscribe(() => this.load(this.data._id));
@@ -100,16 +103,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       sizes: [25, 75],
       minSize: [200]
     });
-  }
 
-  /*onSubmit() {
-    this.payLoad = JSON.stringify(this.form.value);
-    console.log('before emit', this.form);
-    let errors: any[] = [];
-    // this.formularService.onBeforeSave.emit( {data: this.form.value, errors: errors} );
-    this.storageService.beforeSave.next({data: this.form.value, errors: errors});
-    console.log('after emit', errors);
-  }*/
+    // add form errors check when saving/publishing
+    this.storageService.beforeSave.asObservable().subscribe((message: any) => {
+      message.errors.push({ invalid: this.form.invalid });
+      console.log('in observer');
+    })
+  }
 
   newDoc() {
     this.newDocModal.open();
@@ -221,6 +221,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.fields.sort( (a, b) => a.order - b.order );
 
     // add controls from active behaviours
+    // TODO: refactor to a function
     this.behaviours = this.behaviourService.behaviours;
     this.behaviours
       .filter(behave => behave.isActive && behave.forProfile === profile)
@@ -231,6 +232,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           }));
         }
       });
+
+    // sort fields by its order field
+    this.fields.sort((a, b) => a.order - b.order).slice(0);
 
     this.form = this.qcs.toFormGroup(this.fields);
 

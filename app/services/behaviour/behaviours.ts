@@ -34,8 +34,8 @@ export class BehavioursDefault {
    * @type {{id: string; title: string; description: string; defaultActive: boolean; outer: BehavioursDefault; register: Function}[]}
    */
   behaviours: Behaviour[] = [
-    new ClickAndChangeTitleBehaviour( this.storageService ),
-    new MapAndChangeTitleBehaviour( this.formService ),
+    // new ClickAndChangeTitleBehaviour( this.storageService ),
+    // new MapAndChangeTitleBehaviour( this.formService ),
     new OpenDataBehaviour(this.storageService),
     new AddControlBehaviour( this.formService ),
     new ShowDateInSectionBehaviour( this.storageService ),

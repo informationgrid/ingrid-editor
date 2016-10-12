@@ -22,7 +22,7 @@
                 var taskEl = document.querySelector( '#title' );
                 var listener = eventManager.addEventListener( taskEl, 'click', function () {
                     console.log( 'user behaviour click' );
-                    form.find( [ 'title' ] ).updateValue( 'from user behaviour updated' );
+                    form.controls[ 'title'].setValue( 'from user behaviour updated' );
                 } );
                 this.listeners.push( listener );
             },

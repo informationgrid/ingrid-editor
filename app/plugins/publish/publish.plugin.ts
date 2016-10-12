@@ -56,8 +56,14 @@ export class PublishPlugin extends Plugin {
 
   publish() {
     let formData = this.formService.requestFormValues();
+    // let errors: any = {errors: []};
+    // this.storageService.beforeSave.next(errors);
 
-    this.storageService.publish(formData);
+    // if (formData.form.invalid) {
+    //   this.modalService.showError('Es müssen alle Felder korrekt ausgefüllt werden.');
+    // } else {
+      this.storageService.publish(formData.value);
+    // }
   }
 
   revert() {
@@ -67,6 +73,12 @@ export class PublishPlugin extends Plugin {
       this.modalService.showError(err.text());
     });
   }
+
+  // unregister() {
+  //   super.unregister();
+
+    // this.formToolbarService.addButton()
+  // }
 
   // presentInDoc() { }
 
