@@ -1,24 +1,31 @@
-import {TextboxField, TextareaField, TableField, RadioField, CheckboxField} from "../../../+form/controls/index";
-import {FormControl} from "@angular/forms";
+import {TextboxField, TextareaField, RadioField, CheckboxField, TableField} from "../../../+form/controls/index";
+import {OpenTableField} from "../../../+form/controls/field-opentable";
 
-export var profile = [
+export let profile = [
 
-  new TextboxField( {
+  new TextboxField({
     key: 'title',
     label: 'Titel',
     // domClass: 'half',
     order: 10
-  } ),
+  }),
 
-  new TextareaField( {
+  new TextboxField({
+    key: 'age',
+    label: 'Alter',
+    // type: 'number',
+    order: 15
+  }),
+
+  new TextareaField({
     key: 'description',
     label: 'Beschreibung',
     // domClass: 'half',
     rows: 10,
     order: 20
-  } ),
+  }),
 
-  new CheckboxField( {
+  new CheckboxField({
     key: 'isOpenData',
     label: 'Open Data',
     domClass: 'half',
@@ -35,14 +42,29 @@ export var profile = [
     ]
   }),
 
-  new TableField({
+  new OpenTableField({
+    key: 'addresses',
+    label: 'Adressen',
+    order: 30,
+    columns: [
+      new TextboxField({
+        key: 'title',
+        label: 'Titel'
+      }),
+      new TextboxField({
+        key: 'description',
+        label: 'Description'
+      })
+    ]
+  })
+
+/*  new TableField({
     key: 'addresses',
     label: 'Adressen',
     order: 30,
     columns: [
       {headerName: 'Titel', field: 'title', editable: true},
-      {headerName: 'Link', field: 'link', editable: true},
-      {headerName: 'Typ', field: 'type', editable: true}
+      {headerName: 'Description', field: 'description', editable: true}
     ]
-  })
+  })*/
 ];

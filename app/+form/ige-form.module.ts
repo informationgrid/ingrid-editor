@@ -10,10 +10,11 @@ import {routing} from "./ige-form.routing";
 import {BrowserComponent} from "./sidebars/browser/browser.component";
 import {AgGridModule} from "ag-grid-ng2";
 import {ModalModule} from "ng2-modal";
+import {OpenTable} from "./opentable/opentable.component";
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule, AgGridModule.forRoot()],
-  declarations: [FormToolbarComponent, DynamicFieldComponent, CustomInput, BrowserComponent, LeafletComponent, DynamicFormComponent],
+  declarations: [FormToolbarComponent, DynamicFieldComponent, CustomInput, OpenTable, BrowserComponent, LeafletComponent, DynamicFormComponent],
   exports: []
 })
 export class IgeFormModule {

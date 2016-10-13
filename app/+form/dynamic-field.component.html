@@ -44,6 +44,8 @@
                     [ngModel]="value[field.key]">
         </data-table>
 
+        <open-table *ngSwitchCase="'opentable'" [formControlName]="field.key" [columns]="field.columns" [ngModel]="value[field.key]"></open-table>
+
         <!-- LEAFLET-->
         <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [formControlName]="field.key"
                  [ngModel]="value[field.key]"></leaflet>
