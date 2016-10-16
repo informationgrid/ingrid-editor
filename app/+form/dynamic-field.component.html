@@ -50,8 +50,6 @@
         <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [formControlName]="field.key"
                  [ngModel]="value[field.key]"></leaflet>
 
-        <partial-generator *ngSwitchCase="'partialGenerator'" [field]="field" [form]="form" (onAddSection)="addSection($event)"></partial-generator>
-
         <!--<div class="alert alert-danger" [class.hide]="form.controls[field.key].valid || form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>-->
     </div>
 

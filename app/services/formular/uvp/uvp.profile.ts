@@ -10,7 +10,7 @@ let linkDocTypes = {
 export let profile = [
 
   new Container({
-    useGroupKey: 'mainInfo',
+    key: 'mainInfo',
     domClass: 'half',
     children: [
       new TextboxField({
@@ -186,9 +186,64 @@ export let profile = [
   new PartialGeneratorField({
     key: 'sections',
     label: 'Sektion hinzufügen',
-    // isRepeatable: true,
-    children: [],
+    order: 5,
     partials: [
+      new Container({
+        key: 'publicDisplay',
+        label: 'Öffentliche Auslegung',
+        children: [
+          new TextboxField({
+            key: 'date',
+            label: 'Datum',
+            // domClass: 'half',
+            type: 'date'
+          }),
+          new TableField({
+            key: 'constructionInfo',
+            label: 'Auslegungsinformationen',
+            columns: [
+              {headerName: 'Titel', field: 'title', editable: true},
+              {headerName: 'Link', field: 'link', editable: true},
+              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
+              {headerName: 'Größe', field: 'size', editable: true},
+              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+            ]
+          }),
+          new TableField({
+            key: 'applicationDocs',
+            label: 'Antragsunterlagen',
+            columns: [
+              {headerName: 'Titel', field: 'title', editable: true},
+              {headerName: 'Link', field: 'link', editable: true},
+              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
+              {headerName: 'Größe', field: 'size', editable: true},
+              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+            ]
+          }),
+          new TableField({
+            key: 'reportsAndRecommendations',
+            label: 'Berichte und Empfehlungen',
+            columns: [
+              {headerName: 'Titel', field: 'title', editable: true},
+              {headerName: 'Link', field: 'link', editable: true},
+              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
+              {headerName: 'Größe', field: 'size', editable: true},
+              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+            ]
+          }),
+          new TableField({
+            key: 'additionalDocs',
+            label: 'Weitere Unterlagen',
+            columns: [
+              {headerName: 'Titel', field: 'title', editable: true},
+              {headerName: 'Link', field: 'link', editable: true},
+              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
+              {headerName: 'Größe', field: 'size', editable: true},
+              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+            ]
+          })
+        ]
+      }),
       new Container({
         key: 'approvalDecisions',
         label: 'Zulassungsentscheidung',
