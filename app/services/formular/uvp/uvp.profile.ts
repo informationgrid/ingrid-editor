@@ -1,6 +1,7 @@
 import {TableField, TextareaField, TextboxField, Container} from "../../../+form/controls/index";
 import {MapField} from "../../../+form/controls/field-map";
 import {LatLng, TileLayer} from "leaflet";
+import {PartialGeneratorField} from "../../../+form/controls/field-partial-generator";
 
 let linkDocTypes = {
   values: ['PDF', 'XML', 'ZIP', 'TXT', 'andere']
@@ -64,7 +65,7 @@ export let profile = [
     order: 2
   }),
 
-  new Container({
+  /*new Container({
     useGroupKey: 'publicDisplay',
     label: 'Öffentliche Auslegung',
     isRepeatable: true,
@@ -180,6 +181,67 @@ export let profile = [
         ]
       })
     ]]
+  })*/
+
+  new PartialGeneratorField({
+    key: 'sections',
+    label: 'Sektion hinzufügen',
+    // isRepeatable: true,
+    children: [],
+    partials: [
+      new Container({
+        key: 'approvalDecisions',
+        label: 'Zulassungsentscheidung',
+        children: [
+          new TextboxField({
+            key: 'date',
+            label: 'Datum',
+            // domClass: 'half',
+            type: 'date'
+          }),
+          new TextareaField({
+            key: 'paymentDecision',
+            label: 'Zahlungsentscheidung',
+            // domClass: 'half',
+            rows: 5
+          }),
+          new TableField({
+            key: 'constructionInfo',
+            label: 'Auslegungsinformationen',
+            columns: [
+              {headerName: 'Titel', field: 'title', editable: true},
+              {headerName: 'Link', field: 'link', editable: true},
+              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
+              {headerName: 'Größe', field: 'size', editable: true},
+              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+            ]
+          })
+        ]
+      }),
+      new Container({
+        key: 'publicHearingDates',
+        label: 'Erörterungstermin',
+        children: [
+          new TextboxField({
+            key: 'date',
+            label: 'Datum',
+            // domClass: 'half',
+            type: 'date'
+          }),
+          new TableField({
+            key: 'announcements',
+            label: 'Bekanntmachung',
+            columns: [
+              {headerName: 'Titel', field: 'title', editable: true},
+              {headerName: 'Link', field: 'link', editable: true},
+              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
+              {headerName: 'Größe', field: 'size', editable: true},
+              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+            ]
+          })
+        ]
+      })
+    ]
   })
 
 ];

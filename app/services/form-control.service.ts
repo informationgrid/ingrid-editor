@@ -13,7 +13,6 @@ export class FormControlService {
     fields.forEach( field => {
       if (field instanceof Container) {
         let result: any = null;
-
         if (field.isRepeatable) {
           let array: any[] = [];
           field.children.forEach(groups => {
@@ -38,6 +37,9 @@ export class FormControlService {
         if (field.useGroupKey) {
           group[field.useGroupKey] = result;
         }
+      } else if (field.controlType === 'partialGenerator') {
+        let g: any = [];//new FormGroup({});
+        group[field.key] = new FormArray(g);
       } else {
         group[field.key] = this._addValidator( field );
       }

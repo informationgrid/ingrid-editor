@@ -30,7 +30,7 @@
                  [ngClass]="{hasChildren: field.children, padding: !field.children || field.isRepeatable}">
 
                 <!-- SIMPLE FIELD -->
-                <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></dyn-field>
+                <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data" (onAddSection)="addSection($event)"></dyn-field>
 
                 <!-- COMPLEX FIELD -->
                 <fieldset *ngIf="field.children">
@@ -47,8 +47,28 @@
 
                     <!-- REPEATABLE FIELDS -->
                     <div *ngIf="field.isRepeatable">
-                        <div [formArrayName]="field.useGroupKey">
-                            <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i"
+                        <div [formArrayName]="field.key">
+                            <!-- render data -->
+                            <div *ngFor="let child of field.children; let i=index">
+                                <fieldset *ngIf="child.children">
+                                    {{child.key}}
+                                    <div [formGroupName]="i">
+                                        <dyn-field *ngFor="let subChild of child.children" [field]="subChild"
+                                                   [form]="form.controls[field.key].controls[i]" [value]="data[field.key][i]"
+                                                   class="padding {{subChild.domClass}}">
+                                        </dyn-field>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                            <!-- render generator button -->
+                            <dyn-field [field]="field" [form]="form" [value]="data" (onAddSection)="addSection($event)"></dyn-field>
+                        </div>
+                            <!--<dyn-field *ngFor="let child of field.children" [field]="child"
+                                       [form]="form.controls[field.useGroupKey]" [value]="data[field.useGroupKey]"
+                                       class="padding {{child.domClass}}">
+                            </dyn-field>-->
+                            <!--<div *ngFor="let groups of field.children; let i=index" [formGroupName]="i"
                                  class="panel panel-default">
                                 <div class="panel-heading" (click)="expandedField[field.useGroupKey + i] = !expandedField[field.useGroupKey + i]">
                                     <span class="fa" [class.fa-caret-down]="expandedField[field.useGroupKey + i]"
@@ -70,7 +90,7 @@
                         </div>
                         <button (click)="addArrayGroup(field.useGroupKey)" type="button"
                                 class="pull-right btn btn-default">Hinzufügen
-                        </button>
+                        </button>-->
                     </div>
                 </fieldset>
 
