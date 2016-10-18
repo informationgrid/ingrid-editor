@@ -10,7 +10,7 @@ export class StatisticPlugin extends Plugin {
 
   constructor(@Inject( MenuService ) private menuService: MenuService) {
     super();
-    this.isActive = true;
+    this.isActive = false;
   }
 
   get name() {

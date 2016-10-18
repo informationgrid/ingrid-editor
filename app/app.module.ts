@@ -21,10 +21,11 @@ import {BehaviourService} from "./services/behaviour/behaviour.service";
 import {FormularService} from "./services/formular/formular.service";
 import {ModalService} from "./services/modal/modal.service";
 import {ModalModule} from "ng2-modal";
+import {UserModule} from "./+user/user.module";
 
 @NgModule( {
   declarations: [AppComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
-  imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, PluginsModule, routing, ModalModule, TranslateModule.forRoot()],
+  imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, PluginsModule, routing, ModalModule, TranslateModule.forRoot()],
   providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, FormToolbarService, FormularService, StorageService, StorageDummyService, BehaviourService, BehavioursDefault, ModalService, {
     provide: LocationStrategy,
     useClass: HashLocationStrategy

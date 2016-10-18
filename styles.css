@@ -114,3 +114,8 @@ sidebar .list-group-item:hover {
 .pubished-working-label {
   background: linear-gradient(-90deg, #f0ad4e 50%, #337ab7 50%);
 }
+
+.list-group-item.active {
+  background-color: #5999d0;
+  border-color: #5999d0;
+}
