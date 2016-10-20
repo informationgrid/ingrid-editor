@@ -19,8 +19,9 @@
         <div *ngFor="let col of columns; let j=index" [class.last]="j === columns.length-1">
             <label class="control-label" (click)="sortBy(col)">{{col.label}}</label>
             <!-- render data column of all rows -->
-            <div class="clickable cell" [class.firstRow]="i===0" [class.odd]="i % 2 === 1" *ngFor="let row of value; let i=index" (click)="editRow(row, i)"> <!--(mouseover)="hoverRow = i"-->
-                {{row[col.key]}}
+       <!--     <div class="clickable cell" [class.firstRow]="i===0" [class.odd]="i % 2 === 1" *ngFor="let row of value; let i=index" (click)="editRow(row, i, col)">-->
+            <div class="clickable cell" [class.firstRow]="i===0" [class.odd]="i % 2 === 1" *ngFor="let row of value; let i=index" (click)="editRowInline(row, col, $event)"> <!--(mouseover)="hoverRow = i"-->
+                <span class="cellLabel">{{row[col.key]}}</span>
             </div>
         </div>
     </div>

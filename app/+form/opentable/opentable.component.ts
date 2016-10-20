@@ -28,6 +28,13 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
     .cell {
       padding: 5px;
       line-height: 20px;
+      /*text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 100px;*/
+    }
+    .cell.editing {
+      padding: 2px 0 3px;
     }
     .control-label {
       font-weight: lighter;
@@ -50,6 +57,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
     .last {
       flex: 1;
     }
+    
   `],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 })
@@ -65,6 +73,10 @@ export class OpenTable implements ControlValueAccessor {
 
   // flag to show if data is new or should be updated
   private currentRow: number = null;
+
+  private parent: HTMLElement;
+
+  private canceled: boolean = false;
 
   // private hoverRow: number = null;
 
@@ -106,6 +118,61 @@ export class OpenTable implements ControlValueAccessor {
     this.addModel = data;
     this.currentRow = index;
     this.addRowModal.open();
+  }
+
+  editRowInline(row: any, column: any, event: Event) {
+    debugger;
+    let target = <HTMLElement>event.target;
+
+    if (target.classList.contains('cellLabel')) {
+      this.parent = target.parentElement;
+    } else {
+      this.parent = target;
+    }
+    let label = this.parent.getElementsByClassName('cellLabel')[0];
+    label.classList.add('hide');
+
+    let input = this.createInput(row[column.key]);
+    this.parent.insertBefore(input, label.nextSibling);
+    this.parent.classList.add('editing');
+    input.focus();
+
+    input.onblur = (ev) => {
+      if (this.canceled) {
+        this.hideEditField(input);
+      } else {
+        this.acceptInput(input, row, column.key);
+      }
+
+    }
+  }
+
+  acceptInput(input: HTMLInputElement, row: any, column: string ) {
+    row[column] = input.value;
+    this.hideEditField(input);
+  }
+
+  hideEditField(input: HTMLInputElement) {
+    input.remove();
+    let label = this.parent.getElementsByClassName('cellLabel')[0];
+    label.classList.remove('hide');
+    this.parent.classList.remove('editing');
+    this.canceled = false;
+  }
+
+  createInput(text: string): HTMLInputElement {
+    let input = <HTMLInputElement>document.createElement('input');
+    input.tabIndex = -1;
+    input.type = 'text';
+    input.value = text;
+    input.onkeyup = (ev) => {
+      if (ev.keyCode === 13) input.blur();
+      else if (ev.keyCode === 27) {
+        this.canceled = true;
+        input.blur();
+      }
+    };
+    return input;
   }
 
   deleteRow(index: number) {
