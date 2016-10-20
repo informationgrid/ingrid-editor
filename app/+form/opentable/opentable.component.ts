@@ -19,14 +19,36 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
       display: flex;
     }
     .form-group > div {
-      padding: 10px;
-      line-height: 20px;
+      /*padding: 10px;*/
+      /*line-height: 20px;*/
     }
     i {
       vertical-align: text-bottom;
     }
+    .cell {
+      padding: 5px;
+      line-height: 20px;
+    }
+    .control-label {
+      font-weight: lighter;
+      font-style: italic;
+      padding: 0 5px;
+    }
+    .cell input[type=checkbox] {
+      margin: 0;
+      vertical-align: middle;
+    }
     .clickable {
-    cursor: pointer;
+      cursor: pointer;
+    }
+    .odd {
+      background-color: #f6f6f6;
+    }
+    .firstRow {
+      border-top: 1px solid #d8d8d8;
+    }
+    .last {
+      flex: 1;
     }
   `],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
@@ -38,6 +60,8 @@ export class OpenTable implements ControlValueAccessor {
   @ViewChild('addRowModal') addRowModal: Modal;
 
   addModel = {};
+
+  markedRows: number[] = [];
 
   // flag to show if data is new or should be updated
   private currentRow: number = null;
@@ -86,6 +110,20 @@ export class OpenTable implements ControlValueAccessor {
 
   deleteRow(index: number) {
     this._value.splice(index, 1);
+    this.markedRows = [];
+  }
+
+  sortBy(col: any) {
+    console.log( 'sort by', col );
+  }
+
+  updateSelection(row: number, event: Event) {
+    let checked = (<HTMLInputElement>event.target).checked;
+    if (checked) {
+      this.markedRows.push(row);
+    } else {
+      this.markedRows.splice(this.markedRows.indexOf(row), 1);
+    }
   }
 
   handleChange() {
