@@ -25,8 +25,6 @@
     "@angular/platform-browser-dynamic": "2.1.0",
     "@angular/platform-server": "^2.1.0",
     "@angular/router": "3.1.0",
-    "ag-grid": "^6.2.1",
-    "ag-grid-ng2": "^6.2.0",
     "bootstrap": "^3.3.7",
     "es6-promise": "^3.3.1",
     "es6-shim": "0.35.1",

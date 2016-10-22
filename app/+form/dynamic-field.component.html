@@ -40,9 +40,9 @@
         </textarea>
 
         <!-- TABLE -->
-        <data-table *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key" [columns]="field.columns"
+        <!--<data-table *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key" [columns]="field.columns"
                     [ngModel]="value[field.key]">
-        </data-table>
+        </data-table>-->
 
         <open-table *ngSwitchCase="'opentable'" [formControlName]="field.key" [columns]="field.columns" [ngModel]="value[field.key]"></open-table>
 

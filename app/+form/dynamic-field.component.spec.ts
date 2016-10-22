@@ -4,8 +4,6 @@ import {TestBed} from "@angular/core/testing";
 import {TextboxField, FieldBase, TextareaField, DropdownField, CheckboxField, TableField, RadioField} from "./controls";
 import {By} from "@angular/platform-browser";
 import {FormControlService} from "../services/form-control.service";
-import {AgGridModule} from "ag-grid-ng2";
-import {CustomInput} from "./table/table.component";
 import {LeafletComponent} from "./leaflet/leaflet.component";
 
 
@@ -17,9 +15,8 @@ describe('Formular fields', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DynamicFieldComponent, CustomInput, LeafletComponent],
-      imports: [ReactiveFormsModule, AgGridModule.forRoot()],
-      // providers: [FormularService]
+      declarations: [DynamicFieldComponent, LeafletComponent],
+      imports: [ReactiveFormsModule]
     });
 
     // create component and test fixture
