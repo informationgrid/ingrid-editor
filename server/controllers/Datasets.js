@@ -9,6 +9,10 @@ module.exports.find = function find (req, res, next) {
   Datasets.find(req.swagger.params, res, next);
 };
 
+module.exports.children = function find (req, res, next) {
+  Datasets.children(req.swagger.params, res, next);
+};
+
 module.exports.getByID = function getByID (req, res, next) {
   Datasets.getByID(req.swagger.params, res, next);
 };

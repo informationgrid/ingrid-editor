@@ -68,6 +68,28 @@ paths:
         '200':
           description: Datasets found
       x-swagger-router-controller: "Datasets"
+  /datasets/children:
+    get:
+      tags:
+      - "Datasets"
+      summary: ...
+      description: ""
+      operationId: children
+      parameters:
+      - name: "parentId"
+        in: "query"
+        description: "The ID of the parent dataset to get the children from. If empty then the root datasets are returned."
+        required: false
+        type: "string"
+      - name: "fields"
+        in: "query"
+        description: ""
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Datasets found
+      x-swagger-router-controller: "Datasets"
   /dataset/{id}:
     options:
       tags:

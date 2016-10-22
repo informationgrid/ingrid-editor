@@ -30,7 +30,9 @@ export class BrowserComponent implements OnInit {
 
   query() {
     // initially show all documents
-    this.storageService.findDocuments( this.searchString ).subscribe( docs => this.entries = docs.filter( (doc: any) => doc._profile !== undefined ) );
+    this.storageService.findDocuments( this.searchString ).subscribe( docs =>
+      this.entries = docs.filter( (doc: any) => doc._profile !== undefined )
+    );
   }
 
   open(id: string) {

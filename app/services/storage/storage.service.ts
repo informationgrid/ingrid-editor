@@ -12,8 +12,11 @@ interface FormFields {
   _profile: string;
 }
 
+const serviceUrl = 'http://localhost:8080/v1/';
+
 @Injectable()
 export class StorageService {
+
 
   beforeSave: Subject<any> = new Subject<any>();
   afterSave: Subject<any> = new Subject<any>();
@@ -28,6 +31,12 @@ export class StorageService {
 
   findDocuments(query: string) {
     return this.http.get('http://localhost:8080/v1/datasets/find?query=' + query + '&fields=_id,_profile,_state,mainInfo.title,title')
+      .map(resp => resp.json());
+  }
+
+  getChildDocuments(parentId: string): Observable<any> {
+    let idQuery = parentId === null ? '' : '&parentId=' + parentId;
+    return this.http.get(serviceUrl + 'datasets/children?&fields=_id,_profile,_state,mainInfo.title,title' + idQuery)
       .map(resp => resp.json());
   }
 

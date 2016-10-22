@@ -10,10 +10,12 @@ import {BrowserComponent} from "./sidebars/browser/browser.component";
 import {ModalModule} from "ng2-modal";
 import {OpenTable} from "./opentable/opentable.component";
 import {PartialGenerator} from "./partialGenerator/partial-generator.component";
+import {TreeModule} from 'angular2-tree-component'
+import {TreeComponent, MetadataTreeComponent} from "./sidebars/tree/tree.component";
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule],
-  declarations: [FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator, BrowserComponent, LeafletComponent, DynamicFormComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule, TreeModule],
+  declarations: [FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator, BrowserComponent, MetadataTreeComponent, LeafletComponent, DynamicFormComponent],
   exports: []
 })
 export class IgeFormModule {
