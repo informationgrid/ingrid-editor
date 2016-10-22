@@ -30,16 +30,17 @@
                  [ngClass]="{hasChildren: field.children, padding: !field.children || field.isRepeatable}">
 
                 <!-- SIMPLE FIELD -->
-                <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"></dyn-field>
+                <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"
+                           (onAddSection)="addSection($event)"></dyn-field>
 
                 <!-- COMPLEX FIELD -->
                 <fieldset *ngIf="field.children">
 
                     <!-- CONTAINER FOR NESTED FIELDS -->
                     <div *ngIf="!field.isRepeatable">
-                        <div [formGroupName]="field.useGroupKey">
+                        <div [formGroupName]="field.key">
                             <dyn-field *ngFor="let child of field.children" [field]="child"
-                                       [form]="form.controls[field.useGroupKey]" [value]="data[field.useGroupKey]"
+                                       [form]="form.controls[field.key]" [value]="data[field.key]"
                                        class="padding {{child.domClass}}">
                             </dyn-field>
                         </div>
@@ -47,30 +48,62 @@
 
                     <!-- REPEATABLE FIELDS -->
                     <div *ngIf="field.isRepeatable">
-                        <div [formArrayName]="field.useGroupKey">
-                            <div *ngFor="let groups of field.children; let i=index" [formGroupName]="i"
-                                 class="panel panel-default">
-                                <div class="panel-heading" (click)="expandedField[field.useGroupKey + i] = !expandedField[field.useGroupKey + i]">
-                                    <span class="fa" [class.fa-caret-down]="expandedField[field.useGroupKey + i]"
-                                          [class.fa-caret-right]="!expandedField[field.useGroupKey + i]"></span>
-                                    <span class="title">{{i+1}}. {{field.label}}</span>
-                                    <button class="close pull-right" aria-label="Close"
-                                            *ngIf="form.controls[field.useGroupKey].controls.length > 1"
-                                            (click)="removeArrayGroup(field.useGroupKey, i)"><span
-                                            aria-hidden="true">&times;</span></button>
+                        <div [formArrayName]="field.key">
+                            <!-- render data -->
+                            <div *ngFor="let child of field.children; let i=index" class="panel panel-default">
+                                <div *ngIf="child.children" class="panel-heading"
+                                     (click)="expandedField[child.key + i] = !expandedField[child.key + i]">
+                                    <span class="fa" [class.fa-caret-down]="expandedField[child.key + i]"
+                                      [class.fa-caret-right]="!expandedField[child.key + i]"></span>
+                                    <span class="title">{{i+1}}. {{child.label}}</span>
+                                    <button class="close pull-right"
+                                            (click)="removeArrayGroup(field.key, i)">
+                                            <!--*ngIf="form.controls[field.key].controls.length > 1"-->
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
-                                <div class="panel-body" [class.hide]="!expandedField[field.useGroupKey + i]">
-                                    <dyn-field *ngFor="let child of groups" [field]="child"
-                                               [form]="form.controls[field.useGroupKey].controls[i]"
-                                               [value]="data[field.useGroupKey] ? data[field.useGroupKey][i] : {}"
-                                               class="padding {{child.domClass}}">
+                                <div [formGroupName]="i" class="panel-body" [class.hide]="!expandedField[child.key + i]">
+                                    <dyn-field *ngFor="let subChild of child.children" [field]="subChild"
+                                               [form]="form.controls[field.key].controls[i].controls[child.key]"
+                                               [value]="data[field.key][i][child.key]"
+                                               class="padding {{subChild.domClass}}">
                                     </dyn-field>
                                 </div>
                             </div>
+
+                            <!-- render generator button -->
+                            <!--<dyn-field [field]="field" [form]="form" [value]="data"
+                                       (onAddSection)="addSection($event)"></dyn-field>-->
+                            <partial-generator [field]="field" [form]="form" (onAddSection)="addSection($event)"></partial-generator>
+
                         </div>
-                        <button (click)="addArrayGroup(field.useGroupKey)" type="button"
-                                class="pull-right btn btn-default">Hinzufügen
-                        </button>
+                        <!--<dyn-field *ngFor="let child of field.children" [field]="child"
+                                   [form]="form.controls[field.useGroupKey]" [value]="data[field.useGroupKey]"
+                                   class="padding {{child.domClass}}">
+                        </dyn-field>-->
+                        <!--<div *ngFor="let groups of field.children; let i=index" [formGroupName]="i"
+                             class="panel panel-default">
+                            <div class="panel-heading" (click)="expandedField[field.useGroupKey + i] = !expandedField[field.useGroupKey + i]">
+                                <span class="fa" [class.fa-caret-down]="expandedField[field.useGroupKey + i]"
+                                      [class.fa-caret-right]="!expandedField[field.useGroupKey + i]"></span>
+                                <span class="title">{{i+1}}. {{field.label}}</span>
+                                <button class="close pull-right" aria-label="Close"
+                                        *ngIf="form.controls[field.useGroupKey].controls.length > 1"
+                                        (click)="removeArrayGroup(field.useGroupKey, i)"><span
+                                        aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="panel-body" [class.hide]="!expandedField[field.useGroupKey + i]">
+                                <dyn-field *ngFor="let child of groups" [field]="child"
+                                           [form]="form.controls[field.useGroupKey].controls[i]"
+                                           [value]="data[field.useGroupKey] ? data[field.useGroupKey][i] : {}"
+                                           class="padding {{child.domClass}}">
+                                </dyn-field>
+                            </div>
+                        </div>
+                    </div>
+                    <button (click)="addArrayGroup(field.useGroupKey)" type="button"
+                            class="pull-right btn btn-default">Hinzufügen
+                    </button>-->
                     </div>
                 </fieldset>
 

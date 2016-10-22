@@ -49,11 +49,18 @@ export let profile = [
     columns: [
       new TextboxField({
         key: 'title',
-        label: 'Titel'
+        label: 'Titel',
+        width: '100px'
       }),
       new TextboxField({
         key: 'description',
-        label: 'Description'
+        label: 'Description',
+        width: '200px'
+      }),
+      new TextboxField({
+        key: 'date',
+        label: 'Datum',
+        type: 'date'
       })
     ]
   })

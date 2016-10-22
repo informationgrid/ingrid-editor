@@ -12,7 +12,8 @@ export class Container extends FieldBase<string> {
     children?: any[],
     useGroupKey?: string,
     label?: string,
-    order?: number
+    order?: number,
+    key?: string
   } = {}) {
     super(options);
     this.children = options['children'] || [];

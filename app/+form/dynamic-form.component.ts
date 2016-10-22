@@ -13,6 +13,8 @@ import {Split} from '../../node_modules/split.js/split';
 import {StorageService} from '../services/storage/storage.service';
 import {ModalService} from "../services/modal/modal.service";
 import {Modal} from "ng2-modal";
+import {PartialGeneratorField} from "./controls/field-partial-generator";
+import {setUpControl} from "@angular/forms/src/directives/shared";
 
 interface FormData extends Object {
   _id?: string;
@@ -120,7 +122,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.formularService.currentProfile !== profile) {
       this.switchProfile(profile);
     }
-    this.data = {mainInfo: {taskId: 999}};
+    this.data = this.form.value;
     this.newDocModal.close();
   }
 
@@ -135,8 +137,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.form.reset();
       this.data = this.form.value; // this._prepareInitialData(this.form);
     }
-
-    debugger;
 
     this.storageService.loadData(id).subscribe(data => {
       console.log('loaded data:', data);
@@ -220,6 +220,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.fields = this.formularService.getFields(profile);
     // this.fields.sort( (a, b) => a.order - b.order );
 
+
     // add controls from active behaviours
     // TODO: refactor to a function
     this.behaviours = this.behaviourService.behaviours;
@@ -238,6 +239,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.form = this.qcs.toFormGroup(this.fields);
 
+    // since objects in fields array are not cloned, it can have the previous repeatable fields set
+    // which we have to reset
+    // TODO: improve by making fields really immutable from service
+    let repeatFields = this.fields.filter(pField => (<Container>pField).isRepeatable);
+    repeatFields.forEach((repeatField: Container) => {
+      this.resetArrayGroup(repeatField.key);
+    });
+
     this.form.reset();
     this.data = this.form.value;
 
@@ -248,40 +257,87 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   updateRepeatableFields(data: any) {
     // set repeatable fields according to loaded data
     let repeatFields = this.fields.filter(pField => (<Container>pField).isRepeatable);
+
     repeatFields.forEach((repeatField: Container) => {
-      this.resetArrayGroup(repeatField.useGroupKey);
-      let repeatSize = data[repeatField.useGroupKey] ? data[repeatField.useGroupKey].length : 0;
-      for (let i = 1; i < repeatSize; i++) this.addArrayGroup(repeatField.useGroupKey);
+      this.resetArrayGroup(repeatField.key);
+      if (data[repeatField.key]) {
+        let repeatData = data[repeatField.key];
+        for (let i = 0; i < repeatData.length; i++) {
+          let partialKey = Object.keys(repeatData[i])[0];
+          this.addArrayGroup(repeatField, partialKey);
+        }
+      }
     });
   }
 
   resetArrayGroup(name: string) {
-    let group = <Container>this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
-    while (group.children.length > 1) group.children.pop();
+    let group = <Container>this.fields.filter(f => (<Container>f).key === name)[0];
+
+    // remove from definition fields
+    while (group.children.length > 0) group.children.pop();
     let formArray = <FormArray>this.form.controls[name];
-    while (formArray.length > 1) formArray.removeAt(formArray.length - 1);
+
+    // remove from form element
+    while (formArray.length > 0) formArray.removeAt(formArray.length - 1);
   }
 
-  addArrayGroup(name: string) {
-    let group = <Container>this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
-    let newGroupArray: any[] = [];
-    group.children[0].forEach((c: any) => newGroupArray.push(Object.assign({}, c)));
-    group.children.push(
-      newGroupArray
-    );
+  addArrayGroup(repeatField: any, key: string) {
+    let partial = this.addPartialToField(repeatField, key);
 
-    let additionalFormGroup = this.qcs.toFormGroup(newGroupArray);
-    let formArray = <FormArray>this.form.controls[name];
-    // set link to parent so that we are updated correctly
-    additionalFormGroup.setParent(formArray);
-    formArray.controls.push(additionalFormGroup);
-    this.data[name].push({});
+    this.addPartialToForm(partial, <FormArray>this.form.controls[repeatField.key]);
+
+    if (!this.data[repeatField.key]) this.data[repeatField.key] = [];
+    this.data[repeatField.key].push({});
   }
 
   removeArrayGroup(name: string, pos: number) {
-    let group = <Container>this.fields.filter(f => (<Container>f).useGroupKey === name)[0];
+    let group = <Container>this.fields.filter(f => (<Container>f).key === name)[0];
     group.children.splice(pos, 1);
     let ctrls = <FormArray>this.form.controls[name];
     ctrls.removeAt(pos);
+  }
+
+  addPartialToField(field: any, partialKey: string): any {
+    let partial = field.partials.filter( part => part.key === partialKey )[0];
+    let clonedPartial = Object.assign({}, partial);
+    field.children.push(clonedPartial);
+    return partial;
+  }
+
+  addPartialToForm(partial: any, formArray: FormArray) {
+    let additionalFormGroup = this.qcs.toFormGroup([partial]);
+    // let complete = {};
+    // complete[partial.key] = additionalFormGroup;
+    // let additionalComplete = new FormGroup( complete );
+    // set link to parent so that we are updated correctly
+    // additionalComplete.setParent(formArray);
+    // formArray.controls.push(additionalComplete);
+    additionalFormGroup.setParent(formArray);
+    formArray.controls.push(additionalFormGroup);
+  }
+
+  addSection(data: any) {
+    // use target-key or similar to have no conflicts with other fields with same name
+    let field = <PartialGeneratorField>this.fields.filter(f => (<Container>f).key === data.key)[0];
+    // let partial = field.partials.filter( part => part.key === data.section )[0];
+    // let clonedPartial = Object.assign({}, partial);
+    // field.children.push(clonedPartial);
+    let partial = this.addPartialToField(field, data.section);
+    let formArray = <FormArray>this.form.controls[data.key];
+    this.addPartialToForm(partial, formArray);
+
+    // let additionalFormGroup = this.qcs.toFormGroup([partial]);
+    // let complete = {};
+    // complete[partial.key] = additionalFormGroup;
+    // let additionalComplete = new FormGroup( complete );
+    // let formArray = <FormArray>this.form.controls[data.key];
+    // // set link to parent so that we are updated correctly
+    // additionalComplete.setParent(formArray);
+    // formArray.controls.push(additionalComplete);
+
+    if (!this.data[data.key]) this.data[data.key] = [];
+    let newSectionData = {};
+    newSectionData[data.section] = {};
+    this.data[data.key].push(newSectionData);
   }
 }

@@ -13,11 +13,10 @@ export class FormControlService {
     fields.forEach( field => {
       if (field instanceof Container) {
         let result: any = null;
-
         if (field.isRepeatable) {
           let array: any[] = [];
           field.children.forEach(groups => {
-            let subGroup = field.useGroupKey ? {} : group;
+            let subGroup = field.key ? {} : group;
             groups.forEach((child: any) => {
               subGroup[child.key] = this._addValidator(child);
             });
@@ -25,7 +24,7 @@ export class FormControlService {
           });
           result = new FormArray(array);
         } else {
-          let subGroup = field.useGroupKey ? {} : group;
+          let subGroup = field.key ? {} : group;
           field.children.forEach(child => {
             //if (question.isRepeatable) {
             //  subGroup[0][child.key] = this._addValidator( child );
@@ -35,14 +34,16 @@ export class FormControlService {
           });
           result = new FormGroup(subGroup);
         }
-        if (field.useGroupKey) {
-          group[field.useGroupKey] = result;
+        if (field.key) {
+          group[field.key] = result;
         }
+      } else if (field.controlType === 'partialGenerator') {
+        let g: any = [];//new FormGroup({});
+        group[field.key] = new FormArray(g);
       } else {
         group[field.key] = this._addValidator( field );
       }
     } );
-
     return new FormGroup( group );
   }
 

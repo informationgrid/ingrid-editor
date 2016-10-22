@@ -1,0 +1,17 @@
+<div>
+    <div class="form-group well well-sm text-center">
+        <button class="btn btn-default" type="button" (click)="showPartialChoice()">{{field.label}}</button>
+        <!--<div class="clearfix"></div>-->
+    </div>
+</div>
+
+<modal #addPartial title="Hinzufügen" submitButtonLabel="Hinzufügen" (onSubmit)="addPartialToForm()">
+    <modal-content>
+        <div class="radio" *ngFor="let type of types">
+            <label>
+                <input name="type" type="radio" [(ngModel)]="choiceType" [value]="type.id"> {{type.label}}
+            </label>
+        </div>
+        Model: {{choiceType}}
+    </modal-content>
+</modal>

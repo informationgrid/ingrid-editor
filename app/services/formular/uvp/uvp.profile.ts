@@ -1,6 +1,8 @@
-import {TableField, TextareaField, TextboxField, Container} from "../../../+form/controls/index";
+import {TextareaField, TextboxField, Container, DropdownField} from "../../../+form/controls";
 import {MapField} from "../../../+form/controls/field-map";
 import {LatLng, TileLayer} from "leaflet";
+import {PartialGeneratorField} from "../../../+form/controls/field-partial-generator";
+import {OpenTableField} from "../../../+form/controls/field-opentable";
 
 let linkDocTypes = {
   values: ['PDF', 'XML', 'ZIP', 'TXT', 'andere']
@@ -9,7 +11,7 @@ let linkDocTypes = {
 export let profile = [
 
   new Container({
-    useGroupKey: 'mainInfo',
+    key: 'mainInfo',
     domClass: 'half',
     children: [
       new TextboxField({
@@ -55,16 +57,19 @@ export let profile = [
   }),
 
 
-  new TableField({
+  new OpenTableField({
     key: 'categories',
     label: 'Kategorien',
     columns: [
-      {headerName: 'Kategorie', field: 'category', editable: true}
+      new TextboxField({
+        key: 'category',
+        label: 'Kategorie'
+      })
     ],
     order: 2
   }),
 
-  new Container({
+  /*new Container({
     useGroupKey: 'publicDisplay',
     label: 'Öffentliche Auslegung',
     isRepeatable: true,
@@ -180,6 +185,219 @@ export let profile = [
         ]
       })
     ]]
+  })*/
+
+  new PartialGeneratorField({
+    key: 'sections',
+    label: 'Sektion hinzufügen',
+    order: 5,
+    partials: [
+      new Container({
+        key: 'publicDisplay',
+        label: 'Öffentliche Auslegung',
+        children: [
+          new TextboxField({
+            key: 'date',
+            label: 'Datum',
+            // domClass: 'half',
+            type: 'date'
+          }),
+          new OpenTableField({
+            key: 'constructionInfo',
+            label: 'Auslegungsinformationen',
+            columns: [
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new DropdownField({
+                key: 'type',
+                label: 'Typ',
+                options: [{key: 'pdf', value: 'my pdf'}, {key: 'xml', value: 'my xml'}]
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
+            ]
+          }),
+          new OpenTableField({
+            key: 'applicationDocs',
+            label: 'Antragsunterlagen',
+            columns: [
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
+            ]
+          }),
+          new OpenTableField({
+            key: 'reportsAndRecommendations',
+            label: 'Berichte und Empfehlungen',
+            columns: [
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
+            ]
+          }),
+          new OpenTableField({
+            key: 'additionalDocs',
+            label: 'Weitere Unterlagen',
+            columns: [
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
+            ]
+          })
+        ]
+      }),
+      new Container({
+        key: 'approvalDecisions',
+        label: 'Zulassungsentscheidung',
+        children: [
+          new TextboxField({
+            key: 'date',
+            label: 'Datum',
+            // domClass: 'half',
+            type: 'date'
+          }),
+          new TextareaField({
+            key: 'paymentDecision',
+            label: 'Zahlungsentscheidung',
+            // domClass: 'half',
+            rows: 5
+          }),
+          new OpenTableField({
+            key: 'constructionInfo',
+            label: 'Auslegungsinformationen',
+            columns: [
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
+            ]
+          })
+        ]
+      }),
+      new Container({
+        key: 'publicHearingDates',
+        label: 'Erörterungstermin',
+        children: [
+          new TextboxField({
+            key: 'date',
+            label: 'Datum',
+            // domClass: 'half',
+            type: 'date'
+          }),
+          new OpenTableField({
+            key: 'announcements',
+            label: 'Bekanntmachung',
+            columns: [
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
+            ]
+          })
+        ]
+      })
+    ]
   })
 
 ];

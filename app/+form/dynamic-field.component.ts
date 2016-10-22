@@ -1,4 +1,4 @@
-import {Component, Input} from "@angular/core";
+import {Component, Input, EventEmitter, Output} from "@angular/core";
 import {FormGroup} from "@angular/forms";
 import {FieldBase} from "./controls";
 
@@ -11,6 +11,8 @@ export class DynamicFieldComponent {
   @Input() field: FieldBase<any>;
   @Input() form: FormGroup;
   @Input() value: any;
+
+  @Output() onAddSection = new EventEmitter<any>();
 
   /*get isValid() {
    return this.form.controls[this.field.key].valid;
@@ -26,5 +28,9 @@ export class DynamicFieldComponent {
       }
     });
     return allErrors.join('<br>');
+  }
+
+  addSection(data: any) {
+    this.onAddSection.emit(data);
   }
 }
