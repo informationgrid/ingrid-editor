@@ -42,7 +42,11 @@ dyn-field {
   display: inline-block;
 }
 
-dynamic-form input[type=text], dynamic-form textarea {
+dynamic-form input[type=text],
+dynamic-form input[type=date],
+dynamic-form input[type=number],
+dynamic-form select,
+dynamic-form textarea {
   width: 100%;
 }
 
@@ -118,4 +122,8 @@ sidebar .list-group-item:hover {
 .list-group-item.active {
   background-color: #5999d0;
   border-color: #5999d0;
+}
+
+.cell select {
+  height: 25px;
 }

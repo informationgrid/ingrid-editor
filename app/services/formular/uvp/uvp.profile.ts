@@ -1,7 +1,8 @@
-import {TableField, TextareaField, TextboxField, Container} from "../../../+form/controls/index";
+import {TextareaField, TextboxField, Container, DropdownField} from "../../../+form/controls";
 import {MapField} from "../../../+form/controls/field-map";
 import {LatLng, TileLayer} from "leaflet";
 import {PartialGeneratorField} from "../../../+form/controls/field-partial-generator";
+import {OpenTableField} from "../../../+form/controls/field-opentable";
 
 let linkDocTypes = {
   values: ['PDF', 'XML', 'ZIP', 'TXT', 'andere']
@@ -56,11 +57,14 @@ export let profile = [
   }),
 
 
-  new TableField({
+  new OpenTableField({
     key: 'categories',
     label: 'Kategorien',
     columns: [
-      {headerName: 'Kategorie', field: 'category', editable: true}
+      new TextboxField({
+        key: 'category',
+        label: 'Kategorie'
+      })
     ],
     order: 2
   }),
@@ -198,48 +202,113 @@ export let profile = [
             // domClass: 'half',
             type: 'date'
           }),
-          new TableField({
+          new OpenTableField({
             key: 'constructionInfo',
             label: 'Auslegungsinformationen',
             columns: [
-              {headerName: 'Titel', field: 'title', editable: true},
-              {headerName: 'Link', field: 'link', editable: true},
-              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
-              {headerName: 'Größe', field: 'size', editable: true},
-              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new DropdownField({
+                key: 'type',
+                label: 'Typ',
+                options: [{key: 'pdf', value: 'my pdf'}, {key: 'xml', value: 'my xml'}]
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
             ]
           }),
-          new TableField({
+          new OpenTableField({
             key: 'applicationDocs',
             label: 'Antragsunterlagen',
             columns: [
-              {headerName: 'Titel', field: 'title', editable: true},
-              {headerName: 'Link', field: 'link', editable: true},
-              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
-              {headerName: 'Größe', field: 'size', editable: true},
-              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
             ]
           }),
-          new TableField({
+          new OpenTableField({
             key: 'reportsAndRecommendations',
             label: 'Berichte und Empfehlungen',
             columns: [
-              {headerName: 'Titel', field: 'title', editable: true},
-              {headerName: 'Link', field: 'link', editable: true},
-              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
-              {headerName: 'Größe', field: 'size', editable: true},
-              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
             ]
           }),
-          new TableField({
+          new OpenTableField({
             key: 'additionalDocs',
             label: 'Weitere Unterlagen',
             columns: [
-              {headerName: 'Titel', field: 'title', editable: true},
-              {headerName: 'Link', field: 'link', editable: true},
-              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
-              {headerName: 'Größe', field: 'size', editable: true},
-              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
             ]
           })
         ]
@@ -260,15 +329,31 @@ export let profile = [
             // domClass: 'half',
             rows: 5
           }),
-          new TableField({
+          new OpenTableField({
             key: 'constructionInfo',
             label: 'Auslegungsinformationen',
             columns: [
-              {headerName: 'Titel', field: 'title', editable: true},
-              {headerName: 'Link', field: 'link', editable: true},
-              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
-              {headerName: 'Größe', field: 'size', editable: true},
-              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
             ]
           })
         ]
@@ -283,15 +368,31 @@ export let profile = [
             // domClass: 'half',
             type: 'date'
           }),
-          new TableField({
+          new OpenTableField({
             key: 'announcements',
             label: 'Bekanntmachung',
             columns: [
-              {headerName: 'Titel', field: 'title', editable: true},
-              {headerName: 'Link', field: 'link', editable: true},
-              {headerName: 'Typ', field: 'type', editable: true, cellEditor: 'select', cellEditorParams: linkDocTypes},
-              {headerName: 'Größe', field: 'size', editable: true},
-              {headerName: 'Gültig bis', field: 'expiresAt', editable: true}
+              new TextboxField({
+                key: 'title',
+                label: 'Titel'
+              }),
+              new TextboxField({
+                key: 'link',
+                label: 'Link'
+              }),
+              new TextboxField({
+                key: 'type',
+                label: 'Typ'
+              }),
+              new TextboxField({
+                key: 'size',
+                label: 'Größe'
+              }),
+              new TextboxField({
+                key: 'expiresAt',
+                label: 'Gültig bis',
+                type: 'date'
+              })
             ]
           })
         ]
