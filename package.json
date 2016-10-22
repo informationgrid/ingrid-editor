@@ -33,7 +33,6 @@
     "font-awesome": "^4.6.3",
     "leaflet": "^1.0.1",
     "ng2-modal": "0.0.21",
-    "ng2-translate": "3.1.2",
     "rxjs": "^5.0.0-rc.1",
     "split.js": "^1.0.7",
     "zone.js": "^0.6.25"

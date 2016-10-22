@@ -7,7 +7,6 @@ import {FormToolbarService} from "./+form/toolbar/form-toolbar.service";
 import {appRoutingProviders, routing} from "./router";
 import {RadioControlRegistry} from "@angular/forms/src/directives/radio_control_value_accessor";
 import {ROUTER_PROVIDERS} from "@angular/router/src/router_module";
-import {TranslateModule} from "ng2-translate";
 import {PluginsModule} from "./plugins/plugins.module";
 import {FieldsModule} from "./+fields/fields.module";
 import {DashboardModule} from "./+dashboard/dashboard.module";
@@ -25,7 +24,7 @@ import {UserModule} from "./+user/user.module";
 
 @NgModule( {
   declarations: [AppComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
-  imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, PluginsModule, routing, ModalModule, TranslateModule.forRoot()],
+  imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, PluginsModule, routing, ModalModule],
   providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, FormToolbarService, FormularService, StorageService, StorageDummyService, BehaviourService, BehavioursDefault, ModalService, {
     provide: LocationStrategy,
     useClass: HashLocationStrategy

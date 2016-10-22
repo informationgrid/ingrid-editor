@@ -24,11 +24,11 @@ module.exports = webpackMerge(commonConfig, {
             root: helpers.root(''),
             verbose: true
         }),
-        new webpack.dependencies.LabeledModulesPlugin(),
+        // new webpack.dependencies.LabeledModulesPlugin(),
         new webpack.NoErrorsPlugin(),
-        new webpack.optimize.DedupePlugin(),
+        // new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin({
-            mangle: false // needed for RC5
+            // mangle: false // needed for RC5
         }),
         new ExtractTextPlugin('styles.css'),
         new CopyWebpackPlugin( [

@@ -15,10 +15,10 @@
             <ul class="nav navbar-nav">
                 <li *ngFor="let route of routes">
                     <a [routerLink]="route.path" href="#"
-                       routerLinkActive="active">{{route.name | translate }}</a>
+                       routerLinkActive="active">{{route.name}}</a>
                 </li>
             </ul>
-            <p class="navbar-text navbar-right">{{ 'Signed in as' | translate }}
+            <p class="navbar-text navbar-right">Eingeloggt als
                 <a href="#" class="navbar-link" (click)="logout()">
                     André Wallat
                     <span title="Logout" class="glyphicon glyphicon-log-out"></span>

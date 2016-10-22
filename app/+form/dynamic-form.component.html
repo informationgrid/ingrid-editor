@@ -76,47 +76,17 @@
                                 </div>
                             </div>
 
-                            <!-- render generator button -->
-                            <!--<dyn-field [field]="field" [form]="form" [value]="data"
-                                       (onAddSection)="addSection($event)"></dyn-field>-->
+                            <!-- render generator field -->
                             <partial-generator [field]="field" [form]="form" (onAddSection)="addSection($event)"></partial-generator>
 
                         </div>
-                        <!--<dyn-field *ngFor="let child of field.children" [field]="child"
-                                   [form]="form.controls[field.useGroupKey]" [value]="data[field.useGroupKey]"
-                                   class="padding {{child.domClass}}">
-                        </dyn-field>-->
-                        <!--<div *ngFor="let groups of field.children; let i=index" [formGroupName]="i"
-                             class="panel panel-default">
-                            <div class="panel-heading" (click)="expandedField[field.useGroupKey + i] = !expandedField[field.useGroupKey + i]">
-                                <span class="fa" [class.fa-caret-down]="expandedField[field.useGroupKey + i]"
-                                      [class.fa-caret-right]="!expandedField[field.useGroupKey + i]"></span>
-                                <span class="title">{{i+1}}. {{field.label}}</span>
-                                <button class="close pull-right" aria-label="Close"
-                                        *ngIf="form.controls[field.useGroupKey].controls.length > 1"
-                                        (click)="removeArrayGroup(field.useGroupKey, i)"><span
-                                        aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="panel-body" [class.hide]="!expandedField[field.useGroupKey + i]">
-                                <dyn-field *ngFor="let child of groups" [field]="child"
-                                           [form]="form.controls[field.useGroupKey].controls[i]"
-                                           [value]="data[field.useGroupKey] ? data[field.useGroupKey][i] : {}"
-                                           class="padding {{child.domClass}}">
-                                </dyn-field>
-                            </div>
-                        </div>
-                    </div>
-                    <button (click)="addArrayGroup(field.useGroupKey)" type="button"
-                            class="pull-right btn btn-default">Hinzufügen
-                    </button>-->
                     </div>
                 </fieldset>
 
             </div>
 
-
-            <strong>Form contains the following values</strong><br>{{form.value | json}}
-            <p>Form is valid: {{form.valid}}</p>
+            <!--<strong>Form contains the following values</strong><br>{{form.value | json}}
+            <p>Form is valid: {{form.valid}}</p>-->
         </form>
 
 
@@ -138,4 +108,3 @@
         <p>Möchten Sie wirklich diesen Datensatz löschen?</p>
     </modal-content>
 </modal>
-
