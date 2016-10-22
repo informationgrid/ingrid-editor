@@ -18,7 +18,13 @@
                        routerLinkActive="active">{{route.name | translate }}</a>
                 </li>
             </ul>
-            <p class="navbar-text navbar-right">{{ 'Signed in as' | translate }} <a href="#" class="navbar-link">André Wallat</a></p>
+            <p class="navbar-text navbar-right">{{ 'Signed in as' | translate }}
+                <a href="#" class="navbar-link" (click)="logout()">
+                    André Wallat
+                    <span title="Logout" class="glyphicon glyphicon-log-out"></span>
+                </a>
+                &nbsp;
+            </p>
         </div>
     </div>
 </nav>

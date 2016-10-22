@@ -57,7 +57,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       } else if (eventId === 'DELETE') {
         this.deleteDoc();
       } else if (eventId === 'PRINT') {
-        this.modalService.showError('Die Detailansicht ist noch nicht implementiert.');
+        this.modalService.showNotImplemented();
       }
     });
 

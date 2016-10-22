@@ -18,6 +18,10 @@ export class ModalService {
   showError(message: string) {
     this.errorDialog.next({
       message: message
-    });
+    })
+  }
+
+  showNotImplemented() {
+    this.showError('Diese Funktion ist noch nicht implementiert!');
   }
 }
