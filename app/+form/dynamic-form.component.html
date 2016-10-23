@@ -88,8 +88,19 @@
             <!--<strong>Form contains the following values</strong><br>{{form.value | json}}
             <p>Form is valid: {{form.valid}}</p>-->
         </form>
+    </div>
 
-
+    <!-- bottom info bar -->
+    <div class="bottom-bar" (click)="showDateBar = !showDateBar">
+        <span class="content text-muted" [class.expanded]="showDateBar">
+            <span class="glyphicon glyphicon-time" [class.active]="showDateBar"
+                  title="Zeige Datumsinformation"></span>
+            <small>
+                <strong>Erstellt:</strong> {{data._created | date:'HH:mm:ss - dd.MM.yyyy'}}
+                <strong>Geändert:</strong> {{data._modified | date:'HH:mm:ss - dd.MM.yyyy'}}
+            </small>
+            <!--<span class="glyphicon glyphicon-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
+        </span>
     </div>
 </div>
 

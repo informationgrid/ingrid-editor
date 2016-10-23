@@ -22,9 +22,10 @@ export class MetadataTreeComponent implements OnInit {
   };
 
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute) {
-    /*storageService.datasetsChanged.asObservable().subscribe( () => {
-      this.query();
-    } );*/
+    storageService.datasetsChanged.asObservable().subscribe( () => {
+      this.nodes = [];
+      this.query(null);
+    } );
   }
 
   ngOnInit() {

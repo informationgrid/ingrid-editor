@@ -93,6 +93,9 @@ var getDocument = function (id, publishedVersion) {
 var _addInfo = function (doc, data, id) {
   doc._id = id;
   doc._state = _setPublishedState(data);
+  doc._created = data._created;
+  doc._modified = data._modified;
+  doc._published = data._published;
 };
 //
 // var insertDocument = function (doc, publishedVersion) {
@@ -128,9 +131,13 @@ var updateDocument = function (doc, publishedVersion) {
       // TODO: remove id? => but needed in client to send correct updates back to this server
       delete doc._id;
 
+      // update modified timestamp
+      data._modified = new Date();
+
       if (publishedVersion) {
         data.draft = null;
         data.published = doc;
+        data._published = data._modified;
       } else {
         data.draft = doc;
       }
@@ -138,10 +145,20 @@ var updateDocument = function (doc, publishedVersion) {
       return collection.updateOne({_id: data._id}, data);
     });
   } else {
+    var creationDate = new Date();
     var dbDoc = {
-      _id: doc._id
+      _id: doc._id,
+      _created: creationDate,
+      _modified: creationDate
     };
-    publishedVersion ? dbDoc.publish = doc : dbDoc.draft = doc;
+
+    if (publishedVersion) {
+      dbDoc.publish = doc;
+      dbDoc._published = creationDate;
+    } else {
+      dbDoc.draft = doc;
+    }
+
     return collection.insertOne(dbDoc).then(function (result) {
       return result.insertedId.toString();
     });
@@ -156,6 +173,7 @@ var revert = function (id) {
     if (!data.published) throw new Error('Dataset cannot be reverted, since it does not have a published version.');
 
     data.draft = null;
+    data._modified = data._published;
     return collection.updateOne({_id: data._id}, data).then(function () {
       data.published._id = id;
       data.published._state = _setPublishedState(data);

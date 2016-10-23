@@ -165,12 +165,12 @@ paths:
         description: "The ID of the dataset."
         required: true
         type: "string"
-      - in: "body"
-        name: "data"
+      - name: "data"
+        in: "body"
         description: "The dataset to be stored."
         required: true
         schema:
-          $ref: "#/definitions/Dataset"
+          $ref: "#/definitions/DatasetClient"
       - name: "publish"
         in: "query"
         description: "If we want to store the published version then this parameter\
@@ -213,6 +213,26 @@ paths:
       x-swagger-router-controller: "Datasets"
 definitions:
   Dataset:
+    type: "object"
+    required:
+    - _created
+    properties:
+      _id:
+        type: "string"
+        description: "Unique identifier"
+      _profile:
+        type: "string"
+        description: "Description of the dataset."
+      _created:
+        type: "string"
+        description: "The date the dataset was created."
+      _modified:
+        type: "string"
+        description: "The date the dataset was last modified."
+      _published:
+        type: "string"
+        description: "The date the dataset was last published."
+  DatasetClient:
     type: "object"
     properties:
       _id:

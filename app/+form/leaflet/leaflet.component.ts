@@ -1,6 +1,7 @@
 import {AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, forwardRef} from "@angular/core";
 import {LatLng, Map} from "leaflet";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {ModalService} from "../../services/modal/modal.service";
 
 
 export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
@@ -13,13 +14,27 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
 @Component({
   selector: 'leaflet',
   template: `
-    <div #leaflet></div>
-    <div class="fieldContainer half">
-        <input type="text" class="form-control" [(ngModel)]="_bbox.lat" (change)="handleChange()">
-    </div><div class="fieldContainer half"> <!-- white space between divs would create an unwanted gap!!! -->
-        <input type="text" class="form-control" [(ngModel)]="_bbox.lon" (change)="handleChange()">
+    <div #leaflet title="Zum Verändern des Ausschnitts, müssen Sie den Bearbeiten-Knopf drücken."></div>
+    <!--<div class="fieldContainer half">
+        Latitude: <input type="text" class="form-control" [(ngModel)]="_bbox.lat" (change)="handleChange()">
+    </div><div class="fieldContainer half"> &lt;!&ndash; white space between divs would create an unwanted gap!!! &ndash;&gt;
+        Longitude: <input type="text" class="form-control" [(ngModel)]="_bbox.lon" (change)="handleChange()">
+    </div>-->
+    <div class="full">
+        <button type="button" title="Bearbeiten" [class.active]="mapEditing" class="btn btn-default glyphicon glyphicon-edit pull-left" (click)="toggleMap()"></button>
+        <button type="button" title="Suchen" class="btn btn-default glyphicon glyphicon-search pull-right" (click)="showSearch()"></button>
+        <div class="text-muted text-center">
+            <small>
+                Latitude: {{_bbox.lat | number:'1.0-4'}}
+                <br>
+                Longitude: {{_bbox.lon | number:'1.0-4'}}
+            </small>
+        </div>
     </div>
   `,
+  styles: [`
+    
+  `],
   providers: [LEAFLET_CONTROL_VALUE_ACCESSOR]
 })
 export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
@@ -32,9 +47,9 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
 
   private _onChangeCallback: (x: any) => void;
   private _bbox: any = {};
+  private mapEditing: boolean = false;
 
-
-  constructor() {
+  constructor(private modalService: ModalService) {
   }
 
   get bbox(): any {
@@ -73,6 +88,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
 
     if (this.bbox) this.options.center = new LatLng(this.bbox.lat, this.bbox.lon);
     this.leafletReference = L.map(this.leaflet.nativeElement, this.options);
+    this.leafletReference.dragging.disable();
     // this.leafletReference._onResize();
 
     this.leafletReference.on('moveend', () => {
@@ -82,6 +98,21 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
       this._bbox.lat = center.lat;
       this._bbox.lon = center.lng;
     });
+  }
+
+  showSearch() {
+    this.modalService.showNotImplemented();
+  }
+
+  toggleMap() {
+    let enabled = this.leafletReference.dragging.enabled();
+    if (enabled) {
+      this.leafletReference.dragging.disable();
+      this.mapEditing = false;
+    } else {
+      this.leafletReference.dragging.enable();
+      this.mapEditing = true;
+    }
   }
 
   /**
