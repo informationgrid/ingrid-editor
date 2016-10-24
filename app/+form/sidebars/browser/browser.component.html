@@ -8,13 +8,13 @@
         </span>
     </div>
     <ul class="list-group">
-        <li *ngFor="let entry of entries" class="list-group-item" (click)="open(entry._id)" [class.active]="selectedId === entry._id">
+        <li *ngFor="let entry of entries" class="list-group-item" (click)="open(entry._id, entry.title)" [class.active]="selectedId === entry._id">
             <span class="label"
                   [class.label-primary]="entry._state === 'P'"
                   [class.label-warning]="entry._state === 'W'"
                   [class.pubished-working-label]="entry._state === 'PW'"
             >{{entry._profile}}</span>
-            {{showTitle(entry)}}
+            {{entry.title}}
         </li>
     </ul>
 </div>

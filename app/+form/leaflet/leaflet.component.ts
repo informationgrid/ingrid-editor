@@ -22,7 +22,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
     </div>-->
     <div class="full">
         <button type="button" title="Bearbeiten" [class.active]="mapEditing" class="btn btn-default glyphicon glyphicon-edit pull-left" (click)="toggleMap()"></button>
-        <button type="button" title="Suchen" class="btn btn-default glyphicon glyphicon-search pull-right" (click)="showSearch()"></button>
+        <button type="button" title="Suchen" [class.active]="showSearch" class="btn btn-default glyphicon glyphicon-search pull-right" (click)="showSearch = !showSearch"></button>
         <div class="text-muted text-center">
             <small>
                 Latitude: {{_bbox.lat | number:'1.0-4'}}
@@ -30,6 +30,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
                 Longitude: {{_bbox.lon | number:'1.0-4'}}
             </small>
         </div>
+        <input *ngIf="showSearch" #locationQuery type="text" class="form-control" (keyup)="searchLocation(locationQuery)">
     </div>
   `,
   styles: [`
@@ -48,6 +49,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   private _onChangeCallback: (x: any) => void;
   private _bbox: any = {};
   private mapEditing: boolean = false;
+  private showSearch: boolean = false;
 
   constructor(private modalService: ModalService) {
   }
@@ -88,7 +90,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
 
     if (this.bbox) this.options.center = new LatLng(this.bbox.lat, this.bbox.lon);
     this.leafletReference = L.map(this.leaflet.nativeElement, this.options);
-    this.leafletReference.dragging.disable();
+    this.toggleMap(true);
     // this.leafletReference._onResize();
 
     this.leafletReference.on('moveend', () => {
@@ -100,17 +102,24 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     });
   }
 
-  showSearch() {
+  searchLocation(query: string) {
     this.modalService.showNotImplemented();
+
   }
 
-  toggleMap() {
-    let enabled = this.leafletReference.dragging.enabled();
+  toggleMap(forceDisable?: boolean) {
+    let enabled = forceDisable ? true : this.leafletReference.dragging.enabled();
     if (enabled) {
       this.leafletReference.dragging.disable();
+      this.leafletReference.scrollWheelZoom.disable();
+      this.leafletReference.doubleClickZoom.disable();
+      this.leafletReference.touchZoom.disable();
       this.mapEditing = false;
     } else {
       this.leafletReference.dragging.enable();
+      this.leafletReference.scrollWheelZoom.enable();
+      this.leafletReference.doubleClickZoom.enable();
+      this.leafletReference.touchZoom.enable();
       this.mapEditing = true;
     }
   }

@@ -1,5 +1,6 @@
 import {TextboxField, TextareaField, RadioField, CheckboxField, TableField} from "../../../+form/controls/index";
 import {OpenTableField} from "../../../+form/controls/field-opentable";
+import {LinkDatasetField} from "../../../+form/controls/field-link-dataset";
 
 export let profile = [
 
@@ -8,6 +9,13 @@ export let profile = [
     label: 'Titel',
     // domClass: 'half',
     order: 10
+  }),
+
+  new LinkDatasetField({
+    key: 'publisher',
+    label: 'Herausgeber',
+    filter: { _profile: 'ISO' },
+    order: 12
   }),
 
   new TextboxField({

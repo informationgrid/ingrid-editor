@@ -12,10 +12,11 @@ import {OpenTable} from "./opentable/opentable.component";
 import {PartialGenerator} from "./partialGenerator/partial-generator.component";
 import {TreeModule} from 'angular2-tree-component'
 import {TreeComponent, MetadataTreeComponent} from "./sidebars/tree/tree.component";
+import {LinkDatasetComponent} from "./linkDataset/link-dataset.component";
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule, TreeModule],
-  declarations: [FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator, BrowserComponent, MetadataTreeComponent, LeafletComponent, DynamicFormComponent],
+  declarations: [FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator, BrowserComponent, MetadataTreeComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent],
   exports: []
 })
 export class IgeFormModule {
