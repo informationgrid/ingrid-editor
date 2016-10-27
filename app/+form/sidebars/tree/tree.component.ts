@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {StorageService} from "../../../services/storage/storage.service";
 import {TreeComponent, TreeNode} from "angular2-tree-component";
 import {Router, ActivatedRoute} from "@angular/router";
+import {FormularService} from "../../../services/formular/formular.service";
 
 @Component({
   selector: 'tree',
@@ -16,12 +17,13 @@ export class MetadataTreeComponent implements OnInit {
 
   options = {
     getChildren: (node: TreeNode) => {
-      console.log( 'get children ...' );
+      console.log( 'get children ...', node.id );
       this.query(node.id);
     }
   };
 
-  constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute) {
+  constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
+              private formularService: FormularService) {
     storageService.datasetsChanged.asObservable().subscribe( () => {
       this.nodes = [];
       this.query(null);
@@ -44,7 +46,7 @@ export class MetadataTreeComponent implements OnInit {
   query(id: string): Promise<any> {
     return new Promise(resolve => {
       this.storageService.getChildDocuments(id).subscribe(response => {
-        this.setNodes(response);
+        this.setNodes(response, id);
         resolve();
       });
     });
@@ -53,30 +55,40 @@ export class MetadataTreeComponent implements OnInit {
   prepareNode(doc: any): any {
     let node: any = {
       id: doc._id,
-      name: this.showTitle(doc),
+      name: this.formularService.getTitle(doc._profile, doc),
       _profile: doc._profile,
       _state: doc._state,
+      // children: [],
       _id: doc._id
     };
-    if (doc.isFolder) {
+    if (doc.hasChildren) {
       node.hasChildren = true;
-    } else {
-      node.children = [];
     }
+
     return node;
   }
 
-  setNodes(docs: any[]) {
+  setNodes(docs: any[], parentId: string) {
+    let updatedNodes = this.nodes;
+    if (parentId) {
+      updatedNodes = this.nodes.filter( node => node.id === parentId)[0];
+      updatedNodes.children = [];
+    }
+
     docs
       .filter( doc => doc._profile !== undefined )
       .forEach( doc => {
-        this.nodes.push(this.prepareNode(doc));
+        if (parentId) {
+          updatedNodes.children.push(this.prepareNode(doc));
+        } else {
+          updatedNodes.push(this.prepareNode(doc));
+        }
       });
     console.log('nodes: ', this.nodes);
     this.tree.treeModel.update();
   }
 
-  showTitle(entry: any): string {
+  /*showTitle(entry: any): string {
     if (entry.title) {
       return entry.title;
     } else if (entry['mainInfo.title']) {
@@ -84,7 +96,7 @@ export class MetadataTreeComponent implements OnInit {
     } else {
       return '- untitled -';
     }
-  }
+  }*/
 
   open(id: string) {
     this.selectedId = id;

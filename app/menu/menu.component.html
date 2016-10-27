@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav *ngIf="authService.loggedIn()" class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -18,9 +18,10 @@
                        routerLinkActive="active">{{route.name}}</a>
                 </li>
             </ul>
-            <p class="navbar-text navbar-right">Eingeloggt als
+            <p class="navbar-text navbar-right">
                 <a href="#" class="navbar-link" (click)="logout()">
-                    André Wallat
+                    Logout
+                    <!--André Wallat-->
                     <span title="Logout" class="glyphicon glyphicon-log-out"></span>
                 </a>
                 &nbsp;

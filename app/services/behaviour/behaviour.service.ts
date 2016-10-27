@@ -7,7 +7,9 @@ import {ModalService} from "../modal/modal.service";
 import {Observable} from "rxjs";
 
 // the variable containing additional behaviours is global!
-declare var additionalBehaviours: any;
+declare let additionalBehaviours: any;
+
+const serviceUrl = 'http://localhost:8080/v1/';
 
 @Injectable()
 export class BehaviourService {
@@ -28,7 +30,7 @@ export class BehaviourService {
         console.log( 'loaded additional behaviours' );
         // TODO: activate again!
         this.behaviours.push( ...additionalBehaviours );
-        this.http.get('http://localhost:8080/v1/behaviours').toPromise().then((response: Response) => {
+        this.http.get(serviceUrl + 'behaviours').toPromise().then((response: Response) => {
           let storedBehaviours = response.json();
           this.behaviours.forEach( (behaviour) => {
             let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id);
@@ -66,7 +68,7 @@ export class BehaviourService {
       _id: behaviour.id,
       active: behaviour.isActive
     };
-    this.http.post('http://localhost:8080/v1/behaviours', stripped).toPromise().catch( err => {
+    this.http.post(serviceUrl + 'behaviours', stripped).toPromise().catch( err => {
       this.modalService.showError(err);
       return Observable.throw(err);
     });

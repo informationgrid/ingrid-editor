@@ -1,5 +1,4 @@
-<h1>Benutzerverwaltung</h1>
-<ul>
+<!--<ul>
     <li>Verwaltung von Benutzern</li>
     <ul>
         <li>anlegen, bearbeiten neuer Benutzer</li>
@@ -11,4 +10,105 @@
         <li>Rechte auf Unterbäume (wenn Hierarchien vorhanden)</li>
         <li>Rechte auf Dokumente mit speziellen Attributen</li>
     </ul>
+</ul>-->
+<ul class="nav nav-tabs">
+    <li role="presentation" [class.active]="currentTab === 'users'"><a (click)="currentTab = 'users'">Benutzer</a></li>
+    <li role="presentation" [class.active]="currentTab === 'roles'"><a (click)="currentTab = 'roles'">Rollen</a></li>
 </ul>
+<div [class.hide]="currentTab !== 'users'">
+    <div class="splitWrapper padding-vertical">
+        <div id="sidebarUser" class="split split-horizontal container">
+            <div class="list-group">
+                <button *ngFor="let user of users" type="button" class="list-group-item"
+                        [class.disabled]="user === selectedUser"
+                        (click)="loadUser(user)">
+                    {{user.name}}
+                </button>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary glyphicon glyphicon-plus" (click)="addUser()"></button>
+            </div>
+        </div>
+        <div id="formUser" class="split split-horizontal container-fluid">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-control" autocomplete="off" value="{{selectedUser?.name}}">
+            </div>
+            <div class="form-group">
+                <label>Passwort</label>
+                <input type="password" class="form-control" autocomplete="new-password"
+                       value="{{selectedUser?.password}}">
+            </div>
+            <div class="form-group">
+                <label>Rollen</label>
+                <select class="form-control" value="{{selectedUser?.roles}}">
+                    <option *ngFor="let role of roles" value="role.id">{{role.name}}</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary pull-right" (click)="saveUser()">Speichern</button>
+        </div>
+    </div>
+</div>
+
+<div [class.hide]="currentTab !== 'roles'" class="container">
+    <div class="splitWrapper padding-vertical">
+        <div id="sidebarRoles" class="split split-horizontal container">
+            <div class="list-group">
+                <button *ngFor="let role of roles" type="button" class="list-group-item"
+                        [class.disabled]="role === selectedRole"
+                        (click)="loadRole(role)">
+                    {{role.name}}
+                </button>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary glyphicon glyphicon-plus" (click)="addRole()"></button>
+            </div>
+        </div>
+        <div id="formRoles" class="split split-horizontal container-fluid">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Berechtigungen</h3>
+                </div>
+                <div class="panel-body">
+                    Keine gesetzt.
+                </div>
+            </div>
+            <button class="btn btn-primary pull-right" (click)="newPermissionModal.open()">Berechtigung hinzufügen
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<modal #newPermissionModal title="Neue Berechtigung" cancelButtonLabel="Abbrechen" submitButtonLabel="Ok"
+       (onSubmit)="createPermission(newPermissionModal)">
+    <modal-content>
+        <ul class="nav nav-tabs">
+            <li role="presentation" [class.active]="dialogTab === 'dataset'"><a (click)="dialogTab = 'dataset'">Datensatz</a>
+            </li>
+            <li role="presentation" [class.active]="dialogTab === 'tree'"><a (click)="dialogTab = 'tree'">Teilbaum</a>
+            </li>
+            <li role="presentation" [class.active]="dialogTab === 'attribute'"><a (click)="dialogTab = 'attribute'">Datensatz-Attribut</a>
+            </li>
+        </ul>
+        <div [class.hide]="dialogTab !== 'dataset'" class="padding">
+            <div class="alert alert-info" role="alert">
+                Hier werden später individuelle Datensätze ausgewählt, für die eine Rolle Berechtigungen haben soll.
+            </div>
+        </div>
+        <div [class.hide]="dialogTab !== 'tree'" class="padding">
+            <div class="alert alert-info" role="alert">
+                Hier wird später ein Ordner oder Datensatz ausgewählt werden können, dessen Unterobjekte man den Zugriff gewähren kann.
+            </div>
+        </div>
+        <div [class.hide]="dialogTab !== 'attribute'" class="padding">
+            <div class="alert alert-info" role="alert">
+                Hier können später Attribute von Datensätzen angegeben werden, die einer Rolle Schreibrechte gewähren.
+                Bspw. kann man sich so Schreibrechte auf alle Datensätze eines bestimmten Typs gewähren oder auf solche,
+                die ein bestimmtes Feld besitzen.
+            </div>
+        </div>
+    </modal-content>
+</modal>
+

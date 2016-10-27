@@ -35,10 +35,12 @@ var processResults = function (results) {
     // set the id inside the document
     if (res.draft) {
       res.draft._id = res._id;
+      if (res.hasChildren) res.draft.hasChildren = true;
       res.draft._state = _setPublishedState(res);
       return res.draft;
     } else {
       res.published._id = res._id;
+      if (res.hasChildren) res.published.hasChildren = true;
       res.published._state = _setPublishedState(res);
       return res.published;
     }
@@ -128,6 +130,12 @@ var updateDocument = function (doc, publishedVersion) {
       // if document could not be found
       if (data === null) throw new Error('Dataset could not be found: ' + doc._id);
 
+      // add parent information to structure node and remove it from the data object
+      if (doc._parent) {
+        data._parent = doc._parent;
+        delete doc._parent;
+      }
+
       // TODO: remove id? => but needed in client to send correct updates back to this server
       delete doc._id;
 
@@ -151,6 +159,12 @@ var updateDocument = function (doc, publishedVersion) {
       _created: creationDate,
       _modified: creationDate
     };
+
+    // add parent information to structure node and remove it from the data object
+    if (doc._parent) {
+      dbDoc._parent = doc._parent;
+      delete doc._parent;
+    }
 
     if (publishedVersion) {
       dbDoc.publish = doc;
@@ -230,6 +244,17 @@ var getChildDocuments = function (id) {
   });*/
 };
 
+var setChildInfoTo = function(id) {
+  var collection = db.collection('documents');
+
+  return collection.findOne({'_id': new ObjectID(id)}).then(function (data) {
+    if (data && !data.hasChildren) {
+      data.hasChildren = true;
+      return collection.updateOne({_id: data._id}, data);
+    }
+  });
+};
+
 module.exports = {
   connect: connect,
   closeDB: closeDB,
@@ -243,5 +268,7 @@ module.exports = {
   revert: revert,
 
   getBehaviours: getBehaviours,
-  setBehaviour: setBehaviour
+  setBehaviour: setBehaviour,
+
+  setChildInfoTo: setChildInfoTo
 };

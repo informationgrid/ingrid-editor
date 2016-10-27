@@ -12,6 +12,13 @@ schemes:
 produces:
 - "application/json"
 paths:
+  /user/login:
+    post:
+      operationId: login
+      x-swagger-router-controller: "User"
+      responses:
+        '200':
+          description: Return the JWT
   /behaviours:
     options:
       summary: ""

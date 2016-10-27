@@ -8,7 +8,8 @@ export class OpenTableField extends FieldBase<string> {
     key: string,
     columns: FieldBase<string>[],
     label?: string,
-    order?: number
+    order?: number,
+    domClass?: string
   }) {
     super(options);
     this.columns = options['columns'] || [];

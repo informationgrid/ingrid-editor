@@ -12,7 +12,10 @@ var extractFields = function (docs, fields) {
   docs.forEach(function (doc) {
     // get all requested fields from the docs to satisfy the client for whatever
     // it will do with the result
-    var obj = {};
+    var obj = {
+      hasChildren: doc.hasChildren
+    };
+
     fields.forEach(function (field) {
       var subFields = field.split('.');
       var value = null;
@@ -119,6 +122,8 @@ exports.set = function(args, res, next) {
   var publishedVersion = args.publish.value;
   var revert = args.revert ? args.revert.value : false;
 
+  var parent = doc._parent;
+
   if (revert) {
     db.revert(id).then(function (doc) {
       res.end(JSON.stringify(doc, null, 2));
@@ -131,6 +136,10 @@ exports.set = function(args, res, next) {
   } else {
 
     db.updateDocument(doc, publishedVersion).then(function (result) {
+      // TODO: notify parent that it has a child?
+      db.setChildInfoTo(parent);
+
+      // update search index
       db.updateFullIndexSearch();
       // console.log('Inserted doc', result);
       res.end(JSON.stringify({_id: result}, null, 2))

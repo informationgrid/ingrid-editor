@@ -1,23 +1,23 @@
-import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
-import {FormGroup, FormArray} from '@angular/forms';
-import {FormControlService} from '../services/form-control.service';
-import {FieldBase, Container} from './controls';
-import {BehaviourService} from '../services/behaviour/behaviour.service';
-import {FormularService} from '../services/formular/formular.service';
-import {Behaviour} from '../services/behaviour/behaviours';
-import {FormToolbarService} from './toolbar/form-toolbar.service';
-import {Subscription} from 'rxjs';
-import {ActivatedRoute} from '@angular/router';
-import {Split} from '../../node_modules/split.js/split';
+import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from "@angular/core";
+import {FormGroup, FormArray} from "@angular/forms";
+import {FormControlService} from "../services/form-control.service";
+import {FieldBase, Container} from "./controls";
+import {BehaviourService} from "../services/behaviour/behaviour.service";
+import {FormularService} from "../services/formular/formular.service";
+import {Behaviour} from "../services/behaviour/behaviours";
+import {FormToolbarService} from "./toolbar/form-toolbar.service";
+import {Subscription} from "rxjs";
+import {ActivatedRoute} from "@angular/router";
+import {Split} from "../../node_modules/split.js/split";
 // import {StorageDummyService as StorageService} from '../services/storage/storage.dummy.service';
-import {StorageService} from '../services/storage/storage.service';
+import {StorageService} from "../services/storage/storage.service";
 import {ModalService} from "../services/modal/modal.service";
 import {Modal} from "ng2-modal";
 import {PartialGeneratorField} from "./controls/field-partial-generator";
-import {setUpControl} from "@angular/forms/src/directives/shared";
 
 interface FormData extends Object {
   _id?: string;
+  _parent?: string;
   taskId?: string;
   title?: string;
 }
@@ -42,6 +42,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   error = false;
   choiceNewDoc: string = 'UVP';
   expandedField = {};
+  addToParent: boolean = false;
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
@@ -119,10 +120,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   prepareNewDoc() {
     let profile = this.choiceNewDoc;
+    let previousId = this.data._id;
+
+    if (this.form) this.form.reset();
+
     if (this.formularService.currentProfile !== profile) {
       this.switchProfile(profile);
     }
+
     this.data = this.form.value;
+    if (this.addToParent) {
+      this.data._parent = previousId;
+    }
     this.newDocModal.close();
   }
 
@@ -194,6 +203,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     let data = this.form.value;
     // attach profile type to data, which is not reflected in form directly by value
     data._id = this.data._id;
+    data._parent = this.data._parent;
     data._profile = this.formularService.currentProfile;
     this.storageService.saveData(data).then(res => {
       this.data._id = res._id;

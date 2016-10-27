@@ -17,7 +17,7 @@ import {LinkDatasetComponent} from "./linkDataset/link-dataset.component";
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule, TreeModule],
   declarations: [FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator, BrowserComponent, MetadataTreeComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent],
-  exports: []
+  exports: [FormsModule]
 })
 export class IgeFormModule {
 }

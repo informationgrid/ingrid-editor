@@ -1,45 +1,66 @@
 body {
-  padding-top: 50px;
+    padding-top: 50px;
 }
 
 form-toolbar {
-  position: fixed;
-  top: 50px;
-  width: 100%;
-  background-color: #ececec;
-  padding: 4px;
+    position: fixed;
+    top: 50px;
+    width: 100%;
+    background-color: #ececec;
+    padding: 4px;
 }
 
 form-toolbar + div {
-  padding-top: 30px;
+    padding-top: 30px;
 }
 
-.navbar-default .navbar-nav>li>a:focus, nav a.active, nav a:focus.active {
-  background-color: #ececec;
+.navbar-default .navbar-nav > li > a:focus, nav a.active, nav a:focus.active {
+    background-color: #ececec;
 }
 
 .full {
-  width: 100% !important;
+    width: 100% !important;
 }
 
 .half {
-  width: 50% !important;
+    width: 50% !important;
+}
+
+.quarter {
+    width: 25% !important;
+}
+
+.third {
+    width: 33% !important;
+}
+
+.three-quarter {
+    width: 75% !important;
+}
+
+.two-third {
+    width: 67% !important;
 }
 
 .padding {
-  padding: 10px;
+    padding: 10px;
 }
+
+.padding-vertical {
+    padding: 10px 0;
+}
+
 .field-padding {
-  padding: 0 10px 0 0;
+    padding: 0 10px 0 0;
 }
 
 dyn-field {
-  padding-bottom: 10px;
-  display: block;
+    padding-bottom: 10px;
+    display: block;
 }
 
 .hasChildren dyn-field {
-  display: inline-block;
+    display: inline-block;
 }
 
 dynamic-form input[type=text],
@@ -47,83 +68,88 @@ dynamic-form input[type=date],
 dynamic-form input[type=number],
 dynamic-form select,
 dynamic-form textarea {
-  width: 100%;
+    width: 100%;
 }
 
 .fieldContainer {
-  display: inline-block;
-  vertical-align: top;
+    display: inline-block;
+    vertical-align: top;
 }
 
 p-dataTable {
-  width: 100%;
-  height: 100px;
+    width: 100%;
+    height: 100px;
 }
 
 .splitWrapper {
-  position: absolute;
-  top: 92px;
-  bottom: 0;
-  left: 0;
-  right: 0;
+    position: absolute;
+    top: 92px;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .split {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 
-  overflow-y: auto;
-  overflow-x: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .gutter {
-  background-color: #eee;
+    background-color: #eee;
 
-  background-repeat: no-repeat;
-  background-position: 50%;
+    background-repeat: no-repeat;
+    background-position: 50%;
 }
 
 .gutter.gutter-horizontal {
-  background-image: url('./assets/grips/vertical.png');
-  cursor: ew-resize;
+    background-image: url('./assets/grips/vertical.png');
+    cursor: ew-resize;
 }
 
 .gutter.gutter-vertical {
-  background-image: url('./assets/grips/horizontal.png');
-  cursor: ns-resize;
+    background-image: url('./assets/grips/horizontal.png');
+    cursor: ns-resize;
 }
 
 .split.split-horizontal, .gutter.gutter-horizontal {
-  height: 100%;
-  float: left;
+    height: 100%;
+    float: left;
 }
 
 .ag-body-viewport {
-  -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch;
 }
 
 sidebar .list-group-item {
-  cursor: pointer;
+    cursor: pointer;
 }
+
 sidebar .list-group-item:hover {
-  background-color: #ececec;
+    background-color: #ececec;
 }
 
 .error .modal-header {
-  background-color: #a94442;
-  color: #ffffff;
+    background-color: #a94442;
+    color: #ffffff;
 }
 
 .pubished-working-label {
-  background: linear-gradient(-90deg, #f0ad4e 50%, #337ab7 50%);
+    background: linear-gradient(-90deg, #f0ad4e 50%, #337ab7 50%);
 }
 
 .list-group-item.active {
-  background-color: #5999d0;
-  border-color: #5999d0;
+    background-color: #5999d0;
+    border-color: #5999d0;
 }
 
 .cell select {
-  height: 25px;
+    height: 25px;
+}
+
+.nav-tabs li {
+    cursor: pointer;
 }

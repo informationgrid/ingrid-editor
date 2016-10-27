@@ -3,6 +3,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {FieldBase} from "../controls";
 import {Modal} from "ng2-modal";
 import {FormControlService} from "../../services/form-control.service";
+import {PartialGeneratorField} from "../controls/field-partial-generator";
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -20,14 +21,14 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
 export class PartialGenerator implements ControlValueAccessor {
 
   @Input() form: any;
-  @Input() field: FieldBase<string>[];
+  @Input() field: PartialGeneratorField;
 
   @Output() onAddSection = new EventEmitter<any>();
 
   @ViewChild('addPartial') addPartialModal: Modal;
 
   types: any[] = [];
-  choiceType: string = 'approvalDecisions';
+  choiceType: string;
 
   private _value: any[] = [{}];
 
@@ -42,8 +43,8 @@ export class PartialGenerator implements ControlValueAccessor {
   ngAfterViewInit(): any {
     this.field.partials.forEach( part => {
       this.types.push({ label: part.label, id: part.key });
-      // this.choiceType = part.useGroupKey;
     });
+    this.choiceType = this.types[0].id;
   }
 
   // get accessor
@@ -51,17 +52,19 @@ export class PartialGenerator implements ControlValueAccessor {
     return this._value;
   }
 
+  /**
+   * Show a dialog for a selection of partial fields. If there's only one
+   * choice, then skip the dialog.
+   */
   showPartialChoice() {
-    this.addPartialModal.open();
+    if (this.types.length > 1) {
+      this.addPartialModal.open();
+    } else {
+      this.onAddSection.emit({key: this.field.key, section: this.types[0].id});
+    }
   }
 
   addPartialToForm() {
-    // debugger;
-    // let partial = this.field.partials.filter( part => part.useGroupKey === this.choiceType );
-    //
-    // // let clonedPartial: any = Object.assign({}, partial[0]);
-    // let additionalFormGroup = this.qcs.toFormGroup(partial);
-    // this.form.controls[this.field.key].controls.push(additionalFormGroup);
     this.onAddSection.emit({key: this.field.key, section: this.choiceType});
     this.addPartialModal.close();
 

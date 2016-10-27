@@ -61,9 +61,8 @@
                                     <span class="fa" [class.fa-caret-down]="expandedField[child.key + i]"
                                       [class.fa-caret-right]="!expandedField[child.key + i]"></span>
                                     <span class="title">{{i+1}}. {{child.label}}</span>
-                                    <button class="close pull-right"
+                                    <button type="button" class="close" aria-label="Close"
                                             (click)="removeArrayGroup(field.key, i)">
-                                            <!--*ngIf="form.controls[field.key].controls.length > 1"-->
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
@@ -85,8 +84,10 @@
 
             </div>
 
-            <strong>Form contains the following values</strong><br>{{form.value | json}}
-            <!--<p>Form is valid: {{form.valid}}</p>-->
+            <div class="well text-muted">
+                <strong>Form contains the following values</strong><br>{{form.value | json}}
+                <!--<p>Form is valid: {{form.valid}}</p>-->
+            </div>
         </form>
     </div>
 
@@ -109,6 +110,17 @@
         <div class="radio" *ngFor="let type of formularService.docTypes">
             <label>
                 <input name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="type.id"> {{type.label}}
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input disabled name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="folder"> virtueller Ordner (in Arbeit)
+            </label>
+        </div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" [(ngModel)]="addToParent">
+                unter geöffneten Datensatz hinzufügen
             </label>
         </div>
     </modal-content>
