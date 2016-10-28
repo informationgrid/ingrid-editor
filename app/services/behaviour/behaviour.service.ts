@@ -2,14 +2,13 @@ import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {BehavioursDefault, Behaviour} from './behaviours';
 import {EventManager} from '@angular/platform-browser';
-import {Http, Response} from "@angular/http";
-import {ModalService} from "../modal/modal.service";
-import {Observable} from "rxjs";
+import {Http, Response} from '@angular/http';
+import {ModalService} from '../modal/modal.service';
+import {Observable} from 'rxjs';
+import {ConfigService} from '../../config/config.service';
 
 // the variable containing additional behaviours is global!
 declare let additionalBehaviours: any;
-
-const serviceUrl = 'http://localhost:8080/v1/';
 
 @Injectable()
 export class BehaviourService {
@@ -19,7 +18,7 @@ export class BehaviourService {
   initialized: Promise<any>;
 
   constructor(private defaultBehaves: BehavioursDefault, private eventManager: EventManager,
-      private http: Http, private modalService: ModalService) {
+      private http: Http, private modalService: ModalService, private configService: ConfigService) {
     // eval(require( 'raw!./behaviours.js' ));
     this.behaviours = defaultBehaves.behaviours;
 
@@ -30,7 +29,7 @@ export class BehaviourService {
         console.log( 'loaded additional behaviours' );
         // TODO: activate again!
         this.behaviours.push( ...additionalBehaviours );
-        this.http.get(serviceUrl + 'behaviours').toPromise().then((response: Response) => {
+        this.http.get(this.configService.backendUrl + 'behaviours').toPromise().then((response: Response) => {
           let storedBehaviours = response.json();
           this.behaviours.forEach( (behaviour) => {
             let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id);
@@ -68,7 +67,7 @@ export class BehaviourService {
       _id: behaviour.id,
       active: behaviour.isActive
     };
-    this.http.post(serviceUrl + 'behaviours', stripped).toPromise().catch( err => {
+    this.http.post(this.configService.backendUrl + 'behaviours', stripped).toPromise().catch( err => {
       this.modalService.showError(err);
       return Observable.throw(err);
     });

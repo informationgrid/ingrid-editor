@@ -3,6 +3,7 @@ import {Injectable} from "@angular/core";
 import {tokenNotExpired} from "angular2-jwt";
 import {Observable} from "rxjs";
 import {Response, Http} from "@angular/http";
+import {ConfigService} from '../../config/config.service';
 declare var Auth0Lock: any;
 
 @Injectable()
@@ -13,14 +14,14 @@ export class AuthService {
 
   public token: string;
 
-  constructor(private http: Http, private router: Router) {
+  constructor(private http: Http, private router: Router, private configService: ConfigService) {
     // set token if saved in local storage
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.token = currentUser && currentUser.token;
   }
 
   login(username: string, password: string): Observable<boolean> {
-    return this.http.post('http://localhost:8080/v1/user/login', JSON.stringify({username: username, password: password}))
+    return this.http.post( this.configService.backendUrl + 'user/login', JSON.stringify({username: username, password: password}))
       .map((response: Response) => {
         // login successful if there's a jwt token in the response
         let token = response.json() && response.json().token;

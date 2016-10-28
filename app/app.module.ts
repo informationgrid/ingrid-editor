@@ -24,11 +24,12 @@ import {UserModule} from "./+user/user.module";
 import {LoginComponent} from "./security/login.component";
 import {AuthGuard} from "./security/auth.guard";
 import {AuthService} from "./services/security/auth.service";
+import {ConfigService} from './config/config.service';
 
 @NgModule( {
   declarations: [AppComponent, LoginComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
   imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, PluginsModule, routing, ModalModule],
-  providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, AuthGuard, AuthService, FormToolbarService, FormularService, StorageService, StorageDummyService, BehaviourService, BehavioursDefault, ModalService, {
+  providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, AuthGuard, AuthService, ConfigService, FormToolbarService, FormularService, StorageService, StorageDummyService, BehaviourService, BehavioursDefault, ModalService, {
     provide: LocationStrategy,
     useClass: HashLocationStrategy
   }], // additional providers

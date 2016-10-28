@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import {Router} from "@angular/router";
-import {AuthService} from "../services/security/auth.service";
-import {ModalService} from "../services/modal/modal.service";
+import {Router} from '@angular/router';
+import {AuthService} from '../services/security/auth.service';
+import {ModalService} from '../services/modal/modal.service';
 
 @Component({
     selector: 'login',
-    templateUrl: './security/login.component.html'
+    template: require('./login.component.html')
 })
 export class LoginComponent implements OnInit {
-  model: any = {};
+  model: any = {
+    username: 'test',
+    password: 'test'
+  };
   loading = false;
   error = '';
 
