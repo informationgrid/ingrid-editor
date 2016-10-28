@@ -1,7 +1,7 @@
-import {AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, forwardRef} from "@angular/core";
-import {LatLng, Map} from "leaflet";
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {ModalService} from "../../services/modal/modal.service";
+import {AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, forwardRef} from '@angular/core';
+import {LatLng, Map} from 'leaflet';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ModalService} from '../../services/modal/modal.service';
 
 
 export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
@@ -50,6 +50,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   private _bbox: any = {};
   private mapEditing: boolean = false;
   private showSearch: boolean = false;
+  private outsideSetData: boolean = false;
 
   constructor(private modalService: ModalService) {
   }
@@ -63,12 +64,14 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
       this._bbox = {
         lat: 50,
         lon: 12
-      }
+      };
     } else {
       this._bbox = value;
     }
     if (this.leafletReference && this.bbox) {
+      this.outsideSetData = true;
       this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
+      this.outsideSetData = false;
     }
   }
 
@@ -79,8 +82,8 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   registerOnTouched(fn: any): void {
   }
 
-  handleChange() {
-    this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
+  handleChange(setView?: boolean) {
+    if (setView) this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
     this._onChangeCallback(this._bbox);
   }
 
@@ -94,11 +97,15 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     // this.leafletReference._onResize();
 
     this.leafletReference.on('moveend', () => {
+      // if data was set from outside, then ignore update
+      if (this.outsideSetData) return;
+
       let bounds = this.leafletReference.getBounds();
       let center = bounds.getCenter();
       // console.debug( 'bounds:', center );
       this._bbox.lat = center.lat;
       this._bbox.lon = center.lng;
+      this.handleChange(false);
     });
   }
 

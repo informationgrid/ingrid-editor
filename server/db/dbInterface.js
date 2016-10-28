@@ -150,7 +150,9 @@ var updateDocument = function (doc, publishedVersion) {
         data.draft = doc;
       }
 
-      return collection.updateOne({_id: data._id}, data);
+      return collection.updateOne({_id: data._id}, data).then(function (result) {
+          return data._id.toString();
+      });
     });
   } else {
     var creationDate = new Date();

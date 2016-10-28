@@ -1,19 +1,20 @@
-import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from "@angular/core";
-import {FormGroup, FormArray} from "@angular/forms";
-import {FormControlService} from "../services/form-control.service";
-import {FieldBase, Container} from "./controls";
-import {BehaviourService} from "../services/behaviour/behaviour.service";
-import {FormularService} from "../services/formular/formular.service";
-import {Behaviour} from "../services/behaviour/behaviours";
-import {FormToolbarService} from "./toolbar/form-toolbar.service";
-import {Subscription} from "rxjs";
-import {ActivatedRoute} from "@angular/router";
-import {Split} from "../../node_modules/split.js/split";
+import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
+import {FormGroup, FormArray} from '@angular/forms';
+import {FormControlService} from '../services/form-control.service';
+import {FieldBase, Container} from './controls';
+import {BehaviourService} from '../services/behaviour/behaviour.service';
+import {FormularService} from '../services/formular/formular.service';
+import {Behaviour} from '../services/behaviour/behaviours';
+import {FormToolbarService} from './toolbar/form-toolbar.service';
+import {Subscription, Observable} from 'rxjs';
+import {ActivatedRoute, CanDeactivate, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
+import {Split} from '../../node_modules/split.js/split';
 // import {StorageDummyService as StorageService} from '../services/storage/storage.dummy.service';
-import {StorageService} from "../services/storage/storage.service";
-import {ModalService} from "../services/modal/modal.service";
-import {Modal} from "ng2-modal";
-import {PartialGeneratorField} from "./controls/field-partial-generator";
+import {StorageService} from '../services/storage/storage.service';
+import {ModalService} from '../services/modal/modal.service';
+import {Modal} from 'ng2-modal';
+import {PartialGeneratorField} from './controls/field-partial-generator';
+import {UpdateType} from '../models/update-type.enum';
 
 interface FormData extends Object {
   _id?: string;
@@ -28,10 +29,11 @@ interface FormData extends Object {
   styles: [require('./dynamic-form.component.css')],
   providers: [FormControlService]
 })
-export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, CanDeactivate<DynamicFormComponent> {
 
   @ViewChild('newDocModal') newDocModal: Modal;
   @ViewChild('deleteConfirmModal') deleteConfirmModal: Modal;
+  @ViewChild('discardConfirmModal') discardConfirmModal: Modal;
 
   fields: FieldBase<any>[] = [];
   form: FormGroup;
@@ -42,7 +44,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   error = false;
   choiceNewDoc: string = 'UVP';
   expandedField = {};
-  addToParent: boolean = false;
+  addToRoot: boolean = false;
+  // the id to remember when dirty check was true
+  // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
+  pendingId: string;
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
@@ -111,7 +116,21 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storageService.beforeSave.asObservable().subscribe((message: any) => {
       message.errors.push({ invalid: this.form.invalid });
       console.log('in observer');
-    })
+    });
+  }
+
+  canDeactivate(component: DynamicFormComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<DynamicFormComponent>|Promise<DynamicFormComponent>|boolean {
+    console.log( 'can deactive (form)' );
+    /*if (this.form && this.form.dirty) {
+      this.pendingId = null;
+      this.discardConfirmModal.open();
+      return false;
+    }
+    return true;*/
+    if (component.hasChanges()) {
+      return window.confirm('Do you really want to cancel?');
+    }
+    return true;
   }
 
   newDoc() {
@@ -129,16 +148,38 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.data = this.form.value;
-    if (this.addToParent) {
+    if (!this.addToRoot) {
       this.data._parent = previousId;
     }
+
+    // notify browser/tree of new dataset
+    this.storageService.datasetsChanged.next({type: UpdateType.New, data: {_profile: profile, _parent: this.data._parent}});
+
     this.newDocModal.close();
+  }
+
+
+  discardChanges() {
+    this.form.reset();
+    this.load(this.pendingId);
+    this.discardConfirmModal.close();
   }
 
   load(id: string) {
     // since data always stays the same there's no change detection if we load the same data again
     // even if we already have changed the formular
     // since loading will be async, we only have to reset the data first
+
+    // check if form was changed and ask for saving data
+    if (this.form && this.form.dirty) {
+      this.pendingId = id;
+      this.discardConfirmModal.open();
+      // TODO: notify sidebar to select previously dataset before we changed
+      return;
+    }
+
+    // TODO: remove new dataset if not saved already -> we only want at most one new dataset at a time!
+
 
     if (id === undefined) return;
     // TODO: use form.reset() which should work now! but data also has to be reset otherwise form elements won't be updated
@@ -205,6 +246,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     data._id = this.data._id;
     data._parent = this.data._parent;
     data._profile = this.formularService.currentProfile;
+
+    // during save the listeners for dataset changes are already called
+    // this.form.reset(this.form.value);
+    this.form.markAsPristine();
+
     this.storageService.saveData(data).then(res => {
       this.data._id = res._id;
       this.saving = true;
@@ -301,14 +347,20 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   removeArrayGroup(name: string, pos: number) {
+    // remove from fields definition
     let group = <Container>this.fields.filter(f => (<Container>f).key === name)[0];
     group.children.splice(pos, 1);
+
+    // remove from form element
     let ctrls = <FormArray>this.form.controls[name];
     ctrls.removeAt(pos);
+
+    // remove from data object
+    this.data[name].splice(pos, 1);
   }
 
   addPartialToField(field: any, partialKey: string): any {
-    let partial = field.partials.filter( part => part.key === partialKey )[0];
+    let partial = field.partials.filter( (part: any) => part.key === partialKey )[0];
     let clonedPartial = Object.assign({}, partial);
     field.children.push(clonedPartial);
     return partial;

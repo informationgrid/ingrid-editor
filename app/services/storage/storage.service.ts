@@ -4,15 +4,8 @@ import {Http} from '@angular/http';
 import {ModalService} from '../modal/modal.service';
 import {FormularService} from '../formular/formular.service';
 import {ConfigService} from '../../config/config.service';
-
-export interface DocumentInterface {
-  id: string;
-
-}
-
-interface FormFields {
-  _profile: string;
-}
+import {UpdateType} from '../../models/update-type.enum';
+import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 
 @Injectable()
 export class StorageService {
@@ -21,10 +14,11 @@ export class StorageService {
   afterSave: Subject<any> = new Subject<any>();
   afterLoadAndSet: Subject<any> = new Subject<any>();
   afterProfileSwitch: Subject<any> = new Subject<any>();
-  datasetsChanged: Subject<any> = new Subject<any>();
+  datasetsChanged: Subject<UpdateDatasetInfo> = new Subject<UpdateDatasetInfo>();
 
   afterLoadAndSet$ = this.afterLoadAndSet.asObservable();
   afterProfileSwitch$ = this.afterProfileSwitch.asObservable();
+  datasetsChanged$ = this.datasetsChanged.asObservable();
 
   titleFields: string;
 
@@ -61,7 +55,7 @@ export class StorageService {
         console.log('received:', res);
         data._id = res.json()._id;
         this.afterSave.next(data);
-        this.datasetsChanged.next();
+        this.datasetsChanged.next({type: UpdateType.Update, data: data});
         resolve(data);
       }, err => {
         reject(err);
@@ -87,7 +81,7 @@ export class StorageService {
       console.log('received:', res);
       data._id = res.json()._id;
       this.afterSave.next(data);
-      this.datasetsChanged.next();
+      this.datasetsChanged.next({type: UpdateType.Update, data: data});
     }, err => {
       console.error( 'error:', err );
     });
@@ -99,14 +93,14 @@ export class StorageService {
 
     response.subscribe(res => {
       console.log( 'ok, res' );
-      this.datasetsChanged.next();
+      this.datasetsChanged.next({type: UpdateType.Delete, data: id});
     });
   }
 
   revert(id: string): Observable<any> {
     console.log('REVERTING');
     return this.http.post(this.configService.backendUrl + 'dataset/' + id + '?revert=true', null)
-      .do( () => this.datasetsChanged.next() )
+      .do( () => this.datasetsChanged.next({type: UpdateType.Update, data: id}) )
       .catch(this._handleError);
 
     // return response.subscribe(res => {

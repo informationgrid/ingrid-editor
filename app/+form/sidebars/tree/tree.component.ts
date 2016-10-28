@@ -3,6 +3,7 @@ import {StorageService} from "../../../services/storage/storage.service";
 import {TreeComponent, TreeNode} from "angular2-tree-component";
 import {Router, ActivatedRoute} from "@angular/router";
 import {FormularService} from "../../../services/formular/formular.service";
+import {UpdateType} from '../../../models/update-type.enum';
 
 @Component({
   selector: 'tree',
@@ -24,9 +25,38 @@ export class MetadataTreeComponent implements OnInit {
 
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
               private formularService: FormularService) {
-    storageService.datasetsChanged.asObservable().subscribe( () => {
-      this.nodes = [];
-      this.query(null);
+    storageService.datasetsChanged$.subscribe( (info) => {
+      console.log( 'info', info );
+      // TODO: only update changes or recover last state when loading everything new
+      switch (info.type) {
+        case UpdateType.New:
+          let newDataset = {
+            id: -1,
+            name: 'Neuer Datensatz',
+            _profile: info.data._profile,
+            _state: 'W'
+          };
+
+          if (info.data._parent) {
+            let parentNode = this.tree.treeModel.getNodeById(info.data._parent);
+            parentNode.expand();
+            let pNode = this.nodes.filter( node => node.id === info.data._parent)[0];
+            if (!pNode.children) pNode.children = [];
+            pNode.children.push( newDataset );
+          } else {
+            this.nodes.push( newDataset );
+          }
+          this.tree.treeModel.update();
+          let node = this.tree.treeModel.getNodeById(-1);
+          this.tree.treeModel.setActiveNode(node, true);
+          break;
+        case UpdateType.Update:
+        case UpdateType.Delete:
+          this.nodes = [];
+          this.query(null);
+          break;
+      }
+
     } );
   }
 

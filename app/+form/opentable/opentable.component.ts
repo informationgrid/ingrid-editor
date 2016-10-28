@@ -69,6 +69,10 @@ export class OpenTable implements ControlValueAccessor {
 
   @ViewChild('addRowModal') addRowModal: Modal;
 
+  // the number of the input box to focus on
+  // will be set when modal is opened
+  focusNumber: number = -1;
+
   addModel = {};
 
   markedRows: number[] = [];
@@ -107,6 +111,7 @@ export class OpenTable implements ControlValueAccessor {
     this.addModel = {};
     this.currentRow = null;
     this.addRowModal.open();
+    setTimeout( () => this.focusNumber = 0, 0);
   }
 
   addRow() {
@@ -116,6 +121,7 @@ export class OpenTable implements ControlValueAccessor {
     this.addModel = {};
     this.handleChange();
     this.addRowModal.close();
+    this.focusNumber = -1;
   }
 
   editRow(data: any, index: number) {
@@ -147,11 +153,10 @@ export class OpenTable implements ControlValueAccessor {
         }
       }
       this.parent = null;
-    }
+    };
   }
 
   editRowInline(row: any, column: any, event: Event) {
-    debugger;
     // in case the editor is still open do not react on click event here
     if (this.parent) return;
     let target = <HTMLElement>event.target;

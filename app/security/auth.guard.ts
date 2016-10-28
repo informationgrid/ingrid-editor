@@ -9,7 +9,6 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    console.log('can activate');
     let url: string = state.url;
 
     // If user is not logged in we'll send them to the homepage

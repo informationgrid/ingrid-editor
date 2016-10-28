@@ -34,11 +34,11 @@
 
 <modal #addRowModal title="Hinzufügen" submitButtonLabel="Ok" (onSubmit)="addRow()">
     <modal-content>
-        <form #addForm="ngForm">
+        <form #addForm="ngForm"><!--(submit)="addRow()"-->
             <div class="form-group">
-                <div *ngFor="let col of columns" class="padding">
+                <div *ngFor="let col of columns; let i=index" class="padding">
                     <label class="control-label">{{col.label}}</label>
-                    <input *ngIf="col.controlType === 'textbox'" [type]="col.type" class="form-control" [(ngModel)]="addModel[col.key]" [name]="col.key">
+                    <input *ngIf="col.controlType === 'textbox'" [focus]="i === focusNumber" [type]="col.type" class="form-control" [(ngModel)]="addModel[col.key]" [name]="col.key">
                     <select class="form-control" *ngIf="col.controlType === 'dropdown'" [(ngModel)]="addModel[col.key]" [name]="col.key">
                         <option *ngFor="let option of col.options" [value]="option.key">{{option.value}}</option>
                     </select>

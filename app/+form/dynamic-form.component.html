@@ -119,8 +119,8 @@
         </div>
         <div class="checkbox">
             <label>
-                <input type="checkbox" [(ngModel)]="addToParent">
-                unter geöffneten Datensatz hinzufügen
+                <input type="checkbox" [(ngModel)]="addToRoot">
+                als Root-Datensatz anlegen
             </label>
         </div>
     </modal-content>
@@ -129,5 +129,12 @@
 <modal #deleteConfirmModal title="Löschen" cancelButtonLabel="Nein" submitButtonLabel="Ja" (onSubmit)="doDelete()">
     <modal-content>
         <p>Möchten Sie wirklich diesen Datensatz löschen?</p>
+    </modal-content>
+</modal>
+
+
+<modal #discardConfirmModal title="Daten wurden geändert" cancelButtonLabel="Nein" submitButtonLabel="Ja" (onSubmit)="discardChanges()">
+    <modal-content>
+        <p>Der Datensatz wurde geändert. Wollen Sie die Änderungen verwerfen und einen anderen Datensatz laden?</p>
     </modal-content>
 </modal>
