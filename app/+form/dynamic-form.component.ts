@@ -92,7 +92,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, C
     // TODO: emit current form value on demand
     // register to an publisher in the form/storage service and send the value of this form
     // this can be used for publis, revert, detail, compare, ...
-    this.formularService.formDataSubject.asObservable().subscribe( (container: any) => {
+    this.formularService.formDataSubject$.subscribe( (container: any) => {
       container.form = this.form;
       container.value = {
         _id: this.data._id,

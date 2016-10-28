@@ -68,7 +68,7 @@ export class PublishPlugin extends Plugin {
 
   revert() {
     let formData = this.formService.requestFormValues();
-    this.storageService.revert(formData._id).subscribe(null, err => {
+    this.storageService.revert(formData.value._id).subscribe(null, err => {
       console.log( 'Error when reverting data', err );
       this.modalService.showError(err.text());
     });

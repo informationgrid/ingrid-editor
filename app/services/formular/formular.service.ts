@@ -13,6 +13,7 @@ export class FormularService {
   currentProfile: string;
 
   formDataSubject = new Subject<any>();
+  formDataSubject$ = this.formDataSubject.asObservable();
 
   addressProfile = new AddressProfile();
   uvpProfile = new UVPProfile();

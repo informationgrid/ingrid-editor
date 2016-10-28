@@ -98,7 +98,7 @@ export class StorageService {
   }
 
   revert(id: string): Observable<any> {
-    console.log('REVERTING');
+    console.debug('REVERTING', id);
     return this.http.post(this.configService.backendUrl + 'dataset/' + id + '?revert=true', null)
       .do( () => this.datasetsChanged.next({type: UpdateType.Update, data: id}) )
       .catch(this._handleError);
