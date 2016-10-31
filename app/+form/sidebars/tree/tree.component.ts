@@ -1,8 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {StorageService} from "../../../services/storage/storage.service";
-import {TreeComponent, TreeNode} from "angular2-tree-component";
-import {Router, ActivatedRoute} from "@angular/router";
-import {FormularService} from "../../../services/formular/formular.service";
+import {StorageService} from '../../../services/storage/storage.service';
+import {TreeComponent, TreeNode} from 'angular2-tree-component';
+import {Router, ActivatedRoute} from '@angular/router';
+import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
 
 @Component({
@@ -19,7 +19,7 @@ export class MetadataTreeComponent implements OnInit {
   options = {
     getChildren: (node: TreeNode) => {
       console.log( 'get children ...', node.id );
-      this.query(node.id);
+      return this.query(node.id);
     }
   };
 
@@ -37,24 +37,62 @@ export class MetadataTreeComponent implements OnInit {
             _state: 'W'
           };
 
+          let updateTree = () => {
+            this.tree.treeModel.update();
+            this.router.navigate(['/form', '-1']);
+            let node = this.tree.treeModel.getNodeById(-1);
+            this.tree.treeModel.setActiveNode(node, true);
+          };
+
           if (info.data._parent) {
             let parentNode = this.tree.treeModel.getNodeById(info.data._parent);
+            // TODO: make it bullet proof
             parentNode.expand();
-            let pNode = this.nodes.filter( node => node.id === info.data._parent)[0];
-            if (!pNode.children) pNode.children = [];
-            pNode.children.push( newDataset );
+            setTimeout(() => {
+              let pNode = this.nodes.filter( node => node.id === info.data._parent)[0];
+              if (!pNode.children) pNode.children = [];
+              pNode.children.push( newDataset );
+              updateTree();
+            }, 100);
           } else {
             this.nodes.push( newDataset );
+            updateTree();
           }
-          this.tree.treeModel.update();
-          let node = this.tree.treeModel.getNodeById(-1);
-          this.tree.treeModel.setActiveNode(node, true);
+
           break;
         case UpdateType.Update:
-        case UpdateType.Delete:
           this.nodes = [];
           this.query(null);
           break;
+        case UpdateType.Delete:
+          debugger;
+          let path: string[] = null;
+          if (info.data._parent) {
+            let parentNode = this.tree.treeModel.getNodeById(info.data._parent);
+            path = parentNode.path;
+          }
+
+          // TODO: refactor in a separate function
+          let nodeParent: any = null;
+          if (path) {
+            let kids = this.nodes;
+            path.forEach( id => {
+              kids.some(child => {
+                if (child.id === id) {
+                  nodeParent = child;
+                  kids = child.children;
+                  return true;
+                }
+              });
+            });
+          } else {
+            nodeParent = {children: this.nodes};
+          }
+
+          // this.nodes = this.nodes.filter( node => node.id !== info.data._id);
+          let index = nodeParent.children.findIndex( (c: any) => c.id === info.data._id );
+          nodeParent.children.splice(index, 1);
+          this.tree.treeModel.update();
       }
 
     } );
@@ -65,7 +103,7 @@ export class MetadataTreeComponent implements OnInit {
       this.route.params.subscribe(params => {
         this.selectedId = params['id'];
         console.debug( 'selected id: ' + this.selectedId );
-        if (this.selectedId) {
+        if (this.selectedId && this.selectedId !== '-1') {
           let node = this.tree.treeModel.getNodeById(this.selectedId);
           this.tree.treeModel.setActiveNode(node, true);
         }
@@ -99,7 +137,7 @@ export class MetadataTreeComponent implements OnInit {
   }
 
   setNodes(docs: any[], parentId: string) {
-    let updatedNodes = this.nodes;
+    let updatedNodes: any = this.nodes;
     if (parentId) {
       updatedNodes = this.nodes.filter( node => node.id === parentId)[0];
       updatedNodes.children = [];

@@ -45,6 +45,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, C
   choiceNewDoc: string = 'UVP';
   expandedField = {};
   addToRoot: boolean = false;
+  newDocAdded: boolean = false;
+
   // the id to remember when dirty check was true
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
   pendingId: string;
@@ -72,7 +74,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, C
     this.behaviourService.initialized.then(() => {
       this.route.params.subscribe(params => {
         let id = params['id'];
-        this.load(id);
+        if (id !== '-1') {
+          this.load(id);
+        }
       });
     });
   }
@@ -101,7 +105,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, C
       Object.assign(container.value, this.form.value);
     });
 
-    this.storageService.datasetsChanged.asObservable().subscribe(() => this.load(this.data._id));
+    this.storageService.datasetsChanged$.subscribe((msg) => {
+      if (msg.type === UpdateType.Update) this.load( this.data._id );
+    });
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -154,14 +160,25 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, C
 
     // notify browser/tree of new dataset
     this.storageService.datasetsChanged.next({type: UpdateType.New, data: {_profile: profile, _parent: this.data._parent}});
+    this.newDocAdded = true;
 
     this.newDocModal.close();
   }
 
+  handleNewDatasetOnLeave() {
+    // remove new doc if one was created
+    if (this.newDocAdded) {
+      this.storageService.datasetsChanged.next({type: UpdateType.Delete, data: {_id: -1, _parent: this.data._parent}});
+      this.newDocAdded = false;
+    }
+  }
 
   discardChanges() {
     this.form.reset();
     this.load(this.pendingId);
+
+    this.handleNewDatasetOnLeave();
+
     this.discardConfirmModal.close();
   }
 
@@ -176,6 +193,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, C
       this.discardConfirmModal.open();
       // TODO: notify sidebar to select previously dataset before we changed
       return;
+    } else {
+      this.handleNewDatasetOnLeave();
     }
 
     // TODO: remove new dataset if not saved already -> we only want at most one new dataset at a time!
