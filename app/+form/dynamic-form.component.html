@@ -18,8 +18,12 @@
 <div class="splitWrapper">
     <!-- exchangable sidebar -->
     <div id="sidebar" class="split split-horizontal">
-        <!--<browser></browser>-->
-        <tree></tree>
+        <ul class="nav nav-tabs">
+            <li role="presentation" [class.active]="sideTab === 'tree'"><a (click)="sideTab = 'tree'">Baum</a></li>
+            <li role="presentation" [class.active]="sideTab === 'search'"><a (click)="sideTab = 'search'">Suche</a></li>
+        </ul>
+        <tree [class.hide]="sideTab !== 'tree'"></tree>
+        <browser [class.hide]="sideTab !== 'search'" (onSelected)="load($event.id)"></browser>
     </div>
 
     <!-- The form -->
@@ -29,6 +33,43 @@
         </div>
 
         <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
+
+            <!-- bottom info bar -->
+            <div class="bottom-bar" style="position:relative;" [class.expanded]="showDateBar" (click)="showDateBar = !showDateBar">
+                <span class="text-muted">
+                    <div class="padding-sm pull-left">
+                        <span class="glyphicon glyphicon-user"></span>
+                        <small>
+                            <strong>Autor:</strong> Max Mustermann
+                        </small>
+                    </div>
+                    <div class="padding-sm pull-right">
+                        <span class="glyphicon glyphicon-time" [class.active]="showDateBar"
+                              title="Zeige Datumsinformation"></span>
+                        <small>
+                            <strong>Geändert:</strong> {{data._modified | date:'HH:mm:ss - dd.MM.yyyy'}}
+                        </small>
+                    </div>
+                    <div [class.hide]="!showDateBar" style="clear: both;">
+                        <div class="padding-sm pull-right">
+                            <small>
+                                <strong>Erstellt:</strong> {{data._created | date:'HH:mm:ss - dd.MM.yyyy'}}
+                            </small>
+                        </div>
+                    </div>
+                    <!--<span class="glyphicon glyphicon-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
+                    <div class="text-center" style="position:absolute; width: 100%; bottom: -5px;">
+                        <span class="glyphicon"
+                            [class.glyphicon-chevron-down]="!showDateBar"
+                            [class.glyphicon-chevron-up]="showDateBar"></span>
+                    </div>
+                    <!--<div style="position: absolute; left: 50%;">
+                        <div style="position: relative; left: -50%; border: dotted red 1px;">
+                          <span class="glyphicon glyphicon-chevron-down"></span>
+                        </div>
+                    </div>-->
+                </span>
+            </div>
 
             <!-- RENDER ALL FIELDS -->
             <div *ngFor="let field of fields" class="fieldContainer {{field.domClass}}"
@@ -91,18 +132,6 @@
         </form>
     </div>
 
-    <!-- bottom info bar -->
-    <div class="bottom-bar" (click)="showDateBar = !showDateBar">
-        <span class="content text-muted" [class.expanded]="showDateBar">
-            <span class="glyphicon glyphicon-time" [class.active]="showDateBar"
-                  title="Zeige Datumsinformation"></span>
-            <small>
-                <strong>Erstellt:</strong> {{data._created | date:'HH:mm:ss - dd.MM.yyyy'}}
-                <strong>Geändert:</strong> {{data._modified | date:'HH:mm:ss - dd.MM.yyyy'}}
-            </small>
-            <!--<span class="glyphicon glyphicon-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
-        </span>
-    </div>
 </div>
 
 <modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">

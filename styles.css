@@ -11,7 +11,7 @@ form-toolbar {
 }
 
 form-toolbar + div {
-    padding-top: 30px;
+    /*padding-top: 30px;*/
 }
 
 .navbar-default .navbar-nav > li > a:focus, nav a.active, nav a:focus.active {
@@ -44,6 +44,10 @@ form-toolbar + div {
 
 .padding {
     padding: 10px;
+}
+
+.padding-sm {
+    padding: 5px;
 }
 
 .padding-vertical {

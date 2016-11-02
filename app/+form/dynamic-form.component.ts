@@ -29,7 +29,7 @@ interface FormData extends Object {
   styles: [require('./dynamic-form.component.css')],
   providers: [FormControlService]
 })
-export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, CanDeactivate<DynamicFormComponent> {
+export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('newDocModal') newDocModal: Modal;
   @ViewChild('deleteConfirmModal') deleteConfirmModal: Modal;
@@ -46,6 +46,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, C
   expandedField = {};
   addToRoot: boolean = false;
   newDocAdded: boolean = false;
+  sideTab: string = 'tree';
+  showDateBar: boolean = false;
 
   // the id to remember when dirty check was true
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
@@ -125,19 +127,19 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, C
     });
   }
 
-  canDeactivate(component: DynamicFormComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<DynamicFormComponent>|Promise<DynamicFormComponent>|boolean {
+  /*canDeactivate(component: DynamicFormComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<DynamicFormComponent>|Promise<DynamicFormComponent>|boolean {
     console.log( 'can deactive (form)' );
-    /*if (this.form && this.form.dirty) {
+    /!*if (this.form && this.form.dirty) {
       this.pendingId = null;
       this.discardConfirmModal.open();
       return false;
     }
-    return true;*/
+    return true;*!/
     if (component.hasChanges()) {
       return window.confirm('Do you really want to cancel?');
     }
     return true;
-  }
+  }*/
 
   newDoc() {
     this.newDocModal.open();

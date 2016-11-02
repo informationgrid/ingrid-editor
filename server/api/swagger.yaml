@@ -97,6 +97,23 @@ paths:
         '200':
           description: Datasets found
       x-swagger-router-controller: "Datasets"
+  /dataset/path/{id}:
+    get:
+      tags:
+      - "Datasets"
+      summary: "Get the hierarchical path of a document"
+      description: "Retrieve an array of ID of all parents leading to the given dataset ID."
+      operationId: "getPath"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the dataset."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Array of IDs.
+      x-swagger-router-controller: "Datasets"
   /dataset/{id}:
     options:
       tags:

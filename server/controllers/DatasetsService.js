@@ -119,6 +119,7 @@ exports.set = function(args, res, next) {
 
   var id = args.id.value;
   var doc = args.data.value;
+  var docId = doc._id;
   var publishedVersion = args.publish.value;
   var revert = args.revert ? args.revert.value : false;
 
@@ -136,13 +137,14 @@ exports.set = function(args, res, next) {
   } else {
 
     db.updateDocument(doc, publishedVersion).then(function (result) {
-      // TODO: notify parent that it has a child?
-      db.setChildInfoTo(parent);
+      // notify parent that it has a child
+      // but only if it's a new child
+      if (!docId) db.setChildInfoTo(parent);
 
       // update search index
       db.updateFullIndexSearch();
-      // console.log('Inserted doc', result);
-      res.end(JSON.stringify({_id: result}, null, 2))
+      console.log('Inserted doc', parent);
+      res.end(JSON.stringify({_id: result, _parent: parent}, null, 2))
     }).catch(function (err) {
       console.error('Error during db operation:', err);
       // no response value expected for this operation
@@ -162,4 +164,19 @@ exports.deleteById = function (args, res, next) {
     res.end(err.message);
   });
 
+};
+
+exports.getPath = function(args, res, next) {
+  var id = args.id.value;
+
+  db.getPathToDataset(id).then(function (result) {
+
+    console.log("path:", result)
+    res.end(JSON.stringify(result, null, 2))
+  }).catch(function (err) {
+    console.error('Error during db operation:', err);
+    // no response value expected for this operation
+    res.statusCode = 404;
+    res.end(err.message);
+  });
 };

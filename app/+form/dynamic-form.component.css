@@ -3,32 +3,33 @@
 }
 
 .bottom-bar {
-    position: absolute;
-    bottom: 0;
+    /*position: absolute;*/
+    /*bottom: 0;*/
     border: 1px solid #e3e3e3;
-    height: 35px;
-    line-height: 30px;
+    max-height: 35px;
+    /*line-height: 30px;*/
     background-color: #f5f5f5;
     overflow: hidden;
     cursor: pointer;
+    padding: 3px;
 }
-.bottom-bar .content {
+/*.bottom-bar .content {
     display: inline-block;
     padding: 5px;
     max-width: 30px;
     transition: max-width 0.5s ease-in-out;
-}
+}*/
 
-.bottom-bar .content.expanded {
-    max-width: 2000px;
+.bottom-bar.expanded {
+    max-height: 100px;
     transition: max-width 1s ease-in-out;
 }
 
 .notifyWrapper {
     width: 100%;
     text-align: center;
-    position: fixed;
-    top: 50px;
+    position: absolute;
+    bottom: 0;
     z-index: 10000;
     display: none;
     opacity: 0;
@@ -37,7 +38,7 @@
 .tn-box {
     display: inline-block;
     width: 360px;
-    padding: 15px;
+    padding: 5px;
     text-align: center;
     border-radius: 5px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),
@@ -51,7 +52,7 @@
 }
 
 .notifyWrapper.active {
-    display: block;
+    display: inline-block;
     animation: fadeOut 2s linear forwards;
 }
 

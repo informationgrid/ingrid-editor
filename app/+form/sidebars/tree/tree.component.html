@@ -1,12 +1,15 @@
-<Tree #tree [nodes]="nodes" [options]="options">
-    <template #treeNodeTemplate let-node>
-        <div (click)="open(node.data._id)" [class.active]="selectedId === node.data._id">
-            <span class="label"
-                  [class.label-primary]="node.data._state === 'P'"
-                  [class.label-warning]="node.data._state === 'W'"
-                  [class.pubished-working-label]="node.data._state === 'PW'"
-            >{{node.data._profile}}</span>
-            <span>{{ node.data.name }}</span>
-        </div>
-    </template>
-</Tree>
+<div>
+    <a class="clickable text-muted padding pull-right glyphicon glyphicon-refresh" title="Aktualisieren" (click)="refresh()"></a>
+    <Tree #tree [nodes]="nodes" [options]="options">
+        <template #treeNodeTemplate let-node>
+            <div (click)="open(node.data._id)" [class.active]="selectedId === node.data._id">
+                <span class="label"
+                      [class.label-primary]="node.data._state === 'P'"
+                      [class.label-warning]="node.data._state === 'W'"
+                      [class.pubished-working-label]="node.data._state === 'PW'"
+                >{{node.data._profile}}</span>
+                <span>{{ node.data.name }}</span>
+            </div>
+        </template>
+    </Tree>
+</div>

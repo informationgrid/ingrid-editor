@@ -28,3 +28,7 @@ module.exports.set = function set (req, res, next) {
 module.exports.deleteById = function deleteById (req, res, next) {
   Datasets.deleteById(req.swagger.params, res, next);
 };
+
+module.exports.getPath = function getPath (req, res, next) {
+  Datasets.getPath(req.swagger.params, res, next);
+};

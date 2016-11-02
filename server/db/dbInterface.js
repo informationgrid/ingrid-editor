@@ -98,6 +98,7 @@ var _addInfo = function (doc, data, id) {
   doc._created = data._created;
   doc._modified = data._modified;
   doc._published = data._published;
+  doc._parent = data._parent;
 };
 //
 // var insertDocument = function (doc, publishedVersion) {
@@ -257,6 +258,21 @@ var setChildInfoTo = function(id) {
   });
 };
 
+var getPathToDataset = function(id) {
+  var collection = db.collection('documents');
+  return collection.findOne({'_id': new ObjectID(id)}).then(function (data) {
+    if (data._parent) {
+      return getPathToDataset(data._parent).then(function(parents) {
+        parents.push(data._id.toString());
+        return parents;
+      })
+    } else {
+      return [data._id.toString()];
+    }
+  });
+
+};
+
 module.exports = {
   connect: connect,
   closeDB: closeDB,
@@ -272,5 +288,6 @@ module.exports = {
   getBehaviours: getBehaviours,
   setBehaviour: setBehaviour,
 
-  setChildInfoTo: setChildInfoTo
+  setChildInfoTo: setChildInfoTo,
+  getPathToDataset: getPathToDataset
 };

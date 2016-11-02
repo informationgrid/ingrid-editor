@@ -109,6 +109,12 @@ export class StorageService {
     // });
   }
 
+  getPathToDataset(id: string): Observable<string[]> {
+    return this.http.get(this.configService.backendUrl + 'dataset/path/' + id)
+      .map(resp => resp.json())
+      .catch(this._handleError);
+  }
+
   _handleError(err: any) {
     console.error('Error: ', err);
     return Observable.throw(err);

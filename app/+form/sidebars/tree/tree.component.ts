@@ -7,7 +7,10 @@ import {UpdateType} from '../../../models/update-type.enum';
 
 @Component({
   selector: 'tree',
-  template: require('./tree.component.html')
+  template: require('./tree.component.html'),
+  styles: [`
+    .clickable { cursor: pointer; text-decoration: none; }
+  `]
 })
 export class MetadataTreeComponent implements OnInit {
 
@@ -44,12 +47,16 @@ export class MetadataTreeComponent implements OnInit {
             this.tree.treeModel.setActiveNode(node, true);
           };
 
+          debugger;
           if (info.data._parent) {
             let parentNode = this.tree.treeModel.getNodeById(info.data._parent);
             // TODO: make it bullet proof
             parentNode.expand();
             setTimeout(() => {
-              let pNode = this.nodes.filter( node => node.id === info.data._parent)[0];
+              let path = this.getNodeIdPath(info.data._parent);
+              let pNode = this.getNodeFromModel(path);
+
+              // let pNode = this.nodes.filter( node => node.id === info.data._parent)[0];
               if (!pNode.children) pNode.children = [];
               pNode.children.push( newDataset );
               updateTree();
@@ -61,33 +68,20 @@ export class MetadataTreeComponent implements OnInit {
 
           break;
         case UpdateType.Update:
-          this.nodes = [];
-          this.query(null);
+          debugger;
+          /*let pathUpdate = this.getNodeIdPath(info.data._parent);
+          let nodeParentUpdate = this.getNodeFromModel(pathUpdate);
+          let indexUpdateNode = nodeParentUpdate.children.findIndex((c: any) => c.id === info.data._id);
+          let updateNode = this.prepareNode(info.data);
+          nodeParentUpdate.children[indexUpdateNode] = updateNode;
+          this.tree.treeModel.update();*/
+
+          // this.nodes = [];
+          this.query(info.data._parent);
           break;
         case UpdateType.Delete:
-          debugger;
-          let path: string[] = null;
-          if (info.data._parent) {
-            let parentNode = this.tree.treeModel.getNodeById(info.data._parent);
-            path = parentNode.path;
-          }
-
-          // TODO: refactor in a separate function
-          let nodeParent: any = null;
-          if (path) {
-            let kids = this.nodes;
-            path.forEach( id => {
-              kids.some(child => {
-                if (child.id === id) {
-                  nodeParent = child;
-                  kids = child.children;
-                  return true;
-                }
-              });
-            });
-          } else {
-            nodeParent = {children: this.nodes};
-          }
+          let path = this.getNodeIdPath(info.data._parent);
+          let nodeParent = this.getNodeFromModel(path);
 
           // this.nodes = this.nodes.filter( node => node.id !== info.data._id);
           let index = nodeParent.children.findIndex( (c: any) => c.id === info.data._id );
@@ -98,14 +92,61 @@ export class MetadataTreeComponent implements OnInit {
     } );
   }
 
+  getNodeIdPath(id: string): string[] {
+    let path: string[] = null;
+    if (id) {
+      let parentNode = this.tree.treeModel.getNodeById(id);
+      path = parentNode.path;
+    }
+    return path;
+  }
+
+  getNodeFromModel(path: string[]): any {
+    let nodeParent: any = null;
+    if (path) {
+      let kids = this.nodes;
+      path.forEach( id => {
+        kids.some(child => {
+          if (child.id === id) {
+            nodeParent = child;
+            kids = child.children;
+            return true;
+          }
+        });
+      });
+    } else {
+      nodeParent = {children: this.nodes};
+    }
+    return nodeParent;
+  }
+
   ngOnInit() {
     this.query(null).then( () => {
       this.route.params.subscribe(params => {
         this.selectedId = params['id'];
-        console.debug( 'selected id: ' + this.selectedId );
+
         if (this.selectedId && this.selectedId !== '-1') {
-          let node = this.tree.treeModel.getNodeById(this.selectedId);
-          this.tree.treeModel.setActiveNode(node, true);
+          // get path to node
+          this.storageService.getPathToDataset( this.selectedId ).subscribe( path => {
+            console.debug( 'path: ' + path );
+            debugger;
+            let timeout = 0;
+            path.forEach( (id, index) => {
+              setTimeout( () => {
+                let node = this.tree.treeModel.getNodeById( id );
+                let isLast = index === (path.length - 1);
+
+                // focus selected node if the last one was expanded
+                if (isLast) {
+                  setTimeout( () => this.tree.treeModel.setActiveNode( node, true ), 100 );
+                } else {
+                  // expand node
+                  node.expand();
+                }
+              }, timeout );
+              timeout += 500;
+            } );
+          } );
         }
       });
     });
@@ -139,7 +180,10 @@ export class MetadataTreeComponent implements OnInit {
   setNodes(docs: any[], parentId: string) {
     let updatedNodes: any = this.nodes;
     if (parentId) {
-      updatedNodes = this.nodes.filter( node => node.id === parentId)[0];
+      debugger;
+      let path = this.getNodeIdPath(parentId);
+      updatedNodes = this.getNodeFromModel(path);
+      // updatedNodes = this.nodes.filter( node => node.id === parentId)[0];
       updatedNodes.children = [];
     }
 
@@ -169,6 +213,15 @@ export class MetadataTreeComponent implements OnInit {
   open(id: string) {
     this.selectedId = id;
     this.router.navigate( ['/form', id] );
+  }
+
+  refresh() {
+    this.nodes = [];
+    this.tree.treeModel.expandedNodeIds = {};
+    this.tree.treeModel.expandedNodes = [];
+    this.tree.treeModel.activeNodeIds = {};
+    this.tree.treeModel.activeNodes = [];
+    this.query(null);
   }
 
 }
