@@ -1,7 +1,8 @@
-import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
-import {StorageService} from '../../../services/storage/storage.service';
+import {Component, OnInit, Output, EventEmitter, Input} from "@angular/core";
+import {StorageService} from "../../../services/storage/storage.service";
 // import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
-import {Router, ActivatedRoute} from '@angular/router';
+import {ActivatedRoute} from "@angular/router";
+import {FormularService} from "../../../services/formular/formular.service";
 
 @Component( {
   selector: 'browser',
@@ -19,7 +20,8 @@ export class BrowserComponent implements OnInit {
   searchString: string = '';
   selectedId: string;
 
-  constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute) {
+  constructor(private storageService: StorageService, private route: ActivatedRoute,
+    private formularService: FormularService) {
     this.route.params.subscribe(params => {
       this.selectedId = params['id'];
     });
@@ -46,13 +48,7 @@ export class BrowserComponent implements OnInit {
         .filter(doc => doc._profile !== undefined)
         .filter(doc => !this.filter || this.matchFilter(doc) )
         .map( doc => {
-          if (doc.title) {
-            // do nothing
-          } else if (doc['mainInfo.title']) {
-            doc.title = doc['mainInfo.title'];
-          } else {
-            doc.title = '- untitled -';
-          }
+          doc.title = this.formularService.getTitle(doc._profile, doc);
           return doc;
         } );
     });

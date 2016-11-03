@@ -36,7 +36,7 @@ export class BehavioursDefault {
   behaviours: Behaviour[] = [
     // new ClickAndChangeTitleBehaviour( this.storageService ),
     // new MapAndChangeTitleBehaviour( this.formService ),
-    new OpenDataBehaviour(this.storageService),
+    // new OpenDataBehaviour(this.storageService),
     new AddControlBehaviour( this.formService ),
     new ShowDateInSectionBehaviour( this.storageService ),
     new TitleValidatorBehaviour( this.storageService )

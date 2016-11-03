@@ -9,8 +9,8 @@ import {Inject} from "@angular/core";
  */
 export class ShowDateInSectionBehaviour extends BaseBehaviour implements Behaviour {
   id = 'showDateInSection';
-  title = 'Date in section header';
-  description = 'Show the date in the corresponding section header.';
+  title = 'Datum in Rubrik anzeigen';
+  description = 'Zeige das Datum einer UVP-Rubrik im Kopfbereich an.';
   defaultActive = true;
   forProfile = 'UVP';
 

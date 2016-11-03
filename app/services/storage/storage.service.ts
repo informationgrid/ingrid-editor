@@ -91,11 +91,11 @@ export class StorageService {
 
   delete(id: string): any {
     let response = this.http.delete(this.configService.backendUrl + 'dataset/' + id)
-      .catch(this._handleError);
+      .catch(err => this._handleError(err));
 
     response.subscribe(res => {
       console.log( 'ok, res' );
-      this.datasetsChanged.next({type: UpdateType.Delete, data: id});
+      this.datasetsChanged.next({type: UpdateType.Delete, data: {_id: id}});
     });
   }
 
@@ -119,6 +119,7 @@ export class StorageService {
 
   _handleError(err: any) {
     console.error('Error: ', err);
+    this.modalService.showError(err);
     return Observable.throw(err);
   }
 }

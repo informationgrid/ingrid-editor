@@ -9,8 +9,8 @@ import {TextboxField} from '../../../../+form/controls/field-textbox';
  */
 export class AddControlBehaviour extends BaseBehaviour implements Behaviour {
   id = 'addControl';
-  title = 'Add control to form';
-  description = '...';
+  title = 'Neues Feld hinzufügem';
+  description = 'Fügt ein neues Eingabefeld hinzu.';
   defaultActive = true;
   forProfile = 'UVP';
 
@@ -18,7 +18,7 @@ export class AddControlBehaviour extends BaseBehaviour implements Behaviour {
     new TextboxField( {
       key: 'behaviourField',
       label: 'Dynamic Behaviour Field',
-      order: 30
+      order: 3
     } )
   ];
 

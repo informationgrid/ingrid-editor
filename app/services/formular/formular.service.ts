@@ -32,6 +32,9 @@ export class FormularService {
 
     if (profile === 'UVP') fields = this.uvpProfile.profile;
     else if (profile === 'ADDRESS') fields = this.addressProfile.profile;
+    else {
+      throw Error('Unknown profile: ' + profile);
+    }
 
     this.currentProfile = profile;
 

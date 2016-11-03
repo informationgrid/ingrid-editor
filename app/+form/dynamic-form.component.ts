@@ -214,22 +214,27 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       let profile = data._profile;
       // let profileSwitched = false;
 
-      // switch to the right profile depending on the data
-      if (this.formularService.currentProfile !== profile) {
-        this.switchProfile(profile);
-        // profileSwitched = true;
-        // set data delayed so that form can build up in DOM and events can register
-        setTimeout( () => {
-          this.behaviourService.apply(this.form, profile);
-          // after profile switch inform the subscribers about it to recognize initial data set
-          this.storageService.afterProfileSwitch.next(data);
-          // setTimeout(() => this.setData(data), 1000 );
-          this.setData(data);
-        }, 0 );
-      } else {
-        setTimeout( () => {
-          this.setData(data);
-        });
+      try {
+        // switch to the right profile depending on the data
+        if (this.formularService.currentProfile !== profile) {
+          this.switchProfile(profile);
+          // profileSwitched = true;
+          // set data delayed so that form can build up in DOM and events can register
+          setTimeout(() => {
+            this.behaviourService.apply(this.form, profile);
+            // after profile switch inform the subscribers about it to recognize initial data set
+            this.storageService.afterProfileSwitch.next(data);
+            // setTimeout(() => this.setData(data), 1000 );
+            this.setData(data);
+          }, 0);
+        } else {
+          setTimeout(() => {
+            this.setData(data);
+          });
+        }
+      } catch(ex) {
+        this.modalService.showError(ex);
+        this.data._id = id;
       }
     });
   }
@@ -287,9 +292,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   doDelete() {
-    this.storageService.delete(this.data._id);
+    try {
+      this.storageService.delete(this.data._id);
+      if (this.form) this.form.reset();
+    } catch (ex) {
+      console.error( 'Could not delete' );
+    }
     this.deleteConfirmModal.close();
-    this.form.reset();
   }
 
   switchProfile(profile: string) {

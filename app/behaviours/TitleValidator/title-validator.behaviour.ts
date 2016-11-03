@@ -9,10 +9,10 @@ import {Inject} from "@angular/core";
  */
 export class TitleValidatorBehaviour extends BaseBehaviour implements Behaviour {
   id = 'title-validator';
-  title = 'Title must be "top"';
+  title = 'Titel hat mindestens 3 Zeichen';
   description = '...';
   defaultActive = false;
-  forProfile = 'ISO';
+  forProfile = 'UVP';
 
   constructor(@Inject(StorageService) private storageService: StorageService) {
     super();
@@ -21,12 +21,14 @@ export class TitleValidatorBehaviour extends BaseBehaviour implements Behaviour 
   register(form: FormGroup, eventManager: EventManager) {
     this.addSubscriber(
       this.storageService.afterProfileSwitch$.subscribe( () => {
-        form.controls['title'].validator = function (fc: FormControl) {
-          console.log( 'VALIDATING ...', fc.value === 'top' );
-          return fc.value === 'top' ? null : {
-            validateTop: { valid: false, error: 'Text should be "top"' }
-          };
-        }
+        debugger;
+        setTimeout(() => {
+          form.get('mainInfo.title').validator = function (fc: FormControl) {
+            return fc.value.length >= 3 ? null : {
+              validateTop: { valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen' }
+            };
+          }
+        }, 500)
       })
     );
   }

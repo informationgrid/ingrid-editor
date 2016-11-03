@@ -19,7 +19,7 @@ module.exports = webpackMerge( commonConfig, {
     plugins: [
         new ExtractTextPlugin( '[name].css' ),
         new CopyWebpackPlugin( [
-            {from: helpers.root('app/services/behaviour/additionalBehaviours.js'), to: helpers.root('build')}
+            {from: helpers.root('app/behaviours/additionalBehaviours.js'), to: helpers.root('build')}
         ] )
     ],
 
