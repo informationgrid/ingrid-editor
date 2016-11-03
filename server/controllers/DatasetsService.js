@@ -144,7 +144,7 @@ exports.set = function(args, res, next) {
       // update search index
       db.updateFullIndexSearch();
       console.log('Inserted doc', parent);
-      res.end(JSON.stringify({_id: result, _parent: parent}, null, 2))
+      res.end(JSON.stringify(result, null, 2))
     }).catch(function (err) {
       console.error('Error during db operation:', err);
       // no response value expected for this operation
@@ -158,6 +158,7 @@ exports.deleteById = function (args, res, next) {
   var id = args.id.value;
 
   db.deleteDocument(id).then(function (result) {
+    // TODO: also delete child info if it was the last child
     res.end();
   }, function (err) {
     res.statusCode = 500;

@@ -7,7 +7,7 @@ var jsyaml = require('js-yaml');
 var fs = require('fs');
 var bodyParser = require('body-parser'),
     db = require('./db/dbInterface');
-var serverPort = 8081;
+var serverPort = 8080;
 
 // swaggerRouter configuration
 var options = {

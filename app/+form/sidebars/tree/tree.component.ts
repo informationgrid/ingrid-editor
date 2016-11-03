@@ -67,17 +67,22 @@ export class MetadataTreeComponent implements OnInit {
           }
 
           break;
+
         case UpdateType.Update:
           debugger;
-          /*let pathUpdate = this.getNodeIdPath(info.data._parent);
-          let nodeParentUpdate = this.getNodeFromModel(pathUpdate);
+          /*
           let indexUpdateNode = nodeParentUpdate.children.findIndex((c: any) => c.id === info.data._id);
           let updateNode = this.prepareNode(info.data);
           nodeParentUpdate.children[indexUpdateNode] = updateNode;
           this.tree.treeModel.update();*/
 
+          let pathUpdate = this.getNodeIdPath(info.data._id);
+          let nodeParentUpdate = this.getNodeFromModel(pathUpdate);
+          // nodeParentUpdate._state = info.data._state;
+          Object.assign(nodeParentUpdate, this.prepareNode(info.data));
+
           // this.nodes = [];
-          this.query(info.data._parent);
+          // this.query(info.data._parent);
           break;
         case UpdateType.Delete:
           let path = this.getNodeIdPath(info.data._parent);

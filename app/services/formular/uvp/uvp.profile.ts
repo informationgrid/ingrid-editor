@@ -407,7 +407,11 @@ export class UVPProfile implements Profile {
   ];
 
   getTitle(doc: any): string {
-    return doc['mainInfo.title'];
+    let title = doc['mainInfo.title'];
+    if (!title) {
+      title = doc.mainInfo.title;
+    }
+    return title;
   }
 
   getTitleFields(): string[] {

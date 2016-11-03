@@ -152,7 +152,9 @@ var updateDocument = function (doc, publishedVersion) {
       }
 
       return collection.updateOne({_id: data._id}, data).then(function (result) {
-          return data._id.toString();
+        var doc = {};
+        _addInfo(doc, data, data._id.toString());
+        return doc;
       });
     });
   } else {
@@ -177,7 +179,9 @@ var updateDocument = function (doc, publishedVersion) {
     }
 
     return collection.insertOne(dbDoc).then(function (result) {
-      return result.insertedId.toString();
+      var doc = {};
+      _addInfo(doc, dbDoc, result.insertedId.toString());
+      return doc;
     });
   }
 };

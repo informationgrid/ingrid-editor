@@ -54,6 +54,7 @@ export class StorageService {
       response.subscribe(res => {
         console.log('received:', res);
         data._id = res.json()._id;
+        data._state = res.json()._state;
         this.afterSave.next(data);
         this.datasetsChanged.next({type: UpdateType.Update, data: data});
         resolve(data);
@@ -80,6 +81,7 @@ export class StorageService {
     response.subscribe(res => {
       console.log('received:', res);
       data._id = res.json()._id;
+      data._state = res.json()._state;
       this.afterSave.next(data);
       this.datasetsChanged.next({type: UpdateType.Update, data: data});
     }, err => {
@@ -100,7 +102,7 @@ export class StorageService {
   revert(id: string): Observable<any> {
     console.debug('REVERTING', id);
     return this.http.post(this.configService.backendUrl + 'dataset/' + id + '?revert=true', null)
-      .do( () => this.datasetsChanged.next({type: UpdateType.Update, data: id}) )
+      .do( (res) => this.datasetsChanged.next({type: UpdateType.Update, data: res.json()}) )
       .catch(this._handleError);
 
     // return response.subscribe(res => {
