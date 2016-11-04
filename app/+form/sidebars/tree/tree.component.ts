@@ -54,7 +54,7 @@ export class MetadataTreeComponent implements OnInit {
     let updateTree = () => {
       this.tree.treeModel.update();
       this.router.navigate(['/form', '-1']);
-      let node = this.tree.treeModel.getNodeById(-1);
+      let node = this.tree.treeModel.getNodeById('-1');
       this.tree.treeModel.setActiveNode(node, true);
     };
 
@@ -79,7 +79,7 @@ export class MetadataTreeComponent implements OnInit {
 
   private createNewDatasetTemplate(doc: any) {
     return {
-      id: -1,
+      id: '-1',
       name: 'Neuer Datensatz',
       _profile: doc._profile,
       _state: 'W'
@@ -87,8 +87,19 @@ export class MetadataTreeComponent implements OnInit {
   }
 
   onUpdateDataset(doc: any) {
-    let nodeParentUpdate = this.getNodeFromModel(doc._id);
+    // when a new node (with id="-1") is saved than it gets a new ID
+    // but we have to find the node to be replaced by it's old one
+    let id = doc._previousId ? doc._previousId : doc._id;
+
+    let nodeParentUpdate = this.getNodeFromModel(id);
     Object.assign(nodeParentUpdate, this.prepareNode(doc));
+    this.tree.treeModel.update();
+
+    // re-select node if id has changed (after a new dataset has been saved and given an id)
+    if (doc._previousId !== doc._id) {
+      let node = this.tree.treeModel.getNodeById(doc._id);
+      this.tree.treeModel.setActiveNode(node, true);
+    }
   }
 
   onDeleteDataset(doc: any) {
@@ -96,8 +107,12 @@ export class MetadataTreeComponent implements OnInit {
 
     // this.nodes = this.nodes.filter( node => node.id !== doc._id);
     let index = nodeParent.children.findIndex( (c: any) => c.id === doc._id );
-    nodeParent.children.splice(index, 1);
-    this.tree.treeModel.update();
+
+    // only remove node from tree if it's still there
+    if (index !== -1) {
+      nodeParent.children.splice(index, 1);
+      this.tree.treeModel.update();
+    }
   }
 
   getNodeIdPath(id: string): string[] {

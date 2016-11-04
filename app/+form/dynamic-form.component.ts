@@ -108,7 +108,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.storageService.datasetsChanged$.subscribe((msg) => {
-      if (msg.type === UpdateType.Update) this.load( this.data._id );
+      if (msg.type === UpdateType.Update) this.load( this.data._id, msg.data._previousId );
     });
   }
 
@@ -170,7 +170,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   handleNewDatasetOnLeave() {
     // remove new doc if one was created
     if (this.newDocAdded) {
-      this.storageService.datasetsChanged.next({type: UpdateType.Delete, data: {_id: -1, _parent: this.data._parent}});
+      this.storageService.datasetsChanged.next({type: UpdateType.Delete, data: {_id: '-1', _parent: this.data._parent}});
       this.newDocAdded = false;
     }
   }
@@ -184,7 +184,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.discardConfirmModal.close();
   }
 
-  load(id: string) {
+  load(id: string, previousId?: string) {
     // since data always stays the same there's no change detection if we load the same data again
     // even if we already have changed the formular
     // since loading will be async, we only have to reset the data first
@@ -196,7 +196,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       // TODO: notify sidebar to select previously dataset before we changed
       return;
     } else {
-      this.handleNewDatasetOnLeave();
+      // only remove new node if this one was not saved
+      if (previousId !== '-1') this.handleNewDatasetOnLeave();
     }
 
     // TODO: remove new dataset if not saved already -> we only want at most one new dataset at a time!
