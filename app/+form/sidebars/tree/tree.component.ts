@@ -103,7 +103,11 @@ export class MetadataTreeComponent implements OnInit {
   }
 
   onDeleteDataset(doc: any) {
-    let nodeParent = this.getNodeFromModel(doc._parent);
+    let path = this.getNodeIdPath(doc._id);
+
+    // since we don't have the parent we determine the parent from the node path
+    // and get the parent from that to finally get the wanted node from the model
+    let nodeParent = this.getNodeFromModel(path[path.length - 2]);
 
     // this.nodes = this.nodes.filter( node => node.id !== doc._id);
     let index = nodeParent.children.findIndex( (c: any) => c.id === doc._id );

@@ -274,6 +274,24 @@ var getPathToDataset = function(id) {
       return [data._id.toString()];
     }
   });
+};
+
+/**
+ * Check if a dataset has children and remove the flag if there are no more.
+ * This function should be called if a document was deleted.
+ * @param id is the id of the document to check for children
+ */
+var checkForChildren = function (id) {
+  var collection = db.collection('documents');
+
+  return getChildDocuments(id).then(function(children) {
+    if (children.length === 0) {
+      return collection.findOne({'_id': new ObjectID(id)}).then(function (data) {
+        data.hasChildren = false;
+        return collection.updateOne({_id: data._id}, data);
+      });
+    }
+  });
 
 };
 
@@ -293,5 +311,6 @@ module.exports = {
   setBehaviour: setBehaviour,
 
   setChildInfoTo: setChildInfoTo,
-  getPathToDataset: getPathToDataset
+  getPathToDataset: getPathToDataset,
+  checkForChildren: checkForChildren
 };

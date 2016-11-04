@@ -197,7 +197,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     } else {
       // only remove new node if this one was not saved
-      if (previousId !== '-1') this.handleNewDatasetOnLeave();
+      if (previousId === '-1') {
+        this.newDocAdded = false;
+      } else {
+        this.handleNewDatasetOnLeave();
+      }
     }
 
     // TODO: remove new dataset if not saved already -> we only want at most one new dataset at a time!

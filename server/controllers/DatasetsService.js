@@ -157,12 +157,19 @@ exports.set = function(args, res, next) {
 exports.deleteById = function (args, res, next) {
   var id = args.id.value;
 
-  db.deleteDocument(id).then(function (result) {
-    // TODO: also delete child info if it was the last child
-    res.end();
-  }, function (err) {
-    res.statusCode = 500;
-    res.end(err.message);
+  // get the path to the dataset to find out the parent dataset
+  db.getPathToDataset(id).then(function(path) {
+    // delete the dataset
+    db.deleteDocument(id).then(function (result) {
+
+      // also delete child info if it was the last child
+      db.checkForChildren(path[path.length - 2]);
+
+      res.end();
+    }, function (err) {
+      res.statusCode = 500;
+      res.end(err.message);
+    });
   });
 
 };
