@@ -153,6 +153,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.formularService.currentProfile !== profile) {
       this.switchProfile(profile);
+
+      // TODO: refactor to always apply behaviours after a profile switch (because it's used more than once)
+      setTimeout(() => {
+        this.behaviourService.apply(this.form, profile);
+        // after profile switch inform the subscribers about it to recognize initial data set
+        this.storageService.afterProfileSwitch.next(this.form.value);
+      }, 0);
     }
 
     this.data = this.form.value;
@@ -161,7 +168,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // notify browser/tree of new dataset
-    this.storageService.datasetsChanged.next({type: UpdateType.New, data: {_profile: profile, _parent: this.data._parent}});
+    this.storageService.datasetsChanged.next({type: UpdateType.New, data: {_id: '-1', _profile: profile, _parent: this.data._parent}});
     this.newDocAdded = true;
 
     this.newDocModal.close();
@@ -338,6 +345,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.resetArrayGroup(repeatField.key);
     });
 
+    // FIXME: behaviours are not applied here, but have to be before the final reset
     this.form.reset();
     this.data = this.form.value;
 

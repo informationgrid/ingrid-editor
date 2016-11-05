@@ -24,9 +24,13 @@ export class TitleValidatorBehaviour extends BaseBehaviour implements Behaviour 
         debugger;
         setTimeout(() => {
           form.get('mainInfo.title').validator = function (fc: FormControl) {
-            return fc.value.length >= 3 ? null : {
-              validateTop: { valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen' }
-            };
+            if (fc.value) {
+              return fc.value.length >= 3 ? null : {
+                validateTop: {valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen'}
+              };
+            } else {
+              return null;
+            }
           }
         }, 500)
       })

@@ -21,16 +21,23 @@ export class MetadataTreeComponent implements OnInit {
 
   options = {
     getChildren: (node: TreeNode) => {
-      console.log( 'get children ...', node.id );
+      console.debug( 'get children ...', node.id );
       return this.query(node.id);
     }
   };
 
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
               private formularService: FormularService) {
-    storageService.datasetsChanged$.subscribe( (info) => {
-      console.log( 'info', info );
-      // TODO: only update changes or recover last state when loading everything new
+  }
+
+  ngOnInit() {
+    this.query(null).then( () => {
+      this.route.params.subscribe(params => this.expandToNode(params['id']));
+    }, (err) => console.error( 'Error:', err ));
+
+    this.storageService.datasetsChanged$.subscribe( (info) => {
+      console.debug( 'Tree: dataset changed event', info );
+      // only update changes in the tree instead of reloading everything and recover previous state
       switch (info.type) {
         case UpdateType.New:
           this.onNewDataset(info.data);
@@ -44,8 +51,35 @@ export class MetadataTreeComponent implements OnInit {
           this.onDeleteDataset(info.data);
           break;
       }
-
     } );
+  }
+
+  expandToNode(id: string) {
+    this.selectedId = id;
+
+    if (this.selectedId && this.selectedId !== '-1') {
+      // get path to node
+      this.storageService.getPathToDataset( this.selectedId ).subscribe( path => {
+        console.debug( 'path: ' + path );
+        let timeout = 0;
+
+        path.forEach( (id, index) => {
+          setTimeout( () => {
+            let node = this.tree.treeModel.getNodeById( id );
+            let isLast = index === (path.length - 1);
+
+            // focus selected node if the last one was expanded
+            if (isLast) {
+              setTimeout( () => this.tree.treeModel.setActiveNode( node, true ), 100 );
+            } else {
+              // expand node
+              node.expand();
+            }
+          }, timeout );
+          timeout += 500;
+        } );
+      } );
+    }
   }
 
   onNewDataset(doc: any) {
@@ -58,11 +92,14 @@ export class MetadataTreeComponent implements OnInit {
       this.tree.treeModel.setActiveNode(node, true);
     };
 
-    debugger;
     if (doc._parent) {
       let parentNode = this.tree.treeModel.getNodeById(doc._parent);
       // TODO: make it bullet proof by expecting a promise from expand
-      parentNode.expand();
+      try {
+        parentNode.expand();
+      } catch (err) {
+        console.error( 'error expanding node', err );
+      }
       setTimeout(() => {
         let pNode = this.getNodeFromModel(doc._parent);
 
@@ -109,7 +146,6 @@ export class MetadataTreeComponent implements OnInit {
     // and get the parent from that to finally get the wanted node from the model
     let nodeParent = this.getNodeFromModel(path[path.length - 2]);
 
-    // this.nodes = this.nodes.filter( node => node.id !== doc._id);
     let index = nodeParent.children.findIndex( (c: any) => c.id === doc._id );
 
     // only remove node from tree if it's still there
@@ -150,41 +186,10 @@ export class MetadataTreeComponent implements OnInit {
     return nodeParent;
   }
 
-  ngOnInit() {
-    this.query(null).then( () => {
-      this.route.params.subscribe(params => {
-        this.selectedId = params['id'];
-
-        if (this.selectedId && this.selectedId !== '-1') {
-          // get path to node
-          this.storageService.getPathToDataset( this.selectedId ).subscribe( path => {
-            console.debug( 'path: ' + path );
-            let timeout = 0;
-
-            path.forEach( (id, index) => {
-              setTimeout( () => {
-                let node = this.tree.treeModel.getNodeById( id );
-                let isLast = index === (path.length - 1);
-
-                // focus selected node if the last one was expanded
-                if (isLast) {
-                  setTimeout( () => this.tree.treeModel.setActiveNode( node, true ), 100 );
-                } else {
-                  // expand node
-                  node.expand();
-                }
-              }, timeout );
-              timeout += 500;
-            } );
-          } );
-        }
-      });
-    });
-  }
-
   query(id: string): Promise<any> {
     return new Promise(resolve => {
       this.storageService.getChildDocuments(id).subscribe(response => {
+        console.debug( 'got children', response );
         this.setNodes(response, id);
         resolve();
       });
@@ -197,8 +202,6 @@ export class MetadataTreeComponent implements OnInit {
       name: this.formularService.getTitle(doc._profile, doc),
       _profile: doc._profile,
       _state: doc._state
-      // children: [],
-      // _id: doc._id
     };
     if (doc.hasChildren) {
       node.hasChildren = true;
@@ -223,7 +226,6 @@ export class MetadataTreeComponent implements OnInit {
           updatedNodes.push(this.prepareNode(doc));
         }
       });
-    console.log('nodes: ', this.nodes);
     this.tree.treeModel.update();
   }
 

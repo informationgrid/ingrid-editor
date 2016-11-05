@@ -4,6 +4,8 @@ export interface UpdateDatasetInfo {
   type: UpdateType;
   data: {
     _id: string,
-    _profile?: string
+    _profile?: string,
+    _previousId?: string,
+    _parent?: string
   };
 }
