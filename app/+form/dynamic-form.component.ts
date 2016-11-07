@@ -197,7 +197,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // since loading will be async, we only have to reset the data first
 
     // check if form was changed and ask for saving data
-    if (this.form && this.form.dirty) {
+    // TODO: handle double confirmation (deactivated this one for now)
+    if (false && this.form && this.form.dirty) {
       this.pendingId = id;
       this.discardConfirmModal.open();
       // TODO: notify sidebar to select previously dataset before we changed
