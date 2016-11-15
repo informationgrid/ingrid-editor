@@ -98,18 +98,22 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // TODO: emit current form value on demand
     // register to an publisher in the form/storage service and send the value of this form
     // this can be used for publis, revert, detail, compare, ...
-    this.formularService.formDataSubject$.subscribe( (container: any) => {
-      container.form = this.form;
-      container.value = {
-        _id: this.data._id,
-        _profile: this.formularService.currentProfile
-      };
-      Object.assign(container.value, this.form.value);
-    });
+    this.observers.push(
+      // return current form data on request
+      this.formularService.formDataSubject$.subscribe( (container: any) => {
+        container.form = this.form;
+        container.value = {
+          _id: this.data._id,
+          _profile: this.formularService.currentProfile
+        };
+        Object.assign(container.value, this.form.value);
+      }),
 
-    this.storageService.datasetsChanged$.subscribe((msg) => {
-      if (msg.type === UpdateType.Update) this.load( this.data._id, msg.data._previousId );
-    });
+      // load dataset when one was updated
+      this.storageService.datasetsChanged$.subscribe((msg) => {
+        if (msg.type === UpdateType.Update) this.load( this.data._id, msg.data._previousId );
+      })
+    );
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -121,10 +125,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     // add form errors check when saving/publishing
-    this.storageService.beforeSave.asObservable().subscribe((message: any) => {
-      message.errors.push({ invalid: this.form.invalid });
-      console.log('in observer');
-    });
+    this.observers.push(
+      this.storageService.beforeSave$.subscribe((message: any) => {
+        message.errors.push({ invalid: this.form.invalid });
+        console.log('in observer');
+      })
+    );
   }
 
   /*canDeactivate(component: DynamicFormComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<DynamicFormComponent>|Promise<DynamicFormComponent>|boolean {

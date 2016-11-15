@@ -19,6 +19,7 @@ export class StorageService {
   afterLoadAndSet$ = this.afterLoadAndSet.asObservable();
   afterProfileSwitch$ = this.afterProfileSwitch.asObservable();
   datasetsChanged$ = this.datasetsChanged.asObservable();
+  beforeSave$ = this.beforeSave.asObservable();
 
   titleFields: string;
 
