@@ -45,8 +45,6 @@ export class BehaviourService {
   }
 
   apply(form: FormGroup, profile: string) {
-    // debugger;
-    // this.initialized.then( () => {
       // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
       this.behaviours
         .filter( beh => beh.isActive && beh.forProfile === profile )
@@ -57,9 +55,9 @@ export class BehaviourService {
             // we need to run code in this context
             // TODO: add parameters for behaviour
             behaviour.register( form, this.eventManager );
+            if (behaviour.addValidators) behaviour.addValidators( form );
           }
         } );
-    // } );
   }
 
   saveBehaviour(behaviour: Behaviour) {
@@ -102,22 +100,4 @@ export class BehaviourService {
         behaviour.unregister();
       } );
   }
-
-  /*
-    register(id: string, form: FormGroup) {
-      this.behaviours.some( behaviour => {
-        if (behaviour.id === id) {
-          behaviour.register( form, this.eventManager );
-          return true;
-        }
-      } );
-    }*/
-
-  /*  addDynamicBehaviours = function () {
-      let addBeh = require( 'bundle!./additionalBehaviours.js' );
-      addBeh( function (data: Function) {
-        console.log( 'other loaded behaviours: ', data() );
-
-      } );
-    };*/
 }

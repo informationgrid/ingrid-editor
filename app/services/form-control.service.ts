@@ -8,7 +8,7 @@ export class FormControlService {
   constructor() {
   }
 
-  toFormGroup(fields: FieldBase<any>[]) {
+  toFormGroup(fields: FieldBase<any>[], data: any) {
     let group: any = {};
     fields.forEach( field => {
       if (field instanceof Container) {
@@ -18,7 +18,7 @@ export class FormControlService {
           field.children.forEach(groups => {
             let subGroup = field.key ? {} : group;
             groups.forEach((child: any) => {
-              subGroup[child.key] = this._addValidator(child);
+              subGroup[child.key] = this._addValidator(child, this.getDataValue(data, [child.key]));
             });
             array.push(new FormGroup(subGroup));
           });
@@ -29,7 +29,7 @@ export class FormControlService {
             //if (question.isRepeatable) {
             //  subGroup[0][child.key] = this._addValidator( child );
             //} else {
-            subGroup[child.key] = this._addValidator(child);
+            subGroup[child.key] = this._addValidator(child, this.getDataValue(data, [field.key, child.key]));
             //}
           });
           result = new FormGroup(subGroup);
@@ -38,19 +38,35 @@ export class FormControlService {
           group[field.key] = result;
         }
       } else if (field.controlType === 'partialGenerator') {
-        let g: any = [];//new FormGroup({});
+        let g: any = [];
+        if (data[field.key] !== undefined) {
+          data[field.key].forEach((entry: any) => {
+            let partialKey = Object.keys(entry)[0];
+            let partial = field.partials.filter( (part: any) => part.key === partialKey )[0];
+            g.push(this.toFormGroup([partial], entry));
+          });
+        }
         group[field.key] = new FormArray(g);
       } else {
-        group[field.key] = this._addValidator( field );
+        group[field.key] = this._addValidator( field, this.getDataValue(data, [field.key] ));
       }
     } );
     return new FormGroup( group );
   }
 
-  _addValidator(field: any) {
-    return field.validator ? new FormControl( field.value || '', field.validator ) :
-      field.required ? new FormControl( field.value || '', Validators.required )
-        : new FormControl( field.value || '' );
+  getDataValue(data: any, keys: string[]): any {
+    let obj: any = data;
+    keys.some( key => {
+      obj = obj[key];
+      if (obj === undefined) return true;
+    });
+    return obj;
+  }
+
+  _addValidator(field: any, value: any) {
+    return field.validator ? new FormControl( value || '', field.validator ) :
+      field.required ? new FormControl( value || '', Validators.required )
+        : new FormControl( value || '' );
   }
 }
 

@@ -76,7 +76,7 @@
                  [ngClass]="{hasChildren: field.children, padding: !field.children || field.isRepeatable}">
 
                 <!-- SIMPLE FIELD -->
-                <dyn-field *ngIf="!field.children" [field]="field" [form]="form" [value]="data"
+                <dyn-field *ngIf="!field.children" [field]="field" [form]="form"
                            (onAddSection)="addSection($event)"></dyn-field>
 
                 <!-- COMPLEX FIELD -->
@@ -86,7 +86,7 @@
                     <div *ngIf="!field.isRepeatable">
                         <div [formGroupName]="field.key">
                             <dyn-field *ngFor="let child of field.children" [field]="child"
-                                       [form]="form.controls[field.key]" [value]="data[field.key]"
+                                       [form]="form.controls[field.key]"
                                        class="padding {{child.domClass}}">
                             </dyn-field>
                         </div>
@@ -110,7 +110,6 @@
                                 <div [formGroupName]="i" class="panel-body" [class.hide]="!expandedField[child.key + i]">
                                     <dyn-field *ngFor="let subChild of child.children" [field]="subChild"
                                                [form]="form.controls[field.key].controls[i].controls[child.key]"
-                                               [value]="data[field.key][i][child.key]"
                                                class="padding {{subChild.domClass}}">
                                     </dyn-field>
                                 </div>

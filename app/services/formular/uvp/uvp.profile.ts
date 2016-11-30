@@ -291,7 +291,7 @@ export class UVPProfile implements Profile {
   getTitle(doc: any): string {
     let title = doc['mainInfo.title'];
     if (!title) {
-      title = doc.mainInfo.title;
+      title = doc.mainInfo ? doc.mainInfo.title : '???';
     }
     return title;
   }

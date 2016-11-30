@@ -87,7 +87,10 @@ export class MetadataTreeComponent implements OnInit {
 
     let updateTree = () => {
       this.tree.treeModel.update();
+      // FIXME: set route to new node id, for correct refresh
+      // this however does conflict when creating a new node when first visiting the form page
       this.router.navigate(['/form', '-1']);
+
       let node = this.tree.treeModel.getNodeById('-1');
       this.tree.treeModel.setActiveNode(node, true);
     };

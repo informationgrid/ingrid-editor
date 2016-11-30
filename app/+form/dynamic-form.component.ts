@@ -154,29 +154,39 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   prepareNewDoc() {
     let profile = this.choiceNewDoc;
     let previousId = this.data._id;
+    let needsProfileSwitch = this.formularService.currentProfile !== profile;
 
     if (this.form) this.form.reset();
 
-    if (this.formularService.currentProfile !== profile) {
-      this.switchProfile(profile);
+    try {
+      if (needsProfileSwitch) {
+        this.switchProfile(profile);
 
-      // TODO: refactor to always apply behaviours after a profile switch (because it's used more than once)
-      setTimeout(() => {
-        this.behaviourService.apply(this.form, profile);
-        // after profile switch inform the subscribers about it to recognize initial data set
-        this.storageService.afterProfileSwitch.next(this.form.value);
-      }, 0);
+        // TODO: refactor to always apply behaviours after a profile switch (because it's used more than once)
+      }
+
+      this.data = {};
+      if (!this.addToRoot) {
+        this.data._parent = previousId;
+      }
+
+      this.updateRepeatableFields(this.data);
+
+      this.createFormWithData(this.data);
+
+      this.behaviourService.apply(this.form, profile);
+      // after profile switch inform the subscribers about it to recognize initial data set
+      this.storageService.afterProfileSwitch.next(this.form.value);
+
+      // notify browser/tree of new dataset
+      this.storageService.datasetsChanged.next({
+        type: UpdateType.New,
+        data: {_id: '-1', _profile: profile, _parent: this.data._parent}
+      });
+      this.newDocAdded = true;
+    } catch (ex) {
+      console.error( "Error adding new document: ", ex );
     }
-
-    this.data = this.form.value;
-    if (!this.addToRoot) {
-      this.data._parent = previousId;
-    }
-
-    // notify browser/tree of new dataset
-    this.storageService.datasetsChanged.next({type: UpdateType.New, data: {_id: '-1', _profile: profile, _parent: this.data._parent}});
-    this.newDocAdded = true;
-
     this.newDocModal.close();
   }
 
@@ -189,7 +199,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   discardChanges() {
-    this.form.reset();
+    // this.form.reset();
     this.load(this.pendingId);
 
     this.handleNewDatasetOnLeave();
@@ -220,38 +230,33 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // TODO: remove new dataset if not saved already -> we only want at most one new dataset at a time!
 
-
     if (id === undefined) return;
-    // TODO: use form.reset() which should work now! but data also has to be reset otherwise form elements won't be updated
-    if (this.form) {
-      this.form.reset();
-      this.data = this.form.value; // this._prepareInitialData(this.form);
-    }
 
     this.storageService.loadData(id).subscribe(data => {
       console.log('loaded data:', data);
       let profile = data._profile;
+      let needsProfileSwitch = this.formularService.currentProfile !== profile;
+      this.data = data;
       // let profileSwitched = false;
 
       try {
+
         // switch to the right profile depending on the data
-        if (this.formularService.currentProfile !== profile) {
-          this.switchProfile(profile);
-          // profileSwitched = true;
-          // set data delayed so that form can build up in DOM and events can register
-          setTimeout(() => {
-            this.behaviourService.apply(this.form, profile);
-            // after profile switch inform the subscribers about it to recognize initial data set
-            this.storageService.afterProfileSwitch.next(data);
-            // setTimeout(() => this.setData(data), 1000 );
-            this.setData(data);
-          }, 0);
-        } else {
-          setTimeout(() => {
-            this.setData(data);
-          });
-        }
+          if (needsProfileSwitch) {
+            this.switchProfile(profile);
+          }
+
+          this.updateRepeatableFields(data);
+
+          this.createFormWithData(data);
+
+          this.behaviourService.apply(this.form, profile);
+          this.storageService.afterProfileSwitch.next(data);
+
+          this.storageService.afterLoadAndSet.next(data);
+
       } catch(ex) {
+        console.error( ex );
         this.modalService.showError(ex);
         this.data._id = id;
       }
@@ -320,11 +325,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.deleteConfirmModal.close();
   }
 
+  createFormWithData(data: any) {
+    this.form = this.qcs.toFormGroup(this.fields, data);
+
+  }
+
   switchProfile(profile: string) {
     this.behaviourService.unregisterAll();
     this.fields = this.formularService.getFields(profile);
-    // this.fields.sort( (a, b) => a.order - b.order );
-
 
     // add controls from active behaviours
     // TODO: refactor to a function
@@ -342,22 +350,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // sort fields by its order field
     this.fields.sort((a, b) => a.order - b.order).slice(0);
 
-    this.form = this.qcs.toFormGroup(this.fields);
-
-    // since objects in fields array are not cloned, it can have the previous repeatable fields set
-    // which we have to reset
-    // TODO: improve by making fields really immutable from service
-    let repeatFields = this.fields.filter(pField => (<Container>pField).isRepeatable);
-    repeatFields.forEach((repeatField: Container) => {
-      this.resetArrayGroup(repeatField.key);
-    });
-
-    // FIXME: behaviours are not applied here, but have to be before the final reset
-    this.form.reset();
-    this.data = this.form.value;
-
     this.formularService.currentProfile = profile;
-
   }
 
   updateRepeatableFields(data: any) {
@@ -370,7 +363,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         let repeatData = data[repeatField.key];
         for (let i = 0; i < repeatData.length; i++) {
           let partialKey = Object.keys(repeatData[i])[0];
-          this.addArrayGroup(repeatField, partialKey);
+          this.addArrayGroup(repeatField, partialKey, repeatData[i]);
         }
       }
     });
@@ -381,19 +374,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // remove from definition fields
     while (group.children.length > 0) group.children.pop();
-    let formArray = <FormArray>this.form.controls[name];
-
-    // remove from form element
-    while (formArray.length > 0) formArray.removeAt(formArray.length - 1);
   }
 
-  addArrayGroup(repeatField: any, key: string) {
+  addArrayGroup(repeatField: any, key: string, data: any) {
     let partial = this.addPartialToField(repeatField, key);
 
-    this.addPartialToForm(partial, <FormArray>this.form.controls[repeatField.key]);
-
-    if (!this.data[repeatField.key]) this.data[repeatField.key] = [];
-    this.data[repeatField.key].push({});
+    // this.addPartialToForm(partial, <FormArray>this.form.controls[repeatField.key], data);
   }
 
   removeArrayGroup(name: string, pos: number) {
@@ -404,9 +390,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // remove from form element
     let ctrls = <FormArray>this.form.controls[name];
     ctrls.removeAt(pos);
-
-    // remove from data object
-    this.data[name].splice(pos, 1);
   }
 
   addPartialToField(field: any, partialKey: string): any {
@@ -416,14 +399,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return partial;
   }
 
-  addPartialToForm(partial: any, formArray: FormArray) {
-    let additionalFormGroup = this.qcs.toFormGroup([partial]);
-    // let complete = {};
-    // complete[partial.key] = additionalFormGroup;
-    // let additionalComplete = new FormGroup( complete );
-    // set link to parent so that we are updated correctly
-    // additionalComplete.setParent(formArray);
-    // formArray.controls.push(additionalComplete);
+  addPartialToForm(partial: any, formArray: FormArray, data: any) {
+    let additionalFormGroup = this.qcs.toFormGroup([partial], data);
     additionalFormGroup.setParent(formArray);
     formArray.controls.push(additionalFormGroup);
   }
@@ -431,25 +408,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   addSection(data: any) {
     // use target-key or similar to have no conflicts with other fields with same name
     let field = <PartialGeneratorField>this.fields.filter(f => (<Container>f).key === data.key)[0];
-    // let partial = field.partials.filter( part => part.key === data.section )[0];
-    // let clonedPartial = Object.assign({}, partial);
-    // field.children.push(clonedPartial);
     let partial = this.addPartialToField(field, data.section);
     let formArray = <FormArray>this.form.controls[data.key];
-    this.addPartialToForm(partial, formArray);
-
-    // let additionalFormGroup = this.qcs.toFormGroup([partial]);
-    // let complete = {};
-    // complete[partial.key] = additionalFormGroup;
-    // let additionalComplete = new FormGroup( complete );
-    // let formArray = <FormArray>this.form.controls[data.key];
-    // // set link to parent so that we are updated correctly
-    // additionalComplete.setParent(formArray);
-    // formArray.controls.push(additionalComplete);
-
-    if (!this.data[data.key]) this.data[data.key] = [];
-    let newSectionData = {};
-    newSectionData[data.section] = {};
-    this.data[data.key].push(newSectionData);
+    this.addPartialToForm(partial, formArray, {});
   }
 }

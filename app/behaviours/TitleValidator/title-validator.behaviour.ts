@@ -1,4 +1,4 @@
-import { Behaviour } from '../../services/behaviour/behaviours';
+import {Behaviour} from '../../services/behaviour/behaviours';
 import {BaseBehaviour} from '../base.behaviour';
 import {EventManager} from "@angular/platform-browser";
 import {FormGroup, FormControl} from "@angular/forms";
@@ -19,17 +19,15 @@ export class TitleValidatorBehaviour extends BaseBehaviour implements Behaviour 
   }
 
   register(form: FormGroup, eventManager: EventManager) {
-    this.addSubscriber(
-      this.storageService.afterProfileSwitch$.subscribe( () => {
-        debugger;
-        setTimeout(() => {
-          form.get('mainInfo.title').validator = function (fc: FormControl) {
-            return fc.value && fc.value.length >= 3 ? null : {
-              validateTop: {valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen'}
-            };
-          }
-        }, 500)
-      })
-    );
+
+  }
+
+  addValidators(form: FormGroup) {
+    form.get('mainInfo.title').validator = function (fc: FormControl) {
+      debugger;
+      return fc.value && fc.value.length >= 3 ? null : {
+        validateTop: {valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen'}
+      };
+    };
   }
 }
