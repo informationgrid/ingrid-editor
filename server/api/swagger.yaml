@@ -15,7 +15,15 @@ paths:
   /user/login:
     post:
       operationId: login
+      parameters:
+      - name: "logindata"
+        in: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
       x-swagger-router-controller: "User"
+      tags:
+      - "User"
       responses:
         '200':
           description: Return the JWT
@@ -31,6 +39,8 @@ paths:
       responses:
         '200':
           description: Options for this operation are returned.
+      tags:
+      - "Behaviour"
     get:
       summary: ""
       description: ""
@@ -38,6 +48,8 @@ paths:
       responses:
         '200':
           description: Behaviours are returned.
+      tags:
+      - "Behaviour"
     post:
       summary: ""
       description: ""
@@ -52,8 +64,23 @@ paths:
       responses:
         '200':
           description: Behaviours have been set.
+      tags:
+      - "Behaviour"
     x-swagger-router-controller: "Behaviours"
   /datasets/find:
+    options:
+      tags:
+        - "Datasets"
+      summary: ""
+      description: ""
+      operationId: options
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Options for this operation are returned.
     get:
       tags:
       - "Datasets"
@@ -74,14 +101,29 @@ paths:
       responses:
         '200':
           description: Datasets found
-      x-swagger-router-controller: "Datasets"
+    x-swagger-router-controller: "Datasets"
   /datasets/children:
+    options:
+      tags:
+      - "Datasets"
+      summary: ""
+      description: ""
+      operationId: "optionsChildren"
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Datasets"
     get:
       tags:
       - "Datasets"
       summary: ...
       description: ""
       operationId: children
+      security: [{"jwt": []}]
       parameters:
       - name: "parentId"
         in: "query"
@@ -235,6 +277,11 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       x-swagger-router-controller: "Datasets"
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: Authorization
+    in: header
 definitions:
   Dataset:
     type: "object"
@@ -271,6 +318,15 @@ definitions:
       _id:
         type: "string"
         description: "Unique identifier"
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        description: ""
+      password:
+        type: "string"
+        description: ""
   Error:
     type: "object"
     properties:

@@ -1,6 +1,14 @@
 'use strict';
 var db = require('../db/dbInterface');
 
+exports.optionsChildren = function(args, res, next) {
+  res.end();
+};
+
+exports.options = function(args, res, next) {
+  res.end();
+};
+
 /**
  *
  * @param docs

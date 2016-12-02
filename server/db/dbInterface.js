@@ -1,4 +1,5 @@
 var MongoClient = require('mongodb').MongoClient,
+  Promise = require('es6-promise').Promise,
   ObjectID = require('mongodb').ObjectID,
   assert = require('assert');
 
@@ -6,18 +7,51 @@ var MongoClient = require('mongodb').MongoClient,
 var url = 'mongodb://localhost:27017/ige';
 var db = null;
 
-var connect = function (cb) {
+var connect = function () {
   // Use connect method to connect to the server
-  MongoClient.connect(url, function (err, dbInstance) {
-    assert.equal(null, err);
-    console.log("Connected successfully to server");
-    db = dbInstance;
-    if (cb) cb();
+  return new Promise(function(resolve) {
+    MongoClient.connect(url, function (err, dbInstance) {
+      assert.equal(null, err);
+      console.log("Connected successfully to server");
+      db = dbInstance;
+      resolve();
+    });
   });
 };
 
 var closeDB = function () {
   db.close();
+};
+
+var hasAdminUser = function () {
+  var collection = db.collection('users');
+
+  if (collection === null) return Promise.resolve(false);
+
+  // Find some documents
+  return collection.find({role: -1}).count().then(function (result) {
+    return result > 0;
+  });
+
+};
+
+var createUser = function(login, password, role) {
+  var collection = db.collection('users');
+
+  // collection.insertOne({_id: login}, {
+  collection.insertOne({
+    _id: login,
+    password: password,
+    role: role
+  });
+};
+
+var findUser = function(login) {
+  var collection = db.collection('users');
+
+  return collection.findOne({
+    _id: login
+  });
 };
 
 var _setPublishedState = function (dataset) {
@@ -298,6 +332,8 @@ var checkForChildren = function (id) {
 module.exports = {
   connect: connect,
   closeDB: closeDB,
+  hasAdminUser: hasAdminUser,
+
   // insertDocument: insertDocument,
   updateDocument: updateDocument,
   getDocument: getDocument,
@@ -312,5 +348,8 @@ module.exports = {
 
   setChildInfoTo: setChildInfoTo,
   getPathToDataset: getPathToDataset,
-  checkForChildren: checkForChildren
+  checkForChildren: checkForChildren,
+
+  createUser: createUser,
+  findUser: findUser
 };

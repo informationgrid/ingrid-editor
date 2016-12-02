@@ -5,6 +5,13 @@ var url = require('url');
 
 var Datasets = require('./DatasetsService');
 
+module.exports.options = function find (req, res, next) {
+  Datasets.options(req.swagger.params, res, next);
+};
+module.exports.optionsChildren = function optionsChildren (req, res, next) {
+  Datasets.optionsChildren(req.swagger.params, res, next);
+};
+
 module.exports.find = function find (req, res, next) {
   Datasets.find(req.swagger.params, res, next);
 };
