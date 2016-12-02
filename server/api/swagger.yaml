@@ -12,6 +12,17 @@ schemes:
 produces:
 - "application/json"
 paths:
+  /user/list:
+    get:
+      operationId: list
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: Returns the list of users
+      tags:
+      - "User"
+    x-swagger-router-controller: "User"
   /user/login:
     post:
       operationId: login
@@ -26,19 +37,19 @@ paths:
         in: formData
         type: string
         required: false
-      tags:
-      - "User"
       responses:
         '200':
           description: Return the JWT
         '403':
           description: Error when user is not accepted.
+      tags:
+      - "User"
     x-swagger-router-controller: "User"
   /behaviours:
     options:
       summary: ""
       description: ""
-      operationId: options
+      operationId: optionsBehaviours
       consumes:
         - application/x-www-form-urlencoded
       produces:
@@ -60,7 +71,7 @@ paths:
     post:
       summary: ""
       description: ""
-      operationId: set
+      operationId: setBehaviours
       parameters:
         - name: "behaviour"
           in: "body"
@@ -80,7 +91,7 @@ paths:
         - "Datasets"
       summary: ""
       description: ""
-      operationId: options
+      operationId: optionsDatasets
       consumes:
         - application/x-www-form-urlencoded
       produces:
@@ -231,7 +242,7 @@ paths:
       - "Datasets"
       summary: "Set a complete dataset"
       description: "xxx"
-      operationId: "set"
+      operationId: "setDatasets"
       parameters:
       - name: "id"
         in: "path"
@@ -325,15 +336,6 @@ definitions:
       _id:
         type: "string"
         description: "Unique identifier"
-  User:
-    type: "object"
-    properties:
-      username:
-        type: "string"
-        description: ""
-      password:
-        type: "string"
-        description: ""
   Error:
     type: "object"
     properties:

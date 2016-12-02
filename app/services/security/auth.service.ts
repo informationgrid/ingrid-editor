@@ -20,7 +20,7 @@ export class AuthService {
 
   login(username: string, password: string): Observable<boolean> {
     let body = 'username=' + username + '&password=' + password;
-    let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': body.length });
+    let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded'});
     let options = new RequestOptions({ headers: headers });
 
     return this.http.post( this.configService.backendUrl + 'user/login', body, options)

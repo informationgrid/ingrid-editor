@@ -9,8 +9,8 @@ import {ModalService} from '../services/modal/modal.service';
 })
 export class LoginComponent implements OnInit {
   model: any = {
-    username: 'test',
-    password: 'test'
+    username: 'admin',
+    password: 'admin'
   };
   loading = false;
   error = '';

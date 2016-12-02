@@ -1,7 +1,8 @@
-import {Component, OnInit, AfterViewInit} from "@angular/core";
-import {Split} from "../../node_modules/split.js/split";
-import {Modal} from "ng2-modal";
-import {ModalService} from "../services/modal/modal.service";
+import {Component, OnInit, AfterViewInit} from '@angular/core';
+import {Split} from '../../node_modules/split.js/split';
+import {Modal} from 'ng2-modal';
+import {ModalService} from '../services/modal/modal.service';
+import {UserService} from './user.service';
 
 interface User {
   id: string;
@@ -25,22 +26,20 @@ export class UserComponent implements OnInit, AfterViewInit {
   private selectedRole: User;
 
 
-  constructor(private modalService: ModalService) {
+  constructor(private modalService: ModalService, private userService: UserService) {
   }
 
   ngOnInit() {
     this.currentTab = 'users';
     this.dialogTab = 'dataset';
-    this.users = [
-      {id: '1', name: 'André'},
-      {id: '2', name: 'James'},
-      {id: '3', name: 'Mike'}
-    ];
     this.roles = [
       {id: '1', name: 'admin'},
       {id: '2', name: 'manager'},
       {id: '3', name: 'author'}
     ];
+
+    this.userService.getUsers().subscribe( users => this.users = users );
+    // this.userService.getRoles().subscribe( roles => this.roles = roles );
   }
 
   ngAfterViewInit(): void {

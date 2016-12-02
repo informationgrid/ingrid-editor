@@ -32,7 +32,17 @@ export class MetadataTreeComponent implements OnInit {
 
   ngOnInit() {
     this.query(null).then( () => {
-      this.route.params.subscribe(params => this.expandToNode(params['id']));
+      this.route.params.subscribe(params => {
+        this.selectedId = params['id'];
+
+        if (this.selectedId && this.selectedId !== '-1') {
+          // get path to node
+          this.storageService.getPathToDataset( this.selectedId ).subscribe( path => {
+            console.debug( 'path: ' + path );
+            this.expandToPath( path.reverse() );
+          } );
+        }
+      });
     }, (err) => console.error( 'Error:', err ));
 
     this.storageService.datasetsChanged$.subscribe( (info) => {
@@ -52,34 +62,6 @@ export class MetadataTreeComponent implements OnInit {
           break;
       }
     } );
-  }
-
-  expandToNode(id: string) {
-    this.selectedId = id;
-
-    if (this.selectedId && this.selectedId !== '-1') {
-      // get path to node
-      this.storageService.getPathToDataset( this.selectedId ).subscribe( path => {
-        console.debug( 'path: ' + path );
-        let timeout = 0;
-
-        path.forEach( (id, index) => {
-          setTimeout( () => {
-            let node = this.tree.treeModel.getNodeById( id );
-            let isLast = index === (path.length - 1);
-
-            // focus selected node if the last one was expanded
-            if (isLast) {
-              setTimeout( () => this.tree.treeModel.setActiveNode( node, true ), 100 );
-            } else {
-              // expand node
-              node.expand();
-            }
-          }, timeout );
-          timeout += 500;
-        } );
-      } );
-    }
   }
 
   onNewDataset(doc: any) {
@@ -187,22 +169,6 @@ export class MetadataTreeComponent implements OnInit {
       nodeParent = {children: this.nodes};
     }
     return nodeParent;
-  }
-
-  ngOnInit() {
-    this.query(null).then( () => {
-      this.route.params.subscribe(params => {
-        this.selectedId = params['id'];
-
-        if (this.selectedId && this.selectedId !== '-1') {
-          // get path to node
-          this.storageService.getPathToDataset( this.selectedId ).subscribe( path => {
-            console.debug( 'path: ' + path );
-            this.expandToPath( path.reverse() );
-          } );
-        }
-      });
-    });
   }
 
   expandToPath(path: string[]): Promise<any> {

@@ -5,7 +5,7 @@ var url = require('url');
 
 var Datasets = require('./DatasetsService');
 
-module.exports.options = function find (req, res, next) {
+module.exports.optionsDatasets = function find (req, res, next) {
   Datasets.options(req.swagger.params, res, next);
 };
 module.exports.optionsChildren = function optionsChildren (req, res, next) {
@@ -28,7 +28,7 @@ module.exports.getByIDOperation = function getByIDOperation (req, res, next) {
   Datasets.getByIDOperation(req.swagger.params, res, next);
 };
 
-module.exports.set = function set (req, res, next) {
+module.exports.setDatasets = function set (req, res, next) {
   Datasets.set(req.swagger.params, res, next);
 };
 

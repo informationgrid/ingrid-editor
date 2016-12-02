@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Subject, Observable} from 'rxjs';
-import {Http, RequestOptions, Headers} from '@angular/http';
+import {Http, Headers} from '@angular/http';
 import {ModalService} from '../modal/modal.service';
 import {FormularService} from '../formular/formular.service';
 import {ConfigService} from '../../config/config.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
-import {AuthService} from "../security/auth.service";
-import {Router} from "@angular/router";
+import {AuthService} from '../security/auth.service';
+import {Router} from '@angular/router';
 
 @Injectable()
 export class StorageService {
@@ -32,7 +32,7 @@ export class StorageService {
   }
 
   findDocuments(query: string) {
-    let headers = new Headers();//{ 'Authorization': 'Bearer ' + this.authenticationService.token });
+    let headers = new Headers(); // { 'Authorization': 'Bearer ' + this.authenticationService.token });
     headers.append('Authorization', 'Bearer ' + this.authenticationService.token);
 
     // let options = new RequestOptions({ headers: headers });
@@ -46,7 +46,7 @@ export class StorageService {
 
   getChildDocuments(parentId: string): Observable<any> {
     let idQuery = parentId === null ? '' : '&parentId=' + parentId;
-    let headers = new Headers();//{ 'Authorization': 'Bearer ' + this.authenticationService.token });
+    let headers = new Headers(); // { 'Authorization': 'Bearer ' + this.authenticationService.token });
     headers.append('Authorization', 'Bearer ' + this.authenticationService.token);
     headers.append('Content-Type', 'text/plain');
     return this.http.get(this.configService.backendUrl + 'datasets/children?fields=_id,_profile,_state,hasChildren,' + this.titleFields + idQuery,
@@ -118,7 +118,7 @@ export class StorageService {
       .catch(err => this._handleError(err));
 
     response.subscribe(res => {
-      console.log( 'ok, res' );
+      console.log( 'ok', res );
       this.datasetsChanged.next({type: UpdateType.Delete, data: {_id: id}});
     });
   }
@@ -126,7 +126,7 @@ export class StorageService {
   revert(id: string): Observable<any> {
     console.debug('REVERTING', id);
     return this.http.post(this.configService.backendUrl + 'dataset/' + id + '?revert=true', null)
-      .do( (res) => this.datasetsChanged.next({type: UpdateType.Update, data: res.json()}) )
+      .do( (res: any) => this.datasetsChanged.next({type: UpdateType.Update, data: res.json()}) )
       .catch(this._handleError);
 
     // return response.subscribe(res => {
@@ -144,7 +144,7 @@ export class StorageService {
   _handleError(err: any) {
     // on logout or jwt expired
     if (err.status === 403) {
-      console.log("Not logged in");
+      console.log('Not logged in');
       this.router.navigate(['/login']);
     } else {
       console.error('Error: ', err);

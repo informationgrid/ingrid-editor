@@ -35,3 +35,14 @@ exports.login = function (args, res, next) {
 
 };
 
+exports.list = function (args, res, next) {
+  db.getUsers().then(function (user) {
+    res.end( JSON.stringify( user, null, 2 ) );
+
+  }).catch(function (err) {
+    res.statusCode = 403;
+    res.end(err.message);
+
+  });
+};
+
