@@ -189,6 +189,38 @@ export class MetadataTreeComponent implements OnInit {
     return nodeParent;
   }
 
+  ngOnInit() {
+    this.query(null).then( () => {
+      this.route.params.subscribe(params => {
+        this.selectedId = params['id'];
+
+        if (this.selectedId && this.selectedId !== '-1') {
+          // get path to node
+          this.storageService.getPathToDataset( this.selectedId ).subscribe( path => {
+            console.debug( 'path: ' + path );
+            this.expandToPath( path.reverse() );
+          } );
+        }
+      });
+    });
+  }
+
+  expandToPath(path: string[]): Promise<any> {
+    let id = path.pop();
+    let node = this.tree.treeModel.getNodeById( id );
+
+    // only expand if there're more nodes to be expanded
+    if (path.length > 0) {
+      return node.expand().then( () => {
+        return this.expandToPath( path );
+      } );
+    } else {
+      // mark the last node as active
+      setTimeout( () => this.tree.treeModel.setActiveNode( node, true ), 100 );
+      return Promise.resolve();
+    }
+  }
+
   query(id: string): Promise<any> {
     return new Promise(resolve => {
       this.storageService.getChildDocuments(id).subscribe(response => {
