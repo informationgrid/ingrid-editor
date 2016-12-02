@@ -15,18 +15,25 @@ paths:
   /user/login:
     post:
       operationId: login
+      consumes:
+      - application/x-www-form-urlencoded
       parameters:
-      - name: "logindata"
-        in: "body"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      x-swagger-router-controller: "User"
+      - name: username
+        in: formData
+        type: string
+        required: false
+      - name: password
+        in: formData
+        type: string
+        required: false
       tags:
       - "User"
       responses:
         '200':
           description: Return the JWT
+        '403':
+          description: Error when user is not accepted.
+    x-swagger-router-controller: "User"
   /behaviours:
     options:
       summary: ""

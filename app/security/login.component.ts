@@ -29,20 +29,22 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.authService.login(this.model.username, this.model.password)
       .subscribe(result => {
-        if (result === true) {
-          // Get the redirect URL from our auth service
-          // If no redirect has been set, use the default
-          let redirect = this.authService.redirectUrl ? this.authService.redirectUrl : '/form';
+        // Get the redirect URL from our auth service
+        // If no redirect has been set, use the default
+        let redirect = this.authService.redirectUrl ? this.authService.redirectUrl : '/form';
 
-          // login successful
-          this.router.navigate([redirect]);
-        } else {
+        // login successful
+        this.router.navigate([redirect]);
+
+      }, err => {
+        this.loading = false;
+        if (err.status === 403) {
           // login failed
           this.error = 'Username or password is incorrect';
-          this.loading = false;
+
+        } else {
+          this.modalService.showError(err.text());
         }
-      }, err => {
-        this.modalService.showError(err);
       });
   }
 }

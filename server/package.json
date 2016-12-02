@@ -14,11 +14,12 @@
   "license": "Apache-2.0",
   "private": true,
   "dependencies": {
+    "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
     "connect": "^3.2.0",
-    "js-yaml": "^3.3.0",
+    "js-yaml": "^3.7.0",
     "jsonwebtoken": "^7.1.9",
-    "mongodb": "^2.2.10",
+    "mongodb": "^2.2.12",
     "swagger-tools": "0.10.1"
   },
   "devDependencies": {

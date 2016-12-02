@@ -1,10 +1,8 @@
-import {Router} from "@angular/router";
-import {Injectable} from "@angular/core";
-import {tokenNotExpired} from "angular2-jwt";
-import {Observable} from "rxjs";
-import {Response, Http} from "@angular/http";
+import {Router} from '@angular/router';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {Response, Http, RequestOptions, Headers} from '@angular/http';
 import {ConfigService} from '../../config/config.service';
-declare var Auth0Lock: any;
 
 @Injectable()
 export class AuthService {
@@ -21,7 +19,11 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<boolean> {
-    return this.http.post( this.configService.backendUrl + 'user/login', JSON.stringify({username: username, password: password}))
+    let body = 'username=' + username + '&password=' + password;
+    let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': body.length });
+    let options = new RequestOptions({ headers: headers });
+
+    return this.http.post( this.configService.backendUrl + 'user/login', body, options)
       .map((response: Response) => {
         // login successful if there's a jwt token in the response
         let token = response.json() && response.json().token;

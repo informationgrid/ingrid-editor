@@ -8,6 +8,7 @@ var jsyaml = require('js-yaml');
 var fs = require('fs');
 var Jwt = require('jsonwebtoken');
 var bodyParser = require('body-parser'),
+    bcrypt = require('bcryptjs'),
     db = require('./db/dbInterface');
 var serverPort = 8080;
 var HEADER_PREFIX = "Bearer ";
@@ -44,6 +45,7 @@ var spec = fs.readFileSync('./api/swagger.yaml', 'utf8');
 var swaggerDoc = jsyaml.safeLoad(spec);
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // Initialize the Swagger middleware
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
@@ -87,7 +89,8 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
         // TODO: accept user input for admin password
         console.log('Admin does not exists in database. Please set the password for the admin user:');
 
-        db.createUser('admin', 'admin', -1);
+        var hash = bcrypt.hashSync('admin', 8);
+        db.createUser('admin', hash, -1);
       }
     }).catch(function(ex) {
 
