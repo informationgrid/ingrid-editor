@@ -1,4 +1,10 @@
+'use strict';
+
 var mongoClient = require('./db-mongo');
+
+let getClient = function() {
+  return mongoClient;
+};
 
 var connect = function () {
   // Use connect method to connect to the server
@@ -7,37 +13,6 @@ var connect = function () {
 
 var closeDB = function () {
   mongoClient.close();
-};
-
-var hasAdminUser = function () {
-  return mongoClient.findInTable('users', {role: -1})
-    .then(function(data) {
-
-      // there's at least one admin user
-      return data.length > 0;
-
-    }, function (err) {
-
-      // if table could not be found then there also cannot be an admin user
-      return false;
-
-    });
-};
-
-var createUser = function(login, password, role) {
-  mongoClient.insertIntoTable('users', {
-    _id: login,
-    password: password,
-    role: role
-  });
-};
-
-var getUsers = function() {
-  return mongoClient.searchFor('users', "");
-};
-
-var findUser = function(login) {
-  return mongoClient.getDocById('users', login);
 };
 
 var _setPublishedState = function (dataset) {
@@ -291,7 +266,6 @@ var checkForChildren = function (id) {
 module.exports = {
   connect: connect,
   closeDB: closeDB,
-  hasAdminUser: hasAdminUser,
 
   // insertDocument: insertDocument,
   updateDocument: updateDocument,
@@ -309,7 +283,5 @@ module.exports = {
   getPathToDataset: getPathToDataset,
   checkForChildren: checkForChildren,
 
-  createUser: createUser,
-  findUser: findUser,
-  getUsers: getUsers
+  getClient: getClient
 };

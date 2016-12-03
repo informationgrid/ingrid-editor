@@ -1,20 +1,21 @@
 'use strict';
 
-var Config = require('./config');
-var app = require('connect')();
-var http = require('http');
-var swaggerTools = require('swagger-tools');
-var jsyaml = require('js-yaml');
-var fs = require('fs');
-var Jwt = require('jsonwebtoken');
-var bodyParser = require('body-parser'),
+let Config = require('./config');
+let app = require('connect')();
+let http = require('http');
+let swaggerTools = require('swagger-tools');
+let jsyaml = require('js-yaml');
+let fs = require('fs');
+let Jwt = require('jsonwebtoken');
+let bodyParser = require('body-parser'),
     bcrypt = require('bcryptjs'),
-    db = require('./db/dbInterface');
-var serverPort = 8080;
-var HEADER_PREFIX = "Bearer ";
+    db = require('./db/dbInterface'),
+    dbUser = require('./db/UserDao');
+let serverPort = 8080;
+let HEADER_PREFIX = "Bearer ";
 
 // swaggerRouter configuration
-var options = {
+let options = {
   swaggerUi: '/swagger.json',
   controllers: './controllers',
   useStubs: process.env.NODE_ENV === 'development' ? true : false // Conditionally turn on stubs (mock mode)
@@ -41,8 +42,8 @@ app.use(function (req, res, next) {
 });
 
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
-var spec = fs.readFileSync('./api/swagger.yaml', 'utf8');
-var swaggerDoc = jsyaml.safeLoad(spec);
+let spec = fs.readFileSync('./api/swagger.yaml', 'utf8');
+let swaggerDoc = jsyaml.safeLoad(spec);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -81,7 +82,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
     db.connect().then(function() {
 
-      return db.hasAdminUser();
+      return dbUser.hasAdminUser();
 
     }).then(function (adminExists) {
 
@@ -89,8 +90,8 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
         // TODO: accept user input for admin password
         console.log('Admin does not exists in database. Please set the password for the admin user:');
 
-        var hash = bcrypt.hashSync('admin', 8);
-        db.createUser('admin', hash, -1);
+        let hash = bcrypt.hashSync('admin', 8);
+        dbUser.createUser('admin', hash, 'The', 'Administrator', -1);
       }
     }).catch(function(ex) {
 
@@ -104,9 +105,9 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   function setupSwaggerSecurity(middleware) {
     return middleware.swaggerSecurity({
         jwt: function(req, authOrSecDef, scopes, callback) {
-          var token = req.headers.authorization.substring(HEADER_PREFIX.length);
+          let token = req.headers.authorization.substring(HEADER_PREFIX.length);
           console.log("inside swagger security: jwt token", token);
-          var result = Jwt.verify(token, Config.key.privateKey, function (err, decoded) {
+          let result = Jwt.verify(token, Config.key.privateKey, function (err, decoded) {
             if (err) {
               console.error("Error: ", err);
               callback(new Error('Failed'));

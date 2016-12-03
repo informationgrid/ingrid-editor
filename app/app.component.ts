@@ -28,6 +28,7 @@ import {ModalService} from './services/modal/modal.service';
         <modal-content>
             <p>Es ist ein Fehler aufgetreten:</p>
             <p class="text-danger">{{dynDialog.errorMessage}}</p>
+            <p>{{dynDialog.errorMessageMore}}</p>
         </modal-content>
     </modal>
   `,
@@ -42,8 +43,10 @@ export class AppComponent implements OnInit {
 
   constructor(private pluginsService: PluginsService, private modalService: ModalService) {
 
+    // TODO: make more error info collapsible
     this.modalService.errorDialog$.subscribe((content) => {
       this.dynDialog.errorMessage = content.message;
+      this.dynDialog.errorMessageMore = content.moreInfo;
       this.errorModal.open();
     })
   }

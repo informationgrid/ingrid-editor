@@ -31,8 +31,16 @@
         </div>
         <div id="formUser" class="split split-horizontal container-fluid">
             <div class="form-group">
-                <label>Name</label>
-                <input type="text" class="form-control" autocomplete="off" value="{{selectedUser?.name}}">
+                <label>Login</label>
+                <input type="text" disabled class="form-control" autocomplete="off" value="{{selectedUser?.login}}">
+            </div>
+            <div class="form-group">
+                <label>Vorname</label>
+                <input type="text" class="form-control" autocomplete="off" value="{{selectedUser?.firstName}}">
+            </div>
+            <div class="form-group">
+                <label>Nachname</label>
+                <input type="text" class="form-control" autocomplete="off" value="{{selectedUser?.lastName}}">
             </div>
             <div class="form-group">
                 <label>Passwort</label>

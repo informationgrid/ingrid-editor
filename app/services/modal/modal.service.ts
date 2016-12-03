@@ -15,10 +15,17 @@ export class ModalService {
   constructor() {
   }
 
-  showError(message: string) {
-    this.errorDialog.next({
+  /**
+   *
+   * @param message
+   */
+  showError(message: string, moreInfo) {
+    let errorObj = {
       message: message
-    })
+    };
+    if (moreInfo) errorObj.moreInfo = moreInfo;
+
+    this.errorDialog.next(errorObj);
   }
 
   showNotImplemented() {

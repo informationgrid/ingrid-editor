@@ -3,6 +3,7 @@ import {Split} from '../../node_modules/split.js/split';
 import {Modal} from 'ng2-modal';
 import {ModalService} from '../services/modal/modal.service';
 import {UserService} from './user.service';
+import {ErrorService} from "../services/error.service";
 
 interface User {
   id: string;
@@ -26,7 +27,8 @@ export class UserComponent implements OnInit, AfterViewInit {
   private selectedRole: User;
 
 
-  constructor(private modalService: ModalService, private userService: UserService) {
+  constructor(private modalService: ModalService, private userService: UserService,
+    private errorService: ErrorService) {
   }
 
   ngOnInit() {
@@ -38,7 +40,10 @@ export class UserComponent implements OnInit, AfterViewInit {
       {id: '3', name: 'author'}
     ];
 
-    this.userService.getUsers().subscribe( users => this.users = users );
+    this.userService.getUsers().subscribe(
+      users => this.users = users,
+      error => this.errorService.handle(error)
+    );
     // this.userService.getRoles().subscribe( roles => this.roles = roles );
   }
 
@@ -56,8 +61,12 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   loadUser(user: User) {
-    this.selectedUser = user;
-
+    console.log("user", user);
+    this.userService.getUser(user.id)
+      .subscribe(
+        user => this.selectedUser = user,
+        error => this.errorService.handle(error)
+      )
   }
 
   addUser() {
@@ -65,7 +74,8 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   saveUser() {
-    this.modalService.showNotImplemented();
+    this.userService.saveUser(this.selectedUser)
+      .catch(this.modalService.showError);
   }
 
   addRole() {

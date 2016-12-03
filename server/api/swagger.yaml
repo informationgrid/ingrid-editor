@@ -23,6 +23,44 @@ paths:
       tags:
       - "User"
     x-swagger-router-controller: "User"
+  /user/{id}:
+    get:
+      operationId: getUser
+      summary: ""
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique login of the user."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Returns the user
+      tags:
+      - "User"
+    post:
+      operationId: setUser
+      summary: ""
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique login of the user."
+        required: true
+        type: "string"
+      - name: "user"
+        in: "body"
+        description: "Save the user data into the database."
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        '200':
+          description: Returns the user
+      tags:
+      - "User"
+    x-swagger-router-controller: "User"
   /user/login:
     post:
       operationId: login
@@ -301,6 +339,20 @@ securityDefinitions:
     name: Authorization
     in: header
 definitions:
+  User:
+    type: "object"
+    required:
+    - login
+    properties:
+      login:
+        type: "string"
+        description: ""
+      firstName:
+        type: "string"
+        description: ""
+      lastName:
+        type: "string"
+        description: ""
   Dataset:
     type: "object"
     required:
