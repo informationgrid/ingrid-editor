@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {StorageService} from '../../../services/storage/storage.service';
-import {TreeComponent, TreeNode} from 'angular2-tree-component';
+// import {TreeComponent, TreeNode} from 'angular2-tree-component';
+import {TreeComponent, TreeNode} from '../../../_forks/angular2-tree-component/angular2-tree-component';
 import {Router, ActivatedRoute} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
