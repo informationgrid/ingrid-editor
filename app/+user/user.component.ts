@@ -2,13 +2,10 @@ import {Component, OnInit, AfterViewInit} from '@angular/core';
 import {Split} from '../../node_modules/split.js/split';
 import {Modal} from 'ng2-modal';
 import {ModalService} from '../services/modal/modal.service';
-import {UserService} from './user.service';
+import {UserService, User} from './user.service';
 import {ErrorService} from "../services/error.service";
+import {Observable} from "rxjs";
 
-interface User {
-  id: string;
-  name: string;
-}
 interface Role {
   id: string;
   name: string;
@@ -23,12 +20,13 @@ export class UserComponent implements OnInit, AfterViewInit {
   private roles: Role[];
   private currentTab: string;
   private dialogTab: string;
-  private selectedUser: User;
+  private selectedUser: User = {};
   private selectedRole: User;
+  private isNewUser: boolean = false;
 
 
   constructor(private modalService: ModalService, private userService: UserService,
-    private errorService: ErrorService) {
+              private errorService: ErrorService) {
   }
 
   ngOnInit() {
@@ -40,11 +38,15 @@ export class UserComponent implements OnInit, AfterViewInit {
       {id: '3', name: 'author'}
     ];
 
+    this.fetchUsers();
+    // this.userService.getRoles().subscribe( roles => this.roles = roles );
+  }
+
+  fetchUsers() {
     this.userService.getUsers().subscribe(
       users => this.users = users,
       error => this.errorService.handle(error)
     );
-    // this.userService.getRoles().subscribe( roles => this.roles = roles );
   }
 
   ngAfterViewInit(): void {
@@ -62,7 +64,8 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   loadUser(user: User) {
     console.log("user", user);
-    this.userService.getUser(user.id)
+    this.isNewUser = false;
+    this.userService.getUser(user.login)
       .subscribe(
         user => this.selectedUser = user,
         error => this.errorService.handle(error)
@@ -70,12 +73,47 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   addUser() {
-    this.modalService.showNotImplemented();
+    this.isNewUser = true;
+    this.selectedUser = {};
   }
 
-  saveUser() {
-    this.userService.saveUser(this.selectedUser)
-      .catch(this.modalService.showError);
+  deleteUser(login: string) {
+    this.userService.deleteUser(login)
+      .subscribe(
+        () => {
+          this.selectedUser = {};
+          this.fetchUsers();
+        },
+        (err: any) => this.modalService.showError(err, err.text())
+      );
+  }
+
+  saveUser(user: User) {
+    let observer: Observable<any> = null;
+    if (this.isNewUser) {
+      observer = this.userService.createUser(user);
+
+    } else {
+      observer = this.userService.saveUser(user);
+
+    }
+
+    // send request and handle error
+    observer.subscribe(
+      () => {
+        this.isNewUser = false;
+        this.fetchUsers();
+      }, (err: any) => {
+        if (err.status === 406) {
+          if (this.isNewUser) {
+            this.modalService.showError("Es existiert bereits ein Benutzer mit dem Login: " + this.selectedUser.login);
+          } else {
+            this.modalService.showError("Es existiert kein Benutzer mit dem Login: " + this.selectedUser.login);
+          }
+        } else {
+          this.modalService.showError(err, err.text());
+        }
+      });
   }
 
   addRole() {

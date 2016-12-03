@@ -5,11 +5,11 @@ import {Observable} from 'rxjs';
 import {ErrorService} from "../services/error.service";
 
 export interface User {
- firstName: string;
- lastName: string;
- roles: string[];
- login: string;
- password: string;
+ firstName?: string;
+ lastName?: string;
+ roles?: string[];
+ login?: string;
+ password?: string;
 }
 
 @Injectable()
@@ -27,8 +27,7 @@ export class UserService {
         let result: any[] = [];
         data.forEach( item => {
           result.push( {
-            id: item._id,
-            name: item._id,
+            login: item._id,
             firstName: item.firstName,
             lastName: item.lastName,
             roles: item.roles
@@ -46,12 +45,18 @@ export class UserService {
 
   saveUser(user: User): Observable<any> {
     return this.http.post( this.configService.backendUrl + 'user/' + user.login, user )
-      .map( resp => resp.json() )
+      // .map( resp => resp.json() )
       .catch( err => this.errorService.handle(err));
   }
 
-  deleteUser(login): Observable<any> {
-    return this.http.delete( this.configService.backendUrl + 'user/' + login, user )
+  createUser(user: User): Observable<any> {
+    return this.http.put( this.configService.backendUrl + 'user/' + user.login, user )
+      // .map( resp => resp.json() )
+      .catch( err => this.errorService.handle(err));
+  }
+
+  deleteUser(login: string): Observable<any> {
+    return this.http.delete( this.configService.backendUrl + 'user/' + login )
       .catch( err => this.errorService.handle(err));
   }
 

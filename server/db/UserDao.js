@@ -33,8 +33,8 @@ class UserDao {
    * @param user
    * @returns {*}
    */
-  setUser(user) {
-    return this.client.insertIntoTable('users', user);
+  updateUser(user) {
+    return this.client.updateIntoTable('users', user.login, user);
   }
 
   /**
@@ -46,9 +46,12 @@ class UserDao {
     return this.client.getDocById('users', login);
   }
 
+  deleteUser(login) {
+    return this.client.deleteById('users', login);
+  }
 
   createUser(login, password, firstName, lastName, role) {
-    this.client.insertIntoTable('users', {
+    return this.client.insertIntoTable('users', {
       _id: login,
       login: login,
       password: password,

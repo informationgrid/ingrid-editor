@@ -2,6 +2,10 @@
 
 var mongoClient = require('./db-mongo');
 
+/**
+ *
+ * @returns {*}
+ */
 let getClient = function() {
   return mongoClient;
 };

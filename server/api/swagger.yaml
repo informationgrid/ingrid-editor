@@ -24,6 +24,25 @@ paths:
       - "User"
     x-swagger-router-controller: "User"
   /user/{id}:
+    options:
+      summary: ""
+      description: ""
+      operationId: optionsUser
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique login of the user."
+        required: true
+        type: "string"
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      tags:
+      - "User"
     get:
       operationId: getUser
       summary: ""
@@ -41,7 +60,7 @@ paths:
       - "User"
     post:
       operationId: setUser
-      summary: ""
+      summary: "Updates a user. If user could not be found an error will be returned."
       description: ""
       parameters:
       - name: "id"
@@ -57,7 +76,49 @@ paths:
           $ref: "#/definitions/User"
       responses:
         '200':
-          description: Returns the user
+          description: User was successfully updated
+        '406':
+          description: A user with the given login does not exist and cannot be updated
+      tags:
+      - "User"
+    put:
+      operationId: createUser
+      summary: "Creates a new user. If user with a given login already exists an error will be returned."
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique login of the user."
+        required: true
+        type: "string"
+      - name: "user"
+        in: "body"
+        description: "Save the user data into the database."
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        '200':
+          description: User was successfully created
+        '406':
+          description: A user already exists with the given login
+      tags:
+      - "User"
+    delete:
+      operationId: deleteUser
+      summary: "Deletes a user."
+      description: "If user with a given login does not exists an error will be returned."
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique login of the user."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: User was successfully deleted
+        '406':
+          description: A user with the given login does not exist and cannot be deleted
       tags:
       - "User"
     x-swagger-router-controller: "User"
