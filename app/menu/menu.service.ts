@@ -13,7 +13,7 @@ export class MenuService {
   menu$: Subject<void>;
 
   _menuItems: MenuItem[] = [
-    // {name: 'Dashboard', path: '/dashboard'},
+    {name: 'Dashboard', path: '/dashboard'},
     {name: 'Form', path: '/form'},
     {name: 'Plugins', path: '/plugins'},
     // {name: 'Fields', path: '/fields'}

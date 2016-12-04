@@ -394,6 +394,21 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       x-swagger-router-controller: "Datasets"
+  /statistic:
+    get:
+      tags:
+      - "Statistic"
+      summary: ""
+      description: ""
+      operationId: "getStatistic"
+      responses:
+        200:
+          description: ""
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+    x-swagger-router-controller: "Statistic"
 securityDefinitions:
   jwt:
     type: apiKey

@@ -1,5 +1,13 @@
 <h1>Dashboard</h1>
 
+<div style="display: block; width: 300px;">
+    <canvas baseChart
+            [data]="pieChartData"
+            [labels]="pieChartLabels"
+            [chartType]="pieChartType"
+            (chartHover)="chartHovered($event)"
+            (chartClick)="chartClicked($event)"></canvas>
+</div>
 <ul>
     <li><a routerLink="/form/0">UVP-Dokument 1</a></li>
     <li><a routerLink="/form/1">ISO-Dokument 1</a></li>
