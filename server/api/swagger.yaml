@@ -215,6 +215,16 @@ paths:
         description: ""
         required: true
         type: "string"
+      - name: sort
+        in: "query"
+        description: "Sort by a given field."
+        required: false
+        type: "string"
+      - name: reverse
+        in: "query"
+        description: "Reverse sort."
+        required: false
+        type: "string"
       responses:
         '200':
           description: Datasets found

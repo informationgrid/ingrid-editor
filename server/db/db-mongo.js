@@ -51,14 +51,32 @@ module.exports = {
     return collection.find( selector ).toArray();
   },
 
-  searchFor: function (table, query) {
+  /**
+   *
+   * @param table
+   * @param query
+   * @param sort
+   * @param reverse
+   * @returns {Promise}
+   */
+  searchFor: function (table, query, sort, reverse) {
     let collection = db.collection( table );
+
+    let sortObj = {};
+    if (sort) {
+      sortObj['draft.' + sort] = reverse ? 1 : -1;
+    }
 
     // Find some documents
     if (query.trim().length > 0) {
-      return collection.find( {$text: {$search: query}} ).toArray();
+      let result = collection.find( {$text: {$search: query}} );
+      if (sort) result = result.sort(sortObj);
+      return result.toArray();
+
     } else {
-      return collection.find().toArray();
+      let result = collection.find();
+      if (sort) result = result.sort(sortObj);
+      return result.toArray();
     }
   },
 

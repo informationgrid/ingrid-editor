@@ -37,7 +37,7 @@ export class StorageService {
 
     // let options = new RequestOptions({ headers: headers });
     return this.http.get(
-      this.configService.backendUrl + 'datasets/find?query=' + query + '&fields=_id,_profile,_state,' + this.titleFields,
+      this.configService.backendUrl + 'datasets/find?query=' + query + '&sort=mainInfo.title&fields=_id,_profile,_state,' + this.titleFields,
       {
         headers: headers
       })

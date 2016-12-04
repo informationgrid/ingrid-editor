@@ -1,6 +1,6 @@
 'use strict';
 
-var mongoClient = require('./db-mongo');
+let mongoClient = require('./db-mongo');
 
 /**
  *
@@ -10,16 +10,16 @@ let getClient = function() {
   return mongoClient;
 };
 
-var connect = function () {
+let connect = function () {
   // Use connect method to connect to the server
   return mongoClient.connect();
 };
 
-var closeDB = function () {
+let closeDB = function () {
   mongoClient.close();
 };
 
-var _setPublishedState = function (dataset) {
+let _setPublishedState = function (dataset) {
   if (dataset.published && dataset.draft) {
     return "PW";
   } else if (dataset.published) {
@@ -29,7 +29,7 @@ var _setPublishedState = function (dataset) {
   }
 };
 
-var processResults = function (results) {
+let processResults = function (results) {
   return results.map(function (res) {
     // set the id inside the document
     if (res.draft) {
@@ -46,14 +46,21 @@ var processResults = function (results) {
   });
 };
 
-var findDocuments = function (query) {
+/**
+ *
+ * @param query
+ * @param sort
+ * @param reverse
+ * @returns {Promise.<TResult>|Promise<TResult>|Promise<U>|*}
+ */
+let findDocuments = function (query, sort, reverse) {
 
-  return mongoClient.searchFor('documents', query)
+  return mongoClient.searchFor('documents', query, sort, reverse)
     .then(processResults);
 
 };
 
-var getDocument = function (id, publishedVersion) {
+let getDocument = function (id, publishedVersion) {
 
   return mongoClient.getDocById('documents', id)
     .then(function (data) {
@@ -86,7 +93,7 @@ var getDocument = function (id, publishedVersion) {
     });
 };
 
-var _addInfo = function (doc, data, id) {
+let _addInfo = function (doc, data, id) {
   doc._id = id;
   doc._state = _setPublishedState(data);
   doc._created = data._created;
@@ -95,9 +102,9 @@ var _addInfo = function (doc, data, id) {
   doc._parent = data._parent;
 };
 //
-// var insertDocument = function (doc, publishedVersion) {
+// let insertDocument = function (doc, publishedVersion) {
 //     // Get the documents collection
-//     var collection = db.collection('documents');
+//     let collection = db.collection('documents');
 //     // Insert some documents
 //     return collection.findOne({'_id': new ObjectID(id)}).then(function (data) {
 //         if (publishedVersion) {
@@ -116,7 +123,7 @@ var _addInfo = function (doc, data, id) {
  * @param {boolean} publishedVersion
  * @returns {Promise<TResult>|*|Promise<TResult2|TResult1>|Promise<T>|Promise<U>}
  */
-var updateDocument = function (doc, publishedVersion) {
+let updateDocument = function (doc, publishedVersion) {
 
   // Insert some documents
   if (doc._id) {
@@ -147,14 +154,14 @@ var updateDocument = function (doc, publishedVersion) {
 
         mongoClient.updateIntoTable('documents', data._id, data)
           .then(function (result) {
-            var doc = {};
+            let doc = {};
             _addInfo(doc, data, data._id.toString());
             return doc;
           });
       });
   } else {
-    var creationDate = new Date();
-    var dbDoc = {
+    let creationDate = new Date();
+    let dbDoc = {
       _id: doc._id,
       _created: creationDate,
       _modified: creationDate
@@ -175,14 +182,14 @@ var updateDocument = function (doc, publishedVersion) {
 
     return mongoClient.insertIntoTable('documents', dbDoc)
       .then(function (result) {
-        var doc = {};
+        let doc = {};
         _addInfo(doc, dbDoc, result.insertedId.toString());
         return doc;
       });
   }
 };
 
-var revert = function (id) {
+let revert = function (id) {
   return mongoClient.getDocById('documents', id)
     .then(function (data) {
       // only revert if published version exists
@@ -199,30 +206,30 @@ var revert = function (id) {
     });
 };
 
-var deleteDocument = function (id) {
+let deleteDocument = function (id) {
   return mongoClient.deleteById('documents', id);
 };
 
-var updateFullIndexSearch = function () {
+let updateFullIndexSearch = function () {
   // TODO: update full index search
   mongoClient.updateIndexForSearch('documents');
 };
 
 
-var getBehaviours = function () {
+let getBehaviours = function () {
   return mongoClient.findInTable('behaviours', {});
 };
 
-var setBehaviour = function (behaviour) {
+let setBehaviour = function (behaviour) {
   return mongoClient.updateIntoTable('behaviours', behaviour._id, behaviour);//, {upsert: true});
 };
 
-var getChildDocuments = function (id) {
+let getChildDocuments = function (id) {
   return mongoClient.findInTable('documents', {_parent: id})
     .then(processResults);
 };
 
-var setChildInfoTo = function(id) {
+let setChildInfoTo = function(id) {
 
   return mongoClient.getDocById('documents', id)
     .then(function (data) {
@@ -233,7 +240,7 @@ var setChildInfoTo = function(id) {
     });
 };
 
-var getPathToDataset = function(id) {
+let getPathToDataset = function(id) {
   return mongoClient.getDocById('documents', id)
     .then(function (data) {
       if (data._parent) {
@@ -252,7 +259,7 @@ var getPathToDataset = function(id) {
  * This function should be called if a document was deleted.
  * @param id is the id of the document to check for children
  */
-var checkForChildren = function (id) {
+let checkForChildren = function (id) {
 
   return getChildDocuments(id).then(function(children) {
     if (children.length === 0) {

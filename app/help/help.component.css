@@ -1,0 +1,64 @@
+.outer-wrapper {
+    width: 320px;
+    position: absolute;
+    background-color: white;
+    border-left: 1px solid #eeeeee;
+    z-index: 1000;
+    right: 0;
+    top: 51px;
+    bottom: 0;
+    -webkit-box-shadow: 0 0 5px #666;
+    -moz-box-shadow: 0 0 5px  #666;
+    box-shadow: 0 0 5px #666;
+
+    -webkit-transition: width 300ms ease-in-out;
+    -moz-transition: width 300ms ease-in-out;
+    -o-transition: width 300ms ease-in-out;
+    transition: width 300ms ease-in-out;
+}
+
+.wrapper {
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.btn-help {
+    float: left;
+    border-right: none;
+    margin-left: -39px;
+    margin-top: 4px;
+}
+
+.btn-expand {
+    float: right;
+    padding: 10px 10px 0 0;
+}
+
+.content {
+    width: 300px;
+    /*padding: 10px;*/
+    overflow: hidden;
+
+    -webkit-transition: width 300ms ease-in-out;
+    -moz-transition: width 300ms ease-in-out;
+    -o-transition: width 300ms ease-in-out;
+    transition: width 300ms ease-in-out;
+}
+
+.inactive {
+    width: 0 !important;
+}
+
+.content.expanded {
+    width: 600px;
+}
+.outer-wrapper.expanded {
+    width: 620px;
+}
+
+.help-text {
+    padding: 10px;
+}

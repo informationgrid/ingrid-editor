@@ -16,6 +16,8 @@ import {ModalService} from './services/modal/modal.service';
       <!-- MENU -->
       <main-menu></main-menu>
       
+      <help-panel></help-panel>
+      
       <!-- PAGES -->
       <router-outlet></router-outlet>
       

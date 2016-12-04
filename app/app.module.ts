@@ -27,9 +27,10 @@ import {AuthService} from './services/security/auth.service';
 import {ConfigService} from './config/config.service';
 import {FormChangeDeactivateGuard} from './security/form-change.guard';
 import {ErrorService} from "./services/error.service";
+import {HelpComponent} from "./help/help.component";
 
 @NgModule( {
-  declarations: [AppComponent, LoginComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
+  declarations: [AppComponent, HelpComponent, LoginComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
   imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, PluginsModule, routing, ModalModule],
   providers: [ROUTER_PROVIDERS, RadioControlRegistry, appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     ErrorService, AuthService, ConfigService, FormToolbarService, FormularService, StorageService,
