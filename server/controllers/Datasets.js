@@ -1,9 +1,10 @@
 'use strict';
 
-var url = require('url');
+let url = require('url'),
+  Jwt = require('jsonwebtoken');
 
-
-var Datasets = require('./DatasetsService');
+let Datasets = require('./DatasetsService'),
+  Config = require('../config');
 
 module.exports.optionsDatasets = function find (req, res, next) {
   Datasets.options(req.swagger.params, res, next);
@@ -29,7 +30,9 @@ module.exports.getByIDOperation = function getByIDOperation (req, res, next) {
 };
 
 module.exports.setDatasets = function set (req, res, next) {
-  Datasets.set(req.swagger.params, res, next);
+  let token = req.headers.authorization.substring(Config.key.headerPrefix.length);
+  let decoded = Jwt.decode(token);
+  Datasets.set(req.swagger.params, res, decoded.login, next);
 };
 
 module.exports.deleteById = function deleteById (req, res, next) {

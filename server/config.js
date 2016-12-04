@@ -1,5 +1,6 @@
 module.exports = {
   key: {
+    headerPrefix: 'Bearer ',
     privateKey: 'dud3nufswjfn',
     tokenExpiry: 60*60
   },

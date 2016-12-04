@@ -12,7 +12,6 @@ let bodyParser = require('body-parser'),
     db = require('./db/dbInterface'),
     dbUser = require('./db/UserDao');
 let serverPort = 8080;
-let HEADER_PREFIX = "Bearer ";
 
 // swaggerRouter configuration
 let options = {
@@ -105,7 +104,12 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   function setupSwaggerSecurity(middleware) {
     return middleware.swaggerSecurity({
         jwt: function(req, authOrSecDef, scopes, callback) {
-          let token = req.headers.authorization.substring(HEADER_PREFIX.length);
+          if (!req.headers.authorization) {
+            callback(new Error('No authorization header in request'));
+            return;
+          }
+
+          let token = req.headers.authorization.substring(Config.key.headerPrefix.length);
           console.log("inside swagger security: jwt token", token);
           let result = Jwt.verify(token, Config.key.privateKey, function (err, decoded) {
             if (err) {

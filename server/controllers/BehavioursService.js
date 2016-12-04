@@ -1,5 +1,5 @@
 'use strict';
-var db = require('../db/dbInterface');
+let db = require('../db/BehaviourDao');
 
 exports.options = function(args, res, next) {
   res.end();
@@ -19,7 +19,7 @@ exports.get = function(args, res, next) {
 
 exports.set = function(args, res, next) {
 
-  var behaviour = args.behaviour.value;
+  let behaviour = args.behaviour.value;
 
   db.setBehaviour(behaviour).then(function (data) {
     res.end();

@@ -23,14 +23,12 @@ class UserService {
         throw new Error('User not found or wrong password');
 
       } else {
-        let tokenData = {
-          username: 'username',
-          role: user.role
-        };
+        delete user.password;
+
         let result = {
           username: user.login,
           role: user.role,
-          token: Jwt.sign(tokenData, Config.key.privateKey, {expiresIn: Config.key.tokenExpiry})
+          token: Jwt.sign(user, Config.key.privateKey, {expiresIn: Config.key.tokenExpiry})
         };
         res.end(JSON.stringify(result, null, 2));
       }

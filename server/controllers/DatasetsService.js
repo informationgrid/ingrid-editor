@@ -1,5 +1,6 @@
 'use strict';
-let db = require('../db/dbInterface');
+let db = require('../db/DatasetDao');
+let dbInterface = require('../db/dbInterface');
 
 exports.optionsChildren = function(args, res) {
   res.end();
@@ -118,7 +119,7 @@ exports.getByIDOperation = function(args, res) {
   res.end();
 };
 
-exports.set = function(args, res) {
+exports.set = function(args, res, userId) {
   /**
    * parameters expected in the args:
    * id (String)
@@ -147,13 +148,13 @@ exports.set = function(args, res) {
     });
   } else {
 
-    db.updateDocument(doc, publishedVersion).then(function (result) {
+    db.updateDocument(doc, publishedVersion, userId).then(function (result) {
       // notify parent that it has a child
       // but only if it's a new child
       if (!docId) db.setChildInfoTo(parent);
 
       // update search index
-      db.updateFullIndexSearch();
+      dbInterface.updateFullIndexSearch();
       console.log('Inserted doc', parent);
       res.end(JSON.stringify(result, null, 2))
     }).catch(function (err) {

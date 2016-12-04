@@ -352,6 +352,7 @@ paths:
       summary: "Set a complete dataset"
       description: "xxx"
       operationId: "setDatasets"
+      security: [{"jwt": []}]
       parameters:
       - name: "id"
         in: "path"
