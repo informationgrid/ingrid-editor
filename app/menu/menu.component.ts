@@ -11,6 +11,7 @@ import {AuthService} from "../services/security/auth.service";
 export class MenuComponent implements OnInit {
 
   routes: MenuItem[] = [];
+  isLoggedIn: boolean = false;
 
   constructor(private menuService: MenuService, private modalService: ModalService, private authService: AuthService) {
     this.routes = this.menuService.menuItems;
@@ -21,6 +22,10 @@ export class MenuComponent implements OnInit {
       console.log('menu has changed');
       this.routes = this.menuService.menuItems;
     });
+
+    // remember logged in state
+    // TODO: should we listen for changes?
+    this.isLoggedIn = this.authService.loggedIn();
   }
 
   logout() {

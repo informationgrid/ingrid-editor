@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Subject, Observable} from 'rxjs';
-import {Http, Headers} from '@angular/http';
+import {Http, Headers, RequestOptions} from '@angular/http';
 import {ModalService} from '../modal/modal.service';
 import {FormularService} from '../formular/formular.service';
 import {ConfigService} from '../../config/config.service';
@@ -8,6 +8,7 @@ import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 import {AuthService} from '../security/auth.service';
 import {Router} from '@angular/router';
+import {ErrorService} from "../error.service";
 
 @Injectable()
 export class StorageService {
@@ -27,32 +28,30 @@ export class StorageService {
 
   constructor(private http: Http, private modalService: ModalService, private formularService: FormularService,
               private configService: ConfigService, private authenticationService: AuthService,
-              private router: Router) {
+              private errorService: ErrorService, private router: Router) {
     this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
   }
 
-  findDocuments(query: string) {
+  _createRequestOptions(): RequestOptions {
     let headers = new Headers(); // { 'Authorization': 'Bearer ' + this.authenticationService.token });
     headers.append('Authorization', 'Bearer ' + this.authenticationService.token);
+    return new RequestOptions({ headers: headers });
 
-    // let options = new RequestOptions({ headers: headers });
+  }
+
+  findDocuments(query: string) {
     return this.http.get(
       this.configService.backendUrl + 'datasets/find?query=' + query + '&sort=mainInfo.title&fields=_id,_profile,_state,' + this.titleFields,
-      {
-        headers: headers
-      })
-      .map(resp => resp.json());
+      this._createRequestOptions())
+      .map(resp => resp.json())
+      .catch(err => this._handleError(err));
   }
 
   getChildDocuments(parentId: string): Observable<any> {
     let idQuery = parentId === null ? '' : '&parentId=' + parentId;
-    let headers = new Headers(); // { 'Authorization': 'Bearer ' + this.authenticationService.token });
-    headers.append('Authorization', 'Bearer ' + this.authenticationService.token);
-    headers.append('Content-Type', 'text/plain');
+    // headers.append('Content-Type', 'text/plain');
     return this.http.get(this.configService.backendUrl + 'datasets/children?fields=_id,_profile,_state,hasChildren,' + this.titleFields + idQuery,
-      {
-        headers: headers
-      })
+      this._createRequestOptions())
       .map(resp => resp.json())
       .catch((err) => this._handleError(err));
   }
@@ -69,8 +68,8 @@ export class StorageService {
     // this.beforeSave.next(errors);
     // console.log('After validation:', errors);
     return new Promise((resolve, reject) => {
-      let response = this.http.post(this.configService.backendUrl + 'dataset/1', data)
-        .catch(this._handleError);
+      let response = this.http.post(this.configService.backendUrl + 'dataset/1', data, this._createRequestOptions())
+        .catch((err) => this.errorService.handle(err));
       console.log('Response:', response);
       response.subscribe(res => {
         console.log('received:', res);

@@ -5,6 +5,7 @@ import {TreeComponent, TreeNode} from '../../../_forks/angular2-tree-component/a
 import {Router, ActivatedRoute} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
+import {ErrorService} from "../../../services/error.service";
 
 @Component({
   selector: 'tree',
@@ -28,15 +29,18 @@ export class MetadataTreeComponent implements OnInit {
   };
 
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
-              private formularService: FormularService) {
+              private formularService: FormularService, private errorService: ErrorService) {
   }
 
   ngOnInit() {
     this.query(null).then( () => {
-      this.route.params.subscribe(params => {
+      let initialSet = this.route.params.subscribe(params => {
         this.selectedId = params['id'];
 
-        if (this.selectedId && this.selectedId !== '-1') {
+        // only let this function be called once, since we only need it during first visit of the page
+        setTimeout(() => initialSet.unsubscribe(), 0);
+
+        if (this.selectedId && this.selectedId !== '-1' && this.selectedId !== '-2') {
           // get path to node
           this.storageService.getPathToDataset( this.selectedId ).subscribe( path => {
             console.debug( 'path: ' + path );
@@ -194,7 +198,7 @@ export class MetadataTreeComponent implements OnInit {
         console.debug( 'got children', response );
         this.setNodes(response, id);
         resolve();
-      });
+      }, (err) => this.errorService.handle(err));
     });
   }
 

@@ -15,6 +15,7 @@ import {ModalService} from '../services/modal/modal.service';
 import {Modal} from 'ng2-modal';
 import {PartialGeneratorField} from './controls/field-partial-generator';
 import {UpdateType} from '../models/update-type.enum';
+import {ErrorService} from "../services/error.service";
 
 interface FormData extends Object {
   _id?: string;
@@ -56,7 +57,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
-              private route: ActivatedRoute) {
+              private errorService: ErrorService, private route: ActivatedRoute) {
 
     let loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
       console.log('generic toolbar handler', eventId);
@@ -76,7 +77,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.behaviourService.initialized.then(() => {
       this.route.params.subscribe(params => {
         let id = params['id'];
-        if (id !== '-1') {
+        if (id !== '-1' && id !== '-2') {
           this.load(id);
         }
       });
@@ -260,7 +261,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.modalService.showError(ex);
         this.data._id = id;
       }
-    });
+    }, (err) => this.errorService.handle(err));
   }
 
   setData(data: any) {

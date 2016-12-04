@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Response, Http, RequestOptions, Headers} from '@angular/http';
 import {ConfigService} from '../../config/config.service';
+import {tokenNotExpired} from "angular2-jwt";
 
 @Injectable()
 export class AuthService {
@@ -33,6 +34,7 @@ export class AuthService {
 
           // store username and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem('currentUser', JSON.stringify({username: username, token: token}));
+          localStorage.setItem('id_token', token);
 
           // return true to indicate successful login
           return true;
@@ -52,6 +54,6 @@ export class AuthService {
 
   // Finally, this method will check to see if the user is logged in. We'll be able to tell by checking to see if they have a token and whether that token is valid or not.
   loggedIn() {
-    return this.token !== null; // tokenNotExpired();
+    return tokenNotExpired();
   }
 }

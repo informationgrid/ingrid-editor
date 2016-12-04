@@ -14,7 +14,7 @@ export class MenuService {
 
   _menuItems: MenuItem[] = [
     {name: 'Dashboard', path: '/dashboard'},
-    {name: 'Form', path: '/form'},
+    {name: 'Form', path: '/form/-2'},
     {name: 'Plugins', path: '/plugins'},
     // {name: 'Fields', path: '/fields'}
     {name: 'Benutzer', path: '/user'}

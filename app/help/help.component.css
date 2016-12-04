@@ -3,7 +3,7 @@
     position: absolute;
     background-color: white;
     border-left: 1px solid #eeeeee;
-    z-index: 1000;
+    z-index: 10000;
     right: 0;
     top: 51px;
     bottom: 0;
