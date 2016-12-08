@@ -197,11 +197,13 @@ class DatasetDao {
         res.draft._id = res._id;
         if (res.hasChildren) res.draft.hasChildren = true;
         res.draft._state = this._setPublishedState(res);
+        this._addInfo(res.draft, res, res._id);
         return res.draft;
       } else {
         res.published._id = res._id;
         if (res.hasChildren) res.published.hasChildren = true;
         res.published._state = this._setPublishedState(res);
+        this._addInfo(res.published, res, res._id);
         return res.published;
       }
     });

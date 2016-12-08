@@ -14,6 +14,8 @@ export class DashboardComponent implements OnInit {
     public pieChartData:number[] = [];
     public pieChartType:string = 'pie';
 
+    datasets: any[] = [];
+
 
     constructor(private http: Http, private configService: ConfigService, private errorService: ErrorService) { }
 
@@ -26,6 +28,16 @@ export class DashboardComponent implements OnInit {
           data => this.prepareData(data.json()),
           (err) => this.errorService.handle(err)
         );
+
+        this.http.get(this.configService.backendUrl + 'datasets/find?query=&sort=_modified&fields=_id,_modified,mainInfo.title')
+          .map( data => data.json() )
+          .subscribe(
+            data => {
+              console.log("Data received: ", data);
+              this.datasets = data;
+            },
+            (err) => this.errorService.handle(err)
+          );
     }
 
     prepareData(data: any) {

@@ -6,7 +6,7 @@ import {BehaviourService} from '../services/behaviour/behaviour.service';
 import {FormularService} from '../services/formular/formular.service';
 import {Behaviour} from '../services/behaviour/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
-import {Subscription, Observable} from 'rxjs';
+import {Subscription, Observable, Subject} from 'rxjs';
 import {ActivatedRoute, CanDeactivate, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
 import {Split} from '../../node_modules/split.js/split';
 // import {StorageDummyService as StorageService} from '../services/storage/storage.dummy.service';
@@ -49,6 +49,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   newDocAdded: boolean = false;
   sideTab: string = 'tree';
   showDateBar: boolean = false;
+
+  // choice of doc types to be shown when creating new document
+  newDocOptions = {
+    docTypes: [],
+    rootOption: true
+  };
+
 
   // the id to remember when dirty check was true
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
@@ -149,6 +156,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }*/
 
   newDoc() {
+    // let options = {
+    //   availableTypes: this.formularService.docTypes,
+    //   rootOption: true
+    // };
+    this.newDocOptions.docTypes = this.formularService.docTypes;
+    this.newDocOptions.selectedDataset = this.data;
+    this.formularService.newDocumentSubject.next(this.newDocOptions);
     this.newDocModal.open();
   }
 

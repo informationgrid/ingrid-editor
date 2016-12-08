@@ -9,7 +9,8 @@
             (chartClick)="chartClicked($event)"></canvas>
 </div>
 <ul>
-    <li><a routerLink="/form/0">UVP-Dokument 1</a></li>
-    <li><a routerLink="/form/1">ISO-Dokument 1</a></li>
+    <li *ngFor="let item of datasets">
+        <a routerLink="/form/{{item._id}}">{{item['mainInfo.title']}}</a>
+    </li>
 </ul>
 

@@ -15,6 +15,9 @@ export class FormularService {
   formDataSubject = new Subject<any>();
   formDataSubject$ = this.formDataSubject.asObservable();
 
+  newDocumentSubject = new Subject<any>();
+  newDocumentSubject$ = this.newDocumentSubject.asObservable();
+
   addressProfile = new AddressProfile();
   uvpProfile = new UVPProfile();
 

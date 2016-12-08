@@ -135,7 +135,7 @@
 
 <modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">
     <modal-content>
-        <div class="radio" *ngFor="let type of formularService.docTypes">
+        <div class="radio" *ngFor="let type of newDocOptions.docTypes">
             <label>
                 <input name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="type.id"> {{type.label}}
             </label>
@@ -147,7 +147,7 @@
         </div>
         <div class="checkbox">
             <label>
-                <input type="checkbox" [(ngModel)]="addToRoot">
+                <input type="checkbox" [disabled]="!newDocOptions.rootOption" [(ngModel)]="addToRoot">
                 als Root-Datensatz anlegen
             </label>
         </div>

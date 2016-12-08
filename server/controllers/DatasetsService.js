@@ -57,7 +57,7 @@ exports.find = function(args, res) {
   let query = args.query.value;
   let fields = args.fields.value.split(',');
   let sort = args.sort.value;
-  let reverse = args.sort.value;
+  let reverse = args.reverse.value;
 
   db.findDocuments(query, sort, reverse).then((docs) => {
     console.log('FOUND', docs.length);

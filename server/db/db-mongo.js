@@ -7,6 +7,8 @@ let MongoClient = require( 'mongodb' ).MongoClient,
 
 let db = null;
 
+const rootFields = ['_modified'];
+
 module.exports = {
 
   connect: function () {
@@ -64,7 +66,15 @@ module.exports = {
 
     let sortObj = {};
     if (sort) {
-      sortObj['draft.' + sort] = reverse ? 1 : -1;
+      if (rootFields.indexOf(sort) !== -1) {
+
+        sortObj[sort] = reverse ? 1 : -1;
+
+      } else {
+
+        sortObj['draft.' + sort] = reverse ? 1 : -1;
+
+      }
     }
 
     // Find some documents
