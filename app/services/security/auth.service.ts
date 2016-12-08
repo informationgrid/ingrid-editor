@@ -55,6 +55,7 @@ export class AuthService {
     this.token = null;
     this.loginStatusChange.next(false);
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('id_token');
     this.router.navigate(['/login']);
   }
 

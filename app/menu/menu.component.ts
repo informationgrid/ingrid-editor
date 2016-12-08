@@ -27,6 +27,8 @@ export class MenuComponent implements OnInit {
       this.isLoggedIn = loggedIn;
     });
 
+    // get initial login state when page is loaded
+    this.isLoggedIn = this.authService.loggedIn();
   }
 
   logout() {
