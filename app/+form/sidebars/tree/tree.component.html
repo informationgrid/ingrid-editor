@@ -1,14 +1,25 @@
-<div>
-    <a class="clickable text-muted padding pull-right glyphicon glyphicon-refresh" title="Aktualisieren" (click)="refresh()"></a>
+<div style="position: relative;">
+    <a class="refresh clickable text-muted padding pull-right glyphicon glyphicon-refresh"
+       title="Aktualisieren"
+       (click)="refresh()"></a>
+
     <Tree #tree [nodes]="nodes" [options]="options">
         <template #treeNodeTemplate let-node>
-            <div (click)="open(node.data.id)" [class.active]="selectedId === node.data.id">
-                <span class="label"
+            <div class="myTreeNode">
+                <div (click)="open(node.data.id, node.data._profile)" [class.active]="selectedId === node.data.id">
+                <span *ngIf="!node.data._iconClass" class="label"
                       [class.label-primary]="node.data._state === 'P'"
                       [class.label-warning]="node.data._state === 'W'"
                       [class.pubished-working-label]="node.data._state === 'PW'"
                 >{{node.data._profile}}</span>
-                <span>{{ node.data.name }}</span>
+                    <span *ngIf="node.data._iconClass" class="label"
+                          [class]="node.data._iconClass ? node.data._iconClass : ''"></span>
+                    <span>{{ node.data.name }}</span>
+                </div>
+                <!-- TODO: refactor into css -->
+                <span *ngIf="node.data._profile === 'FOLDER'" class="folder fa fa-edit"
+                      (click)="editFolder(node.data)"
+                ></span>
             </div>
         </template>
     </Tree>

@@ -1,9 +1,10 @@
-import {Injectable} from "@angular/core";
-import {FieldBase} from "../../+form/controls";
-import {UVPProfile} from "./uvp/uvp.profile";
-import {profile as ISO_profile} from "./iso/iso.profile";
-import {AddressProfile} from "./address/address.profile";
-import {Subject} from "rxjs";
+import {Injectable} from '@angular/core';
+import {FieldBase} from '../../+form/controls';
+import {FolderProfile} from './folder/folder.profile';
+import {UVPProfile} from './uvp/uvp.profile';
+import {AddressProfile} from './address/address.profile';
+import {Subject} from 'rxjs';
+import {Profile} from './profile';
 
 @Injectable()
 export class FormularService {
@@ -20,24 +21,19 @@ export class FormularService {
 
   addressProfile = new AddressProfile();
   uvpProfile = new UVPProfile();
+  folderProfile = new FolderProfile();
 
   docTypes = [
     {id: 'UVP', label: 'UVP'},
     // {id: 'ISO', label: 'ISO'},
-    {id: 'ADDRESS', label: 'Address'}
+    {id: 'ADDRESS', label: 'Address'},
+    {id: 'FOLDER', label: 'Folder'}
   ];
 
-  // Todo: get from a remote source of question metadata
-  // Todo: make asynchronous
   getFields(profile: string) {
-    // TODO: choose correct profile for data to be displayed
     let fields: FieldBase<any>[];
 
-    if (profile === 'UVP') fields = this.uvpProfile.profile;
-    else if (profile === 'ADDRESS') fields = this.addressProfile.profile;
-    else {
-      throw Error('Unknown profile: ' + profile);
-    }
+    fields = this.getProfile(profile).profile;
 
     this.currentProfile = profile;
 
@@ -45,11 +41,24 @@ export class FormularService {
     return fields.sort((a, b) => a.order - b.order).slice(0);
   }
 
+  private getProfile(id: string): Profile {
+    let profile: any = null;
+    if (id === 'UVP') profile = this.uvpProfile;
+    else if (id === 'ADDRESS') profile = this.addressProfile;
+    else if (id === 'FOLDER') profile = this.folderProfile;
+    else {
+      throw Error('Unknown profile: ' + id);
+    }
+    return profile;
+  }
+
   getTitle(profile: string, doc: any) {
-    // TODO: refactor to make it more flexible
-    if (profile === 'UVP') return this.uvpProfile.getTitle(doc);
-    else if (profile === 'ADDRESS') return this.addressProfile.getTitle(doc);
-    else return '- untitled -';
+    let title = this.getProfile(profile).getTitle(doc);
+    return title ? title : '- untitled -';
+  }
+
+  getIconClass(profile: string): string {
+    return this.getProfile(profile).treeIconClass;
   }
 
   getFieldsNeededForTitle(): string[] {
@@ -57,7 +66,8 @@ export class FormularService {
     let fields: string[] = [];
     fields.push(
       ...this.uvpProfile.getTitleFields(),
-      ...this.addressProfile.getTitleFields()
+      ...this.addressProfile.getTitleFields(),
+      ...this.folderProfile.getTitleFields()
     );
     return fields;
   }

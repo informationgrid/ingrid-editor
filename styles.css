@@ -157,3 +157,8 @@ sidebar .list-group-item:hover {
 .nav-tabs li {
     cursor: pointer;
 }
+
+.tree { width: 100%;}
+treenode:hover .folder {
+    display: block;
+}

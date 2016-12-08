@@ -12,6 +12,8 @@ import {ErrorService} from "../../../services/error.service";
   template: require('./tree.component.html'),
   styles: [`
     .clickable { cursor: pointer; text-decoration: none; }
+    .folder { position: absolute;right: 5px;margin-top: -15px; display: none;}
+    .refresh { position: absolute; right: 0; }
   `]
 })
 export class MetadataTreeComponent implements OnInit {
@@ -206,6 +208,7 @@ export class MetadataTreeComponent implements OnInit {
     let node: any = {
       id: doc._id,
       name: this.formularService.getTitle(doc._profile, doc),
+      _iconClass: this.formularService.getIconClass(doc._profile),
       _profile: doc._profile,
       _state: doc._state
     };
@@ -235,9 +238,15 @@ export class MetadataTreeComponent implements OnInit {
     this.tree.treeModel.update();
   }
 
-  open(id: string) {
+  open(id: string, profile: string) {
     this.selectedId = id;
-    this.router.navigate( ['/form', id] );
+    if (profile !== 'FOLDER') {
+      this.router.navigate( ['/form', id] );
+    }
+  }
+
+  editFolder(data: any) {
+    this.router.navigate( ['/form', data.id] );
   }
 
   refresh() {

@@ -43,7 +43,10 @@ export class StorageService {
     return this.http.get(
       this.configService.backendUrl + 'datasets/find?query=' + query + '&sort=mainInfo.title&fields=_id,_profile,_state,' + this.titleFields,
       this._createRequestOptions())
-      .map(resp => resp.json())
+      .map(resp => {
+        let json = <any[]>resp.json();
+        return json.filter(item => item._profile !== 'FOLDER');
+      })
       .catch(err => this._handleError(err));
   }
 
