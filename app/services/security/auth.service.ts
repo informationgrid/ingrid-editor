@@ -1,6 +1,6 @@
 import {Router} from '@angular/router';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {Response, Http, RequestOptions, Headers} from '@angular/http';
 import {ConfigService} from '../../config/config.service';
 import {tokenNotExpired} from "angular2-jwt";
@@ -12,6 +12,9 @@ export class AuthService {
   redirectUrl: string;
 
   public token: string;
+
+  public loginStatusChange = new Subject<boolean>();
+  public loginStatusChange$ = this.loginStatusChange.asObservable();
 
   constructor(private http: Http, private router: Router, private configService: ConfigService) {
     // set token if saved in local storage
@@ -35,11 +38,13 @@ export class AuthService {
           // store username and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem('currentUser', JSON.stringify({username: username, token: token}));
           localStorage.setItem('id_token', token);
+          this.loginStatusChange.next(true);
 
           // return true to indicate successful login
           return true;
         } else {
           // return false to indicate failed login
+          this.loginStatusChange.next(false);
           return false;
         }
       });
@@ -48,6 +53,7 @@ export class AuthService {
   logout(): void {
     // clear token remove user from local storage to log user out
     this.token = null;
+    this.loginStatusChange.next(false);
     localStorage.removeItem('currentUser');
     this.router.navigate(['/login']);
   }

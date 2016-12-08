@@ -31,6 +31,23 @@
                     l();
                 });
             }
+        },
+
+      {
+        id: 'additionalTitleBehaviour',
+        title: 'user title behaviour',
+        defaultActive: false,
+        forProfile: 'UVP',
+        register: function (form, eventManager) {
+          form.get('mainInfo.title').validator = function (fc) {
+            return fc.value && fc.value.length >= 3 ? null : {
+              validateTop: {valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen'}
+            };
+          };
+        },
+        unregister: function() {
+
         }
+      }
     ]
 } );

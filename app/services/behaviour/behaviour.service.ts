@@ -55,6 +55,7 @@ export class BehaviourService {
             // we need to run code in this context
             // TODO: add parameters for behaviour
             behaviour.register( form, this.eventManager );
+            // TODO: is extra method needed? since it can be done from the register method!
             if (behaviour.addValidators) behaviour.addValidators( form );
           }
         } );
