@@ -17,7 +17,7 @@ let serverPort = 8080;
 let options = {
   swaggerUi: '/swagger.json',
   controllers: './controllers',
-  useStubs: process.env.NODE_ENV === 'development' ? true : false // Conditionally turn on stubs (mock mode)
+  useStubs: process.env.NODE_ENV === 'development' // Conditionally turn on stubs (mock mode)
 };
 
 // Add headers
@@ -87,7 +87,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
       if (!adminExists) {
         // TODO: accept user input for admin password
-        console.log('Admin does not exists in database. Please set the password for the admin user:');
+        console.log('Admin does not exists in database. A user was added with default password "admin".');
 
         let hash = bcrypt.hashSync('admin', 8);
         dbUser.createUser('admin', hash, 'The', 'Administrator', -1);

@@ -14,15 +14,11 @@ export class TitleValidatorBehaviour extends BaseBehaviour implements Behaviour 
   defaultActive = false;
   forProfile = 'UVP';
 
-  constructor(@Inject(StorageService) private storageService: StorageService) {
+  constructor() {
     super();
   }
 
   register(form: FormGroup, eventManager: EventManager) {
-
-  }
-
-  addValidators(form: FormGroup) {
     form.get('mainInfo.title').validator = function (fc: FormControl) {
       return fc.value && fc.value.length >= 3 ? null : {
         validateTop: {valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen'}

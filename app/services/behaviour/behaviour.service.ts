@@ -19,7 +19,7 @@ export class BehaviourService {
 
   constructor(private defaultBehaves: BehavioursDefault, private eventManager: EventManager,
       private http: Http, private modalService: ModalService, private configService: ConfigService) {
-    // eval(require( 'raw!./behaviours.js' ));
+
     this.behaviours = defaultBehaves.behaviours;
 
     // load user behaviours
@@ -27,10 +27,15 @@ export class BehaviourService {
     this.initialized = new Promise( (resolve, reject) => {
       $script( './behaviours/additionalBehaviours.js', () => {
         console.log( 'loaded additional behaviours' );
-        // TODO: activate again!
+
+        // add all additional behaviours to the default ones
         this.behaviours.push( ...additionalBehaviours );
+
+        // request stored behaviour states from backend
         this.http.get(this.configService.backendUrl + 'behaviours').toPromise().then((response: Response) => {
           let storedBehaviours = response.json();
+
+          // set correct active state to each behaviour
           this.behaviours.forEach( (behaviour) => {
             let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id);
             behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
@@ -55,8 +60,6 @@ export class BehaviourService {
             // we need to run code in this context
             // TODO: add parameters for behaviour
             behaviour.register( form, this.eventManager );
-            // TODO: is extra method needed? since it can be done from the register method!
-            if (behaviour.addValidators) behaviour.addValidators( form );
           }
         } );
   }

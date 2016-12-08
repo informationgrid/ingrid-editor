@@ -41,16 +41,16 @@ export class AppComponent implements OnInit {
 
   @ViewChild('errorModal') errorModal: Modal;
 
-  dynDialog = { errorMessage: '' };
+  dynDialog: any = { errorMessage: '' };
 
   constructor(private pluginsService: PluginsService, private modalService: ModalService) {
 
     // TODO: make more error info collapsible
-    this.modalService.errorDialog$.subscribe((content) => {
+    this.modalService.errorDialog$.subscribe((content: any) => {
       this.dynDialog.errorMessage = content.message;
       this.dynDialog.errorMessageMore = content.moreInfo;
       this.errorModal.open();
-    })
+    });
   }
 
   ngOnInit() {

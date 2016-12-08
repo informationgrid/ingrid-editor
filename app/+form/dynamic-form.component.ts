@@ -6,16 +6,15 @@ import {BehaviourService} from '../services/behaviour/behaviour.service';
 import {FormularService} from '../services/formular/formular.service';
 import {Behaviour} from '../services/behaviour/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
-import {Subscription, Observable, Subject} from 'rxjs';
-import {ActivatedRoute, CanDeactivate, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
+import {Subscription} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
 import {Split} from '../../node_modules/split.js/split';
-// import {StorageDummyService as StorageService} from '../services/storage/storage.dummy.service';
 import {StorageService} from '../services/storage/storage.service';
 import {ModalService} from '../services/modal/modal.service';
 import {Modal} from 'ng2-modal';
 import {PartialGeneratorField} from './controls/field-partial-generator';
 import {UpdateType} from '../models/update-type.enum';
-import {ErrorService} from "../services/error.service";
+import {ErrorService} from '../services/error.service';
 
 interface FormData extends Object {
   _id?: string;
@@ -51,8 +50,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   showDateBar: boolean = false;
 
   // choice of doc types to be shown when creating new document
-  newDocOptions = {
+  newDocOptions: any = {
     docTypes: [],
+    selectedDataset: {},
     rootOption: true
   };
 
@@ -103,9 +103,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.formularService.currentProfile = null;
 
-    // TODO: emit current form value on demand
     // register to an publisher in the form/storage service and send the value of this form
-    // this can be used for publis, revert, detail, compare, ...
+    // this can be used for publish, revert, detail, compare, ...
     this.observers.push(
       // return current form data on request
       this.formularService.formDataSubject$.subscribe( (container: any) => {
@@ -176,8 +175,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     try {
       if (needsProfileSwitch) {
         this.switchProfile(profile);
-
-        // TODO: refactor to always apply behaviours after a profile switch (because it's used more than once)
       }
 
       this.data = {};
@@ -200,7 +197,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
       this.newDocAdded = true;
     } catch (ex) {
-      console.error( "Error adding new document: ", ex );
+      console.error( 'Error adding new document: ', ex );
     }
     this.newDocModal.close();
   }
@@ -249,57 +246,36 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.storageService.loadData(id).subscribe(data => {
       console.log('loaded data:', data);
+
+      // if (data._profile === 'FOLDER') return;
+
       let profile = data._profile;
       let needsProfileSwitch = this.formularService.currentProfile !== profile;
       this.data = data;
-      // let profileSwitched = false;
 
       try {
 
         // switch to the right profile depending on the data
-          if (needsProfileSwitch) {
-            this.switchProfile(profile);
-          }
+        if (needsProfileSwitch) {
+          this.switchProfile(profile);
+        }
 
-          this.updateRepeatableFields(data);
+        this.updateRepeatableFields(data);
 
-          this.createFormWithData(data);
+        this.createFormWithData(data);
 
-          this.behaviourService.apply(this.form, profile);
-          this.storageService.afterProfileSwitch.next(data);
+        this.behaviourService.apply(this.form, profile);
+        this.storageService.afterProfileSwitch.next(data);
 
-          this.storageService.afterLoadAndSet.next(data);
+        this.storageService.afterLoadAndSet.next(data);
 
-      } catch(ex) {
+      } catch (ex) {
         console.error( ex );
         this.modalService.showError(ex);
         this.data._id = id;
       }
     }, (err) => this.errorService.handle(err));
   }
-
-  setData(data: any) {
-      // set correct number of repeatable fields
-      this.updateRepeatableFields(data);
-
-      this.storageService.afterLoadAndSet.next(data);
-      this.data = data;
-
-  }
-
-  /*_prepareInitialData(form: FormGroup): any {
-    let data = {};
-    for (let key in form.controls) {
-      let ctrl = form.controls[key];
-      if (ctrl instanceof FormGroup) {
-        data[ctrl.useGroupKey] = {};
-        for (let groupKey in ctrl.controls) {
-          data[ctrl.useGroupKey][groupKey] = '';
-        }
-      }
-    }
-    return data;
-  }*/
 
   save() {
     console.log('valid:', this.form.valid);
@@ -342,7 +318,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   createFormWithData(data: any) {
     this.form = this.qcs.toFormGroup(this.fields, data);
-
   }
 
   switchProfile(profile: string) {
@@ -378,7 +353,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         let repeatData = data[repeatField.key];
         for (let i = 0; i < repeatData.length; i++) {
           let partialKey = Object.keys(repeatData[i])[0];
-          this.addArrayGroup(repeatField, partialKey, repeatData[i]);
+          this.addArrayGroup(repeatField, partialKey);
         }
       }
     });
@@ -391,10 +366,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     while (group.children.length > 0) group.children.pop();
   }
 
-  addArrayGroup(repeatField: any, key: string, data: any) {
-    let partial = this.addPartialToField(repeatField, key);
-
-    // this.addPartialToForm(partial, <FormArray>this.form.controls[repeatField.key], data);
+  addArrayGroup(repeatField: any, key: string) {
+    this.addPartialToField(repeatField, key);
   }
 
   removeArrayGroup(name: string, pos: number) {

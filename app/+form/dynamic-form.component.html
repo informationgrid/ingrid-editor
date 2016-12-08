@@ -140,11 +140,6 @@
                 <input name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="type.id"> {{type.label}}
             </label>
         </div>
-        <div class="radio">
-            <label>
-                <input disabled name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="folder"> virtueller Ordner (in Arbeit)
-            </label>
-        </div>
         <div class="checkbox">
             <label>
                 <input type="checkbox" [disabled]="!newDocOptions.rootOption" [(ngModel)]="addToRoot">

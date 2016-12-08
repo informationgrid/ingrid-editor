@@ -1,7 +1,7 @@
-import {TextboxField, TextareaField, RadioField, CheckboxField, TableField} from "../../../+form/controls/index";
-import {OpenTableField} from "../../../+form/controls/field-opentable";
-import {LinkDatasetField} from "../../../+form/controls/field-link-dataset";
-import {Profile} from "../profile";
+import {TextboxField, TextareaField, RadioField, CheckboxField} from '../../../+form/controls/index';
+import {OpenTableField} from '../../../+form/controls/field-opentable';
+import {LinkDatasetField} from '../../../+form/controls/field-link-dataset';
+import {Profile} from '../profile';
 
 export class IsoProfile implements Profile {
 

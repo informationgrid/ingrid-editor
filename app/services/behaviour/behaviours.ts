@@ -18,7 +18,6 @@ export interface Behaviour {
   forProfile: string;
   isActive?: boolean;
   register: (form: FormGroup, eventManager: EventManager) => void;
-  addValidators?: (form: FormGroup) => void;
   unregister: () => void;
   controls?: any[];
   outer?: any;

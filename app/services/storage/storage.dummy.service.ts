@@ -135,7 +135,6 @@ export class StorageDummyService {
     this.afterSave.next();
   }
 
-  // FIXME: this should be added with a plugin
   publish() {
     console.log( 'PUBLISHING' );
     let data: any = {errors: []};
