@@ -53,7 +53,7 @@ export class UVPProfile implements Profile {
         zoom: 12,
         minZoom: 4,
         maxZoom: 19,
-        layers: [new TileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        layers: [new TileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         })]
       },

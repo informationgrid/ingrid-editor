@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import 'chart.js'
-import {Http} from "@angular/http";
-import {ConfigService} from "../config/config.service";
-import {ErrorService} from "../services/error.service";
+import {Http} from '@angular/http';
+import {ConfigService} from '../config/config.service';
+import {ErrorService} from '../services/error.service';
 
 @Component({
     template: require('./dashboard.component.html')
@@ -33,7 +32,7 @@ export class DashboardComponent implements OnInit {
           .map( data => data.json() )
           .subscribe(
             data => {
-              console.log("Data received: ", data);
+              console.log('Data received: ', data);
               this.datasets = data;
             },
             (err) => this.errorService.handle(err)

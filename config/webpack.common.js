@@ -16,8 +16,7 @@ module.exports = {
   },
 
   resolve: {
-    extensions: [ '', '.ts', '.js', '.css', '.scss' ]
-    // mainFields: ["module", "main", "browser"]
+    extensions: [ '.ts', '.js', '.css', '.scss' ]
   },
 
   module: {
@@ -25,16 +24,16 @@ module.exports = {
       // Support for .ts files.
       {
         test: /\.ts$/,
-        loader: 'ts?transpileOnly=true,configFileName=tsconfig.webpack.json',
+        loader: 'ts-loader?transpileOnly=true,configFileName=tsconfig.webpack.json',
         // 'awesome-typescript-loader',
         exclude: [ /\.(spec|e2e)\.ts$/, helpers.root( 'node_modules' ) ]
       },
 
       // copy those assets to output
-      {test: /\.(png|jpe?g|gif|ico)$/, loader: 'file?name=[path][name].[ext]?[hash]'},
+      {test: /\.(png|jpe?g|gif|ico)$/, loader: 'file-loader?name=[path][name].[ext]?[hash]'},
       {test: /\.woff2(\?\S*)?$/, loader: "url-loader?limit=10000&minetype=application/font-woff2"},
       {test: /\.woff(\?\S*)?$/, loader: "url-loader?limit=10000&minetype=application/font-woff"},
-      {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file?name=[path][name].[ext]?[hash]'},
+      {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader?name=[path][name].[ext]?[hash]'},
 
       // Support for *.json files.
       {test: /\.json$/, loader: 'json-loader', exclude: [ helpers.root( 'node_modules' ) ]},
@@ -45,16 +44,15 @@ module.exports = {
       {
         test: /\.css$/,
         exclude: helpers.root( 'app' ),
-        loader: ExtractTextPlugin.extract( { fallbackLoader: 'style', loader: 'css?postcss' } )
+        loader: ExtractTextPlugin.extract( { fallbackLoader: 'style-loader', loader: 'css-loader' } )
       },
       // all css required in src/app files will be merged in js files
-      {test: /\.css$/, include: helpers.root( 'app' ), loader: 'raw!postcss'},
+      {test: /\.css$/, include: helpers.root( 'app' ), loader: 'raw-loader'},
 
       // SASS
-      // { test: /\.scss$/, loader: ExtractTextPlugin.extract( 'style!css!sass' ) },
-      { test: /\.scss$/, exclude: helpers.root( 'app' ), loaders: ['style', 'css', 'sass' ] },
+      { test: /\.scss$/, exclude: helpers.root( 'app' ), loaders: ['style-loader', 'css-loader', 'sass-loader' ] },
 
-      { test: /\.scss$/, include: helpers.root( 'app' ), loaders: ['raw', 'postcss', 'sass' ] },
+      { test: /\.scss$/, include: helpers.root( 'app' ), loaders: ['raw-loader', 'sass-loader' ] },
 
       // support for .html as raw text
       {test: /\.html$/, loader: 'raw-loader', exclude: [ helpers.root( 'index.html' ), helpers.root( 'node_modules' ) ]}
@@ -63,13 +61,6 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery",
-      "windows.jQuery": "jquery",
-      "window.moment": "moment"
-    }),
-    new webpack.IgnorePlugin(/^\.\/locale$/, [/moment$/]),
     //  the following plugin is needed to avoid a warning when running app
     new webpack.ContextReplacementPlugin(
         /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,

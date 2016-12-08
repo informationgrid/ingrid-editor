@@ -6,7 +6,6 @@ var helpers = require( './../helpers' );
 
 module.exports = webpackMerge( commonConfig, {
     devtool: 'cheap-module-eval-source-map',
-    // devtool: 'hidden-source-map',
 
     output: {
         path: helpers.root( 'dist' ),
@@ -31,7 +30,6 @@ module.exports = webpackMerge( commonConfig, {
         watchOptions: {
             aggregateTimeout: 300,
             poll: 1000
-        },
-        outputPath: helpers.root('build')
+        }
     }
 } );

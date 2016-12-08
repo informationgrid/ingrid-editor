@@ -3,6 +3,7 @@ var webpackMerge = require('webpack-merge');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 var CleanWebpackPlugin = require('clean-webpack-plugin');
+var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var helpers = require('./../helpers');
 
@@ -15,7 +16,6 @@ module.exports = webpackMerge(commonConfig, {
         path: helpers.root('dist'),
         publicPath: '',
         filename: '[name].bundle.js',
-        // sourceMapFilename: '[name].map',
         chunkFilename: '[id].chunk.js'
     },
 
@@ -24,13 +24,12 @@ module.exports = webpackMerge(commonConfig, {
             root: helpers.root(''),
             verbose: true
         }),
-        // new webpack.dependencies.LabeledModulesPlugin(),
         new webpack.NoErrorsPlugin(),
-        // new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin({
-            // mangle: false // needed for RC5
+            sourceMap: true
         }),
         new ExtractTextPlugin('styles.css'),
+        new OptimizeCssAssetsPlugin(),
         new CopyWebpackPlugin( [
             {from: helpers.root('app/behaviours/additionalBehaviours.js'), to: helpers.root('dist/behaviours')}
         ] ),
