@@ -120,7 +120,7 @@ class DatasetDao {
             data.draft = doc;
           }
 
-          this.client.updateIntoTable('documents', data._id, data)
+          return this.client.updateIntoTable('documents', data._id, data)
             .then(() => {
               let doc = {};
               this._addInfo(doc, data, data._id.toString());

@@ -2,14 +2,6 @@
 let db = require('../db/DatasetDao');
 let dbInterface = require('../db/dbInterface');
 
-exports.optionsChildren = function(args, res) {
-  res.end();
-};
-
-exports.options = function(args, res) {
-  res.end();
-};
-
 /**
  *
  * @param docs

@@ -3,6 +3,7 @@ import {Http} from '@angular/http';
 import {ConfigService} from '../config/config.service';
 import {Observable} from 'rxjs';
 import {ErrorService} from "../services/error.service";
+import {AuthHttp} from 'angular2-jwt';
 
 export interface User {
  firstName?: string;
@@ -16,7 +17,7 @@ export interface User {
 export class UserService {
 
 
-  constructor(private http: Http, private configService: ConfigService,
+  constructor(private http: AuthHttp, private configService: ConfigService,
     private errorService: ErrorService) {
   }
 

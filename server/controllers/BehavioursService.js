@@ -1,10 +1,6 @@
 'use strict';
 let db = require('../db/BehaviourDao');
 
-exports.options = function(args, res, next) {
-  res.end();
-};
-
 exports.get = function(args, res, next) {
 
   db.getBehaviours().then(function (data) {

@@ -9,6 +9,7 @@ import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 import {AuthService} from '../security/auth.service';
 import {Router} from '@angular/router';
 import {ErrorService} from "../error.service";
+import {AuthHttp} from 'angular2-jwt';
 
 @Injectable()
 export class StorageService {
@@ -26,7 +27,7 @@ export class StorageService {
 
   titleFields: string;
 
-  constructor(private http: Http, private modalService: ModalService, private formularService: FormularService,
+  constructor(private http: AuthHttp, private modalService: ModalService, private formularService: FormularService,
               private configService: ConfigService, private authenticationService: AuthService,
               private errorService: ErrorService, private router: Router) {
     this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');

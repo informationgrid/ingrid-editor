@@ -13,6 +13,12 @@ produces:
 - "application/json"
 paths:
   /user/list:
+    options:
+      operationId: get
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
     get:
       operationId: list
       summary: ""
@@ -25,24 +31,16 @@ paths:
     x-swagger-router-controller: "User"
   /user/{id}:
     options:
-      summary: ""
-      description: ""
-      operationId: optionsUser
+      operationId: get
       parameters:
       - name: "id"
         in: "path"
-        description: "The unique login of the user."
         required: true
         type: "string"
-      consumes:
-        - application/x-www-form-urlencoded
-      produces:
-        - application/json
       responses:
         '200':
           description: Options for this operation are returned.
-      tags:
-      - "User"
+      x-swagger-router-controller: "Options"
     get:
       operationId: getUser
       summary: ""
@@ -146,18 +144,11 @@ paths:
     x-swagger-router-controller: "User"
   /behaviours:
     options:
-      summary: ""
-      description: ""
-      operationId: optionsBehaviours
-      consumes:
-        - application/x-www-form-urlencoded
-      produces:
-        - application/json
+      operationId: get
       responses:
         '200':
           description: Options for this operation are returned.
-      tags:
-      - "Behaviour"
+      x-swagger-router-controller: "Options"
     get:
       summary: ""
       description: ""
@@ -186,18 +177,11 @@ paths:
     x-swagger-router-controller: "Behaviours"
   /datasets/find:
     options:
-      tags:
-        - "Datasets"
-      summary: ""
-      description: ""
-      operationId: optionsDatasets
-      consumes:
-        - application/x-www-form-urlencoded
-      produces:
-        - application/json
+      operationId: get
       responses:
         '200':
           description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
     get:
       tags:
       - "Datasets"
@@ -231,19 +215,11 @@ paths:
     x-swagger-router-controller: "Datasets"
   /datasets/children:
     options:
-      tags:
-      - "Datasets"
-      summary: ""
-      description: ""
-      operationId: "optionsChildren"
-      consumes:
-        - application/x-www-form-urlencoded
-      produces:
-        - application/json
+      operationId: get
       responses:
         '200':
           description: Options for this operation are returned.
-      x-swagger-router-controller: "Datasets"
+      x-swagger-router-controller: "Options"
     get:
       tags:
       - "Datasets"
@@ -285,39 +261,16 @@ paths:
       x-swagger-router-controller: "Datasets"
   /dataset/{id}:
     options:
-      tags:
-      - "Datasets"
-      summary: ...
-      description: ""
-      operationId: getByIDOperation
-      consumes:
-      - application/x-www-form-urlencoded
-      produces:
-      - application/json
-      - application/xml
+      operationId: get
       parameters:
       - name: "id"
         in: "path"
-        description: "The ID of the dataset."
         required: true
         type: "string"
-      - name: "publish"
-        in: "query"
-        description: "If we want to get the published version then this parameter\
-          \ has to be set to true."
-        required: false
-        type: "boolean"
-      - name: "revert"
-        in: "query"
-        description: "Delete the draft version and make the published version the current one."
-        required: false
-        type: "boolean"
       responses:
         '200':
-          description: Dataset updated.
-        '405':
-          description: Invalid input
-      x-swagger-router-controller: "Datasets"
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
     get:
       tags:
       - "Datasets"
@@ -406,6 +359,12 @@ paths:
             $ref: "#/definitions/Error"
       x-swagger-router-controller: "Datasets"
   /statistic:
+    options:
+      operationId: get
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
     get:
       tags:
       - "Statistic"

@@ -7,10 +7,6 @@ let Config = require('../config'),
 
 class UserService {
 
-  options(args, res) {
-    res.end();
-  }
-
   login(args, res) {
 
     let username = args.username.value;

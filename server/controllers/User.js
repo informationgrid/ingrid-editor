@@ -2,10 +2,6 @@
 
 let User = require('./UserService');
 
-module.exports.optionsUser = function (req, res, next) {
-  User.options(req.swagger.params, res, next);
-};
-
 module.exports.login = function find (req, res, next) {
   User.login(req.swagger.params, res, next);
 };

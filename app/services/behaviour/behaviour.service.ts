@@ -6,6 +6,7 @@ import {Http, Response} from '@angular/http';
 import {ModalService} from '../modal/modal.service';
 import {Observable} from 'rxjs';
 import {ConfigService} from '../../config/config.service';
+import {AuthHttp} from 'angular2-jwt';
 
 // the variable containing additional behaviours is global!
 declare let additionalBehaviours: any;
@@ -18,7 +19,7 @@ export class BehaviourService {
   initialized: Promise<any>;
 
   constructor(private defaultBehaves: BehavioursDefault, private eventManager: EventManager,
-      private http: Http, private modalService: ModalService, private configService: ConfigService) {
+      private http: AuthHttp, private modalService: ModalService, private configService: ConfigService) {
 
     this.behaviours = defaultBehaves.behaviours;
 
