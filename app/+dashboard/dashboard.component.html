@@ -1,6 +1,6 @@
 <h1>Dashboard</h1>
 
-<div style="display: block; width: 300px;">
+<div class="chart pull-left">
     <canvas baseChart
             [data]="pieChartData"
             [labels]="pieChartLabels"
@@ -8,9 +8,16 @@
             (chartHover)="chartHovered($event)"
             (chartClick)="chartClicked($event)"></canvas>
 </div>
-<ul>
-    <li *ngFor="let item of datasets">
-        <a routerLink="/form/{{item.id}}">{{item.title}}</a>
-    </li>
-</ul>
 
+<div class="content">
+    <ul class="nav nav-tabs">
+        <li role="presentation" [class.active]="sideTab === 'tree'"><a (click)="sideTab = 'tree'">Mein Daten</a></li>
+        <li role="presentation" [class.active]="sideTab === 'search'"><a (click)="sideTab = 'search'">Alle Daten</a>
+        </li>
+    </ul>
+    <ul>
+        <li *ngFor="let item of datasets">
+            <a routerLink="/form/{{item.id}}">{{item.title}}</a>
+        </li>
+    </ul>
+</div>

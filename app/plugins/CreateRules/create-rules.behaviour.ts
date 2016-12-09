@@ -1,10 +1,10 @@
-import { Plugin } from '../plugin';
-import {FormToolbarService} from "../../+form/toolbar/form-toolbar.service";
-import {Inject} from "@angular/core";
-import {StorageService} from "../../services/storage/storage.service";
-import {FormularService} from "../../services/formular/formular.service";
-import {ModalService} from "../../services/modal/modal.service";
-import {Subscription} from "rxjs";
+import {Plugin} from '../plugin';
+import {FormToolbarService} from '../../+form/toolbar/form-toolbar.service';
+import {Inject} from '@angular/core';
+import {StorageService} from '../../services/storage/storage.service';
+import {FormularService} from '../../services/formular/formular.service';
+import {ModalService} from '../../services/modal/modal.service';
+import {Subscription} from 'rxjs';
 
 export class CreateDocRulesPlugin extends Plugin {
   id = 'plugin.create.doc';

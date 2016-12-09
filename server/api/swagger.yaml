@@ -243,6 +243,17 @@ paths:
           description: Datasets found
       x-swagger-router-controller: "Datasets"
   /dataset/path/{id}:
+    options:
+      operationId: get
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
     get:
       tags:
       - "Datasets"

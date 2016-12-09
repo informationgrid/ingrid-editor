@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {BehavioursDefault, Behaviour} from './behaviours';
 import {EventManager} from '@angular/platform-browser';
-import {Http, Response} from '@angular/http';
+import {Response} from '@angular/http';
 import {ModalService} from '../modal/modal.service';
 import {Observable} from 'rxjs';
 import {ConfigService} from '../../config/config.service';
@@ -27,7 +27,7 @@ export class BehaviourService {
     let $script = require( 'scriptjs' );
     this.initialized = new Promise( (resolve, reject) => {
       $script( './behaviours/additionalBehaviours.js', () => {
-        console.log( 'loaded additional behaviours' );
+        console.log( 'loaded additional behaviours', additionalBehaviours );
 
         // add all additional behaviours to the default ones
         this.behaviours.push( ...additionalBehaviours );

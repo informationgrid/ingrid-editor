@@ -2,13 +2,10 @@ import {FormularService} from '../formular/formular.service';
 import {EventManager} from '@angular/platform-browser';
 import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {ClickAndChangeTitleBehaviour} from '../../behaviours';
-import {MapAndChangeTitleBehaviour} from '../../plugins/demo/behaviours/MapAndChangeTitle/map-and-change-title.behaviour';
 import {AddControlBehaviour} from '../../plugins/demo/behaviours/AddControl/addControl.behaviour';
-import {StorageService} from "../storage/storage.service";
-import {ShowDateInSectionBehaviour} from "../../behaviours/ShowDateInSection/show-date-in-section.behaviour";
-import {OpenDataBehaviour} from "../../behaviours/OpenData/open-data.behaviour";
-import {TitleValidatorBehaviour} from "../../behaviours/TitleValidator/title-validator.behaviour";
+import {StorageService} from '../storage/storage.service';
+import {ShowDateInSectionBehaviour} from '../../behaviours/ShowDateInSection/show-date-in-section.behaviour';
+import {TitleValidatorBehaviour} from '../../behaviours/TitleValidator/title-validator.behaviour';
 
 export interface Behaviour {
   id: string;
@@ -39,6 +36,6 @@ export class BehavioursDefault {
     // new OpenDataBehaviour(this.storageService),
     new AddControlBehaviour( this.formService ),
     new ShowDateInSectionBehaviour( this.storageService ),
-    new TitleValidatorBehaviour( this.storageService )
+    new TitleValidatorBehaviour()
   ];
 }

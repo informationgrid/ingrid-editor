@@ -9,7 +9,7 @@ import {TextboxField} from '../../../../+form/controls/field-textbox';
  */
 export class AddControlBehaviour extends BaseBehaviour implements Behaviour {
   id = 'addControl';
-  title = 'Neues Feld hinzufügem';
+  title = 'Neues Feld hinzufügen';
   description = 'Fügt ein neues Eingabefeld hinzu.';
   defaultActive = true;
   forProfile = 'UVP';

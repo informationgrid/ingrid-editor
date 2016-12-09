@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import {Http} from '@angular/http';
 import {ConfigService} from '../config/config.service';
 import {ErrorService} from '../services/error.service';
 import {FormularService} from '../services/formular/formular.service';
 import {AuthHttp} from 'angular2-jwt';
 
 @Component({
-    template: require('./dashboard.component.html')
+    template: require('./dashboard.component.html'),
+    styles: [`
+        .chart { width: 300px; }
+        .content { display: inline-block;}
+    `]
 })
 export class DashboardComponent implements OnInit {
 
@@ -25,16 +28,21 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit() {
         this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
+        this.fetchStatistic();
         this.fetchData();
     }
 
-    fetchData() {
-        this.http.get(this.configService.backendUrl + 'statistic').subscribe(
-          data => this.prepareData(data.json()),
-          (err) => this.errorService.handle(err)
+    fetchStatistic() {
+        this.http.get( this.configService.backendUrl + 'statistic' ).subscribe(
+          data => this.prepareData( data.json() ),
+          (err) => this.errorService.handle( err )
         );
+    }
 
-        this.http.get(this.configService.backendUrl + 'datasets/find?query=&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
+    fetchData(query?: string) {
+        if (!query) query = '';
+
+        this.http.get(this.configService.backendUrl + 'datasets/find?query=' + query + '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
           .map( data => {
             let json = <any[]>data.json();
             return json.filter(item => item._profile !== 'FOLDER');
@@ -61,6 +69,10 @@ export class DashboardComponent implements OnInit {
     // events
     public chartClicked(e: any): void {
         // console.log(e.active[0]._index);
+        let index = e.active[0]._index;
+        if (index !== undefined) {
+            this.fetchData('_profile:' + this.pieChartLabels[index]);
+        }
     }
 
     public chartHovered(e: any): void {

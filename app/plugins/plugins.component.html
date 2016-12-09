@@ -1,19 +1,55 @@
 <div class="container">
 
-    <h1>Plugins</h1>
-    <div *ngFor="let plugin of plugins" class="checkbox">
-        <label>
-            <input #plug type="checkbox" (change)="togglePlugin(plugin, plug.checked)" [checked]="plugin.isActive">
-            {{plugin.name}}
-        </label>
+    <h1>Behaviours</h1>
+    <ul class="nav nav-tabs">
+        <li role="presentation" [class.active]="behaviourTab === 'SYSTEM'">
+            <a (click)="behaviourTab = 'SYSTEM'">System</a>
+        </li>
+        <li role="presentation" *ngFor="let key of behavioursLabel" [class.active]="behaviourTab === key">
+            <a (click)="behaviourTab = key">Profil: {{key}}</a>
+        </li>
+    </ul>
+
+    <!-- System behaviours -->
+    <div *ngIf="'SYSTEM' === behaviourTab">
+        <div *ngFor="let plugin of plugins" class="checkbox panel panel-default">
+            <div class="panel-heading">
+                <label>
+                    <input #plug type="checkbox" (change)="togglePlugin(plugin, plug.checked, $event)"
+                           [checked]="plugin.isActive">
+                    {{plugin.name}}
+                </label>
+                <span class="glyphicon pull-right" (click)="expanded[plugin.id] = !expanded[plugin.id]"
+                      [class.glyphicon-chevron-up]="expanded[plugin.id]"
+                      [class.glyphicon-chevron-down]="!expanded[plugin.id]"
+                ></span>
+            </div>
+            <div class="panel-body" [collapse]="!expanded[plugin.id]">
+                ...
+            </div>
+        </div>
     </div>
 
-    <h1>Behaviours</h1>
-    <div *ngFor="let behaviour of behaviours" class="checkbox full">
-        <label>
-            <input #checkBehave type="checkbox" (click)="toggleBehaviour(checkBehave.value, checkBehave.checked)"
-                   [checked]="behaviour.isActive"
-                   value="{{behaviour.id}}"> {{behaviour.title}}
-        </label>
+    <!-- Behaviours for each profile -->
+    <div role="presentation" *ngFor="let key of behavioursLabel" class="checkbox full">
+        <div *ngIf="key === behaviourTab">
+            <div *ngFor="let behaviour of behaviours[key]" class="checkbox panel panel-default">
+                <div class="panel-heading">
+                    <label>
+                        <input #checkBehave type="checkbox"
+                               (click)="toggleBehaviour(checkBehave.value, checkBehave.checked)"
+                               [checked]="behaviour.isActive"
+                               value="{{behaviour.id}}"> {{behaviour.title}}
+                    </label>
+                    <span class="glyphicon pull-right" (click)="expanded[behaviour.id] = !expanded[behaviour.id]"
+                          [class.glyphicon-chevron-up]="expanded[behaviour.id]"
+                          [class.glyphicon-chevron-down]="!expanded[behaviour.id]"
+                    ></span>
+                </div>
+                <div class="panel-body" [collapse]="!expanded[behaviour.id]">
+                    ...
+                </div>
+            </div>
+        </div>
     </div>
 </div>
