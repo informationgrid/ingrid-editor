@@ -7,7 +7,7 @@ import {ErrorService} from "../services/error.service";
 import {Observable} from "rxjs";
 
 interface Role {
-  id: string;
+  id: number;
   name: string;
 }
 
@@ -33,9 +33,8 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.currentTab = 'users';
     this.dialogTab = 'dataset';
     this.roles = [
-      {id: '1', name: 'admin'},
-      {id: '2', name: 'manager'},
-      {id: '3', name: 'author'}
+      {id: -1, name: 'admin'},
+      {id: -2, name: 'author'}
     ];
 
     this.fetchUsers();
@@ -90,6 +89,10 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   saveUser(user: User) {
     let observer: Observable<any> = null;
+
+    // convert roles to numbers
+    user.roles = user.roles.map( role => +role );
+
     if (this.isNewUser) {
       observer = this.userService.createUser(user);
 

@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {Response, Http, RequestOptions, Headers} from '@angular/http';
 import {ConfigService} from '../../config/config.service';
-import {tokenNotExpired} from "angular2-jwt";
+import {tokenNotExpired, JwtHelper} from "angular2-jwt";
 
 @Injectable()
 export class AuthService {
@@ -12,6 +12,7 @@ export class AuthService {
   redirectUrl: string;
 
   public token: string;
+  roles: string[];
 
   public loginStatusChange = new Subject<boolean>();
   public loginStatusChange$ = this.loginStatusChange.asObservable();
@@ -20,6 +21,14 @@ export class AuthService {
     // set token if saved in local storage
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.token = currentUser && currentUser.token;
+    if (this.token) {
+      this.roles = this.getRolesFromToken(this.token);
+    }
+  }
+
+  getRolesFromToken(token: any): string[] {
+    let jwt = new JwtHelper();
+    return jwt.decodeToken(token).roles;
   }
 
   login(username: string, password: string): Observable<boolean> {
@@ -34,6 +43,7 @@ export class AuthService {
         if (token) {
           // set token property
           this.token = token;
+          this.roles = this.getRolesFromToken(this.token);
 
           // store username and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem('currentUser', JSON.stringify({username: username, token: token}));
@@ -57,6 +67,14 @@ export class AuthService {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('id_token');
     this.router.navigate(['/login']);
+  }
+
+  hasRole(otherRoles: string[]): boolean {
+    let intersect = otherRoles.filter(otherRole => {
+      return this.roles.indexOf(otherRole) != -1;
+    });
+
+    return intersect.length > 0;
   }
 
   // Finally, this method will check to see if the user is logged in. We'll be able to tell by checking to see if they have a token and whether that token is valid or not.

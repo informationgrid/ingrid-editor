@@ -1,11 +1,12 @@
 import {Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot} from "@angular/router";
 import {AuthService} from "../services/security/auth.service";
 import {Injectable} from "@angular/core";
+import {ModalService} from "../services/modal/modal.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(private auth: AuthService, private router: Router, private modalService: ModalService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
@@ -13,11 +14,19 @@ export class AuthGuard implements CanActivate {
 
     // If user is not logged in we'll send them to the homepage
     if (!this.auth.loggedIn()) {
+      // return (roles == null || roles.indexOf("the-logged-user-role") != -1);
+
       this.auth.redirectUrl = url;
       this.router.navigate(['/login']);
       return false;
     }
-    return true;
+    let roles = route.data["roles"] as Array<string>;
+    if (!roles || this.auth.hasRole(roles)) {
+      return true;
+    } else {
+      this.modalService.showError('Sie haben nicht die nötigen Rechte!');
+      return false;
+    }
     /*if (localStorage.getItem('currentUser')) {
       // logged in so return true
       return true;

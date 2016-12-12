@@ -10,6 +10,7 @@ let Jwt = require('jsonwebtoken');
 let bodyParser = require('body-parser'),
     bcrypt = require('bcryptjs'),
     db = require('./db/dbInterface'),
+    dbRole = require('./db/RoleDao'),
     dbUser = require('./db/UserDao');
 let serverPort = 8080;
 
@@ -90,7 +91,10 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
         console.log('Admin does not exists in database. A user was added with default password "admin".');
 
         let hash = bcrypt.hashSync('admin', 8);
-        dbUser.createUser('admin', hash, 'The', 'Administrator', -1);
+        let objId = db.getClient().getObjectId(-1);
+        dbRole.createRole(-1, 'admin');
+        dbRole.createRole(-2, 'author');
+        dbUser.createUser('admin', hash, 'The', 'Administrator', [-1]);
       }
     }).catch(function(ex) {
 

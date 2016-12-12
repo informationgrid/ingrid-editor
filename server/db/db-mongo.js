@@ -41,7 +41,7 @@ module.exports = {
   deleteById: function(table, id) {
     let collection = db.collection( table );
 
-    return collection.deleteOne({_id: getObjectId(id)});
+    return collection.deleteOne({_id: this.getObjectId(id)});
   },
 
   findInTable: function (table, selector) {
@@ -90,11 +90,11 @@ module.exports = {
     }
   },
 
-  getDocById: function (table, id) {
+  getDocById: function (table, id, useRaw) {
     let collection = db.collection( table );
 
     // Find some documents
-    return collection.findOne( {'_id': getObjectId(id)} )
+    return collection.findOne( {'_id': useRaw ? id : this.getObjectId(id)} )
   },
 
   /**
@@ -104,15 +104,18 @@ module.exports = {
   updateIndexForSearch: function(table) {
     let collection = db.collection(table);
     collection.ensureIndex({"$**": "text"}, {name: "fullText"})
+  },
+
+  getObjectId(id) {
+    if (id instanceof ObjectID) return id;
+
+    let realId = id;
+
+    try {
+      realId = new ObjectID( id );
+    } catch (ex) {}
+
+    return realId;
   }
 };
 
-function getObjectId(id) {
-  let realId = id;
-
-  try {
-    realId = new ObjectID( id );
-  } catch (ex) {}
-
-  return realId;
-}

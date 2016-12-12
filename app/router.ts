@@ -7,7 +7,7 @@ const routes: Routes = [
   {path: 'form/:id', loadChildren: '+form/ige-form.module'},
   {path: 'plugins', loadChildren: 'plugins/plugins.module'},
   {path: 'fields', loadChildren: '+fields/fields.module'},
-  {path: 'user', loadChildren: '+user/user.module'},
+  {path: 'user', loadChildren: '+user/user.module'}, // TODO: check canActivateChild: [AuthGuard],
   {path: 'login', component: LoginComponent},
   {path: '', redirectTo: '/form', pathMatch: 'full'}
 ];

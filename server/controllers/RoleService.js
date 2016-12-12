@@ -1,65 +1,12 @@
 'use strict';
 
 let Config = require('../config'),
-  Jwt = require('jsonwebtoken'),
-  db = require('../db/UserDao'),
-  dbRole = require('../db/RoleDao'),
-  bcrypt = require('bcryptjs');
+  db = require('../db/RoleDao');
 
-class UserService {
-
-  login(args, res) {
-
-    let username = args.username.value;
-    let password = args.password.value;
-
-    db.findUser(username).then( user => {
-      console.log('user:', user);
-      if (user === null || !bcrypt.compareSync(password, user.password)) {
-
-        throw new Error('User not found or wrong password');
-
-      } else {
-        delete user.password;
-
-        // map role ids to names
-        this.mapIdsToRoles(user.roles).then( roles => {
-          user.roles = roles;
-          let result = {
-            username: user.login,
-            role: user.role,
-            token: Jwt.sign(user, Config.key.privateKey, {expiresIn: Config.key.tokenExpiry})
-          };
-          res.end(JSON.stringify(result, null, 2));
-        }, err => {
-          res.statusCode = 500;
-          console.error(err.message);
-          res.end(err.message);
-        });
-
-      }
-
-    }).catch(function (err) {
-      res.statusCode = 403;
-      res.end(err.message);
-
-    });
-
-  }
-
-  mapIdsToRoles(roleIds) {
-    return dbRole.findRoles(roleIds).then( roles => {
-      return roles.map(
-        role => {
-          if (!role) throw new Error('Role not found');
-          return role.name;
-        }
-      );
-    }, err => console.error(err));
-  }
+class RoleService {
 
   list(args, res) {
-    db.getUsers().then(function (user) {
+    db.getRoles().then(function (user) {
       res.end(JSON.stringify(user, null, 2));
 
     }).catch(function (err) {
@@ -69,10 +16,10 @@ class UserService {
     });
   };
 
-  getUser(args, res, next) {
+  getRole(args, res, next) {
     let login = args.id.value;
 
-    db.findUser(login).then(function (user) {
+    db.findRole(login).then(function (user) {
       // remove password
       delete user.password;
 
@@ -85,11 +32,11 @@ class UserService {
     });
   }
 
-  createUser(args, res) {
+  createRole(args, res) {
     let login = args.id.value;
     let data = args.user.value;
 
-    db.findUser(login).then((user) => {
+    db.findRole(login).then((user) => {
 
       if (user) {
 
@@ -101,7 +48,7 @@ class UserService {
         // if user does not exist
         let password = bcrypt.hashSync(data.password, 8);
 
-        db.createUser(data.login, password, data.firstName, data.lastName, data.roles).then(() => {
+        db.createUser(data.login, password, data.firstName, data.lastName).then(() => {
           res.end();
         }).catch(function (err) {
           res.statusCode = 500;
@@ -117,11 +64,11 @@ class UserService {
     })
   }
 
-  updateUser(args, res) {
+  updateRole(args, res) {
     let login = args.id.value;
     let data = args.user.value;
 
-    db.findUser(login).then(user => {
+    db.findRole(login).then(user => {
 
       if (user) {
         console.log("found user", user);
@@ -134,7 +81,7 @@ class UserService {
         }
 
         // if user exists
-        db.updateUser(data).then(user => {
+        db.updateRole(data).then(user => {
           res.end();
 
         }).catch(function (err) {
@@ -157,7 +104,7 @@ class UserService {
     });
   }
 
-  deleteUser(args, res) {
+  deleteRole(args, res) {
     let login = args.id.value;
 
     db.deleteUser(login)
@@ -169,4 +116,4 @@ class UserService {
   }
 }
 
-module.exports = new UserService();
+module.exports = new RoleService();

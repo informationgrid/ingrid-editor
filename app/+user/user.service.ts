@@ -8,7 +8,7 @@ import {AuthHttp} from 'angular2-jwt';
 export interface User {
  firstName?: string;
  lastName?: string;
- roles?: string[];
+ roles?: number[];
  login?: string;
  password?: string;
 }

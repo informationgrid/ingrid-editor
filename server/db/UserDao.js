@@ -50,14 +50,25 @@ class UserDao {
     return this.client.deleteById('users', login);
   }
 
-  createUser(login, password, firstName, lastName, role) {
+  /**
+   *
+   * @param login
+   * @param password
+   * @param firstName
+   * @param lastName
+   * @param {number[]} roles
+   * @returns {*}
+   */
+  createUser(login, password, firstName, lastName, roles) {
+    // let mappedRoles = roles.map(role => this.client.getObjectId(role));
+
     return this.client.insertIntoTable('users', {
       _id: login,
       login: login,
       password: password,
       firstName: firstName,
       lastName: lastName,
-      role: role
+      roles: roles
     });
   }
 

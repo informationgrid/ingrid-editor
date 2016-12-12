@@ -142,6 +142,114 @@ paths:
       tags:
       - "User"
     x-swagger-router-controller: "User"
+  /role:
+    options:
+      operationId: get
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      operationId: list
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: Returns the list of roles
+      tags:
+      - "User"
+    x-swagger-router-controller: "Role"
+  /role/{id}:
+    options:
+      operationId: get
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      operationId: getRole
+      summary: ""
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique id of the role."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Returns the role
+      tags:
+      - "Role"
+    post:
+      operationId: setRole
+      summary: "Updates a role. If role could not be found an error will be returned."
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique id of the user."
+        required: true
+        type: "string"
+      - name: "user"
+        in: "body"
+        description: "Save the role into the database."
+        required: true
+        schema:
+          $ref: "#/definitions/Role"
+      responses:
+        '200':
+          description: Role was successfully updated
+        '406':
+          description: A role with the given login does not exist and cannot be updated
+      tags:
+      - "Role"
+    put:
+      operationId: createRole
+      summary: "Creates a new role. If role with a given login already exists an error will be returned."
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique id of the role."
+        required: true
+        type: "string"
+      - name: "user"
+        in: "body"
+        description: "Save the role into the database."
+        required: true
+        schema:
+          $ref: "#/definitions/Role"
+      responses:
+        '200':
+          description: Role was successfully created
+        '406':
+          description: A role already exists with the given login
+      tags:
+      - "Role"
+    delete:
+      operationId: deleteRole
+      summary: "Deletes a role."
+      description: "If role with a given id does not exists an error will be returned."
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique id of the role."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Role was successfully deleted
+        '406':
+          description: A role with the given id does not exist and cannot be deleted
+      tags:
+      - "Role"
+    x-swagger-router-controller: Role
   /behaviours:
     options:
       operationId: get
@@ -408,6 +516,17 @@ definitions:
         type: "string"
         description: ""
       lastName:
+        type: "string"
+        description: ""
+  Role:
+    type: "object"
+    required:
+    - id
+    properties:
+      id:
+        type: "string"
+        description: ""
+      name:
         type: "string"
         description: ""
   Dataset:
