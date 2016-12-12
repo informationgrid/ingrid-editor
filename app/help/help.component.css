@@ -1,6 +1,6 @@
 .outer-wrapper {
-    width: 320px;
-    position: absolute;
+    max-width: 800px;
+    position: fixed;
     background-color: white;
     border-left: 1px solid #eeeeee;
     z-index: 10000;
@@ -10,17 +10,13 @@
     -webkit-box-shadow: 0 0 5px #666;
     -moz-box-shadow: 0 0 5px  #666;
     box-shadow: 0 0 5px #666;
-
-    -webkit-transition: width 300ms ease-in-out;
-    -moz-transition: width 300ms ease-in-out;
-    -o-transition: width 300ms ease-in-out;
-    transition: width 300ms ease-in-out;
 }
 
 .wrapper {
     overflow: auto;
     position: absolute;
     right: 0;
+    left: 0;
     top: 0;
     bottom: 0;
 }
@@ -32,31 +28,15 @@
     margin-top: 4px;
 }
 
+.collapsed .btn-expand {
+    display: none;
+}
+
 .btn-expand {
-    float: right;
+    position: absolute;
+    right: 15px;
     padding: 10px 10px 0 0;
-}
-
-.content {
-    width: 300px;
-    /*padding: 10px;*/
-    overflow: hidden;
-
-    -webkit-transition: width 300ms ease-in-out;
-    -moz-transition: width 300ms ease-in-out;
-    -o-transition: width 300ms ease-in-out;
-    transition: width 300ms ease-in-out;
-}
-
-.inactive {
-    width: 0 !important;
-}
-
-.content.expanded {
-    width: 600px;
-}
-.outer-wrapper.expanded {
-    width: 620px;
+    z-index: 1000;
 }
 
 .help-text {

@@ -1,14 +1,15 @@
-<div class="outer-wrapper" [class.inactive]="!showHelp" [class.expanded]="expanded">
+<div class="outer-wrapper" [class.collapsed]="menuState === 'collapsed'" [@openClose]="menuState">
     <button class="btn-help btn btn-default glyphicon glyphicon-question-sign"
-            (click)="showHelp = !showHelp"></button>
+            (click)="toggleState()"></button>
+    <span class="btn-expand glyphicon"
+          [class.glyphicon-resize-small]="menuState === 'maximized'"
+          [class.glyphicon-resize-full]="menuState === 'expanded'"
+          (click)="toggleMaximized()"></span>
 
     <div class="wrapper">
 
-        <div class="content" [class.inactive]="!showHelp" [class.expanded]="expanded">
-            <span class="btn-expand glyphicon" [class.glyphicon-resize-full]="!expanded" [class.glyphicon-resize-small]="expanded"
-                  (click)="expanded = !expanded"></span>
-            <div class="help-text">
-                <h2>Help</h2>
+        <div class="help-text">
+                <h2>Help for {{text}}</h2>
                 <p>...</p>
                 <p>...</p>
                 <p>...</p>
@@ -49,7 +50,6 @@
                 <p>...</p>
                 <p>...</p>
             </div>
-        </div>
 
     </div>
 </div>
