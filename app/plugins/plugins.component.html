@@ -19,13 +19,20 @@
                            [checked]="plugin.isActive">
                     {{plugin.name}}
                 </label>
-                <span class="glyphicon pull-right" (click)="expanded[plugin.id] = !expanded[plugin.id]"
-                      [class.glyphicon-chevron-up]="expanded[plugin.id]"
-                      [class.glyphicon-chevron-down]="!expanded[plugin.id]"
+                <span class="glyphicon pull-right" (click)="toggleField(plugin)"
+                      [class.glyphicon-chevron-up]="plugin._state === 'expanded'"
+                      [class.glyphicon-chevron-down]="plugin._state === 'collapsed'"
                 ></span>
             </div>
-            <div class="panel-body" [collapse]="!expanded[plugin.id]">
-                ...
+            <div class="panel-body" [@openClose]="plugin._state">
+                <ul>
+                    <li>a</li>
+                    <li>a</li>
+                    <li>a</li>
+                    <li>a</li>
+                    <li>a</li>
+                    <li>a</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -41,12 +48,12 @@
                                [checked]="behaviour.isActive"
                                value="{{behaviour.id}}"> {{behaviour.title}}
                     </label>
-                    <span class="glyphicon pull-right" (click)="expanded[behaviour.id] = !expanded[behaviour.id]"
-                          [class.glyphicon-chevron-up]="expanded[behaviour.id]"
-                          [class.glyphicon-chevron-down]="!expanded[behaviour.id]"
+                    <span class="glyphicon pull-right" (click)="toggleField(behaviour)"
+                          [class.glyphicon-chevron-up]="behaviour._state === 'expanded'"
+                          [class.glyphicon-chevron-down]="behaviour._state === 'collapsed'"
                     ></span>
                 </div>
-                <div class="panel-body" [collapse]="!expanded[behaviour.id]">
+                <div class="panel-body" [@openClose]="behaviour._state">
                     ...
                 </div>
             </div>
