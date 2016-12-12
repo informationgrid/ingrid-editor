@@ -23,7 +23,9 @@ class UserService {
         delete user.password;
 
         // map role ids to names
-        this.mapIdsToRoles(user.roles).then( roles => {
+        let usrRoles = user.roles ? user.roles : [];
+
+        this.mapIdsToRoles(usrRoles).then( roles => {
           user.roles = roles;
           let result = {
             username: user.login,

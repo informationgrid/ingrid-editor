@@ -10,6 +10,10 @@ export class CreateDocRulesPlugin extends Plugin {
   id = 'plugin.create.doc';
   _name = 'Regeln für neues Dokument';
 
+  description = `
+    Diese Regeln beschreiben wie ein neuer Datensatz angelegt wird. Abhängig von dem ausgewählten Datensatz wird
+    entschieden, welcher darunter angelegt werden darf.
+  `;
   subscription: Subscription;
 
   get name() {

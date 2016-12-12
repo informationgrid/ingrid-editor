@@ -1,5 +1,5 @@
 import {AppComponent} from './app.component';
-import {StatisticComponent} from './plugins/statistic/statistic.component';
+import {StatisticComponent} from './+plugins/statistic/statistic.component';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {StorageDummyService} from './services/storage/storage.dummy.service';
 import {StorageService} from './services/storage/storage.service';
@@ -7,7 +7,7 @@ import {FormToolbarService} from './+form/toolbar/form-toolbar.service';
 import {appRoutingProviders, routing} from './router';
 import {RadioControlRegistry} from '@angular/forms/src/directives/radio_control_value_accessor';
 import {ROUTER_PROVIDERS} from '@angular/router/src/router_module';
-import {PluginsModule} from './plugins/plugins.module';
+import {PluginsModule} from './+plugins/plugins.module';
 import {FieldsModule} from './+fields/fields.module';
 import {DashboardModule} from './+dashboard/dashboard.module';
 import {IgeFormModule} from './+form/ige-form.module';

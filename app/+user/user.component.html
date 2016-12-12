@@ -33,7 +33,7 @@
             <form (ngSubmit)="onSubmit()" #userForm="ngForm">
                 <div class="form-group">
                     <label>Login</label>
-                    <input type="text" [disabled]="!isNewUser" required class="form-control" autocomplete="off"
+                    <input #loginRef type="text" [disabled]="!isNewUser" required class="form-control" autocomplete="off"
                            name="login"
                            [(ngModel)]="selectedUser.login">
                 </div>

@@ -13,6 +13,7 @@
 export abstract class Plugin {
   id: string;
   name: string;
+  description: string;
   isActive: boolean;
 
   register(): void {

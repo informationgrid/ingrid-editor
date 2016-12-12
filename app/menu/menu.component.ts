@@ -17,7 +17,7 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.menuService.menu$.asObservable().subscribe(() => {
+    this.menuService.menu$.subscribe(() => {
       console.log('menu has changed');
       this.routes = this.menuService.menuItems;
     });
@@ -25,6 +25,7 @@ export class MenuComponent implements OnInit {
     // remember logged in state
     this.authService.loginStatusChange$.subscribe(loggedIn => {
       this.isLoggedIn = loggedIn;
+      this.routes = this.menuService.menuItems;
     });
 
     // get initial login state when page is loaded

@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild, enableProdMode} from '@angular/core';
 import {MenuService} from './menu/menu.service';
-import {PluginsService} from './plugins/plugins.service';
-import {StatisticPlugin} from './plugins/statistic/statistic.plugin';
-import {WorkflowPlugin} from './plugins/workflow/workflow.plugin';
-import {DemoPlugin} from './plugins/demo/demo.plugin';
+import {PluginsService} from './+plugins/plugins.service';
+import {StatisticPlugin} from './+plugins/statistic/statistic.plugin';
+import {WorkflowPlugin} from './+plugins/workflow/workflow.plugin';
+import {DemoPlugin} from './+plugins/demo/demo.plugin';
 import {Modal} from 'ng2-modal';
 import {ModalService} from './services/modal/modal.service';
 
