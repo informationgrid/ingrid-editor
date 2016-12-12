@@ -71,7 +71,7 @@ export class AuthService {
 
   hasRole(otherRoles: string[]): boolean {
     let intersect = otherRoles.filter(otherRole => {
-      return this.roles.indexOf(otherRole) != -1;
+      return this.roles && this.roles.indexOf(otherRole) !== -1;
     });
 
     return intersect.length > 0;

@@ -5,7 +5,7 @@ import {TreeComponent, TreeNode} from '../../../_forks/angular2-tree-component/a
 import {Router, ActivatedRoute} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
-import {ErrorService} from "../../../services/error.service";
+import {ErrorService} from '../../../services/error.service';
 
 @Component({
   selector: 'tree',
@@ -189,7 +189,11 @@ export class MetadataTreeComponent implements OnInit {
       } );
     } else {
       // mark the last node as active
-      setTimeout( () => this.tree.treeModel.setActiveNode( node, true ), 100 );
+      if (node !== undefined) {
+        setTimeout( () => this.tree.treeModel.setActiveNode( node, true ), 100 );
+      } else {
+        console.warn('Could not find node to set active: ' + id);
+      }
       return Promise.resolve();
     }
   }
@@ -206,7 +210,7 @@ export class MetadataTreeComponent implements OnInit {
 
   prepareNode(doc: any): any {
     let node: any = {
-      id: doc._id,
+      id: doc._id + '',
       name: this.formularService.getTitle(doc._profile, doc),
       _iconClass: this.formularService.getIconClass(doc._profile),
       _profile: doc._profile,

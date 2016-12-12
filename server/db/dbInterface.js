@@ -1,22 +1,23 @@
 'use strict';
 
-let mongoClient = require('./db-mongo');
+// let client = require('./db-mongo');
+let client = require('./db-tingo');
 
 /**
  *
  * @returns {*}
  */
 let getClient = function() {
-  return mongoClient;
+  return client;
 };
 
 let connect = function () {
   // Use connect method to connect to the server
-  return mongoClient.connect();
+  return client.connect();
 };
 
 let closeDB = function () {
-  mongoClient.close();
+  client.close();
 };
 
 /**
@@ -24,7 +25,7 @@ let closeDB = function () {
  */
 let updateFullIndexSearch = function () {
   // TODO: update full index search
-  mongoClient.updateIndexForSearch('documents');
+  client.updateIndexForSearch('documents');
 };
 
 module.exports = {

@@ -20,7 +20,8 @@
     "js-yaml": "^3.7.0",
     "jsonwebtoken": "^7.1.9",
     "mongodb": "^2.2.12",
-    "swagger-tools": "0.10.1"
+    "swagger-tools": "0.10.1",
+    "tingodb": "^0.4.2"
   },
   "devDependencies": {
     "mocha": "^3.2.0"

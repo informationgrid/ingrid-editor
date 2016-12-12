@@ -98,7 +98,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
       }
     }).catch(function(ex) {
 
-      console.error(ex);
+      console.error('Error starting up DB connection', ex);
 
     });
 

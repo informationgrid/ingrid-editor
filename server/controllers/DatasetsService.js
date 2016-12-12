@@ -150,7 +150,7 @@ exports.set = function(args, res, userId) {
       console.log('Inserted doc', parent);
       res.end(JSON.stringify(result, null, 2))
     }).catch(function (err) {
-      console.error('Error during db operation:', err);
+      console.error('Error during db operation:', err.stack);
       // no response value expected for this operation
       res.statusCode = 404;
       res.end(err.message);
@@ -171,6 +171,7 @@ exports.deleteById = function (args, res) {
 
       res.end();
     }, function (err) {
+      console.error('Error during db operation:', err.stack);
       res.statusCode = 500;
       res.end(err.message);
     });
@@ -186,9 +187,9 @@ exports.getPath = function(args, res) {
     console.log("path:", result);
     res.end(JSON.stringify(result, null, 2))
   }).catch(function (err) {
-    console.error('Error during db operation:', err);
+    console.error('Error during db operation:', err.stack);
     // no response value expected for this operation
-    res.statusCode = 404;
+    res.statusCode = 500;
     res.end(err.message);
   });
 };
