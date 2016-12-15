@@ -7,6 +7,7 @@ import {Plugin} from '../../plugin';
 export class CreateDocRulesPlugin extends Plugin {
   id = 'plugin.create.doc';
   _name = 'Regeln für neues Dokument';
+  defaultActive = true;
 
   description = `
     Diese Regeln beschreiben wie ein neuer Datensatz angelegt wird. Abhängig von dem ausgewählten Datensatz wird
@@ -21,12 +22,10 @@ export class CreateDocRulesPlugin extends Plugin {
   constructor(@Inject( FormularService ) private formService: FormularService,
               @Inject( StorageService ) private storageService: StorageService) {
     super();
-    this.isActive = true;
   }
 
   register() {
     super.register();
-    debugger;
 
     this.subscription = this.formService.newDocumentSubject$.subscribe( data => {
       console.log( 'handle new documents', data );

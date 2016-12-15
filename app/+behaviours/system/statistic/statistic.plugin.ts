@@ -7,10 +7,10 @@ import {Plugin} from '../../plugin';
 export class StatisticPlugin extends Plugin {
   id = 'plugin.statistic';
   _name = 'Statistic Plugin';
+  defaultActive = true;
 
   constructor(@Inject( MenuService ) private menuService: MenuService) {
     super();
-    this.isActive = false;
   }
 
   get name() {

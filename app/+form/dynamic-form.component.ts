@@ -35,6 +35,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('deleteConfirmModal') deleteConfirmModal: Modal;
   @ViewChild('discardConfirmModal') discardConfirmModal: Modal;
 
+  debugEnabled: boolean = false;
+
   fields: FieldBase<any>[] = [];
   form: FormGroup;
   data: FormData = {};
@@ -82,6 +84,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.observers.push(loadSaveSubscriber);
 
     this.behaviourService.initialized.then(() => {
+      this.route.queryParams.subscribe(params => {
+        this.debugEnabled = params['debug'] !== undefined;
+      });
       this.route.params.subscribe(params => {
         let id = params['id'];
         if (id !== '-1' && id !== '-2') {

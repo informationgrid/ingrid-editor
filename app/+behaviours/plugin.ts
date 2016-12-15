@@ -15,6 +15,7 @@ export abstract class Plugin {
   name: string;
   description: string;
   isActive: boolean;
+  defaultActive: boolean;
 
   register(): void {
     this.isActive = true;

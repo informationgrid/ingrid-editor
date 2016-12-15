@@ -44,8 +44,10 @@ export class PluginsComponent implements OnInit {
     event.stopImmediatePropagation();
     if (isChecked) {
       plugin.register();
+      this.behaviourService.enable( plugin.id );
     } else {
       plugin.unregister();
+      this.behaviourService.disable( plugin.id );
     }
   }
 

@@ -38,29 +38,31 @@ import {BehaviourService} from './+behaviours/behaviour.service';
 } )
 export class AppComponent implements OnInit {
 
-  @ViewChild('errorModal') errorModal: Modal;
+  @ViewChild( 'errorModal' ) errorModal: Modal;
 
-  dynDialog: any = { errorMessage: '' };
+  dynDialog: any = {errorMessage: ''};
 
   constructor(private behaviourService: BehaviourService, private modalService: ModalService) {
 
     // TODO: make more error info collapsible
-    this.modalService.errorDialog$.subscribe((content: any) => {
+    this.modalService.errorDialog$.subscribe( (content: any) => {
       this.dynDialog.errorMessage = content.message;
       this.dynDialog.errorMessageMore = content.moreInfo;
       this.errorModal.open();
-    });
+    } );
   }
 
   ngOnInit() {
-    let systemBehaviours = this.behaviourService.systemBehaviours;
-    console.log( 'got system behaviours:', systemBehaviours );
-    systemBehaviours
-      .filter( systemBehaviour => systemBehaviour.isActive )
-      .forEach( systemBehaviour => {
-        console.log( 'register system behaviour: ' + systemBehaviour.name );
-        systemBehaviour.register();
-      } );
+    this.behaviourService.initialized.then( () => {
+      let systemBehaviours = this.behaviourService.systemBehaviours;
+      console.log( 'got system behaviours:', systemBehaviours );
+      systemBehaviours
+        .filter( systemBehaviour => systemBehaviour.isActive )
+        .forEach( systemBehaviour => {
+          console.log( 'register system behaviour: ' + systemBehaviour.name );
+          systemBehaviour.register();
+        } );
+    } );
   }
 
 }
