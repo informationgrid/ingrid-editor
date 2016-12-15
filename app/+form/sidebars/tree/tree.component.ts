@@ -244,9 +244,9 @@ export class MetadataTreeComponent implements OnInit {
 
   open(id: string, profile: string) {
     this.selectedId = id;
-    if (profile !== 'FOLDER') {
+    // if (profile !== 'FOLDER') {
       this.router.navigate( ['/form', id] );
-    }
+    // }
   }
 
   editFolder(data: any) {

@@ -43,7 +43,7 @@ module.exports = {
             __dirname
         ),
         new CopyWebpackPlugin( [
-            {from: helpers.root('app/behaviours/additionalBehaviours.js'), to: helpers.root('build')}
+            {from: helpers.root('app/+behaviours/additionalBehaviours.js'), to: helpers.root('build')}
         ] )
     ]
 };

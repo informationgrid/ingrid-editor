@@ -1,11 +1,10 @@
-import {Component, OnInit, ViewChild, enableProdMode} from '@angular/core';
-import {MenuService} from './menu/menu.service';
-import {PluginsService} from './+plugins/plugins.service';
-import {StatisticPlugin} from './+plugins/statistic/statistic.plugin';
-import {WorkflowPlugin} from './+plugins/workflow/workflow.plugin';
-import {DemoPlugin} from './+plugins/demo/demo.plugin';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {StatisticPlugin} from './+behaviours/system/statistic/statistic.plugin';
+import {WorkflowPlugin} from './+behaviours/system/workflow/workflow.plugin';
+import {DemoPlugin} from './+behaviours/system/demo/demo.plugin';
 import {Modal} from 'ng2-modal';
 import {ModalService} from './services/modal/modal.service';
+import {BehaviourService} from './+behaviours/behaviour.service';
 
 // enableProdMode();
 
@@ -34,7 +33,7 @@ import {ModalService} from './services/modal/modal.service';
         </modal-content>
     </modal>
   `,
-  providers: [MenuService, PluginsService, StatisticPlugin, WorkflowPlugin, DemoPlugin],
+  providers: [StatisticPlugin, WorkflowPlugin, DemoPlugin],
   entryComponents: []
 } )
 export class AppComponent implements OnInit {
@@ -43,7 +42,7 @@ export class AppComponent implements OnInit {
 
   dynDialog: any = { errorMessage: '' };
 
-  constructor(private pluginsService: PluginsService, private modalService: ModalService) {
+  constructor(private behaviourService: BehaviourService, private modalService: ModalService) {
 
     // TODO: make more error info collapsible
     this.modalService.errorDialog$.subscribe((content: any) => {
@@ -54,13 +53,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    let plugins = this.pluginsService.getPlugins();
-    console.log( 'got plugins:', plugins );
-    plugins
-      .filter( plugin => plugin.isActive )
-      .forEach( plugin => {
-        console.log( 'register plugin: ' + plugin.name );
-        plugin.register();
+    let systemBehaviours = this.behaviourService.systemBehaviours;
+    console.log( 'got system behaviours:', systemBehaviours );
+    systemBehaviours
+      .filter( systemBehaviour => systemBehaviour.isActive )
+      .forEach( systemBehaviour => {
+        console.log( 'register system behaviour: ' + systemBehaviour.name );
+        systemBehaviour.register();
       } );
   }
 

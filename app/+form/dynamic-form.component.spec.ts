@@ -2,8 +2,8 @@ import {TestBed} from "@angular/core/testing";
 import {DynamicFormComponent} from "./dynamic-form.component";
 import {FormularService} from "../services/formular/formular.service";
 import {FormGroup, FormControl} from "@angular/forms";
-import {BehaviourService} from "../services/behaviour/behaviour.service";
-import {BehavioursDefault} from "../services/behaviour/behaviours";
+import {BehaviourService} from "../+behaviours/behaviour.service";
+import {BehavioursDefault} from "../+behaviours/behaviours";
 import {StorageService} from "../services/storage/storage.service";
 import {HttpModule} from "@angular/http";
 import {FormToolbarService} from "./toolbar/form-toolbar.service";
@@ -19,7 +19,7 @@ describe('Dynamic Form', () => {
     // refine the test module by declaring the test component
     TestBed.configureTestingModule({
       imports: [IgeFormModule, HttpModule, ROUTER_PROVIDERS],
-      providers: [BehaviourService, BehavioursDefault, FormularService, StorageService, FormToolbarService]
+      providers: [FormularService, StorageService, FormToolbarService]
     });
 
     // create component and test fixture

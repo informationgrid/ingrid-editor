@@ -2,9 +2,9 @@ import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from '@angular/c
 import {FormGroup, FormArray} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
 import {FieldBase, Container} from './controls';
-import {BehaviourService} from '../services/behaviour/behaviour.service';
+import {BehaviourService} from '../+behaviours/behaviour.service';
 import {FormularService} from '../services/formular/formular.service';
-import {Behaviour} from '../services/behaviour/behaviours';
+import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
@@ -309,7 +309,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   doDelete() {
     try {
       this.storageService.delete(this.data._id);
-      if (this.form) this.form.reset();
+      this.form = null;
     } catch (ex) {
       console.error( 'Could not delete' );
     }
