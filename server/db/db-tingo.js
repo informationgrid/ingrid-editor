@@ -56,10 +56,17 @@ module.exports = {
     // Find some documents
     return new Promise(function(resolve) {
       if (selector == null) {
-        collection.find().toArray( (err, data) => resolve(data) );
+        collection.find().toArray( (err, data) => {
+          let filtered = data.filter( entry => entry._parent === undefined);
+          resolve(filtered);
+        });
 
       } else {
-        collection.find( selector ).toArray( (err, data) => resolve(data) );
+        let query = selector;
+        if (selector.roles) {
+          query = { roles : { "$in": [ selector.roles]}}
+        }
+        collection.find( query ).toArray( (err, data) => resolve(data) );
 
       }
     });
@@ -93,9 +100,10 @@ module.exports = {
     // Find some documents
     return new Promise(function(resolve) {
       if (query.trim().length > 0) {
-        let result = collection.find( {$text: {$search: query}} );
-        if (sort) result = result.sort( sortObj );
-        return result.toArray( (err, data) => resolve(data) );
+        let splitted = query.split(':');
+        let selector = {};
+        selector['draft.' + splitted[0]] = splitted[1];
+        collection.find(selector).toArray( (err, data) => resolve(data) );
 
       } else {
         let result = collection.find();

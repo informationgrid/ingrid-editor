@@ -9,7 +9,7 @@ class UserDao {
   }
 
   hasAdminUser() {
-    return this.client.findInTable('users', {role: -1})
+    return this.client.findInTable('users', {roles: -1})
       .then(function (data) {
 
         // there's at least one admin user

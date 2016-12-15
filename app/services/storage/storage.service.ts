@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Subject, Observable} from 'rxjs';
-import {Http, Headers, RequestOptions} from '@angular/http';
+import {Headers, RequestOptions} from '@angular/http';
 import {ModalService} from '../modal/modal.service';
 import {FormularService} from '../formular/formular.service';
 import {ConfigService} from '../../config/config.service';
@@ -8,7 +8,7 @@ import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 import {AuthService} from '../security/auth.service';
 import {Router} from '@angular/router';
-import {ErrorService} from "../error.service";
+import {ErrorService} from '../error.service';
 import {AuthHttp} from 'angular2-jwt';
 
 @Injectable()
@@ -48,7 +48,7 @@ export class StorageService {
         let json = <any[]>resp.json();
         return json.filter(item => item._profile !== 'FOLDER');
       })
-      .catch(err => this._handleError(err));
+      .catch(err => this.errorService.handle(err));
   }
 
   getChildDocuments(parentId: string): Observable<any> {
@@ -57,7 +57,7 @@ export class StorageService {
     return this.http.get(this.configService.backendUrl + 'datasets/children?fields=_id,_profile,_state,hasChildren,' + this.titleFields + idQuery,
       this._createRequestOptions())
       .map(resp => resp.json())
-      .catch((err) => this._handleError(err));
+      .catch((err) => this.errorService.handle(err));
   }
 
   loadData(id: string): Observable<any> {
@@ -102,7 +102,8 @@ export class StorageService {
       return;
     }
     let response = this.http.post(this.configService.backendUrl + 'dataset/1?publish=true', data)
-      .catch(this._handleError);
+      .catch(err => this.errorService.handle(err));
+
     console.log('Response:', response);
     response.subscribe(res => {
       console.log('received:', res);
@@ -111,14 +112,12 @@ export class StorageService {
       data._state = res.json()._state;
       this.afterSave.next(data);
       this.datasetsChanged.next({type: UpdateType.Update, data: data});
-    }, err => {
-      console.error( 'error:', err );
-    });
+    }, err => this.errorService.handle(err));
   }
 
   delete(id: string): any {
     let response = this.http.delete(this.configService.backendUrl + 'dataset/' + id)
-      .catch(err => this._handleError(err));
+      .catch(err => this.errorService.handle(err));
 
     response.subscribe(res => {
       console.log( 'ok', res );
@@ -130,7 +129,7 @@ export class StorageService {
     console.debug('REVERTING', id);
     return this.http.post(this.configService.backendUrl + 'dataset/' + id + '?revert=true', null)
       .do( (res: any) => this.datasetsChanged.next({type: UpdateType.Update, data: res.json()}) )
-      .catch(this._handleError);
+      .catch(err => this.errorService.handle(err));
 
     // return response.subscribe(res => {
     //   console.log( 'ok, res' );
@@ -141,18 +140,6 @@ export class StorageService {
   getPathToDataset(id: string): Observable<string[]> {
     return this.http.get(this.configService.backendUrl + 'dataset/path/' + id)
       .map(resp => resp.json())
-      .catch(this._handleError);
-  }
-
-  _handleError(err: any) {
-    // on logout or jwt expired
-    if (err.status === 403) {
-      console.log('Not logged in');
-      this.router.navigate(['/login']);
-    } else {
-      console.error('Error: ', err);
-      this.modalService.showError(err);
-      return Observable.throw(err);
-    }
+      .catch(err => this.errorService.handle(err));
   }
 }

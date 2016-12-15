@@ -1,14 +1,13 @@
-import {Component, OnInit, AfterViewInit, ViewChildren, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
 import {Split} from '../../node_modules/split.js/split';
-import {Modal} from 'ng2-modal';
 import {ModalService} from '../services/modal/modal.service';
 import {UserService, User} from './user.service';
 import {ErrorService} from '../services/error.service';
 import {Observable} from 'rxjs';
 
 interface Role {
-  id: number;
-  name: string;
+  id?: string;
+  name?: string;
 }
 
 @Component({
@@ -21,11 +20,10 @@ export class UserComponent implements OnInit, AfterViewInit {
   private users: User[];
   private roles: Role[];
   private currentTab: string;
-  private dialogTab: string;
-  private selectedUser: User = {};
-  private selectedRole: User;
-  private isNewUser: boolean = false;
 
+  private selectedUser: User = {};
+
+  private isNewUser: boolean = false;
 
   constructor(private modalService: ModalService, private userService: UserService,
               private errorService: ErrorService) {
@@ -33,14 +31,8 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.currentTab = 'users';
-    this.dialogTab = 'dataset';
-    this.roles = [
-      {id: -1, name: 'admin'},
-      {id: -2, name: 'author'}
-    ];
 
     this.fetchUsers();
-    // this.userService.getRoles().subscribe( roles => this.roles = roles );
   }
 
   fetchUsers() {
@@ -61,6 +53,10 @@ export class UserComponent implements OnInit, AfterViewInit {
       sizes: [25, 75],
       minSize: [200]
     });
+  }
+
+  updateRoles(roles: Role[]) {
+    this.roles = roles;
   }
 
   loadUser(user: User) {
@@ -122,15 +118,4 @@ export class UserComponent implements OnInit, AfterViewInit {
       });
   }
 
-  addRole() {
-    this.modalService.showNotImplemented();
-  }
-
-  loadRole() {
-    this.modalService.showNotImplemented();
-  }
-
-  createPermission(modal: Modal) {
-    modal.close();
-  }
 }

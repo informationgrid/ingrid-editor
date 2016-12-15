@@ -142,7 +142,7 @@ paths:
       tags:
       - "User"
     x-swagger-router-controller: "User"
-  /role:
+  /roles:
     options:
       operationId: get
       responses:
@@ -157,7 +157,7 @@ paths:
         '200':
           description: Returns the list of roles
       tags:
-      - "User"
+      - "Role"
     x-swagger-router-controller: "Role"
   /role/{id}:
     options:

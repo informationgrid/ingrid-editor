@@ -16,7 +16,6 @@ export interface User {
 @Injectable()
 export class UserService {
 
-
   constructor(private http: AuthHttp, private configService: ConfigService,
     private errorService: ErrorService) {
   }

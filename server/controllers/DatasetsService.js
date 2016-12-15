@@ -75,6 +75,10 @@ exports.children = function(args, res) {
     // TODO: only return requested fields instead of whole documents as in findDocuments
     let result = extractFields(docs, fields);
     res.end(JSON.stringify(result, null, 2));
+  }, (err) => {
+    console.error('error:', err);
+    res.statusCode = 500;
+    res.end(err.message);
   });
 
 };

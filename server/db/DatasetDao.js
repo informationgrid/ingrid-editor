@@ -212,7 +212,10 @@ class DatasetDao {
   getChildDocuments(id) {
     let selector = id === null ? null : {_parent: id};
     return this.client.findInTable('documents', selector)
-      .then((data) => this.processResults(data));
+      .then(
+        data => this.processResults(data),
+        err => console.error(err)
+      );
   };
 
   setChildInfoTo(id) {

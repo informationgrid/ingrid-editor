@@ -9,7 +9,7 @@ class RoleDao {
   }
 
   getRoles() {
-    return this.client.searchFor('roles', "");
+    return this.client.searchFor('role', "");
   }
 
 
@@ -19,7 +19,7 @@ class RoleDao {
    * @returns {*}
    */
   updateRole(role) {
-    return this.client.updateIntoTable('roles', role.id, role);
+    return this.client.updateIntoTable('role', role.id, role);
   }
 
   /**
