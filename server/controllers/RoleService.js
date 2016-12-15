@@ -1,118 +1,96 @@
 'use strict';
 
-let Config = require('../config'),
-  db = require('../db/RoleDao');
+let Config = require( '../config' ),
+  db = require( '../db/RoleDao' );
 
 class RoleService {
 
   list(args, res) {
-    db.getRoles().then(function (user) {
-      res.end(JSON.stringify(user, null, 2));
+    db.getRoles().then( function (user) {
+      res.end( JSON.stringify( user, null, 2 ) );
 
-    }).catch(function (err) {
+    } ).catch( function (err) {
       res.statusCode = 403;
-      res.end(err.message);
+      res.end( err.message );
 
-    });
+    } );
   };
 
   getRole(args, res, next) {
     let login = args.id.value;
 
-    db.findRole(login).then(function (user) {
+    db.findRole( login ).then( function (user) {
       // remove password
       delete user.password;
 
       // send back to client
-      res.end(JSON.stringify(user, null, 2));
+      res.end( JSON.stringify( user, null, 2 ) );
 
-    }).catch(function (err) {
+    } ).catch( function (err) {
       res.statusCode = 404;
-      res.end(err.message);
-    });
+      res.end( err.message );
+    } );
   }
 
   createRole(args, res) {
     let login = args.id.value;
     let data = args.user.value;
 
-    db.findRole(login).then((user) => {
+    db.findRole( login ).then( (user) => {
 
       if (user) {
 
         res.statusCode = 406;
-        res.end("User already exists");
+        res.end( "User already exists" );
 
       } else {
 
         // if user does not exist
-        let password = bcrypt.hashSync(data.password, 8);
+        let password = bcrypt.hashSync( data.password, 8 );
 
-        db.createUser(data.login, password, data.firstName, data.lastName).then(() => {
+        db.createUser( data.login, password, data.firstName, data.lastName ).then( () => {
           res.end();
-        }).catch(function (err) {
+        } ).catch( function (err) {
           res.statusCode = 500;
-          res.end(err.message);
-        });
+          res.end( err.message );
+        } );
 
       }
     }, () => {
 
       res.statusCode = 500;
-      res.end("Error requesting users: " + error);
+      res.end( "Error requesting users: " + error );
 
-    })
+    } )
   }
 
   updateRole(args, res) {
-    let login = args.id.value;
-    let data = args.user.value;
+    let id = args.id.value;
+    let data = args.role.value;
 
-    db.findRole(login).then(user => {
-
-      if (user) {
-        console.log("found user", user);
-
-        // set new password if one was set or use previous password
-        if (data.password && data.password.length > 0) {
-          data.password = bcrypt.hashSync(data.password, 8);
-        } else {
-          data.password = user.password;
-        }
-
-        // if user exists
-        db.updateRole(data).then(user => {
-          res.end();
-
-        }).catch(function (err) {
-          res.statusCode = 500;
-          res.end(err.message);
-        });
-      } else {
-
-        console.log("did not find user", login);
-        res.statusCode = 406;
-        res.end("User does not exists: " + login);
-
-      }
-
-    }, (error) => {
-
-      res.statusCode = 500;
-      res.end("Error requesting users: " + error);
-
-    });
+    db.findRole( id )
+      .then( (role) => {
+        data._id = role._id;
+        return db.updateRole( data )
+      } )
+      .then( () => {
+        res.end();
+      } )
+      .catch( function (err) {
+        res.statusCode = 500;
+        res.end( err.message );
+      } );
   }
 
   deleteRole(args, res) {
-    let login = args.id.value;
+    let id = args.id.value;
 
-    db.deleteUser(login)
-      .then(() => res.end())
-      .catch(error => {
+    db.deleteRole( id )
+      .then( () => res.end() )
+      .catch( error => {
         res.statusCode = 500;
-        res.end("Error deleting user: " + error);
-      })
+        res.end( "Error deleting user: " + error );
+      } )
   }
 }
 

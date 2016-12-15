@@ -25,11 +25,11 @@ class UserService {
         // map role ids to names
         let usrRoles = user.roles ? user.roles : [];
 
-        this.mapIdsToRoles(usrRoles).then( roles => {
-          user.roles = roles;
+        UserService.mapIdsToRoles(usrRoles).then( roles => {
+          user.roles = roles.map( r => r.name );
           let result = {
             username: user.login,
-            role: user.role,
+            roles: roles,
             token: Jwt.sign(user, Config.key.privateKey, {expiresIn: Config.key.tokenExpiry})
           };
           res.end(JSON.stringify(result, null, 2));
@@ -49,15 +49,8 @@ class UserService {
 
   }
 
-  mapIdsToRoles(roleIds) {
-    return dbRole.findRoles(roleIds).then( roles => {
-      return roles.map(
-        role => {
-          if (!role) throw new Error('Role not found');
-          return role.name;
-        }
-      );
-    }, err => console.error(err));
+  static mapIdsToRoles(roleIds) {
+    return dbRole.findRoles(roleIds);
   }
 
   list(args, res) {

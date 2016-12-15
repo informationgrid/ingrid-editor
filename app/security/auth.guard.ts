@@ -20,8 +20,12 @@ export class AuthGuard implements CanActivate {
       this.router.navigate(['/login']);
       return false;
     }
-    let roles = route.data["roles"] as Array<string>;
-    if (!roles || this.auth.hasRole(roles)) {
+    let roles = route.data['roles'] as Array<string>;
+
+    let validPages = this.auth.getAccessiblePages();
+    let mayContinue = validPages.length === 0 || validPages.indexOf(this.router.url) !== -1;
+
+    if (!roles || this.auth.hasRole(roles) || mayContinue) {
       return true;
     } else {
       this.modalService.showError('Sie haben nicht die nötigen Rechte!');

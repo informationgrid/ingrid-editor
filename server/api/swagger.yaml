@@ -196,7 +196,7 @@ paths:
         description: "The unique id of the user."
         required: true
         type: "string"
-      - name: "user"
+      - name: "role"
         in: "body"
         description: "Save the role into the database."
         required: true
@@ -521,11 +521,8 @@ definitions:
   Role:
     type: "object"
     required:
-    - id
+    - name
     properties:
-      id:
-        type: "string"
-        description: ""
       name:
         type: "string"
         description: ""

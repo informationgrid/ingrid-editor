@@ -124,9 +124,6 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
             console.log('result: ', decoded);
             callback();
           });
-          //   if(err) callback(new Error('Error in passport authenticate'));
-          //   if(!user) callback(new Error('Failed to authenticate oAuth token'));
-          //   req.user = user;
         }
     });
   }

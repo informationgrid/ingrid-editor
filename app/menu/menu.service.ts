@@ -27,12 +27,12 @@ export class MenuService {
   }
 
   get menuItems(): MenuItem[] {
-    let isAdmin = this.authService.hasRole(['admin']);
+    let validPages = this.authService.getAccessiblePages();
 
-    if (isAdmin) {
+    if (validPages.length === 0) {
       return this._menuItems;
     } else {
-      return this._menuItems.filter(item => !item.onlyAdmin);
+      return this._menuItems.filter(item => validPages.indexOf(item.path) !== -1);
     }
   }
 

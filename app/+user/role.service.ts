@@ -5,8 +5,9 @@ import {ErrorService} from '../services/error.service';
 import {AuthHttp} from 'angular2-jwt';
 
 export interface Role {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
+  pages?: string[];
 }
 
 @Injectable()
@@ -32,7 +33,8 @@ export class RoleService {
     roles.forEach( role => {
       result.push( {
         id: role._id,
-        name: role.name
+        name: role.name,
+        pages: role.pages
       } );
     } );
     return result;
@@ -50,8 +52,8 @@ export class RoleService {
       .catch( err => this.errorService.handle(err));
   }
 
-  deleteRole(login: string): Observable<any> {
-    return this.http.delete( this.configService.backendUrl + 'role/' + login )
+  deleteRole(id: string): Observable<any> {
+    return this.http.delete( this.configService.backendUrl + 'role/' + id )
       .catch( err => this.errorService.handle(err));
   }
 

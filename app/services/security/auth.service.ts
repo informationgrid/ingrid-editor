@@ -11,8 +11,14 @@ export class AuthService {
   // store the URL so we can redirect after logging in
   redirectUrl: string;
 
+  // the token from the server used for authentication
   public token: string;
+
+  // contains the role ids
   roles: string[];
+
+  // contains the whole roles with its permissions
+  rolesDetail: any[];
 
   public loginStatusChange = new Subject<boolean>();
   public loginStatusChange$ = this.loginStatusChange.asObservable();
@@ -21,6 +27,8 @@ export class AuthService {
     // set token if saved in local storage
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.token = currentUser && currentUser.token;
+    this.rolesDetail = currentUser && currentUser.rolesDetail;
+
     if (this.token) {
       this.roles = this.getRolesFromToken(this.token);
     }
@@ -39,14 +47,16 @@ export class AuthService {
     return this.http.post( this.configService.backendUrl + 'user/login', body, options)
       .map((response: Response) => {
         // login successful if there's a jwt token in the response
-        let token = response.json() && response.json().token;
+        let result = response.json();
+        let token =  result && result.token;
         if (token) {
           // set token property
           this.token = token;
           this.roles = this.getRolesFromToken(this.token);
+          this.rolesDetail = result.roles;
 
           // store username and jwt token in local storage to keep user logged in between page refreshes
-          localStorage.setItem('currentUser', JSON.stringify({username: username, token: token}));
+          localStorage.setItem('currentUser', JSON.stringify({username: username, token: token, rolesDetail: this.rolesDetail}));
           localStorage.setItem('id_token', token);
           this.loginStatusChange.next(true);
 
@@ -58,6 +68,17 @@ export class AuthService {
           return false;
         }
       });
+  }
+
+  getAccessiblePages(): string[] {
+    if (!this.rolesDetail) return [];
+    debugger;
+
+    let pages = this.rolesDetail
+      .map( role => role.pages ) // collect all pages
+      .filter( page => page );   // remove 'undefined' values
+
+    return pages[0] ? pages[0] : [];
   }
 
   logout(): void {

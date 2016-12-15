@@ -39,7 +39,11 @@ export class UserService {
 
   getUser(login: string): Observable<any> {
     return this.http.get( this.configService.backendUrl + 'user/' + login)
-      .map( resp => resp.json() )
+      .map( resp =>  resp.json() )
+      .map( json => {
+        json.roles = json.roles.map( (role: number) => role + '');
+        return json;
+      } )
       .catch( err => this.errorService.handle(err));
   }
 
