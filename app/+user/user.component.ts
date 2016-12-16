@@ -4,6 +4,7 @@ import {ModalService} from '../services/modal/modal.service';
 import {UserService, User} from './user.service';
 import {ErrorService} from '../services/error.service';
 import {Observable} from 'rxjs';
+import {IMultiSelectSettings} from './multi-select.component';
 
 interface Role {
   id?: string;

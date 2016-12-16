@@ -34,7 +34,7 @@ export class RoleService {
       result.push( {
         id: role._id,
         name: role.name,
-        pages: role.pages
+        pages: role.pages ? role.pages : []
       } );
     } );
     return result;

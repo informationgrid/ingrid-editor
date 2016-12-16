@@ -7,6 +7,9 @@ import {BehaviourService} from './behaviour.service';
   template: require( './behaviours.component.html' ),
   styles: [`
     .panel-default>.panel-heading { background-color: #ffffff;}
+    .clickable {
+      cursor: pointer;
+    }
   `],
   animations: [
     trigger('openClose', [

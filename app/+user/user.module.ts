@@ -7,10 +7,11 @@ import {UserService} from './user.service';
 import {FormsModule} from '@angular/forms';
 import {RoleService} from './role.service';
 import {RoleComponent} from './role.component';
+import {MultiselectDropdown, MultiSelectSearchFilter} from './multi-select.component';
 
 @NgModule({
   imports: [FormsModule, CommonModule, routing, ModalModule],
-  declarations: [UserComponent, RoleComponent],
+  declarations: [UserComponent, RoleComponent, MultiselectDropdown, MultiSelectSearchFilter],
   providers: [UserService, RoleService],
   exports: []
 })

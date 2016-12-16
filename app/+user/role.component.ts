@@ -32,7 +32,12 @@ export class RoleComponent implements OnInit {
   ngOnInit() {
     this.fetchRoles();
 
-    this.pages = this.menuService.menuItems;
+    this.pages = this.menuService.menuItems.map( item => {
+      return {
+        id: item.path,
+        name: item.name
+      };
+    });
     console.log('pages: ', this.pages);
   }
 
@@ -54,7 +59,7 @@ export class RoleComponent implements OnInit {
     this.isNewRole = false;
     this.roleService.getRole( role.id )
       .subscribe(
-        role => {this.selectedRole = role; console.log('selectedRole: ', this.selectedRole);},
+        role => {this.selectedRole = role; console.log('selectedRole: ', this.selectedRole); },
         error => this.errorService.handle( error )
       );
   }

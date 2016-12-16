@@ -24,9 +24,11 @@
 
             <div class="form-group">
                 <label>Seiten</label>
-                <select multiple class="form-control" [(ngModel)]="selectedRole.pages" name="pages">
+                <!--<select multiple class="form-control" [(ngModel)]="selectedRole.pages" name="pages">
                     <option *ngFor="let page of pages" value="{{page.path}}">{{page.name}}</option>
-                </select>
+                </select>-->
+                <div class="clearfix"></div>
+                <ss-multiselect-dropdown [options]="pages" name="pages" [(ngModel)]="selectedRole.pages"></ss-multiselect-dropdown>
             </div>
 
             <div class="panel panel-default">

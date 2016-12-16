@@ -22,6 +22,8 @@ export class DashboardComponent implements OnInit {
 
     titleFields: string;
 
+    sideTab: string = 'myData';
+
 
     constructor(private http: AuthHttp, private configService: ConfigService, private errorService: ErrorService,
         private formularService: FormularService) { }
