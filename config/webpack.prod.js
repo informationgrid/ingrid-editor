@@ -31,7 +31,7 @@ module.exports = webpackMerge(commonConfig, {
         new ExtractTextPlugin('styles.css'),
         new OptimizeCssAssetsPlugin(),
         new CopyWebpackPlugin( [
-            {from: helpers.root('app/+behaviours/additionalBehaviours.js'), to: helpers.root('dist/behaviours')}
+            {from: helpers.root('app/+behaviours/additionalBehaviours.js'), to: helpers.root('dist/+behaviours')}
         ] ),
         new webpack.DefinePlugin({
             'process.env': {

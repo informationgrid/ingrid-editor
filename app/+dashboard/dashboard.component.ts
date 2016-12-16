@@ -70,8 +70,7 @@ export class DashboardComponent implements OnInit {
 
     // events
     public chartClicked(e: any): void {
-        // console.log(e.active[0]._index);
-        let index = e.active[0]._index;
+        let index = e.active[0] !== undefined ? e.active[0]._index : undefined;
         if (index !== undefined) {
             this.fetchData('_profile:' + this.pieChartLabels[index]);
         }

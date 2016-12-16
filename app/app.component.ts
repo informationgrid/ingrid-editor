@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, enableProdMode} from '@angular/core';
 import {StatisticPlugin} from './+behaviours/system/statistic/statistic.plugin';
 import {WorkflowPlugin} from './+behaviours/system/workflow/workflow.plugin';
 import {DemoPlugin} from './+behaviours/system/demo/demo.plugin';
