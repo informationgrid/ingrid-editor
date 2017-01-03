@@ -23,9 +23,9 @@
 
 .btn-help {
     float: left;
-    border-right: none;
+    margin-top: 2px;
     margin-left: -39px;
-    margin-top: 4px;
+    border-right: none;
 }
 
 .collapsed .btn-expand {

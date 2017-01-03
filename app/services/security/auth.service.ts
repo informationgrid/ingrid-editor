@@ -72,7 +72,6 @@ export class AuthService {
 
   getAccessiblePages(): string[] {
     if (!this.rolesDetail) return [];
-    debugger;
 
     let pages = this.rolesDetail
       .map( role => role.pages ) // collect all pages

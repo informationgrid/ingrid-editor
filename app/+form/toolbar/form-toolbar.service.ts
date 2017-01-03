@@ -6,6 +6,9 @@ export interface ToolbarItem {
   cssClasses: string;
   eventId: string;
 }
+export interface Separator {
+  isSeparator: boolean;
+}
 
 @Injectable()
 export class FormToolbarService {
@@ -14,10 +17,11 @@ export class FormToolbarService {
 
   toolbarEvent$: Subject<string>;
 
-  _buttons: ToolbarItem[] = [
+  _buttons:  Array<ToolbarItem|Separator> = [
     {tooltip: 'New', cssClasses: 'glyphicon glyphicon-file', eventId: 'NEW_DOC'},
     // {tooltip: 'Load', cssClasses: 'glyphicon glyphicon-folder-open', eventId: 'LOAD'},
     {tooltip: 'Save', cssClasses: 'glyphicon glyphicon-floppy-disk', eventId: 'SAVE'},
+    { isSeparator: true },
     {tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT'},
     {tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-remove', eventId: 'DELETE'}
   ];
@@ -44,7 +48,7 @@ export class FormToolbarService {
   }
 
 
-  get buttons(): ToolbarItem[] {
+  get buttons(): Array<ToolbarItem|Separator> {
     return this._buttons;
   }
 

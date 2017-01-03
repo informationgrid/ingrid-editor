@@ -26,6 +26,8 @@ export class PublishPlugin extends Plugin {
 
     console.log( 'register publish plugin' );
     // add button to toolbar for publish action
+    this.formToolbarService.addButton( { isSeparator: true } );
+
     this.formToolbarService.addButton( {
       tooltip: 'Publish', cssClasses: 'glyphicon glyphicon-check', eventId: 'PUBLISH'
     } );

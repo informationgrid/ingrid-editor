@@ -38,7 +38,10 @@ export class LoginComponent implements OnInit {
 
       }, err => {
         this.loading = false;
-        if (err.status === 403) {
+        if (err.status === 0) {
+          this.error = 'Backend could not be reached';
+
+        } else if (err.status === 403) {
           // login failed
           this.error = 'Username or password is incorrect';
 
