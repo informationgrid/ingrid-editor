@@ -12,9 +12,9 @@ require('zone.js/dist/async-test');
 require('zone.js/dist/fake-async-test');
 
 require('leaflet');
-require('./additionalBehaviours');
+// require('./additionalBehaviours');
 
-var appContext = require.context('../app', true, /\.spec\.ts/);
+var appContext = require.context('../app', true, /tree.*\.spec\.ts/);
 
 appContext.keys().forEach(appContext);
 

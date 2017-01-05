@@ -27,7 +27,7 @@
     "@angular/router": "3.4.1",
     "angular-2-dropdown-multiselect": "^0.3.3",
     "angular2-jwt": "^0.1.27",
-    "angular2-tree-component": "git+https://github.com/awallat/angular2-tree-component.git",
+    "angular2-tree-component": "^2.7.0",
     "bootstrap": "^3.3.7",
     "chart.js": "^2.4.0",
     "es6-promise": "^4.0.5",
@@ -43,14 +43,14 @@
   },
   "devDependencies": {
     "angular2-template-loader": "^0.6.0",
-    "autoprefixer": "^6.6.0",
+    "autoprefixer": "^6.6.1",
     "clean-webpack-plugin": "^0.1.14",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
     "extract-text-webpack-plugin": "^2.0.0-beta",
     "file-loader": "^0.9.0",
     "html-loader": "^0.4.4",
-    "html-webpack-plugin": "^2.25.0",
+    "html-webpack-plugin": "^2.26.0",
     "http-server": "^0.9.0",
     "imports-loader": "^0.7.0",
     "jasmine-core": "^2.5.2",
@@ -74,6 +74,6 @@
     "url-loader": "^0.5.7",
     "webpack": "2.2.0-rc.3",
     "webpack-dev-server": "^2.2.0-rc.0",
-    "webpack-merge": "^2.0.0"
+    "webpack-merge": "^2.1.0"
   }
 }

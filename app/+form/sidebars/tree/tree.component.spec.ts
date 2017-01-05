@@ -1,7 +1,9 @@
+import { TreeModule } from './../../../_forks/angular2-tree-component/angular2-tree-component';
+import { ModalService } from './../../../services/modal/modal.service';
+import { ErrorService } from './../../../services/error.service';
 import {MetadataTreeComponent} from "./tree.component";
 import {TestBed} from "@angular/core/testing";
 import {By} from "@angular/platform-browser";
-import {TreeModule} from "angular2-tree-component";
 import {FormularService} from "../../../services/formular/formular.service";
 import {ConfigService} from "../../../config/config.service";
 import {StorageService} from "../../../services/storage/storage.service";
@@ -14,7 +16,11 @@ let fixture: any, comp: any, el: any;
 class RouterMock {
   navigate() {}
 }
-class ActivatedRouteMock {}
+let ActivatedRouteMock = {
+  params: {
+    subscribe: () => {}
+  }
+};
 
 let childrenThree = [{_id: '1', _profile: 'A'}, {_id: '2', _profile: 'A'}, {_id: '3', _profile: 'A'}];
 let childrenNoProfile = [{_id: '1'}, {_id: '2'}, {_id: '3'}];
@@ -41,6 +47,9 @@ describe('TreeComponent', () => {
     let formularServiceStub = {
       getTitle: (profile: string, doc: any) => {
         return doc.title ? doc.title : 'no-title';
+      },
+      getIconClass: (profile: string) => {
+        return 'X';
       }
     };
 
@@ -49,10 +58,10 @@ describe('TreeComponent', () => {
       declarations: [MetadataTreeComponent],
       providers: [
         { provide: Router, useClass: RouterMock},
-        { provide: ActivatedRoute, useClass: ActivatedRouteMock},
+        { provide: ActivatedRoute, useValue: ActivatedRouteMock},
         { provide: StorageService, useValue: storageServiceStub},
         { provide: FormularService, useValue: formularServiceStub},
-        ConfigService],
+        ConfigService, ErrorService, ModalService],
       imports: [TreeModule]
     });
 

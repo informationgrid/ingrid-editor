@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {StorageService} from '../../../services/storage/storage.service';
-// import {TreeComponent, TreeNode} from 'angular2-tree-component';
-import {TreeComponent, TreeNode} from '../../../_forks/angular2-tree-component/angular2-tree-component';
+import {TreeComponent, TreeNode} from 'angular2-tree-component';
 import {Router, ActivatedRoute} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
@@ -151,7 +150,7 @@ export class MetadataTreeComponent implements OnInit {
     let path: string[] = null;
     if (id) {
       let parentNode = this.tree.treeModel.getNodeById(id);
-      path = parentNode.path;
+      if (parentNode) path = parentNode.path;
     }
     return path;
   }
@@ -199,10 +198,15 @@ export class MetadataTreeComponent implements OnInit {
   }
 
   query(id: string): Promise<any> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.storageService.getChildDocuments(id).subscribe(response => {
         console.debug( 'got children', response );
-        this.setNodes(response, id);
+        try {
+          this.setNodes(response, id);
+        } catch (error) {
+          reject(error);
+          return;
+        }
         resolve();
       }, (err) => this.errorService.handle(err));
     });

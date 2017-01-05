@@ -200,7 +200,7 @@ describe('Formular fields', () => {
    })));*/
   // });
 
-  it('should create a table', () => {
+  xit('should create a table', () => {
     let fixture = TestBed.createComponent(DynamicFieldComponent);
     fixture.whenStable().then(() => {
       let selectField: FieldBase<any> = new TableField({
