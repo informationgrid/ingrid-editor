@@ -13,7 +13,7 @@ export interface Separator {
 @Injectable()
 export class FormToolbarService {
 
-  toolbar$: Subject<ToolbarItem>;
+  toolbar$: Subject<ToolbarItem|Separator>;
 
   toolbarEvent$: Subject<string>;
 
@@ -52,7 +52,7 @@ export class FormToolbarService {
     return this._buttons;
   }
 
-  addButton(button: ToolbarItem, pos?: number) {
+  addButton(button: ToolbarItem|Separator, pos?: number) {
     this._buttons.push( button );
     this.toolbar$.next( button );
   }

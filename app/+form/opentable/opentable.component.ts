@@ -1,8 +1,8 @@
-import {Component, forwardRef, Input, ViewChild} from "@angular/core";
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {FieldBase} from "../controls";
-import {Modal} from "ng2-modal";
-import {isUndefined} from "es7-reflect-metadata/dist/dist/helper/is-undefined";
+import {Component, forwardRef, Input, ViewChild} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {FieldBase} from '../controls';
+import {Modal} from 'ng2-modal';
+import {isUndefined} from 'es7-reflect-metadata/dist/dist/helper/is-undefined';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -145,7 +145,7 @@ export class OpenTable implements ControlValueAccessor {
       if (this.canceled) {
         this.hideEditField(input);
       } else {
-        this.acceptInput(input, row, column.key);
+        this.acceptInput(<HTMLInputElement>input, row, column.key);
         if (this.activateNextCell) {
           this.activateNextCell = false;
           // TODO: finish TAB behaviour in grid
@@ -169,7 +169,7 @@ export class OpenTable implements ControlValueAccessor {
     this.activateInput(this.parent, row, column);
   }
 
-  acceptInput(input: HTMLElement, row: any, column: string ) {
+  acceptInput(input: HTMLInputElement, row: any, column: string ) {
     row[column] = input.value;
     this.hideEditField(input);
   }

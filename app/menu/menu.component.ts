@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {MenuService} from './menu.service';
-import {MenuItem} from 'ag-grid';
 import {AuthService} from '../services/security/auth.service';
 
 @Component({
@@ -9,7 +8,7 @@ import {AuthService} from '../services/security/auth.service';
 })
 export class MenuComponent implements OnInit {
 
-  routes: MenuItem[] = [];
+  routes: any[] = [];
   isLoggedIn: boolean = false;
 
   constructor(private menuService: MenuService, private authService: AuthService) {

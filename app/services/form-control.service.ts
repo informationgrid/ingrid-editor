@@ -1,3 +1,4 @@
+import { PartialGeneratorField } from './../+form/controls/field-partial-generator';
 import {Injectable} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormArray} from '@angular/forms';
 import {FieldBase} from '../+form/controls/field-base';
@@ -26,11 +27,11 @@ export class FormControlService {
         } else {
           let subGroup = field.key ? {} : group;
           field.children.forEach(child => {
-            //if (question.isRepeatable) {
+            // if (question.isRepeatable) {
             //  subGroup[0][child.key] = this._addValidator( child );
-            //} else {
+            // } else {
             subGroup[child.key] = this._addValidator(child, this.getDataValue(data, [field.key, child.key]));
-            //}
+            // }
           });
           result = new FormGroup(subGroup);
         }
@@ -42,7 +43,7 @@ export class FormControlService {
         if (data[field.key] !== undefined) {
           data[field.key].forEach((entry: any) => {
             let partialKey = Object.keys(entry)[0];
-            let partial = field.partials.filter( (part: any) => part.key === partialKey )[0];
+            let partial = (<PartialGeneratorField>field).partials.filter( (part: any) => part.key === partialKey )[0];
             g.push(this.toFormGroup([partial], entry));
           });
         }

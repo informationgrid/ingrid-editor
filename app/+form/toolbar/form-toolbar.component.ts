@@ -1,5 +1,5 @@
 import {Component, OnInit, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {FormToolbarService, ToolbarItem} from './form-toolbar.service';
+import { FormToolbarService, ToolbarItem, Separator } from './form-toolbar.service';
 
 @Component( {
   selector: 'form-toolbar',
@@ -13,7 +13,7 @@ import {FormToolbarService, ToolbarItem} from './form-toolbar.service';
 } )
 export class FormToolbarComponent implements OnInit {
 
-  buttons: ToolbarItem[] = [];
+  buttons: Array<ToolbarItem|Separator> = [];
 
   constructor(private formToolbarService: FormToolbarService) {
     formToolbarService.toolbar$.subscribe(() => {

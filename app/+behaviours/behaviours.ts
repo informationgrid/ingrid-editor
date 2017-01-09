@@ -27,6 +27,7 @@ export interface Behaviour {
   unregister: () => void;
   controls?: any[];
   outer?: any;
+  _state?: string;
 }
 
 @Injectable()
