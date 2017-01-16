@@ -9,7 +9,13 @@
     "removeComments": false,
     "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noEmit": true
+    "noEmit": true,
+    "allowJs": true
   },
+  "files": [
+    "app/app.module.ts",
+    "app/main.ts",
+    "./typings/index.d.ts"
+  ],
   "exclude": ["node_modules"]
 }

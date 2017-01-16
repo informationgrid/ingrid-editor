@@ -14,14 +14,14 @@
   "license": "Apache-2.0",
   "private": true,
   "dependencies": {
-    "bcryptjs": "^2.3.0",
+    "bcryptjs": "^2.4.0",
     "body-parser": "^1.15.2",
-    "connect": "^3.2.0",
+    "connect": "^3.5.0",
     "js-yaml": "^3.7.0",
-    "jsonwebtoken": "^7.1.9",
-    "mongodb": "^2.2.12",
+    "jsonwebtoken": "^7.2.1",
+    "mongodb": "^2.2.21",
     "swagger-tools": "0.10.1",
-    "tingodb": "^0.4.2"
+    "tingodb": "^0.5.1"
   },
   "devDependencies": {
     "mocha": "^3.2.0"
