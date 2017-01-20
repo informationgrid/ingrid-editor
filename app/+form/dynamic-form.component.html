@@ -1,13 +1,6 @@
 <!-- Toolbar -->
 <form-toolbar></form-toolbar>
 
-<!-- Notification -->
-<div class="notifyWrapper" [class.active]="saving">
-    <div class="tn-box tn-box-color-1">
-        <p>This form has been saved successfully!</p>
-        <div class="tn-progress"></div>
-    </div>
-</div>
 <div class="notifyWrapper" [class.active]="error">
     <div class="tn-box tn-box-color-1">
         <p>An error occured: {{error}}</p>
@@ -131,7 +124,10 @@
         </form>
     </div>
 
+    <ng2-toasty [position]="'bottom-center'"></ng2-toasty>
+
 </div>
+
 
 <modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">
     <modal-content>

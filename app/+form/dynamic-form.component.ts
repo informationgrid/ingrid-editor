@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
+import {Component, OnInit, OnDestroy, AfterViewInit, ViewChild, group} from '@angular/core';
 import {FormGroup, FormArray} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
 import {FieldBase, Container} from './controls';
@@ -15,6 +15,7 @@ import {Modal} from 'ng2-modal';
 import {PartialGeneratorField} from './controls/field-partial-generator';
 import {UpdateType} from '../models/update-type.enum';
 import {ErrorService} from '../services/error.service';
+import {ToastOptions, ToastData, ToastyService, ToastyConfig} from 'ng2-toasty';
 
 interface FormData extends Object {
   _id?: string;
@@ -42,7 +43,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   data: FormData = {};
   behaviours: Behaviour[];
   observers: Subscription[] = [];
-  saving = false;
   error = false;
   choiceNewDoc: string = 'UVP';
   expandedField = {};
@@ -63,7 +63,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
   pendingId: string;
 
-  constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
+  constructor( private toastyService: ToastyService, private toastyConfig: ToastyConfig,
+              private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
               private errorService: ErrorService, private route: ActivatedRoute) {
@@ -94,6 +95,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     });
+
+    this.toastyConfig.theme = 'bootstrap';
   }
 
   ngOnDestroy() {
@@ -299,13 +302,24 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.storageService.saveData(data).then(res => {
       this.data._id = res._id;
-      this.saving = true;
-      setTimeout(() => this.saving = false, 3000);
+      this.showToast();
     }, (err) => {
       this.error = err;
       setTimeout(() => this.error = false, 5000);
     });
   }
+
+  showToast() {
+        // Or create the instance of ToastOptions
+        let toastOptions: ToastOptions = {
+            title: 'Dokument wurde gespeichert',
+            // msg: 'Dokument wurde gespeichert',
+            showClose: false,
+            timeout: 2000,
+        };
+        // Add see all possible types in one shot
+        this.toastyService.info(toastOptions);
+    }
 
   deleteDoc() {
     this.deleteConfirmModal.open();

@@ -1,3 +1,4 @@
+import { ToastyModule } from 'ng2-toasty';
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DynamicFieldComponent} from './dynamic-field.component';
@@ -16,9 +17,9 @@ import {LinkDatasetComponent} from './linkDataset/link-dataset.component';
 import {FocusDirective} from '../directives/focus.directive';
 
 @NgModule( {
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, routing, ModalModule, TreeModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), routing, ModalModule, TreeModule],
   declarations: [FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator, BrowserComponent, MetadataTreeComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent, FocusDirective],
-  exports: [FormsModule, FocusDirective]
+  exports: [ToastyModule, FormsModule, FocusDirective]
 } )
 export class IgeFormModule {
 }
