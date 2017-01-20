@@ -3,15 +3,20 @@
 let Engine = require('tingodb')(),
   ObjectID = Engine.ObjectID,
   assert = require( 'assert' );
+let fs = require('fs');
 
 let db = null;
 
+const DBDir = './tingoDB';
 const rootFields = ['_modified'];
 
 module.exports = {
 
   connect: function () {
-    db = new Engine.Db('./tingoDB', {});
+    if (!fs.existsSync(DBDir)){
+      fs.mkdirSync(DBDir);
+    }
+    db = new Engine.Db(DBDir, {});
     return Promise.resolve();
   },
 
@@ -66,7 +71,7 @@ module.exports = {
         if (selector.roles) {
           query = { roles : { "$in": [ selector.roles]}}
         }
-        collection.find( query ).toArray( (err, data) => resolve(data) );
+        collection.find( query ).toArray( (err, data) => resolve(data ? data : []) );
 
       }
     });

@@ -17,11 +17,11 @@ export class FormToolbarService {
 
   toolbarEvent$: Subject<string>;
 
-  _buttons:  Array<ToolbarItem|Separator> = [
+  _buttons: Array<ToolbarItem|Separator> = [
     {tooltip: 'New', cssClasses: 'glyphicon glyphicon-file', eventId: 'NEW_DOC'},
     // {tooltip: 'Load', cssClasses: 'glyphicon glyphicon-folder-open', eventId: 'LOAD'},
     {tooltip: 'Save', cssClasses: 'glyphicon glyphicon-floppy-disk', eventId: 'SAVE'},
-    { isSeparator: true },
+    {isSeparator: true},
     {tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT'},
     {tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-remove', eventId: 'DELETE'}
   ];
@@ -53,12 +53,13 @@ export class FormToolbarService {
   }
 
   addButton(button: ToolbarItem|Separator, pos?: number) {
-    this._buttons.push( button );
-    this.toolbar$.next( button );
+    if (!pos) pos = this._buttons.length;
+    this._buttons.splice(pos, 0, button);
+    this.toolbar$.next(button);
   }
 
   sendEvent(eventId: string) {
-    this.toolbarEvent$.next( eventId );
+    this.toolbarEvent$.next(eventId);
   }
 
 

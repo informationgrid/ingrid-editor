@@ -22,6 +22,11 @@ class DatasetDao {
 
   };
 
+  /**
+   * Get a document identified by its' ID.
+   * @param {string} id
+   * @param {boolean} publishedVersion
+   */
   getDocument(id, publishedVersion) {
 
     return this.client.getDocById('documents', id)
@@ -52,7 +57,8 @@ class DatasetDao {
             return data.published;
           }
         }
-      });
+      })
+      .catch( err => null );
   };
 
   _addInfo(doc, data, id) {
