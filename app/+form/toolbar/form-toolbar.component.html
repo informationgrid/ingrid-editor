@@ -3,6 +3,7 @@
         <span *ngFor="let button of buttons">
             <button *ngIf="!button.isSeparator"
                     class="btn {{button.cssClasses}}"
+                    [disabled]="!button.active"
                     [title]="button.tooltip"
                     (click)="sendEvent(button.eventId)"></button>
 

@@ -9,6 +9,9 @@ export class PublishPlugin extends Plugin {
   id = 'plugin.publish';
   _name = 'Publish Plugin';
 
+  eventPublishId = 'PUBLISH';
+  eventRevertId = 'REVERT';
+
   get name() {
     return this._name;
   }
@@ -29,12 +32,12 @@ export class PublishPlugin extends Plugin {
     this.formToolbarService.addButton( { isSeparator: true } );
 
     this.formToolbarService.addButton( {
-      tooltip: 'Publish', cssClasses: 'glyphicon glyphicon-check', eventId: 'PUBLISH'
+      tooltip: 'Publish', cssClasses: 'glyphicon glyphicon-check', eventId: this.eventPublishId, active: true
     } );
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton( {
-      tooltip: 'Revert', cssClasses: 'glyphicon glyphicon-step-backward', eventId: 'REVERT'
+      tooltip: 'Revert', cssClasses: 'glyphicon glyphicon-step-backward', eventId: this.eventRevertId, active: false
     } );
 
     // add event handler for revert
@@ -45,6 +48,9 @@ export class PublishPlugin extends Plugin {
         this.publish();
       }
     } );
+
+    // add behaviour to set active states for toolbar buttons
+    this.addBehaviour();
 
     // add action for button
     // -> add field to document tagging publish state
@@ -86,4 +92,29 @@ export class PublishPlugin extends Plugin {
 
   // presentInTree() { }
 
+  /**
+   * Depending on the state of a dataset set the toolbar button state.
+   * @param data
+   */
+  private handleRevertButtonState(data: any) {
+    let revertButtonActive = false;
+    if (data._state === 'PW') {
+      revertButtonActive = true;
+    }
+
+    this.formToolbarService.setButtonState(this.eventRevertId, revertButtonActive);
+  }
+
+  /**
+   * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
+   */
+  private addBehaviour() {
+    this.storageService.datasetsChanged$.subscribe( (data) => {
+      this.handleRevertButtonState(data);
+    });
+
+    this.storageService.afterLoadAndSet$.subscribe( (data) => {
+      this.handleRevertButtonState(data);
+    });
+  }
 }

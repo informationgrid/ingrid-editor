@@ -7,6 +7,7 @@ import { FormToolbarService, ToolbarItem, Separator } from './form-toolbar.servi
   styles: [`
         .btn { background-color: transparent; }
         .btn:hover { border: #d8d8d8 1px solid; border-radius: 4px; }
+        .btn:disabled:hover { border: transparent 1px solid; color: #777; }
         .btn-toolbar { margin-left: 0; }
         .separator { border-left: 1px solid #bbbbbb; padding-right: 5px; margin-left: 5px; height: 35px; }
   `]

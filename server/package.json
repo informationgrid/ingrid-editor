@@ -15,11 +15,11 @@
   "private": true,
   "dependencies": {
     "bcryptjs": "^2.4.0",
-    "body-parser": "^1.15.2",
+    "body-parser": "^1.16.0",
     "connect": "^3.5.0",
     "js-yaml": "^3.7.0",
     "jsonwebtoken": "^7.2.1",
-    "mongodb": "^2.2.21",
+    "mongodb": "^2.2.22",
     "swagger-tools": "0.10.1",
     "tingodb": "^0.5.1"
   },

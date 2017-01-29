@@ -5,6 +5,7 @@ export interface ToolbarItem {
   tooltip: string;
   cssClasses: string;
   eventId: string;
+  active:boolean;
 }
 export interface Separator {
   isSeparator: boolean;
@@ -18,12 +19,12 @@ export class FormToolbarService {
   toolbarEvent$: Subject<string>;
 
   _buttons: Array<ToolbarItem|Separator> = [
-    {tooltip: 'New', cssClasses: 'glyphicon glyphicon-file', eventId: 'NEW_DOC'},
+    {tooltip: 'New', cssClasses: 'glyphicon glyphicon-file', eventId: 'NEW_DOC', active: true},
     // {tooltip: 'Load', cssClasses: 'glyphicon glyphicon-folder-open', eventId: 'LOAD'},
-    {tooltip: 'Save', cssClasses: 'glyphicon glyphicon-floppy-disk', eventId: 'SAVE'},
+    {tooltip: 'Save', cssClasses: 'glyphicon glyphicon-floppy-disk', eventId: 'SAVE', active: true},
     {isSeparator: true},
-    {tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT'},
-    {tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-remove', eventId: 'DELETE'}
+    {tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT', active: true},
+    {tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-remove', eventId: 'DELETE', active: true}
   ];
 
   constructor() {
@@ -63,4 +64,13 @@ export class FormToolbarService {
   }
 
 
+  /**
+   * Set the state of a toolbar button to enabled or disabled.
+   * @param eventId
+   * @param active
+   */
+  setButtonState(eventId: string, active: boolean) {
+    let button = <ToolbarItem>this._buttons.find( (b: ToolbarItem) => b.eventId === eventId );
+    button.active = active;
+  }
 }

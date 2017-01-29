@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, AfterViewInit, ViewChild, group} from '@angular/core';
+import {Component, OnInit, OnDestroy, AfterViewInit, ViewChild} from '@angular/core';
 import {FormGroup, FormArray} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
 import {FieldBase, Container} from './controls';
@@ -15,7 +15,7 @@ import {Modal} from 'ng2-modal';
 import {PartialGeneratorField} from './controls/field-partial-generator';
 import {UpdateType} from '../models/update-type.enum';
 import {ErrorService} from '../services/error.service';
-import {ToastOptions, ToastData, ToastyService, ToastyConfig} from 'ng2-toasty';
+import {ToastOptions, ToastyService, ToastyConfig} from 'ng2-toasty';
 
 interface FormData extends Object {
   _id?: string;
@@ -234,19 +234,19 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // check if form was changed and ask for saving data
     // TODO: handle double confirmation (deactivated this one for now)
-    if (false && this.form && this.form.dirty) {
+    /*if (false && this.form && this.form.dirty) {
       this.pendingId = id;
       this.discardConfirmModal.open();
       // TODO: notify sidebar to select previously dataset before we changed
       return;
-    } else {
+    } else {*/
       // only remove new node if this one was not saved
       if (previousId === '-1') {
         this.newDocAdded = false;
       } else {
         this.handleNewDatasetOnLeave();
       }
-    }
+    // }
 
     // TODO: remove new dataset if not saved already -> we only want at most one new dataset at a time!
 
