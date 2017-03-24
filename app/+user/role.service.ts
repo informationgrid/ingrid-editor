@@ -3,12 +3,7 @@ import {ConfigService} from '../config/config.service';
 import {Observable} from 'rxjs';
 import {ErrorService} from '../services/error.service';
 import {AuthHttp} from 'angular2-jwt';
-
-export interface Role {
-  id?: string;
-  name?: string;
-  pages?: string[];
-}
+import {Role} from '../models/user-role';
 
 @Injectable()
 export class RoleService {
@@ -29,12 +24,13 @@ export class RoleService {
   }
 
   prepareRoles(roles: any[]) {
-    let result: any[] = [];
+    let result: Role[] = [];
     roles.forEach( role => {
       result.push( {
         id: role._id,
         name: role.name,
-        pages: role.pages ? role.pages : []
+        pages: role.pages ? role.pages : [],
+        attributes: role.attributes ? role.attributes : []
       } );
     } );
     return result;

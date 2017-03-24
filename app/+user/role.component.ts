@@ -5,6 +5,7 @@ import {ErrorService} from '../services/error.service';
 import {RoleService, Role} from './role.service';
 import {MenuService} from '../menu/menu.service';
 import {Observable} from 'rxjs';
+import {RoleAttribute} from '../models/user-role';
 
 @Component( {
   selector: 'role-gui',
@@ -91,6 +92,18 @@ export class RoleComponent implements OnInit {
           this.modalService.showError(err, err.text());
         }
       });
+  }
+
+  addAttribute(key: string, value: string) {
+    this.selectedRole.attributes.push({
+      id: key,
+      value: value
+    });
+  }
+
+  removeAttribute(attribute: RoleAttribute): void {
+    let pos = this.selectedRole.attributes.indexOf(attribute);
+    this.selectedRole.attributes.splice(pos, 1);
   }
 
   deleteRole(role: Role) {

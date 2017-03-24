@@ -158,7 +158,10 @@ sidebar .list-group-item:hover {
     cursor: pointer;
 }
 
-.tree { width: 100%;}
+.tree {
+    width: 100%;
+}
+
 treenode:hover .folder {
     display: block;
 }
