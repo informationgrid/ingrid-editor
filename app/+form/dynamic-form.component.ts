@@ -16,6 +16,8 @@ import {PartialGeneratorField} from './controls/field-partial-generator';
 import {UpdateType} from '../models/update-type.enum';
 import {ErrorService} from '../services/error.service';
 import {ToastOptions, ToastyService, ToastyConfig} from 'ng2-toasty';
+import {AuthService} from '../services/security/auth.service';
+import {Role} from '../models/user-role';
 
 interface FormData extends Object {
   _id?: string;
@@ -54,6 +56,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   sideTab: string = 'tree';
   showDateBar: boolean = false;
 
+  userRoles: Role[];
+
   // choice of doc types to be shown when creating new document
   newDocOptions: any = {
     docTypes: [],
@@ -70,7 +74,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
-              private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
+              private errorService: ErrorService, private route: ActivatedRoute, private router: Router,
+              authService: AuthService) {
+
+    this.userRoles = authService.rolesDetail;
 
     let loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
       console.log('generic toolbar handler', eventId);
@@ -350,6 +357,19 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   createFormWithData(data: any) {
     this.form = this.qcs.toFormGroup(this.fields, data);
+
+    // TODO: disable form if we don't have the permission
+    if (!this.hasPermission(data)) {
+      this.form.disable();
+    }
+  }
+
+  // TODO: extract to permission service class
+  hasPermission(data: any): boolean {
+    // TODO: check all roles
+    let attr = this.userRoles[0].attributes;
+    // TODO: show why we don't have permission by remembering failed rule
+    return !attr || attr.every( a => data[a.id] === a.value );
   }
 
   switchProfile(profile: string) {
