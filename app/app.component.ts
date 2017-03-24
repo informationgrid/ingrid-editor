@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, enableProdMode} from '@angular/core';
+import {Component, OnInit, ViewChild, enableProdMode, ViewContainerRef} from '@angular/core';
 import {StatisticPlugin} from './+behaviours/system/statistic/statistic.plugin';
 import {WorkflowPlugin} from './+behaviours/system/workflow/workflow.plugin';
 import {DemoPlugin} from './+behaviours/system/demo/demo.plugin';
@@ -32,6 +32,9 @@ import {BehaviourService} from './+behaviours/behaviour.service';
             <p>{{dynDialog.errorMessageMore}}</p>
         </modal-content>
     </modal>
+    
+    <!-- Placeholder for dynamically created dialogs from plugins -->
+    <div #dialogContainer id="dialogContainer"></div>
   `,
   providers: [StatisticPlugin, WorkflowPlugin, DemoPlugin],
   entryComponents: []
@@ -39,6 +42,7 @@ import {BehaviourService} from './+behaviours/behaviour.service';
 export class AppComponent implements OnInit {
 
   @ViewChild( 'errorModal' ) errorModal: Modal;
+  @ViewChild('dialogContainer', {read: ViewContainerRef}) dialogContainerRef: ViewContainerRef;
 
   dynDialog: any = {errorMessage: ''};
 
@@ -50,6 +54,7 @@ export class AppComponent implements OnInit {
       this.dynDialog.errorMessageMore = content.moreInfo;
       this.errorModal.open();
     } );
+
   }
 
   ngOnInit() {
@@ -63,6 +68,7 @@ export class AppComponent implements OnInit {
           systemBehaviour.register();
         } );
     } );
+    this.modalService.containerRef = this.dialogContainerRef;
   }
 
 }

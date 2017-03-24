@@ -3,6 +3,8 @@ import {StorageService} from "../../../services/storage/storage.service";
 // import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
 import {ActivatedRoute} from "@angular/router";
 import {FormularService} from "../../../services/formular/formular.service";
+import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
+import {UpdateType} from '../../../models/update-type.enum';
 
 @Component( {
   selector: 'browser',
@@ -26,8 +28,10 @@ export class BrowserComponent implements OnInit {
       this.selectedId = params['id'];
     });
 
-    storageService.datasetsChanged.asObservable().subscribe( () => {
-      this.query();
+    storageService.datasetsChanged$.subscribe( (event) => {
+      if (event.type === UpdateType.Update) {
+        this.query();
+      }
     } );
 
   }

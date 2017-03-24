@@ -142,4 +142,36 @@ export class StorageService {
       .map(resp => resp.json())
       .catch(err => this.errorService.handle(err));
   }
+
+  /**
+   * Copy a set of documents under a specified destination document.
+   * @param copiedDatasets contains the IDs of the documents to be copied
+   * @param dest is the document, where the other docs to be copied will have as their parent
+   * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
+   * @returns {Observable<Response>}
+   */
+  copyDocuments(copiedDatasets: string[], dest: string, includeTree: boolean) {
+    let body = this.prepareCopyCutBody(copiedDatasets, dest, includeTree);
+    return this.http.post(this.configService.backendUrl + 'datasets/copy', body);
+  }
+
+  /**
+   * Move a set of documents under a specified destination document.
+   * @param src contains the IDs of the documents to be moved
+   * @param dest is the document, where the other docs to be copied will have as their parent
+   * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
+   * @returns {Observable<Response>}
+   */
+  moveDocuments(src: string[], dest: string, includeTree: boolean) {
+    let body = this.prepareCopyCutBody(src, dest, includeTree);
+    return this.http.post(this.configService.backendUrl + 'datasets/move', body);
+  }
+
+  private prepareCopyCutBody(src: string[], dest: string, includeTree: boolean): any {
+    let body = {
+      srcIds: src,
+      destId: dest
+    };
+    return body;
+  }
 }

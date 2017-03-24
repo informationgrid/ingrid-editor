@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import {Injectable, ViewContainerRef} from "@angular/core";
 import {Subject} from "rxjs";
 
 interface DialogContent {
@@ -12,6 +12,8 @@ export class ModalService {
 
   errorDialog$ = this.errorDialog.asObservable();
 
+  containerRef: ViewContainerRef = null;
+
   constructor() {
   }
 
@@ -24,6 +26,7 @@ export class ModalService {
       message: message
     };
     if (moreInfo) errorObj.moreInfo = moreInfo;
+    else if (message._body) errorObj.moreInfo = message._body;
 
     this.errorDialog.next(errorObj);
   }

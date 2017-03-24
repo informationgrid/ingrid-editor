@@ -350,6 +350,56 @@ paths:
         '200':
           description: Datasets found
       x-swagger-router-controller: "Datasets"
+  /datasets/copy:
+    options:
+      operationId: get
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    post:
+      tags:
+      - "Datasets"
+      summary: "Copy a dataset or tree under another dataset"
+      description: "xxx"
+      operationId: "copyDatasets"
+      security: [{"jwt": []}]
+      parameters:
+      - name: "data"
+        in: "body"
+        description: "..."
+        required: true
+        schema:
+          $ref: "#/definitions/CopyCutBody"
+      responses:
+        '200':
+          description: Datasets have been copied successfully.
+    x-swagger-router-controller: "Datasets"
+  /datasets/move:
+    options:
+      operationId: get
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    post:
+      tags:
+      - "Datasets"
+      summary: "Move a dataset or tree under another dataset"
+      description: "xxx"
+      operationId: "moveDatasets"
+      security: [{"jwt": []}]
+      parameters:
+      - name: "data"
+        in: "body"
+        description: "..."
+        required: true
+        schema:
+          $ref: "#/definitions/CopyCutBody"
+      responses:
+        '200':
+          description: Datasets have been moved successfully.
+    x-swagger-router-controller: "Datasets"
   /dataset/path/{id}:
     options:
       operationId: get
@@ -561,6 +611,15 @@ definitions:
       _id:
         type: "string"
         description: "Unique identifier"
+  CopyCutBody:
+    type: "object"
+    properties:
+      srcIds:
+        type: "array"
+        "items":
+          "type": "string"
+      destId:
+        type: "string"
   Error:
     type: "object"
     properties:

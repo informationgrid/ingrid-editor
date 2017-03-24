@@ -35,3 +35,11 @@ module.exports.deleteById = function deleteById (req, res, next) {
 module.exports.getPath = function getPath (req, res, next) {
   Datasets.getPath(req.swagger.params, res, next);
 };
+
+module.exports.copyDatasets = function(req, res, next) {
+  Datasets.copy(req.swagger.params, res, next);
+};
+
+module.exports.moveDatasets = function(req, res, next) {
+  Datasets.move(req.swagger.params, res, next);
+};

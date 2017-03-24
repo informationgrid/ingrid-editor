@@ -4,6 +4,7 @@ import {LatLng, TileLayer} from "leaflet";
 import {PartialGeneratorField} from "../../../+form/controls/field-partial-generator";
 import {OpenTableField} from "../../../+form/controls/field-opentable";
 import {Profile} from "../profile";
+import {LinkDatasetField} from '../../../+form/controls/field-link-dataset';
 
 export class UVPProfile implements Profile {
 
@@ -60,6 +61,12 @@ export class UVPProfile implements Profile {
       settings: {}
     }),
 
+    new LinkDatasetField({
+      key: 'publisher',
+      label: 'Herausgeber',
+      filter: {_profile: 'UVP'},
+      order: 12
+    }),
 
     new OpenTableField({
       key: 'categories',

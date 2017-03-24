@@ -197,3 +197,14 @@ exports.getPath = function(args, res) {
     res.end(err.message);
   });
 };
+
+exports.copy = function (args, res) {
+  res.statusCode = 500;
+  res.end("not implemented");
+};
+
+exports.move = function (args, res) {
+  res.statusCode = 500;
+  res.end("not implemented");
+
+};

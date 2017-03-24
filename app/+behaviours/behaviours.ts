@@ -1,6 +1,6 @@
 import {FormularService} from '../services/formular/formular.service';
 import {EventManager} from '@angular/platform-browser';
-import {Injectable} from '@angular/core';
+import {ComponentFactoryResolver, Injectable, ViewContainerRef} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {AddControlBehaviour} from './system/demo/behaviours/AddControl/addControl.behaviour';
 import {StorageService} from '../services/storage/storage.service';
@@ -15,6 +15,8 @@ import {PublishPlugin} from './system/publish/publish.plugin';
 import {MenuService} from '../menu/menu.service';
 import {FormToolbarService} from '../+form/toolbar/form-toolbar.service';
 import {ModalService} from '../services/modal/modal.service';
+import {CopyCutPastePlugin} from "./system/CopyCutPaste/copy-cut-paste.behaviour";
+import {ToastService} from '../services/toast.service';
 
 export interface Behaviour {
   id: string;
@@ -37,7 +39,9 @@ export class BehavioursDefault {
               private storageService: StorageService,
               private menuService: MenuService,
               private modalService: ModalService,
-              private formToolbarService: FormToolbarService) {
+              private toastService: ToastService,
+              private formToolbarService: FormToolbarService,
+              private compFacResolver: ComponentFactoryResolver) {
   }
 
   /**
@@ -58,6 +62,8 @@ export class BehavioursDefault {
     new WorkflowPlugin(this.formToolbarService),
     new DemoPlugin(this.menuService),
     new PublishPlugin(this.formToolbarService, this.formService, this.modalService, this.storageService),
-    new CreateDocRulesPlugin(this.formService, this.storageService)
+    new CreateDocRulesPlugin(this.formService, this.storageService),
+    new CopyCutPastePlugin(this.formService, this.formToolbarService, this.storageService, this.modalService,
+      this.toastService, this.compFacResolver)
   ];
 }

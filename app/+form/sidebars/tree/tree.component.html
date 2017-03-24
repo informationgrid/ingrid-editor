@@ -17,7 +17,7 @@
                     <span>{{ node.data.name }}</span>
                 </div>
                 <!-- TODO: refactor into css -->
-                <span *ngIf="node.data._profile === 'FOLDER'" class="folder fa fa-edit"
+                <span *ngIf="showFolderEditButton && node.data._profile === 'FOLDER'" class="folder fa fa-edit"
                       (click)="editFolder(node.data)"
                 ></span>
             </div>

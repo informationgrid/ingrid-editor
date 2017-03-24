@@ -16,7 +16,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {MenuComponent} from './menu/menu.component';
 import {BehavioursDefault} from './+behaviours/behaviours';
-import {BehaviourService} from './+behaviours/behaviour.service';
 import {FormularService} from './services/formular/formular.service';
 import {ModalService} from './services/modal/modal.service';
 import {ModalModule} from 'ng2-modal';
@@ -29,13 +28,14 @@ import {FormChangeDeactivateGuard} from './security/form-change.guard';
 import {ErrorService} from './services/error.service';
 import {HelpComponent} from './help/help.component';
 import {AUTH_PROVIDERS} from 'angular2-jwt';
+import {ToastService} from './services/toast.service';
 
 @NgModule( {
   declarations: [AppComponent, HelpComponent, LoginComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
   imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, PluginsModule, routing, ModalModule],
   providers: [ROUTER_PROVIDERS, AUTH_PROVIDERS, RadioControlRegistry, appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     ErrorService, AuthService, ConfigService, FormToolbarService, FormularService, StorageService,
-    StorageDummyService, BehaviourService, BehavioursDefault, ModalService, {
+    StorageDummyService, BehavioursDefault, ModalService, ToastService, {
     provide: LocationStrategy,
     useClass: HashLocationStrategy
   }], // additional providers

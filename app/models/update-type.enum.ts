@@ -1,3 +1,7 @@
 export enum UpdateType {
-  New, Update, Delete
+  Copy,
+  Paste,
+  New,
+  Update,
+  Delete
 }

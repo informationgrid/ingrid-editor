@@ -6,8 +6,9 @@ import {Response} from '@angular/http';
 import {ModalService} from '../services/modal/modal.service';
 import {Observable} from 'rxjs';
 import {ConfigService} from '../config/config.service';
-import {AuthHttp} from 'angular2-jwt';
+import {AuthHttp, AuthHttpError} from 'angular2-jwt';
 import {Plugin} from './plugin';
+import {AuthService} from '../services/security/auth.service';
 
 // the variable containing additional behaviours is global!
 declare let additionalBehaviours: any;
@@ -22,6 +23,7 @@ export class BehaviourService {
 
   constructor(private defaultBehaves: BehavioursDefault,
               private eventManager: EventManager,
+              private authService: AuthService,
               private http: AuthHttp, private modalService: ModalService, private configService: ConfigService) {
 
     this.behaviours = defaultBehaves.behaviours;
@@ -29,33 +31,44 @@ export class BehaviourService {
 
     // load user behaviours
     let $script = require( 'scriptjs' );
-    this.initialized = new Promise( resolve => {
+    this.initialized = new Promise( (resolve, reject) => {
       $script( './+behaviours/additionalBehaviours.js', () => {
         console.log( 'loaded additional behaviours', additionalBehaviours );
 
         // add all additional behaviours to the default ones
         this.behaviours.push( ...additionalBehaviours );
 
-        // request stored behaviour states from backend
-        this.http.get( this.configService.backendUrl + 'behaviours' ).toPromise().then( (response: Response) => {
-          let storedBehaviours = response.json();
+        // TODO: when logged in this event is not sent!
+        // only load behaviours if logged in
+        // let behaviourLoad = this.authService.loginStatusChange$.subscribe( loggedIn => {
+        //   if (loggedIn) {
 
-          // set correct active state to each behaviour
-          this.behaviours.forEach( (behaviour) => {
-            let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
-            behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-          } );
+            // request stored behaviour states from backend
+            this.http.get( this.configService.backendUrl + 'behaviours' ).toPromise().then( (response: Response) => {
+              let storedBehaviours = response.json();
 
-          // set correct active state to each system behaviour
-          this.systemBehaviours.forEach( (behaviour) => {
-            let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
-            behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-          } );
-          resolve();
-        } ).catch( (err: Error) => {
-          this.modalService.showError( err.message );
-          resolve();
-        } );
+              // set correct active state to each behaviour
+              this.behaviours.forEach( (behaviour) => {
+                let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
+                behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+              } );
+
+              // set correct active state to each system behaviour
+              this.systemBehaviours.forEach( (behaviour) => {
+                let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
+                behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+              } );
+              // behaviourLoad.unsubscribe();
+              resolve();
+
+            } ).catch( (err: Error) => {
+              if (!(err instanceof AuthHttpError)) {
+                this.modalService.showError( err.message );
+              }
+              // reject();
+            } );
+          // }
+        // });
       } );
     } );
   }

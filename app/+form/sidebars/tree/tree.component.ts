@@ -1,10 +1,11 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {StorageService} from '../../../services/storage/storage.service';
 import {TreeComponent, TreeNode} from 'angular2-tree-component';
 import {Router, ActivatedRoute} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
 import {ErrorService} from '../../../services/error.service';
+import {FormToolbarService} from '../../toolbar/form-toolbar.service';
 
 @Component({
   selector: 'tree',
@@ -19,8 +20,14 @@ export class MetadataTreeComponent implements OnInit {
 
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
+  @Input() showFolderEditButton = true;
+  @Output() onSelected = new EventEmitter<any>();
+
   nodes: any[] = [];
   selectedId: string = '';
+
+  copiedNodes: TreeNode[] = [];
+  cutNodes: TreeNode[] = [];
 
   options = {
     getChildren: (node: TreeNode) => {
@@ -30,7 +37,8 @@ export class MetadataTreeComponent implements OnInit {
   };
 
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
-              private formularService: FormularService, private errorService: ErrorService) {
+              private formularService: FormularService, private errorService: ErrorService,
+              private toolbarService: FormToolbarService) {
   }
 
   ngOnInit() {
@@ -66,8 +74,21 @@ export class MetadataTreeComponent implements OnInit {
         case UpdateType.Delete:
           this.onDeleteDataset(info.data);
           break;
+        case UpdateType.Copy:
+          this.copy();
+          break;
+        case UpdateType.Paste:
+          this.paste();
+          break;
       }
     } );
+
+    // inform interested components which documents are selected
+    this.formularService.selectedDocuments$.subscribe( (ids) => {
+      ids.push(this.selectedId);
+    });
+
+    this.handleToolbarEvents();
   }
 
   onNewDataset(doc: any) {
@@ -248,22 +269,48 @@ export class MetadataTreeComponent implements OnInit {
 
   open(id: string, profile: string) {
     this.selectedId = id;
-    // if (profile !== 'FOLDER') {
-      this.router.navigate( ['/form', id] );
-    // }
+    this.onSelected.next({id: id, profile: profile});
   }
 
   editFolder(data: any) {
-    this.router.navigate( ['/form', data.id] );
+    // this.router.navigate( ['/form', data.id], { queryParams: { editMode: true } } );
+    this.onSelected.next({id: data.id, profile: data.profile, forceLoad: true});
   }
 
-  refresh() {
+  refresh(): Promise<any> {
     this.nodes = [];
     this.tree.treeModel.expandedNodeIds = {};
     this.tree.treeModel.expandedNodes = [];
     this.tree.treeModel.activeNodeIds = {};
     this.tree.treeModel.activeNodes = [];
-    this.query(null);
+    return this.query(null);
   }
 
+  private handleToolbarEvents() {
+    this.toolbarService.toolbarEvent$.subscribe(eventId => {
+      if (eventId === 'COPY') {
+        this.copy();
+      } else if (eventId === 'CUT') {
+        this.cut();
+      } else if (eventId === 'PASTE') {
+        this.paste();
+      }
+    });
+  }
+
+  private copy() {
+    this.copiedNodes = this.tree.treeModel.getActiveNodes();
+  }
+
+  private cut() {
+    this.cutNodes = this.tree.treeModel.getActiveNodes();
+  }
+
+  private paste() {
+    // send event to paste nodes in backend
+    // NO -> we only make sure that the tree updates correctly and the init event has to do the backend action
+
+    // insert/move nodes or just refresh?
+
+  }
 }

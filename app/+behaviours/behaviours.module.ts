@@ -8,11 +8,16 @@ import {CreateDocRulesPlugin} from './system/CreateRules/create-rules.behaviour'
 import {Collapse} from '../directives/collapse.directive';
 import {BehaviourService} from './behaviour.service';
 import {MenuService} from '../menu/menu.service';
+import {PasteDialogComponent} from './system/CopyCutPaste/paste-dialog.component';
+import {ModalModule} from 'ng2-modal';
+import {TreeModule} from 'angular2-tree-component';
+import {SharedModule} from '../shared.module';
+
 @NgModule( {
-  imports: [CommonModule, routing],
-  declarations: [PluginsComponent, DemoComponent, Collapse],
+  imports: [CommonModule, ModalModule, TreeModule, SharedModule, routing],
+  declarations: [PluginsComponent, DemoComponent, Collapse, PasteDialogComponent],
   providers: [MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin],
-  entryComponents: [DemoComponent]
+  entryComponents: [DemoComponent, PasteDialogComponent]
 } )
 export class PluginsModule {
 }

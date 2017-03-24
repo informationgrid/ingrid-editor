@@ -3,7 +3,7 @@ import {FieldBase} from '../../+form/controls';
 import {FolderProfile} from './folder/folder.profile';
 import {UVPProfile} from './uvp/uvp.profile';
 import {AddressProfile} from './address/address.profile';
-import {Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {Profile} from './profile';
 
 @Injectable()
@@ -18,6 +18,9 @@ export class FormularService {
 
   newDocumentSubject = new Subject<any>();
   newDocumentSubject$ = this.newDocumentSubject.asObservable();
+
+  selectedDocuments = new Subject<string[]>();
+  selectedDocuments$: Observable<string[]> = this.selectedDocuments.asObservable();
 
   addressProfile = new AddressProfile();
   uvpProfile = new UVPProfile();
@@ -78,4 +81,9 @@ export class FormularService {
     return formData;
   }
 
+  getSelectedDocuments(): string[] {
+    let ids: string[] = [];
+    this.selectedDocuments.next(ids);
+    return ids;
+  }
 }

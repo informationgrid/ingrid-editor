@@ -15,7 +15,7 @@
             <li role="presentation" [class.active]="sideTab === 'tree'"><a (click)="sideTab = 'tree'">Baum</a></li>
             <li role="presentation" [class.active]="sideTab === 'search'"><a (click)="sideTab = 'search'">Suche</a></li>
         </ul>
-        <tree [class.hide]="sideTab !== 'tree'"></tree>
+        <tree [class.hide]="sideTab !== 'tree'" (onSelected)="handleLoad($event.id, $event.profile, $event.forceLoad)"></tree>
         <browser [class.hide]="sideTab !== 'search'" (onSelected)="load($event.id)"></browser>
     </div>
 

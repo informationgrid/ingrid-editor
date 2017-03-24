@@ -21,10 +21,16 @@ export class FormToolbarService {
   _buttons: Array<ToolbarItem|Separator> = [
     {tooltip: 'New', cssClasses: 'glyphicon glyphicon-file', eventId: 'NEW_DOC', active: true},
     // {tooltip: 'Load', cssClasses: 'glyphicon glyphicon-folder-open', eventId: 'LOAD'},
-    {tooltip: 'Save', cssClasses: 'glyphicon glyphicon-floppy-disk', eventId: 'SAVE', active: true},
+    {tooltip: 'Save', cssClasses: 'glyphicon glyphicon-save-file', eventId: 'SAVE', active: true},
+    {isSeparator: true},
+
+    {tooltip: 'Copy', cssClasses: 'glyphicon glyphicon-copy', eventId: 'COPY', active: false},
+    {tooltip: 'Cut', cssClasses: 'glyphicon glyphicon-scissors', eventId: 'CUT', active: false},
+    // {tooltip: 'Paste', cssClasses: 'glyphicon glyphicon-paste', eventId: 'PASTE', active: false},
+
     {isSeparator: true},
     {tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT', active: true},
-    {tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-remove', eventId: 'DELETE', active: true}
+    {tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-trash', eventId: 'DELETE', active: true}
   ];
 
   constructor() {

@@ -7,7 +7,7 @@ import {FormularService} from '../services/formular/formular.service';
 import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {Subscription} from 'rxjs';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Split} from '../../node_modules/split.js/split';
 import {StorageService} from '../services/storage/storage.service';
 import {ModalService} from '../services/modal/modal.service';
@@ -38,6 +38,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   debugEnabled: boolean = false;
 
+  // when editing a folder this flag must be set
+  // editMode: boolean = false;
+
   fields: FieldBase<any>[] = [];
   form: FormGroup;
   data: FormData = {};
@@ -67,7 +70,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
-              private errorService: ErrorService, private route: ActivatedRoute) {
+              private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     let loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
       console.log('generic toolbar handler', eventId);
@@ -87,6 +90,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.behaviourService.initialized.then(() => {
       this.route.queryParams.subscribe(params => {
         this.debugEnabled = params['debug'] !== undefined;
+        // this.editMode = params['editMode'] === "true";
+        // this.load(thisid);
       });
       this.route.params.subscribe(params => {
         let id = params['id'];
@@ -227,7 +232,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.discardConfirmModal.close();
   }
 
+  handleLoad(id: string, profile?: string, forceLoad?: boolean) {
+    if (profile === "FOLDER" && !forceLoad) return;
+
+    // this.load(id);
+    this.router.navigate( ['/form', id]);
+  }
+
   load(id: string, previousId?: string) {
+
     // since data always stays the same there's no change detection if we load the same data again
     // even if we already have changed the formular
     // since loading will be async, we only have to reset the data first
@@ -255,7 +268,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storageService.loadData(id).subscribe(data => {
       console.log('loaded data:', data);
 
-      // if (data._profile === 'FOLDER') return;
+      // if (data._profile === 'FOLDER' && !this.editMode) return;
 
       let profile = data._profile;
       let needsProfileSwitch = this.formularService.currentProfile !== profile;
