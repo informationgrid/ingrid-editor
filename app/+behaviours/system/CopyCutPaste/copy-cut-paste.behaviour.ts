@@ -11,6 +11,8 @@ import {UpdateType} from '../../../models/update-type.enum';
 import {ModalService} from '../../../services/modal/modal.service';
 import {PasteDialogComponent} from './paste-dialog.component';
 
+export class MoveMode {}
+
 export class CopyCutPastePlugin extends Plugin {
   id = 'plugin.copy.cut.paste';
   _name = 'Copy Cut Paste';
@@ -52,6 +54,7 @@ export class CopyCutPastePlugin extends Plugin {
         this.handleEvent(UpdateType.Copy);
         this.copy();
       } else if (eventId === 'CUT') {
+        this.cut();
       } else if (eventId === 'PASTE') {
         this.handleEvent(UpdateType.Paste);
         this.paste();
@@ -77,7 +80,24 @@ export class CopyCutPastePlugin extends Plugin {
     let factory = this._cr.resolveComponentFactory(PasteDialogComponent);
 
     let providers = ReflectiveInjector.resolve([
-      {provide: 'moveMode', useValue: false }
+      {provide: MoveMode, useValue: false }
+    ]);
+    const popInjector = ReflectiveInjector.fromResolvedProviders(providers, this.modalService.containerRef.parentInjector);
+    this.modalService.containerRef.createComponent(factory, null, popInjector); //, null);
+  }
+
+  cut() {
+    // remove last remembered copied documents
+    this.copiedDatasets = this.formService.getSelectedDocuments();
+    // this.toolbarService.setButtonState('PASTE', true);
+
+    this.toastService.show('Datensatz verschoben');
+
+    // TODO: show dialog where to copy the dataset(s)
+    let factory = this._cr.resolveComponentFactory(PasteDialogComponent);
+
+    let providers = ReflectiveInjector.resolve([
+      {provide: MoveMode, useValue: true }
     ]);
     const popInjector = ReflectiveInjector.fromResolvedProviders(providers, this.modalService.containerRef.parentInjector);
     this.modalService.containerRef.createComponent(factory, null, popInjector); //, null);

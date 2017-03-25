@@ -5,8 +5,6 @@ import {StorageDummyService} from './services/storage/storage.dummy.service';
 import {StorageService} from './services/storage/storage.service';
 import {FormToolbarService} from './+form/toolbar/form-toolbar.service';
 import {appRoutingProviders, routing} from './router';
-import {RadioControlRegistry} from '@angular/forms/src/directives/radio_control_value_accessor';
-import {ROUTER_PROVIDERS} from '@angular/router/src/router_module';
 import {PluginsModule} from './+behaviours/behaviours.module';
 import {FieldsModule} from './+fields/fields.module';
 import {DashboardModule} from './+dashboard/dashboard.module';
@@ -29,11 +27,12 @@ import {ErrorService} from './services/error.service';
 import {HelpComponent} from './help/help.component';
 import {AUTH_PROVIDERS} from 'angular2-jwt';
 import {ToastService} from './services/toast.service';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule( {
   declarations: [AppComponent, HelpComponent, LoginComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
-  imports: [BrowserModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, PluginsModule, routing, ModalModule],
-  providers: [ROUTER_PROVIDERS, AUTH_PROVIDERS, RadioControlRegistry, appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
+  imports: [BrowserModule, BrowserAnimationsModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, PluginsModule, routing, ModalModule],
+  providers: [AUTH_PROVIDERS, appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     ErrorService, AuthService, ConfigService, FormToolbarService, FormularService, StorageService,
     StorageDummyService, BehavioursDefault, ModalService, ToastService, {
     provide: LocationStrategy,
