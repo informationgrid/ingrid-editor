@@ -1,13 +1,16 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 
-export interface ToolbarItem {
+export interface DefaultToolbarItem {
+  id: string;
+}
+export interface ToolbarItem extends DefaultToolbarItem {
   tooltip: string;
   cssClasses: string;
   eventId: string;
-  active:boolean;
+  active?: boolean;
 }
-export interface Separator {
+export interface Separator extends DefaultToolbarItem{
   isSeparator: boolean;
 }
 
@@ -19,18 +22,13 @@ export class FormToolbarService {
   toolbarEvent$: Subject<string>;
 
   _buttons: Array<ToolbarItem|Separator> = [
-    {tooltip: 'New', cssClasses: 'glyphicon glyphicon-file', eventId: 'NEW_DOC', active: true},
+    {id: 'toolBtnNew', tooltip: 'New', cssClasses: 'glyphicon glyphicon-file', eventId: 'NEW_DOC', active: true},
     // {tooltip: 'Load', cssClasses: 'glyphicon glyphicon-folder-open', eventId: 'LOAD'},
-    {tooltip: 'Save', cssClasses: 'glyphicon glyphicon-save-file', eventId: 'SAVE', active: true},
-    {isSeparator: true},
+    {id: 'toolBtnSave', tooltip: 'Save', cssClasses: 'glyphicon glyphicon-save-file', eventId: 'SAVE', active: true},
+    {id: 'toolBtnLoadSaveSeparator', isSeparator: true},
 
-    {tooltip: 'Copy', cssClasses: 'glyphicon glyphicon-copy', eventId: 'COPY', active: false},
-    {tooltip: 'Cut', cssClasses: 'glyphicon glyphicon-scissors', eventId: 'CUT', active: false},
-    // {tooltip: 'Paste', cssClasses: 'glyphicon glyphicon-paste', eventId: 'PASTE', active: false},
-
-    {isSeparator: true},
-    {tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT', active: true},
-    {tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-trash', eventId: 'DELETE', active: true}
+    {id: 'toolBtnPrint', tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT', active: true},
+    {id: 'toolBtnRemove', tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-trash', eventId: 'DELETE', active: true}
   ];
 
   constructor() {
@@ -65,6 +63,15 @@ export class FormToolbarService {
     this.toolbar$.next(button);
   }
 
+  removeButton(id: string): void {
+    let index = null;
+    this._buttons.some( (b, i) => { if (b.id === id) { index = i; return true; } } );
+
+    if (index !== null) {
+      this._buttons.splice(index, 1);
+    }
+  }
+
   sendEvent(eventId: string) {
     this.toolbarEvent$.next(eventId);
   }
@@ -76,7 +83,11 @@ export class FormToolbarService {
    * @param active
    */
   setButtonState(eventId: string, active: boolean) {
-    let button = <ToolbarItem>this._buttons.find( (b: ToolbarItem) => b.eventId === eventId );
+    let button = <ToolbarItem>this.getButtonById( eventId );
     button.active = active;
+  }
+
+  private getButtonById(id: string): DefaultToolbarItem {
+    return this._buttons.find( (b) => b.id === id );
   }
 }

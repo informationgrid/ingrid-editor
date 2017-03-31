@@ -29,15 +29,15 @@ export class PublishPlugin extends Plugin {
 
     console.log( 'register publish plugin' );
     // add button to toolbar for publish action
-    this.formToolbarService.addButton( { isSeparator: true } );
+    this.formToolbarService.addButton( {id: 'toolBtnPublishSeparator',  isSeparator: true } );
 
     this.formToolbarService.addButton( {
-      tooltip: 'Publish', cssClasses: 'glyphicon glyphicon-check', eventId: this.eventPublishId, active: true
+      id: 'toolBtnPublish', tooltip: 'Publish', cssClasses: 'glyphicon glyphicon-check', eventId: this.eventPublishId, active: true
     } );
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton( {
-      tooltip: 'Revert', cssClasses: 'glyphicon glyphicon-step-backward', eventId: this.eventRevertId, active: false
+      id: 'toolBtnRevert', tooltip: 'Revert', cssClasses: 'glyphicon glyphicon-step-backward', eventId: this.eventRevertId, active: false
     } );
 
     // add event handler for revert
@@ -82,15 +82,13 @@ export class PublishPlugin extends Plugin {
     });
   }
 
-  // unregister() {
-  //   super.unregister();
+  unregister() {
+    super.unregister();
 
-    // this.formToolbarService.addButton()
-  // }
-
-  // presentInDoc() { }
-
-  // presentInTree() { }
+    this.formToolbarService.removeButton('toolBtnPublishSeparator');
+    this.formToolbarService.removeButton('toolBtnPublish');
+    this.formToolbarService.removeButton('toolBtnRevert');
+  }
 
   /**
    * Depending on the state of a dataset set the toolbar button state.
@@ -102,7 +100,7 @@ export class PublishPlugin extends Plugin {
       revertButtonActive = true;
     }
 
-    this.formToolbarService.setButtonState(this.eventRevertId, revertButtonActive);
+    this.formToolbarService.setButtonState('toolBtnRevert', revertButtonActive);
   }
 
   /**

@@ -21,7 +21,7 @@ export class ModalService {
    *
    * @param message
    */
-  showError(message: string, moreInfo?: string) {
+  showError(message: string|any, moreInfo?: string) {
     let errorObj: any = {
       message: message
     };

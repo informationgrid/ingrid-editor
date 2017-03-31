@@ -27,7 +27,7 @@ export class HelpComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.router.events.subscribe( event => {
+    this.router.events.subscribe( (event: NavigationEnd) => {
       let url = event.url;
       if (event instanceof NavigationEnd && url.indexOf(this.previousPath) === -1) {
         console.log( 'fetch help:', url );

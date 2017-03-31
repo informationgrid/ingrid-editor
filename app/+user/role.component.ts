@@ -2,10 +2,10 @@ import {Component, OnInit, ViewChild, ElementRef, Output, EventEmitter} from '@a
 import {Modal} from 'ng2-modal';
 import {ModalService} from '../services/modal/modal.service';
 import {ErrorService} from '../services/error.service';
-import {RoleService, Role} from './role.service';
+import {RoleService} from './role.service';
 import {MenuService} from '../menu/menu.service';
 import {Observable} from 'rxjs';
-import {RoleAttribute} from '../models/user-role';
+import {Role, RoleAttribute} from '../models/user-role';
 
 @Component( {
   selector: 'role-gui',
