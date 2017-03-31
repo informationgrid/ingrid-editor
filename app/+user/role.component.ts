@@ -38,8 +38,8 @@ export class RoleComponent implements OnInit {
         id: item.path,
         name: item.name
       };
-    });
-    console.log('pages: ', this.pages);
+    } );
+    console.log( 'pages: ', this.pages );
   }
 
   fetchRoles() {
@@ -60,7 +60,10 @@ export class RoleComponent implements OnInit {
     this.isNewRole = false;
     this.roleService.getRole( role.id )
       .subscribe(
-        role => {this.selectedRole = role; console.log('selectedRole: ', this.selectedRole); },
+        role => {
+          this.selectedRole = role;
+          console.log( 'selectedRole: ', this.selectedRole );
+        },
         error => this.errorService.handle( error )
       );
   }
@@ -69,10 +72,10 @@ export class RoleComponent implements OnInit {
     let observer: Observable<any> = null;
 
     if (this.isNewRole) {
-      observer = this.roleService.createRole(role);
+      observer = this.roleService.createRole( role );
 
     } else {
-      observer = this.roleService.saveRole(role);
+      observer = this.roleService.saveRole( role );
 
     }
 
@@ -84,36 +87,45 @@ export class RoleComponent implements OnInit {
       }, (err: any) => {
         if (err.status === 406) {
           if (this.isNewRole) {
-            this.modalService.showError('Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedRole.name);
+            this.modalService.showError( 'Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedRole.name );
           } else {
-            this.modalService.showError('Es existiert kein Benutzer mit dem Login: ' + this.selectedRole.name);
+            this.modalService.showError( 'Es existiert kein Benutzer mit dem Login: ' + this.selectedRole.name );
           }
         } else {
-          this.modalService.showError(err, err.text());
+          this.modalService.showError( err, err.text() );
         }
-      });
+      } );
+  }
+
+  addDataset(id: string) {
+    this.selectedRole.datasets.push( id );
   }
 
   addAttribute(key: string, value: string) {
-    this.selectedRole.attributes.push({
+    this.selectedRole.attributes.push( {
       id: key,
       value: value
-    });
+    } );
+  }
+
+  removeDataset(id: string): void {
+    let pos = this.selectedRole.datasets.indexOf( id );
+    this.selectedRole.datasets.splice( pos, 1 );
   }
 
   removeAttribute(attribute: RoleAttribute): void {
-    let pos = this.selectedRole.attributes.indexOf(attribute);
-    this.selectedRole.attributes.splice(pos, 1);
+    let pos = this.selectedRole.attributes.indexOf( attribute );
+    this.selectedRole.attributes.splice( pos, 1 );
   }
 
   deleteRole(role: Role) {
-    this.roleService.deleteRole(role.id)
+    this.roleService.deleteRole( role.id )
       .subscribe(
         () => {
           this.selectedRole = {};
           this.fetchRoles();
         },
-        (err: any) => this.modalService.showError(err, err.text())
+        (err: any) => this.modalService.showError( err, err.text() )
       );
   }
 

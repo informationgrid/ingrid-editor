@@ -1,5 +1,7 @@
 <div class="splitWrapper padding-vertical">
 
+    <!-- TODO: restrict role permission to groups! A simple user must not change his own role to admin!!! -->
+
     <!-- ROLE LIST -->
     <div id="sidebarRoles" class="split split-horizontal container">
         <div class="list-group">
@@ -17,11 +19,14 @@
     <!-- ROLE DETAIL -->
     <div id="formRoles" class="split split-horizontal container-fluid">
         <div *ngIf="selectedRole.id">
+
+            <!-- TITLE -->
             <div class="form-group">
                 <label>Name</label>
                 <input type="text" class="form-control" [(ngModel)]="selectedRole.name" name="name">
             </div>
 
+            <!-- PAGES -->
             <div class="form-group">
                 <label>Seiten</label>
                 <!--<select multiple class="form-control" [(ngModel)]="selectedRole.pages" name="pages">
@@ -31,16 +36,33 @@
                 <ss-multiselect-dropdown [options]="pages" name="pages" [(ngModel)]="selectedRole.pages"></ss-multiselect-dropdown>
             </div>
 
+            <!-- SPECIAL RIGHTS -->
+            <div class="checkbox">
+                <label>
+                    <!-- TODO: implement role admin permission -->
+                    <input type="checkbox" [(ngModel)]="selectedRole.roleAdmin" name="roleAdmin">
+                    Darf Gruppen bearbeiten (TODO)
+                </label>
+            </div>
+
+            <!-- PERMISSION OVERVIEW -->
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Dokumenten-Berechtigungen</h3>
                 </div>
                 <div class="panel-body">
+                    <h3>Dokumente</h3>
+                    <div *ngFor="let id of selectedRole.datasets">
+                        <!-- TODO: show document name for this ID -->
+                        <span class="">{{id}}</span>
+                        <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(id)"></button>
+                    </div>
+                    <h3>Dokument-Attribute</h3>
                     <div *ngFor="let attr of selectedRole.attributes">
                         <span class="">{{attr.id}}: {{attr.value}}</span>
                         <button class="btn btn-default fa fa-remove" type="button" (click)="removeAttribute(attr)"></button>
                     </div>
-                    <div *ngIf="selectedRole.attributes.length === 0">Keine gesetzt</div>
+                    <div *ngIf="selectedRole.attributes.length === 0 || selectedRole.datasets.length === 0">Keine gesetzt</div>
                 </div>
             </div>
             <button class="btn btn-default pull-right" (click)="newPermissionModal.open()">Berechtigung hinzufügen</button>
@@ -49,6 +71,8 @@
             <button class="btn btn-danger" (click)="deleteRole(selectedRole)">Löschen</button>
             <button class="btn btn-primary pull-right" (click)="saveRole(selectedRole)">Speichern</button>
         </div>
+
+        <!-- NO ROLE SELECTED -->
         <div *ngIf="!selectedRole.id">
             Keine Rolle ausgewählt.
         </div>
@@ -67,17 +91,34 @@
             <li role="presentation" [class.active]="dialogTab === 'attribute'"><a (click)="dialogTab = 'attribute'">Datensatz-Attribut</a>
             </li>
         </ul>
+
+        <!-- BY DATASET-->
         <div [class.hide]="dialogTab !== 'dataset'" class="padding">
-            <div class="alert alert-info" role="alert">
-                Hier werden später individuelle Datensätze ausgewählt, für die eine Rolle Berechtigungen haben soll.
+            <div class="pull-left" style="width: 250px; height: 200px; overflow: auto;">
+                <tree #datasetTree [showFolderEditButton]="false"></tree>
             </div>
+            <div *ngFor="let id of selectedRole.datasets">
+                <!-- TODO: show document name for this ID -->
+                <span class="">{{id}}</span>
+                <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(id)"></button>
+            </div>
+            <div *ngIf="!selectedRole.datasets || selectedRole.datasets.length === 0">
+                Keine Einschränkung auf Dokumente.
+            </div>
+
+            <div class="clearfix padding"></div>
+            <button class="btn btn-default" (click)="addDataset(datasetTree.selectedId)">Add</button>
         </div>
+
+        <!-- BY TREE -->
         <div [class.hide]="dialogTab !== 'tree'" class="padding">
             <div class="alert alert-info" role="alert">
                 Hier wird später ein Ordner oder Datensatz ausgewählt werden können, dessen Unterobjekte man den Zugriff
                 gewähren kann.
             </div>
         </div>
+
+        <!-- BY ATTRIBUTE -->
         <div [class.hide]="dialogTab !== 'attribute'" class="padding">
 
             <form class="form-inline">

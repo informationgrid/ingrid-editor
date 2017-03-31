@@ -11,13 +11,12 @@ import {BrowserComponent} from './sidebars/browser/browser.component';
 import {ModalModule} from 'ng2-modal';
 import {OpenTable} from './opentable/opentable.component';
 import {PartialGenerator} from './partialGenerator/partial-generator.component';
-import {TreeModule} from 'angular2-tree-component';
 import {LinkDatasetComponent} from './linkDataset/link-dataset.component';
 import {FocusDirective} from '../directives/focus.directive';
 import {SharedModule} from '../shared.module';
 
 @NgModule( {
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), SharedModule, routing, ModalModule, TreeModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), SharedModule, routing, ModalModule],
   declarations: [FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator, BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent, FocusDirective],
   exports: [ToastyModule, FormsModule, FocusDirective]
 } )

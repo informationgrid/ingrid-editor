@@ -358,18 +358,22 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   createFormWithData(data: any) {
     this.form = this.qcs.toFormGroup(this.fields, data);
 
-    // TODO: disable form if we don't have the permission
-    if (!this.hasPermission(data)) {
-      this.form.disable();
-    }
+    // disable form if we don't have the permission
+    // delay a bit for form to be created
+    // TODO: try to get permission beforehand and create form with this information
+    setTimeout( () => this.hasPermission(data) ? this.form.enable() : this.form.disable(), 0);
   }
 
   // TODO: extract to permission service class
   hasPermission(data: any): boolean {
     // TODO: check all roles
     let attr = this.userRoles[0].attributes;
+    let docIDs = this.userRoles[0].datasets;
     // TODO: show why we don't have permission by remembering failed rule
-    return !attr || attr.every( a => data[a.id] === a.value );
+    let permissionByAttribute = !attr || attr.every( a => data[a.id] === a.value );
+    let permissionByDatasetId = !docIDs || docIDs.some( id => data._id === id );
+
+    return permissionByAttribute && permissionByDatasetId;
   }
 
   switchProfile(profile: string) {

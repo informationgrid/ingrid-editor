@@ -1,7 +1,7 @@
-import {Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot} from "@angular/router";
-import {AuthService} from "../services/security/auth.service";
-import {Injectable} from "@angular/core";
-import {ModalService} from "../services/modal/modal.service";
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
+import {AuthService} from '../services/security/auth.service';
+import {Injectable} from '@angular/core';
+import {ModalService} from '../services/modal/modal.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
       // return (roles == null || roles.indexOf("the-logged-user-role") != -1);
 
       this.auth.redirectUrl = url;
-      this.router.navigate(['/login']);
+      this.router.navigate( ['/login'] );
       return false;
     }
     let roles = route.data['roles'] as Array<string>;
@@ -25,14 +25,18 @@ export class AuthGuard implements CanActivate {
     let validPages = this.auth.getAccessiblePages();
     let nextPath = '/' + route.url[0].path;
 
-    let mayContinue = validPages.length === 0 || validPages.indexOf(nextPath) !== -1;
+    let mayContinue = this.containsValidPage(validPages, nextPath);
 
     // if page was explicitly allowed or if not then default page rules apply
-    if (mayContinue || (validPages.length === 0 && (!roles || this.auth.hasRole(roles)))) {
+    if (mayContinue || (validPages.length === 0 && (!roles || this.auth.hasRole( roles )))) {
       return true;
     } else {
-      this.modalService.showError('Sie haben nicht die nötigen Rechte!');
+      this.modalService.showError( 'Sie haben nicht die nötigen Rechte!' );
       return false;
     }
+  }
+
+  private containsValidPage(validPages: string[], page: string) {
+    return validPages.length === 0 || validPages.some( validPage => validPage.indexOf( page ) !== -1 );
   }
 }

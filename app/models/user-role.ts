@@ -7,4 +7,5 @@ export interface Role {
   name?: string;
   pages?: string[];
   attributes?: RoleAttribute[];
+  datasets?: string[];
 }

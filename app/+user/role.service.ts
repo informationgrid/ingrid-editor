@@ -30,13 +30,15 @@ export class RoleService {
         id: role._id,
         name: role.name,
         pages: role.pages ? role.pages : [],
-        attributes: role.attributes ? role.attributes : []
+        attributes: role.attributes ? role.attributes : [],
+        datasets: role.datasets ? role.datasets : []
       } );
     } );
     return result;
   }
 
   saveRole(role: Role): Observable<any> {
+    // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
     return this.http.post( this.configService.backendUrl + 'role/' + role.id, role )
       // .map( resp => resp.json() )
       .catch( err => this.errorService.handle(err));

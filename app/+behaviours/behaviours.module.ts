@@ -10,11 +10,10 @@ import {BehaviourService} from './behaviour.service';
 import {MenuService} from '../menu/menu.service';
 import {PasteDialogComponent} from './system/CopyCutPaste/paste-dialog.component';
 import {ModalModule} from 'ng2-modal';
-import {TreeModule} from 'angular2-tree-component';
 import {SharedModule} from '../shared.module';
 
 @NgModule( {
-  imports: [CommonModule, ModalModule, TreeModule, SharedModule, routing],
+  imports: [CommonModule, ModalModule, SharedModule, routing],
   declarations: [PluginsComponent, DemoComponent, Collapse, PasteDialogComponent],
   providers: [MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin],
   entryComponents: [DemoComponent, PasteDialogComponent]

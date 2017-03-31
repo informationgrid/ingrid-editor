@@ -18,6 +18,10 @@ form-toolbar + div {
     background-color: #ececec;
 }
 
+a:hover {
+    text-decoration: none;
+}
+
 .full {
     width: 100% !important;
 }
