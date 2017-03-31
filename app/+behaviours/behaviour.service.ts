@@ -38,38 +38,47 @@ export class BehaviourService {
         // add all additional behaviours to the default ones
         this.behaviours.push( ...additionalBehaviours );
 
-        // TODO: when logged in this event is not sent!
-        // only load behaviours if logged in
-        // let behaviourLoad = this.authService.loginStatusChange$.subscribe( loggedIn => {
-        //   if (loggedIn) {
+        if (this.authService.loggedIn()) {
+          // request stored behaviour states from backend
+          this.loadStoredBehaviours()
+            .then( () => resolve() )
+            .catch( () => reject );
 
-            // request stored behaviour states from backend
-            this.http.get( this.configService.backendUrl + 'behaviours' ).toPromise().then( (response: Response) => {
-              let storedBehaviours = response.json();
-
-              // set correct active state to each behaviour
-              this.behaviours.forEach( (behaviour) => {
-                let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
-                behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-              } );
-
-              // set correct active state to each system behaviour
-              this.systemBehaviours.forEach( (behaviour) => {
-                let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
-                behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-              } );
-              // behaviourLoad.unsubscribe();
-              resolve();
-
-            } ).catch( (err: Error) => {
-              if (!(err instanceof AuthHttpError)) {
-                this.modalService.showError( err.message );
-              }
-              // reject();
-            } );
-          // }
-        // });
+        } else {
+          let loginSubscriber = this.authService.loginStatusChange$.subscribe( loggedIn => {
+            // console.log( 'logged in state changed to: ' + loggedIn );
+            if (loggedIn) {
+              loginSubscriber.unsubscribe();
+              this.loadStoredBehaviours()
+                .then( () => resolve() )
+                .catch( () => reject );
+            }
+          });
+        }
       } );
+    } );
+  }
+
+  loadStoredBehaviours() {
+    return this.http.get( this.configService.backendUrl + 'behaviours' ).toPromise().then( (response: Response) => {
+      let storedBehaviours = response.json();
+
+      // set correct active state to each behaviour
+      this.behaviours.forEach( (behaviour) => {
+        let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
+        behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+      } );
+
+      // set correct active state to each system behaviour
+      this.systemBehaviours.forEach( (behaviour) => {
+        let stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
+        behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+      } );
+
+    } ).catch( (err: Error) => {
+      if (!(err instanceof AuthHttpError)) {
+        this.modalService.showError( err.message );
+      }
     } );
   }
 
