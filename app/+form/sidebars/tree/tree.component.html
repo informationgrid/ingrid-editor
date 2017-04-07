@@ -3,8 +3,8 @@
        title="Aktualisieren"
        (click)="refresh()"></a>
 
-    <Tree #tree [nodes]="nodes" [options]="options" (onActivate)="open($event)">
-        <template #treeNodeTemplate let-node>
+    <tree-root #tree [nodes]="nodes" [options]="options" (onActivate)="open($event)">
+        <ng-template #treeNodeTemplate let-node>
             <div class="myTreeNode">
                 <div [class.active]="selectedId === node.data.id">
                 <span *ngIf="!node.data._iconClass" class="label"
@@ -21,6 +21,6 @@
                       (click)="editFolder(node.data)"
                 ></span>
             </div>
-        </template>
-    </Tree>
+        </ng-template>
+    </tree-root>
 </div>
