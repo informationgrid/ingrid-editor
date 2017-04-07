@@ -1,23 +1,10 @@
-<!--<ul>
-    <li>Verwaltung von Benutzern</li>
-    <ul>
-        <li>anlegen, bearbeiten neuer Benutzer</li>
-        <li>Speicherung im Backend</li>
-    </ul>
-    <li>Rechtevergabe für eingeloggte Benutzer auf bestimmte Dokumente</li>
-    <ul>
-        <li>Rechte auf einzelne Dokumente</li>
-        <li>Rechte auf Unterbäume (wenn Hierarchien vorhanden)</li>
-        <li>Rechte auf Dokumente mit speziellen Attributen</li>
-    </ul>
-</ul>-->
 <ul class="nav nav-tabs">
     <li role="presentation" [class.active]="currentTab === 'users'"><a (click)="currentTab = 'users'">Benutzer</a></li>
     <li role="presentation" [class.active]="currentTab === 'roles'"><a (click)="currentTab = 'roles'">Rollen</a></li>
 </ul>
-<div [class.hide]="currentTab !== 'users'">
-    <div class="splitWrapper padding-vertical">
-        <div id="sidebarUser" class="split split-horizontal container">
+<div [class.hide]="currentTab !== 'users'" class="userTabContainer">
+    <split>
+        <split-area [size]="25" id="sidebarUser" class="split-pane-content-primary container">
             <div class="list-group">
                 <button *ngFor="let user of users" type="button" class="list-group-item"
                         [class.disabled]="user === selectedUser"
@@ -28,8 +15,8 @@
             <div class="text-center">
                 <button class="btn btn-primary glyphicon glyphicon-plus" (click)="addUser()"></button>
             </div>
-        </div>
-        <div id="formUser" class="split split-horizontal container-fluid">
+        </split-area>
+        <split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
             <form (ngSubmit)="onSubmit()" #userForm="ngForm">
                 <div class="form-group">
                     <label>Login</label>
@@ -72,10 +59,10 @@
                         (click)="deleteUser(selectedUser.login)">Löschen
                 </button>
             </form>
-        </div>
-    </div>
+        </split-area>
+    </split>
 </div>
 
-<div [class.hide]="currentTab !== 'roles'" class="container">
+<div [class.hide]="currentTab !== 'roles'" class="roleTabContainer">
     <role-gui (onRoleChange)="updateRoles($event)"></role-gui>
 </div>

@@ -8,7 +8,7 @@ import {DynamicFormComponent} from './dynamic-form.component';
 import {LeafletComponent} from './leaflet/leaflet.component';
 import {routing} from './ige-form.routing';
 import {BrowserComponent} from './sidebars/browser/browser.component';
-import {ModalModule} from 'ng2-modal';
+import {ModalModule} from 'ngx-modal';
 import {OpenTable} from './opentable/opentable.component';
 import {PartialGenerator} from './partialGenerator/partial-generator.component';
 import {LinkDatasetComponent} from './linkDataset/link-dataset.component';

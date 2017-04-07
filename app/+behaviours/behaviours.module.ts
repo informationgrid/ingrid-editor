@@ -9,7 +9,7 @@ import {Collapse} from '../directives/collapse.directive';
 import {BehaviourService} from './behaviour.service';
 import {MenuService} from '../menu/menu.service';
 import {PasteDialogComponent} from './system/CopyCutPaste/paste-dialog.component';
-import {ModalModule} from 'ng2-modal';
+import {ModalModule} from 'ngx-modal';
 import {SharedModule} from '../shared.module';
 
 @NgModule( {

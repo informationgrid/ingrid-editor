@@ -1,3 +1,7 @@
+html, body {
+    height: 100%;
+}
+
 body {
     padding-top: 50px;
 }
@@ -88,7 +92,7 @@ p-dataTable {
     width: 100%;
     height: 100px;
 }
-
+/*
 .splitWrapper {
     position: absolute;
     top: 92px;
@@ -126,7 +130,7 @@ p-dataTable {
 .split.split-horizontal, .gutter.gutter-horizontal {
     height: 100%;
     float: left;
-}
+}*/
 
 .ag-body-viewport {
     -webkit-overflow-scrolling: touch;
@@ -166,6 +170,6 @@ sidebar .list-group-item:hover {
     width: 100%;
 }
 
-treenode:hover .folder {
+tree-node:hover .folder {
     display: block;
 }

@@ -1,11 +1,12 @@
 import {Component, OnInit, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core';
-import {Modal} from 'ng2-modal';
+import {Modal} from 'ngx-modal';
 import {ModalService} from '../services/modal/modal.service';
 import {ErrorService} from '../services/error.service';
 import {RoleService} from './role.service';
 import {MenuService} from '../menu/menu.service';
 import {Observable} from 'rxjs';
 import {Role, RoleAttribute} from '../models/user-role';
+import {MetadataTreeComponent} from '../+form/sidebars/tree/tree.component';
 
 @Component( {
   selector: 'role-gui',
@@ -14,6 +15,7 @@ import {Role, RoleAttribute} from '../models/user-role';
 export class RoleComponent implements OnInit {
 
   @ViewChild( 'loginRef' ) loginRef: ElementRef;
+  @ViewChild( 'datasetTree' ) datasetTree: MetadataTreeComponent;
 
   @Output() onRoleChange = new EventEmitter<Role[]>();
 

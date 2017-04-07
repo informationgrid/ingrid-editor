@@ -8,19 +8,19 @@
     </div>
 </div>
 
-<div class="splitWrapper">
+<split>
     <!-- exchangable sidebar -->
-    <div id="sidebar" class="split split-horizontal">
+    <split-area [size]="25" id="sidebar">
         <ul class="nav nav-tabs">
             <li role="presentation" [class.active]="sideTab === 'tree'"><a (click)="sideTab = 'tree'">Baum</a></li>
             <li role="presentation" [class.active]="sideTab === 'search'"><a (click)="sideTab = 'search'">Suche</a></li>
         </ul>
         <tree [class.hide]="sideTab !== 'tree'" (onSelected)="handleLoad($event.id, $event.profile, $event.forceLoad)"></tree>
         <browser [class.hide]="sideTab !== 'search'" (onSelected)="load($event.id)"></browser>
-    </div>
+    </split-area>
 
     <!-- The form -->
-    <div id="form" class="split split-horizontal formWrapper">
+    <split-area [size]="75" id="form" class="formWrapper">
         <div *ngIf="!form" class="info-no-selection well text-center">
             Kein Dokument ausgewählt. Laden Sie ein vorhandenes oder erstellen Sie ein neues Dokument über die Toolbar.
         </div>
@@ -122,12 +122,11 @@
                 <!--<p>Form is valid: {{form.valid}}</p>-->
             </div>
         </form>
-    </div>
+    </split-area>
 
     <ng2-toasty [position]="'bottom-center'"></ng2-toasty>
 
-</div>
-
+</split>
 
 <modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">
     <modal-content>

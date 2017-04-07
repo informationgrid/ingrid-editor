@@ -1,9 +1,9 @@
-<div class="splitWrapper padding-vertical">
+<split>
 
     <!-- TODO: restrict role permission to groups! A simple user must not change his own role to admin!!! -->
 
     <!-- ROLE LIST -->
-    <div id="sidebarRoles" class="split split-horizontal container">
+    <split-area [size]="25" id="sidebarRoles" class="container">
         <div class="list-group">
             <button *ngFor="let role of roles" type="button" class="list-group-item"
                     [class.disabled]="role === selectedRole"
@@ -14,10 +14,10 @@
         <div class="text-center">
             <button class="btn btn-primary glyphicon glyphicon-plus" (click)="addRole()"></button>
         </div>
-    </div>
+    </split-area>
 
     <!-- ROLE DETAIL -->
-    <div id="formRoles" class="split split-horizontal container-fluid">
+    <split-area [size]="75" id="formRoles" class="container-fluid">
         <div *ngIf="selectedRole.id">
 
             <!-- TITLE -->
@@ -76,8 +76,8 @@
         <div *ngIf="!selectedRole.id">
             Keine Rolle ausgewählt.
         </div>
-    </div>
-</div>
+    </split-area>
+</split>
 
 
 <modal #newPermissionModal title="Neue Berechtigung" cancelButtonLabel="Abbrechen" submitButtonLabel="Ok"

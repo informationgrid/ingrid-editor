@@ -8,10 +8,9 @@ import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Split} from '../../node_modules/split.js/split';
 import {StorageService} from '../services/storage/storage.service';
 import {ModalService} from '../services/modal/modal.service';
-import {Modal} from 'ng2-modal';
+import {Modal} from 'ngx-modal';
 import {PartialGeneratorField} from './controls/field-partial-generator';
 import {UpdateType} from '../models/update-type.enum';
 import {ErrorService} from '../services/error.service';
@@ -145,12 +144,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
-    Split(['#sidebar', '#form'], {
-      gutterSize: 8,
-      sizes: [25, 75],
-      minSize: [200]
-    });
-
     // add form errors check when saving/publishing
     this.observers.push(
       this.storageService.beforeSave$.subscribe((message: any) => {

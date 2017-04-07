@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild, enableProdMode, ViewContainerRef} from '@a
 import {StatisticPlugin} from './+behaviours/system/statistic/statistic.plugin';
 import {WorkflowPlugin} from './+behaviours/system/workflow/workflow.plugin';
 import {DemoPlugin} from './+behaviours/system/demo/demo.plugin';
-import {Modal} from 'ng2-modal';
+import {Modal} from 'ngx-modal';
 import {ModalService} from './services/modal/modal.service';
 import {BehaviourService} from './+behaviours/behaviour.service';
 
@@ -11,7 +11,7 @@ import {BehaviourService} from './+behaviours/behaviour.service';
 @Component( {
   selector: 'my-app',
   template: `
-    <div>
+    <div class="igeContainer">
       <!-- MENU -->
       <main-menu></main-menu>
       
@@ -36,6 +36,9 @@ import {BehaviourService} from './+behaviours/behaviour.service';
     <!-- Placeholder for dynamically created dialogs from plugins -->
     <div #dialogContainer id="dialogContainer"></div>
   `,
+  styles: [`
+    .igeContainer { height: 100%; }
+  `],
   providers: [StatisticPlugin, WorkflowPlugin, DemoPlugin],
   entryComponents: []
 } )

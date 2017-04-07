@@ -16,7 +16,7 @@ import {MenuComponent} from './menu/menu.component';
 import {BehavioursDefault} from './+behaviours/behaviours';
 import {FormularService} from './services/formular/formular.service';
 import {ModalService} from './services/modal/modal.service';
-import {ModalModule} from 'ng2-modal';
+import {ModalModule} from 'ngx-modal';
 import {UserModule} from './+user/user.module';
 import {LoginComponent} from './security/login.component';
 import {AuthGuard} from './security/auth.guard';

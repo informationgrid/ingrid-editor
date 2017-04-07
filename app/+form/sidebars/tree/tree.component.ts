@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {StorageService} from '../../../services/storage/storage.service';
-import {TreeComponent, TreeNode} from 'angular2-tree-component';
+import {TreeComponent, TreeNode} from 'angular-tree-component';
 import {Router, ActivatedRoute} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
@@ -13,7 +13,7 @@ import {FormToolbarService} from '../../toolbar/form-toolbar.service';
   styles: [`
     .clickable { cursor: pointer; text-decoration: none; }
     .folder { position: absolute;right: 5px;margin-top: -15px; display: none;}
-    .refresh { position: absolute; right: 0; }
+    .refresh { position: absolute; right: 0; z-index: 1000 }
   `]
 })
 export class MetadataTreeComponent implements OnInit {
@@ -282,9 +282,9 @@ export class MetadataTreeComponent implements OnInit {
   refresh(): Promise<any> {
     this.nodes = [];
     this.tree.treeModel.expandedNodeIds = {};
-    this.tree.treeModel.expandedNodes = [];
+    // this.tree.treeModel.expandedNodes = [];
     this.tree.treeModel.activeNodeIds = {};
-    this.tree.treeModel.activeNodes = [];
+    // this.tree.treeModel.activeNodes = [];
     return this.query(null);
   }
 

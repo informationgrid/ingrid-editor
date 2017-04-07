@@ -85,8 +85,6 @@ export class CopyCutPastePlugin extends Plugin {
     // remove last remembered copied documents
     this.copiedDatasets = this.formService.getSelectedDocuments();
 
-    this.toastService.show( 'Datensatz kopiert' );
-
     // show dialog where to copy the dataset(s)
     let factory = this._cr.resolveComponentFactory( PasteDialogComponent );
 

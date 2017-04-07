@@ -1,5 +1,5 @@
 import {Component, Injector, OnInit, ViewChild} from '@angular/core';
-import {Modal} from 'ng2-modal';
+import {Modal} from 'ngx-modal';
 import {MoveMode} from './copy-cut-paste.behaviour';
 
 @Component({

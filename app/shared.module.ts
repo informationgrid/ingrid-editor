@@ -1,11 +1,13 @@
 import {NgModule} from '@angular/core';
 import {MetadataTreeComponent} from './+form/sidebars/tree/tree.component';
-import {TreeModule} from 'angular2-tree-component';
+import {TreeModule} from 'angular-tree-component';
 import {CommonModule} from '@angular/common';
+import {AngularSplitModule} from 'angular-split';
+
 @NgModule({
-  imports: [CommonModule, TreeModule],
+  imports: [CommonModule, TreeModule, AngularSplitModule],
   declarations: [MetadataTreeComponent],
-  exports: [MetadataTreeComponent]
+  exports: [MetadataTreeComponent, AngularSplitModule]
 })
 export class SharedModule {
 }

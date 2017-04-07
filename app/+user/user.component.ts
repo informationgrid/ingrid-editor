@@ -1,5 +1,4 @@
 import {Component, OnInit, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
-import {Split} from '../../node_modules/split.js/split';
 import {ModalService} from '../services/modal/modal.service';
 import {UserService, User} from './user.service';
 import {ErrorService} from '../services/error.service';
@@ -12,7 +11,14 @@ interface Role {
 }
 
 @Component({
-  template: require('./user.component.html')
+  template: require('./user.component.html'),
+  styles: [`
+    .userTabContainer, .roleTabContainer {
+      position: absolute;
+      top: 93px;
+      bottom: 0px;
+    }
+  `]
 })
 export class UserComponent implements OnInit, AfterViewInit {
 
@@ -43,18 +49,7 @@ export class UserComponent implements OnInit, AfterViewInit {
     );
   }
 
-  ngAfterViewInit(): void {
-    Split(['#sidebarUser', '#formUser'], {
-      gutterSize: 8,
-      sizes: [25, 75],
-      minSize: [200]
-    });
-    Split(['#sidebarRoles', '#formRoles'], {
-      gutterSize: 8,
-      sizes: [25, 75],
-      minSize: [200]
-    });
-  }
+  ngAfterViewInit(): void {}
 
   updateRoles(roles: Role[]) {
     this.roles = roles;

@@ -27,8 +27,9 @@
     "@angular/platform-server": "^4.0.1",
     "@angular/router": "^4.0.1",
     "angular-2-dropdown-multiselect": "^1.0.6",
+    "angular-split": "^0.2.0",
+    "angular-tree-component": "^3.2.4",
     "angular2-jwt": "^0.2.0",
-    "angular2-tree-component": "^2.8.1",
     "bootstrap": "^3.3.7",
     "chart.js": "^2.5.0",
     "es6-promise": "^4.1.0",
@@ -37,10 +38,9 @@
     "font-awesome": "^4.7.0",
     "leaflet": "^1.0.3",
     "ng2-charts": "^1.5.0",
-    "ngx-modal": "^0.0.29",
     "ng2-toasty": "^2.5.0",
+    "ngx-modal": "^0.0.29",
     "rxjs": "5.2.0",
-    "split.js": "^1.2.0",
     "zone.js": "0.8.5"
   },
   "devDependencies": {
