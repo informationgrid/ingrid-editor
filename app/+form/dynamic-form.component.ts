@@ -240,7 +240,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   handleLoad(id: string, profile?: string, forceLoad?: boolean) {
-    if (profile === "FOLDER" && !forceLoad) return;
+    if (profile === 'FOLDER' && !forceLoad) return;
 
     // this.load(id);
     this.router.navigate( ['/form', id]);

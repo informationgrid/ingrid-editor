@@ -87,7 +87,7 @@ export class CopyCutPastePlugin extends Plugin {
 
     this.toastService.show( 'Datensatz kopiert' );
 
-    // TODO: show dialog where to copy the dataset(s)
+    // show dialog where to copy the dataset(s)
     let factory = this._cr.resolveComponentFactory( PasteDialogComponent );
 
     let providers = ReflectiveInjector.resolve( [
@@ -103,7 +103,7 @@ export class CopyCutPastePlugin extends Plugin {
 
     this.toastService.show( 'Datensatz verschoben' );
 
-    // TODO: show dialog where to copy the dataset(s)
+    // show dialog where to copy the dataset(s)
     let factory = this._cr.resolveComponentFactory( PasteDialogComponent );
 
     let providers = ReflectiveInjector.resolve( [

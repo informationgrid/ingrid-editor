@@ -267,9 +267,11 @@ export class MetadataTreeComponent implements OnInit {
     this.tree.treeModel.update();
   }
 
-  open(id: string, profile: string) {
-    this.selectedId = id;
-    this.onSelected.next({id: id, profile: profile});
+  open(event: any) {
+    if (event.eventName === 'onActivate') {
+      this.selectedId = event.node.id;
+      this.onSelected.next({id: event.node.id, profile: event.node.data._profile});
+    }
   }
 
   editFolder(data: any) {

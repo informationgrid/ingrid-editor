@@ -3,10 +3,10 @@
        title="Aktualisieren"
        (click)="refresh()"></a>
 
-    <Tree #tree [nodes]="nodes" [options]="options">
+    <Tree #tree [nodes]="nodes" [options]="options" (onActivate)="open($event)">
         <template #treeNodeTemplate let-node>
             <div class="myTreeNode">
-                <div (click)="open(node.data.id, node.data._profile)" [class.active]="selectedId === node.data.id">
+                <div [class.active]="selectedId === node.data.id">
                 <span *ngIf="!node.data._iconClass" class="label"
                       [class.label-primary]="node.data._state === 'P'"
                       [class.label-warning]="node.data._state === 'W'"
