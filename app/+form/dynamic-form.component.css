@@ -5,14 +5,30 @@ split {
     margin: 20px;
 }
 
+.formWrapper > form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.main-form-flex {
+    overflow: auto;
+}
+
+.main-form {
+    flex-grow: 1;
+}
+
 .bottom-bar {
     /*position: absolute;*/
+    /*left: 0;*/
+    /*right: 0;*/
     /*bottom: 0;*/
     border: 1px solid #e3e3e3;
-    max-height: 35px;
+    /*max-height: 35px;*/
     /*line-height: 30px;*/
     background-color: #f5f5f5;
-    overflow: hidden;
+    /*overflow: hidden;*/
     cursor: pointer;
     padding: 3px;
 }
@@ -24,7 +40,7 @@ split {
 }*/
 
 .bottom-bar.expanded {
-    max-height: 100px;
+    /*max-height: 100px;*/
     transition: max-width 1s ease-in-out;
 }
 

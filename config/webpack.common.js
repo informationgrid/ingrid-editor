@@ -24,19 +24,19 @@ module.exports = {
       // Support for .ts files.
       {
         test: /\.ts$/,
-        loader: 'ts-loader?transpileOnly=true,configFileName=tsconfig.webpack.json',
+        use: 'ts-loader?transpileOnly=true,configFileName=tsconfig.webpack.json',
         // 'awesome-typescript-loader',
         exclude: [ /\.(spec|e2e)\.ts$/, helpers.root( 'node_modules' ) ]
       },
 
       // copy those assets to output
-      {test: /\.(png|jpe?g|gif|ico)$/, loader: 'file-loader?name=[path][name].[ext]?[hash]'},
-      {test: /\.woff2(\?\S*)?$/, loader: "url-loader?limit=10000&minetype=application/font-woff2"},
-      {test: /\.woff(\?\S*)?$/, loader: "url-loader?limit=10000&minetype=application/font-woff"},
-      {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader?name=[path][name].[ext]?[hash]'},
+      {test: /\.(png|jpe?g|gif|ico)$/, use: 'file-loader?name=[path][name].[ext]?[hash]'},
+      {test: /\.woff2(\?\S*)?$/, use: "url-loader?limit=10000&minetype=application/font-woff2"},
+      {test: /\.woff(\?\S*)?$/, use: "url-loader?limit=10000&minetype=application/font-woff"},
+      {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, use: 'file-loader?name=[path][name].[ext]?[hash]'},
 
       // Support for *.json files.
-      {test: /\.json$/, loader: 'json-loader', exclude: [ helpers.root( 'node_modules' ) ]},
+      {test: /\.json$/, use: 'json-loader', exclude: [ helpers.root( 'node_modules' ) ]},
 
       // Support for CSS as raw text
       // use 'null' loader in test mode (https://github.com/webpack/null-loader)
@@ -44,10 +44,10 @@ module.exports = {
       {
         test: /\.css$/,
         exclude: helpers.root( 'app' ),
-        loader: ExtractTextPlugin.extract( { fallbackLoader: 'style-loader', loader: 'css-loader' } )
+        use: ExtractTextPlugin.extract( { fallback: 'style-loader', use: 'css-loader' } )
       },
       // all css required in src/app files will be merged in js files
-      {test: /\.css$/, include: helpers.root( 'app' ), loader: 'raw-loader'},
+      {test: /\.css$/, include: helpers.root( 'app' ), use: 'raw-loader'},
 
       // SASS
       { test: /\.scss$/, exclude: helpers.root( 'app' ), loaders: ['style-loader', 'css-loader', 'sass-loader' ] },
@@ -55,7 +55,7 @@ module.exports = {
       { test: /\.scss$/, include: helpers.root( 'app' ), loaders: ['raw-loader', 'sass-loader' ] },
 
       // support for .html as raw text
-      {test: /\.html$/, loader: 'raw-loader', exclude: [ helpers.root( 'index.html' ), helpers.root( 'node_modules' ) ]}
+      {test: /\.html$/, use: 'raw-loader', exclude: [ helpers.root( 'index.html' ), helpers.root( 'node_modules' ) ]}
 
     ]
   },
@@ -63,8 +63,9 @@ module.exports = {
   plugins: [
     //  the following plugin is needed to avoid a warning when running app
     new webpack.ContextReplacementPlugin(
-        /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
-        __dirname
+      /angular(\\|\/)core(\\|\/)@angular/,
+      helpers.root('./src'),
+      {}
     ),
     new ExtractTextPlugin( "styles.css" ),
     new webpack.optimize.CommonsChunkPlugin( {

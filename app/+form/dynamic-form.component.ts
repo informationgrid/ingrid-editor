@@ -25,6 +25,12 @@ interface FormData extends Object {
   title?: string;
 }
 
+export interface FormDataContainer {
+  form: any;
+  fields: any;
+  value: any;
+}
+
 @Component({
   selector: 'dynamic-form',
   template: require('./dynamic-form.component.html'),
@@ -86,8 +92,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.newDoc();
       } else if (eventId === 'DELETE') {
         this.deleteDoc();
-      } else if (eventId === 'PRINT') {
-        this.modalService.showNotImplemented();
       }
     });
 
@@ -126,8 +130,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // this can be used for publish, revert, detail, compare, ...
     this.observers.push(
       // return current form data on request
-      this.formularService.formDataSubject$.subscribe( (container: any) => {
+      this.formularService.formDataSubject$.subscribe( (container: FormDataContainer) => {
         container.form = this.form;
+        container.fields = this.fields;
         container.value = {
           _id: this.data._id,
           _profile: this.formularService.currentProfile
@@ -301,7 +306,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   save() {
     console.log('valid:', this.form.valid);
 
-    let errors: string[] = [];
+    // let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
     let data = this.form.value;
     // attach profile type to data, which is not reflected in form directly by value

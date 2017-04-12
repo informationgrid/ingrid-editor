@@ -17,6 +17,7 @@ import {FormToolbarService} from '../+form/toolbar/form-toolbar.service';
 import {ModalService} from '../services/modal/modal.service';
 import {CopyCutPastePlugin} from "./system/CopyCutPaste/copy-cut-paste.behaviour";
 import {ToastService} from '../services/toast.service';
+import {PrintViewPlugin} from './system/printView/print-view.plugin';
 
 export interface Behaviour {
   id: string;
@@ -64,6 +65,7 @@ export class BehavioursDefault {
     new PublishPlugin(this.formToolbarService, this.formService, this.modalService, this.storageService),
     new CreateDocRulesPlugin(this.formService, this.storageService),
     new CopyCutPastePlugin(this.formService, this.formToolbarService, this.storageService, this.modalService,
-      this.toastService, this.compFacResolver)
+      this.toastService, this.compFacResolver),
+    new PrintViewPlugin(this.formToolbarService, this.modalService, this.compFacResolver)
   ];
 }

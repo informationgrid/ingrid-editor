@@ -27,7 +27,6 @@ export class FormToolbarService {
     {id: 'toolBtnSave', tooltip: 'Save', cssClasses: 'glyphicon glyphicon-save-file', eventId: 'SAVE', active: true},
     {id: 'toolBtnLoadSaveSeparator', isSeparator: true},
 
-    {id: 'toolBtnPrint', tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT', active: true},
     {id: 'toolBtnRemove', tooltip: 'Remove', cssClasses: 'glyphicon glyphicon-trash', eventId: 'DELETE', active: true}
   ];
 

@@ -1,8 +1,8 @@
-import {Component, EventEmitter, forwardRef, Input, Output, ViewChild} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {Modal} from 'ngx-modal';
-import {FormControlService} from '../../services/form-control.service';
-import {PartialGeneratorField} from '../controls/field-partial-generator';
+import {Component, forwardRef, Input, ViewChild, Output, EventEmitter} from "@angular/core";
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {Modal} from "ngx-modal";
+import {FormControlService} from "../../services/form-control.service";
+import {PartialGeneratorField} from "../controls/field-partial-generator";
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,

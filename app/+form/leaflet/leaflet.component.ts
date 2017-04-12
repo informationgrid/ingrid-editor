@@ -138,8 +138,8 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
    * https://github.com/angular/angular/issues/1618
    */
   public ngOnDestroy(): void {
-    this.leafletReference.remove();
-    this.leaflet.nativeElement.remove();
+    if (this.leafletReference.remove) this.leafletReference.remove();
+    if (this.leaflet.nativeElement.remove) this.leaflet.nativeElement.remove();
   }
 
 }

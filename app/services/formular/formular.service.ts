@@ -44,7 +44,7 @@ export class FormularService {
     return fields.sort((a, b) => a.order - b.order).slice(0);
   }
 
-  private getProfile(id: string): Profile {
+  getProfile(id: string): Profile {
     let profile: any = null;
     if (id === 'UVP') profile = this.uvpProfile;
     else if (id === 'ADDRESS') profile = this.addressProfile;

@@ -1,18 +1,18 @@
-import {Component, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {Modal} from 'ngx-modal';
+import {Component, OnInit, forwardRef, ViewChild, Input} from '@angular/core';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from "@angular/forms";
+import {Modal} from "ngx-modal";
 
 export const LINK_DATASET_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef( () => LinkDatasetComponent ),
+  useExisting: forwardRef(() => LinkDatasetComponent),
   multi: true
 };
 
-@Component( {
+@Component({
   selector: 'link-dataset',
-  template: require( './link-dataset.component.html' ),
+  template: require('./link-dataset.component.html'),
   providers: [LINK_DATASET_CONTROL_VALUE_ACCESSOR]
-} )
+})
 export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
 
   @Input() filter: any;
@@ -22,7 +22,7 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
 
   private _onChangeCallback: (x: any) => void;
 
-  @ViewChild( 'chooseDatasetModal' ) chooseDatasetModal: Modal;
+  @ViewChild('chooseDatasetModal') chooseDatasetModal: Modal;
 
 
   constructor() {
@@ -34,7 +34,7 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
   selectDataset() {
     this.linkedDataset = this.selection;
     this.chooseDatasetModal.close();
-    this._onChangeCallback( this.linkedDataset );
+    this._onChangeCallback(this.linkedDataset);
   }
 
   onSelected(val: any) {
