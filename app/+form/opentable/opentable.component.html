@@ -40,7 +40,7 @@
                     <label class="control-label">{{col.label}}</label>
                     <input *ngIf="col.controlType === 'textbox'" [focus]="i === focusNumber" [type]="col.type" class="form-control" [(ngModel)]="addModel[col.key]" [name]="col.key">
                     <select class="form-control" *ngIf="col.controlType === 'dropdown'" [(ngModel)]="addModel[col.key]" [name]="col.key">
-                        <option *ngFor="let option of col.options" [value]="option.key">{{option.value}}</option>
+                        <option *ngFor="let option of col.options" [value]="option.id">{{option.value}}</option>
                     </select>
                 </div>
             </div>

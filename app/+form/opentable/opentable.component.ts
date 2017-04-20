@@ -207,7 +207,7 @@ export class OpenTable implements ControlValueAccessor {
     select.classList.add('selectStyle');
     options.forEach( opt => {
       let optionEl = <HTMLOptionElement>document.createElement('option');
-      optionEl.value = opt.key;
+      optionEl.value = opt.id;
       optionEl.text = opt.value;
       select.appendChild(optionEl);
     });

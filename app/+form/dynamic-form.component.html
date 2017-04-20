@@ -32,7 +32,7 @@
             <div class="bottom-bar" style="position:relative;" [class.expanded]="showDateBar"
                  (click)="showDateBar = !showDateBar">
                 <span class="text-muted">
-                    <div class="pull-left padding-sm">(TODO: get title)</div>
+                    <div class="pull-left padding-sm">{{getTitle()}}</div>
                     <div class="padding-sm pull-right">
                         <span class="glyphicon glyphicon-user"></span>
                         <small>

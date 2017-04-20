@@ -20,6 +20,8 @@ export class AuthService {
   // contains the whole roles with its permissions
   rolesDetail: any[];
 
+  tokenName: string = 'id_token';
+
   public loginStatusChange = new Subject<boolean>();
   public loginStatusChange$ = this.loginStatusChange.asObservable();
 
@@ -57,7 +59,7 @@ export class AuthService {
 
           // store username and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem('currentUser', JSON.stringify({username: username, token: token, rolesDetail: this.rolesDetail}));
-          localStorage.setItem('id_token', token);
+          localStorage.setItem(this.tokenName, token);
           this.loginStatusChange.next(true);
 
           // return true to indicate successful login
@@ -85,7 +87,7 @@ export class AuthService {
     this.token = null;
     this.loginStatusChange.next(false);
     localStorage.removeItem('currentUser');
-    localStorage.removeItem('id_token');
+    localStorage.removeItem(this.tokenName);
     this.router.navigate(['/login']);
   }
 
@@ -99,6 +101,6 @@ export class AuthService {
 
   // Finally, this method will check to see if the user is logged in. We'll be able to tell by checking to see if they have a token and whether that token is valid or not.
   loggedIn() {
-    return tokenNotExpired();
+    return tokenNotExpired(this.tokenName);
   }
 }

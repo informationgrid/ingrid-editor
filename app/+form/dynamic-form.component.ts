@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, AfterViewInit, ViewChild} from '@angular/core';
+import {Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {FormGroup, FormArray} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
 import {FieldBase, Container} from './controls';
@@ -36,6 +36,7 @@ export interface FormDataContainer {
   template: require('./dynamic-form.component.html'),
   styles: [require('./dynamic-form.component.css')],
   providers: [FormControlService]
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
@@ -49,7 +50,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // editMode: boolean = false;
 
   fields: FieldBase<any>[] = [];
-  form: FormGroup;
+  form: FormGroup = null;
   data: FormData = {};
   behaviours: Behaviour[];
   observers: Subscription[] = [];
@@ -453,5 +454,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     let partial = this.addPartialToField(field, data.section);
     let formArray = <FormArray>this.form.controls[data.key];
     this.addPartialToForm(partial, formArray, {});
+  }
+
+  getTitle() {
+    // console.log( '.' );
+    return this.formularService.getTitle(null, this.data);
   }
 }

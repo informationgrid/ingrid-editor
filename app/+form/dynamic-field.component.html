@@ -28,7 +28,7 @@
 
         <!-- SELECT -->
         <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key" class="form-control">
-            <option *ngFor="let opt of field.options" [value]="opt.key">{{opt.value}}</option>
+            <option *ngFor="let opt of field.options" [value]="opt.id">{{opt.value}}</option>
         </select>
 
         <!-- TEXTAREA -->

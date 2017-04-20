@@ -5,6 +5,7 @@ import {UVPProfile} from './uvp/uvp.profile';
 import {AddressProfile} from './address/address.profile';
 import {Observable, Subject, Subscription} from 'rxjs';
 import {Profile} from './profile';
+import {CodelistService} from '../../+form/services/codelist.service';
 
 @Injectable()
 export class FormularService {
@@ -23,7 +24,7 @@ export class FormularService {
   selectedDocuments$: Observable<string[]> = this.selectedDocuments.asObservable();
 
   addressProfile = new AddressProfile();
-  uvpProfile = new UVPProfile();
+  uvpProfile = new UVPProfile(this.codelistService);
   folderProfile = new FolderProfile();
 
   docTypes = [
@@ -32,6 +33,8 @@ export class FormularService {
     {id: 'ADDRESS', label: 'Address'},
     {id: 'FOLDER', label: 'Folder'}
   ];
+
+  constructor(private codelistService: CodelistService) {}
 
   getFields(profile: string) {
     let fields: FieldBase<any>[];
@@ -56,6 +59,7 @@ export class FormularService {
   }
 
   getTitle(profile: string, doc: any) {
+    if (!profile) profile = this.currentProfile;
     let title = this.getProfile(profile).getTitle(doc);
     return title ? title : '- untitled -';
   }

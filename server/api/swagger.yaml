@@ -548,6 +548,38 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     x-swagger-router-controller: "Statistic"
+  /codelist/{id}:
+    options:
+      operationId: get
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      tags:
+      - "Codelist"
+      summary: ""
+      description: ""
+      operationId: "getCodelistById"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the codelist."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: ""
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+    x-swagger-router-controller: Codelist
 securityDefinitions:
   jwt:
     type: apiKey
