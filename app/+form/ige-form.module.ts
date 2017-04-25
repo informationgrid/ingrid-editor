@@ -16,11 +16,12 @@ import {LinkDatasetComponent} from './linkDataset/link-dataset.component';
 import {FocusDirective} from '../directives/focus.directive';
 import {SharedModule} from '../shared.module';
 import {CodelistService} from './services/codelist.service';
+import {NominatimService} from './leaflet/nominatim.service';
 
 @NgModule( {
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), SharedModule, routing, ModalModule, TreeModule],
   declarations: [FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator, BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent, FocusDirective],
-  providers: [CodelistService],
+  providers: [CodelistService, NominatimService],
   exports: [ToastyModule, FormsModule, FocusDirective]
 } )
 export class IgeFormModule {

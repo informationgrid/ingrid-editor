@@ -15,20 +15,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@angular/animations": "^4.0.2",
-    "@angular/common": "^4.0.2",
-    "@angular/compiler": "^4.0.2",
-    "@angular/compiler-cli": "^4.0.2",
-    "@angular/core": "^4.0.2",
-    "@angular/forms": "^4.0.2",
-    "@angular/http": "^4.0.2",
-    "@angular/platform-browser": "^4.0.2",
-    "@angular/platform-browser-dynamic": "^4.0.2",
-    "@angular/platform-server": "^4.0.2",
-    "@angular/router": "^4.0.2",
-    "angular-2-dropdown-multiselect": "^1.0.8",
+    "@angular/animations": "^4.0.3",
+    "@angular/common": "^4.0.3",
+    "@angular/compiler": "^4.0.3",
+    "@angular/compiler-cli": "^4.0.3",
+    "@angular/core": "^4.0.3",
+    "@angular/forms": "^4.0.3",
+    "@angular/http": "^4.0.3",
+    "@angular/platform-browser": "^4.0.3",
+    "@angular/platform-browser-dynamic": "^4.0.3",
+    "@angular/platform-server": "^4.0.3",
+    "@angular/router": "^4.0.3",
+    "angular-2-dropdown-multiselect": "^1.1.0",
     "angular-split": "^0.2.0",
-    "angular-tree-component": "^3.3.0",
+    "angular-tree-component": "^3.3.1",
     "angular2-jwt": "0.2.0",
     "bootstrap": "^3.3.7",
     "chart.js": "^2.5.0",
@@ -41,7 +41,7 @@
     "ng2-toasty": "^4.0.0",
     "ngx-modal": "^0.0.29",
     "rxjs": "5.3.0",
-    "zone.js": "0.8.5"
+    "zone.js": "0.8.8"
   },
   "devDependencies": {
     "angular2-template-loader": "^0.6.2",
@@ -75,7 +75,7 @@
     "typescript": "^2.2.2",
     "url-loader": "^0.5.8",
     "webpack": "^2.4.1",
-    "webpack-dev-server": "^2.4.2",
+    "webpack-dev-server": "^2.4.3",
     "webpack-merge": "^4.1.0"
   }
 }

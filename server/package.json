@@ -21,7 +21,8 @@
     "jsonwebtoken": "^7.3.0",
     "mongodb": "^2.2.25",
     "swagger-tools": "0.10.1",
-    "tingodb": "^0.5.1"
+    "tingodb": "^0.5.1",
+    "xml2js": "^0.4.17"
   },
   "devDependencies": {
     "mocha": "^3.2.0"

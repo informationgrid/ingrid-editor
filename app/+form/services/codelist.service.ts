@@ -5,7 +5,7 @@ import {ErrorService} from '../../services/error.service';
 
 export interface Codelist {
   id: string;
-  values: CodelistEntry[];
+  entries: CodelistEntry[];
 }
 export interface CodelistEntry {
   id: string;
@@ -35,20 +35,36 @@ export class CodelistService {
     return new Promise( (resolve, reject) => {
       if (this.codelists[id]) {
 
-        resolve( this.codelists[id].values );
+        resolve( this.codelists[id].entries );
 
       } else {
 
         this.http.get( this.configService.backendUrl + 'codelist/' + id )
           .catch( (err: any) => this.errorService.handle( err ) )
           .subscribe( (data: any) => {
-            debugger
+            // debugger
             this.codelists[id] = data.json();
-            resolve( this.codelists[id].values );
+            let entries = this.codelists[id].entries;
+            resolve( this.prepareEntries(entries) );
           }, (err) => reject( err ) );
-
       }
     } );
   }
 
+  prepareEntries(entries: any[]) {
+    let result: any[] = [];
+    entries.forEach(entry => {
+      let item = {
+        id: entry.id,
+        value: this.getLocalisedValue( entry.localisations )
+      };
+      result.push(item);
+    });
+    return result;
+  }
+
+  getLocalisedValue(locals: any[]) {
+    let result = locals.filter(local => local[0] === 'de');
+    return result[0][1];
+  }
 }

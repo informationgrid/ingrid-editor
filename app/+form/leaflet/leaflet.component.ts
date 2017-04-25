@@ -2,6 +2,9 @@ import {AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, forwa
 import {LatLng, Map} from 'leaflet';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ModalService} from '../../services/modal/modal.service';
+import {NominatimService} from './nominatim.service';
+import LatLngBounds = L.LatLngBounds;
+import LatLngExpression = L.LatLngExpression;
 
 
 export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
@@ -25,12 +28,15 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
         <button type="button" title="Suchen" [class.active]="showSearch" class="btn btn-default glyphicon glyphicon-search pull-right" (click)="showSearch = !showSearch"></button>
         <div class="text-muted text-center">
             <small>
-                Latitude: {{_bbox.lat | number:'1.0-4'}}
+                Latitude: {{_bbox.lat1 | number:'1.0-4'}} - {{_bbox.lat2 | number:'1.0-4'}}
                 <br>
-                Longitude: {{_bbox.lon | number:'1.0-4'}}
+                Longitude: {{_bbox.lon1 | number:'1.0-4'}} - {{_bbox.lon2 | number:'1.0-4'}}
             </small>
         </div>
-        <input *ngIf="showSearch" #locationQuery type="text" class="form-control" (keyup)="searchLocation(locationQuery)">
+        <input *ngIf="showSearch" #locationQuery type="text" class="form-control" (keyup)="searchLocation(locationQuery.value)">
+        <select *ngIf="showSearch" #locationResult name="nominatimResult" multiple (change)="showBoundingBox(locationResult.value)">
+          <option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>
+        </select>
     </div>
   `,
   styles: [`
@@ -52,7 +58,10 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   private showSearch: boolean = false;
   private outsideSetData: boolean = false;
 
-  constructor(private modalService: ModalService) {
+  private nominatimResult: any = [];
+
+
+  constructor(private modalService: ModalService, private nominatimService: NominatimService) {
   }
 
   get bbox(): any {
@@ -62,15 +71,20 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   writeValue(value: any): void {
     if (!value) {
       this._bbox = {
-        lat: 50,
-        lon: 12
+        lat1: 50,
+        lon1: 12,
+        lat2: 50,
+        lon2: 12
       };
     } else {
       this._bbox = value;
     }
     if (this.leafletReference && this.bbox) {
       this.outsideSetData = true;
-      this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
+      // this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
+      if (this._bbox.lat1) {
+        this.leafletReference.fitBounds(new LatLngBounds([this.bbox.lat1, this.bbox.lon1], [this.bbox.lat2, this.bbox.lon2]));
+      }
       this.outsideSetData = false;
     }
   }
@@ -83,7 +97,12 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   }
 
   handleChange(setView?: boolean) {
-    if (setView) this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
+    if (setView) {
+      // this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
+      this.leafletReference.fitBounds(
+        new LatLngBounds([this.bbox.lat1, this.bbox.lon1], [this.bbox.lat2, this.bbox.lon2]),
+        {maxZoom: 12});
+    }
     this._onChangeCallback(this._bbox);
   }
 
@@ -91,7 +110,10 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     this.leaflet.nativeElement.style.height = this.height + 'px';
     this.leaflet.nativeElement.style.width = '100%';
 
-    if (this.bbox) this.options.center = new LatLng(this.bbox.lat, this.bbox.lon);
+    if (this.bbox.lat1) {
+      let bounds = new LatLngBounds([this.bbox.lat1, this.bbox.lon1], [this.bbox.lat2, this.bbox.lon2]);
+      this.options.center = bounds.getCenter();
+    }
     this.leafletReference = L.map(this.leaflet.nativeElement, this.options);
     this.toggleMap(true);
     // this.leafletReference._onResize();
@@ -101,17 +123,32 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
       if (this.outsideSetData) return;
 
       let bounds = this.leafletReference.getBounds();
-      let center = bounds.getCenter();
+      // let center = bounds.getCenter();
       // console.debug( 'bounds:', center );
-      this._bbox.lat = center.lat;
-      this._bbox.lon = center.lng;
+      this._bbox.lat1 = bounds.getSouthWest().lat;
+      this._bbox.lon1 = bounds.getSouthWest().lng;
+      this._bbox.lat2 = bounds.getNorthEast().lat;
+      this._bbox.lon2 = bounds.getNorthEast().lng;
       this.handleChange(false);
     });
   }
 
   searchLocation(query: string) {
-    this.modalService.showNotImplemented();
+    // this.modalService.showNotImplemented();
+    this.nominatimService.search(query).subscribe((response: any) => {
+      this.nominatimResult = response;
+      console.log( 'Nominatim:', response );
+    });
+  }
 
+  showBoundingBox(box: any) {
+    let coords = box.split(',');
+    console.log(box);
+    this._bbox.lat1 = coords[0];
+    this._bbox.lon1 = coords[2];
+    this._bbox.lat2 = coords[1];
+    this._bbox.lon2 = coords[3];
+    this.handleChange(true);
   }
 
   toggleMap(forceDisable?: boolean) {
