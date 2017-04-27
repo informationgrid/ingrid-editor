@@ -1,11 +1,15 @@
-import {AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, forwardRef} from '@angular/core';
-import {LatLng, Map} from 'leaflet';
+import {
+  AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, forwardRef,
+  ViewEncapsulation
+} from '@angular/core';
+import {Map} from 'leaflet';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ModalService} from '../../services/modal/modal.service';
 import {NominatimService} from './nominatim.service';
 import LatLngBounds = L.LatLngBounds;
 import LatLngExpression = L.LatLngExpression;
 
+import '../../../assets/leaflet/leaflet-areaselect';
 
 export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -40,14 +44,31 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
     </div>
   `,
   styles: [`
-    
+    .leaflet-areaselect-shade {
+      position: absolute;
+      background: rgba(0,0,0, 0.4);
+    }
+    .leaflet-areaselect-handle {
+      position: absolute;
+      background: #fff;
+      border: 1px solid #666;
+      -moz-box-shadow: 1px 1px rgba(0,0,0, 0.2);
+      -webkit-box-shadow: 1px 1px rgba(0,0,0, 0.2);
+      box-shadow: 1px 1px rgba(0,0,0, 0.2);
+      width: 14px;
+      height: 14px;
+      cursor: move;
+    }
   `],
+  encapsulation: ViewEncapsulation.None,
   providers: [LEAFLET_CONTROL_VALUE_ACCESSOR]
 })
 export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
 
   @ViewChild('leaflet') leaflet: ElementRef;
   private leafletReference: L.Map;
+  private areaSelect: any;
+  private drawnBBox: any;
 
   @Input() options: Map.MapOptions;
   @Input() height: number;
@@ -83,10 +104,16 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
       this.outsideSetData = true;
       // this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
       if (this._bbox.lat1) {
-        this.leafletReference.fitBounds(new LatLngBounds([this.bbox.lat1, this.bbox.lon1], [this.bbox.lat2, this.bbox.lon2]));
+        this.drawBoxAndZoomToBounds();
       }
       this.outsideSetData = false;
     }
+  }
+
+  private drawBoxAndZoomToBounds() {
+    let box = this.getLatLngBoundsFromBox();
+    this.drawBoundingBox(box);
+    this.leafletReference.fitBounds(box, {maxZoom: 12});
   }
 
   registerOnChange(fn: any): void {
@@ -118,19 +145,14 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     this.toggleMap(true);
     // this.leafletReference._onResize();
 
-    this.leafletReference.on('moveend', () => {
+    /*this.leafletReference.on('moveend', () => {
       // if data was set from outside, then ignore update
       if (this.outsideSetData) return;
 
-      let bounds = this.leafletReference.getBounds();
-      // let center = bounds.getCenter();
-      // console.debug( 'bounds:', center );
-      this._bbox.lat1 = bounds.getSouthWest().lat;
-      this._bbox.lon1 = bounds.getSouthWest().lng;
-      this._bbox.lat2 = bounds.getNorthEast().lat;
-      this._bbox.lon2 = bounds.getNorthEast().lng;
       this.handleChange(false);
-    });
+    });*/
+
+    this.drawBoxAndZoomToBounds();
   }
 
   searchLocation(query: string) {
@@ -158,12 +180,18 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
       this.leafletReference.scrollWheelZoom.disable();
       this.leafletReference.doubleClickZoom.disable();
       this.leafletReference.touchZoom.disable();
+      // setup area select box
+      this.applyAreaSelect();
+
       this.mapEditing = false;
     } else {
       this.leafletReference.dragging.enable();
       this.leafletReference.scrollWheelZoom.enable();
       this.leafletReference.doubleClickZoom.enable();
       this.leafletReference.touchZoom.enable();
+      // setup area select box
+      this.setupAreaSelect();
+
       this.mapEditing = true;
     }
   }
@@ -179,4 +207,31 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     if (this.leaflet.nativeElement.remove) this.leaflet.nativeElement.remove();
   }
 
+  private setupAreaSelect() {
+    let box = this.drawnBBox._path.getBBox();
+    this.areaSelect = L.areaSelect({width: box.width, height: box.height});
+    this.areaSelect.addTo(this.leafletReference);
+  }
+
+  private applyAreaSelect() {
+    if (this.areaSelect) {
+      let bounds = this.areaSelect.getBounds();
+      this.areaSelect.remove();
+      this.drawBoundingBox(bounds);
+      this._bbox.lat1 = bounds.getSouthWest().lat;
+      this._bbox.lon1 = bounds.getSouthWest().lng;
+      this._bbox.lat2 = bounds.getNorthEast().lat;
+      this._bbox.lon2 = bounds.getNorthEast().lng;
+      this.handleChange(false);
+    }
+  }
+
+  private drawBoundingBox(latLonBounds: LatLngBounds) {
+    if (this.drawnBBox) this.leafletReference.removeLayer( this.drawnBBox );
+    this.drawnBBox = L.rectangle(latLonBounds, {color: "#ff7800", weight: 1}).addTo(this.leafletReference);
+  }
+
+  private getLatLngBoundsFromBox(): LatLngBounds {
+    return new LatLngBounds([this.bbox.lat1, this.bbox.lon1], [this.bbox.lat2, this.bbox.lon2])
+  }
 }
