@@ -42,7 +42,6 @@ export class CodelistService {
         this.http.get( this.configService.backendUrl + 'codelist/' + id )
           .catch( (err: any) => this.errorService.handle( err ) )
           .subscribe( (data: any) => {
-            // debugger
             this.codelists[id] = data.json();
             let entries = this.codelists[id].entries;
             resolve( this.prepareEntries(entries) );

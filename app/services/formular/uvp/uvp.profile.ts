@@ -27,7 +27,6 @@ export class UVPProfile implements Profile {
     } );
 
     this.codelistService.byId( '8000' ).then( codelist => {
-      debugger;
       codelistDropDown.options = codelist;
     } );
     // }
@@ -43,7 +42,8 @@ export class UVPProfile implements Profile {
             key: 'taskId',
             label: 'Vorhabensnummer',
             // domClass: 'half',
-            order: 1
+            order: 1,
+            required: true
           } ),
 
           new TextboxField( {

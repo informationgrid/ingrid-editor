@@ -23,5 +23,15 @@ export class TitleValidatorBehaviour extends BaseBehaviour implements Behaviour 
         validateTop: {valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen'}
       };
     };
+
+    form.get('mainInfo.taskId').validator = function (fc: FormControl) {
+      // TODO: the validator seems to be called for each created form field of the profile
+      console.log('.');
+
+      return (fc.value && fc.value.length > 0) ? null : {
+        validateTop: {valid: false, error: 'Dieses Feld darf nicht leer sein.'}
+      };
+      // or use fc.pristine or !fc.touched initially?
+    };
   }
 }

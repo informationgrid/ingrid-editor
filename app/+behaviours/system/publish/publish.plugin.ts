@@ -67,11 +67,11 @@ export class PublishPlugin extends Plugin {
     // let errors: any = {errors: []};
     // this.storageService.beforeSave.next(errors);
 
-    // if (formData.form.invalid) {
-    //   this.modalService.showError('Es müssen alle Felder korrekt ausgefüllt werden.');
-    // } else {
+    if (formData.form.invalid) {
+      this.modalService.showError('Es müssen alle Felder korrekt ausgefüllt werden.');
+    } else {
       this.storageService.publish(formData.value);
-    // }
+    }
   }
 
   revert() {
