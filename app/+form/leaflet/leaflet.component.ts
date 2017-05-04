@@ -1,24 +1,31 @@
 import {
-  AfterViewInit, OnDestroy, Component, ElementRef, Input, ViewChild, forwardRef,
-  ViewEncapsulation, ChangeDetectorRef
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  forwardRef,
+  Input,
+  OnDestroy,
+  ViewChild
 } from '@angular/core';
 import {Map} from 'leaflet';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ModalService} from '../../services/modal/modal.service';
 import {NominatimService} from './nominatim.service';
+import '../../../assets/leaflet/leaflet-areaselect';
 import LatLngBounds = L.LatLngBounds;
 import LatLngExpression = L.LatLngExpression;
+import MapOptions = L.MapOptions;
 
-import '../../../assets/leaflet/leaflet-areaselect';
 
 export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => LeafletComponent),
+  useExisting: forwardRef( () => LeafletComponent ),
   multi: true
 };
 
 
-@Component({
+@Component( {
   selector: 'leaflet',
   template: `
     <div #leaflet title="Zum Verändern des Ausschnitts, müssen Sie den Bearbeiten-Knopf drücken."></div>
@@ -28,28 +35,45 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
         Longitude: <input type="text" class="form-control" [(ngModel)]="_bbox.lon" (change)="handleChange()">
     </div>-->
     <div class="full">
-        <button type="button" title="Bearbeiten" [class.active]="mapEditing" class="btn btn-default glyphicon glyphicon-edit pull-left" (click)="toggleMap()"></button>
-        <button type="button" title="Suchen" [class.active]="showSearch" class="btn btn-default glyphicon glyphicon-search pull-right" (click)="showSearch = !showSearch"></button>
-        <div class="text-muted text-center">
-            <small *ngIf="drawnBBox">
-                Latitude: {{_bbox.lat1 | number:'1.0-4'}} - {{_bbox.lat2 | number:'1.0-4'}}
-                <br>
-                Longitude: {{_bbox.lon1 | number:'1.0-4'}} - {{_bbox.lon2 | number:'1.0-4'}}
-            </small>
-            <small *ngIf="!drawnBBox">
-                Nichts ausgewählt
-            </small>
+      <button *ngIf="!showSearch" type="button" title="Bearbeiten"
+              class="btn btn-default glyphicon glyphicon-edit pull-left" (click)="toggleSearch(true)"></button>
+      <div class="text-muted text-center">
+        <small *ngIf="drawnBBox">
+          Latitude: {{_bbox.lat1 | number:'1.0-4'}} - {{_bbox.lat2 | number:'1.0-4'}}
+          <br>
+          Longitude: {{_bbox.lon1 | number:'1.0-4'}} - {{_bbox.lon2 | number:'1.0-4'}}
+        </small>
+        <small *ngIf="!drawnBBox">
+          Nichts ausgewählt
+        </small>
+      </div>
+      <div *ngIf="showSearch" class="nominatimContainer">
+        <input #locationQuery type="text" class="form-control" (keyup)="searchLocation(locationQuery.value)"
+               [focus]="showSearch">
+        <select #locationResult name="nominatimResult" multiple (change)="showBoundingBox(locationResult.value)">
+          <option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>
+        </select>
+        <div class="bottom">
+          <button type="button" class="btn btn-default pull-left" (click)="cancelEdit()">Abbrechen</button>
+          <button type="button" class="btn btn-primary pull-right" (click)="applyEdit()">Übernehmen</button>
         </div>
-        <div *ngIf="showSearch" class="nominatimContainer">
-            <input #locationQuery type="text" class="form-control" (keyup)="searchLocation(locationQuery.value)">
-            <select #locationResult name="nominatimResult" multiple (change)="showBoundingBox(locationResult.value)">
-                <option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>
-            </select>
-        </div>
+      </div>
     </div>
   `,
   styles: [`
-    :host { position: relative; }
+    :host {
+      position: relative;
+    }
+
+    .bottom {
+      display: block;
+    }
+
+    select {
+      flex-grow: 1;
+      margin: 10px 0;
+    }
+
     .nominatimContainer {
       position: absolute;
       top: 0;
@@ -59,38 +83,46 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
       background-color: #eee;
       padding: 10px;
       box-shadow: 0px 0px 20px -5px #000;
+      display: flex;
+      flex-direction: column;
     }
-    /deep/ .leaflet-areaselect-shade {
+
+    /deep/
+    .leaflet-areaselect-shade {
       position: absolute;
-      background: rgba(0,0,0, 0.4);
+      background: rgba(0, 0, 0, 0.4);
     }
-    /deep/ .leaflet-areaselect-handle {
+
+    /deep/
+    .leaflet-areaselect-handle {
       position: absolute;
       background: #fff;
       border: 1px solid #666;
-      -moz-box-shadow: 1px 1px rgba(0,0,0, 0.2);
-      -webkit-box-shadow: 1px 1px rgba(0,0,0, 0.2);
-      box-shadow: 1px 1px rgba(0,0,0, 0.2);
+      -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+      -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+      box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
       width: 14px;
       height: 14px;
       cursor: move;
     }
   `],
   providers: [LEAFLET_CONTROL_VALUE_ACCESSOR]
-})
+} )
 export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
 
-  @ViewChild('leaflet') leaflet: ElementRef;
+  @ViewChild( 'leaflet' ) leaflet: ElementRef;
   private leafletReference: L.Map;
   private areaSelect: any;
   private drawnBBox: any;
 
-  @Input() options: Map.MapOptions;
+  @Input() options: MapOptions;
   @Input() height: number;
 
   private _onChangeCallback: (x: any) => void;
+
   private _bbox: any = {};
-  private mapEditing: boolean = false;
+  private _bboxPrevious: any;
+
   private showSearch: boolean = false;
 
   private nominatimResult: any = [];
@@ -104,16 +136,16 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     this.leaflet.nativeElement.style.height = this.height + 'px';
     this.leaflet.nativeElement.style.width = '100%';
 
-    this.leafletReference = L.map(this.leaflet.nativeElement, this.options);
-    this.toggleMap(true);
+    this.leafletReference = L.map( this.leaflet.nativeElement, this.options );
+    this.toggleSearch( false );
     // this.leafletReference._onResize();
 
     /*this.leafletReference.on('moveend', () => {
-      // if data was set from outside, then ignore update
-      if (this.outsideSetData) return;
+     // if data was set from outside, then ignore update
+     if (this.outsideSetData) return;
 
-      this.handleChange(false);
-    });*/
+     this.handleChange(false);
+     });*/
 
     if (this._bbox) {
       this.drawBoxAndZoomToBounds();
@@ -142,26 +174,26 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     }
   }
 
-  private zoomToInitialBox() {
+  private zoomToInitialBox(): Map {
     let initialBox = {
       lat1: 46.9203,
       lon1: 5.625,
       lat2: 56.3653,
       lon2: 15.9961
     };
-    let box = this.getLatLngBoundsFromBox(initialBox);
-    this.leafletReference.fitBounds(box, {maxZoom: 12});
+    let box = this.getLatLngBoundsFromBox( initialBox );
+    return this.leafletReference.fitBounds( box, {maxZoom: 13} );
   }
 
-  private drawBoxAndZoomToBounds() {
+  private drawBoxAndZoomToBounds(): Map {
     try {
       let box = this.getLatLngBoundsFromBox( this._bbox );
       this.drawBoundingBox( box );
-      this.leafletReference.fitBounds( box, {maxZoom: 12} );
+      return this.leafletReference.fitBounds( box, {maxZoom: 13} );
     } catch (ex) {
-      console.error('Problem drawing bounding box', ex);
+      console.error( 'Problem drawing bounding box', ex );
       this._bbox = null;
-      this.zoomToInitialBox();
+      return this.zoomToInitialBox();
     }
   }
 
@@ -176,52 +208,55 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     if (setView) {
       // this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
       this.leafletReference.fitBounds(
-        new LatLngBounds([this._bbox.lat1, this._bbox.lon1], [this._bbox.lat2, this._bbox.lon2]),
-        {maxZoom: 12});
+        new LatLngBounds( [this._bbox.lat1, this._bbox.lon1], [this._bbox.lat2, this._bbox.lon2] ),
+        {maxZoom: 13} );
     }
-    this._onChangeCallback(this._bbox);
+    this._onChangeCallback( this._bbox );
   }
 
   searchLocation(query: string) {
-    this.nominatimService.search(query).subscribe((response: any) => {
+    this.nominatimService.search( query ).subscribe( (response: any) => {
       this.nominatimResult = response;
       console.log( 'Nominatim:', response );
-    });
+    } );
   }
 
   showBoundingBox(box: any) {
-    let coords = box.split(',');
-    console.log(box);
+    let coords = box.split( ',' );
+    console.log( box );
     this._bbox = {
       lat1: coords[0],
       lon1: coords[2],
       lat2: coords[1],
       lon2: coords[3]
     };
-    this.drawBoxAndZoomToBounds();
-    this.handleChange(false);
+    // this.drawBoxAndZoomToBounds();
+    // this.handleChange(false);
+    // let latLonBounds = this.getLatLngBoundsFromBox(bbox);
+    this.setAreaSelect();
   }
 
-  toggleMap(forceDisable?: boolean) {
-    let enabled = forceDisable ? true : this.leafletReference.dragging.enabled();
-    if (enabled) {
-      this.leafletReference.dragging.disable();
-      this.leafletReference.scrollWheelZoom.disable();
-      this.leafletReference.doubleClickZoom.disable();
-      this.leafletReference.touchZoom.disable();
-      // setup area select box
-      this.applyAreaSelect();
+  toggleSearch(forceShow?: boolean) {
+    // toggle status variable or use override value
+    this.showSearch = (forceShow === undefined) ? !this.showSearch : forceShow;
 
-      this.mapEditing = false;
-    } else {
+    // let disableEditing = forceDisable ? true : !this.leafletReference.dragging.enabled();
+    if (this.showSearch) {
       this.leafletReference.dragging.enable();
       this.leafletReference.scrollWheelZoom.enable();
       this.leafletReference.doubleClickZoom.enable();
       this.leafletReference.touchZoom.enable();
       // setup area select box
       this.setupAreaSelect();
+      this._bboxPrevious = this._bbox;
 
-      this.mapEditing = true;
+    } else {
+      this.leafletReference.dragging.disable();
+      this.leafletReference.scrollWheelZoom.disable();
+      this.leafletReference.doubleClickZoom.disable();
+      this.leafletReference.touchZoom.disable();
+      // setup area select box
+      // this.applyAreaSelect();
     }
   }
 
@@ -239,38 +274,65 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   private setupAreaSelect() {
     let box = this.drawnBBox ? this.drawnBBox._path.getBBox() : null;
     if (box) {
-      this.areaSelect = L.areaSelect({width: box.width, height: box.height});
+      this.areaSelect = L.areaSelect( box );
     } else {
-      this.areaSelect = L.areaSelect({width: 50, height: 50});
+      this.areaSelect = L.areaSelect( {width: 50, height: 50} );
     }
-    this.areaSelect.addTo(this.leafletReference);
+    this.areaSelect.addTo( this.leafletReference );
+  }
+
+  private setAreaSelect() {
+    let updateAreaSelect = () => {
+      let box = this.drawnBBox._path.getBBox();
+      this.areaSelect.setDimensions( box );
+    };
+    this.drawBoxAndZoomToBounds().once( 'zoomend', () => {
+      setTimeout( () => updateAreaSelect(), 10 );
+    } );
+    setTimeout( () => {
+      updateAreaSelect();
+    }, 270 );
   }
 
   private applyAreaSelect() {
     if (this.areaSelect) {
       let bounds = this.areaSelect.getBounds();
       this.areaSelect.remove();
-      this.drawBoundingBox(bounds);
+      this.drawBoundingBox( bounds );
       this._bbox = {
         lat1: bounds.getSouthWest().lat,
         lon1: bounds.getSouthWest().lng,
         lat2: bounds.getNorthEast().lat,
         lon2: bounds.getNorthEast().lng
       };
-      this.handleChange(false);
+      this.handleChange( false );
     }
   }
 
   private drawBoundingBox(latLonBounds: LatLngBounds) {
     this.removeDrawnBoundingBox();
-    this.drawnBBox = L.rectangle(latLonBounds, {color: "#ff7800", weight: 1}).addTo(this.leafletReference);
+    this.drawnBBox = L.rectangle( latLonBounds, {color: "#ff7800", weight: 1} ).addTo( this.leafletReference );
   }
 
   private removeDrawnBoundingBox() {
     if (this.drawnBBox) this.leafletReference.removeLayer( this.drawnBBox );
   }
 
-  private getLatLngBoundsFromBox(bbox): LatLngBounds {
-    return new LatLngBounds([bbox.lat1, bbox.lon1], [bbox.lat2, bbox.lon2]);
+  private getLatLngBoundsFromBox(bbox: any): LatLngBounds {
+    return new LatLngBounds( [bbox.lat1, bbox.lon1], [bbox.lat2, bbox.lon2] );
+  }
+
+  private cancelEdit() {
+    this.showSearch = false;
+    this._bbox = this._bboxPrevious;
+    this.areaSelect.remove();
+    this.drawBoxAndZoomToBounds();
+    this.toggleSearch( false );
+  }
+
+  private applyEdit() {
+    this.showSearch = false;
+    this.applyAreaSelect();
+    this.toggleSearch( false );
   }
 }

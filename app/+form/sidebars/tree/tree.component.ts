@@ -6,6 +6,7 @@ import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
 import {ErrorService} from '../../../services/error.service';
 import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {Promise} from 'es6-promise';
 
 @Component({
   selector: 'tree',
@@ -127,11 +128,14 @@ export class MetadataTreeComponent implements OnInit {
   }
 
   private createNewDatasetTemplate(doc: any) {
+    let name = this.formularService.getTitle(doc._profile, doc);
+
     return {
-      id: '-1',
-      name: 'Neuer Datensatz',
+      id: doc._id ? doc._id : '-1',
+      name: name && name !== this.formularService.untitledLabel ? name : 'Neuer Datensatz',
       _profile: doc._profile,
-      _state: 'W'
+      _state: 'W',
+      _iconClass: this.formularService.getIconClass(doc._profile)
     };
   }
 
@@ -153,6 +157,11 @@ export class MetadataTreeComponent implements OnInit {
 
   onDeleteDataset(doc: any) {
     let path = this.getNodeIdPath(doc._id);
+
+    if (!path) {
+      console.warn('path is null after delete!?', doc);
+      return;
+    }
 
     // since we don't have the parent we determine the parent from the node path
     // and get the parent from that to finally get the wanted node from the model

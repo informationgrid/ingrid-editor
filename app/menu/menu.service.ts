@@ -20,7 +20,8 @@ export class MenuService {
     {name: 'Form', path: '/form/-2'},
     {name: 'Plugins', path: '/plugins', onlyAdmin: true},
     // {name: 'Fields', path: '/fields'}
-    {name: 'Benutzer', path: '/user', onlyAdmin: true}
+    {name: 'Benutzer', path: '/user', onlyAdmin: true},
+    {name: 'Im-/Export', path: '/importExport', onlyAdmin: true}
   ];
 
   constructor(private router: Router, private authService: AuthService) {

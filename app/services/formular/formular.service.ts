@@ -6,9 +6,12 @@ import {AddressProfile} from './address/address.profile';
 import {Observable, Subject, Subscription} from 'rxjs';
 import {Profile} from './profile';
 import {CodelistService} from '../../+form/services/codelist.service';
+import {AuthService} from '../security/auth.service';
 
 @Injectable()
 export class FormularService {
+
+  untitledLabel = '- untitled -';
 
   data = {};
 
@@ -23,9 +26,9 @@ export class FormularService {
   selectedDocuments = new Subject<string[]>();
   selectedDocuments$: Observable<string[]> = this.selectedDocuments.asObservable();
 
-  addressProfile = new AddressProfile();
-  uvpProfile = new UVPProfile(this.codelistService);
-  folderProfile = new FolderProfile();
+  addressProfile: Profile;
+  uvpProfile: Profile;
+  folderProfile: Profile;
 
   docTypes = [
     {id: 'UVP', label: 'UVP'},
@@ -34,7 +37,27 @@ export class FormularService {
     {id: 'FOLDER', label: 'Folder'}
   ];
 
-  constructor(private codelistService: CodelistService) {}
+  constructor(private codelistService: CodelistService, authService: AuthService) {
+    // create profiles after we have logged in
+    let init = () => {
+      this.addressProfile = new AddressProfile();
+      this.uvpProfile = new UVPProfile(this.codelistService);
+      this.folderProfile = new FolderProfile();
+    };
+
+    console.log("init profiles");
+    if (authService.loggedIn()) {
+      init();
+    } else {
+      let loginSubscriber = authService.loginStatusChange$.subscribe( loggedIn => {
+        if (loggedIn) {
+          init();
+          console.log("Finished init profiles");
+          loginSubscriber.unsubscribe();
+        }
+      } );
+    }
+  }
 
   getFields(profile: string) {
     let fields: FieldBase<any>[];
@@ -61,7 +84,7 @@ export class FormularService {
   getTitle(profile: string, doc: any) {
     if (!profile) profile = this.currentProfile;
     let title = this.getProfile(profile).getTitle(doc);
-    return title ? title : '- untitled -';
+    return title ? title : this.untitledLabel;
   }
 
   getIconClass(profile: string): string {
@@ -87,7 +110,8 @@ export class FormularService {
 
   getSelectedDocuments(): string[] {
     let ids: string[] = [];
-    this.selectedDocuments.next(ids);
+    this.
+      .next(ids);
     return ids;
   }
 }

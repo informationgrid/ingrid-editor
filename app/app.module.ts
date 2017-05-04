@@ -28,10 +28,11 @@ import {HelpComponent} from './help/help.component';
 import {AUTH_PROVIDERS} from 'angular2-jwt';
 import {ToastService} from './services/toast.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ImportExportModule} from './+importExport/import-export.module';
 
 @NgModule( {
   declarations: [AppComponent, HelpComponent, LoginComponent, StatisticComponent, MenuComponent], // directives, components, and pipes owned by this NgModule
-  imports: [BrowserModule, BrowserAnimationsModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, PluginsModule, routing, ModalModule],
+  imports: [BrowserModule, BrowserAnimationsModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule, UserModule, ImportExportModule, PluginsModule, routing, ModalModule],
   providers: [AUTH_PROVIDERS, appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     ErrorService, AuthService, ConfigService, FormToolbarService, FormularService, StorageService,
     StorageDummyService, BehavioursDefault, ModalService, ToastService, {

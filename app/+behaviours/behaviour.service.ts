@@ -9,6 +9,7 @@ import {ConfigService} from '../config/config.service';
 import {AuthHttp, AuthHttpError} from 'angular2-jwt';
 import {Plugin} from './plugin';
 import {AuthService} from '../services/security/auth.service';
+import {Promise} from 'es6-promise';
 
 // the variable containing additional behaviours is global!
 declare let additionalBehaviours: any;

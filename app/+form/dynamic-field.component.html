@@ -48,7 +48,7 @@
 
         <link-dataset *ngSwitchCase="'linkDataset'" [formControlName]="field.key" [filter]="field.filter"></link-dataset>
 
-        <div class="alert alert-danger" [class.hide]="form.controls[field.key].valid || form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>
+        <div class="help-block" [class.hide]="form.controls[field.key].valid || form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>
     </div>
 
 

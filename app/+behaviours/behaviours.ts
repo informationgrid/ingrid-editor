@@ -18,6 +18,7 @@ import {ModalService} from '../services/modal/modal.service';
 import {CopyCutPastePlugin} from "./system/CopyCutPaste/copy-cut-paste.behaviour";
 import {ToastService} from '../services/toast.service';
 import {PrintViewPlugin} from './system/printView/print-view.plugin';
+import {FolderPlugin} from './system/folder/folder.plugin';
 
 export interface Behaviour {
   id: string;
@@ -66,6 +67,7 @@ export class BehavioursDefault {
     new CreateDocRulesPlugin(this.formService, this.storageService),
     new CopyCutPastePlugin(this.formService, this.formToolbarService, this.storageService, this.modalService,
       this.toastService, this.compFacResolver),
-    new PrintViewPlugin(this.formToolbarService, this.modalService, this.compFacResolver)
+    new PrintViewPlugin(this.formToolbarService, this.modalService, this.compFacResolver),
+    new FolderPlugin(this.formToolbarService, this.formService, this.modalService, this.storageService, this.compFacResolver)
   ];
 }

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
@@ -14,8 +14,7 @@
   },
   "files": [
     "app/app.module.ts",
-    "app/main.ts",
-    "./typings/index.d.ts"
+    "app/main.ts"
   ],
   "exclude": ["node_modules"]
 }

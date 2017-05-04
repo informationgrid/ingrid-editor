@@ -64,6 +64,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   userRoles: Role[];
 
+  docToDelete: string;
+
   // choice of doc types to be shown when creating new document
   newDocOptions: any = {
     docTypes: [],
@@ -138,7 +140,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           _id: this.data._id,
           _profile: this.formularService.currentProfile
         };
-        Object.assign(container.value, this.form.value);
+
+        // if form was already initialized then map values to the response
+        if (this.form) {
+          Object.assign(container.value, this.form.value);
+        }
       }),
 
       // load dataset when one was updated
@@ -341,13 +347,20 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
   deleteDoc() {
+    let ids = this.formularService.getSelectedDocuments();
+    this.docToDelete = ids[0] + '';
     this.deleteConfirmModal.open();
   }
 
   doDelete() {
     try {
-      this.storageService.delete(this.data._id);
-      this.form = null;
+      let ids = this.formularService.getSelectedDocuments();
+      this.storageService.delete(ids[0]);
+
+      // clear form if we removed the currently opened doc
+      if (this.data._id === ids[0]) {
+        this.form = null;
+      }
     } catch (ex) {
       console.error( 'Could not delete' );
     }

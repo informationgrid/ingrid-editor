@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Modal} from 'ngx-modal';
 import {FormularService} from '../../../services/formular/formular.service';
-import {Profile} from '../../../services/formular/profile';
 
 @Component({
   template: require('./print-view.component.html')

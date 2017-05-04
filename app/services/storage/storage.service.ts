@@ -30,7 +30,16 @@ export class StorageService {
   constructor(private http: AuthHttp, private modalService: ModalService, private formularService: FormularService,
               private configService: ConfigService, private authenticationService: AuthService,
               private errorService: ErrorService, private router: Router) {
-    this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
+    if (authenticationService.loggedIn()) {
+      this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
+    } else {
+        let loginSubscriber = authenticationService.loginStatusChange$.subscribe( loggedIn => {
+          if (loggedIn) {
+            this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
+            loginSubscriber.unsubscribe();
+          }
+        });
+    }
   }
 
   _createRequestOptions(): RequestOptions {
@@ -81,7 +90,11 @@ export class StorageService {
         data._id = res.json()._id;
         data._state = res.json()._state;
         this.afterSave.next(data);
-        this.datasetsChanged.next({type: UpdateType.Update, data: data});
+        // FIXME: UpdateNew is not called for new docs
+        this.datasetsChanged.next({
+          // type: previousId === '-1' ? UpdateType.New : UpdateType.Update,
+          type: UpdateType.Update,
+          data: data});
         resolve(data);
       }, err => {
         reject(err);

@@ -34,7 +34,7 @@ export class AddressProfile implements Profile {
           key: 'type',
           label: 'Typ',
           domClass: 'quarter',
-          options: [{key: 'email', value: 'Email'}, {key: 'phone', value: 'Telefon'}]
+          options: [{id: 'email', value: 'Email'}, {id: 'phone', value: 'Telefon'}]
         }),
         new TextboxField({
           key: 'value',
@@ -105,7 +105,10 @@ export class AddressProfile implements Profile {
   ];
 
   getTitle(doc: any) {
-    return doc.firstName + ' ' + doc.lastName;
+    if (!doc.firstName && !doc.lastName) return null;
+    else {
+      return doc.firstName + ' ' + doc.lastName;
+    }
   }
 
   getTitleFields(): string[] {
