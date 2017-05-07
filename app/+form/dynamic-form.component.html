@@ -16,7 +16,7 @@
             <li role="presentation" [class.active]="sideTab === 'search'"><a (click)="sideTab = 'search'">Suche</a></li>
         </ul>
         <tree [class.hide]="sideTab !== 'tree'"
-              (onSelected)="handleLoad($event.id, $event.profile, $event.forceLoad)"></tree>
+              (onSelected)="handleLoad($event)"></tree>
         <browser [class.hide]="sideTab !== 'search'" (onSelected)="load($event.id)"></browser>
     </split-area>
 
@@ -153,7 +153,10 @@
 
 <modal #deleteConfirmModal title="Löschen" cancelButtonLabel="Nein" submitButtonLabel="Ja" (onSubmit)="doDelete()">
     <modal-content>
-        <p>Möchten Sie wirklich diesen Datensatz löschen: {{docToDelete}}</p>
+        <p>Möchten Sie wirklich diese Datensätze löschen:</p>
+        <ul>
+            <li *ngFor="let doc of docsToDelete">{{doc.label}}</li>
+        </ul>
     </modal-content>
 </modal>
 

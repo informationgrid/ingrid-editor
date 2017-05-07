@@ -94,7 +94,7 @@ export class StorageService {
         this.datasetsChanged.next({
           // type: previousId === '-1' ? UpdateType.New : UpdateType.Update,
           type: UpdateType.Update,
-          data: data});
+          data: [data]});
         resolve(data);
       }, err => {
         reject(err);
@@ -128,13 +128,14 @@ export class StorageService {
     }, err => this.errorService.handle(err));
   }
 
-  delete(id: string): any {
-    let response = this.http.delete(this.configService.backendUrl + 'dataset/' + id)
+  delete(ids: string[]): any {
+    let response = this.http.delete(this.configService.backendUrl + 'dataset/' + ids)
       .catch(err => this.errorService.handle(err));
 
     response.subscribe(res => {
       console.log( 'ok', res );
-      this.datasetsChanged.next({type: UpdateType.Delete, data: {_id: id}});
+      let data = ids.map( id => { return  { _id: id } } );
+      this.datasetsChanged.next({type: UpdateType.Delete, data: data});
     });
   }
 

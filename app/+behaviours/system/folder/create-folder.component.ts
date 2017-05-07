@@ -66,7 +66,7 @@ export class CreateFolderComponent implements OnInit {
     if (this.asSubFolder) {
       let selectedDocs = this.formService.getSelectedDocuments();
       if (selectedDocs.length === 1) {
-        parent = selectedDocs[0];
+        parent = selectedDocs[0].id;
       }
     }
     return parent;

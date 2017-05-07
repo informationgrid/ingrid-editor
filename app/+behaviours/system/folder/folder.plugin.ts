@@ -5,6 +5,7 @@ import {ModalService} from '../../../services/modal/modal.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Plugin} from '../../plugin';
 import {CreateFolderComponent} from './create-folder.component';
+import {SelectedDocument} from '../../../+form/sidebars/selected-document.model';
 
 export class FolderPlugin extends Plugin {
   id = 'plugin.folder';
@@ -31,7 +32,11 @@ export class FolderPlugin extends Plugin {
     console.log( 'register folder plugin' );
     // add button to toolbar for publish action
     this.formToolbarService.addButton( {
-      id: 'toolBtnFolder', tooltip: 'Create Folder', cssClasses: 'glyphicon glyphicon-folder-close', eventId: this.eventCreateFolderId, active: true
+      id: 'toolBtnFolder',
+      tooltip: 'Create Folder',
+      cssClasses: 'glyphicon glyphicon-folder-close',
+      eventId: this.eventCreateFolderId,
+      active: true
     }, 1 );
 
     // add event handler for revert
@@ -63,28 +68,28 @@ export class FolderPlugin extends Plugin {
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
     let parent = this.formService.getSelectedDocuments();
-    let factory = this._cr.resolveComponentFactory(CreateFolderComponent);
+    let factory = this._cr.resolveComponentFactory( CreateFolderComponent );
 
-    let providers = ReflectiveInjector.resolve([]);
-    const popInjector = ReflectiveInjector.fromResolvedProviders(providers, this.modalService.containerRef.parentInjector);
-    this.modalService.containerRef.createComponent(factory, null, popInjector);
+    let providers = ReflectiveInjector.resolve( [] );
+    const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
+    this.modalService.containerRef.createComponent( factory, null, popInjector );
   }
 
   unregister() {
     super.unregister();
 
-    this.formToolbarService.removeButton('toolBtnFolder');
+    this.formToolbarService.removeButton( 'toolBtnFolder' );
   }
 
   /**
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    let handleButtonState = (data: any) => {
-      if (!data || data._profile === 'FOLDER') {
-        this.formToolbarService.setButtonState('toolBtnFolder', true);
+    let handleButtonState = (data: SelectedDocument) => {
+      if (!data || data.profile === 'FOLDER') {
+        this.formToolbarService.setButtonState( 'toolBtnFolder', true );
       } else {
-        this.formToolbarService.setButtonState('toolBtnFolder', false);
+        this.formToolbarService.setButtonState( 'toolBtnFolder', false );
 
       }
     };
@@ -93,8 +98,12 @@ export class FolderPlugin extends Plugin {
     //   handleButtonState(data);
     // });
 
-    this.storageService.afterLoadAndSet$.subscribe( (data) => {
-      handleButtonState(data);
-    });
+    this.formService.selectedDocuments$.subscribe( data => {
+      if (data.length === 1) {
+        handleButtonState( data[0] );
+      } else {
+        this.formToolbarService.setButtonState( 'toolBtnFolder', false );
+      }
+    } );
   }
 }

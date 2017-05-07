@@ -75,22 +75,22 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private handleEvent(type: UpdateType) {
-    this.storageService.datasetsChanged.next({
+    this.storageService.datasetsChanged.next( {
       type: type,
       data: null
-    });
+    } );
   }
 
   copy() {
     // remove last remembered copied documents
-    this.copiedDatasets = this.formService.getSelectedDocuments();
+    this.copiedDatasets = this.formService.getSelectedDocuments().map( doc => doc.id );
 
     // show dialog where to copy the dataset(s)
     let factory = this._cr.resolveComponentFactory( PasteDialogComponent );
 
     let providers = ReflectiveInjector.resolve( [
-      {provide: MoveMode, useValue: { mode: CopyMoveEnum.COPY }},
-      {provide: PasteCallback, useValue: this.paste.bind(this)}
+      {provide: MoveMode, useValue: {mode: CopyMoveEnum.COPY}},
+      {provide: PasteCallback, useValue: this.paste.bind( this )}
     ] );
     const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
     this.modalService.containerRef.createComponent( factory, null, popInjector );
@@ -98,7 +98,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   cut() {
     // remove last remembered copied documents
-    this.copiedDatasets = this.formService.getSelectedDocuments();
+    this.copiedDatasets = this.formService.getSelectedDocuments().map( doc => doc.id );
 
     this.toastService.show( 'Datensatz verschoben' );
 
@@ -106,17 +106,17 @@ export class CopyCutPastePlugin extends Plugin {
     let factory = this._cr.resolveComponentFactory( PasteDialogComponent );
 
     let providers = ReflectiveInjector.resolve( [
-      {provide: MoveMode, useValue: { mode: CopyMoveEnum.MOVE }},
-      {provide: PasteCallback, useValue: this.paste.bind(this)}
+      {provide: MoveMode, useValue: {mode: CopyMoveEnum.MOVE}},
+      {provide: PasteCallback, useValue: this.paste.bind( this )}
     ] );
     const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
     this.modalService.containerRef.createComponent( factory, null, popInjector );
   }
 
   paste(targetNode: any, mode: CopyMoveEnum) {
-    console.log('is paste');
+    console.log( 'is paste' );
     // TODO: add subtree pasting
-    let dest = targetNode.id;
+    let dest = targetNode[0].id;
     let includeTree = false;
 
     let result = null;

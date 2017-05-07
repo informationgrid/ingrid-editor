@@ -3,10 +3,11 @@ import {FieldBase} from '../../+form/controls';
 import {FolderProfile} from './folder/folder.profile';
 import {UVPProfile} from './uvp/uvp.profile';
 import {AddressProfile} from './address/address.profile';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {Profile} from './profile';
 import {CodelistService} from '../../+form/services/codelist.service';
 import {AuthService} from '../security/auth.service';
+import {SelectedDocument} from '../../+form/sidebars/selected-document.model';
 
 @Injectable()
 export class FormularService {
@@ -20,11 +21,16 @@ export class FormularService {
   formDataSubject = new Subject<any>();
   formDataSubject$ = this.formDataSubject.asObservable();
 
+  // an observer when a new document is created
   newDocumentSubject = new Subject<any>();
   newDocumentSubject$ = this.newDocumentSubject.asObservable();
 
-  selectedDocuments = new Subject<string[]>();
-  selectedDocuments$: Observable<string[]> = this.selectedDocuments.asObservable();
+  // the currently selected documents from the tree or browser
+  selectedDocs: SelectedDocument[];
+
+  // an observer to subscribe to, when reacting on newly selected documents
+  selectedDocuments = new Subject<SelectedDocument[]>();
+  selectedDocuments$: Observable<SelectedDocument[]> = this.selectedDocuments.asObservable();
 
   addressProfile: Profile;
   uvpProfile: Profile;
@@ -108,10 +114,12 @@ export class FormularService {
     return formData;
   }
 
-  getSelectedDocuments(): string[] {
-    let ids: string[] = [];
-    this.
-      .next(ids);
-    return ids;
+  setSelectedDocuments(docs: SelectedDocument[]) {
+    this.selectedDocs = docs;
+    this.selectedDocuments.next(docs);
+  }
+
+  getSelectedDocuments(): SelectedDocument[] {
+    return this.selectedDocs;
   }
 }

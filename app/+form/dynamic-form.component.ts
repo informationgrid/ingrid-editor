@@ -17,6 +17,7 @@ import {ErrorService} from '../services/error.service';
 import {ToastOptions, ToastyService, ToastyConfig} from 'ng2-toasty';
 import {AuthService} from '../services/security/auth.service';
 import {Role} from '../models/user-role';
+import {SelectedDocument} from './sidebars/selected-document.model';
 
 interface FormData extends Object {
   _id?: string;
@@ -64,7 +65,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   userRoles: Role[];
 
-  docToDelete: string;
+  docsToDelete: SelectedDocument[];
 
   // choice of doc types to be shown when creating new document
   newDocOptions: any = {
@@ -149,7 +150,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // load dataset when one was updated
       this.storageService.datasetsChanged$.subscribe((msg) => {
-        if (msg.type === UpdateType.Update) this.load( this.data._id, msg.data._previousId );
+        if (msg.type === UpdateType.Update && msg.data.length === 1) {
+          this.load( msg.data[0]._id, msg.data[0]._previousId );
+        }
       })
     );
   }
@@ -218,7 +221,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       // notify browser/tree of new dataset
       this.storageService.datasetsChanged.next({
         type: UpdateType.New,
-        data: {_id: '-1', _profile: profile, _parent: this.data._parent}
+        data: [{_id: '-1', _profile: profile, _parent: this.data._parent}]
       });
       this.newDocAdded = true;
     } catch (ex) {
@@ -230,7 +233,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   handleNewDatasetOnLeave() {
     // remove new doc if one was created
     if (this.newDocAdded) {
-      this.storageService.datasetsChanged.next({type: UpdateType.Delete, data: {_id: '-1', _parent: this.data._parent}});
+      this.storageService.datasetsChanged.next({type: UpdateType.Delete, data: [{_id: '-1', _parent: this.data._parent}]});
       this.newDocAdded = false;
     }
   }
@@ -244,11 +247,20 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.discardConfirmModal.close();
   }
 
-  handleLoad(id: string, profile?: string, forceLoad?: boolean) {
-    if (profile === 'FOLDER' && !forceLoad) return;
+  handleLoad(selectedDocs: SelectedDocument[]) { // id: string, profile?: string, forceLoad?: boolean) {
+    // inform toolbar about selection
+    this.formularService.setSelectedDocuments(selectedDocs);
 
-    // this.load(id);
-    this.router.navigate( ['/form', id]);
+    // do not load document if more than one is selected
+    if (selectedDocs.length !== 1) return;
+
+    let doc = selectedDocs[0];
+
+    // if a folder was selected then normally do not show the form
+    // show folder form only if the edit button was clicked which adds the forceLoad option
+    if (doc.profile === 'FOLDER' && !doc.editable) return;
+
+    this.router.navigate( ['/form', doc.id]);
   }
 
   load(id: string, previousId?: string) {
@@ -347,19 +359,22 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
   deleteDoc() {
-    let ids = this.formularService.getSelectedDocuments();
-    this.docToDelete = ids[0] + '';
+    let docs = this.formularService.getSelectedDocuments();
+    this.docsToDelete = docs;
     this.deleteConfirmModal.open();
   }
 
   doDelete() {
     try {
-      let ids = this.formularService.getSelectedDocuments();
-      this.storageService.delete(ids[0]);
+      let ids = this.docsToDelete.map(doc => doc.id);
+      this.storageService.delete(ids);
 
       // clear form if we removed the currently opened doc
+      // and change route in case we try to reload page which would load the deleted document
       if (this.data._id === ids[0]) {
         this.form = null;
+        // TODO: use constant for no document selected
+        this.router.navigate( ['/form', -2]);
       }
     } catch (ex) {
       console.error( 'Could not delete' );

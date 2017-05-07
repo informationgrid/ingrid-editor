@@ -17,8 +17,10 @@ export interface Separator extends DefaultToolbarItem{
 @Injectable()
 export class FormToolbarService {
 
+  // event when a new button was added
   toolbar$: Subject<ToolbarItem|Separator>;
 
+  // events coming from a toolbar button
   toolbarEvent$: Subject<string>;
 
   _buttons: Array<ToolbarItem|Separator> = [
@@ -32,7 +34,7 @@ export class FormToolbarService {
 
   constructor() {
     this.toolbar$ = new Subject<ToolbarItem>();
-    this.toolbarEvent$ = new Subject<string>(); // new Observable<string>( (observer: any) => this.toolbarEventObserver = observer );
+    this.toolbarEvent$ = new Subject<string>();
   }
 
   /**
