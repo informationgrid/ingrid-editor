@@ -15,6 +15,17 @@ export class CreateFolderComponent implements OnInit {
   folderName = '';
   asSubFolder = false;
 
+  private static createNewFolderDoc(folderName: string, parent?: string) {
+    const data: any = {
+      _profile: 'FOLDER',
+      title: folderName
+    };
+    if (parent) {
+      data._parent = parent;
+    }
+    return data;
+  }
+
   constructor(private formService: FormularService, private storageService: StorageService) {
   }
 
@@ -32,14 +43,14 @@ export class CreateFolderComponent implements OnInit {
     // if a name was entered
     if (this.folderName && this.folderName.trim().length > 0) {
       // store a new folder in the backend by calling storage service
-      let parent = this.getParentForFolder();
+      const parent = this.getParentForFolder();
 
-      let folder = CreateFolderComponent.createNewFolderDoc(this.folderName, parent);
+      const folder = CreateFolderComponent.createNewFolderDoc(this.folderName, parent);
 
       // first send the information to tree that a new dataset is going to be created
       this.storageService.datasetsChanged.next({
         type: UpdateType.New,
-        data: folder
+        data: [folder]
       });
 
       // by saving the folder an update event is sent automatically to notify tree
@@ -51,20 +62,11 @@ export class CreateFolderComponent implements OnInit {
     }
   }
 
-  private static createNewFolderDoc(folderName: string, parent?: string) {
-    let data: any = {
-      _profile: 'FOLDER',
-      title: folderName
-    };
-    if (parent) data._parent = parent;
-    return data;
-  }
-
   private getParentForFolder(): string {
     let parent = null;
     // if ...
     if (this.asSubFolder) {
-      let selectedDocs = this.formService.getSelectedDocuments();
+      const selectedDocs = this.formService.getSelectedDocuments();
       if (selectedDocs.length === 1) {
         parent = selectedDocs[0].id;
       }

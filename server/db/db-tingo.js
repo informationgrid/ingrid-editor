@@ -62,8 +62,13 @@ module.exports = {
     return new Promise(function(resolve) {
       if (selector == null) {
         collection.find().toArray( (err, data) => {
-          let filtered = data.filter( entry => entry._parent === undefined);
-          resolve(filtered);
+          if (data) {
+            let filtered = data.filter( entry => entry._parent === undefined);
+            resolve(filtered);
+
+          } else {
+            resolve([]);
+          }
         });
 
       } else {
