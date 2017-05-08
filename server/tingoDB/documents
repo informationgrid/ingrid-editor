@@ -1,0 +1,66 @@
+{"k":"0000000079","o":"0000000449","v":"001"}
+{"_id":2,"_uid":21,"_dt":1481821988127,"_s":"355e78251580672f4e0a067cd1d1373d"}
+{"_id":{"$wrap":"$oid","v":2},"_created":{"$wrap":"$date","v":1480611414881,"h":"2016-12-01T16:56:54.881Z"},"_modified":{"$wrap":"$date","v":1481821988127,"h":"2016-12-15T17:13:08.127Z"},"draft":null,"_modifiedBy":"admin","published":{"_profile":"UVP","mainInfo":{"taskId":"","title":"aaa","description":""},"bbox":"","categories":"","behaviourField":"","sections":[]},"_published":{"$wrap":"$date","v":1481821988127,"h":"2016-12-15T17:13:08.127Z"}}
+{"k":"0000000078","o":"0000000318","v":"001"}
+{"_id":3,"_uid":3,"_dt":1480611446024,"_s":"56fada6dcb9fe97846a7dbb0098d06e1"}
+{"_id":{"$wrap":"$oid","v":3},"_created":{"$wrap":"$date","v":1480611446015,"h":"2016-12-01T16:57:26.015Z"},"_modified":{"$wrap":"$date","v":1480611446015,"h":"2016-12-01T16:57:26.015Z"},"draft":{"mainInfo":{"taskId":null,"title":"aaa","description":null},"bbox":null,"categories":null,"sections":[],"_profile":"UVP"}}
+{"k":"0000000078","o":"0000000318","v":"001"}
+{"_id":4,"_uid":4,"_dt":1480611493325,"_s":"ddd9e563f57d7b28493f2ef2d5349a4d"}
+{"_id":{"$wrap":"$oid","v":4},"_created":{"$wrap":"$date","v":1480611493316,"h":"2016-12-01T16:58:13.316Z"},"_modified":{"$wrap":"$date","v":1480611493316,"h":"2016-12-01T16:58:13.316Z"},"draft":{"mainInfo":{"taskId":null,"title":"aaa","description":null},"bbox":null,"categories":null,"sections":[],"_profile":"UVP"}}
+{"k":"0000000079","o":"0000000367","v":"001"}
+{"_id":5,"_uid":22,"_dt":1490976533860,"_s":"a84804a06f4918ce9014c69a805366af"}
+{"_id":{"$wrap":"$oid","v":5},"_created":{"$wrap":"$date","v":1480611506246,"h":"2016-12-01T16:58:26.246Z"},"_modified":{"$wrap":"$date","v":1490976533859,"h":"2017-03-31T16:08:53.859Z"},"draft":{"mainInfo":{"taskId":"","title":"bbb","description":""},"bbox":"","categories":"","behaviourField":"","sections":[],"publisher":"","_profile":"UVP"},"_modifiedBy":"andre"}
+{"k":"0000000080","o":"0000000635","v":"001"}
+{"_id":14,"_uid":22,"_dt":1493377914290,"_s":"e9f66e756b317d673d816f4f50ec34ab"}
+{"_id":{"$wrap":"$oid","v":14},"_created":{"$wrap":"$date","v":1481567564652,"h":"2016-12-12T18:32:44.652Z"},"_modified":{"$wrap":"$date","v":1493377914287,"h":"2017-04-28T11:11:54.287Z"},"_modifiedBy":"admin","draft":{"numberString":"","mainInfo":{"taskId":"1","title":"Erster Datensatz","description":""},"bbox":{"lat1":49.986331384664645,"lon1":11.976814270019531,"lat2":50.01369614376082,"lon2":12.023506164550783},"categories":"","behaviourField":"","sections":[{"publicDisplay":{"date":"2011-11-11","constructionInfo":"","applicationDocs":"","reportsAndRecommendations":"","additionalDocs":""}}],"publisher":"","_profile":"UVP"}}
+{"k":"0000000080","o":"0000000367","v":"001"}
+{"_id":15,"_uid":15,"_dt":1481567581525,"_s":"8a07753ec0a8864faf5cd4ca312ca09c"}
+{"_id":{"$wrap":"$oid","v":15},"_created":{"$wrap":"$date","v":1481567581525,"h":"2016-12-12T18:33:01.525Z"},"_modified":{"$wrap":"$date","v":1481567581525,"h":"2016-12-12T18:33:01.525Z"},"_modifiedBy":"other","draft":{"mainInfo":{"taskId":"1","title":"Erster Datensatz","description":""},"bbox":"","categories":"","behaviourField":"","sections":[],"_profile":"UVP"}}
+{"k":"0000000080","o":"0000000431","v":"001"}
+{"_id":16,"_uid":22,"_dt":1491578304226,"_s":"e9abecac36185bc6304290784b7a51db"}
+{"_id":{"$wrap":"$oid","v":16},"_created":{"$wrap":"$date","v":1481567836034,"h":"2016-12-12T18:37:16.034Z"},"_modified":{"$wrap":"$date","v":1491578304223,"h":"2017-04-07T15:18:24.223Z"},"_modifiedBy":"admin","draft":{"mainInfo":{"taskId":"1","title":"Anderer Datensatz","description":""},"bbox":{"lat":49.69866799782292,"lon":11.773223876953127},"categories":"","behaviourField":"","sections":[],"publisher":"","_profile":"UVP"}}
+{"k":"0000000080","o":"0000000274","v":"001"}
+{"_id":17,"_uid":20,"_dt":1481634964525,"_s":"c5e972307bb766a9237851aab4c854b9"}
+{"_id":{"$wrap":"$oid","v":17},"_created":{"$wrap":"$date","v":1481633350954,"h":"2016-12-13T12:49:10.954Z"},"_modified":{"$wrap":"$date","v":1481633350954,"h":"2016-12-13T12:49:10.954Z"},"_modifiedBy":"admin","draft":{"title":"UVPs","_profile":"FOLDER"},"hasChildren":true}
+{"k":"0000000080","o":"0000000278","v":"001"}
+{"_id":18,"_uid":21,"_dt":1481654834526,"_s":"868701c5e62679f83a6e3f17f66528bb"}
+{"_id":{"$wrap":"$oid","v":18},"_created":{"$wrap":"$date","v":1481633409323,"h":"2016-12-13T12:50:09.323Z"},"_modified":{"$wrap":"$date","v":1481633409323,"h":"2016-12-13T12:50:09.323Z"},"_modifiedBy":"admin","draft":{"title":"Adressen","_profile":"FOLDER"},"hasChildren":true}
+{"k":"0000000080","o":"0000000264","v":"001"}
+{"_id":19,"_uid":19,"_dt":1481633484534,"_s":"e08fa7175020a07b06a783d794b0eacc"}
+{"_id":{"$wrap":"$oid","v":19},"_created":{"$wrap":"$date","v":1481633484534,"h":"2016-12-13T12:51:24.534Z"},"_modified":{"$wrap":"$date","v":1481633484534,"h":"2016-12-13T12:51:24.534Z"},"_modifiedBy":"admin","draft":{"title":"Vorprüfungen","_profile":"FOLDER"}}
+{"k":"0000000080","o":"0000000395","v":"001"}
+{"_id":20,"_uid":22,"_dt":1483622765585,"_s":"7716a0b6f1bfdc9f0588a2b56dc6566a"}
+{"_id":{"$wrap":"$oid","v":20},"_created":{"$wrap":"$date","v":1481634964520,"h":"2016-12-13T13:16:04.520Z"},"_modified":{"$wrap":"$date","v":1481653985402,"h":"2016-12-13T18:33:05.402Z"},"_modifiedBy":"andre","_parent":"17","draft":{"mainInfo":{"taskId":"1","title":"Dokument 1","description":""},"bbox":"","categories":"","behaviourField":"","sections":[],"_profile":"UVP"},"hasChildren":true}
+{"k":"0000000080","o":"0000000387","v":"001"}
+{"_id":21,"_uid":21,"_dt":1481654834523,"_s":"fd5a73d7de56c5adcad54d63d57507fa"}
+{"_id":{"$wrap":"$oid","v":21},"_created":{"$wrap":"$date","v":1481654834522,"h":"2016-12-13T18:47:14.522Z"},"_modified":{"$wrap":"$date","v":1481654834522,"h":"2016-12-13T18:47:14.522Z"},"_modifiedBy":"andre","_parent":"18","draft":{"firstName":"Michael","lastName":"Meier","contact":"","address":{"street":"","houseNumber":"","postbox":"","city":"","country":""},"_profile":"ADDRESS"}}
+{"k":"0000000080","o":"0000000363","v":"001"}
+{"_id":22,"_uid":22,"_dt":1483622765580,"_s":"bfb00ff34f3c4b8e74a9fed8f3ab5ff3"}
+{"_id":{"$wrap":"$oid","v":22},"_created":{"$wrap":"$date","v":1483622765578,"h":"2017-01-05T13:26:05.578Z"},"_modified":{"$wrap":"$date","v":1483622765578,"h":"2017-01-05T13:26:05.578Z"},"_modifiedBy":"admin","_parent":"20","draft":{"mainInfo":{"taskId":"1a","title":"Unterdokument","description":"xxx"},"bbox":"","categories":"","sections":[],"_profile":"UVP"}}
+{"k":"0000000079","o":"0000000483","v":"001"}
+{"_id":4,"_uid":22,"_dt":1493384409525,"_s":"e240c62097f3734312b75f469c5e5893"}
+{"_id":{"$wrap":"$oid","v":4},"_created":{"$wrap":"$date","v":1480611493316,"h":"2016-12-01T16:58:13.316Z"},"_modified":{"$wrap":"$date","v":1493384409521,"h":"2017-04-28T13:00:09.521Z"},"draft":{"numberString":"","mainInfo":{"taskId":"","title":"aaa","description":""},"bbox":{"lat1":49.98920100158541,"lon1":12.0135498046875,"lat2":50.0536119068041,"lon2":12.182464599609377},"categories":"","behaviourField":"","sections":[],"publisher":"","_profile":"UVP"},"_modifiedBy":"admin"}
+{"k":"0000000080","o":"0000000496","v":"001"}
+{"_id":15,"_uid":22,"_dt":1493388875470,"_s":"75f2911f2003d81ec5760765b93f54a4"}
+{"_id":{"$wrap":"$oid","v":15},"_created":{"$wrap":"$date","v":1481567581525,"h":"2016-12-12T18:33:01.525Z"},"_modified":{"$wrap":"$date","v":1493388875466,"h":"2017-04-28T14:14:35.466Z"},"_modifiedBy":"admin","draft":{"numberString":"","mainInfo":{"taskId":"1","title":"Erster Datensatz","description":""},"bbox":{"lat1":51.263633525637,"lon1":9.42352294921875,"lat2":51.34948523447414,"lon2":9.560852050781252},"categories":"","behaviourField":"","sections":[],"publisher":"","_profile":"UVP"}}
+{"k":"0000000080","o":"0000000634","v":"001"}
+{"_id":14,"_uid":22,"_dt":1493394996333,"_s":"4982803a2dfeb15377961ce80d234a45"}
+{"_id":{"$wrap":"$oid","v":14},"_created":{"$wrap":"$date","v":1481567564652,"h":"2016-12-12T18:32:44.652Z"},"_modified":{"$wrap":"$date","v":1493394996330,"h":"2017-04-28T15:56:36.330Z"},"_modifiedBy":"admin","draft":{"numberString":"","mainInfo":{"taskId":"","title":"Erster Datensatz","description":""},"bbox":{"lat1":49.986331384664645,"lon1":11.976814270019531,"lat2":50.01369614376082,"lon2":12.023506164550783},"categories":"","behaviourField":"","sections":[{"publicDisplay":{"date":"2011-11-11","constructionInfo":"","applicationDocs":"","reportsAndRecommendations":"","additionalDocs":""}}],"publisher":"","_profile":"UVP"}}
+{"k":"0000000080","o":"0000000731","v":"001"}
+{"_id":14,"_uid":22,"_dt":1493395367223,"_s":"3934c74381eebf662298f91188dbbf52"}
+{"_id":{"$wrap":"$oid","v":14},"_created":{"$wrap":"$date","v":1481567564652,"h":"2016-12-12T18:32:44.652Z"},"_modified":{"$wrap":"$date","v":1493395367222,"h":"2017-04-28T16:02:47.222Z"},"_modifiedBy":"admin","draft":null,"published":{"_profile":"UVP","numberString":"","mainInfo":{"taskId":"","title":"Erster Datensatz","description":""},"bbox":{"lat1":49.986331384664645,"lon1":11.976814270019531,"lat2":50.01369614376082,"lon2":12.023506164550783},"categories":"","behaviourField":"","sections":[{"publicDisplay":{"date":"2011-11-11","constructionInfo":"","applicationDocs":"","reportsAndRecommendations":"","additionalDocs":""}}],"publisher":""},"_published":{"$wrap":"$date","v":1493395367222,"h":"2017-04-28T16:02:47.222Z"}}
+{"k":"0000000080","o":"0000001142","v":"001"}
+{"_id":14,"_uid":22,"_dt":1493395371045,"_s":"391525267c6e967d7a1e2ba43b1ff98e"}
+{"_id":{"$wrap":"$oid","v":14},"_created":{"$wrap":"$date","v":1481567564652,"h":"2016-12-12T18:32:44.652Z"},"_modified":{"$wrap":"$date","v":1493395371043,"h":"2017-04-28T16:02:51.043Z"},"_modifiedBy":"admin","draft":{"numberString":"","mainInfo":{"taskId":"","title":"Erster Datensatz","description":""},"bbox":{"lat1":49.986331384664645,"lon1":11.976814270019531,"lat2":50.01369614376082,"lon2":12.023506164550783},"categories":"","behaviourField":"","sections":[{"publicDisplay":{"date":"2011-11-11","constructionInfo":"","applicationDocs":"","reportsAndRecommendations":"","additionalDocs":""}}],"publisher":"","_profile":"UVP"},"published":{"_profile":"UVP","numberString":"","mainInfo":{"taskId":"","title":"Erster Datensatz","description":""},"bbox":{"lat1":49.986331384664645,"lon1":11.976814270019531,"lat2":50.01369614376082,"lon2":12.023506164550783},"categories":"","behaviourField":"","sections":[{"publicDisplay":{"date":"2011-11-11","constructionInfo":"","applicationDocs":"","reportsAndRecommendations":"","additionalDocs":""}}],"publisher":""},"_published":{"$wrap":"$date","v":1493395367222,"h":"2017-04-28T16:02:47.222Z"}}
+{"k":"0000000080","o":"0000000731","v":"001"}
+{"_id":14,"_uid":22,"_dt":1493395437668,"_s":"83ec6545410c03c9e70564be55cfe3d9"}
+{"_id":{"$wrap":"$oid","v":14},"_created":{"$wrap":"$date","v":1481567564652,"h":"2016-12-12T18:32:44.652Z"},"_modified":{"$wrap":"$date","v":1493395437667,"h":"2017-04-28T16:03:57.667Z"},"_modifiedBy":"admin","draft":null,"published":{"_profile":"UVP","numberString":"","mainInfo":{"taskId":"","title":"Erster Datensatz","description":""},"bbox":{"lat1":49.986331384664645,"lon1":11.976814270019531,"lat2":50.01369614376082,"lon2":12.023506164550783},"categories":"","behaviourField":"","sections":[{"publicDisplay":{"date":"2011-11-11","constructionInfo":"","applicationDocs":"","reportsAndRecommendations":"","additionalDocs":""}}],"publisher":""},"_published":{"$wrap":"$date","v":1493395437667,"h":"2017-04-28T16:03:57.667Z"}}
+{"k":"0000000080","o":"0000000493","v":"001"}
+{"_id":16,"_uid":22,"_dt":1494233963406,"_s":"9a025b1a5da29dfb6dad64f68754982b"}
+{"_id":{"$wrap":"$oid","v":16},"_created":{"$wrap":"$date","v":1481567836034,"h":"2016-12-12T18:37:16.034Z"},"_modified":{"$wrap":"$date","v":1494233963402,"h":"2017-05-08T08:59:23.402Z"},"_modifiedBy":"admin","draft":{"numberString":"","mainInfo":{"taskId":"1","title":"Anderer Datensatz","description":""},"bbox":{"lat1":50.51342652633956,"lon1":8.613281250000002,"lat2":53.22576843579022,"lon2":13.0078125},"categories":"","behaviourField":"","sections":[],"publisher":"","_profile":"UVP"}}
+{"k":"0000000079","o":"0000000386","v":"001"}
+{"_id":3,"_uid":22,"_dt":1494234024362,"_s":"060b2a4c912795b96591ff11576269ca"}
+{"_id":{"$wrap":"$oid","v":3},"_created":{"$wrap":"$date","v":1480611446015,"h":"2016-12-01T16:57:26.015Z"},"_modified":{"$wrap":"$date","v":1494234024361,"h":"2017-05-08T09:00:24.361Z"},"draft":{"numberString":"","mainInfo":{"taskId":"","title":"aaa2","description":""},"bbox":"","categories":"","behaviourField":"","sections":[],"publisher":"","_profile":"UVP"},"_modifiedBy":"admin"}
+{"k":"0000000050","o":"0000000000","v":"001"}
+{"_id":3,"_uid":22,"_dt":1494234027275,"_a":"del"}
+

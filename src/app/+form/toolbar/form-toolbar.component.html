@@ -1,0 +1,14 @@
+<div class="btn-toolbar" role="toolbar" aria-label="Form-Toolbar">
+    <div class="text-muted" role="group" aria-label="...">
+        <span *ngFor="let button of buttons">
+            <button *ngIf="!button.isSeparator"
+                    class="btn {{button.cssClasses}}"
+                    [disabled]="!button.active"
+                    [title]="button.tooltip"
+                    (click)="sendEvent(button.eventId)"></button>
+
+            <div *ngIf="button.isSeparator"
+                 class="pull-left separator"></div>
+        </span>
+    </div>
+</div>

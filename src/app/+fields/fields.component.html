@@ -1,0 +1,21 @@
+<h1>Fields for UVP</h1>
+
+<div *ngFor="let field of fields" class="well">
+
+    <div [ngSwitch]="field.controlType">
+        <div *ngSwitchCase="'container'">
+            <div *ngIf="field.isRepeatable">
+                <div *ngFor="let child of field.children[0]" class="well-sm">
+                    id: {{child.key}}
+                </div>
+            </div>
+            <div *ngIf="!field.isRepeatable">
+                <div *ngFor="let child of field.children" class="well-sm">
+                    id: {{child.key}}
+                </div>
+            </div>
+        </div>
+
+        <div *ngSwitchDefault>id: {{field.key}}</div>
+    </div>
+</div>
