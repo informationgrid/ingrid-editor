@@ -12,7 +12,7 @@ let bodyParser = require('body-parser'),
     db = require('./db/dbInterface'),
     dbRole = require('./db/RoleDao'),
     dbUser = require('./db/UserDao');
-let serverPort = 8080;
+let serverPort = 8081;
 
 // swaggerRouter configuration
 let options = {

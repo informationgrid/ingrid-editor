@@ -1,0 +1,148 @@
+<split>
+
+    <!-- TODO: restrict role permission to groups! A simple user must not change his own role to admin!!! -->
+
+    <!-- ROLE LIST -->
+    <split-area [size]="25" id="sidebarRoles" class="container">
+        <div class="list-group">
+            <button *ngFor="let role of roles" type="button" class="list-group-item"
+                    [class.disabled]="role === selectedRole"
+                    (click)="loadRole(role)">
+                {{role.name}}
+            </button>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary glyphicon glyphicon-plus" (click)="addRole()"></button>
+        </div>
+    </split-area>
+
+    <!-- ROLE DETAIL -->
+    <split-area [size]="75" id="formRoles" class="container-fluid">
+        <div *ngIf="selectedRole.id">
+
+            <!-- TITLE -->
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-control" [(ngModel)]="selectedRole.name" name="name">
+            </div>
+
+            <!-- PAGES -->
+            <div class="form-group">
+                <label>Seiten</label>
+                <!--<select multiple class="form-control" [(ngModel)]="selectedRole.pages" name="pages">
+                    <option *ngFor="let page of pages" value="{{page.path}}">{{page.name}}</option>
+                </select>-->
+                <div class="clearfix"></div>
+                <ss-multiselect-dropdown [options]="pages" name="pages" [(ngModel)]="selectedRole.pages"></ss-multiselect-dropdown>
+            </div>
+
+            <!-- SPECIAL RIGHTS -->
+            <div class="checkbox">
+                <label>
+                    <!-- TODO: implement role admin permission -->
+                    <input type="checkbox" [(ngModel)]="selectedRole.roleAdmin" name="roleAdmin">
+                    Darf Gruppen bearbeiten (TODO)
+                </label>
+            </div>
+
+            <!-- PERMISSION OVERVIEW -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Dokumenten-Berechtigungen</h3>
+                </div>
+                <div class="panel-body">
+                    <h3>Dokumente</h3>
+                    <div *ngFor="let id of selectedRole.datasets">
+                        <!-- TODO: show document name for this ID -->
+                        <span class="">{{id}}</span>
+                        <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(id)"></button>
+                    </div>
+                    <h3>Dokument-Attribute</h3>
+                    <div *ngFor="let attr of selectedRole.attributes">
+                        <span class="">{{attr.id}}: {{attr.value}}</span>
+                        <button class="btn btn-default fa fa-remove" type="button" (click)="removeAttribute(attr)"></button>
+                    </div>
+                    <div *ngIf="selectedRole.attributes.length === 0 || selectedRole.datasets.length === 0">Keine gesetzt</div>
+                </div>
+            </div>
+            <button class="btn btn-default pull-right" (click)="newPermissionModal.open()">Berechtigung hinzufügen</button>
+
+            <div class="clearfix padding"></div>
+            <button class="btn btn-danger" (click)="deleteRole(selectedRole)">Löschen</button>
+            <button class="btn btn-primary pull-right" (click)="saveRole(selectedRole)">Speichern</button>
+        </div>
+
+        <!-- NO ROLE SELECTED -->
+        <div *ngIf="!selectedRole.id">
+            Keine Rolle ausgewählt.
+        </div>
+    </split-area>
+</split>
+
+
+<modal #newPermissionModal title="Neue Berechtigung" cancelButtonLabel="Abbrechen" submitButtonLabel="Ok"
+       (onSubmit)="createPermission(newPermissionModal)">
+    <modal-content>
+        <ul class="nav nav-tabs">
+            <li role="presentation" [class.active]="dialogTab === 'dataset'"><a (click)="dialogTab = 'dataset'">Datensatz</a>
+            </li>
+            <li role="presentation" [class.active]="dialogTab === 'tree'"><a (click)="dialogTab = 'tree'">Teilbaum</a>
+            </li>
+            <li role="presentation" [class.active]="dialogTab === 'attribute'"><a (click)="dialogTab = 'attribute'">Datensatz-Attribut</a>
+            </li>
+        </ul>
+
+        <!-- BY DATASET-->
+        <div [class.hide]="dialogTab !== 'dataset'" class="padding">
+            <div class="pull-left" style="width: 250px; height: 200px; overflow: auto;">
+                <tree #datasetTree [showFolderEditButton]="false"></tree>
+            </div>
+            <div *ngFor="let id of selectedRole.datasets">
+                <!-- TODO: show document name for this ID -->
+                <span class="">{{id}}</span>
+                <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(id)"></button>
+            </div>
+            <div *ngIf="!selectedRole.datasets || selectedRole.datasets.length === 0">
+                Keine Einschränkung auf Dokumente.
+            </div>
+
+            <div class="clearfix padding"></div>
+            <button class="btn btn-default" (click)="addDataset(datasetTree.selectedId)">Add</button>
+        </div>
+
+        <!-- BY TREE -->
+        <div [class.hide]="dialogTab !== 'tree'" class="padding">
+            <div class="alert alert-info" role="alert">
+                Hier wird später ein Ordner oder Datensatz ausgewählt werden können, dessen Unterobjekte man den Zugriff
+                gewähren kann.
+            </div>
+        </div>
+
+        <!-- BY ATTRIBUTE -->
+        <div [class.hide]="dialogTab !== 'attribute'" class="padding">
+
+            <form class="form-inline">
+                <div class="form-group">
+                    <!--<label>Feld</label>-->
+                    <input #newAttrKey class="form-control" type="text" name="attrKey" placeholder="Feld">
+                </div>
+                <div class="form-group">
+                    <!--<label>Wert</label>-->
+                    <input #newAttrValue class="form-control" type="text" name="attrValue" placeholder="Wert">
+                </div>
+                <button class="btn btn-default" (click)="addAttribute(newAttrKey.value, newAttrValue.value)">Add</button>
+            </form>
+
+            <hr>
+
+            <div *ngFor="let attr of selectedRole.attributes">
+                <span class="">{{attr.id}}: {{attr.value}}</span>
+                <button class="btn btn-default fa fa-remove" type="button" (click)="removeAttribute(attr)"></button>
+            </div>
+            <div *ngIf="!selectedRole.attributes || selectedRole.attributes.length === 0">
+                Keine Attribute gesetzt.
+            </div>
+        </div>
+    </modal-content>
+</modal>
+

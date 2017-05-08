@@ -1,0 +1,25 @@
+<ul class="nav nav-tabs">
+    <li role="presentation" [class.active]="currentTab === 'import'"><a (click)="currentTab = 'import'">Import</a></li>
+    <li role="presentation" [class.active]="currentTab === 'export'"><a (click)="currentTab = 'export'">Export</a></li>
+</ul>
+<div class="padding">
+
+    <div [class.hide]="currentTab !== 'import'">
+        <h1>import</h1>
+        <form>
+            <div class="form-group">
+                <label class="btn btn-default btn-file">
+                    <input #fileInput type="file" class="form-control" hidden>
+                    Upload
+                </label>
+                <span class="text-muted">{{fileInput.value}}</span>
+            </div>
+            <button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Import</button>
+        </form>
+    </div>
+
+    <div [class.hide]="currentTab !== 'export'">
+        <h1>export</h1>
+    </div>
+
+</div>

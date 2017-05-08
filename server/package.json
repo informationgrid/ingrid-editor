@@ -16,15 +16,15 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.17.1",
-    "connect": "^3.6.0",
-    "js-yaml": "^3.8.2",
-    "jsonwebtoken": "^7.3.0",
-    "mongodb": "^2.2.25",
+    "connect": "^3.6.1",
+    "js-yaml": "^3.8.3",
+    "jsonwebtoken": "^7.4.0",
+    "mongodb": "^2.2.26",
     "swagger-tools": "0.10.1",
     "tingodb": "^0.5.1",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
-    "mocha": "^3.2.0"
+    "mocha": "^3.3.0"
   }
 }

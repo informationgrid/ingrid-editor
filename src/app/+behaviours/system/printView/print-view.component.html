@@ -1,0 +1,21 @@
+<modal #printViewModal modalClass="info" title="Detailansicht" submitButtonLabel="Ok"
+       (onSubmit)="printViewModal.close()">
+    <modal-content>
+        <div *ngFor="let field of profile">
+            <div [ngSwitch]="field.controlType">
+                <div *ngSwitchCase="'container'">
+                    <div *ngFor="let child of field.children">
+                        <!-- TODO: use component to handle rendering -->
+                        <label>{{child.key}}</label>
+                        <div>{{doc[field.key][child.key]}}</div>
+                    </div>
+                </div>
+                <div *ngSwitchDefault="">
+                    <!-- TODO: use component to handle rendering -->
+                    <label>{{field.key}}</label>
+                    <div>{{doc[field.key]}}</div>
+                </div>
+            </div>
+        </div>
+    </modal-content>
+</modal>
