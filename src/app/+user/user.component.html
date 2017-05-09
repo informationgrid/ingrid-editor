@@ -19,30 +19,30 @@
         <split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
             <form (ngSubmit)="onSubmit()" #userForm="ngForm">
                 <div class="form-group">
-                    <label>Login</label>
+                    <label i18n>Login</label>
                     <input #loginRef type="text" [disabled]="!isNewUser" required class="form-control" autocomplete="off"
                            name="login"
                            [(ngModel)]="selectedUser.login">
                 </div>
                 <div class="form-group">
-                    <label>Vorname</label>
+                    <label i18n>Vorname</label>
                     <input type="text" class="form-control" autocomplete="off" [(ngModel)]="selectedUser.firstName"
                            name="firstName">
                 </div>
                 <div class="form-group">
-                    <label>Nachname</label>
+                    <label i18n>Nachname</label>
                     <input type="text" class="form-control" autocomplete="off" [(ngModel)]="selectedUser.lastName"
                            name="lastName">
                 </div>
                 <div class="form-group">
-                    <label>Passwort</label>
+                    <label i18n>Passwort</label>
                     <input type="password" class="form-control" autocomplete="new-password"
                            [required]="isNewUser"
                            name="password"
                            [(ngModel)]="selectedUser.password">
                 </div>
                 <div class="form-group">
-                    <label>Rollen</label>
+                    <label i18n>Rollen</label>
                     <!--<select multiple class="form-control" [(ngModel)]="selectedUser.roles" name="roles">
                         <option *ngFor="let role of roles" value="{{role.id}}">{{role.name}}</option>
                     </select>-->

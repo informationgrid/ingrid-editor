@@ -24,13 +24,13 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   @ViewChild('loginRef') loginRef: ElementRef;
 
-  private users: User[];
-  private roles: Role[];
-  private currentTab: string;
+  users: User[];
+  roles: Role[];
+  currentTab: string;
 
-  private selectedUser: User = {};
+  selectedUser: User = {};
 
-  private isNewUser: boolean = false;
+  isNewUser: boolean = false;
 
   constructor(private modalService: ModalService, private userService: UserService,
               private errorService: ErrorService) {
@@ -112,6 +112,10 @@ export class UserComponent implements OnInit, AfterViewInit {
           this.modalService.showError(err, err.text());
         }
       });
+  }
+
+  onSubmit() {
+
   }
 
 }

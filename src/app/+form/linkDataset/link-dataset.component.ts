@@ -17,7 +17,7 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
 
   @Input() filter: any;
 
-  private linkedDataset: any = {};
+  linkedDataset: any = {};
   private selection: any = {};
 
   private _onChangeCallback: (x: any) => void;

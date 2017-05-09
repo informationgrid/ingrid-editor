@@ -113,7 +113,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   @ViewChild( 'leaflet' ) leaflet: ElementRef;
   private leafletReference: L.Map;
   private areaSelect: any;
-  private drawnBBox: any;
+  drawnBBox: any;
 
   @Input() options: MapOptions;
   @Input() height: number;
@@ -123,7 +123,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   private _bbox: any = {};
   private _bboxPrevious: any;
 
-  private showSearch = false;
+  showSearch = false;
 
   private nominatimResult: any = [];
 

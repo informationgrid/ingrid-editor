@@ -19,10 +19,10 @@ export class RoleComponent implements OnInit {
 
   @Output() onRoleChange = new EventEmitter<Role[]>();
 
-  private roles: Role[];
+  roles: Role[];
   private pages: any[];
-  private selectedRole: Role = {};
-  private dialogTab: string = 'dataset';
+  selectedRole: Role = {};
+  dialogTab = 'dataset';
 
   private isNewRole: boolean = false;
 

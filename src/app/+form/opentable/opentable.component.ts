@@ -212,7 +212,8 @@ export class OpenTable implements ControlValueAccessor {
     return select;
   }
 
-  deleteRow(index: number) {
+  deleteRow(index?: number) {
+    // TODO: what if no index is given
     this._value.splice(index, 1);
     this.markedRows = [];
   }
