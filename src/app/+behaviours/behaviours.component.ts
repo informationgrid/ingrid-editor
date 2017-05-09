@@ -76,4 +76,8 @@ export class PluginsComponent implements OnInit {
     });
     return mapped;
   }
+
+  toggleField(plugin: Behaviour) {
+    plugin._state === 'expanded' ? plugin._state = 'collapsed' : plugin._state = 'expanded';
+  }
 }

@@ -142,6 +142,23 @@ paths:
       tags:
       - "User"
     x-swagger-router-controller: "User"
+  /refreshToken:
+    options:
+      operationId: get
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      operationId: refreshToken
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: Returns a new access token to the requested client
+      tags:
+      - "User"
+    x-swagger-router-controller: "User"
   /roles:
     options:
       operationId: get

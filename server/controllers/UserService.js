@@ -49,6 +49,15 @@ class UserService {
 
   }
 
+  refreshToken(args, res, decodedToken) {
+
+    let user = {
+      login: decodedToken
+    };
+    let newToken = Jwt.sign(user, Config.key.privateKey, {expiresIn: Config.key.tokenExpiry});
+    res.end(JSON.stringify({token: newToken}, null, 2));
+  }
+
   static mapIdsToRoles(roleIds) {
     return dbRole.findRoles(roleIds);
   }

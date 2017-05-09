@@ -1,9 +1,7 @@
 'use strict';
 
-let url = require('url'),
-  Jwt = require('jsonwebtoken');
-
-let Datasets = require('./DatasetsService'),
+let Jwt = require('jsonwebtoken'),
+  Datasets = require('./DatasetsService'),
   Config = require('../config');
 
 module.exports.find = function find (req, res, next) {
