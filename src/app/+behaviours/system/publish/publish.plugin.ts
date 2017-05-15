@@ -114,5 +114,10 @@ export class PublishPlugin extends Plugin {
     this.storageService.afterLoadAndSet$.subscribe( (data) => {
       this.handleRevertButtonState(data);
     });
+
+    this.formService.selectedDocuments$.subscribe( data => {
+      this.formToolbarService.setButtonState( 'toolBtnPublish', data.length === 1 );
+      this.formToolbarService.setButtonState( 'toolBtnRevert', data.length === 1 );
+    } );
   }
 }

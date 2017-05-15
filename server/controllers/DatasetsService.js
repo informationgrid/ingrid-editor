@@ -163,23 +163,27 @@ exports.set = function(args, res, userId) {
 };
 
 exports.deleteById = function (args, res) {
-  let id = args.id.value;
+  let ids = args.id.value.split(',');
 
-  // get the path to the dataset to find out the parent dataset
-  db.getPathToDataset(id).then((path) => {
-    // delete the dataset
-    db.deleteDocument(id).then(() => {
+  ids.forEach( id => {
 
-      // also delete child info if it was the last child
-      db.checkForChildren(path[path.length - 2]);
+    // get the path to the dataset to find out the parent dataset
+    db.getPathToDataset(id).then((path) => {
+      // delete the dataset
+      db.deleteDocument(id).then(() => {
 
-      res.end();
-    }, function (err) {
-      console.error('Error during db operation:', err.stack);
-      res.statusCode = 500;
-      res.end(err.message);
+        // also delete child info if it was the last child
+        db.checkForChildren(path[path.length - 2]);
+
+        res.end();
+      }, function (err) {
+        console.error('Error during db operation:', err.stack);
+        res.statusCode = 500;
+        res.end(err.message);
+      });
     });
-  });
+
+  })
 
 };
 

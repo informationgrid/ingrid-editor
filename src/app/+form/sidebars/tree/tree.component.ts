@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {StorageService} from '../../../services/storage/storage.service';
-import {TreeComponent, TreeNode} from 'angular-tree-component';
+import {IActionMapping, ITreeOptions, TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
 import {Router, ActivatedRoute} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
@@ -8,6 +8,17 @@ import {ErrorService} from '../../../services/error.service';
 import {FormToolbarService} from '../../toolbar/form-toolbar.service';
 import {SelectedDocument} from '../selected-document.model';
 import {DocMainInfo} from '../../../models/update-dataset-info.model';
+import {TREE_EVENTS} from 'angular-tree-component/dist/constants/events';
+
+const actionMapping: IActionMapping = {
+  mouse: {
+    click(tree, node, $event) {
+      $event.ctrlKey
+        ? TREE_ACTIONS.TOGGLE_SELECTED_MULTI( tree, node, $event )
+        : TREE_ACTIONS.TOGGLE_SELECTED( tree, node, $event )
+    }
+  }
+};
 
 @Component( {
   selector: 'tree',
@@ -40,16 +51,17 @@ export class MetadataTreeComponent implements OnInit {
   @Output() onSelected = new EventEmitter<SelectedDocument[]>();
 
   nodes: any[] = [];
-  selectedId = '';
 
   copiedNodes: TreeNode[] = [];
   cutNodes: TreeNode[] = [];
 
-  options = {
+
+  options: ITreeOptions = {
     getChildren: (node: TreeNode) => {
       console.debug( 'get children ...', node.id );
       return this.query( node.id );
-    }
+    },
+    actionMapping
   };
 
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
@@ -60,14 +72,14 @@ export class MetadataTreeComponent implements OnInit {
   ngOnInit() {
     this.query( null ).then( () => {
       const initialSet = this.route.params.subscribe( params => {
-        this.selectedId = params['id'];
+        let selectedId = params['id'];
 
         // only let this function be called once, since we only need it during first visit of the page
         setTimeout( () => initialSet.unsubscribe(), 0 );
 
-        if (this.selectedId && this.selectedId !== '-1' && this.selectedId !== '-2') {
+        if (selectedId && selectedId !== '-1' && selectedId !== '-2') {
           // get path to node
-          this.storageService.getPathToDataset( this.selectedId ).subscribe( path => {
+          this.storageService.getPathToDataset( selectedId ).subscribe( path => {
             console.debug( 'path: ' + path );
             this.expandToPath( path.reverse() );
           } );
@@ -134,7 +146,7 @@ export class MetadataTreeComponent implements OnInit {
             }
             pNode.children.push( newDataset );
             updateTree();
-          });
+          } );
         } catch (err) {
           console.error( 'error expanding node', err );
         }
@@ -302,11 +314,17 @@ export class MetadataTreeComponent implements OnInit {
   }
 
   open(event: any) {
-    if (event.eventName === 'onActivate') {
-      this.selectedId = event.node.id;
-      this.onSelected.next( [
-        {id: event.node.id, label: event.node.displayField, profile: event.node.data._profile}
-      ] );
+    let data = [];
+    if (event.eventName === TREE_EVENTS.onActivate || event.eventName === TREE_EVENTS.onDeactivate) {
+      let treeModel: TreeModel = event.treeModel;
+      data = treeModel.getActiveNodes()
+        .map( node => ({
+          id: node.data.id,
+          label: node.displayField,
+          profile: node.data._profile
+        } ) );
+
+      this.onSelected.next( data );
     }
   }
 

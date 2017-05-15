@@ -253,9 +253,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // inform toolbar about selection
     this.formularService.setSelectedDocuments(selectedDocs);
 
-    // do not load document if more than one is selected
+    // when multiple nodes were selected then do not show any form
     if (selectedDocs.length !== 1) {
+      this.form.disable();
       return;
+    } else {
+      this.form.enable();
     }
 
     const doc = selectedDocs[0];
@@ -274,6 +277,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // since data always stays the same there's no change detection if we load the same data again
     // even if we already have changed the formular
     // since loading will be async, we only have to reset the data first
+
 
     // check if form was changed and ask for saving data
     // TODO: handle double confirmation (deactivated this one for now)

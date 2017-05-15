@@ -3,7 +3,7 @@
        title="Aktualisieren"
        (click)="refresh()"></a>
 
-    <tree-root #tree [nodes]="nodes" [options]="options" (onActivate)="open($event)">
+    <tree-root #tree [nodes]="nodes" [options]="options" (onEvent)="open($event)">
         <ng-template #treeNodeTemplate let-node>
             <div class="myTreeNode">
                 <div [class.active]="selectedId === node.data.id">
