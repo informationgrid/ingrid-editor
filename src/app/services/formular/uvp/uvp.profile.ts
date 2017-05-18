@@ -21,19 +21,27 @@ export class UVPProfile implements Profile {
 
   constructor(codelistService: CodelistService) {
     this.codelistService = codelistService;
-    const codelistDropDown = new DropdownField( {
+    /*const codelistDropDown = new DropdownField( {
       key: 'numberString',
       label: 'Zahl',
       options: []
+    } );*/
+    const uvpNumberSelect = new DropdownField( {
+      key: 'uvpNumber',
+      label: 'UVP Nummer',
+      options: []
     } );
 
-    this.codelistService.byId( '8000' ).then( codelist => {
+    /*this.codelistService.byId( '8000' ).then( codelist => {
       codelistDropDown.options = codelist;
+    } );*/
+    this.codelistService.byId( '9000' ).then( codelist => {
+      uvpNumberSelect.options = codelist;
     } );
-    // }
+
     this.profile = [
 
-      codelistDropDown,
+      // codelistDropDown,
 
       new Container( {
         key: 'mainInfo',
@@ -93,10 +101,7 @@ export class UVPProfile implements Profile {
         key: 'categories',
         label: 'Kategorien',
         columns: [
-          new TextboxField( {
-            key: 'category',
-            label: 'Kategorie'
-          } )
+          {editor: uvpNumberSelect, formatter: (key) => uvpNumberSelect.options.find( nr => nr.id === key ).value }
         ],
         order: 2
       } ),
@@ -120,109 +125,149 @@ export class UVPProfile implements Profile {
                 key: 'constructionInfo',
                 label: 'Auslegungsinformationen',
                 columns: [
-                  new TextboxField( {
-                    key: 'title',
-                    label: 'Titel'
-                  } ),
-                  new TextboxField( {
-                    key: 'link',
-                    label: 'Link'
-                  } ),
-                  new DropdownField( {
-                    key: 'type',
-                    label: 'Typ',
-                    options: [{id: 'pdf', value: 'my pdf'}, {id: 'xml', value: 'my xml'}]
-                  } ),
-                  new TextboxField( {
-                    key: 'size',
-                    label: 'Größe'
-                  } ),
-                  new TextboxField( {
-                    key: 'expiresAt',
-                    label: 'Gültig bis',
-                    type: 'date'
-                  } )
+                  {
+                    editor: new TextboxField( {
+                      key: 'title',
+                      label: 'Titel'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'link',
+                      label: 'Link'
+                    } )
+                  },
+                  {
+                    editor: new DropdownField( {
+                      key: 'type',
+                      label: 'Typ',
+                      options: [{id: 'pdf', value: 'my pdf'}, {id: 'xml', value: 'my xml'}]
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'size',
+                      label: 'Größe'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'expiresAt',
+                      label: 'Gültig bis',
+                      type: 'date'
+                    } )
+                  }
                 ]
               } ),
               new OpenTableField( {
                 key: 'applicationDocs',
                 label: 'Antragsunterlagen',
                 columns: [
-                  new TextboxField( {
-                    key: 'title',
-                    label: 'Titel'
-                  } ),
-                  new TextboxField( {
-                    key: 'link',
-                    label: 'Link'
-                  } ),
-                  new TextboxField( {
-                    key: 'type',
-                    label: 'Typ'
-                  } ),
-                  new TextboxField( {
-                    key: 'size',
-                    label: 'Größe'
-                  } ),
-                  new TextboxField( {
-                    key: 'expiresAt',
-                    label: 'Gültig bis',
-                    type: 'date'
-                  } )
+                  {
+                    editor: new TextboxField( {
+                      key: 'title',
+                      label: 'Titel'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'link',
+                      label: 'Link'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'type',
+                      label: 'Typ'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'size',
+                      label: 'Größe'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'expiresAt',
+                      label: 'Gültig bis',
+                      type: 'date'
+                    } )
+                  }
                 ]
               } ),
               new OpenTableField( {
                 key: 'reportsAndRecommendations',
                 label: 'Berichte und Empfehlungen',
                 columns: [
-                  new TextboxField( {
-                    key: 'title',
-                    label: 'Titel'
-                  } ),
-                  new TextboxField( {
-                    key: 'link',
-                    label: 'Link'
-                  } ),
-                  new TextboxField( {
-                    key: 'type',
-                    label: 'Typ'
-                  } ),
-                  new TextboxField( {
-                    key: 'size',
-                    label: 'Größe'
-                  } ),
-                  new TextboxField( {
-                    key: 'expiresAt',
-                    label: 'Gültig bis',
-                    type: 'date'
-                  } )
+                  {
+                    editor: new TextboxField( {
+                      key: 'title',
+                      label: 'Titel'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'link',
+                      label: 'Link'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'type',
+                      label: 'Typ'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'size',
+                      label: 'Größe'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'expiresAt',
+                      label: 'Gültig bis',
+                      type: 'date'
+                    } )
+                  }
                 ]
               } ),
               new OpenTableField( {
                 key: 'additionalDocs',
                 label: 'Weitere Unterlagen',
                 columns: [
-                  new TextboxField( {
-                    key: 'title',
-                    label: 'Titel'
-                  } ),
-                  new TextboxField( {
-                    key: 'link',
-                    label: 'Link'
-                  } ),
-                  new TextboxField( {
-                    key: 'type',
-                    label: 'Typ'
-                  } ),
-                  new TextboxField( {
-                    key: 'size',
-                    label: 'Größe'
-                  } ),
-                  new TextboxField( {
-                    key: 'expiresAt',
-                    label: 'Gültig bis',
-                    type: 'date'
-                  } )
+                  {
+                    editor: new TextboxField( {
+                      key: 'title',
+                      label: 'Titel'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'link',
+                      label: 'Link'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'type',
+                      label: 'Typ'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'size',
+                      label: 'Größe'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'expiresAt',
+                      label: 'Gültig bis',
+                      type: 'date'
+                    } )
+                  }
                 ]
               } )
             ]
@@ -247,27 +292,37 @@ export class UVPProfile implements Profile {
                 key: 'constructionInfo',
                 label: 'Auslegungsinformationen',
                 columns: [
-                  new TextboxField( {
-                    key: 'title',
-                    label: 'Titel'
-                  } ),
-                  new TextboxField( {
-                    key: 'link',
-                    label: 'Link'
-                  } ),
-                  new TextboxField( {
-                    key: 'type',
-                    label: 'Typ'
-                  } ),
-                  new TextboxField( {
-                    key: 'size',
-                    label: 'Größe'
-                  } ),
-                  new TextboxField( {
-                    key: 'expiresAt',
-                    label: 'Gültig bis',
-                    type: 'date'
-                  } )
+                  {
+                    editor: new TextboxField( {
+                      key: 'title',
+                      label: 'Titel'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'link',
+                      label: 'Link'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'type',
+                      label: 'Typ'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'size',
+                      label: 'Größe'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'expiresAt',
+                      label: 'Gültig bis',
+                      type: 'date'
+                    } )
+                  }
                 ]
               } )
             ]
@@ -286,27 +341,37 @@ export class UVPProfile implements Profile {
                 key: 'announcements',
                 label: 'Bekanntmachung',
                 columns: [
-                  new TextboxField( {
-                    key: 'title',
-                    label: 'Titel'
-                  } ),
-                  new TextboxField( {
-                    key: 'link',
-                    label: 'Link'
-                  } ),
-                  new TextboxField( {
-                    key: 'type',
-                    label: 'Typ'
-                  } ),
-                  new TextboxField( {
-                    key: 'size',
-                    label: 'Größe'
-                  } ),
-                  new TextboxField( {
-                    key: 'expiresAt',
-                    label: 'Gültig bis',
-                    type: 'date'
-                  } )
+                  {
+                    editor: new TextboxField( {
+                      key: 'title',
+                      label: 'Titel'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'link',
+                      label: 'Link'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'type',
+                      label: 'Typ'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'size',
+                      label: 'Größe'
+                    } )
+                  },
+                  {
+                    editor: new TextboxField( {
+                      key: 'expiresAt',
+                      label: 'Gültig bis',
+                      type: 'date'
+                    } )
+                  }
                 ]
               } )
             ]

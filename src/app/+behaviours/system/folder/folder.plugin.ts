@@ -1,4 +1,4 @@
-import {ComponentFactoryResolver, Inject, ReflectiveInjector} from '@angular/core';
+import {ComponentFactoryResolver, Injectable, ReflectiveInjector} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {FormularService} from '../../../services/formular/formular.service';
 import {ModalService} from '../../../services/modal/modal.service';
@@ -7,6 +7,7 @@ import {Plugin} from '../../plugin';
 import {CreateFolderComponent} from './create-folder.component';
 import {SelectedDocument} from '../../../+form/sidebars/selected-document.model';
 
+@Injectable()
 export class FolderPlugin extends Plugin {
   id = 'plugin.folder';
   _name = 'Folder Plugin';
@@ -17,11 +18,11 @@ export class FolderPlugin extends Plugin {
     return this._name;
   }
 
-  constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService,
-              @Inject( FormularService ) private formService: FormularService,
-              @Inject( ModalService ) private modalService: ModalService,
-              @Inject( StorageService ) private storageService: StorageService,
-              @Inject( StorageService ) private _cr: ComponentFactoryResolver) {
+  constructor(private formToolbarService: FormToolbarService,
+              private formService: FormularService,
+              private modalService: ModalService,
+              private storageService: StorageService,
+              private _cr: ComponentFactoryResolver) {
     super();
     this.isActive = true;
   }

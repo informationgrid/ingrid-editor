@@ -47,6 +47,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   debugEnabled = false;
 
+  NEW_DOCUMENT = '-1';
+  NO_DOCUMENT = '-2';
+
   // when editing a folder this flag must be set
   // editMode: boolean = false;
 
@@ -94,8 +97,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.save();
       } else if (eventId === 'NEW_DOC') {
         this.newDoc();
-      } else if (eventId === 'DELETE') {
-        this.deleteDoc();
+      // } else if (eventId === 'DELETE') {
+      //   this.deleteDoc();
       }
     });
 
@@ -109,8 +112,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
       this.route.params.subscribe(params => {
         const id = params['id'];
-        if (id !== '-1' && id !== '-2') {
+        if (id !== this.NEW_DOCUMENT && id !== this.NO_DOCUMENT) {
           this.load(id);
+        } else if (id === this.NO_DOCUMENT && this.form) {
+          this.form = null;
         }
       });
     });
@@ -252,12 +257,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   handleLoad(selectedDocs: SelectedDocument[]) { // id: string, profile?: string, forceLoad?: boolean) {
     // inform toolbar about selection
     this.formularService.setSelectedDocuments(selectedDocs);
-
+  debugger;
     // when multiple nodes were selected then do not show any form
     if (selectedDocs.length !== 1) {
-      this.form.disable();
+      if (this.form) {
+        this.form.disable();
+      }
       return;
-    } else {
+    } else if (this.form) {
       this.form.enable();
     }
 
@@ -370,37 +377,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.toastyService.info(toastOptions);
     }
 
-  deleteDoc() {
-    const docs = this.formularService.getSelectedDocuments();
-    this.docsToDelete = docs;
-    this.deleteConfirmModal.open();
-  }
-
-  doDelete() {
-    try {
-      const ids = this.docsToDelete.map(doc => doc.id);
-      this.storageService.delete(ids);
-
-      // clear form if we removed the currently opened doc
-      // and change route in case we try to reload page which would load the deleted document
-      if (this.data._id === ids[0]) {
-        this.form = null;
-        // TODO: use constant for no document selected
-        this.router.navigate( ['/form', -2]);
-      }
-    } catch (ex) {
-      console.error( 'Could not delete' );
-    }
-    this.deleteConfirmModal.close();
-  }
-
   createFormWithData(data: any) {
     this.form = this.qcs.toFormGroup(this.fields, data);
 
     // disable form if we don't have the permission
     // delay a bit for form to be created
     // TODO: try to get permission beforehand and create form with this information
-    setTimeout( () => this.hasPermission(data) ? this.form.enable() : this.form.disable(), 0);
+    setTimeout( () => this.hasPermission(data) ? this.form && this.form.enable() : this.form.disable(), 0);
   }
 
   // TODO: extract to permission service class

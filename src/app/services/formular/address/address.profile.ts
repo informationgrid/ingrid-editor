@@ -30,17 +30,21 @@ export class AddressProfile implements Profile {
       order: 30,
       domClass: 'half',
       columns: [
-        new DropdownField({
-          key: 'type',
-          label: 'Typ',
-          domClass: 'quarter',
-          options: [{id: 'email', value: 'Email'}, {id: 'phone', value: 'Telefon'}]
-        }),
-        new TextboxField({
-          key: 'value',
-          label: 'Wert',
-          domClass: 'three-quarter'
-        })
+        {
+          editor: new DropdownField({
+            key: 'type',
+            label: 'Typ',
+            domClass: 'quarter',
+            options: [{id: 'email', value: 'Email'}, {id: 'phone', value: 'Telefon'}]
+          })
+        },
+        {
+          editor: new TextboxField( {
+            key: 'value',
+            label: 'Wert',
+            domClass: 'three-quarter'
+          } )
+        }
       ]
     }),
 

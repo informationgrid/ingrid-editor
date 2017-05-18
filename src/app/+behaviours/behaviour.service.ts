@@ -16,8 +16,8 @@ declare const additionalBehaviours: any;
 @Injectable()
 export class BehaviourService {
 
-  behaviours: Behaviour[];
-  systemBehaviours: Plugin[];
+  behaviours: Behaviour[] = [];
+  systemBehaviours: Plugin[] = [];
 
   initialized: Promise<any>;
 
@@ -36,7 +36,7 @@ export class BehaviourService {
       //   console.log( 'loaded additional behaviours', additionalBehaviours );
 
         // add all additional behaviours to the default ones
-        // this.behaviours.push( ...additionalBehaviours );
+        this.behaviours.push( ...additionalBehaviours );
 
         if (this.authService.loggedIn()) {
           // request stored behaviour states from backend

@@ -1,5 +1,4 @@
 import {AppComponent} from './app.component';
-import {StatisticComponent} from './+behaviours/system/statistic/statistic.component';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {StorageDummyService} from './services/storage/storage.dummy.service';
 import {StorageService} from './services/storage/storage.service';
@@ -40,7 +39,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, LoginComponent, StatisticComponent, MenuComponent],
+  declarations: [AppComponent, HelpComponent, LoginComponent, MenuComponent],
   imports: [BrowserModule, BrowserAnimationsModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule],
   providers: [appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
@@ -54,7 +53,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       deps: [Http, RequestOptions]
     }
   ], // additional providers
-  entryComponents: [StatisticComponent],
+  // entryComponents: [StatisticComponent],
   bootstrap: [AppComponent]
 } )
 

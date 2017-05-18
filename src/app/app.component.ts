@@ -1,7 +1,4 @@
-import {Component, OnInit, ViewChild, enableProdMode, ViewContainerRef} from '@angular/core';
-import {StatisticPlugin} from './+behaviours/system/statistic/statistic.plugin';
-import {WorkflowPlugin} from './+behaviours/system/workflow/workflow.plugin';
-import {DemoPlugin} from './+behaviours/system/demo/demo.plugin';
+import {Component, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {Modal} from 'ngx-modal';
 import {ModalService} from './services/modal/modal.service';
 import {BehaviourService} from './+behaviours/behaviour.service';
@@ -38,9 +35,7 @@ import {BehaviourService} from './+behaviours/behaviour.service';
   `,
   styles: [`
     .igeContainer { height: 100%; }
-  `],
-  providers: [StatisticPlugin, WorkflowPlugin, DemoPlugin],
-  entryComponents: []
+  `]
 } )
 export class AppComponent implements OnInit {
 

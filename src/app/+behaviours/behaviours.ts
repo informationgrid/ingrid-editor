@@ -1,24 +1,22 @@
 import {FormularService} from '../services/formular/formular.service';
 import {EventManager} from '@angular/platform-browser';
-import {ComponentFactoryResolver, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {AddControlBehaviour} from './system/demo/behaviours/AddControl/addControl.behaviour';
 import {StorageService} from '../services/storage/storage.service';
 import {ShowDateInSectionBehaviour} from './form/ShowDateInSection/show-date-in-section.behaviour';
 import {TitleValidatorBehaviour} from './form/TitleValidator/title-validator.behaviour';
-import {CreateDocRulesPlugin} from './system/CreateRules/create-rules.behaviour';
 import {Plugin} from './plugin';
-import {StatisticPlugin} from './system/statistic/statistic.plugin';
-import {WorkflowPlugin} from './system/workflow/workflow.plugin';
-import {DemoPlugin} from './system/demo/demo.plugin';
-import {PublishPlugin} from './system/publish/publish.plugin';
-import {MenuService} from '../menu/menu.service';
-import {FormToolbarService} from '../+form/toolbar/form-toolbar.service';
-import {ModalService} from '../services/modal/modal.service';
-import {CopyCutPastePlugin} from './system/CopyCutPaste/copy-cut-paste.behaviour';
-import {ToastService} from '../services/toast.service';
-import {PrintViewPlugin} from './system/printView/print-view.plugin';
-import {FolderPlugin} from './system/folder/folder.plugin';
+import {
+  CopyCutPastePlugin,
+  CreateDocRulesPlugin,
+  PrintViewPlugin,
+  PublishPlugin,
+  StatisticPlugin,
+  WorkflowPlugin,
+  FolderPlugin
+} from '.';
+import {DeleteDocsPlugin} from './toolbar/deleteDocs/delete-docs.plugin';
 
 export interface Behaviour {
   id: string;
@@ -50,23 +48,25 @@ export class BehavioursDefault {
   ];
 
   systemBehaviours: Plugin[] = [
-    new StatisticPlugin(this.menuService),
-    new WorkflowPlugin(this.formToolbarService),
-    new DemoPlugin(this.menuService),
-    new PublishPlugin(this.formToolbarService, this.formService, this.modalService, this.storageService),
-    new CreateDocRulesPlugin(this.formService, this.storageService),
-    new CopyCutPastePlugin(this.formService, this.formToolbarService, this.storageService, this.modalService,
-      this.toastService, this.compFacResolver),
-    new PrintViewPlugin(this.formToolbarService, this.modalService, this.compFacResolver),
-    new FolderPlugin(this.formToolbarService, this.formService, this.modalService, this.storageService, this.compFacResolver)
+    this.deletePlugin,
+    this.publishPlugin,
+    this.statisticPlugin,
+    this.workflowPlugin,
+    this.createDocRules,
+    this.copyCutPastePlugin,
+    this.printviewPlugin,
+    this.folderPlugin
   ];
 
   constructor(private formService: FormularService,
               private storageService: StorageService,
-              private menuService: MenuService,
-              private modalService: ModalService,
-              private toastService: ToastService,
-              private formToolbarService: FormToolbarService,
-              private compFacResolver: ComponentFactoryResolver) {
+              private statisticPlugin: StatisticPlugin,
+              private workflowPlugin: WorkflowPlugin,
+              private printviewPlugin: PrintViewPlugin,
+              private createDocRules: CreateDocRulesPlugin,
+              private copyCutPastePlugin: CopyCutPastePlugin,
+              private folderPlugin: FolderPlugin,
+              private publishPlugin: PublishPlugin,
+              private deletePlugin: DeleteDocsPlugin) {
   }
 }

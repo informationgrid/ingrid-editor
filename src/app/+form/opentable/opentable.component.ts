@@ -130,8 +130,9 @@ export class OpenTable implements ControlValueAccessor {
     const label = this.parent.getElementsByClassName('cellLabel')[0];
     label.classList.add('hide');
 
-    const input = column.controlType === 'dropdown' ? this.createSelect(column.options)
-      : this.createInput(row[column.key], column.type);
+    const input = column.editor.controlType === 'dropdown'
+      ? this.createSelect(column.editor.options, row[column.editor.key])
+      : this.createInput(row[column.editor.key], column.editor.type);
 
     this.parent.insertBefore(input, label.nextSibling);
     this.parent.classList.add('editing');
@@ -141,7 +142,7 @@ export class OpenTable implements ControlValueAccessor {
       if (this.canceled) {
         this.hideEditField(input);
       } else {
-        this.acceptInput(<HTMLInputElement>input, row, column.key);
+        this.acceptInput(<HTMLInputElement>input, row, column.editor.key);
         if (this.activateNextCell) {
           this.activateNextCell = false;
           // TODO: finish TAB behaviour in grid
@@ -199,7 +200,13 @@ export class OpenTable implements ControlValueAccessor {
     return input;
   }
 
-  createSelect(options: any[]): HTMLElement {
+  /**
+   *
+   * @param options
+   * @param selected
+   * @returns {HTMLSelectElement}
+   */
+  createSelect(options: any[], selected: string): HTMLElement {
     const select = <HTMLSelectElement>document.createElement('select');
     // select.classList.add('form-control');
     select.classList.add('selectStyle');
@@ -207,6 +214,8 @@ export class OpenTable implements ControlValueAccessor {
       const optionEl = <HTMLOptionElement>document.createElement('option');
       optionEl.value = opt.id;
       optionEl.text = opt.value;
+      optionEl.selected = opt.id === selected;
+
       select.appendChild(optionEl);
     });
     return select;

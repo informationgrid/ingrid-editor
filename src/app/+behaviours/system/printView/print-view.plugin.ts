@@ -1,4 +1,4 @@
-import {ComponentFactoryResolver, Inject, Injectable, ReflectiveInjector} from '@angular/core';
+import {ComponentFactoryResolver, Injectable, ReflectiveInjector} from '@angular/core';
 import {Plugin} from '../../plugin';
 import {PrintViewComponent} from './print-view.component';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
@@ -10,9 +10,9 @@ export class PrintViewPlugin extends Plugin {
   _name = 'Print View Plugin';
   defaultActive = true;
 
-  constructor(@Inject(FormToolbarService) private formToolbarService: FormToolbarService,
-              @Inject(ModalService) private modalService: ModalService,
-              @Inject(ComponentFactoryResolver) private _cr: ComponentFactoryResolver) {
+  constructor(private formToolbarService: FormToolbarService,
+              private modalService: ModalService,
+              private _cr: ComponentFactoryResolver) {
     super();
   }
 

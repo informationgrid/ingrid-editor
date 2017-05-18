@@ -1,5 +1,5 @@
 import {StatisticComponent} from './statistic.component';
-import {Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {MenuService} from '../../../menu/menu.service';
 import {Plugin} from '../../plugin';
 
@@ -9,8 +9,9 @@ export class StatisticPlugin extends Plugin {
   _name = 'Statistic Plugin';
   defaultActive = true;
 
-  constructor(@Inject( MenuService ) private menuService: MenuService) {
+  constructor(private menuService: MenuService) {
     super();
+    console.log('INIT STATISTIC PLUGIN');
   }
 
   get name() {

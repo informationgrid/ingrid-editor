@@ -151,16 +151,6 @@
     </modal-content>
 </modal>
 
-<modal #deleteConfirmModal title="Löschen" cancelButtonLabel="Nein" submitButtonLabel="Ja" (onSubmit)="doDelete()">
-    <modal-content>
-        <p>Möchten Sie wirklich diese Datensätze löschen:</p>
-        <ul>
-            <li *ngFor="let doc of docsToDelete">{{doc.label}}</li>
-        </ul>
-    </modal-content>
-</modal>
-
-
 <modal #discardConfirmModal title="Daten wurden geändert" cancelButtonLabel="Nein" submitButtonLabel="Ja"
        (onSubmit)="discardChanges()">
     <modal-content>

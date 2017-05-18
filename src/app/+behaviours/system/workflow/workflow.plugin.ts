@@ -1,12 +1,17 @@
-import {Inject} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {Plugin} from '../../plugin';
+import {Subscription} from 'rxjs/Subscription';
 
+@Injectable()
 export class WorkflowPlugin extends Plugin {
   id = 'plugin.workflow';
   name = 'Workflow';
 
-  constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService) {
+  toolbarBtnId = 'toolBtnSendQA';
+  subscription: Subscription;
+
+  constructor(private formToolbarService: FormToolbarService) {
     super();
   }
 
@@ -14,10 +19,10 @@ export class WorkflowPlugin extends Plugin {
     super.register();
 
     this.formToolbarService.addButton( {
-      id: 'toolBtnSendQA', tooltip: 'Send to QA', cssClasses: 'glyphicon glyphicon-hand-right', eventId: 'SEND_TO_QA'
+      id: this.toolbarBtnId, tooltip: 'Send to QA', cssClasses: 'glyphicon glyphicon-hand-right', eventId: 'SEND_TO_QA'
     } );
 
-    this.formToolbarService.toolbarEvent$.subscribe( eventId => {
+    this.subscription = this.formToolbarService.toolbarEvent$.subscribe( eventId => {
       if (eventId === 'SEND_TO_QA') {
         WorkflowPlugin.sendToQA();
       }
@@ -40,4 +45,10 @@ export class WorkflowPlugin extends Plugin {
     console.log( 'Send to QA' );
   }
 
+  unregister() {
+    super.unregister();
+
+    this.formToolbarService.removeButton( this.toolbarBtnId );
+    this.subscription.unsubscribe();
+  }
 }

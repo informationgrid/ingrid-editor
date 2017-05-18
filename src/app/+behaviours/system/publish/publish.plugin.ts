@@ -1,10 +1,11 @@
-import {Inject} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {FormularService} from '../../../services/formular/formular.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Plugin} from '../../plugin';
 
+@Injectable()
 export class PublishPlugin extends Plugin {
   id = 'plugin.publish';
   _name = 'Publish Plugin';
@@ -16,10 +17,10 @@ export class PublishPlugin extends Plugin {
     return this._name;
   }
 
-  constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService,
-              @Inject( FormularService ) private formService: FormularService,
-              @Inject( ModalService ) private modalService: ModalService,
-              @Inject( StorageService ) private storageService: StorageService) {
+  constructor(private formToolbarService: FormToolbarService,
+              private formService: FormularService,
+              private modalService: ModalService,
+              private storageService: StorageService) {
     super();
     this.isActive = true;
   }

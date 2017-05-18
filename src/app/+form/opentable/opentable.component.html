@@ -16,12 +16,12 @@
         </div>
 
         <!-- render header -->
-        <div *ngFor="let col of columns; let j=index" [style.width]="col.width" [class.last]="j === columns.length-1">
-            <label class="control-label" (click)="sortBy(col)">{{col.label}}</label>
+        <div *ngFor="let col of columns; let j=index" [style.width]="col.editor.width" [class.last]="j === columns.length-1">
+            <label class="control-label" (click)="sortBy(col)">{{col.editor.label}}</label>
             <!-- render data column of all rows -->
        <!--     <div class="clickable cell" [class.firstRow]="i===0" [class.odd]="i % 2 === 1" *ngFor="let row of value; let i=index" (click)="editRow(row, i, col)">-->
             <div class="clickable cell" [class.firstRow]="i===0" [class.odd]="i % 2 === 1" *ngFor="let row of rows; let i=index" (click)="editRowInline(row, col, $event)"> <!--(mouseover)="hoverRow = i"-->
-                <span class="cellLabel">{{row[col.key]}}</span>
+                <span class="cellLabel">{{col.formatter ? col.formatter(row[col.editor.key]) : row[col.editor.key]}}</span>
             </div>
         </div>
     </div>
@@ -37,10 +37,10 @@
         <form #addForm="ngForm"><!--(submit)="addRow()"-->
             <div class="form-group">
                 <div *ngFor="let col of columns; let i=index" class="padding">
-                    <label class="control-label">{{col.label}}</label>
-                    <input *ngIf="col.controlType === 'textbox'" [focus]="i === focusNumber" [type]="col.type" class="form-control" [(ngModel)]="addModel[col.key]" [name]="col.key">
-                    <select class="form-control" *ngIf="col.controlType === 'dropdown'" [(ngModel)]="addModel[col.key]" [name]="col.key">
-                        <option *ngFor="let option of col.options" [value]="option.id">{{option.value}}</option>
+                    <label class="control-label">{{col.editor.label}}</label>
+                    <input *ngIf="col.editor.controlType === 'textbox'" [focus]="i === focusNumber" [type]="col.editor.type" class="form-control" [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
+                    <select class="form-control" *ngIf="col.editor.controlType === 'dropdown'" [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
+                        <option *ngFor="let option of col.editor.options" [value]="option.id">{{option.value}}</option>
                     </select>
                 </div>
             </div>

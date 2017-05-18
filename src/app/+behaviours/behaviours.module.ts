@@ -14,12 +14,16 @@ import {SharedModule} from '../shared.module';
 import {PrintViewComponent} from './system/printView/print-view.component';
 import {CreateFolderComponent} from './system/folder/create-folder.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FolderPlugin, CopyCutPastePlugin, StatisticPlugin, WorkflowPlugin, PrintViewPlugin} from '.';
+import {DeleteDocsPlugin} from './toolbar/deleteDocs/delete-docs.plugin';
+import {DeleteDialogComponent} from './toolbar/deleteDocs/delete-dialog.component';
+import {StatisticComponent} from './system/statistic/statistic.component';
 
 @NgModule( {
   imports: [CommonModule, ModalModule, FormsModule, ReactiveFormsModule, SharedModule, routing],
-  declarations: [PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewComponent, CreateFolderComponent],
-  providers: [MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin],
-  entryComponents: [DemoComponent, PasteDialogComponent, PrintViewComponent, CreateFolderComponent]
+  declarations: [PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent],
+  providers: [MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin, StatisticPlugin, WorkflowPlugin, PrintViewPlugin, CopyCutPastePlugin, FolderPlugin, DeleteDocsPlugin],
+  entryComponents: [PrintViewComponent, PasteDialogComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent]
 } )
 export class PluginsModule {
 }

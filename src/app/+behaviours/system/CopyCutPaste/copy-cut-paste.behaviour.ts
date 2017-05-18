@@ -1,11 +1,9 @@
-import {ComponentFactoryResolver, Inject, ReflectiveInjector} from '@angular/core';
+import {ComponentFactoryResolver, Injectable, ReflectiveInjector} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {FormularService} from '../../../services/formular/formular.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Plugin} from '../../plugin';
-import {
-  FormToolbarService, Separator, ToolbarItem
-} from "../../../+form/toolbar/form-toolbar.service";
+import {FormToolbarService, Separator, ToolbarItem} from '../../../+form/toolbar/form-toolbar.service';
 import {ToastService} from '../../../services/toast.service';
 import {UpdateType} from '../../../models/update-type.enum';
 import {ModalService} from '../../../services/modal/modal.service';
@@ -20,6 +18,7 @@ export class MoveMode {
 export class PasteCallback {
 }
 
+@Injectable()
 export class CopyCutPastePlugin extends Plugin {
   id = 'plugin.copy.cut.paste';
   _name = 'Copy Cut Paste';
@@ -37,12 +36,12 @@ export class CopyCutPastePlugin extends Plugin {
     return this._name;
   }
 
-  constructor(@Inject( FormularService ) private formService: FormularService,
-              @Inject( FormToolbarService ) private toolbarService: FormToolbarService,
-              @Inject( StorageService ) private storageService: StorageService,
-              @Inject( ModalService ) private modalService: ModalService,
-              @Inject( ToastService ) private toastService: ToastService,
-              @Inject( ComponentFactoryResolver ) private _cr: ComponentFactoryResolver) {
+  constructor(private formService: FormularService,
+              private toolbarService: FormToolbarService,
+              private storageService: StorageService,
+              private modalService: ModalService,
+              private toastService: ToastService,
+              private _cr: ComponentFactoryResolver) {
     super();
   }
 
