@@ -81,14 +81,20 @@
                         <fieldset *ngIf="field.children">
 
                             <!-- CONTAINER FOR NESTED FIELDS -->
-                            <div *ngIf="!field.isRepeatable">
-                                <div [formGroupName]="field.key">
+                            <ng-container *ngIf="!field.isRepeatable">
+                                <div *ngIf="field.key" [formGroupName]="field.key">
                                     <dyn-field *ngFor="let child of field.children" [field]="child"
                                                [form]="form.controls[field.key]"
                                                class="padding {{child.domClass}}">
                                     </dyn-field>
                                 </div>
-                            </div>
+                                <ng-container *ngIf="!field.key">
+                                    <dyn-field *ngFor="let child of field.children" [field]="child"
+                                             [form]="form"
+                                             class="padding {{child.domClass}}">
+                                    </dyn-field>
+                                </ng-container>
+                            </ng-container>
 
                             <!-- REPEATABLE FIELDS -->
                             <div *ngIf="field.isRepeatable">

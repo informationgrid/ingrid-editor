@@ -257,7 +257,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   handleLoad(selectedDocs: SelectedDocument[]) { // id: string, profile?: string, forceLoad?: boolean) {
     // inform toolbar about selection
     this.formularService.setSelectedDocuments(selectedDocs);
-  debugger;
+
     // when multiple nodes were selected then do not show any form
     if (selectedDocs.length !== 1) {
       if (this.form) {

@@ -1,4 +1,4 @@
-import { PartialGeneratorField } from './../+form/controls/field-partial-generator';
+import { PartialGeneratorField } from '../+form/controls/field-partial-generator';
 import {Injectable} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormArray} from '@angular/forms';
 import {FieldBase} from '../+form/controls/field-base';
@@ -10,14 +10,14 @@ export class FormControlService {
   }
 
   toFormGroup(fields: FieldBase<any>[], data: any) {
-    let group: any = {};
+    const group: any = {};
     fields.forEach( field => {
       if (field instanceof Container) {
         let result: any = null;
         if (field.isRepeatable) {
-          let array: any[] = [];
+          const array: any[] = [];
           field.children.forEach(groups => {
-            let subGroup = field.key ? {} : group;
+            const subGroup = field.key ? {} : group;
             groups.forEach((child: any) => {
               subGroup[child.key] = this._addValidator(child, this.getDataValue(data, [child.key]));
             });
@@ -25,13 +25,9 @@ export class FormControlService {
           });
           result = new FormArray(array);
         } else {
-          let subGroup = field.key ? {} : group;
+          const subGroup = field.key ? {} : group;
           field.children.forEach(child => {
-            // if (question.isRepeatable) {
-            //  subGroup[0][child.key] = this._addValidator( child );
-            // } else {
             subGroup[child.key] = this._addValidator(child, this.getDataValue(data, [field.key, child.key]));
-            // }
           });
           result = new FormGroup(subGroup);
         }
@@ -39,11 +35,11 @@ export class FormControlService {
           group[field.key] = result;
         }
       } else if (field.controlType === 'partialGenerator') {
-        let g: any = [];
+        const g: any = [];
         if (data[field.key] !== undefined) {
           data[field.key].forEach((entry: any) => {
-            let partialKey = Object.keys(entry)[0];
-            let partial = (<PartialGeneratorField>field).partials.filter( (part: any) => part.key === partialKey )[0];
+            const partialKey = Object.keys(entry)[0];
+            const partial = (<PartialGeneratorField>field).partials.filter( (part: any) => part.key === partialKey )[0];
             g.push(this.toFormGroup([partial], entry));
           });
         }
@@ -58,8 +54,15 @@ export class FormControlService {
   getDataValue(data: any, keys: string[]): any {
     let obj: any = data;
     keys.some( key => {
+      // for containers that do not want to bundle child fields -> skip
+      if (!key) {
+        return false;
+      }
+
       obj = obj[key];
-      if (obj === undefined) return true;
+      if (obj === undefined) {
+        return true;
+      }
     });
     return obj;
   }

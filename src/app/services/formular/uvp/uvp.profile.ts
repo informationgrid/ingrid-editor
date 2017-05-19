@@ -1,9 +1,9 @@
-import {TextareaField, TextboxField, Container, DropdownField} from "../../../+form/controls";
-import {MapField} from "../../../+form/controls/field-map";
-import {LatLng, TileLayer} from "leaflet";
-import {PartialGeneratorField} from "../../../+form/controls/field-partial-generator";
-import {OpenTableField} from "../../../+form/controls/field-opentable";
-import {Profile} from "../profile";
+import {Container, DropdownField, TextareaField, TextboxField} from '../../../+form/controls';
+import {MapField} from '../../../+form/controls/field-map';
+import {LatLng, TileLayer} from 'leaflet';
+import {PartialGeneratorField} from '../../../+form/controls/field-partial-generator';
+import {OpenTableField} from '../../../+form/controls/field-opentable';
+import {Profile} from '../profile';
 import {LinkDatasetField} from '../../../+form/controls/field-link-dataset';
 import {CodelistService} from '../../../+form/services/codelist.service';
 import {FieldBase} from '../../../+form/controls/field-base';
@@ -44,7 +44,8 @@ export class UVPProfile implements Profile {
       // codelistDropDown,
 
       new Container( {
-        key: 'mainInfo',
+        key: null,
+        // key: 'mainInfo',
         domClass: 'half',
         children: [
           new TextboxField( {
@@ -383,14 +384,10 @@ export class UVPProfile implements Profile {
   }
 
   getTitle(doc: any): string {
-    let title = doc['mainInfo.title'];
-    if (!title) {
-      title = doc.mainInfo ? doc.mainInfo.title : '???';
-    }
-    return title;
+    return doc.title ? doc.title : '???';
   }
 
   getTitleFields(): string[] {
-    return ['mainInfo.title'];
+    return ['title'];
   }
 }
