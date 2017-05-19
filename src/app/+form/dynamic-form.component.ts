@@ -200,7 +200,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   prepareNewDoc() {
     const profile = this.choiceNewDoc;
-    const previousId = this.data._id;
+    const previousId = this.formularService.getSelectedDocuments()[0].id;
     const needsProfileSwitch = this.formularService.currentProfile !== profile;
 
     if (this.form) {

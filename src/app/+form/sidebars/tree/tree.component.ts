@@ -15,7 +15,7 @@ const actionMapping: IActionMapping = {
     click(tree, node, $event) {
       $event.ctrlKey
         ? TREE_ACTIONS.TOGGLE_SELECTED_MULTI( tree, node, $event )
-        : TREE_ACTIONS.TOGGLE_SELECTED( tree, node, $event )
+        : TREE_ACTIONS.SELECT( tree, node, $event )
     }
   }
 };

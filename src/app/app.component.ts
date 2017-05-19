@@ -11,17 +11,17 @@ import {BehaviourService} from './+behaviours/behaviour.service';
     <div class="igeContainer">
       <!-- MENU -->
       <main-menu></main-menu>
-      
+
       <help-panel></help-panel>
-      
+
       <!-- PAGES -->
       <router-outlet></router-outlet>
-      
+
       <!-- TEST -->
       <!--<button (click)="addMenuItem('dynamic Item')">Add menu item</button>-->
     </div>
-    
-    
+
+
     <modal #errorModal modalClass="error" title="Fehler" submitButtonLabel="Ok" (onSubmit)="errorModal.close()">
         <modal-content>
             <p>Es ist ein Fehler aufgetreten:</p>

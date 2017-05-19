@@ -7,43 +7,43 @@ export class IsoProfile implements Profile {
 
   profile = [
 
-    new TextboxField({
+    new TextboxField( {
       key: 'title',
       label: 'Titel',
       // domClass: 'half',
       order: 10
-    }),
+    } ),
 
-    new LinkDatasetField({
+    new LinkDatasetField( {
       key: 'publisher',
       label: 'Herausgeber',
       filter: {_profile: 'ISO'},
       order: 12
-    }),
+    } ),
 
-    new TextboxField({
+    new TextboxField( {
       key: 'age',
       label: 'Alter',
       // type: 'number',
       order: 15
-    }),
+    } ),
 
-    new TextareaField({
+    new TextareaField( {
       key: 'description',
       label: 'Beschreibung',
       // domClass: 'half',
       rows: 10,
       order: 20
-    }),
+    } ),
 
-    new CheckboxField({
+    new CheckboxField( {
       key: 'isOpenData',
       label: 'Open Data',
       domClass: 'half',
       order: 25
-    }),
+    } ),
 
-    new RadioField({
+    new RadioField( {
       key: 'isConform',
       domClass: 'half',
       order: 26,
@@ -51,35 +51,43 @@ export class IsoProfile implements Profile {
         {label: 'konform', value: 'conform'},
         {label: 'nicht konform', value: 'not_conform'}
       ]
-    }),
+    } ),
 
-    new OpenTableField({
+    new OpenTableField( {
       key: 'addresses',
       label: 'Adressen',
       order: 30,
       columns: [
-        new TextboxField({
-          key: 'title',
-          label: 'Titel',
-          width: '100px'
-        }),
-        new TextboxField({
-          key: 'description',
-          label: 'Description',
-          width: '200px'
-        }),
-        new TextboxField({
-          key: 'date',
-          label: 'Datum',
-          type: 'date'
-        })
+        {
+          editor: new TextboxField( {
+            key: 'title',
+            label: 'Titel',
+            width: '100px'
+          } )
+        },
+        {
+          editor:
+            new TextboxField( {
+              key: 'description',
+              label: 'Description',
+              width: '200px'
+            } )
+        },
+        {
+          editor: new TextboxField( {
+            key: 'date',
+            label: 'Datum',
+            type: 'date'
+          } )
+        }
       ]
-    })
+    } )
   ];
 
   getTitle(doc: any): string {
     return doc.title;
   }
+
   getTitleFields(): string[] {
     return ['title'];
   }
