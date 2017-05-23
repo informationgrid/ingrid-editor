@@ -10,38 +10,25 @@ import {FieldBase} from '../../../+form/controls/field-base';
 
 export class UVPProfile implements Profile {
 
-
-  /*linkDocTypes = {
-   values: ['PDF', 'XML', 'ZIP', 'TXT', 'andere']
-   };*/
-
   codelistService: CodelistService = null;
 
   profile: Array<FieldBase<any>> = null;
 
+  treeIconClass = 'fa fa-file-o'; // TODO: make icons same size for better presentation in tree/browser
+
   constructor(codelistService: CodelistService) {
     this.codelistService = codelistService;
-    /*const codelistDropDown = new DropdownField( {
-      key: 'numberString',
-      label: 'Zahl',
-      options: []
-    } );*/
     const uvpNumberSelect = new DropdownField( {
       key: 'uvpNumber',
       label: 'UVP Nummer',
       options: []
     } );
 
-    /*this.codelistService.byId( '8000' ).then( codelist => {
-      codelistDropDown.options = codelist;
-    } );*/
     this.codelistService.byId( '9000' ).then( codelist => {
       uvpNumberSelect.options = codelist;
     } );
 
     this.profile = [
-
-      // codelistDropDown,
 
       new Container( {
         key: null,

@@ -1,4 +1,4 @@
-import {ComponentFactoryResolver, Injectable, ReflectiveInjector} from '@angular/core';
+import {ComponentFactoryResolver, Injectable, ReflectiveInjector, ValueProvider} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {FormularService} from '../../../services/formular/formular.service';
 import {ModalService} from '../../../services/modal/modal.service';
@@ -68,10 +68,12 @@ export class FolderPlugin extends Plugin {
 
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
-    let parent = this.formService.getSelectedDocuments();
+    let parents = this.formService.getSelectedDocuments();
     let factory = this._cr.resolveComponentFactory( CreateFolderComponent );
 
-    let providers = ReflectiveInjector.resolve( [] );
+    let providers = ReflectiveInjector.resolve( [
+      <ValueProvider>{provide: 'parent', useValue: parents[0]}
+    ] );
     const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
     this.modalService.containerRef.createComponent( factory, null, popInjector );
   }
@@ -101,7 +103,8 @@ export class FolderPlugin extends Plugin {
 
     this.formService.selectedDocuments$.subscribe( data => {
       if (data.length === 1) {
-        handleButtonState( data[0] );
+        // handleButtonState( data[0] );
+        this.formToolbarService.setButtonState( 'toolBtnFolder', true );
       } else {
         this.formToolbarService.setButtonState( 'toolBtnFolder', false );
       }

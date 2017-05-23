@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Injector, OnInit, ViewChild} from '@angular/core';
 import {Modal} from 'ngx-modal';
 import {FormularService} from '../../../services/formular/formular.service';
 import {StorageService} from '../../../services/storage/storage.service';
@@ -13,6 +13,7 @@ export class CreateFolderComponent implements OnInit {
   @ViewChild( 'name' ) inputName: HTMLInputElement;
 
   folderName = '';
+  parent = null;
   asSubFolder = false;
 
   private static createNewFolderDoc(folderName: string, parent?: string) {
@@ -26,7 +27,8 @@ export class CreateFolderComponent implements OnInit {
     return data;
   }
 
-  constructor(private formService: FormularService, private storageService: StorageService) {
+  constructor(private formService: FormularService, private storageService: StorageService, injector: Injector) {
+    this.parent = injector.get('parent');
   }
 
   ngOnInit() {

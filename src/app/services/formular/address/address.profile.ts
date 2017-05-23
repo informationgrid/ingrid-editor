@@ -9,6 +9,8 @@ import {Profile} from "../profile";
 
 export class AddressProfile implements Profile {
 
+  treeIconClass = 'fa fa-address-card-o';
+
   profile = [
     new TextboxField({
       key: 'firstName',

@@ -4,11 +4,15 @@
         <label class="control-label">Ordnername</label>
         <input #name type="text" class="form-control" (blur)="folderName = name.value" required>
 
-        <div class="checkbox">
+        <div class="checkbox" *ngIf="parent.profile === 'FOLDER'">
             <label>
-                <input #subFolder type="checkbox" (change)="asSubFolder = subFolder.checked">
+                <input #subFolder type="checkbox"
+                       (change)="asSubFolder = subFolder.checked">
                 unter ausgewähltem Ordner anlegen
             </label>
         </div>
+        <span class="text-info" *ngIf="parent.profile !== 'FOLDER'">
+          Wenn Sie einen Unterordner erstellen möchten, müssen Sie zuerst einen Ordner auswählen.
+        </span>
     </modal-content>
 </modal>

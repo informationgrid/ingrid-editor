@@ -303,6 +303,9 @@ export class MetadataTreeComponent implements OnInit {
 
     docs
       .filter( doc => doc._profile !== undefined )
+      .sort( (doc1, doc2) => {
+        return this.formularService.getTitle(doc1._profile, doc1).localeCompare(this.formularService.getTitle(doc2._profile, doc2))
+      } )
       .forEach( doc => {
         if (parentId) {
           updatedNodes.children.push( this.prepareNode( doc ) );

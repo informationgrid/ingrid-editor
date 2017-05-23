@@ -68,8 +68,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   userRoles: Role[];
 
-  docsToDelete: SelectedDocument[];
-
   // choice of doc types to be shown when creating new document
   newDocOptions: any = {
     docTypes: [],
@@ -192,7 +190,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     //   availableTypes: this.formularService.docTypes,
     //   rootOption: true
     // };
-    this.newDocOptions.docTypes = this.formularService.docTypes;
+    this.newDocOptions.docTypes = this.formularService.docTypes.filter( type => type.id !== 'FOLDER');
     this.newDocOptions.selectedDataset = this.data;
     this.formularService.newDocumentSubject.next(this.newDocOptions);
     this.newDocModal.open();
