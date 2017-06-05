@@ -119,7 +119,7 @@ export class StorageService {
       data._id = res.json()._id;
       data._state = res.json()._state;
       this.afterSave.next( data );
-      this.datasetsChanged.next( {type: UpdateType.Update, data: data} );
+      this.datasetsChanged.next( {type: UpdateType.Update, data: [data]} );
     }, err => this.errorService.handle( err ) );
   }
 

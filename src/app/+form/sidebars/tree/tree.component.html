@@ -1,26 +1,30 @@
 <div style="position: relative;">
-    <a class="refresh clickable text-muted padding pull-right glyphicon glyphicon-refresh"
-       title="Aktualisieren"
-       (click)="refresh()"></a>
+  <a class="refresh clickable text-muted padding pull-right glyphicon glyphicon-refresh"
+     title="Aktualisieren"
+     (click)="refresh()"></a>
 
-    <tree-root #tree [nodes]="nodes" [options]="options" (onEvent)="open($event)">
-        <ng-template #treeNodeTemplate let-node>
-            <div class="myTreeNode">
-                <div [class.active]="selectedId === node.data.id">
-                <span *ngIf="!node.data._iconClass" class="label"
-                      [class.label-primary]="node.data._state === 'P'"
-                      [class.label-warning]="node.data._state === 'W'"
-                      [class.pubished-working-label]="node.data._state === 'PW'"
-                >{{node.data._profile}}</span>
-                    <span *ngIf="node.data._iconClass" class="label"
-                          [class]="node.data._iconClass ? node.data._iconClass : ''"></span>
-                    <span>{{ node.data.name }}</span>
-                </div>
-                <!-- TODO: refactor into css -->
-                <span *ngIf="showFolderEditButton && node.data._profile === 'FOLDER'" class="folder fa fa-edit"
-                      (click)="editFolder(node.data)"
+  <tree-root #tree [nodes]="nodes" [options]="options" (onEvent)="open($event)">
+    <ng-template #treeNodeTemplate let-node>
+      <div class="myTreeNode">
+        <div [class.active]="selectedId === node.data.id">
+          <span *ngIf="!node.data._iconClass" class="label"
+                [class.label-primary]="node.data._state === 'P'"
+                [class.label-warning]="node.data._state === 'W'"
+                [class.pubished-working-label]="node.data._state === 'PW'"
+          >{{node.data._profile}}</span>
+          <span *ngIf="node.data._iconClass"
+                [class]="'label ' + node.data._iconClass ? node.data._iconClass : ''"
+                [class.label-primary]="node.data._profile !== 'FOLDER' && node.data._state === 'P'"
+                [class.label-warning]="node.data._profile !== 'FOLDER' && node.data._state === 'W'"
+                [class.pubished-working-label]="node.data._profile !== 'FOLDER' && node.data._state === 'PW'"
                 ></span>
-            </div>
-        </ng-template>
-    </tree-root>
+          <span>{{ node.data.name }}</span>
+        </div>
+        <!-- TODO: refactor into css -->
+        <span *ngIf="showFolderEditButton && node.data._profile === 'FOLDER'" class="folder fa fa-edit"
+              (click)="editFolder(node.data)"
+        ></span>
+      </div>
+    </ng-template>
+  </tree-root>
 </div>

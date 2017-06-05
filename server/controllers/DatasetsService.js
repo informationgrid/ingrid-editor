@@ -1,6 +1,7 @@
 'use strict';
 let db = require('../db/DatasetDao');
 let dbInterface = require('../db/dbInterface');
+let validator = require('../validation/validator');
 
 /**
  *
@@ -41,7 +42,7 @@ let extractFields = function (docs, fields) {
   return result;
 };
 
-exports.find = function(args, res) {
+exports.find = function (args, res) {
   /**
    * parameters expected in the args:
    * query (String)
@@ -52,7 +53,7 @@ exports.find = function(args, res) {
   let reverse = args.reverse.value;
 
   db.findDocuments(query, sort, reverse).then((docs) => {
-    console.log('FOUND', docs.length);
+    // console.log('FOUND', docs.length);
     let result = extractFields(docs, fields);
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result, null, 2))
@@ -64,7 +65,7 @@ exports.find = function(args, res) {
   });
 };
 
-exports.children = function(args, res) {
+exports.children = function (args, res) {
   let id = args.parentId.value;
   let fields = args.fields.value.split(',');
 
@@ -83,7 +84,7 @@ exports.children = function(args, res) {
 
 };
 
-exports.getByID = function(args, res) {
+exports.getByID = function (args, res) {
   /**
    * parameters expected in the args:
    * id (String)
@@ -94,7 +95,7 @@ exports.getByID = function(args, res) {
   let publishedVersion = args.publish.value;
 
   db.getDocument(id, publishedVersion).then(function (doc) {
-    console.log('FOUND', doc);
+    // console.log('FOUND', doc);
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(doc, null, 2))
 
@@ -105,7 +106,7 @@ exports.getByID = function(args, res) {
   });
 };
 
-exports.getByIDOperation = function(args, res) {
+exports.getByIDOperation = function (args, res) {
   /**
    * parameters expected in the args:
    * id (String)
@@ -115,7 +116,7 @@ exports.getByIDOperation = function(args, res) {
   res.end();
 };
 
-exports.set = function(args, res, userId) {
+exports.set = function (args, res, userId) {
   /**
    * parameters expected in the args:
    * id (String)
@@ -144,28 +145,48 @@ exports.set = function(args, res, userId) {
     });
   } else {
 
-    db.updateDocument(doc, publishedVersion, userId).then(function (result) {
-      // notify parent that it has a child
-      // but only if it's a new child
-      if (!docId) db.setChildInfoTo(parent);
+    let storeDoc = () => {
+      db.updateDocument(doc, publishedVersion, userId).then(function (result) {
+        // notify parent that it has a child
+        // but only if it's a new child
+        if (!docId) db.setChildInfoTo(parent);
 
-      // update search index
-      dbInterface.updateFullIndexSearch();
-      console.log('Inserted doc', parent);
-      res.end(JSON.stringify(result, null, 2))
-    }).catch(function (err) {
-      console.error('Error during db operation:', err.stack);
-      // no response value expected for this operation
-      res.statusCode = 404;
-      res.end(err.message);
-    });
+        // update search index
+        dbInterface.updateFullIndexSearch();
+        console.log('Inserted doc', parent);
+        res.end(JSON.stringify(result, null, 2))
+      }).catch(function (err) {
+        console.error('Error during db operation:', err.stack);
+        // no response value expected for this operation
+        res.statusCode = 404;
+        res.end(err.message);
+      });
+    };
+
+    // TODO: add backend validation here when publishing a document
+    // we want to have controlled validation where some can be turned of
+    // depending on the settings of the behaviours
+    // store document in database
+    if (publishedVersion) {
+      validator.run(doc).then((info) => {
+        console.log('Validation is ok', info);
+        storeDoc();
+      }).catch((errors) => {
+        console.error('Error during validation document', errors);
+        res.statusCode = 400;
+        res.end(JSON.stringify(errors, null, 2));
+      });
+    } else {
+      storeDoc();
+    }
+
   }
 };
 
 exports.deleteById = function (args, res) {
   let ids = args.id.value.split(',');
 
-  ids.forEach( id => {
+  ids.forEach(id => {
 
     // get the path to the dataset to find out the parent dataset
     db.getPathToDataset(id).then((path) => {
@@ -187,7 +208,7 @@ exports.deleteById = function (args, res) {
 
 };
 
-exports.getPath = function(args, res) {
+exports.getPath = function (args, res) {
   let id = args.id.value;
 
   db.getPathToDataset(id).then(function (result) {

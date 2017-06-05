@@ -66,7 +66,6 @@ export class DashboardComponent implements OnInit {
         }
 
         this.pieChartLabels = Object.keys(data);
-        this.pieChartData = [];
         this.pieChartLabels.forEach( key => {
             this.pieChartData.push( data[key] );
         });

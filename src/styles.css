@@ -1,6 +1,5 @@
 html, body {
   height: 100%;
-  background-color: red;
 }
 
 body {
@@ -21,6 +20,10 @@ form-toolbar + div {
 
 .navbar-default .navbar-nav > li > a:focus, nav a.active, nav a:focus.active {
   background-color: #ececec;
+}
+
+.has-navbar {
+  padding-top: 10px;
 }
 
 a:hover {
@@ -150,8 +153,12 @@ sidebar .list-group-item:hover {
   color: #ffffff;
 }
 
+.label-primary {
+  background-color: #87c2da !important;
+}
+
 .pubished-working-label {
-  background: linear-gradient(-90deg, #f0ad4e 50%, #337ab7 50%);
+  background: linear-gradient(-90deg, #f0ad4e 50%, #87c2da 50%);
 }
 
 .list-group-item.active {
