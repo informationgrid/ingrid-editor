@@ -17,8 +17,7 @@ class TaskIdFields {
 
     //
     this.validate = {
-      presence: true,
-      length: { is: 4 }
+      presence: true
     };
   }
 

@@ -1,4 +1,5 @@
 'use strict';
+let log = require('log4js').getLogger();
 let db = require('../db/DatasetDao');
 let dbInterface = require('../db/dbInterface');
 let validator = require('../validation/validator');
@@ -59,7 +60,7 @@ exports.find = function (args, res) {
     res.end(JSON.stringify(result, null, 2))
 
   }, (err) => {
-    console.error('nothing found:', err);
+    log.error('nothing found:', err);
     res.statusCode = 404;
     res.end(err.message);
   });
@@ -77,7 +78,7 @@ exports.children = function (args, res) {
     let result = extractFields(docs, fields);
     res.end(JSON.stringify(result, null, 2));
   }, (err) => {
-    console.error('error:', err);
+    log.error('error:', err);
     res.statusCode = 500;
     res.end(err.message);
   });
@@ -100,7 +101,7 @@ exports.getByID = function (args, res) {
     res.end(JSON.stringify(doc, null, 2))
 
   }, function (err) {
-    console.error('not found:', err);
+    log.error('not found:', err);
     res.statusCode = 404;
     res.end(err.message);
   });
@@ -124,7 +125,7 @@ exports.set = function (args, res, userId) {
    * publish (Boolean)
    * revert (Boolean)
    **/
-  console.log('Store dataset');
+  log.debug('Store dataset');
 
   let id = args.id.value;
   let doc = args.data.value;
@@ -138,7 +139,7 @@ exports.set = function (args, res, userId) {
     db.revert(id).then(function (doc) {
       res.end(JSON.stringify(doc, null, 2));
     }).catch(function (err) {
-      console.error('Error during revert operation:', err);
+      log.error('Error during revert operation:', err);
       // no response value expected for this operation
       res.statusCode = 500;
       res.end(err.message);
@@ -153,10 +154,10 @@ exports.set = function (args, res, userId) {
 
         // update search index
         dbInterface.updateFullIndexSearch();
-        console.log('Inserted doc', parent);
+        log.debug('Inserted doc', parent);
         res.end(JSON.stringify(result, null, 2))
       }).catch(function (err) {
-        console.error('Error during db operation:', err.stack);
+        log.error('Error during db operation:', err.stack);
         // no response value expected for this operation
         res.statusCode = 404;
         res.end(err.message);
@@ -169,10 +170,10 @@ exports.set = function (args, res, userId) {
     // store document in database
     if (publishedVersion) {
       validator.run(doc).then((info) => {
-        console.log('Validation is ok', info);
+        log.debug('Validation is ok', info);
         storeDoc();
       }).catch((errors) => {
-        console.error('Error during validation document', errors);
+        log.error('Error during validation document', errors);
         res.statusCode = 400;
         res.end(JSON.stringify(errors, null, 2));
       });
@@ -198,7 +199,7 @@ exports.deleteById = function (args, res) {
 
         res.end();
       }, function (err) {
-        console.error('Error during db operation:', err.stack);
+        log.error('Error during db operation:', err.stack);
         res.statusCode = 500;
         res.end(err.message);
       });
@@ -213,10 +214,10 @@ exports.getPath = function (args, res) {
 
   db.getPathToDataset(id).then(function (result) {
 
-    console.log("path:", result);
+    log.debug("path:", result);
     res.end(JSON.stringify(result, null, 2))
   }).catch(function (err) {
-    console.error('Error during db operation:', err.stack);
+    log.error('Error during db operation:', err.stack);
     // no response value expected for this operation
     res.statusCode = 500;
     res.end(err.message);

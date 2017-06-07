@@ -1,5 +1,6 @@
 let glob = require('glob')
-  , path = require('path');
+  , path = require('path'),
+  log = require('log4js').getLogger();;
 
 let validate = require("validate.js");
 
@@ -23,8 +24,11 @@ class Validator {
     this.constraints = {};
     this.priorityMap = {};
 
-    glob.sync('./validation/uvp/**/*.js').forEach(file => {
-      console.log('loading rule: ', file);
+    let activeRules = [];
+    let inactiveRules = [];
+
+    glob.sync('./validation/rules/**/*.js').forEach(file => {
+      log.debug('loading rule: ', file);
       let rule = require(path.resolve(file));
 
       // if it's the first rule for a profile
@@ -41,19 +45,30 @@ class Validator {
       if (typeof rule.validate === 'object') {
         let keys = Object.keys(rule.validate);
         keys.forEach(key => {
+
+          // check if rule was deactivated by a corresponding behaviour
+          let isActive = this.checkActive(rule.linkToBehaviour);
+
           // check priority first
           let hasPriority = this.checkPriority(rule.profile, rule.field, key, rule.priority);
 
-          if (hasPriority) {
+          if (isActive && hasPriority) {
             constraintField = this.addOrMergeRule(key, constraintField, rule.validate);
+            activeRules.push(file + ' -> ' + key);
+          } else {
+            let text = isActive ? '' : ' behaviour is not active: ' + rule.linkToBehaviour;
+            text += hasPriority ? '' : ' has lower priority';
+            inactiveRules.push(file + ' -> ' + key + text);
           }
 
         });
 
       } else {
-        console.error('Strange validate object: ', rule.validate);
+        log.error('Strange validate object: ', rule.validate);
       }
     });
+    log.debug('Activated rules:\n', activeRules.join('\n'));
+    log.debug('Deactivated rules:\n', inactiveRules.join('\n'));
   }
 
   /**
@@ -62,28 +77,6 @@ class Validator {
    * @returns {Promise}
    */
   run(doc) {
-
-    // let constraints = {
-    //   description: {
-    //     presence: false,
-    //     length: {
-    //       minimum: 3
-    //     }
-    //   },
-    //   taskId: function (value, attributes, attributeName, options, constraints) {
-    //     let titleIsEmpty = validate.isEmpty(attributes.title);
-    //     if (titleIsEmpty) {
-    //       return null;
-    //     } else {
-    //       return {
-    //         presence: {message: "is required when title is not empty"},
-    //         length: {is: 5}
-    //       };
-    //     }
-    //   }
-    // };
-
-    // let contraints = this.prepareConstraints();
     let errors = validate.validate(doc, this.constraints[doc._profile]);
 
     return new Promise(function (resolve, reject) {
@@ -100,7 +93,8 @@ class Validator {
    * So in the validate function we have to iterate through all defined constraints  and call those.
    * @returns {{}}
    */
-  prepareConstraints() {
+
+  /*prepareConstraints() {
     let result = {};
 
 
@@ -115,7 +109,7 @@ class Validator {
     }
 
     return result;
-  }
+  }*/
 
   /**
    * Register a contraint for a profile and a field of the document.
@@ -162,6 +156,20 @@ class Validator {
     } else if (!this.priorityMap[profile][field][key]) {
       this.priorityMap[profile][field][key] = {};
     }
+  }
+
+  /**
+   * Check if a behaviour is active.
+   * @param {string} linkToBehaviour
+   * @returns {boolean}
+   */
+  checkActive(linkToBehaviour) {
+    // if there'S no link to a behaviour then it's automatically active
+    if (!linkToBehaviour) return true;
+
+    let activeBehaviours = []; // getActiveBehaviours();
+
+    return activeBehaviours.indexOf(linkToBehaviour) !== -1;
   }
 }
 

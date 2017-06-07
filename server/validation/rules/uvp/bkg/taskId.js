@@ -7,18 +7,18 @@ class Titlel2Field {
     this.profile = 'UVP';
 
     // the field to apply this rule to
-    this.field = 'title';
+    this.field = 'taskId';
 
     // the priority in case another rule for this profile and field occurs
     this.priority = 1;
 
     // the linked behaviour name if this rule can be toggled
-    // this.linkToBehaviour = 'xxx';
+    this.linkToBehaviour = 'xxx';
 
     //
     this.validate = {
       presence: false,
-      length: { minimum: 3 }
+      length: { is: 4 }
     };
   }
 

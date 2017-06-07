@@ -1,6 +1,7 @@
 'use strict';
 
 let Config = require('./config');
+let log4j = require('log4js');
 let app = require('connect')();
 let http = require('http');
 let swaggerTools = require('swagger-tools');
@@ -13,6 +14,9 @@ let bodyParser = require('body-parser'),
     dbRole = require('./db/RoleDao'),
     dbUser = require('./db/UserDao');
 let serverPort = 8081;
+
+log4j.configure('log4js.json');
+let log = log4j.getLogger();
 
 // swaggerRouter configuration
 let options = {
@@ -77,9 +81,8 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
   // Start the server
   http.createServer(app).listen(serverPort, function () {
-    console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-    console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
-
+    log.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+    log.info('Swagger-ui is available on http://localhost:%d/docs', serverPort);
     db.connect().then(function() {
 
       return dbUser.hasAdminUser();
@@ -88,7 +91,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
       if (!adminExists) {
         // TODO: accept user input for admin password
-        console.log('Admin does not exists in database. A user was added with default password "admin".');
+        log.info('Admin does not exists in database. A user was added with default password "admin".');
 
         let hash = bcrypt.hashSync('admin', 8);
         let objId = db.getClient().getObjectId(-1);
@@ -98,7 +101,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
       }
     }).catch(function(ex) {
 
-      console.error('Error starting up DB connection', ex);
+      log.error('Error starting up DB connection', ex);
 
     });
 
@@ -114,14 +117,14 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
           }
 
           let token = req.headers.authorization.substring(Config.key.headerPrefix.length);
-          console.log("inside swagger security: jwt token", token);
+          log.debug("inside swagger security: jwt token", token);
           let result = Jwt.verify(token, Config.key.privateKey, function (err, decoded) {
             if (err) {
-              console.error("Error: ", err);
+              log.error("Error: ", err);
               callback(new Error('Failed'));
               return;
             }
-            console.log('result: ', decoded);
+            log.debug('result: ', decoded);
             callback();
           });
         }
