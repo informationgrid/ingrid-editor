@@ -55,7 +55,7 @@ export class AuthService {
     const headers = new Headers( {'Content-Type': 'application/x-www-form-urlencoded'} );
     const options = new RequestOptions( {headers: headers} );
 
-    return this.http.post( this.configService.backendUrl + 'user/login', body, options )
+    return this.http.post( this.configService.backendUrl + 'login', body, options )
       .map( (response: Response) => {
         // login successful if there's a jwt token in the response
         const result = response.json();

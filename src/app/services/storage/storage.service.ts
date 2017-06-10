@@ -46,7 +46,7 @@ export class StorageService {
   findDocuments(query: string) {
     // TODO: use general sort filter
     return this.http.get(
-      this.configService.backendUrl + 'datasets/find?query=' + query + '&sort=mainInfo.title&fields=_id,_profile,_state,' + this.titleFields )
+      this.configService.backendUrl + 'datasets?query=' + query + '&sort=title&fields=_id,_profile,_state,' + this.titleFields )
       .map( resp => {
         const json = <any[]>resp.json();
         return json.filter( item => item._profile !== 'FOLDER' );
@@ -58,13 +58,13 @@ export class StorageService {
     const fields = 'fields=_id,_profile,_state,hasChildren,' + this.titleFields;
     const idQuery = parentId === null ? '' : '&parentId=' + parentId;
     // headers.append('Content-Type', 'text/plain');
-    return this.http.get( this.configService.backendUrl + 'datasets/children?' + fields + idQuery )
+    return this.http.get( this.configService.backendUrl + 'datasets?children=true&' + fields + idQuery )
       .map( resp => resp.json() )
       .catch( (err) => this.errorService.handle( err ) );
   }
 
   loadData(id: string): Observable<DocMainInfo> {
-    return this.http.get( this.configService.backendUrl + 'dataset/' + id )
+    return this.http.get( this.configService.backendUrl + 'datasets/' + id )
       .map( resp => resp.json() );
   }
 
@@ -75,8 +75,16 @@ export class StorageService {
     // this.beforeSave.next(errors);
     // console.log('After validation:', errors);
     return new Promise( (resolve, reject) => {
-      const response = this.http.post( this.configService.backendUrl + 'dataset/1', data )
-        .catch( (err) => this.errorService.handle( err ) );
+      let response = null;
+      if (data._id) {
+        response = this.http.put( this.configService.backendUrl + 'datasets/' + data._id, data );
+
+      } else {
+        response = this.http.post( this.configService.backendUrl + 'datasets', data );
+
+      }
+      response.catch( (err) => this.errorService.handle( err ) );
+
       console.log( 'Response:', response );
       response.subscribe( res => {
         console.log( 'received:', res );
@@ -109,7 +117,7 @@ export class StorageService {
       this.modalService.showError( 'Der Datensatz kann nicht veröffentlicht werden.' );
       return;
     }
-    const response = this.http.post( this.configService.backendUrl + 'dataset/1?publish=true', data )
+    const response = this.http.post( this.configService.backendUrl + 'datasets/1?publish=true', data )
       .catch( err => this.errorService.handle( err ) );
 
     console.log( 'Response:', response );
@@ -124,7 +132,7 @@ export class StorageService {
   }
 
   delete(ids: string[]): any {
-    const response = this.http.delete( this.configService.backendUrl + 'dataset/' + ids )
+    const response = this.http.delete( this.configService.backendUrl + 'datasets/' + ids )
       .catch( err => this.errorService.handle( err ) );
 
     response.subscribe( res => {
@@ -138,7 +146,7 @@ export class StorageService {
 
   revert(id: string): Observable<any> {
     console.debug( 'REVERTING', id );
-    return this.http.post( this.configService.backendUrl + 'dataset/' + id + '?revert=true', null )
+    return this.http.post( this.configService.backendUrl + 'datasets/' + id + '?revert=true', null )
       .do( (res: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: res.json()} ) )
       .catch( err => this.errorService.handle( err ) );
 
@@ -149,7 +157,7 @@ export class StorageService {
   }
 
   getPathToDataset(id: string): Observable<string[]> {
-    return this.http.get( this.configService.backendUrl + 'dataset/path/' + id )
+    return this.http.get( this.configService.backendUrl + 'datasets/' + id + '/path' )
       .map( resp => resp.json() )
       .catch( err => this.errorService.handle( err ) );
   }
@@ -161,9 +169,9 @@ export class StorageService {
    * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
    * @returns {Observable<Response>}
    */
-  copyDocuments(copiedDatasets: string[], dest: string, includeTree: boolean) {
-    const body = this.prepareCopyCutBody( copiedDatasets, dest, includeTree );
-    return this.http.post( this.configService.backendUrl + 'datasets/copy', body );
+  copyDocuments(srcIDs: string[], dest: string, includeTree: boolean) {
+    const body = this.prepareCopyCutBody( dest, includeTree );
+    return this.http.post( this.configService.backendUrl + 'datasets/' + srcIDs.join(',') + '/copy', body );
   }
 
   /**
@@ -173,14 +181,14 @@ export class StorageService {
    * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
    * @returns {Observable<Response>}
    */
-  moveDocuments(src: string[], dest: string, includeTree: boolean) {
-    const body = this.prepareCopyCutBody( src, dest, includeTree );
-    return this.http.post( this.configService.backendUrl + 'datasets/move', body );
+  moveDocuments(srcIDs: string[], dest: string, includeTree: boolean) {
+    const body = this.prepareCopyCutBody( dest, includeTree );
+    return this.http.post( this.configService.backendUrl + 'datasets/' + srcIDs.join(',') + 'move', body );
   }
 
-  private prepareCopyCutBody(src: string[], dest: string, includeTree: boolean): any {
+  private prepareCopyCutBody(dest: string, includeTree: boolean): any {
     const body = {
-      srcIds: src,
+      // srcIds: src,
       destId: dest
     };
     return body;

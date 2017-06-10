@@ -18,7 +18,7 @@ export class RoleService {
   }
 
   getRole(id: string): Observable<any> {
-    return this.http.get( this.configService.backendUrl + 'role/' + id)
+    return this.http.get( this.configService.backendUrl + 'roles/' + id)
       .map( resp => this.prepareRoles([resp.json()])[0] )
       .catch( err => this.errorService.handle(err));
   }
@@ -39,19 +39,19 @@ export class RoleService {
 
   saveRole(role: Role): Observable<any> {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
-    return this.http.post( this.configService.backendUrl + 'role/' + role.id, role )
+    return this.http.put( this.configService.backendUrl + 'roles/' + role.id, role )
       // .map( resp => resp.json() )
       .catch( err => this.errorService.handle(err));
   }
 
   createRole(role: Role): Observable<any> {
-    return this.http.put( this.configService.backendUrl + 'role/' + role.id, role )
+    return this.http.post( this.configService.backendUrl + 'roles/' + role.id, role )
       // .map( resp => resp.json() )
       .catch( err => this.errorService.handle(err));
   }
 
   deleteRole(id: string): Observable<any> {
-    return this.http.delete( this.configService.backendUrl + 'role/' + id )
+    return this.http.delete( this.configService.backendUrl + 'roles/' + id )
       .catch( err => this.errorService.handle(err));
   }
 

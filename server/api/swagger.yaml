@@ -12,7 +12,7 @@ schemes:
 produces:
 - "application/json"
 paths:
-  /user/list:
+  /users:
     options:
       operationId: get
       responses:
@@ -29,7 +29,7 @@ paths:
       tags:
       - "User"
     x-swagger-router-controller: "User"
-  /user/{id}:
+  /users/{id}:
     options:
       operationId: get
       parameters:
@@ -44,7 +44,7 @@ paths:
     get:
       operationId: getUser
       summary: ""
-      description: ""
+      description: "Get the user with the given ID."
       parameters:
       - name: "id"
         in: "path"
@@ -57,8 +57,8 @@ paths:
       tags:
       - "User"
     post:
-      operationId: setUser
-      summary: "Updates a user. If user could not be found an error will be returned."
+      operationId: createUser
+      summary: "Create a new user. If the user already exists an error will be returned."
       description: ""
       parameters:
       - name: "id"
@@ -80,8 +80,8 @@ paths:
       tags:
       - "User"
     put:
-      operationId: createUser
-      summary: "Creates a new user. If user with a given login already exists an error will be returned."
+      operationId: updateUser
+      summary: "Updates an existing user user. If the user does not exist an error will be returned."
       description: ""
       parameters:
       - name: "id"
@@ -105,7 +105,7 @@ paths:
     delete:
       operationId: deleteUser
       summary: "Deletes a user."
-      description: "If user with a given login does not exists an error will be returned."
+      description: "The user with the given ID is deleted. If user with a given login does not exists an error will be returned."
       parameters:
       - name: "id"
         in: "path"
@@ -120,7 +120,7 @@ paths:
       tags:
       - "User"
     x-swagger-router-controller: "User"
-  /user/login:
+  /login:
     post:
       operationId: login
       consumes:
@@ -140,7 +140,7 @@ paths:
         '403':
           description: Error when user is not accepted.
       tags:
-      - "User"
+      - "Security"
     x-swagger-router-controller: "User"
   /refreshToken:
     options:
@@ -157,7 +157,7 @@ paths:
         '200':
           description: Returns a new access token to the requested client
       tags:
-      - "User"
+      - "Security"
     x-swagger-router-controller: "User"
   /roles:
     options:
@@ -176,7 +176,7 @@ paths:
       tags:
       - "Role"
     x-swagger-router-controller: "Role"
-  /role/{id}:
+  /roles/{id}:
     options:
       operationId: get
       parameters:
@@ -190,8 +190,8 @@ paths:
       x-swagger-router-controller: "Options"
     get:
       operationId: getRole
-      summary: ""
-      description: ""
+      summary: "Get a role"
+      description: "Get the role with the given ID."
       parameters:
       - name: "id"
         in: "path"
@@ -204,8 +204,8 @@ paths:
       tags:
       - "Role"
     post:
-      operationId: setRole
-      summary: "Updates a role. If role could not be found an error will be returned."
+      operationId: createRole
+      summary: "Creates a new role. If role with a given login already exists an error will be returned."
       description: ""
       parameters:
       - name: "id"
@@ -227,8 +227,8 @@ paths:
       tags:
       - "Role"
     put:
-      operationId: createRole
-      summary: "Creates a new role. If role with a given login already exists an error will be returned."
+      operationId: updateRole
+      summary: "Updates a role. If role could not be found an error will be returned."
       description: ""
       parameters:
       - name: "id"
@@ -252,7 +252,7 @@ paths:
     delete:
       operationId: deleteRole
       summary: "Deletes a role."
-      description: "If role with a given id does not exists an error will be returned."
+      description: "Delete a role with a given ID. If role with a given id does not exists an error will be returned."
       parameters:
       - name: "id"
         in: "path"
@@ -300,7 +300,7 @@ paths:
       tags:
       - "Behaviour"
     x-swagger-router-controller: "Behaviours"
-  /datasets/find:
+  /datasets:
     options:
       operationId: get
       responses:
@@ -310,14 +310,24 @@ paths:
     get:
       tags:
       - "Datasets"
-      summary: ...
-      description: ""
+      summary: Get datasets by a query or as child documents
+      description: "Get all datasets or those which match a given query. You can define the fields where the search should be, in case the documents have different attributes for their title. The results can also be sorted."
       operationId: find
       parameters:
       - name: "query"
         in: "query"
-        description: ""
-        required: true
+        description: "Find datasets by a search query."
+        required: false
+        type: "string"
+      - name: "children"
+        in: "query"
+        description: "Get all children of a dataset. The parameter 'parentId' is also needed for this request."
+        required: false
+        type: "boolean"
+      - name: "parentId"
+        in: "query"
+        description: "The ID of the parent dataset to get the children from. If empty then the root datasets are returned."
+        required: false
         type: "string"
       - name: "fields"
         in: "query"
@@ -338,38 +348,47 @@ paths:
         '200':
           description: Datasets found
     x-swagger-router-controller: "Datasets"
-  /datasets/children:
-    options:
-      operationId: get
-      responses:
-        '200':
-          description: Options for this operation are returned.
-      x-swagger-router-controller: "Options"
-    get:
+    post:
       tags:
       - "Datasets"
-      summary: ...
-      description: ""
-      operationId: children
+      summary: "Set a complete dataset"
+      description: "xxx"
+      operationId: "createDataset"
       security: [{"jwt": []}]
       parameters:
-      - name: "parentId"
-        in: "query"
-        description: "The ID of the parent dataset to get the children from. If empty then the root datasets are returned."
-        required: false
-        type: "string"
-      - name: "fields"
-        in: "query"
-        description: ""
+      - name: "data"
+        in: "body"
+        description: "The dataset to be stored."
         required: true
-        type: "string"
+        schema:
+          $ref: "#/definitions/DatasetClient"
+      - name: "publish"
+        in: "query"
+        description: "If we want to store the published version then this parameter\
+          \ has to be set to true."
+        required: false
+        type: "boolean"
       responses:
-        '200':
-          description: Datasets found
+        200:
+          description: "The stored dataset, which might contain additional storage\
+            \ information."
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
       x-swagger-router-controller: "Datasets"
-  /datasets/copy:
+  /datasets/{ids}/copy:
     options:
       operationId: get
+      parameters:
+      - name: ids
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
       responses:
         '200':
           description: Options for this operation are returned.
@@ -382,6 +401,14 @@ paths:
       operationId: "copyDatasets"
       security: [{"jwt": []}]
       parameters:
+      - name: ids
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
       - name: "data"
         in: "body"
         description: "..."
@@ -392,9 +419,18 @@ paths:
         '200':
           description: Datasets have been copied successfully.
     x-swagger-router-controller: "Datasets"
-  /datasets/move:
+  /datasets/{ids}/move:
     options:
       operationId: get
+      parameters:
+      - name: ids
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
       responses:
         '200':
           description: Options for this operation are returned.
@@ -407,6 +443,14 @@ paths:
       operationId: "moveDatasets"
       security: [{"jwt": []}]
       parameters:
+      - name: ids
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
       - name: "data"
         in: "body"
         description: "..."
@@ -417,7 +461,7 @@ paths:
         '200':
           description: Datasets have been moved successfully.
     x-swagger-router-controller: "Datasets"
-  /dataset/path/{id}:
+  /datasets/{id}/path:
     options:
       operationId: get
       parameters:
@@ -445,7 +489,7 @@ paths:
         '200':
           description: Array of IDs.
       x-swagger-router-controller: "Datasets"
-  /dataset/{id}:
+  /datasets/{id}:
     options:
       operationId: get
       parameters:
@@ -485,12 +529,12 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       x-swagger-router-controller: "Datasets"
-    post:
+    put:
       tags:
       - "Datasets"
       summary: "Set a complete dataset"
       description: "xxx"
-      operationId: "setDatasets"
+      operationId: "updateDataset"
       security: [{"jwt": []}]
       parameters:
       - name: "id"
@@ -717,10 +761,6 @@ definitions:
   CopyCutBody:
     type: "object"
     properties:
-      srcIds:
-        type: "array"
-        "items":
-          "type": "string"
       destId:
         type: "string"
   Error:

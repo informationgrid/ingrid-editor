@@ -10,7 +10,7 @@ module.exports.getRole = function (req, res, next) {
   Role.getRole(req.swagger.params, res, next);
 };
 
-module.exports.setRole = function (req, res, next) {
+module.exports.updateRole = function (req, res, next) {
   Role.updateRole(req.swagger.params, res, next);
 };
 

@@ -49,40 +49,40 @@ exports.find = function (args, res) {
    * query (String)
    **/
   let query = args.query.value;
+  let requestChildren = args.children.value;
+  let parentId = args.parentId.value;
   let fields = args.fields.value.split(',');
   let sort = args.sort.value;
   let reverse = args.reverse.value;
 
-  db.findDocuments(query, sort, reverse).then((docs) => {
-    // console.log('FOUND', docs.length);
-    let result = extractFields(docs, fields);
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(result, null, 2))
+  if (requestChildren === true) {
+    // convert empty id to null object for requesting root datasets
+    if (parentId === undefined) parentId = null;
 
-  }, (err) => {
-    log.error('nothing found:', err);
-    res.statusCode = 404;
-    res.end(err.message);
-  });
-};
+    db.getChildDocuments(parentId).then(function (docs) {
+      // TODO: only return requested fields instead of whole documents as in findDocuments
+      let result = extractFields(docs, fields);
+      res.end(JSON.stringify(result, null, 2));
+    }, (err) => {
+      log.error('error:', err);
+      res.statusCode = 500;
+      res.end(err.message);
+    });
 
-exports.children = function (args, res) {
-  let id = args.parentId.value;
-  let fields = args.fields.value.split(',');
+  } else {
 
-  // convert empty id to null object for requesting root datasets
-  if (id === undefined) id = null;
+    db.findDocuments(query, sort, reverse).then((docs) => {
+      // console.log('FOUND', docs.length);
+      let result = extractFields(docs, fields);
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(result, null, 2))
 
-  db.getChildDocuments(id).then(function (docs) {
-    // TODO: only return requested fields instead of whole documents as in findDocuments
-    let result = extractFields(docs, fields);
-    res.end(JSON.stringify(result, null, 2));
-  }, (err) => {
-    log.error('error:', err);
-    res.statusCode = 500;
-    res.end(err.message);
-  });
-
+    }, (err) => {
+      log.error('nothing found:', err);
+      res.statusCode = 404;
+      res.end(err.message);
+    });
+  }
 };
 
 exports.getByID = function (args, res) {
@@ -117,7 +117,58 @@ exports.getByIDOperation = function (args, res) {
   res.end();
 };
 
-exports.set = function (args, res, userId) {
+exports.create = function (args, res, userId) {
+  /**
+   * parameters expected in the args:
+   * data (Dataset)
+   * publish (Boolean)
+   **/
+  log.debug('Store dataset');
+
+  let doc = args.data.value;
+  let docId = doc._id;
+  let publishedVersion = args.publish.value;
+
+  let parent = doc._parent;
+
+  let storeDoc = () => {
+    db.updateDocument(doc, publishedVersion, userId).then(function (result) {
+      // notify parent that it has a child
+      // but only if it's a new child
+      if (!docId) db.setChildInfoTo(parent);
+
+      // update search index
+      dbInterface.updateFullIndexSearch();
+      log.debug('Inserted doc', parent);
+      res.end(JSON.stringify(result, null, 2))
+    }).catch(function (err) {
+      log.error('Error during db operation:', err.stack);
+      // no response value expected for this operation
+      res.statusCode = 404;
+      res.end(err.message);
+    });
+  };
+
+  // TODO: add backend validation here when publishing a document
+  // we want to have controlled validation where some can be turned of
+  // depending on the settings of the behaviours
+  // store document in database
+  if (publishedVersion) {
+    validator.run(doc).then((info) => {
+      log.debug('Validation is ok', info);
+      storeDoc();
+    }).catch((errors) => {
+      log.error('Error during validation document', errors);
+      res.statusCode = 400;
+      res.end(JSON.stringify(errors, null, 2));
+    });
+  } else {
+    storeDoc();
+  }
+
+};
+
+exports.update = function (args, res, userId) {
   /**
    * parameters expected in the args:
    * id (String)
@@ -225,11 +276,15 @@ exports.getPath = function (args, res) {
 };
 
 exports.copy = function (args, res) {
+  let /*string[]*/ids = args.ids.value;
+
   res.statusCode = 500;
   res.end("not implemented");
 };
 
 exports.move = function (args, res) {
+  let /*string[]*/ids = args.ids.value;
+
   res.statusCode = 500;
   res.end("not implemented");
 

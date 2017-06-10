@@ -21,7 +21,7 @@ export class RoleComponent implements OnInit {
 
   roles: Role[];
   private pages: any[];
-  selectedRole: Role = {};
+  selectedRole = new Role();
   dialogTab = 'dataset';
 
   private isNewRole: boolean = false;
@@ -124,7 +124,7 @@ export class RoleComponent implements OnInit {
     this.roleService.deleteRole( role.id )
       .subscribe(
         () => {
-          this.selectedRole = {};
+          this.selectedRole = null;
           this.fetchRoles();
         },
         (err: any) => this.modalService.showError( err, err.text() )

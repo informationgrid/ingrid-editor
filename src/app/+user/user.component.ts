@@ -1,14 +1,10 @@
-import {Component, OnInit, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ModalService} from '../services/modal/modal.service';
-import {UserService, User} from './user.service';
+import {UserService} from './user.service';
 import {ErrorService} from '../services/error.service';
 import {Observable} from 'rxjs';
-import {IMultiSelectSettings} from './multi-select.component';
-
-interface Role {
-  id?: string;
-  name?: string;
-}
+import {User} from './user';
+import {Role} from './role';
 
 @Component({
   templateUrl: './user.component.html',
@@ -28,7 +24,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   roles: Role[];
   currentTab: string;
 
-  selectedUser: User = {};
+  selectedUser: User = new User();
 
   isNewUser: boolean = false;
 
@@ -67,7 +63,7 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   addUser() {
     this.isNewUser = true;
-    this.selectedUser = {};
+    this.selectedUser = null;
     setTimeout(() => this.loginRef.nativeElement.focus(), 200);
   }
 
@@ -75,7 +71,7 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.userService.deleteUser(login)
       .subscribe(
         () => {
-          this.selectedUser = {};
+          this.selectedUser = null;
           this.fetchUsers();
         },
         (err: any) => this.modalService.showError(err, err.text())
