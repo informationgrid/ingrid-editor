@@ -489,6 +489,44 @@ paths:
         '200':
           description: Array of IDs.
       x-swagger-router-controller: "Datasets"
+  /datasets/{id}/export/{format}:
+    options:
+      operationId: get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+      - name: format
+        in: path
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      tags:
+      - "Datasets"
+      summary: "Export a dataset to a specific format"
+      description: "..."
+      operationId: "exportDataset"
+      security: [{"jwt": []}]
+      parameters:
+      - name: id
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: string
+      - name: format
+        in: path
+        description: "e.g. ISO"
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Dataset has been exported successfully.
+    x-swagger-router-controller: "Datasets"
   /datasets/{id}:
     options:
       operationId: get

@@ -12,10 +12,6 @@ module.exports.getByID = function getByID (req, res, next) {
   Datasets.getByID(req.swagger.params, res, next);
 };
 
-module.exports.getByIDOperation = function getByIDOperation (req, res, next) {
-  Datasets.getByIDOperation(req.swagger.params, res, next);
-};
-
 module.exports.createDataset = function set (req, res, next) {
   let token = req.headers.authorization.substring(Config.key.headerPrefix.length);
   let decoded = Jwt.decode(token);
@@ -42,4 +38,8 @@ module.exports.copyDatasets = function(req, res, next) {
 
 module.exports.moveDatasets = function(req, res, next) {
   Datasets.move(req.swagger.params, res, next);
+};
+
+module.exports.exportDataset = function(req, res, next) {
+  Datasets.export(req.swagger.params, res, next);
 };

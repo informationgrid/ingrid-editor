@@ -28,6 +28,7 @@ import {AuthConfig, AuthHttp} from 'angular2-jwt';
 import {ToastService} from './services/toast.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ImportExportModule} from './+importExport/import-export.module';
+import {ApiService} from './services/ApiService';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig({
@@ -44,7 +45,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule],
   providers: [appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     ErrorService, AuthService, ConfigService, FormToolbarService, FormularService, StorageService,
-    StorageDummyService, BehavioursDefault, ModalService, ToastService, {
+    StorageDummyService, BehavioursDefault, ModalService, ApiService, ToastService, {
     provide: LocationStrategy,
     useClass: HashLocationStrategy
   }, {

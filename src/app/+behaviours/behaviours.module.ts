@@ -18,12 +18,14 @@ import {FolderPlugin, CopyCutPastePlugin, StatisticPlugin, WorkflowPlugin, Print
 import {DeleteDocsPlugin} from './toolbar/deleteDocs/delete-docs.plugin';
 import {DeleteDialogComponent} from './toolbar/deleteDocs/delete-dialog.component';
 import {StatisticComponent} from './system/statistic/statistic.component';
+import {IsoViewComponent} from './toolbar/isoView/iso-view.component';
+import {IsoViewPlugin} from './toolbar/isoView/iso-view.plugin';
 
 @NgModule( {
   imports: [CommonModule, ModalModule, FormsModule, ReactiveFormsModule, SharedModule, routing],
-  declarations: [PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent],
-  providers: [MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin, StatisticPlugin, WorkflowPlugin, PrintViewPlugin, CopyCutPastePlugin, FolderPlugin, DeleteDocsPlugin],
-  entryComponents: [PrintViewComponent, PasteDialogComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent]
+  declarations: [PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewComponent, IsoViewComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent],
+  providers: [MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin, StatisticPlugin, WorkflowPlugin, PrintViewPlugin, IsoViewPlugin, CopyCutPastePlugin, FolderPlugin, DeleteDocsPlugin],
+  entryComponents: [PrintViewComponent, IsoViewComponent, PasteDialogComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent]
 } )
 export class PluginsModule {
 }

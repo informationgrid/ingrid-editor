@@ -3,6 +3,7 @@ let log = require('log4js').getLogger();
 let db = require('../db/DatasetDao');
 let dbInterface = require('../db/dbInterface');
 let validator = require('../validation/validator');
+let exportService = require('../export/export');
 
 /**
  *
@@ -105,16 +106,6 @@ exports.getByID = function (args, res) {
     res.statusCode = 404;
     res.end(err.message);
   });
-};
-
-exports.getByIDOperation = function (args, res) {
-  /**
-   * parameters expected in the args:
-   * id (String)
-   * publish (Boolean)
-   **/
-  // no response value expected for this operation
-  res.end();
 };
 
 exports.create = function (args, res, userId) {
@@ -288,4 +279,21 @@ exports.move = function (args, res) {
   res.statusCode = 500;
   res.end("not implemented");
 
+};
+
+exports.export = function (args, res) {
+  let /*string*/id = args.id.value;
+  let /*string*/format = args.format.value;
+
+
+  db.getDocument(id, false).then(function (doc) {
+    let exportedDoc = exportService.exportToFormat(format, doc);
+    res.setHeader('Content-Type', 'application/json');
+    res.end(exportedDoc.end({pretty: true}) + '');
+
+  }, function (err) {
+    log.error('not found:', err);
+    res.statusCode = 404;
+    res.end(err.message);
+  });
 };

@@ -17,10 +17,13 @@ describe('Export', function () {
 
   it('should convert a given document to ISO', function () {
     let doc = {
-      title: 'This is my title'
+      _id: 'E6044602-F59B-4DC0-815D-F25BB34BAEF6',
+      title: 'This is my title',
+      description: 'Some description goes here ...'
     };
-    let result = '' + exportService.exportToFormat('ISO', doc); // .then( result => {
-    expect(result).to.equal('<xml><title>This is my title</title></xml>');
+    let result = exportService.exportToFormat('ISO', doc); // .then( result => {
+    console.log(result.end({ pretty: true }));
+    expect(result+'').to.contain('<gmd:title><gco:CharacterString>This is my title</gco:CharacterString></gmd:title>');
     // });
   });
 });
