@@ -2,18 +2,20 @@ import {Injectable} from '@angular/core';
 import {ConfigService} from '../config/config.service';
 import {Observable} from 'rxjs';
 import {ErrorService} from '../services/error.service';
-import {AuthHttp} from 'angular2-jwt';
 import {User} from './user';
+import {Http} from '@angular/http';
+import {ApiService} from '../services/ApiService';
 
 @Injectable()
 export class UserService {
 
-  constructor(private http: AuthHttp, private configService: ConfigService,
-              private errorService: ErrorService) {
+  constructor(private http: Http, private configService: ConfigService,
+              private errorService: ErrorService, private apiService: ApiService) {
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get( this.configService.backendUrl + 'users' )
+    return this.apiService.getUsers();
+    /*return this.http.get( this.configService.backendUrl + 'users' )
       .map( resp => resp.json() )
       .map( (data: any[]) => {
         let result: any[] = [];
@@ -26,17 +28,18 @@ export class UserService {
           } );
         } );
         return result;
-      } );
+      } );*/
   }
 
   getUser(login: string): Observable<User> {
-    return this.http.get( this.configService.backendUrl + 'users/' + login )
-      .map( resp => resp.json() )
+    return this.apiService.getUser(login);
+    // return this.http.get( this.configService.backendUrl + 'users/' + login )
+    //   .map( resp => resp.json() )
       /*.map( json => {
         json.roles = json.roles.map( (role: number) => role + '');
         return json;
       } )*/
-      .catch( err => this.errorService.handle( err ) );
+      // .catch( err => this.errorService.handle( err ) );
   }
 
   saveUser(user: User): Observable<User> {

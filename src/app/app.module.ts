@@ -8,7 +8,7 @@ import {PluginsModule} from './+behaviours/behaviours.module';
 import {FieldsModule} from './+fields/fields.module';
 import {DashboardModule} from './+dashboard/dashboard.module';
 import {IgeFormModule} from './+form/ige-form.module';
-import {Http, HttpModule, RequestOptions} from '@angular/http';
+import {HttpModule} from '@angular/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {MenuComponent} from './menu/menu.component';
@@ -17,42 +17,42 @@ import {FormularService} from './services/formular/formular.service';
 import {ModalService} from './services/modal/modal.service';
 import {ModalModule} from 'ngx-modal';
 import {UserModule} from './+user/user.module';
-import {LoginComponent} from './security/login.component';
+// import {LoginComponent} from './security/login.component';
 import {AuthGuard} from './security/auth.guard';
-import {AuthService} from './services/security/auth.service';
 import {ConfigService} from './config/config.service';
 import {FormChangeDeactivateGuard} from './security/form-change.guard';
 import {ErrorService} from './services/error.service';
 import {HelpComponent} from './help/help.component';
-import {AuthConfig, AuthHttp} from 'angular2-jwt';
 import {ToastService} from './services/toast.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ImportExportModule} from './+importExport/import-export.module';
 import {ApiService} from './services/ApiService';
+import {KeycloakService} from './keycloak/keycloak.service';
+import {KEYCLOAK_HTTP_PROVIDER} from './keycloak/keycloak.http';
 
-export function authHttpServiceFactory(http: Http, options: RequestOptions) {
+/*export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig({
     tokenName: 'id_token',
     tokenGetter: (() => localStorage.getItem('id_token')),
     globalHeaders: [{'Content-Type': 'application/json'}],
   }), http, options);
-}
+}*/
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, LoginComponent, MenuComponent],
+  declarations: [AppComponent, HelpComponent, MenuComponent],
   imports: [BrowserModule, BrowserAnimationsModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule],
-  providers: [appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
-    ErrorService, AuthService, ConfigService, FormToolbarService, FormularService, StorageService,
+  providers: [appRoutingProviders, AuthGuard, FormChangeDeactivateGuard, KeycloakService, KEYCLOAK_HTTP_PROVIDER,
+    ErrorService, ConfigService, FormToolbarService, FormularService, StorageService,
     StorageDummyService, BehavioursDefault, ModalService, ApiService, ToastService, {
     provide: LocationStrategy,
     useClass: HashLocationStrategy
-  }, {
+  }/*, {
       provide: AuthHttp,
       useFactory: authHttpServiceFactory,
       deps: [Http, RequestOptions]
-    }
+    }*/
   ], // additional providers
   // entryComponents: [StatisticComponent],
   bootstrap: [AppComponent]

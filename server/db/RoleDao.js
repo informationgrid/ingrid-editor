@@ -24,11 +24,12 @@ class RoleDao {
 
   /**
    * Find a user with a given login.
-   * @param {string} id
+   * @param {string} name of the role
    * @returns {*}
    */
-  findRole(id) {
-    return this.client.getDocById('role', id);
+  findRole(name) {
+    return this.client.findInTable('role', {name: name})
+      .then(roles => roles[0]);
   }
 
   findRoles(ids) {

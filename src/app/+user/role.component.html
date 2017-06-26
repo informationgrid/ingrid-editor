@@ -52,10 +52,10 @@
                 </div>
                 <div class="panel-body">
                     <h3>Dokumente</h3>
-                    <div *ngFor="let id of selectedRole.datasets">
+                    <div *ngFor="let dataset of selectedRole.datasets">
                         <!-- TODO: show document name for this ID -->
-                        <span class="">{{id}}</span>
-                        <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(id)"></button>
+                        <span class="">{{dataset.label}}</span>
+                        <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(dataset.id)"></button>
                     </div>
                     <h3>Dokument-Attribute</h3>
                     <div *ngFor="let attr of selectedRole.attributes">
@@ -95,12 +95,12 @@
         <!-- BY DATASET-->
         <div [class.hide]="dialogTab !== 'dataset'" class="padding">
             <div class="pull-left" style="width: 250px; height: 200px; overflow: auto;">
-                <tree #datasetTree [showFolderEditButton]="false"></tree>
+                <tree #datasetTree [showFolderEditButton]="false" (onSelected)="rememberSelection($event)"></tree>
             </div>
-            <div *ngFor="let id of selectedRole.datasets">
+            <div *ngFor="let dataset of selectedRole.datasets">
                 <!-- TODO: show document name for this ID -->
-                <span class="">{{id}}</span>
-                <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(id)"></button>
+                <span class="">{{dataset.label}}</span>
+                <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(dataset.id)"></button>
             </div>
             <div *ngIf="!selectedRole.datasets || selectedRole.datasets.length === 0">
                 Keine Einschränkung auf Dokumente.

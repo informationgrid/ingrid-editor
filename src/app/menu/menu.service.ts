@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {Subject} from 'rxjs';
-import {AuthService} from '../services/security/auth.service';
 
 interface MenuItem {
   name: string;
@@ -24,11 +23,11 @@ export class MenuService {
     {name: 'Im-/Export', path: '/importExport', onlyAdmin: true}
   ];
 
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router) {
   }
 
   get menuItems(): MenuItem[] {
-    let validPages = this.authService.getAccessiblePages();
+    let validPages = []; // this.authService.getAccessiblePages();
 
     if (validPages.length === 0) {
       return this._menuItems;

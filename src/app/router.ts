@@ -9,7 +9,7 @@ export const routes: Routes = [
   {path: 'fields', loadChildren: './+fields/fields.module'},
   {path: 'user', loadChildren: './+user/user.module'}, // TODO: check canActivateChild: [AuthGuard],
   {path: 'importExport', loadChildren: './+importExport/import-export.module'},
-  {path: 'login', component: LoginComponent},
+  // {path: 'login', component: LoginComponent},
   {path: '', redirectTo: '/form', pathMatch: 'full'}
 ];
 

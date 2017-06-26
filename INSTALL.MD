@@ -47,3 +47,18 @@ IGE - NG Server
 > cd ..
 > npm run server
 > npm run prod
+
+# Keycloak
+
+* Setup Realm InGrid
+* Setup Client 'ige-ng' with:
+** Settings:
+*** Client protocol: openid-connect
+*** accesstype: confidential
+*** valid redirect URLs: http://localhost/*
+*** Web Origins: *
+** Credentials:
+*** Client Id and Secret
+
+Use this secret for requests and use public key for verify JWT. The public key can be found under
+"Realm Settings->Keys->RSA->Public Key". This one has to be embedded into '-----BEGIN PUBLIC KEY-----' and '-----END PUBLIC KEY-----'.

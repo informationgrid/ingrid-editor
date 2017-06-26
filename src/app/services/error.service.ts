@@ -12,7 +12,7 @@ export class ErrorService {
       // on logout or jwt expired
       if (error.status === 403) {
         console.log('Not logged in');
-        this.router.navigate(['/login']);
+        // this.router.navigate(['/login']);
       } else {
         console.error('Error: ', error);
         let moreInfo = error.text ? error.text() : undefined;

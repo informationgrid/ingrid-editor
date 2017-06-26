@@ -8,7 +8,7 @@ export class Role {
   name: string;
   pages: string[];
   attributes: RoleAttribute[];
-  datasets: string[];
+  datasets: any[];
 
   constructor(values: Object = {}) {
     Object.assign( this, values );

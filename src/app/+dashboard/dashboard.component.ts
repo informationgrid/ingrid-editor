@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ConfigService} from '../config/config.service';
 import {ErrorService} from '../services/error.service';
 import {FormularService} from '../services/formular/formular.service';
-import {AuthHttp} from 'angular2-jwt';
+import {Http} from '@angular/http';
 
 @Component({
     templateUrl: './dashboard.component.html',
@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
     sideTab = 'myData';
 
 
-    constructor(private http: AuthHttp, private configService: ConfigService, private errorService: ErrorService,
+    constructor(private http: Http, private configService: ConfigService, private errorService: ErrorService,
         private formularService: FormularService) { }
 
     ngOnInit() {

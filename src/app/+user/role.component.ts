@@ -25,6 +25,7 @@ export class RoleComponent implements OnInit {
   dialogTab = 'dataset';
 
   private isNewRole: boolean = false;
+  private markForSelection: any[] = [];
 
   constructor(private modalService: ModalService,
               private roleService: RoleService,
@@ -60,7 +61,7 @@ export class RoleComponent implements OnInit {
 
   loadRole(role: Role) {
     this.isNewRole = false;
-    this.roleService.getRole( role.id )
+    this.roleService.getRoleMapping( role.name )
       .subscribe(
         role => {
           this.selectedRole = role;
@@ -99,8 +100,12 @@ export class RoleComponent implements OnInit {
       } );
   }
 
+  rememberSelection(selection) {
+    this.markForSelection = selection;
+  }
+
   addDataset(id: string) {
-    this.selectedRole.datasets.push( id );
+    this.selectedRole.datasets.push( ...this.markForSelection );
   }
 
   addAttribute(key: string, value: string) {

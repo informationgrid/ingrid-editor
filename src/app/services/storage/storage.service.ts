@@ -1,16 +1,14 @@
 import {Injectable} from '@angular/core';
-import {Headers, RequestOptions} from '@angular/http';
 import {ModalService} from '../modal/modal.service';
 import {FormularService} from '../formular/formular.service';
 import {ConfigService} from '../../config/config.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {DocMainInfo, UpdateDatasetInfo} from '../../models/update-dataset-info.model';
-import {AuthService} from '../security/auth.service';
-import {Router} from '@angular/router';
 import {ErrorService} from '../error.service';
-import {AuthHttp} from 'angular2-jwt';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {Http} from '@angular/http';
+import {KeycloakService} from '../../keycloak/keycloak.service';
 
 @Injectable()
 export class StorageService {
@@ -28,18 +26,11 @@ export class StorageService {
 
   titleFields: string;
 
-  constructor(private http: AuthHttp, private modalService: ModalService, private formularService: FormularService,
-              private configService: ConfigService, private authenticationService: AuthService,
-              private errorService: ErrorService, private router: Router) {
-    if (authenticationService.loggedIn()) {
+  constructor(private http: Http, private modalService: ModalService, private formularService: FormularService,
+              private configService: ConfigService,
+              private errorService: ErrorService) {
+    if (KeycloakService.auth.loggedIn) {
       this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
-    } else {
-      const loginSubscriber = authenticationService.loginStatusChange$.subscribe( loggedIn => {
-        if (loggedIn) {
-          this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
-          loginSubscriber.unsubscribe();
-        }
-      } );
     }
   }
 

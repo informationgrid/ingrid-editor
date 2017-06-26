@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MenuService} from './menu.service';
-import {AuthService} from '../services/security/auth.service';
+import {KeycloakService} from '../keycloak/keycloak.service';
 
 @Component({
   selector: 'main-menu',
@@ -11,7 +11,7 @@ export class MenuComponent implements OnInit {
   routes: any[] = [];
   isLoggedIn: boolean = false;
 
-  constructor(private menuService: MenuService, private authService: AuthService) {
+  constructor(private menuService: MenuService, private keycloak: KeycloakService) {
     this.routes = this.menuService.menuItems;
   }
 
@@ -22,16 +22,17 @@ export class MenuComponent implements OnInit {
     });
 
     // remember logged in state
-    this.authService.loginStatusChange$.subscribe(loggedIn => {
+    /*this.authService.loginStatusChange$.subscribe(loggedIn => {
       this.isLoggedIn = loggedIn;
       this.routes = this.menuService.menuItems;
-    });
+    });*/
 
     // get initial login state when page is loaded
-    this.isLoggedIn = this.authService.loggedIn();
+    this.isLoggedIn = true; // this.authService.loggedIn();
   }
 
   logout() {
-    this.authService.logout();
+    // this.authService.logout();
+    this.keycloak.logout();
   }
 }

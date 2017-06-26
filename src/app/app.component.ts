@@ -2,6 +2,8 @@ import {Component, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {Modal} from 'ngx-modal';
 import {ModalService} from './services/modal/modal.service';
 import {BehaviourService} from './+behaviours/behaviour.service';
+import {RoleService} from './+user/role.service';
+import {KeycloakService} from './keycloak/keycloak.service';
 
 // enableProdMode();
 
@@ -44,7 +46,8 @@ export class AppComponent implements OnInit {
 
   dynDialog: any = {errorMessage: ''};
 
-  constructor(private behaviourService: BehaviourService, private modalService: ModalService) {
+  constructor(private behaviourService: BehaviourService, private modalService: ModalService,
+              private roleService: RoleService) {
 
     // TODO: make more error info collapsible
     this.modalService.errorDialog$.subscribe( (content: any) => {
@@ -52,6 +55,14 @@ export class AppComponent implements OnInit {
       this.dynDialog.errorMessageMore = content.moreInfo;
       this.errorModal.open();
     } );
+
+    let roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
+    // TODO: get RoleMapping from each role so that we can give permissions in client correctly
+    this.roleService.getRoleMapping('admin' )
+      .subscribe(role => {
+        console.log('my roles:', role);
+        KeycloakService.auth.roleMapping.push(role);
+      });
 
   }
 

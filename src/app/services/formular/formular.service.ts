@@ -5,10 +5,10 @@ import {UVPProfile} from './uvp/uvp.profile';
 import {AddressProfile} from './address/address.profile';
 import {Profile} from './profile';
 import {CodelistService} from '../../+form/services/codelist.service';
-import {AuthService} from '../security/auth.service';
 import {SelectedDocument} from '../../+form/sidebars/selected-document.model';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {KeycloakService} from '../../keycloak/keycloak.service';
 
 @Injectable()
 export class FormularService {
@@ -44,7 +44,7 @@ export class FormularService {
     {id: 'FOLDER', label: 'Folder'}
   ];
 
-  constructor(private codelistService: CodelistService, authService: AuthService) {
+  constructor(private codelistService: CodelistService) {
     // create profiles after we have logged in
     const init = () => {
       this.addressProfile = new AddressProfile();
@@ -53,16 +53,9 @@ export class FormularService {
     };
 
     console.log('init profiles');
-    if (authService.loggedIn()) {
+
+    if (KeycloakService.auth.loggedIn) {
       init();
-    } else {
-      const loginSubscriber = authService.loginStatusChange$.subscribe( loggedIn => {
-        if (loggedIn) {
-          init();
-          console.log('Finished init profiles');
-          loginSubscriber.unsubscribe();
-        }
-      } );
     }
   }
 

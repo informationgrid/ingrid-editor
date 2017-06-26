@@ -236,7 +236,7 @@ paths:
         description: "The unique id of the role."
         required: true
         type: "string"
-      - name: "user"
+      - name: "role"
         in: "body"
         description: "Save the role into the database."
         required: true
@@ -545,6 +545,7 @@ paths:
       summary: "A complete dataset"
       description: "Retrieve a dataset by a given ID."
       operationId: "getByID"
+      security: [{"jwt": []}]
       parameters:
       - name: "id"
         in: "path"

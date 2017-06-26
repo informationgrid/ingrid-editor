@@ -15,9 +15,10 @@ import {PartialGeneratorField} from './controls/field-partial-generator';
 import {UpdateType} from '../models/update-type.enum';
 import {ErrorService} from '../services/error.service';
 import {ToastOptions, ToastyConfig, ToastyService} from 'ng2-toasty';
-import {AuthService} from '../services/security/auth.service';
 import {Role} from '../models/user-role';
 import {SelectedDocument} from './sidebars/selected-document.model';
+import {KeycloakService} from '../keycloak/keycloak.service';
+import {RoleService} from '../+user/role.service';
 
 interface FormData extends Object {
   _id?: string;
@@ -84,10 +85,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
-              private errorService: ErrorService, private route: ActivatedRoute, private router: Router,
-              authService: AuthService) {
+              private roleService: RoleService,
+              private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
-    this.userRoles = authService.rolesDetail;
+    // TODO: get roles definiton
+    this.userRoles = KeycloakService.auth.roleMapping; // authService.rolesDetail;
+
+    // KeycloakService.auth.authz.
 
     const loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
       console.log('generic toolbar handler', eventId);
@@ -388,10 +392,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   hasPermission(data: any): boolean {
     // TODO: check all roles
     const attr = this.userRoles[0].attributes;
-    const docIDs = this.userRoles[0].datasets;
+    const docIDs = this.userRoles[0].datasets.map( dataset => dataset.id );
     // TODO: show why we don't have permission by remembering failed rule
     const permissionByAttribute = !attr || attr.every( a => data[a.id] === a.value );
-    const permissionByDatasetId = !docIDs || docIDs.some( id => data._id === id );
+    const permissionByDatasetId = !docIDs || docIDs.length === 0 ||  docIDs.some( id => data._id === id );
 
     return permissionByAttribute && permissionByDatasetId;
   }

@@ -118,7 +118,8 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
           let token = req.headers.authorization.substring(Config.key.headerPrefix.length);
           log.debug("inside swagger security: jwt token", token);
-          let result = Jwt.verify(token, Config.key.privateKey, function (err, decoded) {
+
+          let result = Jwt.verify(token, Config.key.privateKey,  {algorithms: ['RS256']}, function (err, decoded) {
             if (err) {
               log.error("Error: ", err);
               callback(new Error('Failed'));

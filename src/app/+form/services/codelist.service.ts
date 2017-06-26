@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {AuthHttp} from 'angular2-jwt';
 import {ConfigService} from '../../config/config.service';
 import {ErrorService} from '../../services/error.service';
+import {Http} from '@angular/http';
 
 export interface Codelist {
   id: string;
@@ -23,7 +23,7 @@ export class CodelistService {
     return result[0][1];
   }
 
-  constructor(private http: AuthHttp, private configService: ConfigService, private errorService: ErrorService) {
+  constructor(private http: Http, private configService: ConfigService, private errorService: ErrorService) {
   }
 
   byId(id: string): Promise<CodelistEntry[]> {

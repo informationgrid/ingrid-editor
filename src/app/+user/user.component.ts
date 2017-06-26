@@ -4,7 +4,7 @@ import {UserService} from './user.service';
 import {ErrorService} from '../services/error.service';
 import {Observable} from 'rxjs';
 import {User} from './user';
-import {Role} from './role';
+import {Role} from '../models/user-role';
 
 @Component({
   templateUrl: './user.component.html',
@@ -54,7 +54,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   loadUser(user: User) {
     console.log('user', user);
     this.isNewUser = false;
-    this.userService.getUser(user.login)
+    this.userService.getUser(user.id)
       .subscribe(
         user => { this.selectedUser = user; console.log('selectedUser:', this.selectedUser); },
         error => this.errorService.handle(error)
