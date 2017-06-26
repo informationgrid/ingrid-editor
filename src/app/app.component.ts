@@ -5,8 +5,6 @@ import {BehaviourService} from './+behaviours/behaviour.service';
 import {RoleService} from './+user/role.service';
 import {KeycloakService} from './keycloak/keycloak.service';
 
-// enableProdMode();
-
 @Component( {
   selector: 'app-root',
   template: `

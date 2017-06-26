@@ -8,6 +8,8 @@ import {Http, Response} from '@angular/http';
 import {KeycloakService} from '../keycloak/keycloak.service';
 import {User} from '../+user/user';
 import {Role} from '../models/user-role';
+import {environment} from '../../environments/environment';
+
 
 @Injectable()
 export class ApiService {
@@ -24,7 +26,7 @@ export class ApiService {
   }
 
   getGroups(): Observable<Role[]> {
-    return this.http.get( 'http://192.168.99.100:8080/auth/admin/realms/' + KeycloakService.auth.authz.realm + '/roles' )
+    return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/roles' )
       .map( response => response.json() )
       .map( (json: any[]) => {
         let result: Role[] = [];
@@ -42,7 +44,7 @@ export class ApiService {
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get( 'http://192.168.99.100:8080/auth/admin/realms/' + KeycloakService.auth.authz.realm + '/users' )
+    return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users' )
       .map( response => response.json() )
       .map( (json: any[]) => {
         let result: User[] = [];
@@ -61,7 +63,7 @@ export class ApiService {
   }
 
   getUser(id: string): Observable<User> {
-    return this.http.get( 'http://192.168.99.100:8080/auth/admin/realms/' + KeycloakService.auth.authz.realm + '/users/' + id )
+    return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users/' + id )
       .map( response => response.json() )
       .map( (json: any) => {
         let result: User = {
@@ -77,7 +79,7 @@ export class ApiService {
   }
 
   getGroup(id: string): Observable<Role> {
-    return this.http.get( 'http://192.168.99.100:8080/auth/admin/realms/' + KeycloakService.auth.authz.realm + '/roles-by-id/' + id )
+    return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/roles-by-id/' + id )
       .map( response => response.json() )
       .map( (json: any) => {
         let result: Role = {
