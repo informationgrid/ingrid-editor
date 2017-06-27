@@ -26,21 +26,32 @@ export class ApiService {
   }
 
   getGroups(): Observable<Role[]> {
-    return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/roles' )
-      .map( response => response.json() )
-      .map( (json: any[]) => {
-        let result: Role[] = [];
-        json.forEach( item => {
-          result.push( {
-            id: item.id,
-            name: item.name,
-            attributes: [],
-            datasets: [],
-            pages: null
-          } );
-        } );
-        return result;
-      } );
+    // return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng') ///7556e61a-4520-4f2a-b4d7-f948b3ad943b/roles' )
+    let promise = new Promise((resolve) => {
+
+
+      this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng' )
+        .map( res => res.json() )
+        .map( client => {
+          this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients/' + client[0].id + '/roles' )
+            .map( response => response.json() )
+            .map( (json: any[]) => {
+              let result: Role[] = [];
+              json.forEach( item => {
+                result.push( {
+                  id: item.id,
+                  name: item.name,
+                  attributes: [],
+                  datasets: [],
+                  pages: null
+                } );
+              } );
+              resolve(result);
+            } ).subscribe();
+        } ).subscribe();
+
+    });
+    return Observable.fromPromise(promise);
   }
 
   getUsers(): Observable<User[]> {
