@@ -5,5 +5,6 @@
 
 export const environment = {
   production: false,
-  keykloakBaseUrl: 'http://192.168.99.100:8080/auth/'
+  mockKeycloak: true,
+  keykloakBaseUrl: 'http://localhost:8080/auth/'
 };

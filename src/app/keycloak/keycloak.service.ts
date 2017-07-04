@@ -46,7 +46,7 @@ export class KeycloakService {
           // will be initialized later
           KeycloakService.auth.roleMapping = [];
           KeycloakService.auth.logoutUrl = keycloakAuth.authServerUrl
-            + '/realms/' + keycloakAuth.realm + '/protocol/openid-connect/logout?redirect_uri='
+            + 'realms/' + keycloakAuth.realm + '/protocol/openid-connect/logout?redirect_uri='
             + document.baseURI;
           resolve();
         } )

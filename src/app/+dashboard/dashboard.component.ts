@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit {
           query = '';
         }
 
-        this.http.get(this.configService.backendUrl + 'datasets/find?query=' + query + '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
+        this.http.get(this.configService.backendUrl + 'datasets?query=' + query + '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
           .map( data => {
             const json = <any[]>data.json();
             return json.filter(item => item._profile !== 'FOLDER');

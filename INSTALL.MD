@@ -56,7 +56,7 @@ IGE - NG Server
 *** Client protocol: openid-connect
 *** accesstype: confidential
 *** valid redirect URLs: http://localhost/*
-*** Web Origins: *
+*** Web Origins: * or http://localhost:4200
 ** Credentials:
 *** Client Id and Secret
 

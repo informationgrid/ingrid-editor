@@ -17,7 +17,6 @@ import {FormularService} from './services/formular/formular.service';
 import {ModalService} from './services/modal/modal.service';
 import {ModalModule} from 'ngx-modal';
 import {UserModule} from './+user/user.module';
-// import {LoginComponent} from './security/login.component';
 import {AuthGuard} from './security/auth.guard';
 import {ConfigService} from './config/config.service';
 import {FormChangeDeactivateGuard} from './security/form-change.guard';
@@ -30,32 +29,21 @@ import {ApiService} from './services/ApiService';
 import {KeycloakService} from './keycloak/keycloak.service';
 import {KEYCLOAK_HTTP_PROVIDER} from './keycloak/keycloak.http';
 
-/*export function authHttpServiceFactory(http: Http, options: RequestOptions) {
-  return new AuthHttp(new AuthConfig({
-    tokenName: 'id_token',
-    tokenGetter: (() => localStorage.getItem('id_token')),
-    globalHeaders: [{'Content-Type': 'application/json'}],
-  }), http, options);
-}*/
-
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, MenuComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, HttpModule, IgeFormModule, DashboardModule, FieldsModule,
+  imports: [BrowserModule, BrowserAnimationsModule, HttpModule,
+    IgeFormModule, DashboardModule, FieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule],
-  providers: [appRoutingProviders, AuthGuard, FormChangeDeactivateGuard, KeycloakService, KEYCLOAK_HTTP_PROVIDER,
+  providers: [appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
+    KeycloakService, KEYCLOAK_HTTP_PROVIDER,
     ErrorService, ConfigService, FormToolbarService, FormularService, StorageService,
     StorageDummyService, BehavioursDefault, ModalService, ApiService, ToastService, {
-    provide: LocationStrategy,
-    useClass: HashLocationStrategy
-  }/*, {
-      provide: AuthHttp,
-      useFactory: authHttpServiceFactory,
-      deps: [Http, RequestOptions]
-    }*/
-  ], // additional providers
-  // entryComponents: [StatisticComponent],
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    }], // additional providers
   bootstrap: [AppComponent]
 } )
 
-export class AppModule {}
+export class AppModule {
+}

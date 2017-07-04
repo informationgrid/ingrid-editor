@@ -30,7 +30,7 @@ class UserService {
           let result = {
             username: user.login,
             roles: roles,
-            token: Jwt.sign(user, Config.key.privateKey, {expiresIn: Config.key.tokenExpiry})
+            token: Jwt.sign(user, Config.key.publicKey, {expiresIn: Config.key.tokenExpiry})
           };
           res.end(JSON.stringify(result, null, 2));
         }, err => {
@@ -54,7 +54,7 @@ class UserService {
     let user = {
       login: decodedToken
     };
-    let newToken = Jwt.sign(user, Config.key.privateKey, {expiresIn: Config.key.tokenExpiry});
+    let newToken = Jwt.sign(user, Config.key.publicKey, {expiresIn: Config.key.tokenExpiry});
     res.end(JSON.stringify({token: newToken}, null, 2));
   }
 
