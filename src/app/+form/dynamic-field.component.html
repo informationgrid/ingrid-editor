@@ -5,6 +5,12 @@
 
     <div [ngSwitch]="field.controlType">
 
+        <!-- RUBRIC -->
+        <ng-container *ngSwitchCase="'rubric'">
+          <h4>{{field.label}}</h4>
+          <hr>
+        </ng-container>
+
         <!-- TEXTBOX -->
         <input *ngSwitchCase="'textbox'" [formControlName]="field.key" class="form-control"
                [id]="field.key" [attr.type]="field.type">
@@ -41,7 +47,7 @@
                     [ngModel]="value[field.key]">
         </data-table>-->
 
-        <open-table *ngSwitchCase="'opentable'" [formControlName]="field.key" [columns]="field.columns"></open-table>
+        <open-table *ngSwitchCase="'opentable'" [formControlName]="field.key" [columns]="field.columns" [hideTableHeader]="field.hideHeader"></open-table>
 
         <!-- LEAFLET-->
         <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [formControlName]="field.key"></leaflet>
@@ -50,6 +56,5 @@
 
         <div class="help-block" [class.hide]="form.controls[field.key].valid || form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>
     </div>
-
 
 </div>

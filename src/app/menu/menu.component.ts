@@ -9,7 +9,7 @@ import {KeycloakService} from '../keycloak/keycloak.service';
 export class MenuComponent implements OnInit {
 
   routes: any[] = [];
-  isLoggedIn: boolean = false;
+  isLoggedIn = false;
 
   constructor(private menuService: MenuService, private keycloak: KeycloakService) {
     this.routes = this.menuService.menuItems;

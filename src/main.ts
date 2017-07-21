@@ -14,4 +14,8 @@ const keycloakService = environment.mockKeycloak ? KeycloakMockService : Keycloa
 
 keycloakService.init()
   .then(() => platformBrowserDynamic().bootstrapModule(AppModule))
-  .catch(e => window.location.reload() );
+  .catch(e => {
+    debugger;
+    console.error(e);
+    window.location.reload();
+  } );

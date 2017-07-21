@@ -16,7 +16,7 @@ export class MenuService {
 
   _menuItems: MenuItem[] = [
     {name: 'Dashboard', path: '/dashboard'},
-    {name: 'Form', path: '/form/-2'},
+    {name: 'Form', path: '/form'},
     {name: 'Plugins', path: '/plugins', onlyAdmin: true},
     // {name: 'Fields', path: '/fields'}
     {name: 'Benutzer', path: '/user', onlyAdmin: true},
@@ -27,7 +27,7 @@ export class MenuService {
   }
 
   get menuItems(): MenuItem[] {
-    let validPages = []; // this.authService.getAccessiblePages();
+    const validPages = []; // this.authService.getAccessiblePages();
 
     if (validPages.length === 0) {
       return this._menuItems;
@@ -37,7 +37,7 @@ export class MenuService {
   }
 
   addMenuItem(label: string, path: string, component: any) {
-    let routerConfig = this.router.config;
+    const routerConfig = this.router.config;
     routerConfig.push(
       {path: path, component: component}
     );

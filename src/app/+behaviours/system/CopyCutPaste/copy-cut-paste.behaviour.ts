@@ -48,10 +48,9 @@ export class CopyCutPastePlugin extends Plugin {
   register() {
     super.register();
 
-    let buttons: Array<ToolbarItem | Separator> = [
+    const buttons: Array<ToolbarItem | Separator> = [
       {id: 'toolBtnCopy', tooltip: 'Copy', cssClasses: 'glyphicon glyphicon-copy', eventId: 'COPY', active: false},
       {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'glyphicon glyphicon-scissors', eventId: 'CUT', active: false},
-      // {tooltip: 'Paste', cssClasses: 'glyphicon glyphicon-paste', eventId: 'PASTE', active: false},
       {id: 'toolBtnCopyCutSeparator', isSeparator: true}
     ];
     buttons.forEach( (button, index) => this.toolbarService.addButton( button, index + 3 ) );
@@ -71,6 +70,18 @@ export class CopyCutPastePlugin extends Plugin {
         this.cut();
       }
     } );
+
+    // set button state according to selected documents
+    this.formService.selectedDocuments$.subscribe( data => {
+      if (data.length === 0) {
+        // handleButtonState( data[0] );
+        this.toolbarService.setButtonState( 'toolBtnCopy', false );
+        this.toolbarService.setButtonState( 'toolBtnCut', false );
+      } else {
+        this.toolbarService.setButtonState( 'toolBtnCopy', true );
+        this.toolbarService.setButtonState( 'toolBtnCut', true );
+      }
+    } );
   }
 
   private handleEvent(type: UpdateType) {
@@ -85,9 +96,9 @@ export class CopyCutPastePlugin extends Plugin {
     this.copiedDatasets = this.formService.getSelectedDocuments().map( doc => doc.id );
 
     // show dialog where to copy the dataset(s)
-    let factory = this._cr.resolveComponentFactory( PasteDialogComponent );
+    const factory = this._cr.resolveComponentFactory( PasteDialogComponent );
 
-    let providers = ReflectiveInjector.resolve( [
+    const providers = ReflectiveInjector.resolve( [
       {provide: MoveMode, useValue: {mode: CopyMoveEnum.COPY}},
       {provide: PasteCallback, useValue: this.paste.bind( this )}
     ] );
@@ -102,9 +113,9 @@ export class CopyCutPastePlugin extends Plugin {
     this.toastService.show( 'Datensatz verschoben' );
 
     // show dialog where to copy the dataset(s)
-    let factory = this._cr.resolveComponentFactory( PasteDialogComponent );
+    const factory = this._cr.resolveComponentFactory( PasteDialogComponent );
 
-    let providers = ReflectiveInjector.resolve( [
+    const providers = ReflectiveInjector.resolve( [
       {provide: MoveMode, useValue: {mode: CopyMoveEnum.MOVE}},
       {provide: PasteCallback, useValue: this.paste.bind( this )}
     ] );
@@ -115,8 +126,8 @@ export class CopyCutPastePlugin extends Plugin {
   paste(targetNode: any, mode: CopyMoveEnum) {
     console.log( 'is paste' );
     // TODO: add subtree pasting
-    let dest = targetNode[0].id;
-    let includeTree = false;
+    const dest = targetNode[0].id;
+    const includeTree = false;
 
     let result = null;
     if (mode === CopyMoveEnum.COPY) {

@@ -3,7 +3,7 @@ import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {StorageDummyService} from './services/storage/storage.dummy.service';
 import {StorageService} from './services/storage/storage.service';
 import {FormToolbarService} from './+form/toolbar/form-toolbar.service';
-import {appRoutingProviders, routing} from './router';
+import {appRoutingProviders, routing} from './app.router';
 import {PluginsModule} from './+behaviours/behaviours.module';
 import {FieldsModule} from './+fields/fields.module';
 import {DashboardModule} from './+dashboard/dashboard.module';

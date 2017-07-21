@@ -3,16 +3,15 @@ import {FieldBase} from './field-base';
 export class OpenTableField extends FieldBase<string> {
   controlType = 'opentable';
   columns: { editor: FieldBase<string>, formatter?: any }[];
+  hideHeader: boolean;
 
-  constructor(options: {
-    key: string,
+  constructor(options: FieldBase<any> | {
     columns: { editor: FieldBase<string>, formatter?: any }[],
-    label?: string,
-    order?: number,
-    domClass?: string
+    hideHeader?: boolean
   }) {
     super(options);
     this.columns = options['columns'] || [];
+    this.hideHeader = options['hideHeader'] || false;
   }
 }
 

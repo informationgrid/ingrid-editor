@@ -8,7 +8,7 @@
             </div>
         </div>-->
         <div>
-            <label class="control-label">&nbsp;</label>
+            <label *ngIf="!hideTableHeader" class="control-label">&nbsp;</label>
             <div class="cell" *ngFor="let row of rows; let i=index" [class.odd]="i % 2 === 1" title="Löschen"><!-- (click)="deleteRow(i)">-->
                 <!--<i class="fa fa-trash"></i>-->
                 <input type="checkbox" [value]="i" (change)="updateSelection(i, $event)">
@@ -17,7 +17,7 @@
 
         <!-- render header -->
         <div *ngFor="let col of columns; let j=index" [style.width]="col.editor.width" [class.last]="j === columns.length-1">
-            <label class="control-label" (click)="sortBy(col)">{{col.editor.label}}</label>
+            <label *ngIf="!hideTableHeader" class="control-label" (click)="sortBy(col)">{{col.editor.label}}</label>
             <!-- render data column of all rows -->
        <!--     <div class="clickable cell" [class.firstRow]="i===0" [class.odd]="i % 2 === 1" *ngFor="let row of value; let i=index" (click)="editRow(row, i, col)">-->
             <div class="clickable cell" [class.firstRow]="i===0" [class.odd]="i % 2 === 1" *ngFor="let row of rows; let i=index" (click)="editRowInline(row, col, $event)"> <!--(mouseover)="hoverRow = i"-->

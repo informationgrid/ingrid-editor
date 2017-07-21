@@ -2,87 +2,194 @@ import {TextboxField, TextareaField, RadioField, CheckboxField} from '../../../+
 import {OpenTableField} from '../../../+form/controls/field-opentable';
 import {LinkDatasetField} from '../../../+form/controls/field-link-dataset';
 import {Profile} from '../profile';
+import { Rubric } from '../../../+form/controls/rubric';
+import { DropdownField } from '../../../+form/controls/field-dropdown';
+import { FieldBase } from '../../../+form/controls/field-base';
+import { CodelistService } from '../../../+form/services/codelist.service';
 
 export class IsoProfile implements Profile {
 
-  profile = [
+  codelistService: CodelistService = null;
 
-    new TextboxField( {
-      key: 'title',
-      label: 'Titel',
-      // domClass: 'half',
-      order: 10
-    } ),
+  profile: Array<FieldBase<any>> = null;
 
-    new LinkDatasetField( {
-      key: 'publisher',
-      label: 'Herausgeber',
-      filter: {_profile: 'ISO'},
-      order: 12
-    } ),
+  constructor(codelistService: CodelistService) {
+    const advProductGroupSelect = new DropdownField({
+      key: 'advProductGroup',
+      label: 'Produktgruppe',
+      options: []
+    });
+    codelistService.byId( '8010' ).then( codelist => {
+      advProductGroupSelect.options = codelist;
+    } );
 
-    new TextboxField( {
-      key: 'age',
-      label: 'Alter',
-      // type: 'number',
-      order: 15
-    } ),
+    this.profile = [
 
-    new TextareaField( {
-      key: 'description',
-      label: 'Beschreibung',
-      // domClass: 'half',
-      rows: 10,
-      order: 20
-    } ),
+      new TextboxField({
+        key: 'title',
+        label: 'Titel',
+        // domClass: 'half',
+        order: 10
+      }),
 
-    new CheckboxField( {
-      key: 'isOpenData',
-      label: 'Open Data',
-      domClass: 'half',
-      order: 25
-    } ),
+      new TextboxField({
+        key: 'shortDescription',
+        label: 'Kurzbezeichnung',
+        order: 10
+      }),
 
-    new RadioField( {
-      key: 'isConform',
-      domClass: 'half',
-      order: 26,
-      options: [
-        {label: 'konform', value: 'conform'},
-        {label: 'nicht konform', value: 'not_conform'}
-      ]
-    } ),
+      new TextboxField({
+        key: 'previewImage',
+        label: 'Vorschaugrafik',
+        order: 10
+      }),
 
-    new OpenTableField( {
-      key: 'addresses',
-      label: 'Adressen',
-      order: 30,
-      columns: [
-        {
-          editor: new TextboxField( {
-            key: 'title',
-            label: 'Titel',
-            width: '100px'
-          } )
-        },
-        {
-          editor:
-            new TextboxField( {
-              key: 'description',
-              label: 'Description',
-              width: '200px'
-            } )
-        },
-        {
-          editor: new TextboxField( {
-            key: 'date',
-            label: 'Datum',
-            type: 'date'
-          } )
-        }
-      ]
-    } )
-  ];
+      new TextareaField({
+        key: 'description',
+        label: 'Beschreibung',
+        // domClass: 'half',
+        rows: 10,
+        order: 20
+      }),
+
+      new OpenTableField({
+        key: 'addresses',
+        label: 'Adressen',
+        order: 20,
+        columns: [
+          {
+            editor: new TextboxField({
+              key: 'title',
+              label: 'Titel',
+              width: '100px'
+            })
+          },
+          {
+            editor:
+              new TextboxField({
+                key: 'description',
+                label: 'Description',
+                width: '200px'
+              })
+          },
+          {
+            editor: new TextboxField({
+              key: 'date',
+              label: 'Datum',
+              type: 'date'
+            })
+          }
+        ]
+      }),
+
+      new CheckboxField({
+        key: 'isAdvCompatible',
+        label: 'AdV kompatibel',
+        order: 25
+      }),
+
+      new CheckboxField({
+        key: 'isOpenData',
+        label: 'Open Data',
+        domClass: 'half',
+        order: 25
+      }),
+
+      new RadioField({
+        key: 'isConform',
+        domClass: 'half',
+        order: 26,
+        options: [
+          {label: 'konform', value: 'conform'},
+          {label: 'nicht konform', value: 'not_conform'}
+        ]
+      }),
+
+      new Rubric({
+        label: 'Verschlagwortung',
+        order: 30,
+        children: [
+          new OpenTableField({
+            key: 'advProductGroup',
+            label: 'AdV-Produktgruppe',
+            hideHeader: true,
+            order: 30,
+            columns: [
+              {
+                editor: advProductGroupSelect,
+                formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+              }
+            ]
+          })
+        ]
+      }),
+
+      new OpenTableField({
+        key: 'optionalKeywords',
+        label: 'Optionale Schlagwörter',
+        hideHeader: true,
+        order: 30,
+        columns: [
+          {
+            editor: advProductGroupSelect,
+            formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+          }
+        ]
+      }),
+
+      new CheckboxField({
+        key: 'showAsTopic',
+        label: 'Als InGrid-Portal-Themenseite anzeigen',
+        order: 30
+      }),
+
+      new OpenTableField({
+        key: 'environmentTopics',
+        label: 'Themen',
+        hideHeader: true,
+        order: 30,
+        columns: [
+          {
+            editor: advProductGroupSelect,
+            formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+          }
+        ]
+      }),
+
+      new Rubric({
+        label: 'Raumbezugssystem',
+        order: 30,
+      }),
+
+      new Rubric({
+        label: 'Zeitbezug',
+        order: 30,
+      }),
+
+      new Rubric({
+        label: 'Zusatzinformation',
+        order: 30,
+      }),
+
+      new Rubric({
+        label: 'Verweise',
+        order: 30,
+      }),
+
+      new OpenTableField({
+        key: 'linksTo',
+        label: 'Verweise',
+        hideHeader: true,
+        order: 30,
+        columns: [
+          {
+            editor: advProductGroupSelect,
+            formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+          }
+        ]
+      })
+    ];
+  }
 
   getTitle(doc: any): string {
     return doc.title;

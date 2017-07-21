@@ -6,12 +6,7 @@ export class DropdownField extends FieldBase<string> {
   controlType = 'dropdown';
   options: CodelistEntry[] = [];
 
-  constructor(options: {
-    key: string,
-    label: string,
-    options: CodelistEntry[],
-    domClass?: string
-  }) {
+  constructor(options: FieldBase<any> | {options?: any[]}) {
     super(options);
     this.options = options['options'] || [];
   }

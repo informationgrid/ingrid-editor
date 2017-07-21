@@ -9,6 +9,7 @@ import {SelectedDocument} from '../../+form/sidebars/selected-document.model';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {KeycloakService} from '../../keycloak/keycloak.service';
+import { IsoProfile } from './iso/iso.profile';
 
 @Injectable()
 export class FormularService {
@@ -33,13 +34,14 @@ export class FormularService {
   selectedDocuments = new Subject<SelectedDocument[]>();
   selectedDocuments$: Observable<SelectedDocument[]> = this.selectedDocuments.asObservable();
 
+  isoProfile: Profile;
   addressProfile: Profile;
   uvpProfile: Profile;
   folderProfile: Profile;
 
   docTypes = [
     {id: 'UVP', label: 'UVP'},
-    // {id: 'ISO', label: 'ISO'},
+    {id: 'ISO', label: 'ISO'},
     {id: 'ADDRESS', label: 'Address'},
     {id: 'FOLDER', label: 'Folder'}
   ];
@@ -47,6 +49,7 @@ export class FormularService {
   constructor(private codelistService: CodelistService) {
     // create profiles after we have logged in
     const init = () => {
+      this.isoProfile = new IsoProfile(this.codelistService);
       this.addressProfile = new AddressProfile();
       this.uvpProfile = new UVPProfile(this.codelistService);
       this.folderProfile = new FolderProfile();
@@ -74,6 +77,8 @@ export class FormularService {
     let profile: any = null;
     if (id === 'UVP') {
       profile = this.uvpProfile;
+    } else if (id === 'ISO') {
+      profile = this.isoProfile;
     } else if (id === 'ADDRESS') {
       profile = this.addressProfile;
     } else if (id === 'FOLDER') {

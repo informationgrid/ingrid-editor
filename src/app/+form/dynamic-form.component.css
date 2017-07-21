@@ -94,8 +94,3 @@ split {
         opacity: 0;
     }
 }
-
-.panel-heading:hover {
-    cursor: pointer;
-    background-color: #ffffff;
-}

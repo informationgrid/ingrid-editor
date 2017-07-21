@@ -58,13 +58,14 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
     .last {
       flex: 1;
     }
-    
   `],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 })
 export class OpenTable implements ControlValueAccessor {
 
   @Input() columns: FieldBase<string>[];
+
+  @Input() hideTableHeader: boolean;
 
   @ViewChild('addRowModal') addRowModal: Modal;
 

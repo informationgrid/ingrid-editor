@@ -6,7 +6,6 @@ import {BehaviourService} from '../+behaviours/behaviour.service';
 import {FormularService} from '../services/formular/formular.service';
 import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
-import {Subscription} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StorageService} from '../services/storage/storage.service';
 import {ModalService} from '../services/modal/modal.service';
@@ -19,6 +18,7 @@ import {Role} from '../models/user-role';
 import {SelectedDocument} from './sidebars/selected-document.model';
 import {KeycloakService} from '../keycloak/keycloak.service';
 import {RoleService} from '../+user/role.service';
+import { Subscription } from 'rxjs/Subscription';
 
 interface FormData extends Object {
   _id?: string;
@@ -49,7 +49,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   debugEnabled = false;
 
   NEW_DOCUMENT = '-1';
-  NO_DOCUMENT = '-2';
 
   // when editing a folder this flag must be set
   // editMode: boolean = false;
@@ -61,8 +60,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   observers: Subscription[] = [];
   error = false;
   choiceNewDoc = 'UVP';
-  expandedField = {};
-  addToRoot = false;
+  addToDoc = false;
   newDocAdded = false;
   sideTab = 'tree';
   showDateBar = false;
@@ -114,9 +112,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
       this.route.params.subscribe(params => {
         const id = params['id'];
-        if (id !== this.NEW_DOCUMENT && id !== this.NO_DOCUMENT) {
+        if (id !== this.NEW_DOCUMENT) {
           this.load(id);
-        } else if (id === this.NO_DOCUMENT && this.form) {
+        } else if (this.form) {
           this.form = null;
         }
       });
@@ -215,7 +213,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.data = {};
-      if (!this.addToRoot) {
+      if (this.addToDoc) {
         this.data._parent = previousId;
       }
 
@@ -256,18 +254,21 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.discardConfirmModal.close();
   }
 
-  handleLoad(selectedDocs: SelectedDocument[]) { // id: string, profile?: string, forceLoad?: boolean) {
-    // inform toolbar about selection
+  handleSelection(selectedDocs: SelectedDocument[]) {
     this.formularService.setSelectedDocuments(selectedDocs);
 
     // when multiple nodes were selected then do not show any form
-    if (selectedDocs.length !== 1) {
-      if (this.form) {
-        this.form.disable();
-      }
-      return;
-    } else if (this.form) {
+    if (this.form && selectedDocs.length !== 1) {
+      this.form.disable();
+    } else {
       this.form.enable();
+    }
+  }
+
+  handleLoad(selectedDocs: SelectedDocument[]) { // id: string, profile?: string, forceLoad?: boolean) {
+    // when multiple nodes were selected then do not show any form
+    if (selectedDocs.length !== 1) {
+      return;
     }
 
     const doc = selectedDocs[0];
@@ -450,16 +451,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   addArrayGroup(repeatField: any, key: string) {
     this.addPartialToField(repeatField, key);
-  }
-
-  removeArrayGroup(name: string, pos: number) {
-    // remove from fields definition
-    const group = <Container>this.fields.filter(f => (<Container>f).key === name)[0];
-    group.children.splice(pos, 1);
-
-    // remove from form element
-    const ctrls = <FormArray>this.form.controls[name];
-    ctrls.removeAt(pos);
   }
 
   addPartialToField(field: any, partialKey: string): any {

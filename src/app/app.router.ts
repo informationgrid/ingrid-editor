@@ -1,5 +1,5 @@
 import {Routes, RouterModule} from '@angular/router';
-//import {LoginComponent} from './security/login.component';
+// import {LoginComponent} from './security/login.component';
 
 export const routes: Routes = [
   {path: 'dashboard', loadChildren: './+dashboard/dashboard.module'},
