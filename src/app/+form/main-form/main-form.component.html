@@ -10,27 +10,27 @@
                (onAddSection)="addSection($event)"></dyn-field>
 
     <!-- COMPLEX FIELD -->
-    <fieldset *ngIf="field.children">
+    <fieldset *ngIf="field.children" [formGroup]="form">
 
         <!-- CONTAINER FOR NESTED FIELDS -->
         <ng-container *ngIf="!field.isRepeatable">
+
             <!-- nest fields also within json -->
             <div *ngIf="field.key" [formGroupName]="field.key">
-                <ige-main-form [form]="form.controls[field.key]" [fields]="field.children"
-                               class="padding {{child.domClass}}"></ige-main-form>
+                <ige-main-form [form]="form.controls[field.key]"
+                               [fields]="field.children"></ige-main-form>
             </div>
+
 
             <!-- only nest fields visually but not in json -->
             <ng-container *ngIf="!field.key">
+
                 <!-- render nested rubric -->
                 <ng-container *ngIf="field.controlType === 'rubric'">
                     <h1>RUBRIC: {{field.label}}</h1>
                 </ng-container>
-                <ige-main-form [form]="form" [fields]="field.children"></ige-main-form>
-                <!--<dyn-field *ngFor="let child of field.children" [field]="child"
-                           [form]="form"
-                           class="padding {{child.domClass}}">
-                </dyn-field>-->
+                <ige-main-form [form]="form"
+                               [fields]="field.children"></ige-main-form>
             </ng-container>
 
         </ng-container>
@@ -40,8 +40,8 @@
             <div [formArrayName]="field.key">
                 <!-- render data -->
                 <div *ngFor="let child of field.children; let i=index" class="panel panel-default">
-                    <p>Index: {{i}}</p>
 
+                    <!-- Header of partial -->
                     <div *ngIf="child.children" class="panel-heading"
                          (click)="expandedField[child.key + i] = !expandedField[child.key + i]">
                                         <span class="fa"
@@ -56,18 +56,18 @@
                         </button>
                     </div>
 
+                    <!-- render all partial fields -->
                     <div [formGroupName]="i"
                          class="panel-body"
                          [class.hide]="!expandedField[child.key + i]">
-                        <dyn-field *ngFor="let subChild of child.children"
-                                   [field]="subChild"
-                                   [form]="form.controls[field.key].controls[i].controls[child.key]"
-                                   class="padding {{subChild.domClass}}">
-                        </dyn-field>
+
+                        <ige-main-form [form]="form.controls[field.key].controls[i].controls[child.key]"
+                                       [fields]="child.children"></ige-main-form>
+
                     </div>
                 </div>
 
-                 <!-- render generator field -->
+                 <!-- render generator field to add new partial -->
                 <partial-generator [field]="field"
                                    [form]="form"
                                    (onAddSection)="addSection($event)"></partial-generator>

@@ -5,7 +5,8 @@ import {FieldBase} from './controls';
 
 @Component({
   selector: 'dyn-field',
-  templateUrl: './dynamic-field.component.html'
+  templateUrl: './dynamic-field.component.html',
+  styleUrls: ['./dynamic-field.component.css']
 })
 export class DynamicFieldComponent {
   @Input() field: FieldBase<any>;

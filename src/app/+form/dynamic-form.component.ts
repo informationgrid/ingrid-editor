@@ -258,10 +258,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formularService.setSelectedDocuments(selectedDocs);
 
     // when multiple nodes were selected then do not show any form
-    if (this.form && selectedDocs.length !== 1) {
-      this.form.disable();
-    } else {
-      this.form.enable();
+    if (this.form) {
+      if (selectedDocs.length !== 1) {
+        this.form.disable();
+      } else {
+        this.form.enable();
+      }
     }
   }
 
