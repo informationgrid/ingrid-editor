@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { Container, FieldBase } from '../controls';
 import { PartialGeneratorField } from '../controls/field-partial-generator';
@@ -12,6 +12,7 @@ export class MainFormComponent implements OnInit {
 
   @Input() form: FormGroup;
   @Input() fields: FieldBase<any>[];
+  @Output() onAddSection = new EventEmitter<any>();
 
   expandedField = {};
 
@@ -32,7 +33,7 @@ export class MainFormComponent implements OnInit {
   }
 
   addSection(data: any) {
-    // TODO: implement
+    this.onAddSection.emit(data);
   }
 
 }

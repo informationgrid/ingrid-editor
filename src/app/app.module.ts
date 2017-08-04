@@ -28,11 +28,13 @@ import {ImportExportModule} from './+importExport/import-export.module';
 import {ApiService} from './services/ApiService';
 import {KeycloakService} from './keycloak/keycloak.service';
 import {KEYCLOAK_HTTP_PROVIDER} from './keycloak/keycloak.http';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, MenuComponent],
   imports: [BrowserModule, BrowserAnimationsModule, HttpModule,
+    Ng2SmartTableModule,
     IgeFormModule, DashboardModule, FieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule],
   providers: [appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,

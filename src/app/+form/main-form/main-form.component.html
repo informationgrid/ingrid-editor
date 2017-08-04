@@ -27,10 +27,15 @@
 
                 <!-- render nested rubric -->
                 <ng-container *ngIf="field.controlType === 'rubric'">
-                    <h1>RUBRIC: {{field.label}}</h1>
+                    <div class="well">{{field.label}}
+                        <ige-main-form [form]="form"
+                                       [fields]="field.children"></ige-main-form>
+                    </div>
                 </ng-container>
-                <ige-main-form [form]="form"
-                               [fields]="field.children"></ige-main-form>
+                <ng-container *ngIf="field.controlType !== 'rubric'">
+                    <ige-main-form [form]="form"
+                                   [fields]="field.children"></ige-main-form>
+                </ng-container>
             </ng-container>
 
         </ng-container>

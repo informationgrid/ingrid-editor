@@ -64,7 +64,7 @@ export class UVPProfile implements Profile {
         key: 'bbox',
         label: 'Karte',
         domClass: 'half',
-        height: 340,
+        height: 358,
         options: {
           zoomControl: true,
           center: new LatLng( 40.731253, -73.996139 ),

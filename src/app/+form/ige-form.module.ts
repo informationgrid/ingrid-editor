@@ -18,10 +18,16 @@ import { SharedModule } from '../shared.module';
 import { CodelistService } from './services/codelist.service';
 import { NominatimService } from './leaflet/nominatim.service';
 import { MainFormComponent } from './main-form/main-form.component';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), SharedModule, routing, ModalModule, TreeModule],
-  declarations: [FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator, BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent, FocusDirective, MainFormComponent],
+  imports: [
+    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule,
+    SharedModule, routing, ModalModule, TreeModule],
+  declarations: [
+    FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,
+    BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
+    FocusDirective, MainFormComponent],
   providers: [CodelistService, NominatimService],
   exports: [ToastyModule, FormsModule, FocusDirective]
 })

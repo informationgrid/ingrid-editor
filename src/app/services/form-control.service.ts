@@ -25,14 +25,21 @@ export class FormControlService {
           });
           result = new FormArray(array);
         } else {
-          const subGroup = field.key ? {} : group;
-          field.children.forEach(child => {
+          // const subGroup = field.key ? {} : group;
+          /*field.children.forEach(child => {
             subGroup[child.key] = this._addValidator(child, this.getDataValue(data, [field.key, child.key]));
-          });
-          result = new FormGroup(subGroup);
+          });*/
+          result = this.toFormGroup(field.children, data); // new FormGroup(subGroup);
         }
         if (field.key) {
           group[field.key] = result;
+        } else {
+          // merge all controls from result into current group
+          for (const ctrl in result.controls) {
+            if ( result.controls.hasOwnProperty(ctrl) ) {
+              group[ctrl] = result.controls[ctrl];
+            }
+          }
         }
       } else if (field.controlType === 'partialGenerator') {
         const g: any = [];

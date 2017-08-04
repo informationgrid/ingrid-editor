@@ -115,7 +115,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         if (id !== this.NEW_DOCUMENT) {
           this.load(id);
         } else if (this.form) {
-          this.form = null;
+          // this.form = null;
         }
       });
     });
