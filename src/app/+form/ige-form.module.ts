@@ -19,6 +19,7 @@ import { CodelistService } from './services/codelist.service';
 import { NominatimService } from './leaflet/nominatim.service';
 import { MainFormComponent } from './main-form/main-form.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
+import {MainFormTabsComponent} from './main-form-tabs/main-form-tabs.component';
 
 @NgModule({
   imports: [
@@ -27,7 +28,7 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
-    FocusDirective, MainFormComponent],
+    FocusDirective, MainFormComponent, MainFormTabsComponent],
   providers: [CodelistService, NominatimService],
   exports: [ToastyModule, FormsModule, FocusDirective]
 })

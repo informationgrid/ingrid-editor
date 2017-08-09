@@ -130,41 +130,42 @@ export class IsoProfile implements Profile {
                 formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
               }
             ]
+          }),
+          new OpenTableField({
+            key: 'optionalKeywords',
+            label: 'Optionale Schlagwörter',
+            hideHeader: true,
+            order: 30,
+            columns: [
+              {
+                editor: advProductGroupSelect,
+                formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+              }
+            ]
+          }),
+
+          new CheckboxField({
+            key: 'showAsTopic',
+            label: 'Als InGrid-Portal-Themenseite anzeigen',
+            order: 30
+          }),
+
+          new OpenTableField({
+            key: 'environmentTopics',
+            label: 'Themen',
+            hideHeader: true,
+            order: 30,
+            columns: [
+              {
+                editor: advProductGroupSelect,
+                formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+              }
+            ]
           })
+
         ]
       }),
 
-      new OpenTableField({
-        key: 'optionalKeywords',
-        label: 'Optionale Schlagwörter',
-        hideHeader: true,
-        order: 30,
-        columns: [
-          {
-            editor: advProductGroupSelect,
-            formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
-          }
-        ]
-      }),
-
-      new CheckboxField({
-        key: 'showAsTopic',
-        label: 'Als InGrid-Portal-Themenseite anzeigen',
-        order: 30
-      }),
-
-      new OpenTableField({
-        key: 'environmentTopics',
-        label: 'Themen',
-        hideHeader: true,
-        order: 30,
-        columns: [
-          {
-            editor: advProductGroupSelect,
-            formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
-          }
-        ]
-      }),
 
       new Rubric({
         label: 'Raumbezugssystem',
@@ -184,20 +185,22 @@ export class IsoProfile implements Profile {
       new Rubric({
         label: 'Verweise',
         order: 30,
-      }),
-
-      new OpenTableField({
-        key: 'linksTo',
-        label: 'Verweise',
-        hideHeader: true,
-        order: 30,
-        columns: [
-          {
-            editor: advProductGroupSelect,
-            formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
-          }
+        children: [
+          new OpenTableField({
+            key: 'linksTo',
+            label: 'Verweise',
+            hideHeader: true,
+            order: 30,
+            columns: [
+              {
+                editor: advProductGroupSelect,
+                formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+              }
+            ]
+          })
         ]
       })
+
     ];
   }
 
