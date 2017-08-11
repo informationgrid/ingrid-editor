@@ -60,7 +60,8 @@ export class OpenTable implements ControlValueAccessor, OnInit {
   showAddButton = false;
 
   settings: any = {
-    mode: 'click-to-edit',
+    // mode: 'click-to-edit',
+    closeEditorOnClick: false, // TODO: implement in table!
     actions: {
       add: false,
       position: 'right',
@@ -165,7 +166,7 @@ export class OpenTable implements ControlValueAccessor, OnInit {
     const mappedColumns = {};
     this.columns.forEach((col: any) => {
       const editor = this.mapEditor(col.editor);
-      const renderComponent = this.getRenderComponent(col.editor);
+      const renderComponent = null; // this.getRenderComponent(col.editor);
 
       mappedColumns[col.editor.key] = {
         title: col.editor.label,

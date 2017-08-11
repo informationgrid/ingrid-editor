@@ -204,6 +204,7 @@ export class IsoProfile implements Profile {
       key: 'type',
       label: 'Typ',
       useCodelist: 505,
+      isCombo: true,
       options: []
     });
     this.codelistService.byId( '505' ).then( codelist => {

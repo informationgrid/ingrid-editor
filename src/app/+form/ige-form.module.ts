@@ -19,13 +19,13 @@ import { CodelistService } from './services/codelist.service';
 import { NominatimService } from './leaflet/nominatim.service';
 import { MainFormComponent } from './main-form/main-form.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
-import {MainFormTabsComponent} from './main-form-tabs/main-form-tabs.component';
-import { SelectRenderComponent } from './opentable/renderComponents/select.render.component';
+import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component';
 import { OpentableModule } from './opentable/opentable.module';
+import { ComboBoxModule } from 'ng2-combobox';
 
 @NgModule({
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule,
+    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule, ComboBoxModule,
     SharedModule, routing, ModalModule, TreeModule, OpentableModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,
