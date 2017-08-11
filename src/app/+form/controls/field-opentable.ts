@@ -2,11 +2,11 @@ import {FieldBase} from './field-base';
 
 export class OpenTableField extends FieldBase<string> {
   controlType = 'opentable';
-  columns: { editor: FieldBase<string>, formatter?: any }[];
+  columns: { width?: string, editor: FieldBase<string>, formatter?: any }[];
   hideHeader: boolean;
 
   constructor(options: FieldBase<any> | {
-    columns: { editor: FieldBase<string>, formatter?: any }[],
+    columns: { width?: string, editor: FieldBase<string>, formatter?: any }[],
     hideHeader?: boolean
   }) {
     super(options);

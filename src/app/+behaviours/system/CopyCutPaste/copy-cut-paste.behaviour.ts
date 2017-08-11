@@ -1,22 +1,14 @@
-import {ComponentFactoryResolver, Injectable, ReflectiveInjector} from '@angular/core';
-import {Subscription} from 'rxjs';
-import {FormularService} from '../../../services/formular/formular.service';
-import {StorageService} from '../../../services/storage/storage.service';
-import {Plugin} from '../../plugin';
-import {FormToolbarService, Separator, ToolbarItem} from '../../../+form/toolbar/form-toolbar.service';
-import {ToastService} from '../../../services/toast.service';
-import {UpdateType} from '../../../models/update-type.enum';
-import {ModalService} from '../../../services/modal/modal.service';
-import {PasteDialogComponent} from './paste-dialog.component';
-
-export enum CopyMoveEnum {
-  COPY, MOVE, MOVE_TREE
-}
-export class MoveMode {
-  mode: CopyMoveEnum;
-}
-export class PasteCallback {
-}
+import { ComponentFactoryResolver, Injectable, ReflectiveInjector } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+import { FormularService } from '../../../services/formular/formular.service';
+import { StorageService } from '../../../services/storage/storage.service';
+import { Plugin } from '../../plugin';
+import { FormToolbarService, Separator, ToolbarItem } from '../../../+form/toolbar/form-toolbar.service';
+import { ToastService } from '../../../services/toast.service';
+import { UpdateType } from '../../../models/update-type.enum';
+import { ModalService } from '../../../services/modal/modal.service';
+import { PasteDialogComponent } from './paste-dialog.component';
+import { CopyMoveEnum, MoveMode, PasteCallback } from './enums';
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -53,98 +45,98 @@ export class CopyCutPastePlugin extends Plugin {
       {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'glyphicon glyphicon-scissors', eventId: 'CUT', active: false},
       {id: 'toolBtnCopyCutSeparator', isSeparator: true}
     ];
-    buttons.forEach( (button, index) => this.toolbarService.addButton( button, index + 3 ) );
+    buttons.forEach((button, index) => this.toolbarService.addButton(button, index + 3));
 
-    this.subscription = this.storageService.afterLoadAndSet$.subscribe( () => {
+    this.subscription = this.storageService.afterLoadAndSet$.subscribe(() => {
 
-      this.toolbarService.setButtonState( 'toolBtnCopy', true );
-      this.toolbarService.setButtonState( 'toolBtnCut', true );
-    } );
+      this.toolbarService.setButtonState('toolBtnCopy', true);
+      this.toolbarService.setButtonState('toolBtnCut', true);
+    });
 
     // add event handler for revert
-    this.toolbarService.toolbarEvent$.subscribe( eventId => {
+    this.toolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'COPY') {
-        this.handleEvent( UpdateType.Copy );
+        this.handleEvent(UpdateType.Copy);
         this.copy();
       } else if (eventId === 'CUT') {
         this.cut();
       }
-    } );
+    });
 
     // set button state according to selected documents
-    this.formService.selectedDocuments$.subscribe( data => {
+    this.formService.selectedDocuments$.subscribe(data => {
       if (data.length === 0) {
         // handleButtonState( data[0] );
-        this.toolbarService.setButtonState( 'toolBtnCopy', false );
-        this.toolbarService.setButtonState( 'toolBtnCut', false );
+        this.toolbarService.setButtonState('toolBtnCopy', false);
+        this.toolbarService.setButtonState('toolBtnCut', false);
       } else {
-        this.toolbarService.setButtonState( 'toolBtnCopy', true );
-        this.toolbarService.setButtonState( 'toolBtnCut', true );
+        this.toolbarService.setButtonState('toolBtnCopy', true);
+        this.toolbarService.setButtonState('toolBtnCut', true);
       }
-    } );
+    });
   }
 
   private handleEvent(type: UpdateType) {
-    this.storageService.datasetsChanged.next( {
+    this.storageService.datasetsChanged.next({
       type: type,
       data: null
-    } );
+    });
   }
 
   copy() {
     // remove last remembered copied documents
-    this.copiedDatasets = this.formService.getSelectedDocuments().map( doc => doc.id );
+    this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => doc.id);
 
     // show dialog where to copy the dataset(s)
-    const factory = this._cr.resolveComponentFactory( PasteDialogComponent );
+    const factory = this._cr.resolveComponentFactory(PasteDialogComponent);
 
-    const providers = ReflectiveInjector.resolve( [
+    const providers = ReflectiveInjector.resolve([
       {provide: MoveMode, useValue: {mode: CopyMoveEnum.COPY}},
-      {provide: PasteCallback, useValue: this.paste.bind( this )}
-    ] );
-    const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
-    this.modalService.containerRef.createComponent( factory, null, popInjector );
+      {provide: PasteCallback, useValue: this.paste.bind(this)}
+    ]);
+    const popInjector = ReflectiveInjector.fromResolvedProviders(providers, this.modalService.containerRef.parentInjector);
+    this.modalService.containerRef.createComponent(factory, null, popInjector);
   }
 
   cut() {
     // remove last remembered copied documents
-    this.copiedDatasets = this.formService.getSelectedDocuments().map( doc => doc.id );
+    this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => doc.id);
 
-    this.toastService.show( 'Datensatz verschoben' );
+    this.toastService.show('Datensatz verschoben');
 
     // show dialog where to copy the dataset(s)
-    const factory = this._cr.resolveComponentFactory( PasteDialogComponent );
+    const factory = this._cr.resolveComponentFactory(PasteDialogComponent);
 
-    const providers = ReflectiveInjector.resolve( [
+    const providers = ReflectiveInjector.resolve([
       {provide: MoveMode, useValue: {mode: CopyMoveEnum.MOVE}},
-      {provide: PasteCallback, useValue: this.paste.bind( this )}
-    ] );
-    const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
-    this.modalService.containerRef.createComponent( factory, null, popInjector );
+      {provide: PasteCallback, useValue: this.paste.bind(this)}
+    ]);
+    const popInjector = ReflectiveInjector.fromResolvedProviders(providers, this.modalService.containerRef.parentInjector);
+    this.modalService.containerRef.createComponent(factory, null, popInjector);
   }
 
   paste(targetNode: any, mode: CopyMoveEnum) {
-    console.log( 'is paste' );
+    console.log('is paste');
     // TODO: add subtree pasting
     const dest = targetNode[0].id;
     const includeTree = false;
 
     let result = null;
     if (mode === CopyMoveEnum.COPY) {
-      result = this.storageService.copyDocuments( this.copiedDatasets, dest, includeTree );
+      result = this.storageService.copyDocuments(this.copiedDatasets, dest, includeTree);
     } else {
-      result = this.storageService.moveDocuments( this.cutDatasets, dest, includeTree );
+      result = this.storageService.moveDocuments(this.cutDatasets, dest, includeTree);
 
     }
 
     result.subscribe(
       () => this.handleAfterPaste(),
-      (err) => this.modalService.showError( err )
+      (err) => this.modalService.showError(err)
     );
   }
 
   private handleAfterPaste() {
-    this.toastService.show( 'Datensatz eingefügt' );
+    this.toastService.show('Datensatz eingefügt');
   }
 
   unregister() {
@@ -154,8 +146,8 @@ export class CopyCutPastePlugin extends Plugin {
     }
 
     // remove from same index since buttons take the neighbor place after deletion
-    this.toolbarService.removeButton( 'toolBtnCopy' );
-    this.toolbarService.removeButton( 'toolBtnCut' );
-    this.toolbarService.removeButton( 'toolBtnCopyCutSeparator' );
+    this.toolbarService.removeButton('toolBtnCopy');
+    this.toolbarService.removeButton('toolBtnCut');
+    this.toolbarService.removeButton('toolBtnCopyCutSeparator');
   }
 }

@@ -3,7 +3,7 @@
 
     <label *ngIf="!field.hideLabel" class="control-label" [attr.for]="field.key">{{field.label}}</label>
 
-    <div [ngSwitch]="field.controlType">
+    <ng-container [ngSwitch]="field.controlType">
 
         <!-- RUBRIC -->
         <ng-container *ngSwitchCase="'rubric'">
@@ -55,6 +55,6 @@
         <link-dataset *ngSwitchCase="'linkDataset'" [formControlName]="field.key" [filter]="field.filter"></link-dataset>
 
         <div class="help-block" [class.hide]="form.controls[field.key].valid || form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>
-    </div>
+    </ng-container>
 
 </div>

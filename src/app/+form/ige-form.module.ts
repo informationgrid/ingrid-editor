@@ -20,11 +20,13 @@ import { NominatimService } from './leaflet/nominatim.service';
 import { MainFormComponent } from './main-form/main-form.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import {MainFormTabsComponent} from './main-form-tabs/main-form-tabs.component';
+import { SelectRenderComponent } from './opentable/renderComponents/select.render.component';
+import { OpentableModule } from './opentable/opentable.module';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule,
-    SharedModule, routing, ModalModule, TreeModule],
+    SharedModule, routing, ModalModule, TreeModule, OpentableModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,

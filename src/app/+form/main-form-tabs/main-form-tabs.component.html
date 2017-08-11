@@ -2,15 +2,21 @@
 <ng-container *ngIf="categories.length > 0">
     <ul class="nav nav-tabs">
         <ng-container *ngFor="let category of categories">
-            <li role="presentation" class="active"><a (click)="currentCategory = category.label">{{category.label}}</a></li>
+            <li role="presentation" [class.active]="currentCategory === category.label"><a
+                (click)="currentCategory = category.label">{{category.label}}</a></li>
         </ng-container>
     </ul>
 </ng-container>
 
 <!-- RENDER ALL FIELDS -->
+<!--<div *ngIf="field.controlType !== 'rubric' || (field.controlType === 'rubric' && currentCategory === field.label)"-->
 <div *ngFor="let field of fields"
-     class="fieldContainer {{field.domClass}}"
-     [ngClass]="{hasChildren: field.children, padding: !field.children || field.isRepeatable}">
+     class="{{field.domClass}}"
+     [ngClass]="{
+        hasChildren: field.children,
+        padding: !field.children || field.isRepeatable,
+        fieldContainer: field.controlType !== 'rubric' || (field.controlType === 'rubric' && currentCategory === field.label)
+        }">
 
     <!-- SIMPLE FIELD -->
     <dyn-field *ngIf="!field.children"
@@ -26,8 +32,8 @@
 
             <!-- nest fields also within json -->
             <div *ngIf="field.key" [formGroupName]="field.key">
-                <ige-main-form [form]="form.controls[field.key]"
-                               [fields]="field.children"></ige-main-form>
+                <ige-main-form-tabs [form]="form.controls[field.key]"
+                                    [fields]="field.children"></ige-main-form-tabs>
             </div>
 
 
@@ -36,15 +42,14 @@
 
                 <!-- render nested rubric -->
                 <ng-container *ngIf="field.controlType === 'rubric'">
-                    <div class="well" *ngIf="currentCategory === field.label">
-                        <h3>{{field.label}}</h3>
-                        <ige-main-form [form]="form"
-                                       [fields]="field.children"></ige-main-form>
+                    <div class="" *ngIf="currentCategory === field.label">
+                        <ige-main-form-tabs [form]="form"
+                                            [fields]="field.children"></ige-main-form-tabs>
                     </div>
                 </ng-container>
                 <ng-container *ngIf="field.controlType !== 'rubric'">
-                    <ige-main-form [form]="form"
-                                   [fields]="field.children"></ige-main-form>
+                    <ige-main-form-tabs [form]="form"
+                                        [fields]="field.children"></ige-main-form-tabs>
                 </ng-container>
             </ng-container>
 
@@ -76,8 +81,8 @@
                          class="panel-body"
                          [class.hide]="!expandedField[child.key + i]">
 
-                        <ige-main-form [form]="form.controls[field.key].controls[i].controls[child.key]"
-                                       [fields]="child.children"></ige-main-form>
+                        <ige-main-form-tabs [form]="form.controls[field.key].controls[i].controls[child.key]"
+                                            [fields]="child.children"></ige-main-form-tabs>
 
                     </div>
                 </div>
@@ -90,4 +95,5 @@
             </div>
         </div>
     </fieldset>
+    <!--</div>-->
 </div>

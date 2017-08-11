@@ -1,7 +1,6 @@
-import {TextboxField, TextareaField, RadioField, CheckboxField} from '../../../+form/controls/index';
-import {OpenTableField} from '../../../+form/controls/field-opentable';
-import {LinkDatasetField} from '../../../+form/controls/field-link-dataset';
-import {Profile} from '../profile';
+import { CheckboxField, RadioField, TextareaField, TextboxField } from '../../../+form/controls/index';
+import { OpenTableField } from '../../../+form/controls/field-opentable';
+import { Profile } from '../profile';
 import { Rubric } from '../../../+form/controls/rubric';
 import { DropdownField } from '../../../+form/controls/field-dropdown';
 import { FieldBase } from '../../../+form/controls/field-base';
@@ -10,19 +9,10 @@ import { Container } from '../../../+form/controls/container';
 
 export class IsoProfile implements Profile {
 
-  codelistService: CodelistService = null;
-
   profile: Array<FieldBase<any>> = null;
 
-  constructor(codelistService: CodelistService) {
-    const advProductGroupSelect = new DropdownField({
-      key: 'advProductGroup',
-      label: 'Produktgruppe',
-      options: []
-    });
-    codelistService.byId( '8010' ).then( codelist => {
-      advProductGroupSelect.options = codelist;
-    } );
+  constructor(private codelistService: CodelistService) {
+    const [addressTypes, advProductGroup] = this.prepareSelects();
 
     this.profile = [
 
@@ -66,25 +56,13 @@ export class IsoProfile implements Profile {
             order: 20,
             columns: [
               {
-                editor: new TextboxField({
-                  key: 'title',
-                  label: 'Titel',
-                  width: '100px'
-                })
-              },
-              {
-                editor:
-                  new TextboxField({
-                    key: 'description',
-                    label: 'Description',
-                    width: '200px'
-                  })
+                editor: addressTypes,
+                width: '150px'
               },
               {
                 editor: new TextboxField({
-                  key: 'date',
-                  label: 'Datum',
-                  type: 'date'
+                  key: 'addressRef',
+                  label: 'Adresse'
                 })
               }
             ]
@@ -126,8 +104,8 @@ export class IsoProfile implements Profile {
             order: 30,
             columns: [
               {
-                editor: advProductGroupSelect,
-                formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+                editor: advProductGroup,
+                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
               }
             ]
           }),
@@ -138,8 +116,8 @@ export class IsoProfile implements Profile {
             order: 30,
             columns: [
               {
-                editor: advProductGroupSelect,
-                formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+                editor: advProductGroup,
+                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
               }
             ]
           }),
@@ -157,8 +135,8 @@ export class IsoProfile implements Profile {
             order: 30,
             columns: [
               {
-                editor: advProductGroupSelect,
-                formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+                editor: advProductGroup,
+                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
               }
             ]
           })
@@ -193,8 +171,8 @@ export class IsoProfile implements Profile {
             order: 30,
             columns: [
               {
-                editor: advProductGroupSelect,
-                formatter: (key) => advProductGroupSelect.options.find(nr => nr.id === key).value
+                editor: advProductGroup,
+                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
               }
             ]
           })
@@ -212,4 +190,26 @@ export class IsoProfile implements Profile {
     return ['title'];
   }
 
+  private prepareSelects() {
+    const advProductGroupSelect = new DropdownField({
+      key: 'advProductGroup',
+      label: 'Produktgruppe',
+      options: []
+    });
+    this.codelistService.byId( '8010' ).then( codelist => {
+      advProductGroupSelect.options = codelist;
+    } );
+
+    const addressTypes = new DropdownField({
+      key: 'type',
+      label: 'Typ',
+      useCodelist: 505,
+      options: []
+    });
+    this.codelistService.byId( '505' ).then( codelist => {
+      addressTypes.options = codelist;
+    } );
+
+    return [addressTypes, advProductGroupSelect];
+  }
 }
