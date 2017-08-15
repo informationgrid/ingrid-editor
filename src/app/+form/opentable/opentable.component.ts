@@ -36,7 +36,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
     .addButton {
       position: absolute;
       right: 0;
-      top: -20px;
+      top: -25px;
       /*padding-bottom: 10px;*/
     }
 
@@ -57,7 +57,7 @@ export class OpenTable implements ControlValueAccessor, OnInit {
 
   addNew = new EventEmitter<any>();
 
-  showAddButton = false;
+  showAddButton = true;
 
   settings: any = {
     // mode: 'click-to-edit',
@@ -98,14 +98,9 @@ export class OpenTable implements ControlValueAccessor, OnInit {
   ngOnInit() {
     this.settings.columns = this.mapColumns();
     this.settings.hideHeader = this.hideTableHeader;
-    // this.source = new LocalDataSource(this._value);
-    /*this.source.add({
-      type: 'aaa',
-      value: 'bbb'
-    });*/
   }
 
-  @HostListener('mouseenter')
+  /*@HostListener('mouseenter')
   onShowAddButton() {
     this.showAddButton = true;
   }
@@ -117,7 +112,7 @@ export class OpenTable implements ControlValueAccessor, OnInit {
       return;
     }
     this.showAddButton = false;
-  }
+  }*/
 
   handleChange() {
     console.log('table changed');
@@ -132,11 +127,6 @@ export class OpenTable implements ControlValueAccessor, OnInit {
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    // if (value instanceof Array) {
-    //   this._value = value;
-    // } else {
-    //   this._value = [{}];
-    // }
     if (value instanceof Array) {
       this._value = value;
     } else {

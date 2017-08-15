@@ -12,7 +12,7 @@ split {
 }
 
 .main-form-flex {
-    overflow: auto;
+    /*overflow: auto;*/
 }
 
 .main-form {

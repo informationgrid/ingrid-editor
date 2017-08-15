@@ -46,6 +46,15 @@ export class CodelistService {
     } );
   }
 
+  byIds(ids: string[]): Promise<Array<CodelistEntry[]>> {
+    const promises = [];
+
+    ids.forEach( id => {
+      promises.push( this.byId(id) );
+    });
+    return Promise.all(promises);
+  }
+
   prepareEntries(entries: any[]) {
     const result: any[] = [];
     entries.forEach( entry => {

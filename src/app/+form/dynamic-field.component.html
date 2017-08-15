@@ -33,9 +33,11 @@
         </span>
 
         <!-- SELECT -->
-        <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key" class="form-control">
-            <option *ngFor="let opt of field.options" [value]="opt.id">{{opt.value}}</option>
-        </select>
+        <ige-drop-down *ngSwitchCase="'dropdown'" [formControlName]="field.key"
+                       [id]="field.key"
+                       [isCombo]="field.isCombo"
+                       [options]="field.options">
+        </ige-drop-down>
 
         <!-- TEXTAREA -->
         <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"

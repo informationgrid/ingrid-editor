@@ -12,7 +12,7 @@ export class IsoProfile implements Profile {
   profile: Array<FieldBase<any>> = null;
 
   constructor(private codelistService: CodelistService) {
-    const [addressTypes, advProductGroup] = this.prepareSelects();
+    const [addressTypes, advProductGroup, metadataLanguage, publicationInfo] = this.prepareSelects();
 
     this.profile = [
 
@@ -148,16 +148,39 @@ export class IsoProfile implements Profile {
       new Rubric({
         label: 'Raumbezugssystem',
         order: 30,
+        children: [
+        ]
       }),
 
       new Rubric({
         label: 'Zeitbezug',
         order: 30,
+        children: [
+        ]
       }),
 
       new Rubric({
         label: 'Zusatzinformation',
         order: 30,
+        children: [
+          metadataLanguage,
+
+          publicationInfo,
+
+          new OpenTableField({
+            key: 'resourceLanguage',
+            label: 'Sprache der Resource',
+            hideHeader: true,
+            columns: [
+              {
+                editor: new TextboxField({
+                  key: 'lang',
+                  label: 'Sprache'
+                })
+              }
+            ]
+          }),
+        ]
       }),
 
       new Rubric({
@@ -196,21 +219,39 @@ export class IsoProfile implements Profile {
       label: 'Produktgruppe',
       options: []
     });
-    this.codelistService.byId( '8010' ).then( codelist => {
+    /*this.codelistService.byId( '8010' ).then( codelist => {
       advProductGroupSelect.options = codelist;
-    } );
+    } );*/
 
     const addressTypes = new DropdownField({
       key: 'type',
       label: 'Typ',
-      useCodelist: 505,
       isCombo: true,
       options: []
     });
-    this.codelistService.byId( '505' ).then( codelist => {
-      addressTypes.options = codelist;
+
+    const metadataLanguage = new DropdownField({
+      key: 'metadataLanguage',
+      label: 'Sprache des Metadatensatzes',
+      domClass: 'half',
+      options: []
+    });
+
+    const publicationInfo = new DropdownField({
+      key: 'publicationInfo',
+      label: 'Veröffentlichung',
+      isCombo: true,
+      domClass: 'half',
+      options: []
+    });
+
+    this.codelistService.byIds( ['505', '8010', '99999999', '3571'] ).then( codelists => {
+      addressTypes.options = codelists[0];
+      advProductGroupSelect.options = codelists[1];
+      metadataLanguage.options = codelists[2];
+      publicationInfo.options = codelists[3];
     } );
 
-    return [addressTypes, advProductGroupSelect];
+    return [addressTypes, advProductGroupSelect, metadataLanguage, publicationInfo];
   }
 }

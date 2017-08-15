@@ -22,6 +22,7 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component';
 import { OpentableModule } from './opentable/opentable.module';
 import { ComboBoxModule } from 'ng2-combobox';
+import { DropDownComponent } from './drop-down/drop-down.component';
 
 @NgModule({
   imports: [
@@ -30,7 +31,7 @@ import { ComboBoxModule } from 'ng2-combobox';
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
-    FocusDirective, MainFormComponent, MainFormTabsComponent],
+    FocusDirective, MainFormComponent, MainFormTabsComponent, DropDownComponent],
   providers: [CodelistService, NominatimService],
   exports: [ToastyModule, FormsModule, FocusDirective]
 })
