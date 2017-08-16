@@ -200,7 +200,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   prepareNewDoc() {
     const profile = this.choiceNewDoc;
-    const previousId = this.formularService.getSelectedDocuments()[0].id;
+    let previousId = null;
+    if (this.formularService.getSelectedDocuments()) {
+      previousId = this.formularService.getSelectedDocuments()[0].id;
+    }
     const needsProfileSwitch = this.formularService.currentProfile !== profile;
 
     if (this.form) {
@@ -394,13 +397,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // TODO: extract to permission service class
   hasPermission(data: any): boolean {
     // TODO: check all roles
-    const attr = this.userRoles[0].attributes;
-    const docIDs = this.userRoles[0].datasets.map( dataset => dataset.id );
-    // TODO: show why we don't have permission by remembering failed rule
-    const permissionByAttribute = !attr || attr.every( a => data[a.id] === a.value );
-    const permissionByDatasetId = !docIDs || docIDs.length === 0 ||  docIDs.some( id => data._id === id );
+    if (this.userRoles.length > 0) {
+      const attr = this.userRoles[0].attributes;
+      const docIDs = this.userRoles[0].datasets.map(dataset => dataset.id);
+      // TODO: show why we don't have permission by remembering failed rule
+      const permissionByAttribute = !attr || attr.every(a => data[a.id] === a.value);
+      const permissionByDatasetId = !docIDs || docIDs.length === 0 || docIDs.some(id => data._id === id);
 
-    return permissionByAttribute && permissionByDatasetId;
+      return permissionByAttribute && permissionByDatasetId;
+    }
+    // TODO: implement correct permission handling
+    return true;
   }
 
   switchProfile(profile: string) {

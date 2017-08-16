@@ -2,9 +2,12 @@
 
 let pg = require( 'pg' );
 let fs = require( 'fs' );
+let log = require( 'log4js' ).getLogger();
 
 const connectionString = process.env.DATABASE_URL || 'postgres://root@localhost:5432/test';
 let client = null;
+
+// TODO: check out -> https://github.com/dmfay/massive-js
 
 module.exports = {
 
@@ -25,6 +28,34 @@ module.exports = {
   },
 
   insertIntoTable: function (table, data) {
+    // const query = {
+    //   name: 'insert-row',
+    //   text: 'INSERT INTO $1::text VALUES(DEFAULT, $2)',
+    //   values: [table, data],
+    //   rowMode: 'array'
+    // };
+
+    let query = null;
+    if (table === "documents") {
+      query = 'INSERT INTO ' + table + ' VALUES(DEFAULT, null, \'' + JSON.stringify( data ) + '\')';
+    } else {
+      query = 'INSERT INTO ' + table + ' VALUES(DEFAULT, \'' + JSON.stringify( data ) + '\')';
+    }
+
+    return new Promise( function (resolve, reject) {
+      const queryResponse = client.query( query + ' RETURNING id', [], (error, result) => {
+        if (error) {
+          reject( error );
+        } else {
+          log.info( "INSERT:", result );
+          const response = result.rows[ 0 ];
+          response.insertedId = result.rows[ 0 ].id;
+          resolve( response );
+        }
+      } );
+    } );
+
+
     /*let collection = db.collection( table );
 
     return new Promise(function(resolve) {
@@ -54,6 +85,29 @@ module.exports = {
   },
 
   findInTable: function (table, selector) {
+    let where = "";
+    let query = null;
+    if (selector) {
+      for (var key in selector) {
+        if (selector.hasOwnProperty( key )) {
+          where = 'data->>\'' + key + '\' LIKE \'%' + selector[ key ] + '%\'';
+        }
+      }
+      query = 'SELECT * FROM ' + table + ' WHERE ' + where;
+    } else {
+
+      query = 'SELECT * FROM ' + table;
+    }
+    return client.query( query )
+      .then( response => {
+        log.info( "FOUND:", response );
+        response.rows.forEach(row => row.data._id = row.id);
+        const result = response.rows.map(row => row.data);
+        return result;
+      } )
+      .catch( error => {
+        log.error( "ERROR (FOUND):", error );
+      } );
     /*let collection = db.collection( table );
 
     if (collection === null) return Promise.reject( 'Collection not found: ' + table );
@@ -92,7 +146,14 @@ module.exports = {
    * @returns {Promise}
    */
   searchFor: function (table, query, sort, reverse) {
-    let collection = db.collection( table );
+    return new Promise( function (resolve, reject) {
+      client.query( "SELECT data FROM " + table )
+        .then( result => {
+          resolve( result.rows );
+        } )
+        .catch( error => log.error( "Error", error ) );
+    } );
+    /*let collection = db.collection( table );
 
     let sortObj = {};
     if (sort) {
@@ -121,7 +182,7 @@ module.exports = {
 
         return result.toArray( (err, data) => resolve( data ) );
       }
-    } );
+    } );*/
   },
 
   getDocById: function (table, id, useRaw) {
@@ -153,8 +214,8 @@ module.exports = {
    * @param {string} table
    */
   updateIndexForSearch: function (table) {
-    let collection = db.collection( table );
-    collection.ensureIndex( {"$**": "text"}, {name: "fullText"} )
+    // let collection = db.collection( table );
+    // collection.ensureIndex( {"$**": "text"}, {name: "fullText"} )
   },
 
   getObjectId(id) {
