@@ -69,10 +69,12 @@
             </div>
 
             <div class="main-form-flex">
-                <div class="main-form">
+                <!--<div class="main-form">-->
                     <!--<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>-->
-                    <ige-main-form-tabs [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form-tabs>
-                </div>
+                    <ige-main-form-tabs [fields]="fields" [form]="form"
+                                        style="display: flex;"
+                                        (onAddSection)="addSection($event)"></ige-main-form-tabs>
+                <!--</div>-->
             </div>
             <div *ngIf="debugEnabled" class="well text-muted">
                 <strong>Form contains the following values</strong><br>{{form.value | json}}

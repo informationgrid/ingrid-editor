@@ -63,6 +63,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
   styles: [`
     :host {
       position: relative;
+      display: block;
     }
 
     .bottom {
@@ -76,10 +77,10 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
 
     .nominatimContainer {
       position: absolute;
+      width: 350px;
       top: 0;
-      left: -420px;
       bottom: 0;
-      right: 10px;
+      right: calc(100% + 10px);
       background-color: #eee;
       padding: 10px;
       box-shadow: 0px 0px 20px -5px #000;
@@ -120,12 +121,12 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
 
   private _onChangeCallback: (x: any) => void;
 
-  private _bbox: any = {};
+  _bbox: any = {};
   private _bboxPrevious: any;
 
   showSearch = false;
 
-  private nominatimResult: any = [];
+  nominatimResult: any = [];
 
   private static getLatLngBoundsFromBox(bbox: any): LatLngBounds {
     return new LatLngBounds( [bbox.lat1, bbox.lon1], [bbox.lat2, bbox.lon2] );
@@ -301,7 +302,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     }, 270 );
   }
 
-  private applyAreaSelect() {
+  applyAreaSelect() {
     if (this.areaSelect) {
       const bounds = this.areaSelect.getBounds();
       this.areaSelect.remove();
@@ -327,7 +328,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     }
   }
 
-  private cancelEdit() {
+  cancelEdit() {
     this.showSearch = false;
     this._bbox = this._bboxPrevious;
     this.areaSelect.remove();
@@ -335,7 +336,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     this.toggleSearch( false );
   }
 
-  private applyEdit() {
+  applyEdit() {
     this.showSearch = false;
     this.applyAreaSelect();
     this.toggleSearch( false );
