@@ -31,14 +31,11 @@ export class UVPProfile implements Profile {
     this.profile = [
 
       new Container( {
-        key: null,
-        // key: 'mainInfo',
         domClass: 'half',
         children: [
           new TextboxField( {
             key: 'taskId',
             label: 'Vorhabensnummer',
-            // domClass: 'half',
             order: 1,
             required: true
           } ),
@@ -46,14 +43,12 @@ export class UVPProfile implements Profile {
           new TextboxField( {
             key: 'title',
             label: 'Titel',
-            // domClass: 'half',
             order: 10
           } ),
 
           new TextareaField( {
             key: 'description',
             label: 'Beschreibung',
-            // domClass: 'half',
             rows: 10,
             order: 20
           } ),
@@ -64,7 +59,7 @@ export class UVPProfile implements Profile {
         key: 'bbox',
         label: 'Karte',
         domClass: 'half',
-        height: 358,
+        height: 338,
         options: {
           zoomControl: true,
           center: new LatLng( 40.731253, -73.996139 ),
@@ -82,7 +77,7 @@ export class UVPProfile implements Profile {
         key: 'publisher',
         label: 'Herausgeber',
         filter: {_profile: 'UVP'},
-        order: 12
+        order: 2
       } ),
 
       new OpenTableField( {

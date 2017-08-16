@@ -10,90 +10,104 @@
 
 <!-- RENDER ALL FIELDS -->
 <!--<div *ngIf="field.controlType !== 'rubric' || (field.controlType === 'rubric' && currentCategory === field.label)"-->
-<div *ngFor="let field of fields"
-     class="{{field.domClass}}"
-     [ngClass]="{
-        hasChildren: field.children,
-        padding: !field.children || field.isRepeatable,
-        fieldContainer: field.controlType !== 'rubric' || (field.controlType === 'rubric' && currentCategory === field.label)
-        }">
+<!-- only directly below ul-container with tabs! -->
+<div [class.rubricContent]="isRootLevel">
+    <ng-container *ngFor="let field of fields">
+         <!--class="{{field.domClass}}"
+         [ngClass]="{
+            hasChildren: field.children,
+            padding: !field.children || field.isRepeatable,
+            rubricContent: field.controlType === 'rubric',
+            fieldContainer: field.controlType !== 'rubric' || (field.controlType === 'rubric' && currentCategory === field.label)
+            }">-->
 
-    <!-- SIMPLE FIELD -->
-    <dyn-field *ngIf="!field.children"
-               [field]="field"
-               [form]="form"
-               (onAddSection)="addSection($event)"></dyn-field>
+        <!-- SIMPLE FIELD -->
+        <div *ngIf="!field.children" class="{{field.domClass}}">
+            <dyn-field
+                   [field]="field"
+                   [form]="form"
+                   (onAddSection)="addSection($event)"></dyn-field>
+        </div>
 
-    <!-- COMPLEX FIELD -->
-    <fieldset *ngIf="field.children" [formGroup]="form">
+        <!-- COMPLEX FIELD -->
+        <ng-container *ngIf="field.children" [formGroup]="form">
 
-        <!-- CONTAINER FOR NESTED FIELDS -->
-        <ng-container *ngIf="!field.isRepeatable">
+            <!-- CONTAINER FOR NESTED FIELDS -->
+            <ng-container *ngIf="!field.isRepeatable">
 
-            <!-- nest fields also within json -->
-            <div *ngIf="field.key" [formGroupName]="field.key">
-                <ige-main-form-tabs [form]="form.controls[field.key]"
-                                    [fields]="field.children"></ige-main-form-tabs>
-            </div>
-
-
-            <!-- only nest fields visually but not in json -->
-            <ng-container *ngIf="!field.key">
-
-                <!-- render nested rubric -->
-                <ng-container *ngIf="field.controlType === 'rubric'">
-                    <div class="" *ngIf="currentCategory === field.label">
-                        <ige-main-form-tabs [form]="form"
+                <!-- nest fields also within json -->
+                <ng-container *ngIf="field.key" [formGroupName]="field.key">
+                    <div class="{{field.domClass}}">
+                        <ige-main-form-tabs [form]="form.controls[field.key]"
+                                            [isRootLevel]="false"
                                             [fields]="field.children"></ige-main-form-tabs>
                     </div>
                 </ng-container>
-                <ng-container *ngIf="field.controlType !== 'rubric'">
-                    <ige-main-form-tabs [form]="form"
-                                        [fields]="field.children"></ige-main-form-tabs>
+
+                <!-- only nest fields visually but not in json -->
+                <ng-container *ngIf="!field.key">
+
+                    <!-- render nested rubric -->
+                    <ng-container *ngIf="field.controlType === 'rubric' && currentCategory === field.label">
+                        <div class="{{field.domClass}}">
+                            <ige-main-form-tabs [form]="form"
+                                                [isRootLevel]="false"
+                                                [fields]="field.children"></ige-main-form-tabs>
+                                                <!--style="overflow: auto;"-->
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="field.controlType !== 'rubric'">
+                        <div class="{{field.domClass}}">
+                            <ige-main-form-tabs [form]="form"
+                                                [isRootLevel]="false"
+                                                [fields]="field.children"></ige-main-form-tabs>
+                        </div>
+                    </ng-container>
                 </ng-container>
+
             </ng-container>
 
-        </ng-container>
+            <!-- REPEATABLE FIELDS -->
+            <ng-container *ngIf="field.isRepeatable">
+                <div [formArrayName]="field.key" class="full">
+                    <!-- render data -->
+                    <div *ngFor="let child of field.children; let i=index" class="panel panel-default">
 
-        <!-- REPEATABLE FIELDS -->
-        <div *ngIf="field.isRepeatable">
-            <div [formArrayName]="field.key">
-                <!-- render data -->
-                <div *ngFor="let child of field.children; let i=index" class="panel panel-default">
+                        <!-- Header of partial -->
+                        <div *ngIf="child.children" class="panel-heading"
+                             (click)="expandedField[child.key + i] = !expandedField[child.key + i]">
+                                            <span class="fa"
+                                                  [class.fa-caret-down]="expandedField[child.key + i]"
+                                                  [class.fa-caret-right]="!expandedField[child.key + i]"></span>
+                            <span class="title">{{i+1}}. {{child.label}}</span>
+                            <button type="button"
+                                    class="close"
+                                    aria-label="Close"
+                                    (click)="removeArrayGroup(field.key, i)">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
 
-                    <!-- Header of partial -->
-                    <div *ngIf="child.children" class="panel-heading"
-                         (click)="expandedField[child.key + i] = !expandedField[child.key + i]">
-                                        <span class="fa"
-                                              [class.fa-caret-down]="expandedField[child.key + i]"
-                                              [class.fa-caret-right]="!expandedField[child.key + i]"></span>
-                        <span class="title">{{i+1}}. {{child.label}}</span>
-                        <button type="button"
-                                class="close"
-                                aria-label="Close"
-                                (click)="removeArrayGroup(field.key, i)">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <!-- render all partial fields -->
+                        <div [formGroupName]="i"
+                             class="panel-body"
+                             [class.hide]="!expandedField[child.key + i]">
+                            <div class="{{child.domClass}}">
+                                <ige-main-form-tabs [form]="form.controls[field.key].controls[i].controls[child.key]"
+                                                    [fields]="child.children"></ige-main-form-tabs>
+                            </div>
+
+                        </div>
                     </div>
 
-                    <!-- render all partial fields -->
-                    <div [formGroupName]="i"
-                         class="panel-body"
-                         [class.hide]="!expandedField[child.key + i]">
+                    <!-- render generator field to add new partial -->
+                    <partial-generator [field]="field"
+                                       [form]="form"
+                                       (onAddSection)="addSection($event)"></partial-generator>
 
-                        <ige-main-form-tabs [form]="form.controls[field.key].controls[i].controls[child.key]"
-                                            [fields]="child.children"></ige-main-form-tabs>
-
-                    </div>
                 </div>
-
-                <!-- render generator field to add new partial -->
-                <partial-generator [field]="field"
-                                   [form]="form"
-                                   (onAddSection)="addSection($event)"></partial-generator>
-
-            </div>
-        </div>
-    </fieldset>
-    <!--</div>-->
+            </ng-container>
+        </ng-container>
+        <!--</div>-->
+    </ng-container>
 </div>

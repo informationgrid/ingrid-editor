@@ -11,6 +11,7 @@ import { Container } from '../controls/container';
 export class MainFormTabsComponent implements OnInit, OnChanges {
   @Input() form: FormGroup;
   @Input() fields: FieldBase<any>[];
+  @Input() isRootLevel = true;
   @Output() onAddSection = new EventEmitter<any>();
 
   expandedField = {};
