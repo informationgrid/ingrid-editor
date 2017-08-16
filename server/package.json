@@ -22,6 +22,7 @@
     "jsonwebtoken": "^7.4.0",
     "log4js": "^1.1.1",
     "mongodb": "^2.2.26",
+    "pg": "^7.1.2",
     "swagger-tools": "0.10.1",
     "tingodb": "^0.5.1",
     "validate.js": "^0.11.1",
