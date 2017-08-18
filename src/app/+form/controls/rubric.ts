@@ -1,5 +1,4 @@
-import { FieldBase } from './field-base';
-import { Container } from './container';
+import { Container, IContainerFieldBase } from './container';
 
 export class Rubric extends Container {
   controlType = 'rubric';
@@ -7,7 +6,7 @@ export class Rubric extends Container {
   domClass = 'full';
   hideLabel = true;
 
-  constructor(options: Container | { controlType?: string } = {}) {
+  constructor(options: IContainerFieldBase) {
     super(options);
     this.label = options['label'] || '';
   }

@@ -29,7 +29,7 @@ export class FormControlService {
           /*field.children.forEach(child => {
             subGroup[child.key] = this._addValidator(child, this.getDataValue(data, [field.key, child.key]));
           });*/
-          result = this.toFormGroup(field.children, data); // new FormGroup(subGroup);
+          result = this.toFormGroup(field.children, field.key ? data[field.key] : data); // new FormGroup(subGroup);
         }
         if (field.key) {
           group[field.key] = result;
@@ -59,6 +59,10 @@ export class FormControlService {
   }
 
   getDataValue(data: any, keys: string[]): any {
+    if (data === undefined) {
+      return undefined;
+    }
+
     let obj: any = data;
     keys.some( key => {
       // for containers that do not want to bundle child fields -> skip

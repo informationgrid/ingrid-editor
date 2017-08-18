@@ -13,7 +13,8 @@ class BehaviourDao {
   };
 
   setBehaviour(behaviour) {
-    return this.client.updateIntoTable('behaviours', behaviour._id, behaviour);//, {upsert: true});
+    // return this.client.updateIntoTable('behaviours', behaviour._id, behaviour);//, {upsert: true});
+    return this.client.insertIntoTable('behaviours', behaviour, behaviour._id);//, {upsert: true});
   };
 
 }

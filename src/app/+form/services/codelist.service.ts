@@ -38,9 +38,13 @@ export class CodelistService {
         this.http.get( this.configService.backendUrl + 'codelist/' + id )
           .catch( (err: any) => this.errorService.handle( err ) )
           .subscribe( (data: any) => {
-            this.codelists[id] = data.json();
-            const entries = this.codelists[id].entries;
-            resolve( this.prepareEntries( entries ) );
+            if (data.json() === null) {
+              reject( 'Codelist could not be read: ' + id );
+            } else {
+              this.codelists[id] = data.json();
+              const entries = this.codelists[id].entries;
+              resolve( this.prepareEntries( entries ) );
+            }
           }, (err) => reject( err ) );
       }
     } );

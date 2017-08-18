@@ -1,6 +1,12 @@
 
-import {FieldBase} from './field-base';
+import { FieldBase, IFieldBase } from './field-base';
 import {CodelistEntry} from '../services/codelist.service';
+
+interface IDropDownFieldBase extends IFieldBase<string> {
+  useCodelist?: number;
+  options?: CodelistEntry[];
+  isCombo?: boolean;
+}
 
 export class DropdownField extends FieldBase<string> {
   controlType = 'dropdown';
@@ -8,7 +14,7 @@ export class DropdownField extends FieldBase<string> {
   options: CodelistEntry[] = [];
   isCombo: boolean;
 
-  constructor(options: FieldBase<any> | {options?: any[], useCodelist?: number, isCombo?: boolean}) {
+  constructor(options: IDropDownFieldBase) {
     super(options);
     this.options = options['options'] || [];
     this.useCodelist = options['useCodelist'] || null;

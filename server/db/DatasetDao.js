@@ -59,7 +59,7 @@ class DatasetDao {
           }
         }
       })
-      .catch( err => null );
+      .catch( err => log.error("Error getting document", err) );
   };
 
   _addInfo(doc, data, id) {

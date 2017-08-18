@@ -15,7 +15,7 @@ export class ErrorService {
         // this.router.navigate(['/login']);
       } else {
         console.error('Error: ', error);
-        let moreInfo = error.text ? error.text() : undefined;
+        const moreInfo = error.text ? error.text() : undefined;
         this.modalService.showError(error.toString(), moreInfo);
         return Observable.throw(error);
       }

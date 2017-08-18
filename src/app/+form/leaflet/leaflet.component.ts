@@ -253,6 +253,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
       // setup area select box
       this.setupAreaSelect();
       this._bboxPrevious = this._bbox;
+      this.nominatimResult = [];
 
     } else {
       this.leafletReference.dragging.disable();

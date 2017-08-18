@@ -19,32 +19,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
 @Component({
   selector: 'open-table',
   templateUrl: './opentable.component.html',
-  styles: [`
-    ng2-smart-table {
-      font-size: 1em;
-    }
-
-    /deep/ td.ng2-smart-actions, /deep/ th.ng2-smart-actions {
-      width: 55px;
-    }
-
-    /deep/ table th, /deep/ table td {
-      padding: 0.5rem 1rem;
-      border: 1px solid #e9ebec;
-    }
-
-    .addButton {
-      position: absolute;
-      right: 0;
-      top: -25px;
-      /*padding-bottom: 10px;*/
-    }
-
-    :host {
-      position: relative;
-      display: block;
-    }
-  `],
+  styleUrls: ['./opentable.component.css'],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 })
 export class OpenTable implements ControlValueAccessor, OnInit {
@@ -81,7 +56,10 @@ export class OpenTable implements ControlValueAccessor, OnInit {
     },
     hideSubHeader: true,
     noDataMessage: 'Diese Tabelle ist leer.',
-    columns: null
+    columns: null,
+    pager: {
+      perPage: 4
+    }
   };
 
   // The internal data model
@@ -150,6 +128,12 @@ export class OpenTable implements ControlValueAccessor, OnInit {
   // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
     this._onTouchedCallback = fn;
+  }
+
+  addRow($event) {
+    $event.stopImmediatePropagation();
+    this.addNew.emit();
+    // TODO: choice between inline editing and dialog
   }
 
   private mapColumns(): any {

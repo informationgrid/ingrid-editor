@@ -1,5 +1,5 @@
-import {Injectable, ViewContainerRef} from "@angular/core";
-import {Subject} from "rxjs";
+import { Injectable, ViewContainerRef } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
 
 interface DialogContent {
   message: string;
@@ -20,13 +20,17 @@ export class ModalService {
   /**
    *
    * @param message
+   * @param moreInfo
    */
-  showError(message: string|any, moreInfo?: string) {
-    let errorObj: any = {
+  showError(message: string | any, moreInfo?: string) {
+    const errorObj: any = {
       message: message
     };
-    if (moreInfo) errorObj.moreInfo = moreInfo;
-    else if (message._body) errorObj.moreInfo = message._body;
+    if (moreInfo) {
+      errorObj.moreInfo = moreInfo;
+    } else if (message._body) {
+      errorObj.moreInfo = message._body;
+    }
 
     this.errorDialog.next(errorObj);
   }

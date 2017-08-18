@@ -9,25 +9,44 @@ let client = null;
 
 // TODO: check out -> https://github.com/dmfay/massive-js
 
+// TODO: initialize tables
+/*
+CREATE TABLE documents (
+    id SERIAL primary key,
+    parent int,
+    data JSONB
+);
+
+CREATE TABLE role (
+    id SERIAL primary key,
+    data JSONB
+);
+
+CREATE TABLE users (
+    id SERIAL primary key,
+    data JSONB
+);
+
+CREATE TABLE behaviours (
+    id text primary key,
+    data JSONB
+);
+ */
+
 module.exports = {
 
   connect: function () {
     client = new pg.Client( connectionString );
-    const connection = client.connect();
-    return new Promise( (resolve) => {
-      connection.then( () => {
-        resolve();
-      }, (error) => {
-        console.error( 'ERROR Connecting to Postgres', error );
-      } );
-    } );
+    return client.connect();
   },
 
   close: function () {
-    db.close();
+    client.end()
+      .then( () => log.info( 'client has disconnected' ) )
+      .catch( err => log.error( 'error during disconnection', err.stack ) )
   },
 
-  insertIntoTable: function (table, data) {
+  insertIntoTable: function (table, data, id) {
     // const query = {
     //   name: 'insert-row',
     //   text: 'INSERT INTO $1::text VALUES(DEFAULT, $2)',
@@ -36,10 +55,13 @@ module.exports = {
     // };
 
     let query = null;
+    const idValue = id ? '\'' + id + '\'' : 'DEFAULT';
+    const onConflict = ' ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data';
+
     if (table === "documents") {
-      query = 'INSERT INTO ' + table + ' VALUES(DEFAULT, null, \'' + JSON.stringify( data ) + '\')';
+      query = 'INSERT INTO ' + table + ' VALUES(' + idValue + ', null, \'' + JSON.stringify( data ) + '\')' + onConflict;
     } else {
-      query = 'INSERT INTO ' + table + ' VALUES(DEFAULT, \'' + JSON.stringify( data ) + '\')';
+      query = 'INSERT INTO ' + table + ' VALUES(' + idValue + ', \'' + JSON.stringify( data ) + '\')' + onConflict;
     }
 
     return new Promise( function (resolve, reject) {
@@ -69,19 +91,28 @@ module.exports = {
   },
 
   updateIntoTable: function (table, id, data) {
-    let collection = db.collection( table );
-
-    return new Promise( function (resolve) {
-      collection.update( {_id: data._id}, data, {upsert: true}, (err, result) => resolve( result ) );
+    const query = 'UPDATE ' + table + ' SET data = \'' + JSON.stringify( data ) + '\' WHERE id = ' + id;
+    return new Promise( (resolve, reject) => {
+      const queryResponse = client.query( query + ' RETURNING id', [], (error, result) => {
+        if (error) {
+          reject( error );
+        } else {
+          log.info( "UPDATE:", result );
+          const response = result.rows[ 0 ];
+          // response.insertedId = result.rows[ 0 ].id;
+          resolve( response );
+        }
+      } );
     } );
   },
 
   deleteById: function (table, id) {
-    let collection = db.collection( table );
+    const query = 'DELETE FROM ' + table + ' WHERE id = ' + id;
+    return client.query(query);
 
-    return new Promise( resolve => {
+    /*return new Promise( resolve => {
       collection.remove( {_id: this.getObjectId( id )}, (err, result) => resolve( result ) );
-    } )
+    } )*/
   },
 
   findInTable: function (table, selector) {
@@ -93,17 +124,17 @@ module.exports = {
           where = 'data->>\'' + key + '\' LIKE \'%' + selector[ key ] + '%\'';
         }
       }
-      query = 'SELECT * FROM ' + table + ' WHERE ' + where;
-    } else {
+    }
 
+    if (where.trim() === '') {
       query = 'SELECT * FROM ' + table;
+    } else {
+      query = 'SELECT * FROM ' + table + ' WHERE ' + where;
     }
     return client.query( query )
-      .then( response => {
-        log.info( "FOUND:", response );
-        response.rows.forEach(row => row.data._id = row.id);
-        const result = response.rows.map(row => row.data);
-        return result;
+      .then( result => {
+        log.info( "FOUND:", result );
+        return this.mapDocResults( result.rows );
       } )
       .catch( error => {
         log.error( "ERROR (FOUND):", error );
@@ -146,10 +177,11 @@ module.exports = {
    * @returns {Promise}
    */
   searchFor: function (table, query, sort, reverse) {
-    return new Promise( function (resolve, reject) {
+    return new Promise( (resolve, reject) => {
       client.query( "SELECT data FROM " + table )
         .then( result => {
-          resolve( result.rows );
+          const mapped = this.mapDocResults( result.rows );
+          resolve( mapped );
         } )
         .catch( error => log.error( "Error", error ) );
     } );
@@ -200,11 +232,12 @@ module.exports = {
         // done();
         return resolve(results[0]);
       });*/
-      const query = client.query( 'SELECT data FROM docs WHERE id=' + parseInt( id ) )
+      const query = client.query( 'SELECT id, data FROM ' + table + ' WHERE id=' + parseInt( id ) )
       query.then( result => {
-        resolve( {draft: result.rows[ 0 ].data} );
+        const mapped = this.mapDocResults( result.rows );
+        resolve( mapped[ 0 ] );
       }, error => {
-        console.error( "Error querying db" );
+        console.error( "Error querying db", error );
       } )
     } );
   },
@@ -229,6 +262,13 @@ module.exports = {
 
     return realId;*/
     return null;
+  },
+
+  mapDocResults(rows) {
+    rows.forEach( row => {
+      row.data._id = row.id;
+    } );
+    return rows.map( row => row.data );
   }
 };
 

@@ -29,7 +29,7 @@ import {KeycloakService} from './keycloak/keycloak.service';
             <p>{{dynDialog.errorMessageMore}}</p>
         </modal-content>
     </modal>
-    
+
     <!-- Placeholder for dynamically created dialogs from plugins -->
     <div #dialogContainer id="dialogContainer"></div>
   `,
@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
       this.errorModal.open();
     } );
 
-    let roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
+    const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly
     this.roleService.getRoleMapping('admin' )
       .subscribe(role => {

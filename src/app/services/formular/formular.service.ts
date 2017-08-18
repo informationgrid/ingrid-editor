@@ -10,6 +10,7 @@ import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {KeycloakService} from '../../keycloak/keycloak.service';
 import { IsoProfile } from './iso/iso.profile';
+import { ModalService } from '../modal/modal.service';
 
 @Injectable()
 export class FormularService {
@@ -46,11 +47,11 @@ export class FormularService {
     {id: 'FOLDER', label: 'Folder'}
   ];
 
-  constructor(private codelistService: CodelistService) {
+  constructor(private codelistService: CodelistService, private modalService: ModalService) {
     // create profiles after we have logged in
     const init = () => {
       this.isoProfile = new IsoProfile(this.codelistService);
-      this.addressProfile = new AddressProfile();
+      this.addressProfile = new AddressProfile(this.codelistService, this.modalService);
       this.uvpProfile = new UVPProfile(this.codelistService);
       this.folderProfile = new FolderProfile();
     };
