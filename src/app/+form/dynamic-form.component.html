@@ -70,16 +70,37 @@
 
             <div class="main-form-flex">
                 <!--<div class="main-form">-->
-                    <!--<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>-->
-                    <ige-main-form-tabs [fields]="fields" [form]="form"
-                                        style="display: flex;"
-                                        (onAddSection)="addSection($event)"></ige-main-form-tabs>
+                <!--<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>-->
+                <ige-main-form-tabs [fields]="fields" [form]="form"
+                                    style="display: flex;"
+                                    (onAddSection)="addSection($event)"></ige-main-form-tabs>
                 <!--</div>-->
             </div>
             <div *ngIf="debugEnabled" class="well text-muted">
                 <strong>Form contains the following values</strong><br>{{form.value | json}}
                 <!--<p>Form is valid: {{form.valid}}</p>-->
             </div>
+
+            <!-- WIZARD -->
+            <!-- TODO: show within sidebar with vertical style? -->
+            <div *ngIf="showWizard" class="padding">
+                <wizard [navBarLocation]="'bottom'">
+                    <wizard-step title="Schritt 1">
+                        Content of Step 1
+                        <button type="button" nextStep>Next Step</button>
+                    </wizard-step>
+                    <wizard-step title="Schritt 2" optionalStep>
+                        Content of Step 2
+                        <button type="button" previousStep>Go to previous step</button>
+                        <button type="button" nextStep>Go to next step</button>
+                    </wizard-step>
+                    <wizard-step title="Schritt 3">
+                        Content of Step 3
+                        <button type="button" previousStep>Previous Step</button>
+                    </wizard-step>
+                </wizard>
+            </div>
+
         </form>
     </split-area>
 

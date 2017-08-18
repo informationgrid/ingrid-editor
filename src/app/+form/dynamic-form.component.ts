@@ -48,6 +48,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   debugEnabled = false;
 
+  showWizard = true;
+
   NEW_DOCUMENT = '-1';
 
   // when editing a folder this flag must be set

@@ -24,11 +24,12 @@ import { OpentableModule } from './opentable/opentable.module';
 import { ComboBoxModule } from 'ng2-combobox';
 import { DropDownComponent } from './drop-down/drop-down.component';
 import { PopoverModule } from 'ngx-popover';
+import { WizardModule } from 'ng2-archwizard/dist';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule,
-    PopoverModule, ComboBoxModule,
+    PopoverModule, ComboBoxModule, WizardModule,
     SharedModule, routing, ModalModule, TreeModule, OpentableModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,

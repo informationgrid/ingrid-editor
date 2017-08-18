@@ -30,6 +30,7 @@
     "core-js": "^2.5.0",
     "font-awesome": "^4.7.0",
     "leaflet": "^1.2.0",
+    "ng2-archwizard": "^1.7.0",
     "ng2-charts": "^1.6.0",
     "ng2-combobox": "^0.6.0",
     "ng2-smart-table": "^1.2.1",

@@ -7,6 +7,8 @@ import { Observable } from 'rxjs/Observable';
 import { DropdownField } from '../controls/field-dropdown';
 import { SelectRenderComponent } from './renderComponents/select.render.component';
 import { ComboEditorComponent } from './editorComponents/combo.editor.component';
+import { Ng2SmartTableComponent } from 'ng2-smart-table/ng2-smart-table.component';
+import { Row } from 'ng2-smart-table/lib/data-set/row';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -28,9 +30,9 @@ export class OpenTable implements ControlValueAccessor, OnInit {
 
   @Input() hideTableHeader: boolean;
 
-  source: LocalDataSource;
+  @ViewChild(Ng2SmartTableComponent) public smartTable: Ng2SmartTableComponent;
 
-  addNew = new EventEmitter<any>();
+  source: LocalDataSource;
 
   showAddButton = true;
 
@@ -76,6 +78,22 @@ export class OpenTable implements ControlValueAccessor, OnInit {
   ngOnInit() {
     this.settings.columns = this.mapColumns();
     this.settings.hideHeader = this.hideTableHeader;
+
+    // override original function to enable click-to-edit functionality
+    this.smartTable.onUserSelectRow = function(selectedRow: Row) {
+      if (this.grid.getSetting('mode') === 'click-to-edit') {
+        this.grid.getRows().forEach(row => row.isInEditing ? this.grid.save(row, this.createConfirm) : null);
+        // set editing mode a bit later so that document click handler is called correctly
+        // TODO: focus clicked cell editor
+        setTimeout(() => selectedRow.isInEditing = true);
+
+      } else if (this.grid.getSetting('selectMode') !== 'multi') {
+        this.grid.selectRow(selectedRow);
+        this.emitUserSelectRow(selectedRow);
+        this.emitSelectRow(selectedRow);
+
+      }
+    }
   }
 
   /*@HostListener('mouseenter')
@@ -131,9 +149,8 @@ export class OpenTable implements ControlValueAccessor, OnInit {
   }
 
   addRow($event) {
-    $event.stopImmediatePropagation();
-    this.addNew.emit();
     // TODO: choice between inline editing and dialog
+    this.smartTable.grid.createFormShown = true;
   }
 
   private mapColumns(): any {
