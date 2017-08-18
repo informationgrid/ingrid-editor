@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {AuthService} from '../services/security/auth.service';
 import {ModalService} from '../services/modal/modal.service';
 
 @Component({
@@ -17,17 +16,16 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private authService: AuthService,
     private modalService: ModalService) { }
 
   ngOnInit() {
     // reset login status
-    this.authService.logout();
+    // this.authService.logout();
   }
 
   login() {
     this.loading = true;
-    this.authService.login(this.model.username, this.model.password)
+    /*this.authService.login(this.model.username, this.model.password)
       .subscribe(result => {
         // Get the redirect URL from our auth service
         // If no redirect has been set, use the default
@@ -48,6 +46,6 @@ export class LoginComponent implements OnInit {
         } else {
           this.modalService.showError(err.text ? err.text() : err.stack);
         }
-      });
+      });*/
   }
 }

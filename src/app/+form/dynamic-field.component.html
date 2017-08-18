@@ -3,7 +3,13 @@
 
     <label *ngIf="!field.hideLabel" class="control-label" [attr.for]="field.key">{{field.label}}</label>
 
-    <div [ngSwitch]="field.controlType">
+    <ng-container [ngSwitch]="field.controlType">
+
+        <!-- RUBRIC -->
+        <ng-container *ngSwitchCase="'rubric'">
+          <h4>{{field.label}}</h4>
+          <hr>
+        </ng-container>
 
         <!-- TEXTBOX -->
         <input *ngSwitchCase="'textbox'" [formControlName]="field.key" class="form-control"
@@ -27,9 +33,11 @@
         </span>
 
         <!-- SELECT -->
-        <select [id]="field.key" *ngSwitchCase="'dropdown'" [formControlName]="field.key" class="form-control">
-            <option *ngFor="let opt of field.options" [value]="opt.id">{{opt.value}}</option>
-        </select>
+        <ige-drop-down *ngSwitchCase="'dropdown'" [formControlName]="field.key"
+                       [id]="field.key"
+                       [isCombo]="field.isCombo"
+                       [options]="field.options">
+        </ige-drop-down>
 
         <!-- TEXTAREA -->
         <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"
@@ -41,7 +49,7 @@
                     [ngModel]="value[field.key]">
         </data-table>-->
 
-        <open-table *ngSwitchCase="'opentable'" [formControlName]="field.key" [columns]="field.columns"></open-table>
+        <open-table *ngSwitchCase="'opentable'" [formControlName]="field.key" [columns]="field.columns" [hideTableHeader]="field.hideHeader"></open-table>
 
         <!-- LEAFLET-->
         <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [formControlName]="field.key"></leaflet>
@@ -49,7 +57,6 @@
         <link-dataset *ngSwitchCase="'linkDataset'" [formControlName]="field.key" [filter]="field.filter"></link-dataset>
 
         <div class="help-block" [class.hide]="form.controls[field.key].valid || form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>
-    </div>
-
+    </ng-container>
 
 </div>

@@ -1,13 +1,29 @@
-import {TextboxField, TextareaField, RadioField, CheckboxField, TableField} from "../../../+form/controls/index";
-import {OpenTableField} from "../../../+form/controls/field-opentable";
-import {LinkDatasetField} from "../../../+form/controls/field-link-dataset";
-import {Container} from "../../../+form/controls/container";
-import {PartialGeneratorField} from "../../../+form/controls/field-partial-generator";
-import {DropdownField} from "../../../+form/controls/field-dropdown";
-import {Profile} from "../profile";
+import { TextboxField } from "../../../+form/controls/index";
+import { OpenTableField } from "../../../+form/controls/field-opentable";
+import { Container } from "../../../+form/controls/container";
+import { DropdownField } from "../../../+form/controls/field-dropdown";
+import { Profile } from "../profile";
+import { CodelistService } from '../../../+form/services/codelist.service';
+import { ModalService } from '../../modal/modal.service';
+import { TextareaField } from '../../../+form/controls/field-textarea';
 
 
 export class AddressProfile implements Profile {
+
+  treeIconClass = 'fa fa-address-card-o';
+
+  countrySelect = new DropdownField({
+    key: 'country',
+    label: 'Land',
+    domClass: 'half',
+    options: []
+  });
+  adminAreaSelect = new DropdownField({
+    key: 'adminArea',
+    label: 'Verwaltungsgebiet',
+    domClass: 'half',
+    options: []
+  });
 
   profile = [
     new TextboxField({
@@ -26,7 +42,7 @@ export class AddressProfile implements Profile {
 
     new OpenTableField({
       key: 'contact',
-      label: 'Kontakt',
+      label: 'Kommunikation',
       order: 30,
       domClass: 'half',
       columns: [
@@ -34,45 +50,18 @@ export class AddressProfile implements Profile {
           editor: new DropdownField({
             key: 'type',
             label: 'Typ',
-            domClass: 'quarter',
             options: [{id: 'email', value: 'Email'}, {id: 'phone', value: 'Telefon'}]
-          })
+          }),
+          width: '100px'
         },
         {
-          editor: new TextboxField( {
+          editor: new TextboxField({
             key: 'value',
-            label: 'Wert',
-            domClass: 'three-quarter'
-          } )
+            label: 'Wert'
+          })
         }
       ]
     }),
-
-    /*new PartialGeneratorField({
-     key: 'contact',
-     label: 'Kontakt',
-     domClass: 'half',
-     order: 30,
-     partials: [
-     new Container({
-     key: 'info',
-     label: 'Kontaktinformation',
-     children: [
-     new DropdownField({
-     key: 'type',
-     label: 'Typ',
-     domClass: 'half',
-     options: [{key: 'email', value: 'Email'}, {key: 'phone', value: 'Telefon'}]
-     }),
-     new TextboxField({
-     key: 'value',
-     label: 'Wert',
-     domClass: 'half'
-     })
-     ]
-     })
-     ]
-     }),*/
 
     new Container({
       key: 'address',
@@ -99,18 +88,38 @@ export class AddressProfile implements Profile {
           label: 'Stadt',
           domClass: 'three-quarter'
         }),
-        new TextboxField({
-          key: 'country',
-          label: 'Land'
-          // domClass: 'half'
-        }),
+
+        this.adminAreaSelect,
+
+        this.countrySelect
       ]
     }),
+
+    new TextareaField({
+      key: 'tasks',
+      label: 'Aufgaben',
+      rows: 2,
+      order: 40
+    }),
+
+    new TextboxField({
+      key: 'serviceTimes',
+      label: 'Servicezeiten',
+      order: 40
+    })
   ];
 
+  constructor(private codelistService: CodelistService, modalService: ModalService) {
+    this.codelistService.byIds(['6200', '6250']).then(codelists => {
+      this.countrySelect.options = codelists[0];
+      this.adminAreaSelect.options = codelists[1];
+    }).catch( err => modalService.showError(err));
+  }
+
   getTitle(doc: any) {
-    if (!doc.firstName && !doc.lastName) return null;
-    else {
+    if (!doc.firstName && !doc.lastName) {
+      return null;
+    } else {
       return doc.firstName + ' ' + doc.lastName;
     }
   }

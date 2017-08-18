@@ -5,19 +5,24 @@ split {
     margin: 20px;
 }
 
+.formWrapper {
+  display: flex;
+}
+
 .formWrapper > form {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    flex: 1;
 }
 
 .main-form-flex {
-    overflow: auto;
+    display: flex;
+    flex: 1;
 }
 
-.main-form {
+/*.main-form {
     flex-grow: 1;
-}
+}*/
 
 .bottom-bar {
     /*position: absolute;*/
@@ -93,9 +98,4 @@ split {
     100% {
         opacity: 0;
     }
-}
-
-.panel-heading:hover {
-    cursor: pointer;
-    background-color: #ffffff;
 }

@@ -1,27 +1,21 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
 import {ConfigService} from '../config/config.service';
 import {Observable} from 'rxjs';
-import {ErrorService} from "../services/error.service";
-import {AuthHttp} from 'angular2-jwt';
-
-export interface User {
- firstName?: string;
- lastName?: string;
- roles?: number[];
- login?: string;
- password?: string;
-}
+import {ErrorService} from '../services/error.service';
+import {User} from './user';
+import {Http} from '@angular/http';
+import {ApiService} from '../services/ApiService';
 
 @Injectable()
 export class UserService {
 
-  constructor(private http: AuthHttp, private configService: ConfigService,
-    private errorService: ErrorService) {
+  constructor(private http: Http, private configService: ConfigService,
+              private errorService: ErrorService, private apiService: ApiService) {
   }
 
-  getUsers(): Observable<any[]> {
-    return this.http.get( this.configService.backendUrl + 'user/list' )
+  getUsers(): Observable<User[]> {
+    return this.apiService.getUsers();
+    /*return this.http.get( this.configService.backendUrl + 'users' )
       .map( resp => resp.json() )
       .map( (data: any[]) => {
         let result: any[] = [];
@@ -34,34 +28,35 @@ export class UserService {
           } );
         } );
         return result;
-      } );
+      } );*/
   }
 
-  getUser(login: string): Observable<any> {
-    return this.http.get( this.configService.backendUrl + 'user/' + login)
-      .map( resp =>  resp.json() )
+  getUser(login: string): Observable<User> {
+    return this.apiService.getUser(login);
+    // return this.http.get( this.configService.backendUrl + 'users/' + login )
+    //   .map( resp => resp.json() )
       /*.map( json => {
         json.roles = json.roles.map( (role: number) => role + '');
         return json;
       } )*/
-      .catch( err => this.errorService.handle(err));
+      // .catch( err => this.errorService.handle( err ) );
   }
 
-  saveUser(user: User): Observable<any> {
-    return this.http.post( this.configService.backendUrl + 'user/' + user.login, user )
-      // .map( resp => resp.json() )
-      .catch( err => this.errorService.handle(err));
+  saveUser(user: User): Observable<User> {
+    return this.http.put( this.configService.backendUrl + 'users/' + user.login, user )
+    // .map( resp => resp.json() )
+      .catch( err => this.errorService.handle( err ) );
   }
 
-  createUser(user: User): Observable<any> {
-    return this.http.put( this.configService.backendUrl + 'user/' + user.login, user )
-      // .map( resp => resp.json() )
-      .catch( err => this.errorService.handle(err));
+  createUser(user: User): Observable<User> {
+    return this.http.post( this.configService.backendUrl + 'users/' + user.login, user )
+    // .map( resp => resp.json() )
+      .catch( err => this.errorService.handle( err ) );
   }
 
-  deleteUser(login: string): Observable<any> {
-    return this.http.delete( this.configService.backendUrl + 'user/' + login )
-      .catch( err => this.errorService.handle(err));
+  deleteUser(login: string): Observable<null> {
+    return this.http.delete( this.configService.backendUrl + 'users/' + login )
+      .catch( err => this.errorService.handle( err ) );
   }
 
 }

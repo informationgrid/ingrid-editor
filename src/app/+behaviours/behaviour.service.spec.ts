@@ -8,7 +8,7 @@ import {AuthService} from '../services/security/auth.service';
 import {Http, HttpModule} from '@angular/http';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
-import {routes} from '../router';
+import {routes} from '../app.router';
 
 // const behaviourService: BehaviourService;
 

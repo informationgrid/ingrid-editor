@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {Subject} from 'rxjs';
-import {AuthService} from '../services/security/auth.service';
 
 interface MenuItem {
   name: string;
@@ -17,18 +16,18 @@ export class MenuService {
 
   _menuItems: MenuItem[] = [
     {name: 'Dashboard', path: '/dashboard'},
-    {name: 'Form', path: '/form/-2'},
+    {name: 'Form', path: '/form'},
     {name: 'Plugins', path: '/plugins', onlyAdmin: true},
     // {name: 'Fields', path: '/fields'}
     {name: 'Benutzer', path: '/user', onlyAdmin: true},
     {name: 'Im-/Export', path: '/importExport', onlyAdmin: true}
   ];
 
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router) {
   }
 
   get menuItems(): MenuItem[] {
-    let validPages = this.authService.getAccessiblePages();
+    const validPages = []; // this.authService.getAccessiblePages();
 
     if (validPages.length === 0) {
       return this._menuItems;
@@ -38,7 +37,7 @@ export class MenuService {
   }
 
   addMenuItem(label: string, path: string, component: any) {
-    let routerConfig = this.router.config;
+    const routerConfig = this.router.config;
     routerConfig.push(
       {path: path, component: component}
     );

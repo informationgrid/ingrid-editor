@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {BehavioursDefault, Behaviour} from './behaviours';
+import {Behaviour, BehavioursDefault} from './behaviours';
 import {EventManager} from '@angular/platform-browser';
-import {Response} from '@angular/http';
+import {Http, Response} from '@angular/http';
 import {ModalService} from '../services/modal/modal.service';
 import {ConfigService} from '../config/config.service';
-import {AuthHttp, AuthHttpError} from 'angular2-jwt';
+import {AuthHttpError} from 'angular2-jwt';
 import {Plugin} from './plugin';
-import {AuthService} from '../services/security/auth.service';
 import {Observable} from 'rxjs/Observable';
+import {KeycloakService} from '../keycloak/keycloak.service';
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -23,8 +23,7 @@ export class BehaviourService {
 
   constructor(private defaultBehaves: BehavioursDefault,
               private eventManager: EventManager,
-              private authService: AuthService,
-              private http: AuthHttp, private modalService: ModalService, private configService: ConfigService) {
+              private http: Http, private modalService: ModalService, private configService: ConfigService) {
 
     this.behaviours = defaultBehaves.behaviours;
     this.systemBehaviours = defaultBehaves.systemBehaviours;
@@ -38,14 +37,23 @@ export class BehaviourService {
         // add all additional behaviours to the default ones
         this.behaviours.push( ...additionalBehaviours );
 
-        if (this.authService.loggedIn()) {
+      if (KeycloakService.auth.loggedIn) {
+          this.loadStoredBehaviours()
+            .then( () => resolve() )
+            .catch( () => reject );
+      }
+
+      // keycloak.getGroupsOfUser('');
+        /*
+
+        // if (this.authService.loggedIn()) {
           // request stored behaviour states from backend
           this.loadStoredBehaviours()
             .then( () => resolve() )
             .catch( () => reject );
 
         } else {
-          const loginSubscriber = this.authService.loginStatusChange$.subscribe( loggedIn => {
+          /*const loginSubscriber = this.authService.loginStatusChange$.subscribe( loggedIn => {
             // console.log( 'logged in state changed to: ' + loggedIn );
             if (loggedIn) {
               loginSubscriber.unsubscribe();
@@ -53,8 +61,8 @@ export class BehaviourService {
                 .then( () => resolve() )
                 .catch( () => reject );
             }
-          });
-        }
+          });*/
+        // }
       // } );
     } );
   }

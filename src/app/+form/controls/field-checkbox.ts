@@ -1,12 +1,10 @@
-import {FieldBase} from './field-base';
+import { FieldBase, IFieldBase } from './field-base';
 
 export class CheckboxField extends FieldBase<string> {
   controlType = 'checkbox';
-  // type: string;
 
-  constructor(options: {} = {}) {
+  constructor(options: IFieldBase<string>) {
     super(options);
-    // this.type = options['type'] || 'text';
     this.hideLabel = options['hideLabel'] || true;
   }
 }

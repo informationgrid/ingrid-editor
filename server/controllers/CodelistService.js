@@ -1,17 +1,18 @@
 'use strict';
 let xml2js = require('xml2js'),
-  fs = require('fs');
+  fs = require('fs'),
+  log = require('log4js').getLogger();
 
 class CodelistService {
 
 
   constructor() {
     this.codelists = [];
-    console.log('init codelist');
+    log.info('Init codelists ...');
     let parser = xml2js.Parser();
     fs.readFile('codelists_initial.xml', (err, data) => {
       if (err) {
-        console.error(err);
+        log.error(err);
         return;
       }
 
@@ -31,6 +32,7 @@ class CodelistService {
         // console.log(codelists[0].entries[0].localisations);
         // this.prepareCodelists(codelists);
         this.codelists = codelists;
+        log.info('finished!');
       });
     });
   }
@@ -54,15 +56,15 @@ class CodelistService {
     return localisations;
   }
 
-/*  prepareCodelists(codelists) {
-    let mapCodelist = {};
-    codelists.forEach(codelist => {
-      mapCodelist[codelist.id] = {
-        id: codelist.id,
-        values: prepareCodelistValues(codelist.)
-      }
-    })
-  }*/
+  /*  prepareCodelists(codelists) {
+      let mapCodelist = {};
+      codelists.forEach(codelist => {
+        mapCodelist[codelist.id] = {
+          id: codelist.id,
+          values: prepareCodelistValues(codelist.)
+        }
+      })
+    }*/
 
   getById(args, res, next) {
 

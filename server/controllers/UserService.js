@@ -1,5 +1,5 @@
 'use strict';
-
+let log = require('log4js').getLogger();
 let Config = require('../config'),
   Jwt = require('jsonwebtoken'),
   db = require('../db/UserDao'),
@@ -14,7 +14,7 @@ class UserService {
     let password = args.password.value;
 
     db.findUser(username).then( user => {
-      console.log('user:', user);
+      log.debug('user:', user);
       if (user === null || !bcrypt.compareSync(password, user.password)) {
 
         throw new Error('User not found or wrong password');
@@ -30,12 +30,12 @@ class UserService {
           let result = {
             username: user.login,
             roles: roles,
-            token: Jwt.sign(user, Config.key.privateKey, {expiresIn: Config.key.tokenExpiry})
+            token: Jwt.sign(user, Config.key.publicKey, {expiresIn: Config.key.tokenExpiry})
           };
           res.end(JSON.stringify(result, null, 2));
         }, err => {
           res.statusCode = 500;
-          console.error(err.message);
+          log.error(err.message);
           res.end(err.message);
         });
 
@@ -54,7 +54,7 @@ class UserService {
     let user = {
       login: decodedToken
     };
-    let newToken = Jwt.sign(user, Config.key.privateKey, {expiresIn: Config.key.tokenExpiry});
+    let newToken = Jwt.sign(user, Config.key.publicKey, {expiresIn: Config.key.tokenExpiry});
     res.end(JSON.stringify({token: newToken}, null, 2));
   }
 
@@ -128,7 +128,7 @@ class UserService {
     db.findUser(login).then(user => {
 
       if (user) {
-        console.log("found user", user);
+        log.debug("found user", user);
 
         // set new password if one was set or use previous password
         if (data.password && data.password.length > 0) {
@@ -147,7 +147,7 @@ class UserService {
         });
       } else {
 
-        console.log("did not find user", login);
+        log.debug("did not find user", login);
         res.statusCode = 406;
         res.end("User does not exists: " + login);
 

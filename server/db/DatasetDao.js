@@ -1,5 +1,6 @@
 'use strict';
 
+let log = require('log4js').getLogger();
 let dbInterface = require('./dbInterface');
 
 class DatasetDao {
@@ -58,7 +59,7 @@ class DatasetDao {
           }
         }
       })
-      .catch( err => null );
+      .catch( err => log.error("Error getting document", err) );
   };
 
   _addInfo(doc, data, id) {
@@ -220,7 +221,7 @@ class DatasetDao {
     return this.client.findInTable('documents', selector)
       .then(
         data => this.processResults(data),
-        err => console.error(err)
+        err => log.error(err)
       );
   };
 

@@ -1,6 +1,5 @@
 html, body {
   height: 100%;
-  background-color: red;
 }
 
 body {
@@ -19,12 +18,24 @@ form-toolbar + div {
   /*padding-top: 30px;*/
 }
 
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+  background-color: #c9eeff !important;
+}
+
 .navbar-default .navbar-nav > li > a:focus, nav a.active, nav a:focus.active {
   background-color: #ececec;
 }
 
+.has-navbar {
+  padding-top: 10px;
+}
+
 a:hover {
   text-decoration: none;
+}
+
+.half, .full, .quarter, .three-quarter, .third, .two-third {
+  float: left;
 }
 
 .full {
@@ -93,6 +104,7 @@ p-dataTable {
   width: 100%;
   height: 100px;
 }
+
 /*
 .splitWrapper {
     position: absolute;
@@ -150,8 +162,12 @@ sidebar .list-group-item:hover {
   color: #ffffff;
 }
 
+.label-primary {
+  background-color: #87c2da !important;
+}
+
 .pubished-working-label {
-  background: linear-gradient(-90deg, #f0ad4e 50%, #337ab7 50%);
+  background: linear-gradient(-90deg, #f0ad4e 50%, #87c2da 50%);
 }
 
 .list-group-item.active {

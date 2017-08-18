@@ -39,7 +39,7 @@ export class DeleteDialogComponent implements OnInit {
       // if (this.data._id === ids[0]) {
       //   this.form = null;
         // TODO: use constant for no document selected
-        this.router.navigate( ['/form', -2]);
+        this.router.navigate( ['/form']);
       // }
     } catch (ex) {
       console.error( 'Could not delete' );

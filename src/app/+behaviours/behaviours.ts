@@ -17,6 +17,7 @@ import {
   FolderPlugin
 } from '.';
 import {DeleteDocsPlugin} from './toolbar/deleteDocs/delete-docs.plugin';
+import {IsoViewPlugin} from './toolbar/isoView/iso-view.plugin';
 
 export interface Behaviour {
   id: string;
@@ -55,7 +56,8 @@ export class BehavioursDefault {
     this.createDocRules,
     this.copyCutPastePlugin,
     this.printviewPlugin,
-    this.folderPlugin
+    this.folderPlugin,
+    this.isoviewPlugin
   ];
 
   constructor(private formService: FormularService,
@@ -63,6 +65,7 @@ export class BehavioursDefault {
               private statisticPlugin: StatisticPlugin,
               private workflowPlugin: WorkflowPlugin,
               private printviewPlugin: PrintViewPlugin,
+              private isoviewPlugin: IsoViewPlugin,
               private createDocRules: CreateDocRulesPlugin,
               private copyCutPastePlugin: CopyCutPastePlugin,
               private folderPlugin: FolderPlugin,

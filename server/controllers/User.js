@@ -22,7 +22,7 @@ module.exports.getUser = function getUser (req, res, next) {
   User.getUser(req.swagger.params, res, next);
 };
 
-module.exports.setUser = function setUser (req, res, next) {
+module.exports.updateUser = function setUser (req, res, next) {
   User.updateUser(req.swagger.params, res, next);
 };
 

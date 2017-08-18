@@ -48,7 +48,8 @@ export class MetadataTreeComponent implements OnInit {
   @ViewChild( TreeComponent ) private tree: TreeComponent;
 
   @Input() showFolderEditButton = true;
-  @Output() onSelected = new EventEmitter<SelectedDocument[]>();
+  @Output() selected = new EventEmitter<SelectedDocument[]>();
+  @Output() activate = new EventEmitter<SelectedDocument[]>();
 
   nodes: any[] = [];
 
@@ -72,12 +73,12 @@ export class MetadataTreeComponent implements OnInit {
   ngOnInit() {
     this.query( null ).then( () => {
       const initialSet = this.route.params.subscribe( params => {
-        let selectedId = params['id'];
+        const selectedId = params['id'];
 
         // only let this function be called once, since we only need it during first visit of the page
         setTimeout( () => initialSet.unsubscribe(), 0 );
 
-        if (selectedId && selectedId !== '-1' && selectedId !== '-2') {
+        if (selectedId && selectedId !== '-1') {
           // get path to node
           this.storageService.getPathToDataset( selectedId ).subscribe( path => {
             console.debug( 'path: ' + path );
@@ -182,7 +183,7 @@ export class MetadataTreeComponent implements OnInit {
 
       // re-select node if id has changed (after a new dataset has been saved and given an id)
       if (doc._previousId !== doc._id) {
-        let node = this.tree.treeModel.getNodeById( doc._id );
+        const node = this.tree.treeModel.getNodeById( doc._id );
         this.tree.treeModel.setActiveNode( node, true );
       }
     } );
@@ -200,9 +201,9 @@ export class MetadataTreeComponent implements OnInit {
 
       // since we don't have the parent we determine the parent from the node path
       // and get the parent from that to finally get the wanted node from the model
-      let nodeParent = this.getNodeFromModel( path[path.length - 2] );
+      const nodeParent = this.getNodeFromModel( path[path.length - 2] );
 
-      let index = nodeParent.children.findIndex( (c: any) => c.id === doc._id );
+      const index = nodeParent.children.findIndex( (c: any) => c.id === doc._id );
 
       // only remove node from tree if it's still there
       // TODO: optimize by call update only once after all docs are removed from tree
@@ -216,8 +217,10 @@ export class MetadataTreeComponent implements OnInit {
   getNodeIdPath(id: string): string[] {
     let path: string[] = null;
     if (id) {
-      let parentNode = this.tree.treeModel.getNodeById( id );
-      if (parentNode) path = parentNode.path;
+      const parentNode = this.tree.treeModel.getNodeById( id );
+      if (parentNode) {
+        path = parentNode.path;
+      }
     }
     return path;
   }
@@ -225,7 +228,7 @@ export class MetadataTreeComponent implements OnInit {
   getNodeFromModel(id: string): any {
     let nodeParent: any = null;
 
-    let path = this.getNodeIdPath( id );
+    const path = this.getNodeIdPath( id );
 
     if (path) {
       let kids = this.nodes;
@@ -245,8 +248,8 @@ export class MetadataTreeComponent implements OnInit {
   }
 
   expandToPath(path: string[]): Promise<any> {
-    let id = path.pop();
-    let node = this.tree.treeModel.getNodeById( id );
+    const id = path.pop();
+    const node = this.tree.treeModel.getNodeById( id );
 
     // only expand if there're more nodes to be expanded
     if (path.length > 0) {
@@ -280,7 +283,7 @@ export class MetadataTreeComponent implements OnInit {
   }
 
   prepareNode(doc: any): any {
-    let node: any = {
+    const node: any = {
       id: doc._id + '',
       name: this.formularService.getTitle( doc._profile, doc ),
       _iconClass: this.formularService.getIconClass( doc._profile ),
@@ -303,6 +306,9 @@ export class MetadataTreeComponent implements OnInit {
 
     docs
       .filter( doc => doc._profile !== undefined )
+      .sort( (doc1, doc2) => {
+        return this.formularService.getTitle(doc1._profile, doc1).localeCompare(this.formularService.getTitle(doc2._profile, doc2))
+      } )
       .forEach( doc => {
         if (parentId) {
           updatedNodes.children.push( this.prepareNode( doc ) );
@@ -313,24 +319,31 @@ export class MetadataTreeComponent implements OnInit {
     this.tree.treeModel.update();
   }
 
-  open(event: any) {
-    let data = [];
-    if (event.eventName === TREE_EVENTS.onActivate || event.eventName === TREE_EVENTS.onDeactivate) {
-      let treeModel: TreeModel = event.treeModel;
-      data = treeModel.getActiveNodes()
-        .map( node => ({
-          id: node.data.id,
-          label: node.displayField,
-          profile: node.data._profile
-        } ) );
+  private getSelectedNodes(treeModel: TreeModel): any {
+    return treeModel.getActiveNodes()
+      .map( node => ({
+        id: node.data.id,
+        label: node.displayField,
+        profile: node.data._profile
+      } ) );
+  }
 
-      this.onSelected.next( data );
-    }
+  open(event: TreeNode) {
+    const data = this.getSelectedNodes( event.treeModel );
+
+    this.activate.next( data );
+    this.selected.next( data );
+  }
+
+  deselected(event: TreeNode) {
+    const data = this.getSelectedNodes( event.treeModel );
+
+    this.selected.next( data );
   }
 
   editFolder(data: any) {
     // this.router.navigate( ['/form', data.id], { queryParams: { editMode: true } } );
-    this.onSelected.next( [
+    this.activate.next( [
       {id: data.id, label: data.name, profile: data.profile, forceLoad: true}
     ] );
   }

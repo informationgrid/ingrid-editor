@@ -41,7 +41,10 @@ div.tree tree-node>div::before {
   border-bottom: 1px dotted #23527c;
   width: 7px;
   margin-top: 12px;
-  left: 7px;
+  left: 13px;
+}
+div.tree tree-node tree-node>div::before {
+  left: 6px;
 }
 
 div.tree tree-node>div .toggle-children-wrapper {
@@ -49,7 +52,8 @@ div.tree tree-node>div .toggle-children-wrapper {
   height: 13px;
   border: 1px solid #23527c;
   /*position: absolute;*/
-  margin-left: 15px;
+  position: relative;
+  margin-left: 20px;
   margin-top: 5px;
   /*margin-left: 0;*/
   display: inline-block;
@@ -63,8 +67,8 @@ div.tree tree-node>div .toggle-children-wrapper::before {
   width: 7px;
   border-top: 1px solid #23527c;
   position: absolute;
-  top: 13px;
-  left: 18px
+  top: 5px;
+  left: 2px
 }
 
 div.tree tree-node>div .toggle-children-wrapper.toggle-children-wrapper-collapsed::after {
@@ -73,8 +77,8 @@ div.tree tree-node>div .toggle-children-wrapper.toggle-children-wrapper-collapse
   height: 7px;
   border-left: 1px solid #23527c;
   position: absolute;
-  top: 10px;
-  left: 21px
+  top: 2px;
+  left: 5px
 }
 
 div.tree tree-node>div .toggle-children-wrapper .toggle-children {

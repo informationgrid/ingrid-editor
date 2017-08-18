@@ -1,4 +1,4 @@
-import {ComponentFactoryResolver, Injectable, ReflectiveInjector} from '@angular/core';
+import {ComponentFactoryResolver, Injectable, ReflectiveInjector, ValueProvider} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {FormularService} from '../../../services/formular/formular.service';
 import {ModalService} from '../../../services/modal/modal.service';
@@ -21,7 +21,6 @@ export class FolderPlugin extends Plugin {
   constructor(private formToolbarService: FormToolbarService,
               private formService: FormularService,
               private modalService: ModalService,
-              private storageService: StorageService,
               private _cr: ComponentFactoryResolver) {
     super();
     this.isActive = true;
@@ -68,10 +67,12 @@ export class FolderPlugin extends Plugin {
 
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
-    let parent = this.formService.getSelectedDocuments();
-    let factory = this._cr.resolveComponentFactory( CreateFolderComponent );
+    const parents = this.formService.getSelectedDocuments();
+    const factory = this._cr.resolveComponentFactory( CreateFolderComponent );
 
-    let providers = ReflectiveInjector.resolve( [] );
+    const providers = ReflectiveInjector.resolve( [
+      <ValueProvider>{provide: 'parent', useValue: parents[0]}
+    ] );
     const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
     this.modalService.containerRef.createComponent( factory, null, popInjector );
   }
@@ -86,14 +87,14 @@ export class FolderPlugin extends Plugin {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    let handleButtonState = (data: SelectedDocument) => {
+    /*const handleButtonState = (data: SelectedDocument) => {
       if (!data || data.profile === 'FOLDER') {
         this.formToolbarService.setButtonState( 'toolBtnFolder', true );
       } else {
         this.formToolbarService.setButtonState( 'toolBtnFolder', false );
 
       }
-    };
+    };*/
 
     // this.storageService.datasetsChanged$.subscribe( (data: any) => {
     //   handleButtonState(data);
@@ -101,7 +102,8 @@ export class FolderPlugin extends Plugin {
 
     this.formService.selectedDocuments$.subscribe( data => {
       if (data.length === 1) {
-        handleButtonState( data[0] );
+        // handleButtonState( data[0] );
+        this.formToolbarService.setButtonState( 'toolBtnFolder', true );
       } else {
         this.formToolbarService.setButtonState( 'toolBtnFolder', false );
       }

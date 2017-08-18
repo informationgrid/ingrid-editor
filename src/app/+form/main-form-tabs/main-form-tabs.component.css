@@ -1,0 +1,23 @@
+:host-context .nav > li > a {
+  padding: 5px 10px;
+}
+
+:host {
+  /*display: inherit;*/
+  /*display: block;*/
+  flex-direction: column;
+  flex: 1;
+}
+
+.rubricContent {
+  overflow: auto;
+  flex: 1;
+}
+
+.rubricContent fieldset {
+  flex: 1;
+}
+
+div > dyn-field {
+  padding: 10px;
+}

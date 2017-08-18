@@ -1,13 +1,13 @@
 import {ErrorService} from '../services/error.service';
 import {ConfigService} from '../config/config.service';
-import {AuthHttp} from 'angular2-jwt';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import {Http} from '@angular/http';
 
 @Injectable()
 export class ImportExportService {
 
-  constructor(private http: AuthHttp, private configService: ConfigService,
+  constructor(private http: Http, private configService: ConfigService,
               private errorService: ErrorService) {
   }
 

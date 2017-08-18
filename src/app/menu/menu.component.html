@@ -13,9 +13,8 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li *ngFor="let route of routes">
-                    <a [routerLink]="route.path" href="#"
-                       routerLinkActive="active">{{route.name}}</a>
+                <li *ngFor="let route of routes" routerLinkActive="active">
+                    <a [routerLink]="route.path">{{route.name}}</a>
                 </li>
             </ul>
             <p class="navbar-text navbar-right">

@@ -5,7 +5,8 @@ import {FieldBase} from './controls';
 
 @Component({
   selector: 'dyn-field',
-  templateUrl: './dynamic-field.component.html'
+  templateUrl: './dynamic-field.component.html',
+  styleUrls: ['./dynamic-field.component.css']
 })
 export class DynamicFieldComponent {
   @Input() field: FieldBase<any>;
@@ -19,9 +20,11 @@ export class DynamicFieldComponent {
    }*/
 
   showError(errors: any) {
-    if (!errors) return;
+    if (!errors) {
+      return;
+    }
 
-    let allErrors: string[] = [];
+    const allErrors: string[] = [];
     Object.keys(errors).forEach( (key: string) => {
       if (!errors[key].valid) {
         allErrors.push(errors[key].error);

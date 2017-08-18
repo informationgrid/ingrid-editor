@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ConfigService} from '../config/config.service';
 import {ErrorService} from '../services/error.service';
 import {FormularService} from '../services/formular/formular.service';
-import {AuthHttp} from 'angular2-jwt';
+import {Http} from '@angular/http';
 
 @Component({
     templateUrl: './dashboard.component.html',
@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
     sideTab = 'myData';
 
 
-    constructor(private http: AuthHttp, private configService: ConfigService, private errorService: ErrorService,
+    constructor(private http: Http, private configService: ConfigService, private errorService: ErrorService,
         private formularService: FormularService) { }
 
     ngOnInit() {
@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit {
           query = '';
         }
 
-        this.http.get(this.configService.backendUrl + 'datasets/find?query=' + query + '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
+        this.http.get(this.configService.backendUrl + 'datasets?query=' + query + '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
           .map( data => {
             const json = <any[]>data.json();
             return json.filter(item => item._profile !== 'FOLDER');
@@ -66,7 +66,6 @@ export class DashboardComponent implements OnInit {
         }
 
         this.pieChartLabels = Object.keys(data);
-        this.pieChartData = [];
         this.pieChartLabels.forEach( key => {
             this.pieChartData.push( data[key] );
         });

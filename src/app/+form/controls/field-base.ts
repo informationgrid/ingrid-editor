@@ -1,4 +1,18 @@
-export class FieldBase<T>{
+export interface IFieldBase<T> {
+  value?: T,
+  key?: string,
+  label?: string,
+  required?: boolean,
+  order?: number,
+  controlType?: string,
+  domClass?: string,
+  padding?: boolean,
+  validator?: any,
+  hideLabel?: boolean,
+  width?: string
+}
+
+export class FieldBase<T> {
   value: T;
   key: string;
   label: string;
@@ -11,19 +25,7 @@ export class FieldBase<T>{
   hideLabel: boolean;
   width: string;
 
-  constructor(options: {
-      value?: T,
-      key?: string,
-      label?: string,
-      required?: boolean,
-      order?: number,
-      controlType?: string,
-      domClass?: string,
-      padding?: boolean,
-      validator?: any,
-      hideLabel?: boolean,
-      width?: string
-    } = {}) {
+  constructor(options: IFieldBase<T>) {
     this.value = options.value;
     this.key = options.key || '';
     this.label = options.label || '';

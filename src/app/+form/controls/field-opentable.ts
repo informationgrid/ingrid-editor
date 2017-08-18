@@ -1,18 +1,19 @@
-import {FieldBase} from './field-base';
+import { FieldBase, IFieldBase } from './field-base';
+
+interface ITableFieldBase extends IFieldBase<string> {
+  columns: { width?: string, editor: FieldBase<string>, formatter?: any }[],
+  hideHeader?: boolean
+}
 
 export class OpenTableField extends FieldBase<string> {
   controlType = 'opentable';
-  columns: { editor: FieldBase<string>, formatter?: any }[];
+  columns: { width?: string, editor: FieldBase<string>, formatter?: any }[];
+  hideHeader: boolean;
 
-  constructor(options: {
-    key: string,
-    columns: { editor: FieldBase<string>, formatter?: any }[],
-    label?: string,
-    order?: number,
-    domClass?: string
-  }) {
+  constructor(options: ITableFieldBase) {
     super(options);
     this.columns = options['columns'] || [];
+    this.hideHeader = options['hideHeader'] || false;
   }
 }
 

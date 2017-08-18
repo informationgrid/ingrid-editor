@@ -6,7 +6,6 @@ import {BehaviourService} from '../+behaviours/behaviour.service';
 import {FormularService} from '../services/formular/formular.service';
 import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
-import {Subscription} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StorageService} from '../services/storage/storage.service';
 import {ModalService} from '../services/modal/modal.service';
@@ -15,9 +14,11 @@ import {PartialGeneratorField} from './controls/field-partial-generator';
 import {UpdateType} from '../models/update-type.enum';
 import {ErrorService} from '../services/error.service';
 import {ToastOptions, ToastyConfig, ToastyService} from 'ng2-toasty';
-import {AuthService} from '../services/security/auth.service';
 import {Role} from '../models/user-role';
 import {SelectedDocument} from './sidebars/selected-document.model';
+import {KeycloakService} from '../keycloak/keycloak.service';
+import {RoleService} from '../+user/role.service';
+import { Subscription } from 'rxjs/Subscription';
 
 interface FormData extends Object {
   _id?: string;
@@ -48,7 +49,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   debugEnabled = false;
 
   NEW_DOCUMENT = '-1';
-  NO_DOCUMENT = '-2';
 
   // when editing a folder this flag must be set
   // editMode: boolean = false;
@@ -60,15 +60,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   observers: Subscription[] = [];
   error = false;
   choiceNewDoc = 'UVP';
-  expandedField = {};
-  addToRoot = false;
+  addToDoc = false;
   newDocAdded = false;
   sideTab = 'tree';
   showDateBar = false;
 
   userRoles: Role[];
-
-  docsToDelete: SelectedDocument[];
 
   // choice of doc types to be shown when creating new document
   newDocOptions: any = {
@@ -86,10 +83,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
-              private errorService: ErrorService, private route: ActivatedRoute, private router: Router,
-              authService: AuthService) {
+              private roleService: RoleService,
+              private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
-    this.userRoles = authService.rolesDetail;
+    // TODO: get roles definiton
+    this.userRoles = KeycloakService.auth.roleMapping; // authService.rolesDetail;
+
+    // KeycloakService.auth.authz.
 
     const loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
       console.log('generic toolbar handler', eventId);
@@ -112,10 +112,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
       this.route.params.subscribe(params => {
         const id = params['id'];
-        if (id !== this.NEW_DOCUMENT && id !== this.NO_DOCUMENT) {
+        if (id !== this.NEW_DOCUMENT) {
           this.load(id);
-        } else if (id === this.NO_DOCUMENT && this.form) {
-          this.form = null;
+        } else if (this.form) {
+          // this.form = null;
         }
       });
     });
@@ -192,7 +192,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     //   availableTypes: this.formularService.docTypes,
     //   rootOption: true
     // };
-    this.newDocOptions.docTypes = this.formularService.docTypes;
+    this.newDocOptions.docTypes = this.formularService.docTypes.filter( type => type.id !== 'FOLDER');
     this.newDocOptions.selectedDataset = this.data;
     this.formularService.newDocumentSubject.next(this.newDocOptions);
     this.newDocModal.open();
@@ -200,7 +200,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   prepareNewDoc() {
     const profile = this.choiceNewDoc;
-    const previousId = this.formularService.getSelectedDocuments()[0].id;
+    let previousId = null;
+    if (this.formularService.getSelectedDocuments()) {
+      previousId = this.formularService.getSelectedDocuments()[0].id;
+    }
     const needsProfileSwitch = this.formularService.currentProfile !== profile;
 
     if (this.form) {
@@ -213,7 +216,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.data = {};
-      if (!this.addToRoot) {
+      if (this.addToDoc) {
         this.data._parent = previousId;
       }
 
@@ -254,18 +257,23 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.discardConfirmModal.close();
   }
 
-  handleLoad(selectedDocs: SelectedDocument[]) { // id: string, profile?: string, forceLoad?: boolean) {
-    // inform toolbar about selection
+  handleSelection(selectedDocs: SelectedDocument[]) {
     this.formularService.setSelectedDocuments(selectedDocs);
 
     // when multiple nodes were selected then do not show any form
-    if (selectedDocs.length !== 1) {
-      if (this.form) {
+    if (this.form) {
+      if (selectedDocs.length !== 1) {
         this.form.disable();
+      } else {
+        this.form.enable();
       }
+    }
+  }
+
+  handleLoad(selectedDocs: SelectedDocument[]) { // id: string, profile?: string, forceLoad?: boolean) {
+    // when multiple nodes were selected then do not show any form
+    if (selectedDocs.length !== 1) {
       return;
-    } else if (this.form) {
-      this.form.enable();
     }
 
     const doc = selectedDocs[0];
@@ -389,13 +397,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // TODO: extract to permission service class
   hasPermission(data: any): boolean {
     // TODO: check all roles
-    const attr = this.userRoles[0].attributes;
-    const docIDs = this.userRoles[0].datasets;
-    // TODO: show why we don't have permission by remembering failed rule
-    const permissionByAttribute = !attr || attr.every( a => data[a.id] === a.value );
-    const permissionByDatasetId = !docIDs || docIDs.some( id => data._id === id );
+    if (this.userRoles.length > 0) {
+      const attr = this.userRoles[0].attributes;
+      const docIDs = this.userRoles[0].datasets.map(dataset => dataset.id);
+      // TODO: show why we don't have permission by remembering failed rule
+      const permissionByAttribute = !attr || attr.every(a => data[a.id] === a.value);
+      const permissionByDatasetId = !docIDs || docIDs.length === 0 || docIDs.some(id => data._id === id);
 
-    return permissionByAttribute && permissionByDatasetId;
+      return permissionByAttribute && permissionByDatasetId;
+    }
+    // TODO: implement correct permission handling
+    return true;
   }
 
   switchProfile(profile: string) {
@@ -448,16 +460,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   addArrayGroup(repeatField: any, key: string) {
     this.addPartialToField(repeatField, key);
-  }
-
-  removeArrayGroup(name: string, pos: number) {
-    // remove from fields definition
-    const group = <Container>this.fields.filter(f => (<Container>f).key === name)[0];
-    group.children.splice(pos, 1);
-
-    // remove from form element
-    const ctrls = <FormArray>this.form.controls[name];
-    ctrls.removeAt(pos);
   }
 
   addPartialToField(field: any, partialKey: string): any {

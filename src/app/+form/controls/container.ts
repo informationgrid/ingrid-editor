@@ -1,4 +1,10 @@
-import {FieldBase} from './field-base';
+import { FieldBase, IFieldBase } from './field-base';
+
+export interface IContainerFieldBase extends IFieldBase<string> {
+  children: any[];
+  isRepeatable?: false;
+  useGroupKey?: string;
+}
 
 export class Container extends FieldBase<string> {
   controlType = 'container';
@@ -6,15 +12,7 @@ export class Container extends FieldBase<string> {
   children: any[];
   useGroupKey: string;
 
-  constructor(options: {
-    domClass?: string,
-    isRepeatable?: boolean,
-    children?: any[],
-    useGroupKey?: string,
-    label?: string,
-    order?: number,
-    key?: string
-  } = {}) {
+  constructor(options: IContainerFieldBase) {
     super(options);
     this.children = options['children'] || [];
     this.useGroupKey = options['useGroupKey'] || null;

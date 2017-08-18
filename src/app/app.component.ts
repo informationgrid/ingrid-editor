@@ -2,8 +2,8 @@ import {Component, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {Modal} from 'ngx-modal';
 import {ModalService} from './services/modal/modal.service';
 import {BehaviourService} from './+behaviours/behaviour.service';
-
-// enableProdMode();
+import {RoleService} from './+user/role.service';
+import {KeycloakService} from './keycloak/keycloak.service';
 
 @Component( {
   selector: 'app-root',
@@ -29,7 +29,7 @@ import {BehaviourService} from './+behaviours/behaviour.service';
             <p>{{dynDialog.errorMessageMore}}</p>
         </modal-content>
     </modal>
-    
+
     <!-- Placeholder for dynamically created dialogs from plugins -->
     <div #dialogContainer id="dialogContainer"></div>
   `,
@@ -44,7 +44,8 @@ export class AppComponent implements OnInit {
 
   dynDialog: any = {errorMessage: ''};
 
-  constructor(private behaviourService: BehaviourService, private modalService: ModalService) {
+  constructor(private behaviourService: BehaviourService, private modalService: ModalService,
+              private roleService: RoleService) {
 
     // TODO: make more error info collapsible
     this.modalService.errorDialog$.subscribe( (content: any) => {
@@ -52,6 +53,14 @@ export class AppComponent implements OnInit {
       this.dynDialog.errorMessageMore = content.moreInfo;
       this.errorModal.open();
     } );
+
+    const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
+    // TODO: get RoleMapping from each role so that we can give permissions in client correctly
+    this.roleService.getRoleMapping('admin' )
+      .subscribe(role => {
+        console.log('my roles:', role);
+        KeycloakService.auth.roleMapping.push(role);
+      });
 
   }
 

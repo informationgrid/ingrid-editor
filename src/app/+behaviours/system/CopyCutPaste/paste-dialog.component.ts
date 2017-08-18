@@ -1,6 +1,7 @@
-import {Component, Injector, OnInit, ViewChild} from '@angular/core';
-import {Modal} from 'ngx-modal';
-import {MoveMode, PasteCallback} from './copy-cut-paste.behaviour';
+import { Component, Injector, OnInit, ViewChild } from '@angular/core';
+import { Modal } from 'ngx-modal';
+import { MoveMode, PasteCallback } from './enums';
+
 
 @Component({
   template: `

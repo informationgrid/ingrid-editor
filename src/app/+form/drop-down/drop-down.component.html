@@ -1,0 +1,18 @@
+<!--<select #mySelect class="form-control" (change)="handleChange(mySelect.value)">
+    <option *ngFor="let opt of options" [value]="opt.id" [selected]="opt === _value" >{{opt.value}}</option>
+</select>-->
+
+<!-- TODO: show input error for non-combo boxes; when no filter then jump at least to the language -->
+
+<combo-box #box [listData]="options"
+           [forceSelection]="!isCombo"
+           [displayField]="'value'"
+           [valueField]="'id'"
+           [localFilter]="useFilter"
+           [localFilterCaseSensitive]="false"
+           [typeAheadDelay]="50"
+           [inputPlaceholder]="'Keine Auswahl'"
+           (onSelect)="handleChange($event.value)"
+           (onCreate)="handleChange($event)"
+           (onBlur)="handleChange(box._currVal)"
+           [currVal]="_value.value"> </combo-box>
