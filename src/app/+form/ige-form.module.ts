@@ -23,10 +23,12 @@ import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component
 import { OpentableModule } from './opentable/opentable.module';
 import { ComboBoxModule } from 'ng2-combobox';
 import { DropDownComponent } from './drop-down/drop-down.component';
+import { PopoverModule } from 'ngx-popover';
 
 @NgModule({
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule, ComboBoxModule,
+    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule,
+    PopoverModule, ComboBoxModule,
     SharedModule, routing, ModalModule, TreeModule, OpentableModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,

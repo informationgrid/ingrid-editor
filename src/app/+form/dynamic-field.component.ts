@@ -15,6 +15,9 @@ export class DynamicFieldComponent {
 
   @Output() onAddSection = new EventEmitter<any>();
 
+  // toggles the view of the help button when label is hovered
+  showHelp = false;
+
   /*get isValid() {
    return this.form.controls[this.field.key].valid;
    }*/

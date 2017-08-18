@@ -1,7 +1,15 @@
 <div [formGroup]="form"
-     [class.has-error]="form.controls[field.key].invalid">
+     [class.has-error]="form.controls[field.key].invalid"
+     (mouseenter)="showHelp = true"
+     (mouseleave)="showHelp = false">
 
-    <label *ngIf="!field.hideLabel" class="control-label" [attr.for]="field.key">{{field.label}}</label>
+    <label *ngIf="!field.hideLabel" class="control-label" [attr.for]="field.key">{{field.label}}
+        <span *ngIf="showHelp" class="btnHelp text-muted glyphicon glyphicon-question-sign"
+              popoverTitle="Hilfe (Header kann entfallen)"
+              popover="Hilfetext ..."
+              popoverPlacement="top"
+        ></span>
+    </label>
 
     <ng-container [ngSwitch]="field.controlType">
 
