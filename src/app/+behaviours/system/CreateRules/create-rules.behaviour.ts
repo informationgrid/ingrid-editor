@@ -41,7 +41,7 @@ export class CreateDocRulesPlugin extends Plugin {
         data.rootOption = false;
       } else {
         // TODO: check for parent folder title
-        this.storageService.getPathToDataset( data.selectedDataset._id ).toPromise()
+        this.storageService.getPathToDataset( data.selectedDataset.id ).toPromise()
           .then( path => this.storageService.loadData( path[0] ).toPromise() )
           .then( rootNode => console.debug( 'Path: ', rootNode ) );
 

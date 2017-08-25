@@ -80,6 +80,13 @@ split {
     animation: fadeOut 2s linear forwards;
 }
 
+.wizard-container {
+  box-shadow: 0 0 20px -7px #000000;
+}
+/deep/ .horizontal ul.steps-indicator li.default, /deep/ .horizontal ul.steps-indicator li.current, /deep/ .horizontal ul.steps-indicator li.optional, /deep/ .horizontal ul.steps-indicator li.editing {
+  pointer-events: initial !important;
+}
+
 @keyframes fadeOut {
     0% {
         opacity: 0;

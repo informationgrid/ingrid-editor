@@ -6,3 +6,4 @@ export * from './system/CopyCutPaste/copy-cut-paste.behaviour';
 export * from './system/printView/print-view.plugin';
 export * from './system/folder/folder.plugin';
 export * from './system/CreateRules/create-rules.behaviour';
+export * from './system/undo/undo.plugin';

@@ -31,7 +31,7 @@ paths:
     x-swagger-router-controller: "User"
   /users/{id}:
     options:
-      operationId: get
+      operationId: getUserOp
       parameters:
       - name: "id"
         in: "path"
@@ -144,7 +144,7 @@ paths:
     x-swagger-router-controller: "User"
   /refreshToken:
     options:
-      operationId: get
+      operationId: getRefreshOp
       responses:
         '200':
           description: Options for this operation are returned.
@@ -161,13 +161,13 @@ paths:
     x-swagger-router-controller: "User"
   /roles:
     options:
-      operationId: get
+      operationId: getRolesOp
       responses:
         '200':
           description: Options for this operation are returned.
       x-swagger-router-controller: "Options"
     get:
-      operationId: list
+      operationId: listRoles
       summary: ""
       description: ""
       responses:
@@ -178,7 +178,7 @@ paths:
     x-swagger-router-controller: "Role"
   /roles/{id}:
     options:
-      operationId: get
+      operationId: getRoleOp
       parameters:
       - name: "id"
         in: "path"
@@ -269,7 +269,7 @@ paths:
     x-swagger-router-controller: Role
   /behaviours:
     options:
-      operationId: get
+      operationId: getBehavioursOp
       responses:
         '200':
           description: Options for this operation are returned.
@@ -277,7 +277,7 @@ paths:
     get:
       summary: ""
       description: ""
-      operationId: get
+      operationId: getBehaviours
       responses:
         '200':
           description: Behaviours are returned.
@@ -302,7 +302,7 @@ paths:
     x-swagger-router-controller: "Behaviours"
   /datasets:
     options:
-      operationId: get
+      operationId: getDatasetsOp
       responses:
         '200':
           description: Options for this operation are returned.
@@ -354,7 +354,7 @@ paths:
       summary: "Set a complete dataset"
       description: "xxx"
       operationId: "createDataset"
-      security: [{"jwt": []}]
+#      security: [{"jwt": []}]
       parameters:
       - name: "data"
         in: "body"
@@ -379,7 +379,7 @@ paths:
       x-swagger-router-controller: "Datasets"
   /datasets/{ids}/copy:
     options:
-      operationId: get
+      operationId: getCopyOp
       parameters:
       - name: ids
         in: path
@@ -399,7 +399,7 @@ paths:
       summary: "Copy a dataset or tree under another dataset"
       description: "xxx"
       operationId: "copyDatasets"
-      security: [{"jwt": []}]
+#      security: [{"jwt": []}]
       parameters:
       - name: ids
         in: path
@@ -421,7 +421,7 @@ paths:
     x-swagger-router-controller: "Datasets"
   /datasets/{ids}/move:
     options:
-      operationId: get
+      operationId: getMoveOp
       parameters:
       - name: ids
         in: path
@@ -441,7 +441,7 @@ paths:
       summary: "Move a dataset or tree under another dataset"
       description: "xxx"
       operationId: "moveDatasets"
-      security: [{"jwt": []}]
+#      security: [{"jwt": []}]
       parameters:
       - name: ids
         in: path
@@ -463,7 +463,7 @@ paths:
     x-swagger-router-controller: "Datasets"
   /datasets/{id}/path:
     options:
-      operationId: get
+      operationId: getPathOp
       parameters:
       - name: "id"
         in: "path"
@@ -491,7 +491,7 @@ paths:
       x-swagger-router-controller: "Datasets"
   /datasets/{id}/export/{format}:
     options:
-      operationId: get
+      operationId: getExportOp
       parameters:
       - name: id
         in: path
@@ -511,7 +511,7 @@ paths:
       summary: "Export a dataset to a specific format"
       description: "..."
       operationId: "exportDataset"
-      security: [{"jwt": []}]
+#      security: [{"jwt": []}]
       parameters:
       - name: id
         in: path
@@ -529,7 +529,7 @@ paths:
     x-swagger-router-controller: "Datasets"
   /datasets/{id}:
     options:
-      operationId: get
+      operationId: getDatasetOp
       parameters:
       - name: "id"
         in: "path"
@@ -545,7 +545,7 @@ paths:
       summary: "A complete dataset"
       description: "Retrieve a dataset by a given ID."
       operationId: "getByID"
-      security: [{"jwt": []}]
+#      security: [{"jwt": []}]
       parameters:
       - name: "id"
         in: "path"
@@ -574,7 +574,7 @@ paths:
       summary: "Set a complete dataset"
       description: "xxx"
       operationId: "updateDataset"
-      security: [{"jwt": []}]
+#      security: [{"jwt": []}]
       parameters:
       - name: "id"
         in: "path"
@@ -629,7 +629,7 @@ paths:
       x-swagger-router-controller: "Datasets"
   /statistic:
     options:
-      operationId: get
+      operationId: getStatisticOp
       responses:
         '200':
           description: Options for this operation are returned.
@@ -650,7 +650,7 @@ paths:
     x-swagger-router-controller: "Statistic"
   /codelist/{id}:
     options:
-      operationId: get
+      operationId: getCodelistOp
       parameters:
       - name: "id"
         in: "path"
@@ -682,7 +682,7 @@ paths:
     x-swagger-router-controller: Codelist
   /import:
     options:
-      operationId: get
+      operationId: getImportOp
       responses:
         '200':
           description: Options for this operation are returned.
@@ -693,7 +693,7 @@ paths:
       summary: ...
       description: ...
       operationId: importDataset
-      security: [{"jwt": []}]
+#      security: [{"jwt": []}]
       parameters:
       - name: "data"
         in: "body"
@@ -716,8 +716,8 @@ paths:
       -  Export
       summary: ...
       description: ...
-      operationId: exportDataset
-      security: [{"jwt": []}]
+      operationId: exportDataset2
+#      security: [{"jwt": []}]
       parameters:
       - name: "data"
         in: "body"

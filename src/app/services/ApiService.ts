@@ -27,7 +27,7 @@ export class ApiService {
 
   getGroups(): Observable<Role[]> {
     // return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng') ///7556e61a-4520-4f2a-b4d7-f948b3ad943b/roles' )
-    let promise = new Promise((resolve) => {
+    const promise = new Promise((resolve) => {
 
 
       this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng' )
@@ -36,7 +36,7 @@ export class ApiService {
           this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients/' + client[0].id + '/roles' )
             .map( response => response.json() )
             .map( (json: any[]) => {
-              let result: Role[] = [];
+              const result: Role[] = [];
               json.forEach( item => {
                 result.push( {
                   id: item.id,
@@ -58,7 +58,7 @@ export class ApiService {
     return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users' )
       .map( response => response.json() )
       .map( (json: any[]) => {
-        let result: User[] = [];
+        const result: User[] = [];
         json.forEach( item => {
           result.push( {
             id: item.id,
@@ -77,7 +77,7 @@ export class ApiService {
     return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users/' + id )
       .map( response => response.json() )
       .map( (json: any) => {
-        let result: User = {
+        const result: User = {
           id: json.id,
           login: json.username,
           firstName: json.firstName,
@@ -93,7 +93,7 @@ export class ApiService {
     return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/roles-by-id/' + id )
       .map( response => response.json() )
       .map( (json: any) => {
-        let result: Role = {
+        const result: Role = {
           id: json.id,
           name: '?',
           attributes: [],

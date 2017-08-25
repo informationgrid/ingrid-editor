@@ -131,6 +131,10 @@ export class MetadataTreeComponent implements OnInit {
         this.router.navigate( ['/form', '-1'] );
 
         const node = this.tree.treeModel.getNodeById( '-1' );
+
+        // make sure parent is expanded
+        node.parent.expand();
+
         this.tree.treeModel.setActiveNode( node, true );
       };
 
@@ -138,7 +142,7 @@ export class MetadataTreeComponent implements OnInit {
         const parentNode = this.tree.treeModel.getNodeById( doc._parent );
         // TODO: make it bullet proof by expecting a promise from expand
         try {
-          parentNode.expand().then( () => {
+          // parentNode.expand().then( () => {
             const pNode = this.getNodeFromModel( doc._parent );
 
             // let pNode = this.nodes.filter( node => node.id === info.data._parent)[0];
@@ -147,7 +151,7 @@ export class MetadataTreeComponent implements OnInit {
             }
             pNode.children.push( newDataset );
             updateTree();
-          } );
+          // } );
         } catch (err) {
           console.error( 'error expanding node', err );
         }
@@ -290,7 +294,7 @@ export class MetadataTreeComponent implements OnInit {
       _profile: doc._profile,
       _state: doc._state
     };
-    if (doc.hasChildren) {
+    if (doc._hasChildren) {
       node.hasChildren = true;
     }
 

@@ -64,7 +64,7 @@ export class PublishPlugin extends Plugin {
   }
 
   publish() {
-    let formData = this.formService.requestFormValues();
+    const formData = this.formService.requestFormValues();
     // let errors: any = {errors: []};
     // this.storageService.beforeSave.next(errors);
 
@@ -76,7 +76,9 @@ export class PublishPlugin extends Plugin {
   }
 
   revert() {
-    let formData = this.formService.requestFormValues();
+    // TODO: confirm before revert!
+
+    const formData = this.formService.requestFormValues();
     this.storageService.revert(formData.value._id).subscribe(null, err => {
       console.log( 'Error when reverting data', err );
       this.modalService.showError(err.text());

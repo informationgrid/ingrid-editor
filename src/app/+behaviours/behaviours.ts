@@ -14,7 +14,8 @@ import {
   PublishPlugin,
   StatisticPlugin,
   WorkflowPlugin,
-  FolderPlugin
+  FolderPlugin,
+  UndoPlugin
 } from '.';
 import {DeleteDocsPlugin} from './toolbar/deleteDocs/delete-docs.plugin';
 import {IsoViewPlugin} from './toolbar/isoView/iso-view.plugin';
@@ -57,7 +58,8 @@ export class BehavioursDefault {
     this.copyCutPastePlugin,
     this.printviewPlugin,
     this.folderPlugin,
-    this.isoviewPlugin
+    this.isoviewPlugin,
+    this.undoPlugin
   ];
 
   constructor(private formService: FormularService,
@@ -70,6 +72,7 @@ export class BehavioursDefault {
               private copyCutPastePlugin: CopyCutPastePlugin,
               private folderPlugin: FolderPlugin,
               private publishPlugin: PublishPlugin,
-              private deletePlugin: DeleteDocsPlugin) {
+              private deletePlugin: DeleteDocsPlugin,
+              private undoPlugin: UndoPlugin) {
   }
 }

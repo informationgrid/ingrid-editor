@@ -46,7 +46,7 @@ export class StorageService {
   }
 
   getChildDocuments(parentId: string): Observable<any> {
-    const fields = 'fields=_id,_profile,_state,hasChildren,' + this.titleFields;
+    const fields = 'fields=_id,_profile,_state,_hasChildren,' + this.titleFields;
     const idQuery = parentId === null ? '' : '&parentId=' + parentId;
     // headers.append('Content-Type', 'text/plain');
     return this.http.get( this.configService.backendUrl + 'datasets?children=true&' + fields + idQuery )
@@ -108,8 +108,17 @@ export class StorageService {
       this.modalService.showError( 'Der Datensatz kann nicht veröffentlicht werden.' );
       return;
     }
-    const response = this.http.post( this.configService.backendUrl + 'datasets/1?publish=true', data )
-      .catch( err => this.errorService.handle( err ) );
+    let response = null;
+
+    if (data._id === undefined) {
+      response = this.http.post( this.configService.backendUrl + 'datasets?publish=true', data );
+
+    } else {
+      response = this.http.put( this.configService.backendUrl + 'datasets/' + data._id + '?publish=true', data );
+
+    }
+
+    response.catch( err => this.errorService.handle( err ) );
 
     console.log( 'Response:', response );
     response.subscribe( res => {
@@ -137,8 +146,8 @@ export class StorageService {
 
   revert(id: string): Observable<any> {
     console.debug( 'REVERTING', id );
-    return this.http.post( this.configService.backendUrl + 'datasets/' + id + '?revert=true', null )
-      .do( (res: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: res.json()} ) )
+    return this.http.put( this.configService.backendUrl + 'datasets/' + id + '?revert=true', {} )
+      .do( (res: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: [res.json()]} ) )
       .catch( err => this.errorService.handle( err ) );
 
     // return response.subscribe(res => {

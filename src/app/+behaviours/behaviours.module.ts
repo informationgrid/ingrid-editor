@@ -20,11 +20,12 @@ import {DeleteDialogComponent} from './toolbar/deleteDocs/delete-dialog.componen
 import {StatisticComponent} from './system/statistic/statistic.component';
 import {IsoViewComponent} from './toolbar/isoView/iso-view.component';
 import {IsoViewPlugin} from './toolbar/isoView/iso-view.plugin';
+import { UndoPlugin } from './system/undo/undo.plugin';
 
 @NgModule( {
   imports: [CommonModule, ModalModule, FormsModule, ReactiveFormsModule, SharedModule, routing],
   declarations: [PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewComponent, IsoViewComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent],
-  providers: [MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin, StatisticPlugin, WorkflowPlugin, PrintViewPlugin, IsoViewPlugin, CopyCutPastePlugin, FolderPlugin, DeleteDocsPlugin],
+  providers: [MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin, StatisticPlugin, WorkflowPlugin, PrintViewPlugin, IsoViewPlugin, CopyCutPastePlugin, FolderPlugin, DeleteDocsPlugin, UndoPlugin],
   entryComponents: [PrintViewComponent, IsoViewComponent, PasteDialogComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent]
 } )
 export class PluginsModule {

@@ -17,6 +17,9 @@ import LatLngBounds = L.LatLngBounds;
 import LatLngExpression = L.LatLngExpression;
 import MapOptions = L.MapOptions;
 
+class MyMap extends L.Map {
+  _onResize: () => {};
+}
 
 export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -142,7 +145,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
 
     this.leafletReference = L.map( this.leaflet.nativeElement, this.options );
     this.toggleSearch( false );
-    // this.leafletReference._onResize();
+    (<MyMap>this.leafletReference)._onResize();
 
     /*this.leafletReference.on('moveend', () => {
      // if data was set from outside, then ignore update

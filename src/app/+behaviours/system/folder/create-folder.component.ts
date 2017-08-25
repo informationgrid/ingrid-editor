@@ -13,7 +13,7 @@ export class CreateFolderComponent implements OnInit {
   @ViewChild( 'name' ) inputName: HTMLInputElement;
 
   folderName = '';
-  parent = null;
+  parent: any = null;
   asSubFolder = false;
 
   private static createNewFolderDoc(folderName: string, parent?: string) {
@@ -28,7 +28,8 @@ export class CreateFolderComponent implements OnInit {
   }
 
   constructor(private formService: FormularService, private storageService: StorageService, injector: Injector) {
-    this.parent = injector.get('parent');
+    const parent = injector.get('parent');
+    this.parent = parent ? parent : {};
   }
 
   ngOnInit() {

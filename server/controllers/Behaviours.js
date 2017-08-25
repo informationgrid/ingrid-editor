@@ -5,7 +5,7 @@ var url = require('url');
 
 var Behaviours = require('./BehavioursService');
 
-module.exports.get = function get (req, res, next) {
+module.exports.getBehaviours = function get (req, res, next) {
   Behaviours.get(req.swagger.params, res, next);
 };
 

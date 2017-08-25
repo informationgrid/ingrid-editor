@@ -71,7 +71,7 @@ export class FolderPlugin extends Plugin {
     const factory = this._cr.resolveComponentFactory( CreateFolderComponent );
 
     const providers = ReflectiveInjector.resolve( [
-      <ValueProvider>{provide: 'parent', useValue: parents[0]}
+      <ValueProvider>{provide: 'parent', useValue: parents ? parents[0] : null}
     ] );
     const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
     this.modalService.containerRef.createComponent( factory, null, popInjector );
