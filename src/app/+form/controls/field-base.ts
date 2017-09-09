@@ -9,7 +9,8 @@ export interface IFieldBase<T> {
   padding?: boolean,
   validator?: any,
   hideLabel?: boolean,
-  width?: string
+  width?: string,
+  help?: string
 }
 
 export class FieldBase<T> {
@@ -24,6 +25,7 @@ export class FieldBase<T> {
   padding: boolean;
   hideLabel: boolean;
   width: string;
+  help: string;
 
   constructor(options: IFieldBase<T>) {
     this.value = options.value;
@@ -37,5 +39,6 @@ export class FieldBase<T> {
     this.domClass = options.domClass || 'full';
     this.hideLabel = options.hideLabel || false;
     this.width = options.width || null;
+    this.help = options.help || null;
   }
 }

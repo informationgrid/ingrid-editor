@@ -6,7 +6,7 @@
     <label *ngIf="!field.hideLabel" class="control-label" [attr.for]="field.key">{{field.label}}
         <span *ngIf="showHelp" class="btnHelp text-muted glyphicon glyphicon-question-sign"
               popoverTitle="Hilfe (Header kann entfallen)"
-              popover="Hilfetext ..."
+              popover="{{field.help}}"
               popoverPlacement="top"
         ></span>
     </label>

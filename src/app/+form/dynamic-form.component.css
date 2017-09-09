@@ -106,3 +106,77 @@ split {
         opacity: 0;
     }
 }
+
+
+/* vertical tabs */
+.tabs-left {
+  /*margin-top: 3rem;*/
+  padding-top: 10px;
+}
+
+.nav-tabs {
+  float: left;
+  border-bottom: 0;
+}
+.nav-tabs li {
+  float: none;
+  margin: 0;
+}
+.nav-tabs li a {
+  margin-right: 0;
+  border: 0;
+  /*background-color: #333;*/
+  border-radius: 0;
+}
+.nav-tabs li a:hover {
+  /*background-color: #444;*/
+}
+.nav-tabs .glyphicon {
+  /*color: #fff;*/
+}
+.nav-tabs .active .glyphicon {
+  /*color: #333;*/
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+  border: 0;
+}
+
+.tab-content, .tab-pane {
+  height: 100%;
+  /*margin-left: 45px;*/
+}
+.tab-content .tab-pane {
+  /*display: none;*/
+  display: block;
+  /*background-color: #fff;*/
+  padding: 0 10px;
+  overflow-y: auto;
+}
+.tab-content .active {
+  display: block;
+}
+
+ul.nav-tabs, .tabs-left {
+  height: 100%;
+}
+li.toggle {
+  position: absolute;
+  bottom: 10px;
+}
+
+
+.tabs-left.menu {
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  padding-top: 100px;
+  padding-bottom: 10px;
+}
+
+split {
+  padding-left: 50px;
+}
+.nav-tabs {
+  box-shadow: 0 0 20px -7px #000000;
+}

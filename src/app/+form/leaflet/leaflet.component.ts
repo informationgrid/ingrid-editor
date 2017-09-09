@@ -8,16 +8,13 @@ import {
   OnDestroy,
   ViewChild
 } from '@angular/core';
-import {Map} from 'leaflet';
+import {Map, LatLngBounds, MapOptions, Rectangle} from 'leaflet';
 import {} from 'leaflet-areaselect';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ModalService} from '../../services/modal/modal.service';
 import {NominatimService} from './nominatim.service';
-import LatLngBounds = L.LatLngBounds;
-import LatLngExpression = L.LatLngExpression;
-import MapOptions = L.MapOptions;
 
-class MyMap extends L.Map {
+class MyMap extends Map {
   _onResize: () => {};
 }
 
@@ -143,7 +140,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     this.leaflet.nativeElement.style.height = this.height + 'px';
     this.leaflet.nativeElement.style.width = '100%';
 
-    this.leafletReference = L.map( this.leaflet.nativeElement, this.options );
+    this.leafletReference = new Map( this.leaflet.nativeElement, this.options );
     this.toggleSearch( false );
     (<MyMap>this.leafletReference)._onResize();
 
@@ -286,9 +283,9 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   private setupAreaSelect() {
     const box = this.drawnBBox ? this.drawnBBox._path.getBBox() : null;
     if (box) {
-      this.areaSelect = L.areaSelect( box );
+      //this.areaSelect = L.areaSelect( box );
     } else {
-      this.areaSelect = L.areaSelect( {width: 50, height: 50} );
+      //this.areaSelect = L.areaSelect( {width: 50, height: 50} );
     }
     this.areaSelect.addTo( this.leafletReference );
   }
@@ -323,7 +320,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
 
   private drawBoundingBox(latLonBounds: LatLngBounds) {
     this.removeDrawnBoundingBox();
-    this.drawnBBox = L.rectangle( latLonBounds, {color: '#ff7800', weight: 1} ).addTo( this.leafletReference );
+    this.drawnBBox = new Rectangle( latLonBounds, {color: '#ff7800', weight: 1} ).addTo( this.leafletReference );
   }
 
   private removeDrawnBoundingBox() {

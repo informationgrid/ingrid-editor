@@ -23,6 +23,7 @@ export class IsoProfile implements Profile {
           new TextboxField({
             key: 'title',
             label: 'Titel',
+            help: 'Hier wird der Titel für das Dokument eingetragen',
             // domClass: 'half',
             order: 10
           }),
@@ -31,7 +32,8 @@ export class IsoProfile implements Profile {
             key: 'previewImage',
             label: 'Vorschaugrafik',
             domClass: 'half',
-            order: 10
+            order: 10,
+            help: 'Die Vorschaugrafik wird in den Suchergebnissen verwendet und dargestellt.'
           }),
 
           new Container({
@@ -149,6 +151,69 @@ export class IsoProfile implements Profile {
         label: 'Raumbezugssystem',
         order: 30,
         children: [
+          new OpenTableField({
+            key: 'geoThesaurus',
+            label: 'Geothesaurus-Raumbezug',
+            hideHeader: true,
+            order: 30,
+            columns: [
+              {
+                editor: advProductGroup,
+                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+              }
+            ]
+          }),
+
+          new OpenTableField({
+            key: 'crs',
+            label: 'Raumbezugssystem',
+            hideHeader: true,
+            order: 30,
+            columns: [
+              {
+                editor: advProductGroup,
+                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+              }
+            ]
+          }),
+
+          new Container({
+            domClass: 'half',
+            label: 'Höhe',
+            hideLabel: false,
+            key: 'spatialHeight',
+            children: [
+              new TextboxField({
+                key: 'min',
+                label: 'Minimum',
+                domClass: 'third'
+              }),
+
+              new TextboxField({
+                key: 'max',
+                label: 'Maximum',
+                domClass: 'third'
+              }),
+
+              new DropdownField({
+                key: 'unit',
+                label: 'Maßeinheit',
+                domClass: 'third'
+              }),
+
+              new DropdownField({
+                key: 'verticalDate',
+                label: 'Vertikaldatum'
+              })
+            ]
+          }),
+
+          new TextareaField({
+            key: 'spatialDescription',
+            label: 'Erläuterungen',
+            rows: 5,
+            domClass: 'half'
+          })
         ]
       }),
 
@@ -156,6 +221,29 @@ export class IsoProfile implements Profile {
         label: 'Zeitbezug',
         order: 30,
         children: [
+          new OpenTableField({
+            key: 'timeReference',
+            label: 'Zeitbezug der Ressource',
+            order: 30,
+            domClass: 'half',
+            columns: [
+              {
+                editor: advProductGroup,
+                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+              },
+              {
+                editor: advProductGroup,
+                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+              }
+            ]
+          }),
+
+          new TextareaField({
+            key: 'timeDescription',
+            label: 'Erläuterungen',
+            rows: 5,
+            domClass: 'half'
+          })
         ]
       }),
 

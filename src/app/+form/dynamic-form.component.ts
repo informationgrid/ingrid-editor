@@ -67,6 +67,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   sideTab = 'tree';
   showDateBar = false;
 
+  hideSidebar = false;
+  sidebarWidth = 25;
+
+  markFavoriteHovered = false;
+
   userRoles: Role[];
 
   // choice of doc types to be shown when creating new document
@@ -489,5 +494,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   getTitle() {
     // console.log( '.' );
     return this.formularService.getTitle(null, this.data);
+  }
+
+  markFavorite($event: Event) {
+    // TODO: mark favorite
+    $event.stopImmediatePropagation();
+    console.log("TODO: Mark document as favorite");
   }
 }

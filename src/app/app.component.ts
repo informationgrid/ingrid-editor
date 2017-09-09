@@ -34,7 +34,7 @@ import {KeycloakService} from './keycloak/keycloak.service';
     <div #dialogContainer id="dialogContainer"></div>
   `,
   styles: [`
-    .igeContainer { height: 100%; }
+    .igeContainer { height: 100%; overflow-x: hidden; }
   `]
 } )
 export class AppComponent implements OnInit {
