@@ -6,9 +6,12 @@ import { Profile } from "../profile";
 import { CodelistService } from '../../../+form/services/codelist.service';
 import { ModalService } from '../../modal/modal.service';
 import { TextareaField } from '../../../+form/controls/field-textarea';
+import {Injectable} from '@angular/core';
 
-
+@Injectable()
 export class AddressProfile implements Profile {
+
+  id = 'ADDRESS';
 
   treeIconClass = 'fa fa-address-card-o';
 

@@ -12,6 +12,7 @@ form-toolbar {
   width: 100%;
   background-color: #ececec;
   padding: 4px;
+  z-index: 10;
 }
 
 form-toolbar + div {

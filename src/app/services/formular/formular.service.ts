@@ -1,16 +1,10 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {FieldBase} from '../../+form/controls';
-import {FolderProfile} from './folder/folder.profile';
-import {UVPProfile} from './uvp/uvp.profile';
-import {AddressProfile} from './address/address.profile';
-import {Profile} from './profile';
-import {CodelistService} from '../../+form/services/codelist.service';
+import {Profile, PROFILES} from './profile';
 import {SelectedDocument} from '../../+form/sidebars/selected-document.model';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {KeycloakService} from '../../keycloak/keycloak.service';
-import { IsoProfile } from './iso/iso.profile';
-import { ModalService } from '../modal/modal.service';
 
 @Injectable()
 export class FormularService {
@@ -35,25 +29,12 @@ export class FormularService {
   selectedDocuments = new Subject<SelectedDocument[]>();
   selectedDocuments$: Observable<SelectedDocument[]> = this.selectedDocuments.asObservable();
 
-  isoProfile: Profile;
-  addressProfile: Profile;
-  uvpProfile: Profile;
-  folderProfile: Profile;
+  profileDefinitions: Profile[];
 
-  docTypes = [
-    {id: 'UVP', label: 'UVP'},
-    {id: 'ISO', label: 'ISO'},
-    {id: 'ADDRESS', label: 'Address'},
-    {id: 'FOLDER', label: 'Folder'}
-  ];
-
-  constructor(private codelistService: CodelistService, private modalService: ModalService) {
+  constructor(@Inject(PROFILES) private profiles: Profile[]) {
     // create profiles after we have logged in
     const init = () => {
-      this.isoProfile = new IsoProfile(this.codelistService);
-      this.addressProfile = new AddressProfile(this.codelistService, this.modalService);
-      this.uvpProfile = new UVPProfile(this.codelistService);
-      this.folderProfile = new FolderProfile();
+      this.profileDefinitions = profiles
     };
 
     console.log('init profiles');
@@ -75,16 +56,8 @@ export class FormularService {
   }
 
   getProfile(id: string): Profile {
-    let profile: any = null;
-    if (id === 'UVP') {
-      profile = this.uvpProfile;
-    } else if (id === 'ISO') {
-      profile = this.isoProfile;
-    } else if (id === 'ADDRESS') {
-      profile = this.addressProfile;
-    } else if (id === 'FOLDER') {
-      profile = this.folderProfile;
-    } else {
+    const profile = this.profileDefinitions.find( profile => profile.id === id);
+    if (!profile) {
       throw Error('Unknown profile: ' + id);
     }
     return profile;
@@ -103,13 +76,8 @@ export class FormularService {
   }
 
   getFieldsNeededForTitle(): string[] {
-    // TODO: refactor
     const fields: string[] = [];
-    fields.push(
-      ...this.uvpProfile.getTitleFields(),
-      ...this.addressProfile.getTitleFields(),
-      ...this.folderProfile.getTitleFields()
-    );
+    this.profileDefinitions.forEach(profile => fields.push(...profile.getTitleFields()));
     return fields;
   }
 
@@ -126,5 +94,9 @@ export class FormularService {
 
   getSelectedDocuments(): SelectedDocument[] {
     return this.selectedDocs;
+  }
+
+  getDocTypes(): {id: string, label: string}[] {
+    return this.profileDefinitions.map( profile => ({id: profile.id, label: profile.id}) );
   }
 }

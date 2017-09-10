@@ -205,7 +205,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     //   rootOption: true
     // };
     const selectedDocs = this.formularService.getSelectedDocuments();
-    this.newDocOptions.docTypes = this.formularService.docTypes.filter( type => type.id !== 'FOLDER');
+    this.newDocOptions.docTypes = this.formularService.getDocTypes().filter( type => type.id !== 'FOLDER');
     this.newDocOptions.selectedDataset = selectedDocs.length === 1 ? selectedDocs[0] : {};
     this.formularService.newDocumentSubject.next(this.newDocOptions);
     this.newDocModal.open();

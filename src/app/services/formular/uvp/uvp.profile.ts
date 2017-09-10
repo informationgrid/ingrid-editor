@@ -7,8 +7,12 @@ import { Profile } from '../profile';
 import { LinkDatasetField } from '../../../+form/controls/field-link-dataset';
 import { CodelistService } from '../../../+form/services/codelist.service';
 import { FieldBase } from '../../../+form/controls/field-base';
+import {Injectable} from '@angular/core';
 
+@Injectable()
 export class UVPProfile implements Profile {
+
+  id = 'UVP';
 
   codelistService: CodelistService = null;
 

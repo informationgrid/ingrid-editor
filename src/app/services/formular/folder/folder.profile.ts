@@ -1,7 +1,11 @@
 import {TextboxField} from '../../../+form/controls/index';
 import {Profile} from '../profile';
+import {Injectable} from '@angular/core';
 
+@Injectable()
 export class FolderProfile implements Profile {
+
+  id = 'FOLDER';
 
   treeIconClass = 'fa fa-folder-o';
 

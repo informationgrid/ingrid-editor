@@ -6,8 +6,12 @@ import { DropdownField } from '../../../+form/controls/field-dropdown';
 import { FieldBase } from '../../../+form/controls/field-base';
 import { CodelistService } from '../../../+form/services/codelist.service';
 import { Container } from '../../../+form/controls/container';
+import {Injectable} from '@angular/core';
 
+@Injectable()
 export class IsoProfile implements Profile {
+
+  id = 'ISO';
 
   profile: Array<FieldBase<any>> = null;
 
