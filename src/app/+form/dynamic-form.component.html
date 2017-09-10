@@ -43,38 +43,27 @@
                     <browser (onSelected)="load($event.id)"></browser>
                 </div>
                 <div class="tab-pane" [class.hide]="sideTab !== 'wizards'">
-                    <div class="list-group">
-                        <a (click)="x" class="list-group-item active">
-                            <h4 class="list-group-item-heading">Open data</h4>
-                            <p class="list-group-item-text">Dieser Assistent hilft bei der Erstellung von Open data
-                                Datensätzen</p>
-                        </a>
-                        <a (click)="x" class="list-group-item">
-                            <h4 class="list-group-item-heading">AdV</h4>
-                            <p class="list-group-item-text">Unterstützung für AdV Datensätzen</p>
-                        </a>
-                        <a (click)="x" class="list-group-item">
-                            <h4 class="list-group-item-heading">INSPIRE konform</h4>
-                            <p class="list-group-item-text">Unterstützung für die Erstellung von INSPIRE konformen
-                                Datensätzen
-                            </p>
-                        </a>
-                    </div>
+                    <!--<a [routerLink]="['/form/10']">Zurück</a>-->
+                    <router-outlet name="wizard"></router-outlet>
                 </div>
                 <div class="tab-pane" [class.hide]="sideTab !== 'favorites'">
-                    <div class="list-group">
-                        <a (click)="load()" class="list-group-item">
-                            <span class="fa fa-file-o"></span>
-                            Document 1 (TEST)
-                        </a>
-                        <a (click)="load()" class="list-group-item active">
-                            <span class="fa fa-file-o"></span>
-                            Document 5 (TEST)
-                        </a>
-                        <a (click)="load()" class="list-group-item">
-                            <span class="fa fa-address-card-o"></span>
-                            Document 6 (TEST)
-                        </a>
+                    <div class="panel panel-default">
+                        <!-- Default panel contents -->
+                        <div class="panel-heading">Favoriten</div>
+                        <div class="list-group">
+                            <a (click)="load()" class="list-group-item">
+                                <span class="fa fa-file-o"></span>
+                                Document 1 (TEST)
+                            </a>
+                            <a (click)="load()" class="list-group-item">
+                                <span class="fa fa-file-o"></span>
+                                Document 5 (TEST)
+                            </a>
+                            <a (click)="load()" class="list-group-item">
+                                <span class="fa fa-address-card-o"></span>
+                                Document 6 (TEST)
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div><!-- /tab-content -->
@@ -153,6 +142,7 @@
                 <!--<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>-->
                 <ige-main-form-tabs [fields]="fields" [form]="form"
                                     style="display: flex;"
+                                    [blurAllBut]="wizardFocusElement"
                                     (onAddSection)="addSection($event)"></ige-main-form-tabs>
                 <!--</div>-->
             </div>

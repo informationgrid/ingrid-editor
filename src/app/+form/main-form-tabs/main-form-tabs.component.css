@@ -21,3 +21,11 @@
 div > dyn-field {
   padding: 10px;
 }
+
+.blur {
+  filter: blur(2px);
+}
+.highlight {
+  box-shadow: 0 0 5px;
+  border-radius: 20px;
+}

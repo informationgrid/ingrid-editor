@@ -1,0 +1,28 @@
+<div class="panel panel-info">
+    <div class="panel-heading">Assistenten</div>
+
+    <div *ngIf="data" class="list-group">
+        <a class="list-group-item" [class.active]="false"
+           [routerLink]="['/form/' + data._id, {outlets: {'wizard': ['opendata']}}]">
+            <h4 class="list-group-item-heading">Open data</h4>
+            <p class="list-group-item-text">Dieser Assistent hilft bei der Erstellung von Open data
+                Datensätzen</p>
+        </a>
+        <a (click)="x" class="list-group-item disabled"
+           [routerLink]="['/form', {outlets: {'wizard': ['adv']}}]">
+            <h4 class="list-group-item-heading">AdV</h4>
+            <p class="list-group-item-text">Unterstützung für AdV Datensätzen</p>
+        </a>
+        <a (click)="x" class="list-group-item disabled"
+           [routerLink]="['/form', {outlets: {'wizard': ['inspire']}}]">
+            <h4 class="list-group-item-heading">INSPIRE konform</h4>
+            <p class="list-group-item-text">Unterstützung für die Erstellung von INSPIRE konformen
+                Datensätzen
+            </p>
+        </a>
+    </div>
+
+    <div *ngIf="!data">
+        Sie müssen zuerst ein Dokument erstellen bzw. laden, um einen entsprechenden Assistenten zu verwenden.
+    </div>
+</div>

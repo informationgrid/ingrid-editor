@@ -23,10 +23,11 @@
 
         <!-- SIMPLE FIELD -->
         <div *ngIf="!field.children" class="{{field.domClass}}">
-            <dyn-field
-                   [field]="field"
-                   [form]="form"
-                   (onAddSection)="addSection($event)"></dyn-field>
+            <dyn-field [class.blur]="blurAllBut && blurAllBut !== field.key"
+                       [class.highlight]="blurAllBut && blurAllBut === field.key"
+                       [field]="field"
+                       [form]="form"
+                       (onAddSection)="addSection($event)"></dyn-field>
         </div>
 
         <!-- COMPLEX FIELD -->
@@ -40,6 +41,7 @@
                     <div class="{{field.domClass}}">
                         <ige-main-form-tabs [form]="form.controls[field.key]"
                                             [isRootLevel]="false"
+                                            [blurAllBut]="blurAllBut"
                                             [fields]="field.children"></ige-main-form-tabs>
                     </div>
                 </ng-container>
@@ -52,6 +54,7 @@
                         <div class="{{field.domClass}}">
                             <ige-main-form-tabs [form]="form"
                                                 [isRootLevel]="false"
+                                                [blurAllBut]="blurAllBut"
                                                 [fields]="field.children"></ige-main-form-tabs>
                                                 <!--style="overflow: auto;"-->
                         </div>
@@ -60,6 +63,7 @@
                         <div class="{{field.domClass}}">
                             <ige-main-form-tabs [form]="form"
                                                 [isRootLevel]="false"
+                                                [blurAllBut]="blurAllBut"
                                                 [fields]="field.children"></ige-main-form-tabs>
                         </div>
                     </ng-container>
@@ -94,6 +98,7 @@
                              [class.hide]="!expandedField[child.key + i]">
                             <div class="{{child.domClass}}">
                                 <ige-main-form-tabs [form]="form.controls[field.key].controls[i].controls[child.key]"
+                                                    [blurAllBut]="blurAllBut"
                                                     [fields]="child.children"></ige-main-form-tabs>
                             </div>
 

@@ -19,6 +19,7 @@ import {SelectedDocument} from './sidebars/selected-document.model';
 import {KeycloakService} from '../keycloak/keycloak.service';
 import {RoleService} from '../+user/role.service';
 import { Subscription } from 'rxjs/Subscription';
+import {WizardService} from '../wizard/wizard.service';
 
 interface FormData extends Object {
   _id?: string;
@@ -71,6 +72,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   sidebarWidth = 25;
 
   markFavoriteHovered = false;
+  wizardFocusElement = null;
 
   userRoles: Role[];
 
@@ -91,6 +93,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
               private roleService: RoleService,
+              private wizardService: WizardService,
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     // TODO: get roles definiton
@@ -141,6 +144,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
     this.formularService.currentProfile = null;
+
+    this.wizardService.focusElements$.subscribe( fields => this.wizardFocusElement = fields );
 
     // register to an publisher in the form/storage service and send the value of this form
     // this can be used for publish, revert, detail, compare, ...
@@ -501,4 +506,5 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     $event.stopImmediatePropagation();
     console.log("TODO: Mark document as favorite");
   }
+
 }
