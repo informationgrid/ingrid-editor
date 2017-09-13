@@ -2,8 +2,8 @@
     <div class="panel-heading">
         <h3 class="panel-title">
             Schritt {{page}}
-            <a (click)="wizardService.focusElements$.next('')"
-               [routerLink]="['/form/10']">
+            <a (click)="location.back(); wizardService.focusElements$.next('')"
+               >
                 <div class="pull-right fa fa-close"></div>
             </a>
         </h3>
@@ -13,7 +13,7 @@
             Geben Sie zuerst einen Titel für den Datensatz ein. Dieser wird in den Suchergebnissen verwendet.
         </p>
         <p *ngIf="page === 2">
-            Jetzt wird der Nachname benötigt, um den Titel vollständig anzuzeigen.
+            Wählen Sie die Checkbox "Open data" aus, um diesen Datensatz entsprechend zu markieren.
         </p>
     </div>
     <div class="panel-footer">

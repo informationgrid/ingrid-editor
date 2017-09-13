@@ -9,16 +9,17 @@ import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {Http} from '@angular/http';
 import {KeycloakService} from '../../keycloak/keycloak.service';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class StorageService {
 
   beforeSave: Subject<any> = new Subject<any>();
   afterSave: Subject<any> = new Subject<any>();
-  afterLoadAndSet: Subject<any> = new Subject<any>();
   afterProfileSwitch: Subject<any> = new Subject<any>();
   datasetsChanged: Subject<UpdateDatasetInfo> = new Subject<UpdateDatasetInfo>();
 
+  afterLoadAndSet: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   afterLoadAndSet$ = this.afterLoadAndSet.asObservable();
   afterProfileSwitch$ = this.afterProfileSwitch.asObservable();
   datasetsChanged$ = this.datasetsChanged.asObservable();

@@ -23,6 +23,25 @@ form-toolbar + div {
   cursor: pointer;
 }
 
+.help-block {
+  position: absolute;
+  font-size: 80%;
+  margin-top: 1px !important;
+  animation: slideIn 0.3s linear forwards;
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
   background-color: #c9eeff !important;
 }

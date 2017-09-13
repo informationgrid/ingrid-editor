@@ -26,6 +26,7 @@ import { DropDownComponent } from './drop-down/drop-down.component';
 import { PopoverModule } from 'ngx-popover';
 import { WizardModule } from 'ng2-archwizard/dist';
 import {IgeWizardModule} from '../wizard/wizard.module';
+import {ScrollToDirective} from '../directives/scrollTo.directive';
 
 @NgModule({
   imports: [
@@ -35,9 +36,9 @@ import {IgeWizardModule} from '../wizard/wizard.module';
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
-    FocusDirective, MainFormComponent, MainFormTabsComponent, DropDownComponent],
+    FocusDirective, ScrollToDirective, MainFormComponent, MainFormTabsComponent, DropDownComponent],
   providers: [CodelistService, NominatimService],
-  exports: [ToastyModule, FormsModule, FocusDirective]
+  exports: [ToastyModule, FormsModule, FocusDirective, ScrollToDirective]
 })
 export class IgeFormModule {
 }

@@ -18,13 +18,13 @@ export class TitleValidatorBehaviour extends BaseBehaviour implements Behaviour 
   }
 
   register(form: FormGroup, eventManager: EventManager) {
-    form.get('mainInfo.title').validator = function (fc: FormControl) {
+    form.get('title').validator = function (fc: FormControl) {
       return fc.value && fc.value.length >= 3 ? null : {
         validateTop: {valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen'}
       };
     };
 
-    form.get('mainInfo.taskId').validator = function (fc: FormControl) {
+    form.get('taskId').validator = function (fc: FormControl) {
       // TODO: the validator seems to be called for each created form field of the profile
       console.log('.');
 

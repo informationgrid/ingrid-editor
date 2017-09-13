@@ -2,7 +2,9 @@
     <div class="panel-heading">Assistenten</div>
 
     <div *ngIf="data" class="list-group">
-        <a class="list-group-item" [class.active]="false"
+        <a class="list-group-item"
+           [class.active]="false"
+           [class.disabled]="data._profile !== 'ISO'"
            [routerLink]="['/form/' + data._id, {outlets: {'wizard': ['opendata']}}]">
             <h4 class="list-group-item-heading">Open data</h4>
             <p class="list-group-item-text">Dieser Assistent hilft bei der Erstellung von Open data

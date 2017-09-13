@@ -1,5 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {WizardService} from '../wizard.service';
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-open-data-wizard',
@@ -11,11 +12,11 @@ export class OpenDataWizardComponent implements OnInit {
   page = 1;
 
   focusByPage = [
-    'firstName',
-    'lastName'
+    'title',
+    'isOpenData'
   ];
 
-  constructor(private wizardService: WizardService) { }
+  constructor(private location: Location, private wizardService: WizardService) { }
 
   ngOnInit() {
     this.notifyPageturn();

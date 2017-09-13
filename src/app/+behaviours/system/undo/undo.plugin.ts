@@ -48,11 +48,13 @@ export class UndoPlugin extends Plugin {
     });
 
     this.storageService.afterLoadAndSet.subscribe((data) => {
-      this.history = [];
-      this.formToolbarService.setButtonState('toolBtnUndo', false);
+      if (data) {
+        this.history = [];
+        this.formToolbarService.setButtonState('toolBtnUndo', false);
 
-      // add behaviour to set active states for toolbar buttons
-      this.addBehaviour();
+        // add behaviour to set active states for toolbar buttons
+        this.addBehaviour();
+      }
     });
 
   }
@@ -84,12 +86,16 @@ export class UndoPlugin extends Plugin {
     const formData = this.formService.requestFormValues();
 
     this.form = formData.form;
-    this.form.valueChanges.subscribe((value) => {
-      console.log('The form value changed:', value);
-      this.history.push(value);
-      if (this.history.length > 1) {
-        this.formToolbarService.setButtonState('toolBtnUndo', true);
-      }
-    });
+    this.form.valueChanges
+      .debounceTime(500)
+      .subscribe((value) => {
+        console.log('The form value changed:', value);
+        // only push if other field was changed, otherwise remove last change and push new value
+        // => so we only remember complete field changes instead of each character
+        this.history.push(value);
+        if (this.history.length > 1) {
+          this.formToolbarService.setButtonState('toolBtnUndo', true);
+        }
+      });
   }
 }

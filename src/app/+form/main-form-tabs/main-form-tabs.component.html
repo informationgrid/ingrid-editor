@@ -25,6 +25,7 @@
         <div *ngIf="!field.children" class="{{field.domClass}}">
             <dyn-field [class.blur]="blurAllBut && blurAllBut !== field.key"
                        [class.highlight]="blurAllBut && blurAllBut === field.key"
+                       [scrollTo]="blurAllBut && blurAllBut === field.key"
                        [field]="field"
                        [form]="form"
                        (onAddSection)="addSection($event)"></dyn-field>
