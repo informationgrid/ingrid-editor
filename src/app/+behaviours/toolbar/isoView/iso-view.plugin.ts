@@ -3,6 +3,7 @@ import {Plugin} from '../../plugin';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {IsoViewComponent} from './iso-view.component';
+import {FormularService} from '../../../services/formular/formular.service';
 
 @Injectable()
 export class IsoViewPlugin extends Plugin {
@@ -11,6 +12,7 @@ export class IsoViewPlugin extends Plugin {
   defaultActive = true;
 
   constructor(private formToolbarService: FormToolbarService,
+              private formService: FormularService,
               private modalService: ModalService,
               private _cr: ComponentFactoryResolver) {
     super();
@@ -34,6 +36,12 @@ export class IsoViewPlugin extends Plugin {
         this.showISODialog();
       }
     });
+
+    this.formService.selectedDocuments$.subscribe( data => {
+      this.formToolbarService.setButtonState(
+        'toolBtnIso',
+        data.length === 1 && data[0].profile === 'ISO' );
+    } );
   };
 
   private showISODialog() {
