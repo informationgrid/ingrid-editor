@@ -99,10 +99,10 @@ describe('Formular fields', () => {
         key: 'ctrlSelect',
         label: 'Titel of ctrlSelect',
         options: [
-          {key: 'a', value: 'Key A'},
-          {key: 'b', value: 'Key B'},
-          {key: 'c', value: 'Key C'},
-          {key: 'd', value: 'Key D'}
+          {id: 'a', value: 'Key A'},
+          {id: 'b', value: 'Key B'},
+          {id: 'c', value: 'Key C'},
+          {id: 'd', value: 'Key D'}
         ]
       });
 
@@ -133,8 +133,7 @@ describe('Formular fields', () => {
     fixture.whenStable().then(() => {
       const checkboxField: FieldBase<any> = new CheckboxField({
         key: 'ctrlCheckbox',
-        label: 'Titel of ctrlCheckbox',
-        type: 'checkbox'
+        label: 'Titel of ctrlCheckbox'
       });
 
       const comp = fixture.componentInstance;

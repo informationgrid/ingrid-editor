@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
-import {ConfigService} from '../config/config.service';
 import {Observable} from 'rxjs';
 import {ErrorService} from '../services/error.service';
 import {User} from './user';
 import {Http} from '@angular/http';
 import {ApiService} from '../services/ApiService';
+import {environment} from '../../environments/environment';
 
 @Injectable()
 export class UserService {
 
-  constructor(private http: Http, private configService: ConfigService,
+  constructor(private http: Http,
               private errorService: ErrorService, private apiService: ApiService) {
   }
 
@@ -43,19 +43,19 @@ export class UserService {
   }
 
   saveUser(user: User): Observable<User> {
-    return this.http.put( this.configService.backendUrl + 'users/' + user.login, user )
+    return this.http.put( environment.backendUrl + 'users/' + user.login, user )
     // .map( resp => resp.json() )
       .catch( err => this.errorService.handle( err ) );
   }
 
   createUser(user: User): Observable<User> {
-    return this.http.post( this.configService.backendUrl + 'users/' + user.login, user )
+    return this.http.post( environment.backendUrl + 'users/' + user.login, user )
     // .map( resp => resp.json() )
       .catch( err => this.errorService.handle( err ) );
   }
 
   deleteUser(login: string): Observable<null> {
-    return this.http.delete( this.configService.backendUrl + 'users/' + login )
+    return this.http.delete( environment.backendUrl + 'users/' + login )
       .catch( err => this.errorService.handle( err ) );
   }
 

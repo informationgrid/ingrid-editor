@@ -1,11 +1,11 @@
 import {Router} from '@angular/router';
 import {Injectable} from '@angular/core';
 import {Headers, Http, RequestOptions, Response} from '@angular/http';
-import {ConfigService} from '../../config/config.service';
 import {AuthHttp, JwtHelper, tokenNotExpired} from 'angular2-jwt';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {ModalService} from '../modal/modal.service';
+import {environment} from '../../../environments/environment';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +30,7 @@ export class AuthService {
   // TODO: handle refresh token: https://github.com/auth0/angular2-jwt/issues/197
 
   constructor(private http: Http, private authHttp: AuthHttp, private router: Router,
-              private configService: ConfigService, private modalService: ModalService) {
+              private modalService: ModalService) {
     // set token if saved in local storage
     const currentUser = this.getCurrentUser();
     this.token = currentUser && currentUser.token;
@@ -55,7 +55,7 @@ export class AuthService {
     const headers = new Headers( {'Content-Type': 'application/x-www-form-urlencoded'} );
     const options = new RequestOptions( {headers: headers} );
 
-    return this.http.post( this.configService.backendUrl + 'login', body, options )
+    return this.http.post( environment.backendUrl + 'login', body, options )
       .map( (response: Response) => {
         // login successful if there's a jwt token in the response
         const result = response.json();
@@ -98,7 +98,7 @@ export class AuthService {
   refreshAccessTokenBeforeExpiration(refreshInMs: number) {
     setTimeout( () => {
       // request new token with authenticated request!
-      this.authHttp.get( this.configService.backendUrl + 'refreshToken' ).subscribe( (response: Response) => {
+      this.authHttp.get( environment.backendUrl + 'refreshToken' ).subscribe( (response: Response) => {
         const result = response.json();
         const token = result && result.token;
         if (token) {

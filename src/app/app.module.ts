@@ -18,7 +18,6 @@ import {ModalService} from './services/modal/modal.service';
 import {ModalModule} from 'ngx-modal';
 import {UserModule} from './+user/user.module';
 import {AuthGuard} from './security/auth.guard';
-import {ConfigService} from './config/config.service';
 import {FormChangeDeactivateGuard} from './security/form-change.guard';
 import {ErrorService} from './services/error.service';
 import {HelpComponent} from './help/help.component';
@@ -44,7 +43,7 @@ import {FolderProfile} from './services/formular/folder/folder.profile';
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule],
   providers: [appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     KeycloakService, KEYCLOAK_HTTP_PROVIDER,
-    ErrorService, ConfigService, FormToolbarService, StorageService,
+    ErrorService, FormToolbarService, StorageService,
     StorageDummyService, BehavioursDefault, ModalService, ApiService, ToastService, {
       provide: LocationStrategy,
       useClass: HashLocationStrategy

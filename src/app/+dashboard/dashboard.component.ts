@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ConfigService} from '../config/config.service';
 import {ErrorService} from '../services/error.service';
 import {FormularService} from '../services/formular/formular.service';
 import {Http} from '@angular/http';
+import {environment} from '../../environments/environment'
 
 @Component({
     templateUrl: './dashboard.component.html',
@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
     sideTab = 'myData';
 
 
-    constructor(private http: Http, private configService: ConfigService, private errorService: ErrorService,
+    constructor(private http: Http, private errorService: ErrorService,
         private formularService: FormularService) { }
 
     ngOnInit() {
@@ -35,7 +35,8 @@ export class DashboardComponent implements OnInit {
     }
 
     fetchStatistic() {
-        this.http.get( this.configService.backendUrl + 'statistic' ).subscribe(
+      // TODO: get backend url from environment
+        this.http.get( environment.backendUrl + 'statistic' ).subscribe(
           data => this.prepareData( data.json() ),
           (err) => this.errorService.handle( err )
         );
@@ -46,7 +47,7 @@ export class DashboardComponent implements OnInit {
           query = '';
         }
 
-        this.http.get(this.configService.backendUrl + 'datasets?query=' + query + '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
+        this.http.get(environment.backendUrl + 'datasets?query=' + query + '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
           .map( data => {
             const json = <any[]>data.json();
             return json.filter(item => item._profile !== 'FOLDER');
@@ -63,6 +64,12 @@ export class DashboardComponent implements OnInit {
         // do not show folders
         if (data.FOLDER) {
           delete data.FOLDER;
+        }
+        if (data['@type'] !== undefined) {
+          delete data['@type'];
+        }
+        if (data['@version'] !== undefined) {
+          delete data['@version'];
         }
 
         this.pieChartLabels = Object.keys(data);

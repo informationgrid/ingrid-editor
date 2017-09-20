@@ -1,10 +1,9 @@
-import {ModalService} from './../../../services/modal/modal.service';
-import {ErrorService} from './../../../services/error.service';
+import {ModalService} from '../../../services/modal/modal.service';
+import {ErrorService} from '../../../services/error.service';
 import {MetadataTreeComponent} from './tree.component';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {FormularService} from '../../../services/formular/formular.service';
-import {ConfigService} from '../../../config/config.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
@@ -71,7 +70,7 @@ describe( 'TreeComponent', () => {
         {provide: StorageService, useValue: storageServiceStub},
         {provide: FormularService, useValue: formularServiceStub},
         {provide: FormToolbarService, useValue: formToolbarServiceStub},
-        ConfigService, ErrorService, ModalService],
+        ErrorService, ModalService],
       imports: [TreeModule]
     } );
 

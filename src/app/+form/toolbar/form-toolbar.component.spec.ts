@@ -38,7 +38,7 @@ describe('Form-Toolbar', () => {
   });
 
   it('should add a toolbar item through the service', () => {
-    let item: ToolbarItem = {tooltip: 'TEST_TOOLBAR_ITEM', cssClasses: 'TEST_CSS_CLASS', eventId: 'TEST_EVENT'};
+    let item: ToolbarItem = {id: 'btnToolbarTest', tooltip: 'TEST_TOOLBAR_ITEM', cssClasses: 'TEST_CSS_CLASS', eventId: 'TEST_EVENT'};
     ftService.addButton(item);
 
     fixture.detectChanges();

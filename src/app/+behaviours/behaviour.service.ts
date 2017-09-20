@@ -4,11 +4,11 @@ import {Behaviour, BehavioursDefault} from './behaviours';
 import {EventManager} from '@angular/platform-browser';
 import {Http, Response} from '@angular/http';
 import {ModalService} from '../services/modal/modal.service';
-import {ConfigService} from '../config/config.service';
 import {AuthHttpError} from 'angular2-jwt';
 import {Plugin} from './plugin';
 import {Observable} from 'rxjs/Observable';
 import {KeycloakService} from '../keycloak/keycloak.service';
+import {environment} from '../../environments/environment';
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -23,7 +23,7 @@ export class BehaviourService {
 
   constructor(private defaultBehaves: BehavioursDefault,
               private eventManager: EventManager,
-              private http: Http, private modalService: ModalService, private configService: ConfigService) {
+              private http: Http, private modalService: ModalService) {
 
     this.behaviours = defaultBehaves.behaviours;
     this.systemBehaviours = defaultBehaves.systemBehaviours;
@@ -68,7 +68,7 @@ export class BehaviourService {
   }
 
   loadStoredBehaviours() {
-    return this.http.get( this.configService.backendUrl + 'behaviours' ).toPromise().then( (response: Response) => {
+    return this.http.get( environment.backendUrl + 'behaviours' ).toPromise().then( (response: Response) => {
       const storedBehaviours = response.json();
 
       // set correct active state to each behaviour
@@ -112,7 +112,7 @@ export class BehaviourService {
       _id: behaviour.id,
       active: behaviour.isActive
     };
-    this.http.post( this.configService.backendUrl + 'behaviours', stripped ).toPromise().catch( err => {
+    this.http.post( environment.backendUrl + 'behaviours', stripped ).toPromise().catch( err => {
       this.modalService.showError( err );
       return Observable.throw( err );
     } );

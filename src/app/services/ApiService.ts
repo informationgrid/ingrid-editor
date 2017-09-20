@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
-import {ConfigService} from '../config/config.service';
 import {ErrorService} from './error.service';
 import {Http, Response} from '@angular/http';
 import {KeycloakService} from '../keycloak/keycloak.service';
@@ -13,12 +12,12 @@ import {environment} from '../../environments/environment';
 
 @Injectable()
 export class ApiService {
-  constructor(private http: Http, private configService: ConfigService,
+  constructor(private http: Http,
               private errorService: ErrorService) {
   }
 
   getIsoDocument(id: number): Observable<any> {
-    return this.http.get( this.configService.backendUrl + 'datasets/' + id + '/export/ISO' )
+    return this.http.get( environment.backendUrl + 'datasets/' + id + '/export/ISO' )
       .map( (result: Response) => {
         return result.text();
       } )

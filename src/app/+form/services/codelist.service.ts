@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ConfigService} from '../../config/config.service';
 import {ErrorService} from '../../services/error.service';
 import {Http} from '@angular/http';
+import {environment} from '../../../environments/environment';
 
 export interface Codelist {
   id: string;
@@ -23,7 +23,7 @@ export class CodelistService {
     return result[0][1];
   }
 
-  constructor(private http: Http, private configService: ConfigService, private errorService: ErrorService) {
+  constructor(private http: Http, private errorService: ErrorService) {
   }
 
   byId(id: string): Promise<CodelistEntry[]> {
@@ -35,7 +35,7 @@ export class CodelistService {
 
       } else {
 
-        this.http.get( this.configService.backendUrl + 'codelist/' + id )
+        this.http.get( environment.backendUrl + 'codelist/' + id )
           .catch( (err: any) => this.errorService.handle( err ) )
           .subscribe( (data: any) => {
             if (data.json() === null) {
