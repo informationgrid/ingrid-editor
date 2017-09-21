@@ -35,7 +35,7 @@ export class UndoPlugin extends Plugin {
     this.formToolbarService.addButton({
       id: 'toolBtnUndo',
       tooltip: 'Undo',
-      cssClasses: 'glyphicon glyphicon-menu-left',
+      cssClasses: 'fa fa-undo',
       eventId: this.eventUndoId,
       active: false
     });

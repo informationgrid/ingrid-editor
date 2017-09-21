@@ -36,7 +36,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
     </div>-->
     <div class="full">
       <button *ngIf="!showSearch" type="button" title="Bearbeiten"
-              class="btn btn-default glyphicon glyphicon-edit pull-left" (click)="toggleSearch(true)"></button>
+              class="btn btn-secondary fa fa pencil-square-o pull-left" (click)="toggleSearch(true)"></button>
       <div class="text-muted text-center">
         <small *ngIf="drawnBBox">
           Latitude: {{_bbox.lat1 | number:'1.0-4'}} - {{_bbox.lat2 | number:'1.0-4'}}
@@ -54,7 +54,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
           <option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>
         </select>
         <div class="bottom">
-          <button type="button" class="btn btn-default pull-left" (click)="cancelEdit()">Abbrechen</button>
+          <button type="button" class="btn btn-secondary pull-left" (click)="cancelEdit()">Abbrechen</button>
           <button type="button" class="btn btn-primary pull-right" (click)="applyEdit()">Übernehmen</button>
         </div>
       </div>

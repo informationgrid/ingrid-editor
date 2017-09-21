@@ -9,23 +9,34 @@
 </div>
 
 <div class="tabs-left menu">
-    <ul class="nav nav-tabs">
-        <li [class.active]="sideTab === 'tree'"><a (click)="sideTab = 'tree'" title="Baumstruktur"
-                                                   data-toggle="tab"><span
-            class="glyphicon glyphicon-tree-conifer"></span></a></li>
-        <li [class.active]="sideTab === 'search'"><a (click)="sideTab = 'search'" title="Suche" data-toggle="tab"><span
-            class="glyphicon glyphicon-search"></span></a></li>
-        <li [class.active]="sideTab === 'wizards'"><a (click)="sideTab = 'wizards'" title="Assistenten"
-                                                      data-toggle="tab"><span class="fa fa-magic"></span></a></li>
-        <li [class.active]="sideTab === 'favorites'"><a (click)="sideTab = 'favorites'" title="Favoriten"
-                                                        data-toggle="tab"><span class="glyphicon glyphicon-star"></span></a>
+    <ul class="nav nav-tabs flex-column">
+        <li class="nav-item" [class.active]="sideTab === 'tree'">
+            <a class="nav-link" (click)="sideTab = 'tree'" title="Baumstruktur" data-toggle="tab">
+                <span class="fa fa-tree"></span>
+            </a>
         </li>
-        <li class="toggle"><a title="Ein-/Ausklappen" (click)="hideSidebar = !hideSidebar">
-            <span class="glyphicon"
-                  [class.glyphicon-chevron-left]="!hideSidebar"
-                  [class.glyphicon-chevron-right]="hideSidebar"
-            ></span>
-        </a></li>
+        <li class="nav-item" [class.active]="sideTab === 'search'">
+            <a class="nav-link" (click)="sideTab = 'search'" title="Suche" data-toggle="tab">
+                <span class="fa fa-search"></span>
+            </a>
+        </li>
+        <li class="nav-item" [class.active]="sideTab === 'wizards'">
+            <a class="nav-link" (click)="sideTab = 'wizards'" title="Assistenten" data-toggle="tab">
+                <span class="fa fa-magic"></span>
+            </a>
+        </li>
+        <li class="nav-item" [class.active]="sideTab === 'favorites'">
+            <a class="nav-link" (click)="sideTab = 'favorites'" title="Favoriten" data-toggle="tab">
+                <span class="fa fa-star"></span>
+            </a>
+        </li>
+        <li class="nav-item" class="toggle">
+            <a class="nav-link" title="Ein-/Ausklappen" (click)="hideSidebar = !hideSidebar">
+                <span class="fa"
+                      [class.fa-chevron-left]="!hideSidebar"
+                      [class.fa-chevron-right]="hideSidebar"></span>
+            </a>
+        </li>
     </ul>
 </div>
 
@@ -35,18 +46,18 @@
         <!--<div class="col-md-4 col-sm-5">-->
         <div class="tabs-left">
             <div class="tab-content">
-                <div class="tab-pane" [class.hide]="sideTab !== 'tree'">
+                <div class="tab-pane" [class.active]="sideTab === 'tree'">
                     <tree (activate)="handleLoad($event)"
                           (selected)="handleSelection($event)"></tree>
                 </div>
-                <div class="tab-pane" [class.hide]="sideTab !== 'search'">
+                <div class="tab-pane" [class.active]="sideTab === 'search'">
                     <browser (onSelected)="load($event.id)"></browser>
                 </div>
-                <div class="tab-pane" [class.hide]="sideTab !== 'wizards'">
+                <div class="tab-pane" [class.active]="sideTab === 'wizards'">
                     <!--<a [routerLink]="['/form/10']">Zurück</a>-->
                     <router-outlet name="wizard"></router-outlet>
                 </div>
-                <div class="tab-pane" [class.hide]="sideTab !== 'favorites'">
+                <div class="tab-pane" [class.active]="sideTab === 'favorites'">
                     <div class="panel panel-default">
                         <!-- Default panel contents -->
                         <div class="panel-heading">Favoriten</div>
@@ -96,20 +107,20 @@
                          (mouseover)="markFavoriteHovered = true"
                          (mouseout)="markFavoriteHovered = false"
                          (click)="markFavorite($event)">
-                        <span class="glyphicon"
-                              [class.glyphicon-star]="false || markFavoriteHovered"
-                              [class.glyphicon-star-empty]="true && !markFavoriteHovered"
+                        <span class="fa"
+                              [class.fa-star]="false || markFavoriteHovered"
+                              [class.fa-star-o]="true && !markFavoriteHovered"
                         ></span>
                         {{getTitle()}}
                     </div>
                     <div class="padding-sm pull-right">
-                        <span class="glyphicon glyphicon-user"></span>
+                        <span class="fa fa-user"></span>
                         <small>
                             <strong>Autor:</strong> {{data._modifiedBy}}
                         </small>
                     </div>
                     <div class="padding-sm pull-right">
-                        <span class="glyphicon glyphicon-time" [class.active]="showDateBar"
+                        <span class="fa fa-clock-o" [class.active]="showDateBar"
                               title="Zeige Datumsinformation"></span>
                         <small>
                             <strong>Geändert:</strong> {{data._modified | date:'HH:mm - dd.MM.yyyy'}}
@@ -123,15 +134,15 @@
                             </small>
                         </div>
                     </div>
-                    <!--<span class="glyphicon glyphicon-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
+                    <!--<span class="fa fa-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
                     <div class="text-center" style="position:absolute; margin: 0 50%; bottom: -5px;">
-                        <span class="glyphicon"
-                              [class.glyphicon-chevron-down]="!showDateBar"
-                              [class.glyphicon-chevron-up]="showDateBar"></span>
+                        <span class="fa"
+                              [class.fa-chevron-down]="!showDateBar"
+                              [class.fa-chevron-up]="showDateBar"></span>
                     </div>
                     <!--<div style="position: absolute; left: 50%;">
                         <div style="position: relative; left: -50%; border: dotted red 1px;">
-                          <span class="glyphicon glyphicon-chevron-down"></span>
+                          <span class="fa fa-chevron-down"></span>
                         </div>
                     </div>-->
                 </span>

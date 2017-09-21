@@ -28,8 +28,8 @@
 
     <div class="well well-sm" *ngIf="rows.length === 0">Die Tabelle ist leer</div>
 
-    <button class="btn btn-default" type="button" (click)="deleteRow()" [disabled]="markedRows.length === 0">Löschen</button>
-    <button class="btn btn-default pull-right" type="button" (click)="showAddRowModal()">Hinzufügen</button>
+    <button class="btn btn-secondary" type="button" (click)="deleteRow()" [disabled]="markedRows.length === 0">Löschen</button>
+    <button class="btn btn-secondary pull-right" type="button" (click)="showAddRowModal()">Hinzufügen</button>
 </div>
 
 <modal #addRowModal title="Hinzufügen" submitButtonLabel="Ok" (onSubmit)="addRow()">

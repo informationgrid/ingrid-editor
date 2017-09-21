@@ -4,7 +4,7 @@
      (mouseleave)="showHelp = false">
 
     <label *ngIf="!field.hideLabel" class="control-label" [attr.for]="field.key">{{field.label}}
-        <span *ngIf="showHelp" class="btnHelp text-muted glyphicon glyphicon-question-sign"
+        <span *ngIf="showHelp" class="btnHelp text-muted fa fa-question-circle-o"
               popoverTitle="Hilfe (Header kann entfallen)"
               popover="{{field.help}}"
               popoverPlacement="top"
@@ -64,7 +64,7 @@
 
         <link-dataset *ngSwitchCase="'linkDataset'" [formControlName]="field.key" [filter]="field.filter"></link-dataset>
 
-        <div class="help-block" [class.hide]="form.controls[field.key].valid || form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>
+        <div class="invalid-feedback" [class.show]="form.controls[field.key].invalid && form.controls[field.key].touched">{{showError(form.controls[field.key].errors)}}</div>
     </ng-container>
 
 </div>

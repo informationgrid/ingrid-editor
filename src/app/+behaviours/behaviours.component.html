@@ -1,11 +1,11 @@
 <div class="container has-navbar">
 
     <ul class="nav nav-tabs">
-        <li role="presentation" [class.active]="behaviourTab === 'SYSTEM'">
-            <a (click)="behaviourTab = 'SYSTEM'">System</a>
+        <li class="nav-item" role="presentation" [class.active]="behaviourTab === 'SYSTEM'">
+            <a class="nav-link" (click)="behaviourTab = 'SYSTEM'">System</a>
         </li>
-        <li role="presentation" *ngFor="let key of behavioursLabel" [class.active]="behaviourTab === key">
-            <a (click)="behaviourTab = key">Profil: {{key}}</a>
+        <li class="nav-item" role="presentation" *ngFor="let key of behavioursLabel" [class.active]="behaviourTab === key">
+            <a class="nav-link" (click)="behaviourTab = key">Profil: {{key}}</a>
         </li>
     </ul>
 
@@ -18,9 +18,9 @@
                            [checked]="plugin.isActive">
                     {{plugin.name}}
                 </label>
-                <span class="glyphicon pull-right clickable" (click)="toggleField(plugin)"
-                      [class.glyphicon-chevron-up]="plugin._state === 'expanded'"
-                      [class.glyphicon-chevron-down]="plugin._state === 'collapsed'"
+                <span class="fa pull-right clickable" (click)="toggleField(plugin)"
+                      [class.fa-chevron-up]="plugin._state === 'expanded'"
+                      [class.fa-chevron-down]="plugin._state === 'collapsed'"
                 ></span>
             </div>
             <div class="panel-body" [@openClose]="plugin._state">
@@ -40,9 +40,9 @@
                                [checked]="behaviour.isActive"
                                value="{{behaviour.id}}"> {{behaviour.title}}
                     </label>
-                    <span class="glyphicon pull-right clickable" (click)="toggleField(behaviour)"
-                          [class.glyphicon-chevron-up]="behaviour._state === 'expanded'"
-                          [class.glyphicon-chevron-down]="behaviour._state === 'collapsed'"
+                    <span class="fa pull-right clickable" (click)="toggleField(behaviour)"
+                          [class.fa-chevron-up]="behaviour._state === 'expanded'"
+                          [class.fa-chevron-down]="behaviour._state === 'collapsed'"
                     ></span>
                 </div>
                 <div class="panel-body" [@openClose]="behaviour._state">

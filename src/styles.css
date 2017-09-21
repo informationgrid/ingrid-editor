@@ -3,12 +3,12 @@ html, body {
 }
 
 body {
-  padding-top: 50px;
+  padding-top: 56px;
 }
 
 form-toolbar {
   position: fixed;
-  top: 50px;
+  top: 56px;
   width: 100%;
   background-color: #ececec;
   padding: 4px;
@@ -23,11 +23,18 @@ form-toolbar + div {
   cursor: pointer;
 }
 
+.btn.btn-xs {
+  /*// line-height: ensure proper height of button next to extra small input*/
+  /*@include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);*/
+  font-size: 0.5rem;
+  padding: 8px;
+}
+
 .help-block {
-  position: absolute;
-  font-size: 80%;
-  margin-top: 1px !important;
-  animation: slideIn 0.3s linear forwards;
+  /*position: absolute;*/
+  /*font-size: 80%;*/
+  /*margin-top: 1px !important;*/
+  /*animation: slideIn 0.3s linear forwards;*/
 }
 
 @keyframes slideIn {

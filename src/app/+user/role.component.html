@@ -12,7 +12,7 @@
             </button>
         </div>
         <div class="text-center">
-            <button class="btn btn-primary glyphicon glyphicon-plus" (click)="addRole()"></button>
+            <button class="btn btn-primary fa fa-plus" (click)="addRole()"></button>
         </div>
     </split-area>
 
@@ -55,17 +55,17 @@
                     <div *ngFor="let dataset of selectedRole.datasets">
                         <!-- TODO: show document name for this ID -->
                         <span class="">{{dataset.label}}</span>
-                        <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(dataset.id)"></button>
+                        <button class="btn btn-secondary fa fa-remove" type="button" (click)="removeDataset(dataset.id)"></button>
                     </div>
                     <h3>Dokument-Attribute</h3>
                     <div *ngFor="let attr of selectedRole.attributes">
                         <span class="">{{attr.id}}: {{attr.value}}</span>
-                        <button class="btn btn-default fa fa-remove" type="button" (click)="removeAttribute(attr)"></button>
+                        <button class="btn btn-secondary fa fa-remove" type="button" (click)="removeAttribute(attr)"></button>
                     </div>
                     <div *ngIf="selectedRole.attributes.length === 0 || selectedRole.datasets.length === 0">Keine gesetzt</div>
                 </div>
             </div>
-            <button class="btn btn-default pull-right" (click)="newPermissionModal.open()">Berechtigung hinzufügen</button>
+            <button class="btn btn-secondary pull-right" (click)="newPermissionModal.open()">Berechtigung hinzufügen</button>
 
             <div class="clearfix padding"></div>
             <button class="btn btn-danger" (click)="deleteRole(selectedRole)">Löschen</button>
@@ -100,14 +100,14 @@
             <div *ngFor="let dataset of selectedRole.datasets">
                 <!-- TODO: show document name for this ID -->
                 <span class="">{{dataset.label}}</span>
-                <button class="btn btn-default fa fa-remove" type="button" (click)="removeDataset(dataset.id)"></button>
+                <button class="btn btn-secondary fa fa-remove" type="button" (click)="removeDataset(dataset.id)"></button>
             </div>
             <div *ngIf="!selectedRole.datasets || selectedRole.datasets.length === 0">
                 Keine Einschränkung auf Dokumente.
             </div>
 
             <div class="clearfix padding"></div>
-            <button class="btn btn-default" (click)="addDataset(datasetTree.selectedId)">Add</button>
+            <button class="btn btn-secondary" (click)="addDataset(datasetTree.selectedId)">Add</button>
         </div>
 
         <!-- BY TREE -->
@@ -130,14 +130,14 @@
                     <!--<label>Wert</label>-->
                     <input #newAttrValue class="form-control" type="text" name="attrValue" placeholder="Wert">
                 </div>
-                <button class="btn btn-default" (click)="addAttribute(newAttrKey.value, newAttrValue.value)">Add</button>
+                <button class="btn btn-secondary" (click)="addAttribute(newAttrKey.value, newAttrValue.value)">Add</button>
             </form>
 
             <hr>
 
             <div *ngFor="let attr of selectedRole.attributes">
                 <span class="">{{attr.id}}: {{attr.value}}</span>
-                <button class="btn btn-default fa fa-remove" type="button" (click)="removeAttribute(attr)"></button>
+                <button class="btn btn-secondary fa fa-remove" type="button" (click)="removeAttribute(attr)"></button>
             </div>
             <div *ngIf="!selectedRole.attributes || selectedRole.attributes.length === 0">
                 Keine Attribute gesetzt.

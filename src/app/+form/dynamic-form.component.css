@@ -148,14 +148,14 @@ split {
 }
 .tab-content .tab-pane {
   /*display: none;*/
-  display: block;
+  /*display: block;*/
   /*background-color: #fff;*/
   padding: 0 10px;
   overflow-y: auto;
 }
-.tab-content .active {
-  display: block;
-}
+/*.tab-content .active {*/
+  /*display: block;*/
+/*}*/
 
 ul.nav-tabs, .tabs-left {
   height: 100%;
@@ -170,7 +170,7 @@ li.toggle {
   position: absolute;
   bottom: 0;
   top: 0;
-  padding-top: 100px;
+  padding-top: 110px;
   padding-bottom: 10px;
 }
 

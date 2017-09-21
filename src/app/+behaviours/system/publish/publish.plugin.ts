@@ -33,12 +33,12 @@ export class PublishPlugin extends Plugin {
     this.formToolbarService.addButton( {id: 'toolBtnPublishSeparator',  isSeparator: true } );
 
     this.formToolbarService.addButton( {
-      id: 'toolBtnPublish', tooltip: 'Publish', cssClasses: 'glyphicon glyphicon-check', eventId: this.eventPublishId, active: true
+      id: 'toolBtnPublish', tooltip: 'Publish', cssClasses: 'fa fa-caret-square-o-right', eventId: this.eventPublishId, active: true
     } );
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton( {
-      id: 'toolBtnRevert', tooltip: 'Revert', cssClasses: 'glyphicon glyphicon-step-backward', eventId: this.eventRevertId, active: false
+      id: 'toolBtnRevert', tooltip: 'Revert', cssClasses: 'fa fa-step-backward', eventId: this.eventRevertId, active: false
     } );
 
     // add event handler for revert

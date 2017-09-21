@@ -45,16 +45,16 @@ export class OpenTable implements ControlValueAccessor, OnInit {
       columnTitle: ''
     },
     add: {
-      createButtonContent: '<span class="glyphicon glyphicon-ok"></span>',
-      cancelButtonContent: '<span class="glyphicon glyphicon-remove"></span>'
+      createButtonContent: '<span class="fa fa-check"></span>',
+      cancelButtonContent: '<span class="fa fa-remove"></span>'
     },
     edit: {
-      editButtonContent: '<span class="glyphicon glyphicon-edit"></span>',
-      saveButtonContent: '<span class="glyphicon glyphicon-ok"></span>',
-      cancelButtonContent: '<span class="glyphicon glyphicon-remove"></span>'
+      editButtonContent: '<span class="fa fa-edit"></span>',
+      saveButtonContent: '<span class="fa fa-check"></span>',
+      cancelButtonContent: '<span class="fa fa-remove"></span>'
     },
     delete: {
-      deleteButtonContent: '<span class="glyphicon glyphicon-trash"></span>'
+      deleteButtonContent: '<span class="fa fa-trash"></span>'
     },
     hideSubHeader: true,
     noDataMessage: 'Diese Tabelle ist leer.',

@@ -7,8 +7,8 @@
                     [title]="button.tooltip"
                     (click)="sendEvent(button.eventId)"></button>
 
-            <div *ngIf="button.isSeparator"
-                 class="pull-left separator"></div>
+            <span *ngIf="button.isSeparator"
+                 class="separator"></span>
         </span>
     </div>
 </div>

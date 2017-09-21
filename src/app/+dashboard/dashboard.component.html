@@ -11,19 +11,19 @@
 
     <div class="content">
         <ul class="nav nav-tabs">
-            <li role="presentation" [class.active]="sideTab === 'myData'"><a (click)="sideTab = 'myData'">Mein Daten</a></li>
-            <li role="presentation" [class.active]="sideTab === 'allData'"><a (click)="sideTab = 'allData'">Alle Daten</a>
+            <li role="presentation" class="nav-item" [class.active]="sideTab === 'myData'"><a class="nav-link" (click)="sideTab = 'myData'">Mein Daten</a></li>
+            <li role="presentation" class="nav-item" [class.active]="sideTab === 'allData'"><a class="nav-link" (click)="sideTab = 'allData'">Alle Daten</a>
             </li>
         </ul>
-        <div *ngIf="sideTab === 'myData'">
-            <ul>
+        <div class="tab-content">
+            <ul class="tab-pane" [class.active]="sideTab === 'myData'">
                 <li *ngFor="let item of datasets">
                     <a routerLink="/form/{{item.id}}">{{item.title}}</a>
                 </li>
             </ul>
         </div>
-        <div *ngIf="sideTab === 'allData'">
-            <p class="text-primary">Noch nicht umgesetzt.</p>
+        <div class="tab-content" [class.active]="sideTab === 'allData'">
+            <p class="tab-pane text-primary" [class.active]="sideTab === 'allData'">Noch nicht umgesetzt.</p>
         </div>
     </div>
 </div>

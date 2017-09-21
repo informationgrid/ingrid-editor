@@ -1,24 +1,20 @@
 <ul class="nav nav-tabs">
-    <li role="presentation" [class.active]="currentTab === 'import'"><a (click)="currentTab = 'import'">Import</a></li>
-    <li role="presentation" [class.active]="currentTab === 'export'"><a (click)="currentTab = 'export'">Export</a></li>
+    <li class="nav-item" role="presentation" [class.active]="currentTab === 'import'"><a class="nav-link" (click)="currentTab = 'import'">Import</a></li>
+    <li class="nav-item" role="presentation" [class.active]="currentTab === 'export'"><a class="nav-link" (click)="currentTab = 'export'">Export</a></li>
 </ul>
-<div class="padding">
+<div class="padding tab-content">
 
-    <div [class.hide]="currentTab !== 'import'">
+    <div class="tab-pane" [class.active]="currentTab === 'import'">
         <h1>import</h1>
-        <form>
-            <div class="form-group">
-                <label class="btn btn-default btn-file">
-                    <input #fileInput type="file" class="form-control" hidden>
-                    Upload
+                <label class="custom-file">
+                    <input #fileInput type="file" class="custom-file-input">
+                    <span class="custom-file-control"></span>
                 </label>
                 <span class="text-muted">{{fileInput.value}}</span>
-            </div>
-            <button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Import</button>
-        </form>
+            <button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Start Import</button>
     </div>
 
-    <div [class.hide]="currentTab !== 'export'">
+    <div class="tab-pane" [class.active]="currentTab === 'export'">
         <h1>export</h1>
     </div>
 
