@@ -2,8 +2,9 @@
 <ng-container *ngIf="categories.length > 0">
     <ul class="nav nav-tabs">
         <ng-container *ngFor="let category of categories">
-            <li role="presentation" [class.active]="currentCategory === category.label"><a
-                (click)="currentCategory = category.label">{{category.label}}</a></li>
+            <li class="nav-item" role="presentation" [class.active]="currentCategory === category.label">
+                <a class="nav-link" (click)="currentCategory = category.label">{{category.label}}</a>
+            </li>
         </ng-container>
     </ul>
 </ng-container>
@@ -76,10 +77,10 @@
             <ng-container *ngIf="field.isRepeatable">
                 <div [formArrayName]="field.key" class="full">
                     <!-- render data -->
-                    <div *ngFor="let child of field.children; let i=index" class="panel panel-default">
+                    <div *ngFor="let child of field.children; let i=index" class="card">
 
                         <!-- Header of partial -->
-                        <div *ngIf="child.children" class="panel-heading"
+                        <div *ngIf="child.children" class="card-header"
                              (click)="expandedField[child.key + i] = !expandedField[child.key + i]">
                                             <span class="fa"
                                                   [class.fa-caret-down]="expandedField[child.key + i]"
@@ -95,8 +96,8 @@
 
                         <!-- render all partial fields -->
                         <div [formGroupName]="i"
-                             class="panel-body"
-                             [class.hide]="!expandedField[child.key + i]">
+                             class="card-body"
+                             [class.d-none]="!expandedField[child.key + i]">
                             <div class="{{child.domClass}}">
                                 <ige-main-form-tabs [form]="form.controls[field.key].controls[i].controls[child.key]"
                                                     [blurAllBut]="blurAllBut"

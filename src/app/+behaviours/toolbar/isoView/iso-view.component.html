@@ -1,7 +1,12 @@
-<modal #isoViewModal modalClass="info" title="ISO-Ansicht" submitButtonLabel="Ok"
-       (onSubmit)="isoViewModal.close()">
-    <modal-content>
+<ng-template #isoViewModal>
+    <div class="modal-header">
+        <h4 class="modal-title">ISO-Ansicht</h4>
+    </div>
+    <div class="modal-body">
         ISO
         <pre>{{doc}}</pre>
-    </modal-content>
-</modal>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-link" (click)="isoViewModalRef.hide()">Schließen</button>
+    </div>
+</ng-template>

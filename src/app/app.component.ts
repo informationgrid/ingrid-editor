@@ -1,9 +1,11 @@
-import {Component, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {Modal} from 'ngx-modal';
+import {Component, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ModalService} from './services/modal/modal.service';
 import {BehaviourService} from './+behaviours/behaviour.service';
 import {RoleService} from './+user/role.service';
 import {KeycloakService} from './keycloak/keycloak.service';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import { defineLocale } from 'ngx-bootstrap/bs-moment';
+import { de } from 'ngx-bootstrap/locale';
 
 @Component( {
   selector: 'app-root',
@@ -22,13 +24,29 @@ import {KeycloakService} from './keycloak/keycloak.service';
     </div>
 
 
-    <modal #errorModal modalClass="error" title="Fehler" submitButtonLabel="Ok" (onSubmit)="errorModal.close()">
+    <ng-template #errorModal>
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Fehler</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="errorModalRef.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Es ist ein Fehler aufgetreten:</p>
+        <p class="text-danger">{{dynDialog.errorMessage}}</p>
+        <p>{{dynDialog.errorMessageMore}}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-link" (click)="errorModalRef.hide()">Schließen</button>
+      </div>
+    </ng-template>
+    <!--<modal #errorModal modalClass="error" title="Fehler" submitButtonLabel="Ok" (onSubmit)="errorModal.close()">
         <modal-content>
             <p>Es ist ein Fehler aufgetreten:</p>
             <p class="text-danger">{{dynDialog.errorMessage}}</p>
             <p>{{dynDialog.errorMessageMore}}</p>
         </modal-content>
-    </modal>
+    </modal>-->
 
     <!-- Placeholder for dynamically created dialogs from plugins -->
     <div #dialogContainer id="dialogContainer"></div>
@@ -39,19 +57,24 @@ import {KeycloakService} from './keycloak/keycloak.service';
 } )
 export class AppComponent implements OnInit {
 
-  @ViewChild( 'errorModal' ) errorModal: Modal;
+  @ViewChild( 'errorModal' ) errorModal: TemplateRef<any>;
   @ViewChild('dialogContainer', {read: ViewContainerRef}) dialogContainerRef: ViewContainerRef;
 
+  errorModalRef: BsModalRef;
   dynDialog: any = {errorMessage: ''};
 
-  constructor(private behaviourService: BehaviourService, private modalService: ModalService,
+  // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
+
+  constructor(private bsModalService: BsModalService, private behaviourService: BehaviourService, private modalService: ModalService,
               private roleService: RoleService) {
+
+    defineLocale('de', de);
 
     // TODO: make more error info collapsible
     this.modalService.errorDialog$.subscribe( (content: any) => {
       this.dynDialog.errorMessage = content.message;
       this.dynDialog.errorMessageMore = content.moreInfo;
-      this.errorModal.open();
+      this.errorModalRef = this.bsModalService.show(this.errorModal, {class: 'modal-alert'});
     } );
 
     const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;

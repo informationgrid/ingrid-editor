@@ -1,16 +1,16 @@
 <h1>Fields for UVP</h1>
 
-<div *ngFor="let field of fields" class="well">
+<div *ngFor="let field of fields" class="card-body">
 
     <div [ngSwitch]="field.controlType">
         <div *ngSwitchCase="'container'">
             <div *ngIf="field.isRepeatable">
-                <div *ngFor="let child of field.children[0]" class="well-sm">
+                <div *ngFor="let child of field.children[0]" class="card-body">
                     id: {{child.key}}
                 </div>
             </div>
             <div *ngIf="!field.isRepeatable">
-                <div *ngFor="let child of field.children" class="well-sm">
+                <div *ngFor="let child of field.children" class="card-body">
                     id: {{child.key}}
                 </div>
             </div>

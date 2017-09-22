@@ -1,6 +1,7 @@
 <div class="outer-wrapper" [class.collapsed]="menuState === 'collapsed'" [@openClose]="menuState">
-    <button class="btn-help btn btn-secondary fa fa-question"
-            (click)="toggleState()"></button>
+    <button class="btn-help btn btn-outline-dark" (click)="toggleState()">
+        <span class="fa fa-question"></span>
+    </button>
     <span class="btn-expand fa"
           [class.fa-expand]="menuState === 'maximized'"
           [class.fa-arrows-alt]="menuState === 'expanded'"

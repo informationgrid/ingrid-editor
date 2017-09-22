@@ -32,9 +32,34 @@
     <button class="btn btn-secondary pull-right" type="button" (click)="showAddRowModal()">Hinzufügen</button>
 </div>
 
+<ng-template #addRowModal>
+    <div class="modal-header">
+        <h4 class="modal-title">Hinzufügen</h4>
+    </div>
+    <div class="modal-body">
+        <form #addForm="ngForm"><!--(submit)="addRow()"-->
+            <div class="form-group">
+                <div *ngFor="let col of columns; let i=index" class="padding">
+                    <label class="control-label">{{col.editor.label}}</label>
+                    <input *ngIf="col.editor.controlType === 'textbox'" [focus]="i === focusNumber" [type]="col.editor.type" class="form-control" [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
+                    <select class="form-control" *ngIf="col.editor.controlType === 'dropdown'" [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
+                        <option *ngFor="let option of col.editor.options" [value]="option.id">{{option.value}}</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-link" (click)="addRow()">Hinzufügen</button>
+        <button class="btn btn-link" (click)="isoViewModalRef.hide()">Schließen</button>
+    </div>
+</ng-template>
+
+<!--
+
 <modal #addRowModal title="Hinzufügen" submitButtonLabel="Ok" (onSubmit)="addRow()">
     <modal-content>
-        <form #addForm="ngForm"><!--(submit)="addRow()"-->
+        <form #addForm="ngForm">&lt;!&ndash;(submit)="addRow()"&ndash;&gt;
             <div class="form-group">
                 <div *ngFor="let col of columns; let i=index" class="padding">
                     <label class="control-label">{{col.editor.label}}</label>
@@ -47,3 +72,4 @@
         </form>
     </modal-content>
 </modal>
+-->

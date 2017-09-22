@@ -79,10 +79,11 @@
     </split-area>
 </split>
 
-
-<modal #newPermissionModal title="Neue Berechtigung" cancelButtonLabel="Abbrechen" submitButtonLabel="Ok"
-       (onSubmit)="createPermission(newPermissionModal)">
-    <modal-content>
+<ng-template #newPermissionModal>
+    <div class="modal-header">
+        <h4 class="modal-title">Neue Berechtigung</h4>
+    </div>
+    <div class="modal-body">
         <ul class="nav nav-tabs">
             <li role="presentation" [class.active]="dialogTab === 'dataset'"><a (click)="dialogTab = 'dataset'">Datensatz</a>
             </li>
@@ -143,6 +144,78 @@
                 Keine Attribute gesetzt.
             </div>
         </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-link" (click)="createPermission(newPermissionModal)">Erstellen</button>
+        <button class="btn btn-link" (click)="isoViewModalRef.hide()">Abbrechen</button>
+    </div>
+</ng-template>
+
+<!--
+<modal #newPermissionModal title="Neue Berechtigung" cancelButtonLabel="Abbrechen" submitButtonLabel="Ok"
+       (onSubmit)="createPermission(newPermissionModal)">
+    <modal-content>
+        <ul class="nav nav-tabs">
+            <li role="presentation" [class.active]="dialogTab === 'dataset'"><a (click)="dialogTab = 'dataset'">Datensatz</a>
+            </li>
+            <li role="presentation" [class.active]="dialogTab === 'tree'"><a (click)="dialogTab = 'tree'">Teilbaum</a>
+            </li>
+            <li role="presentation" [class.active]="dialogTab === 'attribute'"><a (click)="dialogTab = 'attribute'">Datensatz-Attribut</a>
+            </li>
+        </ul>
+
+        &lt;!&ndash; BY DATASET&ndash;&gt;
+        <div [class.hide]="dialogTab !== 'dataset'" class="padding">
+            <div class="pull-left" style="width: 250px; height: 200px; overflow: auto;">
+                <tree #datasetTree [showFolderEditButton]="false" (onSelected)="rememberSelection($event)"></tree>
+            </div>
+            <div *ngFor="let dataset of selectedRole.datasets">
+                &lt;!&ndash; TODO: show document name for this ID &ndash;&gt;
+                <span class="">{{dataset.label}}</span>
+                <button class="btn btn-secondary fa fa-remove" type="button" (click)="removeDataset(dataset.id)"></button>
+            </div>
+            <div *ngIf="!selectedRole.datasets || selectedRole.datasets.length === 0">
+                Keine Einschränkung auf Dokumente.
+            </div>
+
+            <div class="clearfix padding"></div>
+            <button class="btn btn-secondary" (click)="addDataset(datasetTree.selectedId)">Add</button>
+        </div>
+
+        &lt;!&ndash; BY TREE &ndash;&gt;
+        <div [class.hide]="dialogTab !== 'tree'" class="padding">
+            <div class="alert alert-info" role="alert">
+                Hier wird später ein Ordner oder Datensatz ausgewählt werden können, dessen Unterobjekte man den Zugriff
+                gewähren kann.
+            </div>
+        </div>
+
+        &lt;!&ndash; BY ATTRIBUTE &ndash;&gt;
+        <div [class.hide]="dialogTab !== 'attribute'" class="padding">
+
+            <form class="form-inline">
+                <div class="form-group">
+                    &lt;!&ndash;<label>Feld</label>&ndash;&gt;
+                    <input #newAttrKey class="form-control" type="text" name="attrKey" placeholder="Feld">
+                </div>
+                <div class="form-group">
+                    &lt;!&ndash;<label>Wert</label>&ndash;&gt;
+                    <input #newAttrValue class="form-control" type="text" name="attrValue" placeholder="Wert">
+                </div>
+                <button class="btn btn-secondary" (click)="addAttribute(newAttrKey.value, newAttrValue.value)">Add</button>
+            </form>
+
+            <hr>
+
+            <div *ngFor="let attr of selectedRole.attributes">
+                <span class="">{{attr.id}}: {{attr.value}}</span>
+                <button class="btn btn-secondary fa fa-remove" type="button" (click)="removeAttribute(attr)"></button>
+            </div>
+            <div *ngIf="!selectedRole.attributes || selectedRole.attributes.length === 0">
+                Keine Attribute gesetzt.
+            </div>
+        </div>
     </modal-content>
 </modal>
+-->
 

@@ -64,7 +64,7 @@
                     <!-- render all partial fields -->
                     <div [formGroupName]="i"
                          class="panel-body"
-                         [class.hide]="!expandedField[child.key + i]">
+                         [class.d-none]="!expandedField[child.key + i]">
 
                         <ige-main-form [form]="form.controls[field.key].controls[i].controls[child.key]"
                                        [fields]="child.children"></ige-main-form>

@@ -1,5 +1,4 @@
 import {Component, OnInit, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core';
-import {Modal} from 'ngx-modal';
 import {ModalService} from '../services/modal/modal.service';
 import {ErrorService} from '../services/error.service';
 import {RoleService} from './role.service';
@@ -7,6 +6,7 @@ import {MenuService} from '../menu/menu.service';
 import {Observable} from 'rxjs';
 import {Role, RoleAttribute} from '../models/user-role';
 import {MetadataTreeComponent} from '../+form/sidebars/tree/tree.component';
+import {BsModalRef} from 'ngx-bootstrap';
 
 @Component( {
   selector: 'role-gui',
@@ -136,7 +136,7 @@ export class RoleComponent implements OnInit {
       );
   }
 
-  createPermission(modal: Modal) {
-    modal.close();
+  createPermission(modal: BsModalRef) {
+    modal.hide();
   }
 }

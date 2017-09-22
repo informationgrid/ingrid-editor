@@ -11,19 +11,20 @@
 
     <!-- System behaviours -->
     <div *ngIf="'SYSTEM' === behaviourTab">
-        <div *ngFor="let plugin of plugins" class="checkbox panel panel-default">
-            <div class="panel-heading">
-                <label>
-                    <input #plug type="checkbox" (change)="togglePlugin(plugin, plug.checked, $event)"
+        <div *ngFor="let plugin of plugins" class="checkbox card border-light">
+            <div class="card-header form-check" (click)="toggleField(plugin)">
+                <label class="custom-control custom-checkbox">
+                    <input #plug class="custom-control-input" type="checkbox" (change)="togglePlugin(plugin, plug.checked, $event)"
                            [checked]="plugin.isActive">
-                    {{plugin.name}}
+                    <span class="custom-control-indicator"></span>
+                    <span class="custom-control-description">{{plugin.name}}</span>
                 </label>
-                <span class="fa pull-right clickable" (click)="toggleField(plugin)"
+                <span class="fa pull-right clickable"
                       [class.fa-chevron-up]="plugin._state === 'expanded'"
                       [class.fa-chevron-down]="plugin._state === 'collapsed'"
                 ></span>
             </div>
-            <div class="panel-body" [@openClose]="plugin._state">
+            <div class="card-body" [@openClose]="plugin._state">
                 <p>{{plugin.description}}</p>
             </div>
         </div>
@@ -32,20 +33,23 @@
     <!-- Behaviours for each profile -->
     <div role="presentation" *ngFor="let key of behavioursLabel" class="checkbox full">
         <div *ngIf="key === behaviourTab">
-            <div *ngFor="let behaviour of behaviours[key]" class="checkbox panel panel-default">
-                <div class="panel-heading">
-                    <label>
+            <div *ngFor="let behaviour of behaviours[key]" class="checkbox card">
+                <div class="card-header">
+                    <label class="custom-control custom-checkbox">
                         <input #checkBehave type="checkbox"
+                               class="custom-control-input"
                                (click)="toggleBehaviour(checkBehave.value, checkBehave.checked)"
                                [checked]="behaviour.isActive"
-                               value="{{behaviour.id}}"> {{behaviour.title}}
+                               value="{{behaviour.id}}">
+                        <span class="custom-control-indicator"></span>
+                        <span class="custom-control-description">{{behaviour.title}}</span>
                     </label>
                     <span class="fa pull-right clickable" (click)="toggleField(behaviour)"
                           [class.fa-chevron-up]="behaviour._state === 'expanded'"
                           [class.fa-chevron-down]="behaviour._state === 'collapsed'"
                     ></span>
                 </div>
-                <div class="panel-body" [@openClose]="behaviour._state">
+                <div class="card-body" [@openClose]="behaviour._state">
                     <p>{{behaviour.description}}</p>
                 </div>
             </div>

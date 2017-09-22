@@ -15,7 +15,6 @@ import {MenuComponent} from './menu/menu.component';
 import {BehavioursDefault} from './+behaviours/behaviours';
 import {FormularService} from './services/formular/formular.service';
 import {ModalService} from './services/modal/modal.service';
-import {ModalModule} from 'ngx-modal';
 import {UserModule} from './+user/user.module';
 import {AuthGuard} from './security/auth.guard';
 import {FormChangeDeactivateGuard} from './security/form-change.guard';
@@ -33,14 +32,16 @@ import {UVPProfile} from './services/formular/uvp/uvp.profile';
 import {PROFILES} from './services/formular/profile';
 import {AddressProfile} from './services/formular/address/address.profile';
 import {FolderProfile} from './services/formular/folder/folder.profile';
+import {FileUploadModule} from 'ng2-file-upload';
+import {AccordionModule, BsDatepickerModule, ModalModule, PopoverModule} from 'ngx-bootstrap';
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, MenuComponent],
   imports: [BrowserModule, BrowserAnimationsModule, HttpModule,
-    Ng2SmartTableModule,
+    Ng2SmartTableModule, FileUploadModule, PopoverModule.forRoot(), BsDatepickerModule.forRoot(), AccordionModule.forRoot(),
     IgeFormModule, DashboardModule, FieldsModule,
-    UserModule, ImportExportModule, PluginsModule, routing, ModalModule],
+    UserModule, ImportExportModule, PluginsModule, routing, ModalModule.forRoot()],
   providers: [appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     KeycloakService, KEYCLOAK_HTTP_PROVIDER,
     ErrorService, FormToolbarService, StorageService,

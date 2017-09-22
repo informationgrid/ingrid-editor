@@ -1,7 +1,6 @@
 import { Component, ElementRef, EventEmitter, forwardRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FieldBase } from '../controls';
-import { Modal } from 'ngx-modal';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Observable } from 'rxjs/Observable';
 import { DropdownField } from '../controls/field-dropdown';

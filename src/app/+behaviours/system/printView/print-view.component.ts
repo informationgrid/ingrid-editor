@@ -1,24 +1,26 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {Modal} from 'ngx-modal';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormularService} from '../../../services/formular/formular.service';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component({
   templateUrl: './print-view.component.html'
 })
 export class PrintViewComponent implements OnInit {
 
-  @ViewChild('printViewModal') printViewModal: Modal;
+  @ViewChild('printViewModal') printViewModal: TemplateRef<any>;
+
+  private printViewModalRef: BsModalRef;
 
   profile: any[] = null;
 
   doc: any = null;
 
-  constructor(private formService: FormularService) {
+  constructor(private modalService: BsModalService, private formService: FormularService) {
   }
 
   ngOnInit() {
 
-    this.printViewModal.open();
+    setTimeout( () => this.printViewModalRef = this.modalService.show(this.printViewModal) );
 
     // get current document
     let currentForm = this.formService.requestFormValues();

@@ -43,7 +43,7 @@ export class CodelistService {
             } else {
               this.codelists[id] = data.json();
               const entries = this.codelists[id].entries;
-              resolve( this.prepareEntries( entries ) );
+              resolve( entries ? this.prepareEntries( entries ) : [] );
             }
           }, (err) => reject( err ) );
       }

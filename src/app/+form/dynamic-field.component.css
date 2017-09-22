@@ -6,6 +6,6 @@
   display: block;
 }
 
-.ng-invalid:not(div):not(form) {
+.ng-invalid:not(.ng-untouched):not(div):not(form) {
   border-left: 2px solid red;
 }

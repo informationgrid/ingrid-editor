@@ -8,6 +8,7 @@ import { LinkDatasetField } from '../../../+form/controls/field-link-dataset';
 import { CodelistService } from '../../../+form/services/codelist.service';
 import { FieldBase } from '../../../+form/controls/field-base';
 import {Injectable} from '@angular/core';
+import {DatepickerField} from '../../../+form/controls/field-datepicker';
 
 @Injectable()
 export class UVPProfile implements Profile {
@@ -63,7 +64,7 @@ export class UVPProfile implements Profile {
         key: 'bbox',
         label: 'Karte',
         domClass: 'half',
-        height: 338,
+        height: 365,
         options: {
           zoomControl: true,
           center: new LatLng( 40.731253, -73.996139 ),
@@ -102,11 +103,10 @@ export class UVPProfile implements Profile {
             key: 'publicDisplay',
             label: 'Öffentliche Auslegung',
             children: [
-              new TextboxField( {
+              new DatepickerField( {
                 key: 'date',
                 label: 'Datum',
                 // domClass: 'half',
-                type: 'date'
               } ),
               new OpenTableField( {
                 key: 'constructionInfo',

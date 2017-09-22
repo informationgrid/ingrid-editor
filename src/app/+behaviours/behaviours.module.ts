@@ -9,7 +9,6 @@ import {Collapse} from '../directives/collapse.directive';
 import {BehaviourService} from './behaviour.service';
 import {MenuService} from '../menu/menu.service';
 import {PasteDialogComponent} from './system/CopyCutPaste/paste-dialog.component';
-import {ModalModule} from 'ngx-modal';
 import {SharedModule} from '../shared.module';
 import {PrintViewComponent} from './system/printView/print-view.component';
 import {CreateFolderComponent} from './system/folder/create-folder.component';
@@ -23,7 +22,7 @@ import {IsoViewPlugin} from './toolbar/isoView/iso-view.plugin';
 import { UndoPlugin } from './system/undo/undo.plugin';
 
 @NgModule( {
-  imports: [CommonModule, ModalModule, FormsModule, ReactiveFormsModule, SharedModule, routing],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedModule, routing],
   declarations: [PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewComponent, IsoViewComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent],
   providers: [MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin, StatisticPlugin, WorkflowPlugin, PrintViewPlugin, IsoViewPlugin, CopyCutPastePlugin, FolderPlugin, DeleteDocsPlugin, UndoPlugin],
   entryComponents: [PrintViewComponent, IsoViewComponent, PasteDialogComponent, CreateFolderComponent, DeleteDialogComponent, StatisticComponent]

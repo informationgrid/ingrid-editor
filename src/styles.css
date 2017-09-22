@@ -6,6 +6,39 @@ body {
   padding-top: 56px;
 }
 
+.modal .modal-content {
+  background-color: #03a9f4;
+  color: #fff;
+}
+
+.modal-alert .modal-content {
+  background-color: #f44336;
+}
+
+.modal .modal-header {
+  padding: 23px 26px;
+  border-bottom: 1px solid transparent;
+}
+
+.modal .modal-footer {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid transparent;
+}
+
+.modal .modal-footer .btn-link {
+  color: #fff;
+  text-decoration: none;
+  border-radius: 2px;
+}
+.modal .modal-footer .btn-link:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+}
+
+.border-dashed {
+  border: dotted 3px lightgray;
+}
+
 form-toolbar {
   position: fixed;
   top: 56px;
