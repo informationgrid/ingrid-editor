@@ -1,0 +1,56 @@
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-3">
+            <div>
+                <span class="badge badge-pill badge-info">1</span>
+                <span class="wizard-title">Datensatz auswählen</span>
+            </div>
+            <div class="padding">
+
+            </div>
+        </div>
+
+        <div class="col-2">
+            <span class="badge badge-pill badge-info">2</span>
+            <span class="wizard-title">Exportoptionen</span>
+
+            <div class="padding">
+                <label class="custom-control custom-radio">
+                    <input #plug class="custom-control-input" type="radio" name="exportOption">
+                    <span class="custom-control-indicator"></span>
+                    <span class="custom-control-description">nur diesen Datensatz</span>
+                </label>
+                <label class="custom-control custom-radio">
+                    <input #plug class="custom-control-input" type="radio" name="exportOption">
+                    <span class="custom-control-indicator"></span>
+                    <span class="custom-control-description">alle untergeordneten</span>
+                </label>
+                <label class="custom-control custom-radio">
+                    <input #plug class="custom-control-input" type="radio" name="exportOption">
+                    <span class="custom-control-indicator"></span>
+                    <span class="custom-control-description">dieser und alle untergeordneten</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="col-2">
+            <span class="badge badge-pill badge-info">3</span>
+            <span class="wizard-title">Start</span>
+
+            <div class="padding">
+                <button class="btn btn-lg btn-outline-info">Exportieren</button>
+            </div>
+        </div>
+
+        <div class="col">
+            <span class="badge badge-pill badge-info">4</span>
+            <span class="wizard-title">Ergebnis</span>
+
+            <div class="padding">
+
+            </div>
+        </div>
+
+    </div>
+</div>
