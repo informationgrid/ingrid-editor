@@ -1,25 +1,75 @@
 <ul class="nav nav-tabs">
-    <li role="presentation" [class.active]="currentTab === 'import'"><a (click)="currentTab = 'import'">Import</a></li>
-    <li role="presentation" [class.active]="currentTab === 'export'"><a (click)="currentTab = 'export'">Export</a></li>
+    <li class="nav-item" role="presentation" [class.active]="currentTab === 'import'"><a class="nav-link" (click)="currentTab = 'import'">Import</a></li>
+    <li class="nav-item" role="presentation" [class.active]="currentTab === 'export'"><a class="nav-link" (click)="currentTab = 'export'">Export</a></li>
 </ul>
-<div class="padding">
+<div class="padding tab-content d-flex fl" style="flex: 1;">
 
-    <div [class.hide]="currentTab !== 'import'">
-        <h1>import</h1>
-        <form>
-            <div class="form-group">
-                <label class="btn btn-default btn-file">
-                    <input #fileInput type="file" class="form-control" hidden>
-                    Upload
-                </label>
-                <span class="text-muted">{{fileInput.value}}</span>
+    <div class="tab-pane" [class.active]="currentTab === 'import'" style="flex: 1;">
+        <div class="container-fluid d-flex h-100">
+            <div class="row" style="flex: 1;">
+                <div class="col">
+
+                    <accordion [closeOthers]="true">
+                        <accordion-group [isOpen]="true">
+                            <div accordion-heading>
+                                <span class='badge badge-pill badge-info'>1</span>
+                                <span>Datensatz auswählen</span>
+                            </div>
+                            <div ng2FileDrop
+                                 [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
+                                 (fileOver)="fileOverBase($event)"
+                                 [uploader]="uploader"
+                                 class="card-body text-center border-dashed">
+                                Import-Datei ablegen
+                            </div>
+
+                            <p class="text-center padding-sm">oder</p>
+
+                            <div>
+                                <label class="custom-file w-100">
+                                    <input #fileInput type="file" class="custom-file-input">
+                                    <span class="custom-file-control"></span>
+                                </label>
+                            </div>
+                        </accordion-group>
+                        <accordion-group>
+                            <div accordion-heading>
+                                <span class='badge badge-pill badge-info'>2</span>
+                                <span>Analyse</span>
+                            </div>
+                            <div class="text-center padding">
+                                <span class="text-muted">{{fileInput.value}}</span>
+                                <button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Start Import</button>
+                            </div>
+                        </accordion-group>
+                        <accordion-group [isDisabled]="true">
+                            <div accordion-heading>
+                                <div>
+                                    <span class='badge badge-pill badge-info'>3</span>
+                                    <span>Start</span>
+                                </div>
+                            </div>
+                        </accordion-group>
+                    </accordion>
+
+                </div>
+
+                <div class="col-1 text-center">
+                    <span class="fa fa-chevron-right text-info" style="font-size: 7rem;"></span>
+                    <p>Vorschau</p>
+                </div>
+
+                <div class="col">
+                    <div class="h-100 border-dashed">
+                        <ige-main-form-tabs [fields]="formFields" [form]="form"></ige-main-form-tabs>
+                    </div>
+                </div>
             </div>
-            <button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Import</button>
-        </form>
+        </div>
     </div>
 
-    <div [class.hide]="currentTab !== 'export'">
-        <h1>export</h1>
+    <div class="tab-pane w-100" [class.active]="currentTab === 'export'">
+        <ige-export></ige-export>
     </div>
 
 </div>

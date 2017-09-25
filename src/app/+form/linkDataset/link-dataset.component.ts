@@ -1,6 +1,6 @@
-import {Component, OnInit, forwardRef, ViewChild, Input} from '@angular/core';
+import {Component, OnInit, forwardRef, ViewChild, Input, TemplateRef} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from "@angular/forms";
-import {Modal} from "ngx-modal";
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 export const LINK_DATASET_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -22,10 +22,11 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
 
   private _onChangeCallback: (x: any) => void;
 
-  @ViewChild('chooseDatasetModal') chooseDatasetModal: Modal;
+  @ViewChild('chooseDatasetModal') chooseDatasetModal: TemplateRef<any>;
+  private chooseDatasetModalRef: BsModalRef;
 
 
-  constructor() {
+  constructor(private modalService: BsModalService) {
   }
 
   ngOnInit() {
@@ -33,7 +34,7 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
 
   selectDataset() {
     this.linkedDataset = this.selection;
-    this.chooseDatasetModal.close();
+    this.chooseDatasetModalRef.hide();
     this._onChangeCallback(this.linkedDataset);
   }
 

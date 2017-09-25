@@ -1,6 +1,8 @@
-<modal #printViewModal modalClass="info" title="Detailansicht" submitButtonLabel="Ok"
-       (onSubmit)="printViewModal.close()">
-    <modal-content>
+<ng-template #printViewModal>
+    <div class="modal-header">
+        <h4 class="modal-title">Detailansicht</h4>
+    </div>
+    <div class="modal-body">
         <div *ngFor="let field of profile">
             <div [ngSwitch]="field.controlType">
                 <div *ngSwitchCase="'container'">
@@ -17,5 +19,32 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-link" (click)="printViewModalRef.hide()">Schließen</button>
+    </div>
+</ng-template>
+
+
+<!--
+<modal #printViewModal modalClass="info" title="Detailansicht" submitButtonLabel="Ok"
+       (onSubmit)="printViewModal.close()">
+    <modal-content>
+        <div *ngFor="let field of profile">
+            <div [ngSwitch]="field.controlType">
+                <div *ngSwitchCase="'container'">
+                    <div *ngFor="let child of field.children">
+                        &lt;!&ndash; TODO: use component to handle rendering &ndash;&gt;
+                        <label>{{child.key}}</label>
+                        <div>{{doc[field.key][child.key]}}</div>
+                    </div>
+                </div>
+                <div *ngSwitchDefault="">
+                    &lt;!&ndash; TODO: use component to handle rendering &ndash;&gt;
+                    <label>{{field.key}}</label>
+                    <div>{{doc[field.key]}}</div>
+                </div>
+            </div>
+        </div>
     </modal-content>
-</modal>
+</modal>-->

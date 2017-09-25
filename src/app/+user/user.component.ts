@@ -11,8 +11,10 @@ import {Role} from '../models/user-role';
   styles: [`
     .userTabContainer, .roleTabContainer {
       position: absolute;
-      top: 93px;
-      bottom: 0px;
+      top: 98px;
+      bottom: 0;
+      left: 0;
+      right: 0;
     }
   `]
 })

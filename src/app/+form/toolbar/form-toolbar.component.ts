@@ -6,7 +6,7 @@ import { FormToolbarService, ToolbarItem, Separator } from './form-toolbar.servi
   templateUrl: './form-toolbar.component.html',
   styles: [`
         .btn { background-color: transparent; }
-        .btn.fa { font-size: 20px; }
+        .btn.fa { font-size: 16px; }
         .btn:hover { border: #d8d8d8 1px solid; border-radius: 4px; }
         .btn:focus { outline-color: transparent; }
         .btn:disabled:hover { border: transparent 1px solid; color: #777; }

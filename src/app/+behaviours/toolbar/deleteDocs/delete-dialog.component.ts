@@ -1,32 +1,51 @@
-import {Component, Injector, OnInit, ViewChild} from '@angular/core';
-import {Modal} from 'ngx-modal';
+import {Component, Injector, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Router} from '@angular/router';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component({
   template: `
-    <modal #deleteConfirmModal title="Löschen" cancelButtonLabel="Nein" submitButtonLabel="Ja" (onSubmit)="doDelete()">
+    <ng-template #deleteConfirmModal>
+      <div class="modal-header">
+        <h4 class="modal-title">Löschen</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Möchten Sie wirklich diese Datensätze löschen:</p>
+        <ul>
+          <li *ngFor="let doc of docsToDelete">{{doc.label}}</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-link" (click)="doDelete()">Ja</button>
+        <button type="button" class="btn btn-link" (click)="modalRef.hide()">Nein</button>
+      </div>
+    </ng-template>
+    <!--<modal #deleteConfirmModal title="Löschen" cancelButtonLabel="Nein" submitButtonLabel="Ja" (onSubmit)="doDelete()">
       <modal-content>
         <p>Möchten Sie wirklich diese Datensätze löschen:</p>
         <ul>
-          <li *ngFor="let doc of docsToDelete">\{\{doc.label}}</li>
+          <li *ngFor="let doc of docsToDelete">{{doc.label}}</li>
         </ul>
       </modal-content>
-    </modal>
+    </modal>-->
   `
 })
 export class DeleteDialogComponent implements OnInit {
 
-  @ViewChild('deleteConfirmModal') deleteConfirmModal: Modal;
+  @ViewChild('deleteConfirmModal') deleteConfirmModal: TemplateRef<any>;
+  modalRef: BsModalRef;
   docsToDelete: any[];
 
-  constructor(injector: Injector, private storageService: StorageService,
+  constructor(injector: Injector, private modalService: BsModalService, private storageService: StorageService,
               private router: Router) {
     this.docsToDelete = injector.get('docs' );
   }
 
   ngOnInit() {
-    this.deleteConfirmModal.open();
+    setTimeout( () => this.modalRef = this.modalService.show(this.deleteConfirmModal, {class: 'modal-alert'}), 0);
   }
 
   doDelete() {
@@ -44,6 +63,6 @@ export class DeleteDialogComponent implements OnInit {
     } catch (ex) {
       console.error( 'Could not delete' );
     }
-    this.deleteConfirmModal.close();
+    this.modalRef.hide();
   }
 }

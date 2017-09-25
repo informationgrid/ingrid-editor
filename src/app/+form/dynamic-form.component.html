@@ -9,23 +9,34 @@
 </div>
 
 <div class="tabs-left menu">
-    <ul class="nav nav-tabs">
-        <li [class.active]="sideTab === 'tree'"><a (click)="sideTab = 'tree'" title="Baumstruktur"
-                                                   data-toggle="tab"><span
-            class="glyphicon glyphicon-tree-conifer"></span></a></li>
-        <li [class.active]="sideTab === 'search'"><a (click)="sideTab = 'search'" title="Suche" data-toggle="tab"><span
-            class="glyphicon glyphicon-search"></span></a></li>
-        <li [class.active]="sideTab === 'wizards'"><a (click)="sideTab = 'wizards'" title="Assistenten"
-                                                      data-toggle="tab"><span class="fa fa-magic"></span></a></li>
-        <li [class.active]="sideTab === 'favorites'"><a (click)="sideTab = 'favorites'" title="Favoriten"
-                                                        data-toggle="tab"><span class="glyphicon glyphicon-star"></span></a>
+    <ul class="nav nav-tabs flex-column">
+        <li class="nav-item" [class.active]="sideTab === 'tree'">
+            <a class="nav-link" (click)="sideTab = 'tree'" title="Baumstruktur" data-toggle="tab">
+                <span class="fa fa-tree"></span>
+            </a>
         </li>
-        <li class="toggle"><a title="Ein-/Ausklappen" (click)="hideSidebar = !hideSidebar">
-            <span class="glyphicon"
-                  [class.glyphicon-chevron-left]="!hideSidebar"
-                  [class.glyphicon-chevron-right]="hideSidebar"
-            ></span>
-        </a></li>
+        <li class="nav-item" [class.active]="sideTab === 'search'">
+            <a class="nav-link" (click)="sideTab = 'search'" title="Suche" data-toggle="tab">
+                <span class="fa fa-search"></span>
+            </a>
+        </li>
+        <li class="nav-item" [class.active]="sideTab === 'wizards'">
+            <a class="nav-link" (click)="sideTab = 'wizards'" title="Assistenten" data-toggle="tab">
+                <span class="fa fa-magic"></span>
+            </a>
+        </li>
+        <li class="nav-item" [class.active]="sideTab === 'favorites'">
+            <a class="nav-link" (click)="sideTab = 'favorites'" title="Favoriten" data-toggle="tab">
+                <span class="fa fa-star"></span>
+            </a>
+        </li>
+        <li class="nav-item" class="toggle">
+            <a class="nav-link" title="Ein-/Ausklappen" (click)="hideSidebar = !hideSidebar">
+                <span class="fa"
+                      [class.fa-chevron-left]="!hideSidebar"
+                      [class.fa-chevron-right]="hideSidebar"></span>
+            </a>
+        </li>
     </ul>
 </div>
 
@@ -35,18 +46,18 @@
         <!--<div class="col-md-4 col-sm-5">-->
         <div class="tabs-left">
             <div class="tab-content">
-                <div class="tab-pane" [class.hide]="sideTab !== 'tree'">
+                <div class="tab-pane" [class.active]="sideTab === 'tree'">
                     <tree (activate)="handleLoad($event)"
                           (selected)="handleSelection($event)"></tree>
                 </div>
-                <div class="tab-pane" [class.hide]="sideTab !== 'search'">
+                <div class="tab-pane" [class.active]="sideTab === 'search'">
                     <browser (onSelected)="load($event.id)"></browser>
                 </div>
-                <div class="tab-pane" [class.hide]="sideTab !== 'wizards'">
+                <div class="tab-pane" [class.active]="sideTab === 'wizards'">
                     <!--<a [routerLink]="['/form/10']">Zurück</a>-->
                     <router-outlet name="wizard"></router-outlet>
                 </div>
-                <div class="tab-pane" [class.hide]="sideTab !== 'favorites'">
+                <div class="tab-pane" [class.active]="sideTab === 'favorites'">
                     <div class="panel panel-default">
                         <!-- Default panel contents -->
                         <div class="panel-heading">Favoriten</div>
@@ -81,7 +92,7 @@
 
     <!-- The form -->
     <split-area [size]="75" id="form" class="formWrapper">
-        <div *ngIf="!form" class="info-no-selection well text-center">
+        <div *ngIf="!form" class="info-no-selection card-body text-center">
             Kein Dokument ausgewählt. Laden Sie ein vorhandenes oder erstellen Sie ein neues Dokument über die Toolbar.
         </div>
 
@@ -96,42 +107,42 @@
                          (mouseover)="markFavoriteHovered = true"
                          (mouseout)="markFavoriteHovered = false"
                          (click)="markFavorite($event)">
-                        <span class="glyphicon"
-                              [class.glyphicon-star]="false || markFavoriteHovered"
-                              [class.glyphicon-star-empty]="true && !markFavoriteHovered"
+                        <span class="fa"
+                              [class.fa-star]="false || markFavoriteHovered"
+                              [class.fa-star-o]="true && !markFavoriteHovered"
                         ></span>
                         {{getTitle()}}
                     </div>
                     <div class="padding-sm pull-right">
-                        <span class="glyphicon glyphicon-user"></span>
+                        <span class="fa fa-user"></span>
                         <small>
                             <strong>Autor:</strong> {{data._modifiedBy}}
                         </small>
                     </div>
                     <div class="padding-sm pull-right">
-                        <span class="glyphicon glyphicon-time" [class.active]="showDateBar"
+                        <span class="fa fa-clock-o" [class.active]="showDateBar"
                               title="Zeige Datumsinformation"></span>
                         <small>
                             <strong>Geändert:</strong> {{data._modified | date:'HH:mm - dd.MM.yyyy'}}
                         </small>
                     </div>
                     <div style="clear: both;"></div>
-                    <div [class.hide]="!showDateBar" style="clear: both;">
+                    <div [class.d-none]="!showDateBar" style="clear: both;">
                         <div class="padding-sm pull-right">
                             <small>
                                 <strong>Erstellt:</strong> {{data._created | date:'HH:mm - dd.MM.yyyy'}}
                             </small>
                         </div>
                     </div>
-                    <!--<span class="glyphicon glyphicon-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
+                    <!--<span class="fa fa-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
                     <div class="text-center" style="position:absolute; margin: 0 50%; bottom: -5px;">
-                        <span class="glyphicon"
-                              [class.glyphicon-chevron-down]="!showDateBar"
-                              [class.glyphicon-chevron-up]="showDateBar"></span>
+                        <span class="fa"
+                              [class.fa-chevron-down]="!showDateBar"
+                              [class.fa-chevron-up]="showDateBar"></span>
                     </div>
                     <!--<div style="position: absolute; left: 50%;">
                         <div style="position: relative; left: -50%; border: dotted red 1px;">
-                          <span class="glyphicon glyphicon-chevron-down"></span>
+                          <span class="fa fa-chevron-down"></span>
                         </div>
                     </div>-->
                 </span>
@@ -146,7 +157,7 @@
                                     (onAddSection)="addSection($event)"></ige-main-form-tabs>
                 <!--</div>-->
             </div>
-            <div *ngIf="debugEnabled" class="well text-muted">
+            <div *ngIf="debugEnabled" class="card-body text-muted">
                 <strong>Form contains the following values</strong><br>{{form.value | json}}
                 <!--<p>Form is valid: {{form.valid}}</p>-->
             </div>
@@ -178,7 +189,36 @@
 
 </split>
 
-<modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">
+<ng-template #newDocModal>
+    <div class="modal-header">
+        <h4 class="modal-title">Neues Dokument</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="radio" *ngFor="let type of newDocOptions.docTypes">
+            <label class="custom-control custom-radio">
+                <input class="custom-control-input" name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="type.id">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">{{type.label}}</span>
+            </label>
+        </div>
+        <div class="checkbox">
+            <label class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" [disabled]="!newDocOptions.rootOption" [(ngModel)]="addToDoc">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">unter ausgewähltem Dokument/Ordner anlegen</span>
+            </label>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-link" (click)="prepareNewDoc()">Anlegen</button>
+        <!--<button type="button" class="btn btn-link" (click)="modalRef.hide()">Nein</button>-->
+    </div>
+</ng-template>
+
+<!--<modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">
     <modal-content>
         <div class="radio" *ngFor="let type of newDocOptions.docTypes">
             <label>
@@ -192,11 +232,25 @@
             </label>
         </div>
     </modal-content>
-</modal>
+</modal>-->
 
-<modal #discardConfirmModal title="Daten wurden geändert" cancelButtonLabel="Nein" submitButtonLabel="Ja"
+<ng-template #discardConfirmModal>
+    <div class="modal-header">
+        <h4 class="modal-title">Daten wurden geändert</h4>
+    </div>
+    <div class="modal-body">
+        <p>Der Datensatz wurde geändert. Wollen Sie die Änderungen verwerfen und einen anderen Datensatz laden?</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-link" (click)="discardChanges()">Verwerfen</button>
+        <button class="btn btn-link" (click)="isoViewModalRef.hide()">Abbrechen</button>
+    </div>
+</ng-template>
+
+
+<!--<modal #discardConfirmModal title="Daten wurden geändert" cancelButtonLabel="Nein" submitButtonLabel="Ja"
        (onSubmit)="discardChanges()">
     <modal-content>
         <p>Der Datensatz wurde geändert. Wollen Sie die Änderungen verwerfen und einen anderen Datensatz laden?</p>
     </modal-content>
-</modal>
+</modal>-->

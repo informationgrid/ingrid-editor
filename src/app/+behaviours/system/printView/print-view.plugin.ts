@@ -25,7 +25,7 @@ export class PrintViewPlugin extends Plugin {
 
     // add button to toolbar
     this.formToolbarService.addButton({
-      id: 'toolBtnPrint', tooltip: 'Print', cssClasses: 'glyphicon glyphicon-print', eventId: 'PRINT', active: true
+      id: 'toolBtnPrint', tooltip: 'Print', cssClasses: 'fa fa-print', eventId: 'PRINT', active: true
     }, 6);
 
     // react on event when button is clicked

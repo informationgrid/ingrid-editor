@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormArray, FormGroup} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
 import {Container, FieldBase} from './controls';
@@ -9,7 +9,6 @@ import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StorageService} from '../services/storage/storage.service';
 import {ModalService} from '../services/modal/modal.service';
-import {Modal} from 'ngx-modal';
 import {PartialGeneratorField} from './controls/field-partial-generator';
 import {UpdateType} from '../models/update-type.enum';
 import {ErrorService} from '../services/error.service';
@@ -20,6 +19,7 @@ import {KeycloakService} from '../keycloak/keycloak.service';
 import {RoleService} from '../+user/role.service';
 import { Subscription } from 'rxjs/Subscription';
 import {WizardService} from '../wizard/wizard.service';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 interface FormData extends Object {
   _id?: string;
@@ -38,14 +38,17 @@ export interface FormDataContainer {
   selector: 'dynamic-form',
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.css'],
-  providers: [FormControlService]
+  providers: [FormControlService],
+  host: {'(window:keydown)': 'hotkeys($event)'}
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild('newDocModal') newDocModal: Modal;
-  @ViewChild('deleteConfirmModal') deleteConfirmModal: Modal;
-  @ViewChild('discardConfirmModal') discardConfirmModal: Modal;
+  @ViewChild('newDocModal') newDocModal: TemplateRef<any>;
+  @ViewChild('deleteConfirmModal') deleteConfirmModal: TemplateRef<any>;
+  @ViewChild('discardConfirmModal') discardConfirmModal: TemplateRef<any>;
+
+  newDocModalRef: BsModalRef;
 
   debugEnabled = false;
 
@@ -89,6 +92,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   pendingId: string;
 
   constructor( private toastyService: ToastyService, private toastyConfig: ToastyConfig,
+              private modal2Service: BsModalService,
               private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
@@ -199,6 +203,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return true;
   }*/
 
+  hotkeys(event: KeyboardEvent) {
+    if (event.ctrlKey && event.keyCode === 83) { // CTRL + S (Save)
+      console.log("SAVE");
+      event.stopImmediatePropagation();
+      event.stopPropagation();
+      event.preventDefault();
+      if (this.form) {
+        this.save();
+      }
+    }
+  }
+
   newDoc() {
     // let options = {
     //   availableTypes: this.formularService.docTypes,
@@ -208,7 +224,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.newDocOptions.docTypes = this.formularService.getDocTypes().filter( type => type.id !== 'FOLDER');
     this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
     this.formularService.newDocumentSubject.next(this.newDocOptions);
-    this.newDocModal.open();
+    this.newDocModalRef = this.modal2Service.show(this.newDocModal);
   }
 
   prepareNewDoc() {
@@ -250,7 +266,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     } catch (ex) {
       console.error( 'Error adding new document: ', ex );
     }
-    this.newDocModal.close();
+    this.newDocModalRef.hide();
   }
 
   handleNewDatasetOnLeave() {
@@ -267,7 +283,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.handleNewDatasetOnLeave();
 
-    this.discardConfirmModal.close();
+    // this.discardConfirmModal.close();
   }
 
   handleSelection(selectedDocs: SelectedDocument[]) {

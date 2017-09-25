@@ -57,7 +57,7 @@ export class ShowDateInSectionBehaviour extends BaseBehaviour implements Behavio
 
   static _findTitleElementFrom(field: HTMLElement): HTMLElement {
     let parent = field.parentElement;
-    while (parent && !parent.classList.contains('panel')) {
+    while (parent && !parent.classList.contains('card')) {
       parent = parent.parentElement;
     }
     if (parent) {

@@ -1,10 +1,28 @@
 <div>
-    <div class="form-group well well-sm text-center">
-        <button class="btn btn-default" type="button" (click)="showPartialChoice()">{{field.label}}</button>
+    <div class="form-group card-body text-center">
+        <button class="btn btn-secondary" type="button" (click)="showPartialChoice()">{{field.label}}</button>
     </div>
 </div>
 
-<modal #addPartial title="Hinzufügen" submitButtonLabel="Hinzufügen" (onSubmit)="addPartialToForm()">
+<ng-template #addPartial>
+    <div class="modal-header">
+        <h4 class="modal-title">Hinzufügen</h4>
+    </div>
+    <div class="modal-body">
+        <div class="radio" *ngFor="let type of types">
+            <label>
+                <input name="type" type="radio" [(ngModel)]="choiceType" [value]="type.id"> {{type.label}}
+            </label>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-link" (click)="addPartialToForm()">Hinzufügen</button>
+        <button class="btn btn-link" (click)="addPartialModalRef.hide()">Abbrechen</button>
+    </div>
+</ng-template>
+
+
+<!--<modal #addPartial title="Hinzufügen" submitButtonLabel="Hinzufügen" (onSubmit)="addPartialToForm()">
     <modal-content>
         <div class="radio" *ngFor="let type of types">
             <label>
@@ -12,4 +30,4 @@
             </label>
         </div>
     </modal-content>
-</modal>
+</modal>-->

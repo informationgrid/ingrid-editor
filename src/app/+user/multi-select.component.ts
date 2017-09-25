@@ -37,7 +37,7 @@ export interface IMultiSelectOption {
 export interface IMultiSelectSettings {
   pullRight?: boolean;
   enableSearch?: boolean;
-  checkedStyle?: 'checkboxes' | 'glyphicon';
+  checkedStyle?: 'checkboxes' | 'fa';
   buttonClasses?: string;
   selectionLimit?: number;
   closeOnSelect?: boolean;
@@ -84,20 +84,20 @@ export class MultiSelectSearchFilter {
                         <input type="text" class="form-control" placeholder="{{ texts.searchPlaceholder }}" 
                         aria-describedby="sizing-addon3" name="search" [(ngModel)]="searchFilterText">
                         <span class="input-group-btn" *ngIf="searchFilterText.length > 0">
-                            <button class="btn btn-default" type="button" (click)="clearSearch()"><i class="fa fa-times"></i></button>
+                            <button class="btn btn-secondary" type="button" (click)="clearSearch()"><i class="fa fa-times"></i></button>
                         </span>
                     </div>
                 </li>
                 <li class="divider" *ngIf="settings.enableSearch"></li>
                 <li *ngIf="settings.showCheckAll">
                     <a href="javascript:;" role="menuitem" tabindex="-1" (click)="checkAll()">
-                        <span style="width: 16px;" class="glyphicon glyphicon-ok"></span>
+                        <span style="width: 16px;" class="fa fa-check"></span>
                         {{ texts.checkAll }}
                     </a>
                 </li>
                 <li *ngIf="settings.showUncheckAll">
                     <a href="javascript:;" role="menuitem" tabindex="-1" (click)="uncheckAll()">
-                        <span style="width: 16px;" class="glyphicon glyphicon-remove"></span>
+                        <span style="width: 16px;" class="fa fa-times"></span>
                         {{ texts.uncheckAll }}
                     </a>
                 </li>
@@ -105,8 +105,8 @@ export class MultiSelectSearchFilter {
                 <li *ngFor="let option of options | searchFilter:searchFilterText">
                     <a href="javascript:;" role="menuitem" tabindex="-1" (click)="setSelected($event, option)">
                         <input *ngIf="settings.checkedStyle == 'checkboxes'" type="checkbox" name="selection" [checked]="isSelected(option)" />
-                        <span *ngIf="settings.checkedStyle == 'glyphicon'" style="width: 16px;" 
-                        class="glyphicon" [class.glyphicon-ok]="isSelected(option)"></span>
+                        <span *ngIf="settings.checkedStyle == 'fa'" style="width: 16px;" 
+                        class="fa" [class.fa-check]="isSelected(option)"></span>
                         {{ option.name }}
                     </a>
                 </li>
@@ -150,7 +150,7 @@ export class MultiselectDropdown implements OnInit, DoCheck, ControlValueAccesso
     pullRight: false,
     enableSearch: false,
     checkedStyle: 'checkboxes',
-    buttonClasses: 'btn btn-default',
+    buttonClasses: 'btn btn-secondary',
     selectionLimit: 0,
     closeOnSelect: false,
     autoUnselect: false,

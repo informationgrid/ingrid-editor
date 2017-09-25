@@ -8,6 +8,7 @@ import {
   OnDestroy,
   ViewChild
 } from '@angular/core';
+import * as L from 'leaflet';
 import {Map, LatLngBounds, MapOptions, Rectangle} from 'leaflet';
 import {} from 'leaflet-areaselect';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -36,7 +37,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
     </div>-->
     <div class="full">
       <button *ngIf="!showSearch" type="button" title="Bearbeiten"
-              class="btn btn-default glyphicon glyphicon-edit pull-left" (click)="toggleSearch(true)"></button>
+              class="btn btn-outline-secondary fa fa-pencil-square-o pull-left" (click)="toggleSearch(true)"></button>
       <div class="text-muted text-center">
         <small *ngIf="drawnBBox">
           Latitude: {{_bbox.lat1 | number:'1.0-4'}} - {{_bbox.lat2 | number:'1.0-4'}}
@@ -54,7 +55,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
           <option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>
         </select>
         <div class="bottom">
-          <button type="button" class="btn btn-default pull-left" (click)="cancelEdit()">Abbrechen</button>
+          <button type="button" class="btn btn-secondary pull-left" (click)="cancelEdit()">Abbrechen</button>
           <button type="button" class="btn btn-primary pull-right" (click)="applyEdit()">Übernehmen</button>
         </div>
       </div>
@@ -283,17 +284,19 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   private setupAreaSelect() {
     const box = this.drawnBBox ? this.drawnBBox._path.getBBox() : null;
     if (box) {
-      //this.areaSelect = L.areaSelect( box );
+      this.areaSelect = L.areaSelect( box );
     } else {
-      //this.areaSelect = L.areaSelect( {width: 50, height: 50} );
+      this.areaSelect = L.areaSelect( {width: 50, height: 50} );
     }
     this.areaSelect.addTo( this.leafletReference );
   }
 
   private setAreaSelect() {
     const updateAreaSelect = () => {
-      const box = this.drawnBBox._path.getBBox();
-      this.areaSelect.setDimensions( box );
+      if (this.drawnBBox) {
+        const box = this.drawnBBox._path.getBBox();
+        this.areaSelect.setDimensions( box );
+      }
     };
     this.drawBoxAndZoomToBounds().once( 'zoomend', () => {
       setTimeout( () => updateAreaSelect(), 10 );

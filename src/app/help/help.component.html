@@ -1,9 +1,10 @@
 <div class="outer-wrapper" [class.collapsed]="menuState === 'collapsed'" [@openClose]="menuState">
-    <button class="btn-help btn btn-default glyphicon glyphicon-question-sign"
-            (click)="toggleState()"></button>
-    <span class="btn-expand glyphicon"
-          [class.glyphicon-resize-small]="menuState === 'maximized'"
-          [class.glyphicon-resize-full]="menuState === 'expanded'"
+    <button class="btn-help btn btn-outline-dark" (click)="toggleState()">
+        <span class="fa fa-question"></span>
+    </button>
+    <span class="btn-expand fa"
+          [class.fa-expand]="menuState === 'maximized'"
+          [class.fa-arrows-alt]="menuState === 'expanded'"
           (click)="toggleMaximized()"></span>
 
     <div class="wrapper">

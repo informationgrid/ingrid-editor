@@ -1,3 +1,11 @@
 :host {
   width: 100%;
 }
+
+.show {
+  display: block;
+}
+
+.ng-invalid:not(.ng-untouched):not(div):not(form) {
+  border-left: 2px solid red;
+}

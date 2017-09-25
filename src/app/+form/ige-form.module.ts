@@ -8,7 +8,6 @@ import { DynamicFormComponent } from './dynamic-form.component';
 import { LeafletComponent } from './leaflet/leaflet.component';
 import { routing } from './ige-form.routing';
 import { BrowserComponent } from './sidebars/browser/browser.component';
-import { ModalModule } from 'ngx-modal';
 import { OpenTable } from './opentable/opentable.component';
 import { PartialGenerator } from './partialGenerator/partial-generator.component';
 import { TreeModule } from 'angular-tree-component';
@@ -23,22 +22,23 @@ import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component
 import { OpentableModule } from './opentable/opentable.module';
 import { ComboBoxModule } from 'ng2-combobox';
 import { DropDownComponent } from './drop-down/drop-down.component';
-import { PopoverModule } from 'ngx-popover';
 import { WizardModule } from 'ng2-archwizard/dist';
 import {IgeWizardModule} from '../wizard/wizard.module';
 import {ScrollToDirective} from '../directives/scrollTo.directive';
+import {FileUploadModule} from 'ng2-file-upload'
+import {BsDatepickerModule, PopoverModule} from 'ngx-bootstrap';
 
 @NgModule({
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule,
-    PopoverModule, ComboBoxModule, WizardModule, IgeWizardModule,
-    SharedModule, routing, ModalModule, TreeModule, OpentableModule],
+    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule, FileUploadModule,
+    PopoverModule, ComboBoxModule, WizardModule, IgeWizardModule, BsDatepickerModule,
+    SharedModule, routing, TreeModule, OpentableModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
     FocusDirective, ScrollToDirective, MainFormComponent, MainFormTabsComponent, DropDownComponent],
   providers: [CodelistService, NominatimService],
-  exports: [ToastyModule, FormsModule, FocusDirective, ScrollToDirective]
+  exports: [ToastyModule, FormsModule, FocusDirective, ScrollToDirective, MainFormTabsComponent]
 })
 export class IgeFormModule {
 }

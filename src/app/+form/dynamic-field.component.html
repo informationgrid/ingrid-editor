@@ -4,9 +4,10 @@
      (mouseleave)="showHelp = false">
 
     <label *ngIf="!field.hideLabel" class="control-label" [attr.for]="field.key">{{field.label}}
-        <span *ngIf="showHelp" class="btnHelp text-muted glyphicon glyphicon-question-sign"
+        <span *ngIf="showHelp" class="btnHelp text-muted fa fa-question-circle-o"
               popoverTitle="Hilfe (Header kann entfallen)"
               popover="{{field.help}}"
+              triggers="mouseenter"
               popoverPlacement="top"
         ></span>
     </label>
@@ -23,20 +24,33 @@
         <input *ngSwitchCase="'textbox'" [formControlName]="field.key" class="form-control"
                [id]="field.key" [attr.type]="field.type">
 
+        <!-- DATEPICKER -->
+        <input *ngSwitchCase="'datepicker'"
+               class="form-control"
+               value="{{field.value | date:'dd.MM.YYYY'}}"
+               [formControlName]="field.key"
+               bsDatepicker
+               [bsConfig]="bsConfig"
+        >
+
         <!-- CHECKBOX -->
         <div *ngSwitchCase="'checkbox'" class="checkbox">
-            <label>
-                <input [formControlName]="field.key" [id]="field.key" type="checkbox">
-                {{field.label}}
+            <label class="custom-control custom-checkbox">
+                <input [formControlName]="field.key" [id]="field.key" type="checkbox" class="custom-control-input">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">{{field.label}}</span>
             </label>
         </div>
 
         <!-- TODO: https://github.com/pleerock/ng2-radio-group -->
         <!-- RADIO BUTTON-->
         <span *ngSwitchCase="'radio'">
-            <label *ngFor="let opt of field.options" class="radio-inline">
+            <label *ngFor="let opt of field.options" class="custom-control custom-radio">
                 <input [formControlName]="field.key" type="radio"
-                       [value]="opt.value"> {{opt.label}}
+                       class="custom-control-input"
+                       [value]="opt.value">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">{{opt.label}}</span>
             </label>
         </span>
 
@@ -64,7 +78,7 @@
 
         <link-dataset *ngSwitchCase="'linkDataset'" [formControlName]="field.key" [filter]="field.filter"></link-dataset>
 
-        <div class="help-block" [class.hide]="form.controls[field.key].valid || form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>
+        <div class="invalid-feedback" [class.show]="form.controls[field.key].invalid && !form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>
     </ng-container>
 
 </div>

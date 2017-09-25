@@ -7,7 +7,7 @@ import {environment} from '../../environments/environment'
 @Component({
     templateUrl: './dashboard.component.html',
     styles: [`
-        .chart { width: 300px; }
+        .chart { width: 500px; }
         .content { display: inline-block;}
     `]
 })

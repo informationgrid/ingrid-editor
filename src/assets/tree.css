@@ -89,6 +89,10 @@ div.tree tree-node>div .node-content-wrapper {
   margin-left: 4px
 }
 
+div.tree tree-node>div .node-content-wrapper:hover {
+  background: transparent;
+}
+
 div.tree>tree-node>div::before {
   left: 14px
 }

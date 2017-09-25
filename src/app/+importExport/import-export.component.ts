@@ -1,9 +1,25 @@
 import {Component, OnInit} from '@angular/core';
 import {ImportExportService} from './import-export-service';
+import {FileUploader} from 'ng2-file-upload';
+import {environment} from '../../environments/environment';
+import {FormControl, FormGroup} from '@angular/forms';
+import {TextboxField} from '../+form/controls/field-textbox';
 
 @Component({
   templateUrl: './import-export.component.html',
   styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    [accordion-heading] span {
+      vertical-align: middle;
+    }
+    
+    .nv-file-over { border: dotted 3px green; } /* Default class applied to drop zones on over */
+    
     .btn-file {
       position: relative;
       overflow: hidden;
@@ -29,14 +45,36 @@ export class ImportExportComponent implements OnInit {
 
   file: File;
 
+  public uploader:FileUploader = new FileUploader({url: environment.backendUrl + '/upload'});
+  public hasBaseDropZoneOver:boolean = false;
+
   currentTab: string;
+
+  formFields = [];
+  form = null;
 
   constructor(private importExportService: ImportExportService) {
 
+    // new FormControl()
+    this.formFields = [
+      new TextboxField({
+        key: 'title',
+        label: 'Titel',
+        help: 'Hier wird der Titel für das Dokument eingetragen'
+        // domClass: 'half'
+      })
+    ];
+
+    let ctrl = new FormControl('xxx');
+    this.form = new FormGroup({ title: ctrl });
   }
 
   ngOnInit(): void {
     this.currentTab = 'import';
+  }
+
+  public fileOverBase(e:any):void {
+    this.hasBaseDropZoneOver = e;
   }
 
   // onChange(event: EventTarget) {

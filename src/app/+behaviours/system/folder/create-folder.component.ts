@@ -1,20 +1,21 @@
-import {Component, Injector, OnInit, ViewChild} from '@angular/core';
-import {Modal} from 'ngx-modal';
+import {Component, Injector, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormularService} from '../../../services/formular/formular.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {UpdateType} from '../../../models/update-type.enum';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component( {
   templateUrl: './create-folder.component.html'
 } )
 export class CreateFolderComponent implements OnInit {
 
-  @ViewChild( 'createFolderModal' ) createFolderModal: Modal;
+  @ViewChild( 'createFolderModal' ) createFolderModal: TemplateRef<any>;
   @ViewChild( 'name' ) inputName: HTMLInputElement;
 
   folderName = '';
   parent: any = null;
   asSubFolder = false;
+  private createFolderModalRef: BsModalRef;
 
   private static createNewFolderDoc(folderName: string, parent?: string) {
     const data: any = {
@@ -27,14 +28,14 @@ export class CreateFolderComponent implements OnInit {
     return data;
   }
 
-  constructor(private formService: FormularService, private storageService: StorageService, injector: Injector) {
+  constructor(private modalService: BsModalService, private formService: FormularService, private storageService: StorageService, injector: Injector) {
     const parent = injector.get('parent');
     this.parent = parent ? parent : {};
   }
 
   ngOnInit() {
 
-    this.createFolderModal.open();
+    setTimeout( () => this.createFolderModalRef = this.modalService.show(this.createFolderModal) );
     // this.inputName.focus();
 
   }
@@ -58,7 +59,7 @@ export class CreateFolderComponent implements OnInit {
 
       // by saving the folder an update event is sent automatically to notify tree
       this.storageService.saveData(folder);
-      this.createFolderModal.close();
+      this.createFolderModalRef.hide();
 
     } else {
       // notify user to enter a title for the folder

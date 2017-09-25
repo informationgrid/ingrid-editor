@@ -1,25 +1,26 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {Modal} from 'ngx-modal';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormularService} from '../../../services/formular/formular.service';
 import {ApiService} from '../../../services/ApiService';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component( {
   templateUrl: './iso-view.component.html'
 } )
 export class IsoViewComponent implements OnInit {
 
-  @ViewChild( 'isoViewModal' ) isoViewModal: Modal;
+  @ViewChild( 'isoViewModal' ) isoViewModal: TemplateRef<any>;
 
   profile: any[] = null;
 
   doc: any = null;
+  private isoViewModalRef: BsModalRef;
 
-  constructor(private formService: FormularService, private apiService: ApiService) {
+  constructor(private modalService: BsModalService, private formService: FormularService, private apiService: ApiService) {
   }
 
   ngOnInit() {
 
-    this.isoViewModal.open();
+    this.isoViewModalRef = this.modalService.show(this.isoViewModal);
 
     // get current document
     let currentForm = this.formService.requestFormValues();

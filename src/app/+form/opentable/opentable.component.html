@@ -1,5 +1,5 @@
 
-<button *ngIf="showAddButton" class="btn btn-default btn-xs addButton text-muted" type="button" (click)="addRow($event)">
-    <span class="glyphicon glyphicon-plus"></span>
+<button *ngIf="showAddButton" class="btn btn-outline-secondary btn-xs addButton" type="button" (click)="addRow($event)">
+    <span class="fa fa-plus"></span>
 </button>
 <ng2-smart-table [settings]="settings" [source]="source"></ng2-smart-table>

@@ -1,8 +1,8 @@
-import {Component, forwardRef, Input, ViewChild, Output, EventEmitter} from "@angular/core";
+import {Component, forwardRef, Input, ViewChild, Output, EventEmitter, TemplateRef} from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {Modal} from "ngx-modal";
 import {FormControlService} from "../../services/form-control.service";
 import {PartialGeneratorField} from "../controls/field-partial-generator";
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -24,7 +24,7 @@ export class PartialGenerator implements ControlValueAccessor {
 
   @Output() onAddSection = new EventEmitter<any>();
 
-  @ViewChild('addPartial') addPartialModal: Modal;
+  @ViewChild('addPartial') addPartialModal: TemplateRef<any>;
 
   types: any[] = [];
   choiceType: string;
@@ -35,8 +35,9 @@ export class PartialGenerator implements ControlValueAccessor {
   private _onTouchedCallback: () => void;
 
   private _onChangeCallback: (x: any) => void;
+  private addPartialModalRef: BsModalRef;
 
-  constructor(private qcs: FormControlService) {
+  constructor(private modalService: BsModalService, private qcs: FormControlService) {
   }
 
   ngAfterViewInit(): any {
@@ -57,7 +58,7 @@ export class PartialGenerator implements ControlValueAccessor {
    */
   showPartialChoice() {
     if (this.types.length > 1) {
-      this.addPartialModal.open();
+      this.addPartialModalRef = this.modalService.show(this.addPartialModal);
     } else {
       this.onAddSection.emit({key: this.field.key, section: this.types[0].id});
     }
@@ -65,7 +66,7 @@ export class PartialGenerator implements ControlValueAccessor {
 
   addPartialToForm() {
     this.onAddSection.emit({key: this.field.key, section: this.choiceType});
-    this.addPartialModal.close();
+    this.addPartialModalRef.hide();
 
   }
 

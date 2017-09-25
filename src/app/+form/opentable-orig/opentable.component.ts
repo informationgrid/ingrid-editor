@@ -1,7 +1,7 @@
-import {Component, forwardRef, Input, ViewChild} from '@angular/core';
+import {Component, forwardRef, Input, TemplateRef, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {FieldBase} from '../controls';
-import {Modal} from 'ngx-modal';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -67,7 +67,7 @@ export class OpenTable implements ControlValueAccessor {
 
   @Input() hideTableHeader: boolean;
 
-  @ViewChild('addRowModal') addRowModal: Modal;
+  @ViewChild('addRowModal') addRowModal: TemplateRef<any>;
 
   // the number of the input box to focus on
   // will be set when modal is opened
@@ -95,8 +95,9 @@ export class OpenTable implements ControlValueAccessor {
   private _onTouchedCallback: () => void;
 
   private _onChangeCallback: (x: any) => void;
+  private addRowModalRef: BsModalRef;
 
-  constructor() {
+  constructor(private modalService: BsModalService) {
   }
 
   // get accessor
@@ -107,7 +108,7 @@ export class OpenTable implements ControlValueAccessor {
   showAddRowModal() {
     this.addModel = {};
     this.currentRow = null;
-    this.addRowModal.open();
+    this.addRowModalRef = this.modalService.show(this.addRowModal);
     setTimeout( () => this.focusNumber = 0, 0);
   }
 
@@ -117,14 +118,14 @@ export class OpenTable implements ControlValueAccessor {
     }
     this.addModel = {};
     this.handleChange();
-    this.addRowModal.close();
+    this.addRowModalRef.hide();
     this.focusNumber = -1;
   }
 
   editRow(data: any, index: number) {
     this.addModel = data;
     this.currentRow = index;
-    this.addRowModal.open();
+    this.addRowModalRef = this.modalService.show(this.addRowModal);
   }
 
   activateInput(parent: HTMLElement, row: any, column: any) {

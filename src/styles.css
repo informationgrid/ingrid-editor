@@ -3,12 +3,45 @@ html, body {
 }
 
 body {
-  padding-top: 50px;
+  padding-top: 56px;
+}
+
+.modal .modal-content {
+  background-color: #03a9f4;
+  color: #fff;
+}
+
+.modal-alert .modal-content {
+  background-color: #f44336;
+}
+
+.modal .modal-header {
+  padding: 23px 26px;
+  border-bottom: 1px solid transparent;
+}
+
+.modal .modal-footer {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid transparent;
+}
+
+.modal .modal-footer .btn-link {
+  color: #fff;
+  text-decoration: none;
+  border-radius: 2px;
+}
+.modal .modal-footer .btn-link:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+}
+
+.border-dashed {
+  border: dotted 3px lightgray;
 }
 
 form-toolbar {
   position: fixed;
-  top: 50px;
+  top: 56px;
   width: 100%;
   background-color: #ececec;
   padding: 4px;
@@ -23,11 +56,18 @@ form-toolbar + div {
   cursor: pointer;
 }
 
+.btn.btn-xs {
+  /*// line-height: ensure proper height of button next to extra small input*/
+  /*@include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);*/
+  font-size: 0.5rem;
+  padding: 8px;
+}
+
 .help-block {
-  position: absolute;
-  font-size: 80%;
-  margin-top: 1px !important;
-  animation: slideIn 0.3s linear forwards;
+  /*position: absolute;*/
+  /*font-size: 80%;*/
+  /*margin-top: 1px !important;*/
+  /*animation: slideIn 0.3s linear forwards;*/
 }
 
 @keyframes slideIn {
