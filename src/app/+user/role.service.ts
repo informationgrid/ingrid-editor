@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
+import { ConfigService, Configuration } from '../config/config.service';
 import { ErrorService } from '../services/error.service';
 import { Role } from '../models/user-role';
 import { Http } from '@angular/http';
 import { ApiService } from '../services/ApiService';
 import { Observable } from 'rxjs/Observable';
-import {environment} from '../../environments/environment';
 
 @Injectable()
 export class RoleService {
 
   public activeUserRoles: Role[];
+  private configuration: Configuration;
 
-  constructor(private http: Http, private apiService: ApiService,
+  constructor(private http: Http, private configService: ConfigService, private apiService: ApiService,
               private errorService: ErrorService) {
+    this.configuration = configService.getConfiguration();
   }
 
   getRoles(): Observable<Role[]> {
@@ -23,7 +25,7 @@ export class RoleService {
 
   getRoleMapping(id: string): Observable<Role> {
     // return this.apiService.getGroup( id );
-    return this.http.get(environment.backendUrl + 'roles/' + id)
+    return this.http.get(this.configuration.backendUrl + 'roles/' + id)
       .map(resp => this.prepareRoles([resp.json()])[0])
       .catch(err => this.errorService.handle(err));
   }
@@ -44,20 +46,20 @@ export class RoleService {
 
   saveRole(role: Role): Observable<any> {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
-    return this.http.put(environment.backendUrl + 'roles/' + role.name, role)
+    return this.http.put(this.configuration.backendUrl + 'roles/' + role.name, role)
     // .map( resp => resp.json() )
       .catch(err => this.errorService.handle(err));
   }
 
   createRole(role: Role): Observable<any> {
-    return this.http.post(environment.backendUrl + 'roles/' + role.name, role)
+    return this.http.post(this.configuration.backendUrl + 'roles/' + role.name, role)
     // .map( resp => resp.json() )
       .catch(err => this.errorService.handle(err));
   }
 
   // delete group metadata from backend
   deleteRole(id: string): Observable<any> {
-    return this.http.delete(environment.backendUrl + 'roles/' + name)
+    return this.http.delete(this.configuration.backendUrl + 'roles/' + name)
       .catch(err => this.errorService.handle(err));
 
     // TODO: also delete from keycloak

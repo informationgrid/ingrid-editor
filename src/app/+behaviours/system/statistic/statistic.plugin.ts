@@ -2,6 +2,7 @@ import {StatisticComponent} from './statistic.component';
 import {Injectable} from '@angular/core';
 import {MenuService} from '../../../menu/menu.service';
 import {Plugin} from '../../plugin';
+import { ConfigService } from '../../../config/config.service';
 
 @Injectable()
 export class StatisticPlugin extends Plugin {
@@ -9,9 +10,10 @@ export class StatisticPlugin extends Plugin {
   _name = 'Statistic Plugin';
   defaultActive = true;
 
-  constructor(private menuService: MenuService) {
+  constructor(private menuService: MenuService, configService: ConfigService) {
     super();
     console.log('INIT STATISTIC PLUGIN');
+    console.log('Configuration is: ', configService.getConfiguration());
   }
 
   get name() {

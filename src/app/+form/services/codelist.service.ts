@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
+import { ConfigService, Configuration } from '../../config/config.service';
 import {ErrorService} from '../../services/error.service';
 import {Http} from '@angular/http';
-import {environment} from '../../../environments/environment';
 
 export interface Codelist {
   id: string;
@@ -17,13 +17,15 @@ export interface CodelistEntry {
 export class CodelistService {
 
   codelists: { [id: string]: Codelist } = {};
+  private configuration: Configuration;
 
   static getLocalisedValue(locals: any[]) {
     const result = locals.filter( local => local[0] === 'de' );
     return result[0][1];
   }
 
-  constructor(private http: Http, private errorService: ErrorService) {
+  constructor(private http: Http, private configService: ConfigService, private errorService: ErrorService) {
+    this.configuration = configService.getConfiguration();
   }
 
   byId(id: string): Promise<CodelistEntry[]> {
@@ -35,7 +37,7 @@ export class CodelistService {
 
       } else {
 
-        this.http.get( environment.backendUrl + 'codelist/' + id )
+        this.http.get( this.configuration.backendUrl + 'codelist/' + id )
           .catch( (err: any) => this.errorService.handle( err ) )
           .subscribe( (data: any) => {
             if (data.json() === null) {
@@ -43,7 +45,7 @@ export class CodelistService {
             } else {
               this.codelists[id] = data.json();
               const entries = this.codelists[id].entries;
-              resolve( entries ? this.prepareEntries( entries ) : [] );
+              resolve( this.prepareEntries( entries ) );
             }
           }, (err) => reject( err ) );
       }

@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
+import { ConfigService, Configuration } from '../config/config.service';
 import {ErrorService} from './error.service';
 import {Http, Response} from '@angular/http';
 import {KeycloakService} from '../keycloak/keycloak.service';
@@ -12,12 +13,16 @@ import {environment} from '../../environments/environment';
 
 @Injectable()
 export class ApiService {
-  constructor(private http: Http,
+
+  private configuration: Configuration;
+
+  constructor(private http: Http, configService: ConfigService,
               private errorService: ErrorService) {
+    this.configuration = configService.getConfiguration();
   }
 
   getIsoDocument(id: number): Observable<any> {
-    return this.http.get( environment.backendUrl + 'datasets/' + id + '/export/ISO' )
+    return this.http.get( this.configuration.backendUrl + 'datasets/' + id + '/export/ISO' )
       .map( (result: Response) => {
         return result.text();
       } )
@@ -29,10 +34,10 @@ export class ApiService {
     const promise = new Promise((resolve) => {
 
 
-      this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng' )
+      this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng' )
         .map( res => res.json() )
         .map( client => {
-          this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients/' + client[0].id + '/roles' )
+          this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients/' + client[0].id + '/roles' )
             .map( response => response.json() )
             .map( (json: any[]) => {
               const result: Role[] = [];
@@ -54,7 +59,7 @@ export class ApiService {
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users' )
+    return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users' )
       .map( response => response.json() )
       .map( (json: any[]) => {
         const result: User[] = [];
@@ -73,7 +78,7 @@ export class ApiService {
   }
 
   getUser(id: string): Observable<User> {
-    return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users/' + id )
+    return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users/' + id )
       .map( response => response.json() )
       .map( (json: any) => {
         const result: User = {
@@ -89,7 +94,7 @@ export class ApiService {
   }
 
   getGroup(id: string): Observable<Role> {
-    return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/roles-by-id/' + id )
+    return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/roles-by-id/' + id )
       .map( response => response.json() )
       .map( (json: any) => {
         const result: Role = {

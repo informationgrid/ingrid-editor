@@ -1,18 +1,21 @@
 import {ErrorService} from '../services/error.service';
+import { ConfigService, Configuration } from '../config/config.service';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Http} from '@angular/http';
-import {environment} from '../../environments/environment';
 
 @Injectable()
 export class ImportExportService {
 
-  constructor(private http: Http,
+  private configuration: Configuration;
+
+  constructor(private http: Http, configService: ConfigService,
               private errorService: ErrorService) {
+    this.configuration = configService.getConfiguration();
   }
 
   import(file: File): Observable<any> {
-    return this.http.post( environment.backendUrl + 'import', file )
+    return this.http.post( this.configuration.backendUrl + 'import', file )
       .map( data => data.json() )
       .catch( err => {
         this.errorService.handle( err );
@@ -21,8 +24,8 @@ export class ImportExportService {
   }
 
   export(docId: string, inclSubDocs?: boolean) {
-    let data = this.prepareExportInfo( docId, inclSubDocs );
-    return this.http.post( environment.backendUrl + 'export', data );
+    const data = this.prepareExportInfo( docId, inclSubDocs );
+    return this.http.post( this.configuration.backendUrl + 'export', data );
   }
 
   private prepareExportInfo(docId: string, inclSubDocs: boolean): any {

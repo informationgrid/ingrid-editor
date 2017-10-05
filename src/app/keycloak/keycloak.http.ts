@@ -13,6 +13,7 @@ export class KeycloakHttp extends Http {
     super(_backend, _defaultOptions);
   }
 
+  // TODO: make a request without a token!? Needed for ConfigService
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     const tokenPromise: Promise<string> = this._keycloakService.getToken();
     const tokenObservable: Observable<string> = Observable.fromPromise(tokenPromise);
