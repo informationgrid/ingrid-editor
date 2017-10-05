@@ -5,6 +5,7 @@
             <div>
                 <span class="badge badge-pill badge-info">1</span>
                 <span class="wizard-title">Datensatz auswählen</span>
+                <tree [showFolderEditButton]="false" (selected)="handleSelected($event)"></tree>
             </div>
             <div class="padding">
 
@@ -17,7 +18,7 @@
 
             <div class="padding">
                 <label class="custom-control custom-radio">
-                    <input #plug class="custom-control-input" type="radio" name="exportOption">
+                    <input #plug class="custom-control-input" type="radio" name="exportOption" checked>
                     <span class="custom-control-indicator"></span>
                     <span class="custom-control-description">nur diesen Datensatz</span>
                 </label>
@@ -35,16 +36,25 @@
         </div>
 
         <div class="col-2">
-            <span class="badge badge-pill badge-info">3</span>
+            <span class="badge badge-pill"
+                  [class.badge-info]="selection.length !== 0"
+                  [class.badge-secondary]="selection.length === 0"
+            >3</span>
             <span class="wizard-title">Start</span>
 
             <div class="padding">
-                <button class="btn btn-lg btn-outline-info">Exportieren</button>
+                <button class="btn btn-lg btn-outline-info"
+                        [disabled]="selection.length === 0">
+                    Exportieren
+                </button>
             </div>
         </div>
 
         <div class="col">
-            <span class="badge badge-pill badge-info">4</span>
+            <span class="badge badge-pill"
+                  [class.badge-info]="false"
+                  [class.badge-secondary]="true">4</span>
+
             <span class="wizard-title">Ergebnis</span>
 
             <div class="padding">

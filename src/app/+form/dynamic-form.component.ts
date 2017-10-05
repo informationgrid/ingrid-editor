@@ -111,10 +111,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.save();
       } else if (eventId === 'NEW_DOC') {
         this.newDoc();
-      // } else if (eventId === 'DELETE') {
-      //   this.deleteDoc();
       }
     });
+
+    this.formularService.selectedDocuments$.subscribe( data => {
+      this.formToolbarService.setButtonState(
+        'toolBtnSave',
+        data.length === 1);
+    } );
 
     this.observers.push(loadSaveSubscriber);
 
@@ -143,6 +147,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.behaviourService.behaviours
       .filter(behave => behave.isActive)
       .forEach(behave => behave.unregister());
+
+    // reset selected documents if we revisit the page
+    this.formularService.setSelectedDocuments([]);
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -230,7 +237,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   prepareNewDoc() {
     const profile = this.choiceNewDoc;
     let previousId = null;
-    if (this.formularService.getSelectedDocuments()) {
+    const selectedDocs = this.formularService.getSelectedDocuments();
+    if (selectedDocs.length === 1) {
       previousId = this.formularService.getSelectedDocuments()[0].id;
     }
     const needsProfileSwitch = this.formularService.currentProfile !== profile;

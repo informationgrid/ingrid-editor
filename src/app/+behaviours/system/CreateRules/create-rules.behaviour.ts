@@ -30,6 +30,11 @@ export class CreateDocRulesPlugin extends Plugin {
     this.subscription = this.formService.newDocumentSubject$.subscribe( data => {
       console.log( 'handle new documents', data );
 
+      // if no document was selected then everything is allowed
+      if (data.selectedDataset._profile === undefined) {
+        return;
+      }
+
       if (data.selectedDataset._profile === 'FOLDER') {
         if (data.selectedDataset.title === 'UVPs') {
           data.docTypes = data.docTypes.filter( (type: any) => type.id === 'UVP' );

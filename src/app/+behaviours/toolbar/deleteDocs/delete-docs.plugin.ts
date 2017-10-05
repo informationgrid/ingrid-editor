@@ -30,7 +30,7 @@ export class DeleteDocsPlugin extends Plugin {
     super.register();
 
     this.formToolbarService.addButton(
-      {id: 'toolBtnRemove', tooltip: 'Remove', cssClasses: 'fa fa-trash-o', eventId: 'DELETE', active: true}
+      {id: 'toolBtnRemove', tooltip: 'Remove', cssClasses: 'fa fa-trash-o', eventId: 'DELETE', active: false}
     );
 
     const loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
@@ -38,6 +38,12 @@ export class DeleteDocsPlugin extends Plugin {
         this.deleteDoc();
       }
     });
+
+    this.formService.selectedDocuments$.subscribe( data => {
+      this.formToolbarService.setButtonState(
+        'toolBtnRemove',
+        data.length > 0);
+    } );
   }
 
   deleteDoc() {

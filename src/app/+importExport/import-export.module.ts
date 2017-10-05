@@ -7,9 +7,10 @@ import {FileUploadModule} from 'ng2-file-upload';
 import {IgeFormModule} from '../+form/ige-form.module';
 import { ExportComponent } from './export/export.component';
 import {AccordionModule} from 'ngx-bootstrap';
+import {SharedModule} from '../shared.module';
 
 @NgModule({
-  imports: [CommonModule, routing, FileUploadModule, AccordionModule, IgeFormModule],
+  imports: [CommonModule, routing, FileUploadModule, AccordionModule, SharedModule, IgeFormModule],
   declarations: [ImportExportComponent, ExportComponent],
   providers: [ImportExportService],
   exports: []

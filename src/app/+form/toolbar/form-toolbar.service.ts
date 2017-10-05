@@ -25,7 +25,7 @@ export class FormToolbarService {
 
   _buttons: Array<ToolbarItem|Separator> = [
     {id: 'toolBtnNew', tooltip: 'New', cssClasses: 'fa fa-file-o', eventId: 'NEW_DOC', active: true},
-    {id: 'toolBtnSave', tooltip: 'Save', cssClasses: 'fa fa-floppy-o', eventId: 'SAVE', active: true},
+    {id: 'toolBtnSave', tooltip: 'Save', cssClasses: 'fa fa-floppy-o', eventId: 'SAVE', active: false},
     {id: 'toolBtnLoadSaveSeparator', isSeparator: true}
   ];
 

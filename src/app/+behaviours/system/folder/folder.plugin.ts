@@ -100,13 +100,13 @@ export class FolderPlugin extends Plugin {
     //   handleButtonState(data);
     // });
 
-    this.formService.selectedDocuments$.subscribe( data => {
+    /*this.formService.selectedDocuments$.subscribe( data => {
       if (data.length === 1) {
         // handleButtonState( data[0] );
         this.formToolbarService.setButtonState( 'toolBtnFolder', true );
       } else {
         this.formToolbarService.setButtonState( 'toolBtnFolder', false );
       }
-    } );
+    } );*/
   }
 }

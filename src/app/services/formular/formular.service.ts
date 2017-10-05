@@ -23,7 +23,7 @@ export class FormularService {
   newDocumentSubject$ = this.newDocumentSubject.asObservable();
 
   // the currently selected documents from the tree or browser
-  selectedDocs: SelectedDocument[];
+  selectedDocs: SelectedDocument[] = [];
 
   // an observer to subscribe to, when reacting on newly selected documents
   selectedDocuments = new Subject<SelectedDocument[]>();

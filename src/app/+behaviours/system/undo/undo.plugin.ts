@@ -5,6 +5,7 @@ import { ModalService } from '../../../services/modal/modal.service';
 import { StorageService } from '../../../services/storage/storage.service';
 import { Plugin } from '../../plugin';
 import { FormGroup } from '@angular/forms';
+import {Subscription} from 'rxjs/Subscription';
 
 @Injectable()
 export class UndoPlugin extends Plugin {
@@ -15,6 +16,8 @@ export class UndoPlugin extends Plugin {
 
   form: FormGroup;
   history: any[] = [];
+
+  formValueSubscription: Subscription;
 
   get name() {
     return this._name;
@@ -52,7 +55,14 @@ export class UndoPlugin extends Plugin {
         this.history = [];
         this.formToolbarService.setButtonState('toolBtnUndo', false);
 
+        // remove old subscription
+        if (this.formValueSubscription) {
+          this.formValueSubscription.unsubscribe();
+        }
+
         // add behaviour to set active states for toolbar buttons
+        // need to add behaviour after each load since form-object changes!
+
         this.addBehaviour();
       }
     });
@@ -61,7 +71,7 @@ export class UndoPlugin extends Plugin {
 
   undo() {
     // ignore the last value, which is the current value
-    this.history.pop()
+    this.history.pop();
 
     // get the value before the current
     const recentValue = this.history.pop();
@@ -77,6 +87,10 @@ export class UndoPlugin extends Plugin {
     super.unregister();
 
     this.formToolbarService.removeButton('toolBtnUndo');
+
+    if (this.formValueSubscription) {
+      this.formValueSubscription.unsubscribe();
+    }
   }
 
   /**
@@ -86,7 +100,7 @@ export class UndoPlugin extends Plugin {
     const formData = this.formService.requestFormValues();
 
     this.form = formData.form;
-    this.form.valueChanges
+    this.formValueSubscription = this.form.valueChanges
       .debounceTime(500)
       .subscribe((value) => {
         console.log('The form value changed:', value);

@@ -3,6 +3,7 @@ import {Plugin} from '../../plugin';
 import {PrintViewComponent} from './print-view.component';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
+import {FormularService} from '../../../services/formular/formular.service';
 
 @Injectable()
 export class PrintViewPlugin extends Plugin {
@@ -11,6 +12,7 @@ export class PrintViewPlugin extends Plugin {
   defaultActive = true;
 
   constructor(private formToolbarService: FormToolbarService,
+              private formService: FormularService,
               private modalService: ModalService,
               private _cr: ComponentFactoryResolver) {
     super();
@@ -25,7 +27,7 @@ export class PrintViewPlugin extends Plugin {
 
     // add button to toolbar
     this.formToolbarService.addButton({
-      id: 'toolBtnPrint', tooltip: 'Print', cssClasses: 'fa fa-print', eventId: 'PRINT', active: true
+      id: 'toolBtnPrint', tooltip: 'Print', cssClasses: 'fa fa-print', eventId: 'PRINT', active: false
     }, 6);
 
     // react on event when button is clicked
@@ -35,6 +37,12 @@ export class PrintViewPlugin extends Plugin {
         this.showPrintDialog();
       }
     });
+
+    this.formService.selectedDocuments$.subscribe( data => {
+      this.formToolbarService.setButtonState(
+        'toolBtnPrint',
+        data.length === 1);
+    } );
   };
 
   private showPrintDialog() {

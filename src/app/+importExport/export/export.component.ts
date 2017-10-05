@@ -7,9 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ExportComponent implements OnInit {
 
+  selection: any[] = [];
+
   constructor() { }
 
   ngOnInit() {
   }
 
+  handleSelected(nodes) {
+    this.selection = nodes;
+  }
 }

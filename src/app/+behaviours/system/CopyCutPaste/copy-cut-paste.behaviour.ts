@@ -47,7 +47,9 @@ export class CopyCutPastePlugin extends Plugin {
     ];
     buttons.forEach((button, index) => this.toolbarService.addButton(button, index + 3));
 
-    this.subscription = this.storageService.afterLoadAndSet$.subscribe(() => {
+    this.subscription = this.storageService.afterLoadAndSet$.subscribe((data) => {
+
+      if (data === null) return;
 
       this.toolbarService.setButtonState('toolBtnCopy', true);
       this.toolbarService.setButtonState('toolBtnCut', true);
