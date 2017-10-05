@@ -6,5 +6,5 @@
 export const environment = {
   production: false,
   mockKeycloak: true,
-  keykloakBaseUrl: 'http://localhost:8080/auth/'
+  configFile: 'assets/config.json'
 };

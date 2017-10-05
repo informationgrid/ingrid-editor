@@ -10,8 +10,11 @@ if (environment.production) {
   enableProdMode();
 }
 
-const keycloakService = environment.mockKeycloak ? KeycloakMockService : KeycloakService;
+// const keycloakService = environment.mockKeycloak ? KeycloakMockService : KeycloakService;
 
+platformBrowserDynamic().bootstrapModule(AppModule);
+
+/*
 keycloakService.init()
   .then(() => platformBrowserDynamic().bootstrapModule(AppModule))
   .catch(e => {
@@ -19,3 +22,4 @@ keycloakService.init()
     console.error(e);
     window.location.reload();
   } );
+*/

@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {environment} from '../../environments/environment';
 import {AuthInfo, KeycloakAuthData, KeycloakService} from './keycloak.service';
+import { Configuration } from '../config/config.service';
 
 // access token with a very long expiry date
 const mockToken = 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ1N2tJODdXNDhydjJ3WlFBOUNxVWY2d1p6bnh3R1pHUldmYjE4' +
@@ -23,10 +24,12 @@ const mockToken = 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ1N2tJODdXN
 export class KeycloakMockService {
   static auth: AuthInfo = {};
 
-  static init(): Promise<any> {
+  static init(config: Configuration): Promise<any> {
+
+    console.log('=== KeycloakMockService ===');
 
     const keycloakAuth: KeycloakAuthData = {
-      url: environment.keykloakBaseUrl,
+      url: config.keykloakBaseUrl,
       realm: 'InGrid',
       clientId: 'ige-ng',
       authServerUrl: '',
@@ -39,7 +42,7 @@ export class KeycloakMockService {
       updateToken: () => {}
     };
 
-    return new Promise( (resolve) => {
+    return new Promise( (resolve, reject) => {
       KeycloakService.auth.loggedIn = true;
       KeycloakService.auth.authz = keycloakAuth;
       // will be initialized later
@@ -53,6 +56,7 @@ export class KeycloakMockService {
         } );
       };
       resolve();
+      // reject();
     } );
   }
 
