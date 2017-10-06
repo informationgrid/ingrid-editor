@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlValue;
 
 public class CodelistAttributes {
 	
+    public CodelistAttributes() {}
+    
 	public CodelistAttributes(String codelist, String codelistValue) {
 		this.codeList = codelist;
 		this.codeListValue = codelistValue;

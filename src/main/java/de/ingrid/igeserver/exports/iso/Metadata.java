@@ -10,8 +10,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(
 		namespace="http://www.isotc211.org/2005/gmd",
 		propOrder = { 
-		"fileIdentifier", "language", "characterSet", "parentIdentifier", "hierarchyLevel",
-		"contact", "dateStamp", "metadataStandardName", "referenceSystemInfo", "identificationInfo"
+		"fileIdentifier", "language", "characterSet", "parentIdentifier", "hierarchyLevel", "hierarchyLevelName",
+		"contact", "dateStamp", "metadataStandardName", "metadataStandardVersion", "dataSetURI", "locale",
+		"spatialRepresentationInfo", "referenceSystemInfo", "metadataExtensionInfo", "identificationInfo",
+		"contentInfo", "distributionInfo", "dataQualityInfo", "portrayalCatalogueInfo", "metadataConstraints",
+		"applicationSchemaInfo", "metadataMaintenance", "series", "describes", "propertyType", "featureType",
+		"featureAttribute" 
 		})
 public class Metadata {
 
@@ -25,12 +29,41 @@ public class Metadata {
 	
 	private ScopeCode hierarchyLevel;
 	
+	private String hierarchyLevelName;
+	
 	private Contact contact;
 	
-	private String dateStamp;
-	private String metadataStandardName;
+	private Date dateStamp;
+	
+	private CharacterString metadataStandardName;
+	
+	private CharacterString metadataStandardVersion;
+	private String dataSetURI;
+	private String locale;
+	private String spatialRepresentationInfo;
 	private String referenceSystemInfo;
+	private String metadataExtensionInfo;
+	
 	private String identificationInfo;
+	private String contentInfo;
+	private String distributionInfo;
+	private String dataQualityInfo;
+	private String portrayalCatalogueInfo;
+	private String metadataConstraints;
+	private String applicationSchemaInfo;
+	private String metadataMaintenance;
+	private String series;
+	private String describes;
+	private String propertyType;
+	private String featureType;
+	private String featureAttribute;
+	
+	
+	public Metadata() {
+	    this.metadataStandardName = new CharacterString( "ISO19119" );
+	    this.metadataStandardVersion = new CharacterString( "2005/PDAM 1" );
+	}
+	
 
 	public void setUuid(String uuid) {
 		this.fileIdentifier = new CharacterString(uuid);
@@ -83,7 +116,14 @@ public class Metadata {
 				"http://www.tc211.org/ISO19139/resources/codeList.xml#CI_RoleCode", 
 				role));
 		
+		ContactInfo ci = new ContactInfo();
+		ci.setAddress( ContactType.ADDRESS, "xxx@yyy.zz" );
+		responsibleParty.contactInfo = ci;
+		
 		this.contact.responsibleParty = responsibleParty;
 	}
 
+	public void setDateStamp(String date) {
+	    this.dateStamp = new Date(date);
+	}
 }

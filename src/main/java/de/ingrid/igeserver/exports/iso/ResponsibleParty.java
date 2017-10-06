@@ -8,6 +8,15 @@ public class ResponsibleParty {
 	@XmlAttribute
 	public String uuid;
 
+	private String individualName;
+	
+	private String organisationName;
+	
+	private String positionName;
+	
+	@XmlElement(name = "CI_Contact")
+	public ContactInfo contactInfo;
+	
 	@XmlElement(name = "role")
 	private RoleCode role;
 

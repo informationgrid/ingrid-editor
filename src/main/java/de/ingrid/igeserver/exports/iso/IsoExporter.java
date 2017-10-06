@@ -28,6 +28,7 @@ public class IsoExporter implements IgeExporter {
 		md.setParentIdentifier(tree.path("_parent").asText(null));
 		md.setHierarchyLevel("dataset");
 		md.setContact("12345", "pointOfContact");
+		md.setDateStamp( "1978-10-10" );
 		return md;
 	}
 
