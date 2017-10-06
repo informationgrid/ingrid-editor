@@ -2,7 +2,6 @@ package de.ingrid.igeserver.exports.iso;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -11,22 +10,27 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(
 		namespace="http://www.isotc211.org/2005/gmd",
 		propOrder = { 
-		"fileIdentifier", "language", "characterSet", "parentIdentifier" 
+		"fileIdentifier", "language", "characterSet", "parentIdentifier", "hierarchyLevel",
+		"contact", "dateStamp", "metadataStandardName", "referenceSystemInfo", "identificationInfo"
 		})
 public class Metadata {
 
-	
-	@XmlElement(name = "fileIdentifier")
 	private CharacterString fileIdentifier;
 
-	@XmlElement(name = "language")
 	private LanguageCode language;
 
-	@XmlElement(name = "characterSet")
 	private CharacterSetCode characterSet;
 
-	@XmlElement(name = "parentIdentifier")
 	private CharacterString parentIdentifier;
+	
+	private ScopeCode hierarchyLevel;
+	
+	private Contact contact;
+	
+	private String dateStamp;
+	private String metadataStandardName;
+	private String referenceSystemInfo;
+	private String identificationInfo;
 
 	public void setUuid(String uuid) {
 		this.fileIdentifier = new CharacterString(uuid);
@@ -59,6 +63,27 @@ public class Metadata {
 	public void setParentIdentifier(String parentUuid) {
 		this.parentIdentifier = new CharacterString(parentUuid);
 
+	}
+	
+	public void setHierarchyLevel(String level) {
+		ScopeCode scopeCode = new ScopeCode();
+		scopeCode.codelist = new CodelistAttributes(
+				"http://www.tc211.org/ISO19139/resources/codeList.xml#MD_ScopeCode", 
+				level, 
+				level);
+		this.hierarchyLevel = scopeCode;
+	}
+	
+	public void setContact(String uuid, String role) {
+		this.contact = new Contact();
+		
+		ResponsibleParty responsibleParty = new ResponsibleParty();
+		responsibleParty.uuid = uuid;
+		responsibleParty.setRole(new CodelistAttributes(
+				"http://www.tc211.org/ISO19139/resources/codeList.xml#CI_RoleCode", 
+				role));
+		
+		this.contact.responsibleParty = responsibleParty;
 	}
 
 }

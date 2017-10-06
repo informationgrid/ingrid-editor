@@ -26,6 +26,8 @@ public class IsoExporter implements IgeExporter {
 		md.setLanguage(tree.path("metadataLanguage").path("value").asText());
 		md.setCharacterSet(tree.path("").asText());
 		md.setParentIdentifier(tree.path("_parent").asText(null));
+		md.setHierarchyLevel("dataset");
+		md.setContact("12345", "pointOfContact");
 		return md;
 	}
 

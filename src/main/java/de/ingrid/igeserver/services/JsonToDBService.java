@@ -18,7 +18,7 @@ public class JsonToDBService extends MapperService {
     public String mapDocument(String json, boolean published, String userId) throws Exception {
         ObjectNode map = (ObjectNode) getJsonMap( json );
 
-        String id = String.valueOf( map.get( FIELD_ID ) );
+        String id = map.path( FIELD_ID ).asText(null);
 
         String oldDoc = dbService.getById( "Documents", id );
 
@@ -26,8 +26,8 @@ public class JsonToDBService extends MapperService {
 
         if (oldDoc == null) {
             oldMap = new ObjectMapper().createObjectNode();
-            oldMap.put( FIELD_PROFILE, map.get( FIELD_PROFILE ).asText() );
-            oldMap.put( FIELD_PARENT, map.get( FIELD_PARENT ).asText() );
+            oldMap.put( FIELD_PROFILE, map.path( FIELD_PROFILE ).asText() );
+            oldMap.put( FIELD_PARENT, map.path( FIELD_PARENT ).asText(null) );
         } else {
             oldMap = (ObjectNode) getJsonMap( oldDoc );
         }

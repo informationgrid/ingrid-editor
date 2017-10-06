@@ -18,10 +18,11 @@ public class DBToJsonService extends MapperService {
     public JsonNode mapDocument(String dbDoc, String[] fields) throws Exception {
         JsonNode map = getJsonMap( dbDoc );
 
-        ObjectNode currentDoc = (ObjectNode) map.path( "draft" );
-        if (currentDoc == null) {
-            currentDoc = (ObjectNode) map.path( "published" );
+        JsonNode currentDocRead = map.path( "draft" );
+        if (currentDocRead.isMissingNode()) {
+        	currentDocRead = map.path( "published" );
         }
+        ObjectNode currentDoc = (ObjectNode) currentDocRead;
 
         // if fields are defined, then filter only those from the document
         if (fields != null) {
@@ -39,11 +40,11 @@ public class DBToJsonService extends MapperService {
     }
 
     private String determineState(JsonNode map) {
-        Object draft = map.path( "draft" );
-        Object published = map.path( "published" );
-        if (published != null && draft != null) {
+    	JsonNode draft = map.path( "draft" );
+        JsonNode published = map.path( "published" );
+        if (!published.isMissingNode() && !draft.isMissingNode()) {
             return "PW";
-        } else if (published != null) {
+        } else if (published.isMissingNode()) {
             return "P";
         } else {
             return "W";

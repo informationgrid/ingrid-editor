@@ -25,7 +25,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import de.ingrid.igeserver.exports.iso.Metadata;
 import de.ingrid.igeserver.services.ExportPostProcessors;
 
-@Service
+// @Service
 public class IsoXmlPostProcessor implements ExportPostProcessors {
 	
 	private static Logger log = LogManager.getLogger(IsoXmlPostProcessor.class);
