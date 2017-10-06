@@ -1,4 +1,4 @@
 {
   "keykloakBaseUrl": "http://localhost:8080/auth/",
-  "backendUrl": "http://ige-ng.informationgrid.eu/mongo-server/v1/"
+  "backendUrl": "http://localhost:8081/v1/"
 }

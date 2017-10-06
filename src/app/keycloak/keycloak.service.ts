@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-
-import {environment} from '../../environments/environment';
+import {Configuration} from '../config/config.service';
 
 declare let Keycloak: any;
 
@@ -26,9 +25,9 @@ export interface AuthInfo {
 export class KeycloakService {
   static auth: AuthInfo = {};
 
-  static init(): Promise<any> {
+  static init(config: Configuration): Promise<any> {
     const keycloakAuth: KeycloakAuthData = Keycloak( {
-      url: environment.keykloakBaseUrl,
+      url: config.keykloakBaseUrl,
       realm: 'InGrid',
       clientId: 'ige-ng'/*,
       credentials: {

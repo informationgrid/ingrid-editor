@@ -20,21 +20,20 @@ export class IsoViewComponent implements OnInit {
 
   ngOnInit() {
 
-    this.isoViewModalRef = this.modalService.show(this.isoViewModal);
+    this.isoViewModalRef = this.modalService.show(this.isoViewModal, {class: 'modal-lg'});
 
     // get current document
     let currentForm = this.formService.requestFormValues();
-    this.doc = currentForm.value;
 
     // get profile model of current document
     this.profile = currentForm.fields;
 
-    this.getIso();
+    this.getIso(currentForm.value);
 
   }
 
-  getIso() {
-    this.apiService.getIsoDocument( this.doc._id )
+  getIso(doc: any) {
+    this.apiService.getIsoDocument( doc._id )
       .subscribe( result => this.doc = result );
   }
 

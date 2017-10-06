@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ImportExportService} from './import-export-service';
 import {FileUploader} from 'ng2-file-upload';
-import {environment} from '../../environments/environment';
 import {FormControl, FormGroup} from '@angular/forms';
 import {TextboxField} from '../+form/controls/field-textbox';
+import {ConfigService} from '../config/config.service';
 
 @Component({
   templateUrl: './import-export.component.html',
@@ -45,7 +45,7 @@ export class ImportExportComponent implements OnInit {
 
   file: File;
 
-  public uploader:FileUploader = new FileUploader({url: environment.backendUrl + '/upload'});
+  public uploader:FileUploader = null;
   public hasBaseDropZoneOver:boolean = false;
 
   currentTab: string;
@@ -53,7 +53,9 @@ export class ImportExportComponent implements OnInit {
   formFields = [];
   form = null;
 
-  constructor(private importExportService: ImportExportService) {
+  constructor(private importExportService: ImportExportService, config: ConfigService) {
+
+    this.uploader = new FileUploader({url: config.getConfiguration().backendUrl + '/upload'});
 
     // new FormControl()
     this.formFields = [
