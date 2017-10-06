@@ -20,13 +20,13 @@ import {CopyMoveEnum, MoveMode, PasteCallback} from './enums';
         <button class="btn btn-link" (click)="submit()">{{copyOrMoveText}}</button>
       </div>
     </ng-template>
-    <!--<modal #pasteModal modalClass="info" title="Einfügen" submitButtonLabel="Ok" (onSubmit)="submit()">
-      <modal-content>
-        <p>Wohin wollen Sie die ausgewählten Datensätze kopieren?</p>
-        <tree [showFolderEditButton]="false" (onSelected)="handleSelected($event)"></tree>
-      </modal-content>
-    </modal>-->
-  `
+  `,
+  styles: [`
+    .modal-body {
+      height: 300px;
+      overflow: auto;
+    }
+  `]
 })
 export class PasteDialogComponent implements OnInit, AfterViewInit {
 

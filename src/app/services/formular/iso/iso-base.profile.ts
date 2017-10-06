@@ -9,13 +9,13 @@ import { Container } from '../../../+form/controls/container';
 import {Injectable} from '@angular/core';
 
 @Injectable()
-export class IsoProfile implements Profile {
+export class IsoBaseProfile implements Profile {
 
-  id = 'ISO';
+  id = 'ISOService';
 
   profile: Array<FieldBase<any>> = null;
 
-  constructor(private codelistService: CodelistService) {
+  constructor(public codelistService: CodelistService) {
     const [addressTypes, advProductGroup, metadataLanguage, publicationInfo] = this.prepareSelects();
 
     this.profile = [

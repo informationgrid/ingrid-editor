@@ -3,7 +3,7 @@ ng2-smart-table {
 }
 
 /deep/ td.ng2-smart-actions, /deep/ th.ng2-smart-actions {
-  width: 55px;
+  width: 60px;
 }
 
 /deep/ table th, /deep/ table td {

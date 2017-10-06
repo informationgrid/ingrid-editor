@@ -58,7 +58,9 @@ export class FormularService {
   getProfile(id: string): Profile {
     const profile = this.profileDefinitions.find( profile => profile.id === id);
     if (!profile) {
-      throw Error('Unknown profile: ' + id);
+      // throw Error('Unknown profile: ' + id);
+      console.error('Unknown profile: ' + id);
+      return null;
     }
     return profile;
   }
@@ -67,12 +69,14 @@ export class FormularService {
     if (!profile) {
       profile = this.currentProfile;
     }
-    const title = this.getProfile(profile).getTitle(doc);
+    const profileVal = this.getProfile(profile);
+    const title = profileVal ? profileVal.getTitle(doc) : '- unknown profile -';
     return title ? title : this.untitledLabel;
   }
 
   getIconClass(profile: string): string {
-    return this.getProfile(profile).treeIconClass;
+    const profileVal = this.getProfile(profile);
+    return profileVal ? profileVal.treeIconClass : 'xxx';
   }
 
   getFieldsNeededForTitle(): string[] {

@@ -31,11 +31,17 @@ import {environment} from '../environments/environment';
 import {ConfigService, HttpOrig} from './config/config.service';
 import {KeycloakMockService} from './keycloak/keycloak-mock.service';
 import {PROFILES} from './services/formular/profile';
-import {IsoProfile} from './services/formular/iso/iso.profile';
+import {IsoServiceProfile} from './services/formular/iso/iso-service.profile';
 import {UVPProfile} from './services/formular/uvp/uvp.profile';
 import {AddressProfile} from './services/formular/address/address.profile';
 import {FolderProfile} from './services/formular/folder/folder.profile';
 import { AccordionModule, BsDatepickerModule, ModalModule, PopoverModule } from 'ngx-bootstrap';
+import {IsoDataPoolingProfile} from './services/formular/iso/iso-data-pooling.profile';
+import {IsoDatasetProfile} from './services/formular/iso/iso-dataset.profile';
+import {IsoInformationSystemProfile} from './services/formular/iso/iso-information-system.profile';
+import {IsoLiteratureProfile} from './services/formular/iso/iso-literature.profile';
+import {IsoProjectProfile} from './services/formular/iso/iso-project.profile';
+import {IsoTaskProfile} from './services/formular/iso/iso-task.profile';
 
 export function HttpLoader(backend: XHRBackend, defaultOptions: RequestOptions) {
   return new Http(backend, defaultOptions);
@@ -85,10 +91,17 @@ export function KeycloakLoader(configService: ConfigService) {
       multi: true
     },
 
-    {provide: PROFILES, useClass: IsoProfile, multi: true},
     {provide: PROFILES, useClass: UVPProfile, multi: true},
     {provide: PROFILES, useClass: AddressProfile, multi: true},
     {provide: PROFILES, useClass: FolderProfile, multi: true},
+    {provide: PROFILES, useClass: IsoDataPoolingProfile, multi: true},
+    {provide: PROFILES, useClass: IsoDatasetProfile, multi: true},
+    {provide: PROFILES, useClass: IsoInformationSystemProfile, multi: true},
+    {provide: PROFILES, useClass: IsoLiteratureProfile, multi: true},
+    {provide: PROFILES, useClass: IsoProjectProfile, multi: true},
+    {provide: PROFILES, useClass: IsoServiceProfile, multi: true},
+    {provide: PROFILES, useClass: IsoTaskProfile, multi: true},
+
     FormularService
   ], // additional providers
 
