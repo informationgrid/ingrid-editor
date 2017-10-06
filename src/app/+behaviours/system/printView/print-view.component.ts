@@ -23,7 +23,7 @@ export class PrintViewComponent implements OnInit {
     setTimeout( () => this.printViewModalRef = this.modalService.show(this.printViewModal) );
 
     // get current document
-    let currentForm = this.formService.requestFormValues();
+    const currentForm = this.formService.requestFormValues();
     this.doc = currentForm.value;
 
     // get profile model of current document

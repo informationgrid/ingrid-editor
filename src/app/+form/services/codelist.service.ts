@@ -45,7 +45,11 @@ export class CodelistService {
             } else {
               this.codelists[id] = data.json();
               const entries = this.codelists[id].entries;
-              resolve( this.prepareEntries( entries ) );
+              if (entries) {
+                resolve( this.prepareEntries( entries ) );
+              } else {
+                reject( 'This codelist does not exist: ' + id );
+              }
             }
           }, (err) => reject( err ) );
       }

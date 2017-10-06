@@ -35,7 +35,7 @@ import {IsoProfile} from './services/formular/iso/iso.profile';
 import {UVPProfile} from './services/formular/uvp/uvp.profile';
 import {AddressProfile} from './services/formular/address/address.profile';
 import {FolderProfile} from './services/formular/folder/folder.profile';
-import {BsDatepickerModule, ModalModule, PopoverModule} from 'ngx-bootstrap';
+import { AccordionModule, BsDatepickerModule, ModalModule, PopoverModule } from 'ngx-bootstrap';
 
 export function HttpLoader(backend: XHRBackend, defaultOptions: RequestOptions) {
   return new Http(backend, defaultOptions);
@@ -62,7 +62,7 @@ export function KeycloakLoader(configService: ConfigService) {
   declarations: [AppComponent, HelpComponent, MenuComponent],
   imports: [BrowserModule, BrowserAnimationsModule, HttpModule,
     Ng2SmartTableModule,
-    PopoverModule.forRoot(), BsDatepickerModule.forRoot(),
+    PopoverModule.forRoot(), BsDatepickerModule.forRoot(), AccordionModule.forRoot(),
     IgeFormModule, DashboardModule, FieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule.forRoot()],
   providers: [

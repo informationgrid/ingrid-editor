@@ -113,7 +113,7 @@ export class AddressProfile implements Profile {
   ];
 
   constructor(private codelistService: CodelistService, modalService: ModalService) {
-    this.codelistService.byIds(['6200', '6250']).then(codelists => {
+    this.codelistService.byIds(['6200', '6400']).then(codelists => {
       this.countrySelect.options = codelists[0];
       this.adminAreaSelect.options = codelists[1];
     }).catch( err => modalService.showError(err));

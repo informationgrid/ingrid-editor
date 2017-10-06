@@ -33,7 +33,7 @@ import { de } from 'ngx-bootstrap/locale';
       </div>
       <div class="modal-body">
         <p>Es ist ein Fehler aufgetreten:</p>
-        <p class="text-danger">{{dynDialog.errorMessage}}</p>
+        <p>{{dynDialog.errorMessage}}</p>
         <p>{{dynDialog.errorMessageMore}}</p>
       </div>
       <div class="modal-footer">

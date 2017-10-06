@@ -46,9 +46,9 @@ export class IsoViewPlugin extends Plugin {
 
   private showISODialog() {
     // show dialog where to copy the dataset(s)
-    let factory = this._cr.resolveComponentFactory(IsoViewComponent);
+    const factory = this._cr.resolveComponentFactory(IsoViewComponent);
 
-    let providers = ReflectiveInjector.resolve([]);
+    const providers = ReflectiveInjector.resolve([]);
     const popInjector = ReflectiveInjector.fromResolvedProviders(providers, this.modalService.containerRef.parentInjector);
     this.modalService.containerRef.createComponent(factory, null, popInjector);
   }
