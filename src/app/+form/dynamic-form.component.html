@@ -62,18 +62,18 @@
                         <!-- Default panel contents -->
                         <div class="panel-heading">Favoriten</div>
                         <div class="list-group">
-                            <a (click)="load()" class="list-group-item">
+                            <button (click)="load()" class="list-group-item list-group-item-action">
                                 <span class="fa fa-file-o"></span>
                                 Document 1 (TEST)
-                            </a>
-                            <a (click)="load()" class="list-group-item">
+                            </button>
+                            <button (click)="load()" class="list-group-item list-group-item-action">
                                 <span class="fa fa-file-o"></span>
                                 Document 5 (TEST)
-                            </a>
-                            <a (click)="load()" class="list-group-item">
+                            </button>
+                            <button (click)="load()" class="list-group-item list-group-item-action">
                                 <span class="fa fa-address-card-o"></span>
                                 Document 6 (TEST)
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -218,22 +218,6 @@
     </div>
 </ng-template>
 
-<!--<modal #newDocModal title="Neues Dokument" submitButtonLabel="Neues Dokument" (onSubmit)="prepareNewDoc()">
-    <modal-content>
-        <div class="radio" *ngFor="let type of newDocOptions.docTypes">
-            <label>
-                <input name="newDocChoice" type="radio" [(ngModel)]="choiceNewDoc" [value]="type.id"> {{type.label}}
-            </label>
-        </div>
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" [disabled]="!newDocOptions.rootOption" [(ngModel)]="addToDoc">
-                unter ausgewähltem Dokument/Ordner anlegen
-            </label>
-        </div>
-    </modal-content>
-</modal>-->
-
 <ng-template #discardConfirmModal>
     <div class="modal-header">
         <h4 class="modal-title">Daten wurden geändert</h4>
@@ -246,11 +230,3 @@
         <button class="btn btn-link" (click)="isoViewModalRef.hide()">Abbrechen</button>
     </div>
 </ng-template>
-
-
-<!--<modal #discardConfirmModal title="Daten wurden geändert" cancelButtonLabel="Nein" submitButtonLabel="Ja"
-       (onSubmit)="discardChanges()">
-    <modal-content>
-        <p>Der Datensatz wurde geändert. Wollen Sie die Änderungen verwerfen und einen anderen Datensatz laden?</p>
-    </modal-content>
-</modal>-->

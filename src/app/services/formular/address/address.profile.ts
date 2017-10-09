@@ -13,6 +13,8 @@ export class AddressProfile implements Profile {
 
   id = 'ADDRESS';
 
+  label = 'Adresse';
+
   treeIconClass = 'fa fa-address-card-o';
 
   countrySelect = new DropdownField({

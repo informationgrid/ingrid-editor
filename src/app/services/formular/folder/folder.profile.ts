@@ -7,6 +7,8 @@ export class FolderProfile implements Profile {
 
   id = 'FOLDER';
 
+  label = 'Ordner';
+
   treeIconClass = 'fa fa-folder-o';
 
   profile = [

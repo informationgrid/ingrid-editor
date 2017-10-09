@@ -14,6 +14,8 @@ export class IsoTaskProfile extends IsoBaseProfile {
 
   id = 'ISOTask';
 
+  label = 'ISO-Fachaufgabe';
+
   constructor(public codelistService: CodelistService) {
     super(codelistService);
 

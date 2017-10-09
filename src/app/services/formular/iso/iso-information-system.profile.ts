@@ -14,6 +14,8 @@ export class IsoInformationSystemProfile extends IsoBaseProfile {
 
   id = 'ISOInformationSystem';
 
+  label = 'ISO-Informationssystem';
+
   constructor(public codelistService: CodelistService) {
     super(codelistService);
 

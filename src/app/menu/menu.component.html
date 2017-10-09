@@ -10,13 +10,18 @@
                 <a [routerLink]="route.path" class="nav-link">{{route.name}}</a>
             </li>
         </ul>
-    </div>
 
-    <span class="navbar-text">
-        <a href="#" class="navbar-link" (click)="logout()">
-            Logout
-            <!--André Wallat-->
-            <!--<span title="Logout" class="fa fa-sign-out"></span>-->
-        </a>
-    </span>
+        <div>
+            <select #catalogSelect class="custom-select" (change)="changeCatalog(catalogSelect.value)">
+                <option value="catNiedersachsen">Niedersachsen</option>
+                <option value="catBrandenburg">Brandenburg</option>
+                <option value="catHamburg">Hamburg</option>
+            </select>
+            <a href="#" class="navbar-link" (click)="logout()">
+                Logout
+                <!--André Wallat-->
+                <!--<span title="Logout" class="fa fa-sign-out"></span>-->
+            </a>
+        </div>
+    </div>
 </nav>

@@ -12,9 +12,9 @@
     <div style="overflow-y: auto">
         <ul class="list-group">
             <li *ngFor="let entry of entries" class="list-group-item" (click)="open(entry._id, entry.title)" [class.active]="selectedId === entry._id">
-                <span class="label"
-                      [class.label-primary]="entry._state === 'P'"
-                      [class.label-warning]="entry._state === 'W'"
+                <span class="badge"
+                      [class.badge-primary]="entry._state === 'P'"
+                      [class.badge-warning]="entry._state === 'W'"
                       [class.pubished-working-label]="entry._state === 'PW'"
                 >{{entry._profile}}</span>
                 {{entry.title}}

@@ -15,6 +15,8 @@ export class UVPProfile implements Profile {
 
   id = 'UVP';
 
+  label = 'UVP-Verfahren';
+
   codelistService: CodelistService = null;
 
   profile: Array<FieldBase<any>> = null;

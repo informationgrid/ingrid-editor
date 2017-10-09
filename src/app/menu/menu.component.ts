@@ -31,6 +31,10 @@ export class MenuComponent implements OnInit {
     this.isLoggedIn = true; // this.authService.loggedIn();
   }
 
+  changeCatalog(catalogId: string) {
+    console.log('Change catalog to: ' + catalogId);
+  }
+
   logout() {
     // this.authService.logout();
     this.keycloak.logout();

@@ -231,7 +231,7 @@ sidebar .list-group-item:hover {
 }
 
 .pubished-working-label {
-  background: linear-gradient(-90deg, #f0ad4e 50%, #87c2da 50%);
+  background: linear-gradient(-90deg, #ffc107 50%, #007bff 50%);
 }
 
 .list-group-item.active {

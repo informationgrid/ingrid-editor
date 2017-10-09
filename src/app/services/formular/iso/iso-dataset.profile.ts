@@ -14,6 +14,8 @@ export class IsoDatasetProfile extends IsoBaseProfile {
 
   id = 'ISODataset';
 
+  label = 'ISO-Geodatensatz';
+
   constructor(public codelistService: CodelistService) {
     super(codelistService);
 

@@ -10,6 +10,8 @@ export class IsoLiteratureProfile extends IsoBaseProfile {
 
   id = 'ISOLiterature';
 
+  label = 'ISO-Literatur';
+
   constructor(public codelistService: CodelistService) {
     super(codelistService);
 

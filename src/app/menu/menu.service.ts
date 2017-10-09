@@ -20,7 +20,8 @@ export class MenuService {
     {name: 'Plugins', path: '/plugins', onlyAdmin: true},
     // {name: 'Fields', path: '/fields'}
     {name: 'Benutzer', path: '/user', onlyAdmin: true},
-    {name: 'Im-/Export', path: '/importExport', onlyAdmin: true}
+    {name: 'Im-/Export', path: '/importExport', onlyAdmin: true},
+    {name: 'Katalogverwaltung', path: '/catalogs', onlyAdmin: true}
   ];
 
   constructor(private router: Router) {

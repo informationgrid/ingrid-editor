@@ -14,6 +14,8 @@ export class IsoServiceProfile extends IsoBaseProfile {
 
   id = 'ISOService';
 
+  label = 'ISO-Geodatendienst';
+
   constructor(public codelistService: CodelistService) {
     super(codelistService);
 

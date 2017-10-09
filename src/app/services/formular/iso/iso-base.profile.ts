@@ -13,6 +13,8 @@ export class IsoBaseProfile implements Profile {
 
   id = 'ISOService';
 
+  label = 'no-name';
+
   profile: Array<FieldBase<any>> = null;
 
   constructor(public codelistService: CodelistService) {

@@ -101,6 +101,6 @@ export class FormularService {
   }
 
   getDocTypes(): {id: string, label: string}[] {
-    return this.profileDefinitions.map( profile => ({id: profile.id, label: profile.id}) );
+    return this.profileDefinitions.map( profile => ({id: profile.id, label: profile.label}) );
   }
 }

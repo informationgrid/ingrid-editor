@@ -10,6 +10,8 @@ export class IsoDataPoolingProfile extends IsoBaseProfile {
 
   id = 'ISODataPooling';
 
+  label = 'ISO-Datensammlung';
+
   constructor(public codelistService: CodelistService) {
     super(codelistService);
 
