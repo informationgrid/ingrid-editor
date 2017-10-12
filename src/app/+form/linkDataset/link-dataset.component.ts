@@ -1,6 +1,6 @@
-import {Component, OnInit, forwardRef, ViewChild, Input, TemplateRef} from '@angular/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from "@angular/forms";
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import { Component, forwardRef, Input, OnInit, TemplateRef } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 
 export const LINK_DATASET_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -22,7 +22,7 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
 
   private _onChangeCallback: (x: any) => void;
 
-  @ViewChild('chooseDatasetModal') chooseDatasetModal: TemplateRef<any>;
+  // @ViewChild('chooseDatasetModal') chooseDatasetModal: TemplateRef<any>;
   private chooseDatasetModalRef: BsModalRef;
 
 
@@ -32,8 +32,12 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
   ngOnInit() {
   }
 
+  openDialog(ref: TemplateRef<any>) {
+    this.chooseDatasetModalRef = this.modalService.show( ref );
+  }
+
   selectDataset() {
-    this.linkedDataset = this.selection;
+    this.linkedDataset = this.mapToLinkedDataset( this.selection );
     this.chooseDatasetModalRef.hide();
     this._onChangeCallback(this.linkedDataset);
   }
@@ -45,6 +49,8 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
   writeValue(obj: any): void {
     if (obj) {
       this.linkedDataset = obj;
+    } else {
+      this.linkedDataset = null;
     }
   }
 
@@ -53,5 +59,12 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
   }
 
   registerOnTouched(fn: any): void {
+  }
+
+  private mapToLinkedDataset(selection: any) {
+    return {
+      refId: selection.id,
+      title: selection.title
+    };
   }
 }

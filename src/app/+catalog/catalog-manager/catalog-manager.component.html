@@ -1,3 +1,10 @@
-<p>
-  catalog-manager works!
-</p>
+<div class="card-deck">
+    <div *ngFor="let cat of catalog" class="card bg-light mb-3" style="max-width: 20rem;">
+        <div class="card-header">{{cat.label}}</div>
+        <div class="card-body">
+            <!--<h4 class="card-title">Light card title</h4>-->
+            <p class="card-text">...</p>
+            <a (click)="chooseCatalog(cat.id)" class="card-link">Auswählen</a>
+        </div>
+    </div>
+</div>

@@ -1,14 +1,13 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {StorageService} from '../../../services/storage/storage.service';
-import {IActionMapping, ITreeOptions, TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
-import {Router, ActivatedRoute} from '@angular/router';
-import {FormularService} from '../../../services/formular/formular.service';
-import {UpdateType} from '../../../models/update-type.enum';
-import {ErrorService} from '../../../services/error.service';
-import {FormToolbarService} from '../../toolbar/form-toolbar.service';
-import {SelectedDocument} from '../selected-document.model';
-import {DocMainInfo} from '../../../models/update-dataset-info.model';
-import {TREE_EVENTS} from 'angular-tree-component/dist/constants/events';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { StorageService } from '../../../services/storage/storage.service';
+import { IActionMapping, ITreeOptions, TREE_ACTIONS, TreeComponent, TreeNode } from 'angular-tree-component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormularService } from '../../../services/formular/formular.service';
+import { UpdateType } from '../../../models/update-type.enum';
+import { ErrorService } from '../../../services/error.service';
+import { FormToolbarService } from '../../toolbar/form-toolbar.service';
+import { SelectedDocument } from '../selected-document.model';
+import { DocMainInfo } from '../../../models/update-dataset-info.model';
 
 const actionMapping: IActionMapping = {
   mouse: {
@@ -323,8 +322,8 @@ export class MetadataTreeComponent implements OnInit {
     this.tree.treeModel.update();
   }
 
-  private getSelectedNodes(treeModel: TreeModel): any {
-    return treeModel.getActiveNodes()
+  private getSelectedNodes(): any {
+    return this.tree.treeModel.getActiveNodes()
       .map( node => ({
         id: node.data.id,
         label: node.displayField,
@@ -333,14 +332,14 @@ export class MetadataTreeComponent implements OnInit {
   }
 
   open(event: TreeNode) {
-    const data = this.getSelectedNodes( event.treeModel );
+    const data = this.getSelectedNodes();
 
     this.activate.next( data );
     this.selected.next( data );
   }
 
   deselected(event: TreeNode) {
-    const data = this.getSelectedNodes( event.treeModel );
+    const data = this.getSelectedNodes();
 
     this.selected.next( data );
   }

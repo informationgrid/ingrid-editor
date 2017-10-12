@@ -99,7 +99,7 @@
         <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
 
             <!-- bottom info bar -->
-            <div class="bottom-bar" style="position:relative;" [class.expanded]="showDateBar"
+            <div class="form-info-bar" style="position:relative;" [class.expanded]="showDateBar"
                  (click)="showDateBar = !showDateBar">
                 <span class="text-muted">
                     <div class="pull-left padding-sm"
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                     <!--<span class="fa fa-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
-                    <div class="text-center" style="position:absolute; margin: 0 50%; bottom: -5px;">
+                    <div class="text-center" style="position:absolute; margin: 0 50%; bottom: -3px;">
                         <span class="fa"
                               [class.fa-chevron-down]="!showDateBar"
                               [class.fa-chevron-up]="showDateBar"></span>

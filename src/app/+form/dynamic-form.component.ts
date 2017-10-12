@@ -301,9 +301,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // when multiple nodes were selected then do not show any form
     if (this.form) {
-      if (selectedDocs.length !== 1) {
+      if (selectedDocs.length !== 1 && this.form.enabled) {
         this.form.disable();
-      } else {
+      } else if (this.form.disabled) {
         this.form.enable();
       }
     }
@@ -466,6 +466,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
 
+    // TODO: introduce order by field IDs as an array to make it easier to squeeze in a new field
+    //       => [ 'title', 'description', ... ]
     // sort fields by its order field
     this.fields.sort((a, b) => a.order - b.order).slice(0);
 
