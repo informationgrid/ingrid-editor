@@ -2,8 +2,7 @@
     <div class="panel-heading">
         <h3 class="panel-title">
             Schritt {{page}}
-            <a (click)="location.back(); wizardService.focusElements$.next('')"
-               >
+            <a (click)="close()">
                 <div class="pull-right fa fa-close"></div>
             </a>
         </h3>

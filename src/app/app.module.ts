@@ -43,6 +43,7 @@ import {IsoLiteratureProfile} from './services/formular/iso/iso-literature.profi
 import {IsoProjectProfile} from './services/formular/iso/iso-project.profile';
 import {IsoTaskProfile} from './services/formular/iso/iso-task.profile';
 import { CatalogModule } from './+catalog/catalog.module';
+import { LoginComponent } from './security/login.component';
 
 export function HttpLoader(backend: XHRBackend, defaultOptions: RequestOptions) {
   return new Http(backend, defaultOptions);
@@ -66,7 +67,7 @@ export function KeycloakLoader(configService: ConfigService) {
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent],
+  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent],
   imports: [BrowserModule, BrowserAnimationsModule, HttpModule,
     Ng2SmartTableModule,
     PopoverModule.forRoot(), BsDatepickerModule.forRoot(), AccordionModule.forRoot(),

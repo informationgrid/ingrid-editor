@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  mockKeycloak: false,
+  configFile: 'assets/config-prod.json'
 };
