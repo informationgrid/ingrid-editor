@@ -63,7 +63,7 @@ export class LinkDatasetComponent implements OnInit, ControlValueAccessor {
 
   private mapToLinkedDataset(selection: any) {
     return {
-      refId: selection.id,
+      _id: selection.id,
       title: selection.title
     };
   }

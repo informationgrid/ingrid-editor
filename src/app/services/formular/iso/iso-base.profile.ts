@@ -6,7 +6,8 @@ import { DropdownField } from '../../../+form/controls/field-dropdown';
 import { FieldBase } from '../../../+form/controls/field-base';
 import { CodelistService } from '../../../+form/services/codelist.service';
 import { Container } from '../../../+form/controls/container';
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
+import { TreeField } from '../../../+form/controls/field-tree';
 
 @Injectable()
 export class IsoBaseProfile implements Profile {
@@ -61,6 +62,7 @@ export class IsoBaseProfile implements Profile {
           new OpenTableField({
             key: 'addresses',
             label: 'Adressen',
+            addWithDialog: true,
             order: 20,
             columns: [
               {
@@ -68,7 +70,7 @@ export class IsoBaseProfile implements Profile {
                 width: '150px'
               },
               {
-                editor: new TextboxField({
+                editor: new TreeField({
                   key: 'addressRef',
                   label: 'Adresse'
                 })
@@ -321,6 +323,7 @@ export class IsoBaseProfile implements Profile {
       key: 'type',
       label: 'Typ',
       isCombo: true,
+      useCodelist: 505,
       options: []
     });
 

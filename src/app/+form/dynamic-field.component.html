@@ -71,7 +71,11 @@
                     [ngModel]="value[field.key]">
         </data-table>-->
 
-        <open-table *ngSwitchCase="'opentable'" [formControlName]="field.key" [columns]="field.columns" [hideTableHeader]="field.hideHeader"></open-table>
+        <ige-open-table *ngSwitchCase="'opentable'"
+                        [formControlName]="field.key"
+                        [columns]="field.columns"
+                        [addWithDialog]="field.addWithDialog"
+                        [hideTableHeader]="field.hideHeader"></ige-open-table>
 
         <!-- LEAFLET-->
         <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [formControlName]="field.key"></leaflet>

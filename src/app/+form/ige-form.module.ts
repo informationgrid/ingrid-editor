@@ -8,7 +8,7 @@ import { DynamicFormComponent } from './dynamic-form.component';
 import { LeafletComponent } from './leaflet/leaflet.component';
 import { routing } from './ige-form.routing';
 import { BrowserComponent } from './sidebars/browser/browser.component';
-import { OpenTable } from './opentable/opentable.component';
+import { OpenTableComponent } from './opentable/opentable.component';
 import { PartialGenerator } from './partialGenerator/partial-generator.component';
 import { TreeModule } from 'angular-tree-component';
 import { LinkDatasetComponent } from './linkDataset/link-dataset.component';
@@ -34,7 +34,7 @@ import {BsDatepickerModule, PopoverModule} from 'ngx-bootstrap';
     PopoverModule, ComboBoxModule, WizardModule, IgeWizardModule, BsDatepickerModule,
     SharedModule, routing, TreeModule, OpentableModule],
   declarations: [
-    FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,
+    FormToolbarComponent, DynamicFieldComponent, OpenTableComponent, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
     FocusDirective, ScrollToDirective, MainFormComponent, MainFormTabsComponent, DropDownComponent],
   providers: [CodelistService, NominatimService],
