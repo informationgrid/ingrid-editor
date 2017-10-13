@@ -61,7 +61,7 @@ export class StorageService {
       .map( resp => resp.json() );
   }
 
-  saveData(data: any): Promise<DocMainInfo> {
+  saveData(data: any, isNewDoc?: boolean): Promise<DocMainInfo> {
     console.log( 'TEST: save data' );
     const previousId = data._id ? data._id : '-1';
     // let errors: any = {errors: []};
@@ -85,10 +85,8 @@ export class StorageService {
         data._id = res.json()._id;
         data._state = res.json()._state;
         this.afterSave.next( data );
-        // FIXME: UpdateNew is not called for new docs
         this.datasetsChanged.next( {
-          // type: previousId === '-1' ? UpdateType.New : UpdateType.Update,
-          type: UpdateType.Update,
+          type: isNewDoc ? UpdateType.New : UpdateType.Update,
           data: [data]
         } );
         resolve( data );

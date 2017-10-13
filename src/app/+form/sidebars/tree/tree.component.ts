@@ -123,13 +123,13 @@ export class MetadataTreeComponent implements OnInit {
     docs.forEach( doc => {
       const newDataset = this.createNewDatasetTemplate( doc );
 
-      const updateTree = () => {
+      const updateTree = (id: string) => {
         this.tree.treeModel.update();
         // FIXME: set route to new node id, for correct refresh
         // this however does conflict when creating a new node when first visiting the form page
-        this.router.navigate( ['/form', '-1'] );
+        this.router.navigate( ['/form', id] );
 
-        const node = this.tree.treeModel.getNodeById( '-1' );
+        const node = this.tree.treeModel.getNodeById( id );
 
         // make sure parent is expanded
         node.parent.expand();
@@ -149,14 +149,14 @@ export class MetadataTreeComponent implements OnInit {
               pNode.children = [];
             }
             pNode.children.push( newDataset );
-            updateTree();
+            updateTree( newDataset.id );
           // } );
         } catch (err) {
           console.error( 'error expanding node', err );
         }
       } else {
         this.nodes.push( newDataset );
-        updateTree();
+        updateTree( newDataset.id );
       }
     } );
   }

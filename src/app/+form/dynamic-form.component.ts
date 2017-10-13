@@ -402,8 +402,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // during save the listeners for dataset changes are already called
     // this.form.reset(this.form.value);
     this.form.markAsPristine();
+    const isNewDoc = data._id === '-1' ? true : false;
 
-    this.storageService.saveData(data).then(res => {
+    this.storageService.saveData(data, isNewDoc).then(res => {
       this.data._id = res._id;
       this.showToast();
     }, (err) => {

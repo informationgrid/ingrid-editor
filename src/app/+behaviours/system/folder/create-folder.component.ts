@@ -51,14 +51,8 @@ export class CreateFolderComponent implements OnInit {
 
       const folder = CreateFolderComponent.createNewFolderDoc(this.folderName, parent);
 
-      // first send the information to tree that a new dataset is going to be created
-      this.storageService.datasetsChanged.next({
-        type: UpdateType.New,
-        data: [folder]
-      });
-
       // by saving the folder an update event is sent automatically to notify tree
-      this.storageService.saveData(folder);
+      this.storageService.saveData(folder, true);
       this.createFolderModalRef.hide();
 
     } else {
