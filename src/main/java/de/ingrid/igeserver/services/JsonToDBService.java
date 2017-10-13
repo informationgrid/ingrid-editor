@@ -34,6 +34,10 @@ public class JsonToDBService extends MapperService {
 
         map.put( FIELD_MODIFIED_BY, userId );
 
+        // remove all referenced data except the ID
+        // this data is fetched on each load (TODO: should be cached!)
+        cleanupReferences( map );
+
         // cleanup document to save
         map.remove( FIELD_ID );
         map.remove( FIELD_PROFILE );
@@ -41,16 +45,27 @@ public class JsonToDBService extends MapperService {
         map.remove( FIELD_PARENT );
 
         if (published) {
-            oldMap.put( "published", map );
+            oldMap.set( "published", map );
             oldMap.remove( FIELD_DRAFT );
         } else {
-            oldMap.put( FIELD_DRAFT, map );
+            oldMap.set( FIELD_DRAFT, map );
         }
 
         // apply specific fields to document (id, profile, state, ...)
         oldMap.put( FIELD_ID, id );
 
         return toJsonString( oldMap );
+    }
+
+    private void cleanupReferences(ObjectNode map) {
+        // TODO: make dynamic
+        String profile = map.get( MapperService.FIELD_PROFILE ).asText();
+        if ("UVP".equals( profile ) ) {
+            String id = map.get("publisher").get( MapperService.FIELD_ID ).asText();
+            ObjectNode refNode = new ObjectMapper().createObjectNode();
+            
+            map.set( "publisher", refNode.put( MapperService.FIELD_ID, id ) );
+        }
     }
 
     public String prepareBehaviour(String json) throws Exception {

@@ -19,6 +19,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.ingrid.igeserver.OrientDbService;
 import de.ingrid.igeserver.model.Data1;
@@ -26,6 +27,7 @@ import de.ingrid.igeserver.model.Data2;
 import de.ingrid.igeserver.services.DBToJsonService;
 import de.ingrid.igeserver.services.ExportService;
 import de.ingrid.igeserver.services.JsonToDBService;
+import de.ingrid.igeserver.utils.DBUtils;
 import io.swagger.annotations.ApiParam;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
@@ -45,6 +47,9 @@ public class DatasetsApiController implements DatasetsApi {
     
     @Autowired
     private ExportService exportService;
+    
+    @Autowired
+    private DBUtils dbUtils;
 
     /**
      * Create dataset.
@@ -82,6 +87,7 @@ public class DatasetsApiController implements DatasetsApi {
         try {
             String mapDocument = null;
             String userId = getUserIdFromHeader(auth);
+            String dbId = this.dbUtils.getCatalogForUser( userId );
             
             if (revert) {
                 mapDocument = this.jsonFromService.revertDocument( id );
@@ -89,7 +95,7 @@ public class DatasetsApiController implements DatasetsApi {
                 mapDocument = this.jsonFromService.mapDocument( data, publish, userId );
             }
 
-            String result = this.dbService.updateDocTo( COLLECTION, id, mapDocument );
+            String result = this.dbService.updateDocTo( dbId, COLLECTION, id, mapDocument );
             JsonNode mapDoc = this.jsonToService.mapDocument( result );
             return ResponseEntity.ok( jsonToService.toJsonString(mapDoc) );
 
@@ -161,7 +167,7 @@ public class DatasetsApiController implements DatasetsApi {
             if (children) {
                 docs = this.dbService.getChildDocuments( parentId );
             } else {
-                docs = this.dbService.find( COLLECTION );
+                docs = this.dbService.find( "igedb", COLLECTION, null, null );
             }
 
             for (String doc : docs) {
@@ -190,6 +196,10 @@ public class DatasetsApiController implements DatasetsApi {
         JsonNode mapDoc = null;
         try {
             mapDoc = this.jsonToService.mapDocument( doc );
+            
+            String[] refDocs = dbUtils.getReferencedDocs(mapDoc);
+            jsonToService.addReferencedDocsTo(refDocs, (ObjectNode) mapDoc);
+            
             return ResponseEntity.ok( jsonToService.toJsonString(mapDoc) );
         } catch (Exception e) {
             // TODO Auto-generated catch block

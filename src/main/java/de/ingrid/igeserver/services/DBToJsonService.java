@@ -3,6 +3,8 @@ package de.ingrid.igeserver.services;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,6 +12,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class DBToJsonService extends MapperService {
+    
+    private static Logger log = LogManager.getLogger( DBToJsonService.class );
 
     public JsonNode mapDocument(String dbDoc) throws Exception {
         return mapDocument( dbDoc, null );
@@ -21,6 +25,11 @@ public class DBToJsonService extends MapperService {
         JsonNode currentDocRead = map.path( "draft" );
         if (currentDocRead.isMissingNode()) {
         	currentDocRead = map.path( "published" );
+        	
+        	if (currentDocRead.isMissingNode()) {
+        	    log.warn( "A document does not have draft or published version: " + dbDoc );
+        	    return null;
+        	}
         }
         ObjectNode currentDoc = (ObjectNode) currentDocRead;
 
@@ -49,5 +58,17 @@ public class DBToJsonService extends MapperService {
         } else {
             return "W";
         }
+    }
+
+    public void addReferencedDocsTo(String[] refDocs, ObjectNode mapDoc) {
+        for (String ref : refDocs) {
+            try {
+                mapDoc.set( "publisher", mapDocument( ref ) );
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        
     }
 }

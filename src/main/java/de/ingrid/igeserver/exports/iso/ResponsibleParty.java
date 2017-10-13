@@ -14,7 +14,7 @@ public class ResponsibleParty {
 	
 	private String positionName;
 	
-	@XmlElement(name = "CI_Contact")
+	@XmlElement(name = "contactInfo")
 	public ContactInfo contactInfo;
 	
 	@XmlElement(name = "role")

@@ -29,7 +29,7 @@ public class BehavioursApiController implements BehavioursApi {
         try {
             List<String> behaviours = this.dbService.getAllFrom( "Behaviours" );
             
-            String prepareBehaviour = jsonService.prepareBehaviour( behaviours.get( 0 ) );
+            // String prepareBehaviour = jsonService.prepareBehaviour( behaviours.get( 0 ) );
 
             return ResponseEntity.ok( "[" + String.join( ",", behaviours ) + "]" );
         } catch (Exception e) {

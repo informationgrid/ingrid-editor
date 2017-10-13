@@ -3,6 +3,7 @@ package de.ingrid.igeserver;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
@@ -16,7 +17,6 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.sequence.OSequence;
 import com.orientechnologies.orient.core.metadata.sequence.OSequence.SEQUENCE_TYPE;
 import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibrary;
-import com.orientechnologies.orient.core.record.ORecordAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.server.OServer;
@@ -38,7 +38,7 @@ public class OrientDbService {
         server.startup( getClass().getResourceAsStream( "/db.config.xml" ) );
         server.activate();
 
-        initDatabase();
+        initDatabase("igedb");
     }
 
     public OServer getServer() {
@@ -48,13 +48,17 @@ public class OrientDbService {
     public void setServer(OServer server) {
         this.server = server;
     }
+    
+    public void createDatabase(String name) {
+        initDatabase(name);
+    }
 
     public List<String> getAllFrom(String classType) {
         // log.info( "Thread is:" + Thread.currentThread().getName() );
 
         // TODO: should we get a new connection?
         // db.activateOnCurrentThread();
-        ODatabaseDocumentTx db = openDB();
+        ODatabaseDocumentTx db = openDB("igedb");
         List<String> list = new ArrayList<String>();
 
         try {
@@ -73,7 +77,7 @@ public class OrientDbService {
     }
 
     public String addDocTo(String classType, Object data, Object id) {
-        ODatabaseDocumentTx db = openDB();
+        ODatabaseDocumentTx db = openDB("igedb");
         String json = null;
 
         db.begin();
@@ -124,7 +128,7 @@ public class OrientDbService {
 
         String id = doc.field( "_id", String.class );
 
-        ODatabaseDocumentTx db = openDB();
+        ODatabaseDocumentTx db = openDB("igedb");
         ODocument docById = getDocById( db, classType, id );
         closeDB( db );
 
@@ -137,22 +141,28 @@ public class OrientDbService {
 
             }
         } else {
-            storedDoc = updateDocTo( classType, id, data );
+            storedDoc = updateDocTo( "igedb", classType, id, data );
         }
 
         return storedDoc;
     }
 
-    public List<String> find(String classType) {
-        ODatabaseDocumentTx db = openDB();
+    public List<String> find(String dbName, String classType, Map<String, String> query, String... fields) {
+        ODatabaseDocumentTx db = openDB(dbName);
 
-        OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>(
+        OSQLSynchQuery<ODocument> oQuery = new OSQLSynchQuery<ODocument>(
                 "SELECT * FROM " + classType );
 
         List<String> list = new ArrayList<String>();
-        List<ODocument> docs = db.query( query );
+        List<ODocument> docs = db.query( oQuery );
         for (ODocument doc : docs) {
-            list.add( prepare( doc ).toJSON() );
+            if (fields == null) {
+                list.add( doc.toJSON() );
+            } else {
+                // TODO: fix fields!
+                String field = fields[0];
+                list.add( doc.field( field ) );
+            }
         }
 
         closeDB( db );
@@ -160,7 +170,7 @@ public class OrientDbService {
     }
 
     public String getById(String classType, String id) {
-        ODatabaseDocumentTx db = openDB();
+        ODatabaseDocumentTx db = openDB("igedb");
         String json = null;
 
         try {
@@ -170,7 +180,7 @@ public class OrientDbService {
             List<ODocument> result = db.query( query );
 
             if (result.size() == 1) {
-                json = prepare( result.get( 0 ) ).toJSON();
+                json = result.get( 0 ).toJSON();
             }
 
         } finally {
@@ -179,8 +189,8 @@ public class OrientDbService {
         return json;
     }
 
-    public String updateDocTo(String classType, String id, String data) {
-        ODatabaseDocumentTx db = openDB();
+    public String updateDocTo(String dbName, String classType, String id, String data) {
+        ODatabaseDocumentTx db = openDB(dbName);
 
         // String docToUpdate = getById( classType, id );
 
@@ -196,7 +206,7 @@ public class OrientDbService {
     }
 
     public List<String> getPathToDataset(String id) {
-        ODatabaseDocumentTx db = openDB();
+        ODatabaseDocumentTx db = openDB("igedb");
 
         ODocument doc = getDocById( db, "Documents", id );
         String parent = doc.field( "_parent", String.class );
@@ -215,7 +225,7 @@ public class OrientDbService {
 
     public List<String> getChildDocuments(String parentId) {
         List<String> list = new ArrayList<String>();
-        ODatabaseDocumentTx db = openDB();
+        ODatabaseDocumentTx db = openDB("igedb");
 
         try {
 
@@ -232,7 +242,7 @@ public class OrientDbService {
             List<ODocument> result = db.query( query );
 
             result.forEach( doc -> {
-                list.add( prepare( doc ).toJSON() );
+                list.add( doc.toJSON() );
             } );
 
         } finally {
@@ -242,7 +252,7 @@ public class OrientDbService {
     }
     
     public String getDocStatistic() {
-        ODatabaseDocumentTx db = openDB();
+        ODatabaseDocumentTx db = openDB("igedb");
         
         String queryStr = "select _profile, count(_profile) from Documents group by _profile";
         OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>( queryStr );
@@ -259,7 +269,7 @@ public class OrientDbService {
     }
     
     public void deleteDocFrom(String classType, String id) {
-        ODatabaseDocumentTx db = openDB();
+        ODatabaseDocumentTx db = openDB("igedb");
         
         // get document first to get the identifier
         ODocument doc = getDocById( db, classType, id );
@@ -292,14 +302,8 @@ public class OrientDbService {
         }
     }
 
-    private ORecordAbstract prepare(ODocument doc) {
-        // doc.field( "_id", doc.getIdentity() );
-        doc.field( "_state", "W" );
-        return doc;
-    }
-
-    private ODatabaseDocumentTx openDB() {
-        ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/igedb" );
+    private ODatabaseDocumentTx openDB(String databaseName) {
+        ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/" + databaseName );
         db.open( "admin", "admin" );
         return db;
     }
@@ -314,9 +318,9 @@ public class OrientDbService {
         server.shutdown();
     }
 
-    private void initDatabase() {
+    private void initDatabase(String databaseName) {
         try {
-            ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/igedb" );
+            ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/" + databaseName );
 
             // db.begin();
             // db.isClosed();
@@ -362,7 +366,7 @@ public class OrientDbService {
             // iRecord.fromJSON( "{ \"name\": \"Peter\", \"age\": 34 }" );
             // iRecord.save();
             // db.commit();
-            // db.close();
+             db.close();
         } catch (Exception e) {
             log.error( "Error during DB initialization", e );
         } finally {}
