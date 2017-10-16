@@ -2,9 +2,9 @@ import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/
 import {ModalService} from '../services/modal/modal.service';
 import {UserService} from './user.service';
 import {ErrorService} from '../services/error.service';
-import {Observable} from 'rxjs';
 import {User} from './user';
 import {Role} from '../models/user-role';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   templateUrl: './user.component.html',
@@ -28,7 +28,7 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   selectedUser: User = new User();
 
-  isNewUser: boolean = false;
+  isNewUser = false;
 
   constructor(private modalService: ModalService, private userService: UserService,
               private errorService: ErrorService) {
@@ -53,10 +53,10 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.roles = roles;
   }
 
-  loadUser(user: User) {
-    console.log('user', user);
+  loadUser(userToLoad: User) {
+    console.log('user', userToLoad);
     this.isNewUser = false;
-    this.userService.getUser(user.id)
+    this.userService.getUser(userToLoad.id)
       .subscribe(
         user => { this.selectedUser = user; console.log('selectedUser:', this.selectedUser); },
         error => this.errorService.handle(error)
@@ -81,7 +81,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   saveUser(user: User) {
-    let observer: Observable<any> = null;
+    let observer: Observable<User> = null;
 
     // convert roles to numbers
     user.roles = user.roles.map( role => +role );
