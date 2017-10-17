@@ -8,7 +8,7 @@ import { defineLocale } from 'ngx-bootstrap/bs-moment';
 import { de } from 'ngx-bootstrap/locale';
 
 @Component( {
-  selector: 'app-root',
+  selector: 'ige-root',
   template: `
     <div class="igeContainer">
       <!-- MENU -->
@@ -27,32 +27,32 @@ import { de } from 'ngx-bootstrap/locale';
     <ng-template #errorModal>
       <div class="modal-header">
         <h4 class="modal-title pull-left">Fehler</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="errorModalRef.hide()">
+        <!--<button type="button" class="close pull-right" aria-label="Close" (click)="errorModalRef.hide()">
           <span aria-hidden="true">&times;</span>
-        </button>
+        </button>-->
       </div>
       <div class="modal-body">
         <p>Es ist ein Fehler aufgetreten:</p>
-        <p>{{dynDialog.errorMessage}}</p>
-        <p>{{dynDialog.errorMessageMore}}</p>
+        <ul>
+          <ng-container *ngFor="let item of dynDialogMessages">
+            <li >{{item.msg}}</li>
+            <ul *ngIf="item.detail">
+              <li>{{item.detail}}</li>
+            </ul>
+          </ng-container>
+        </ul>
       </div>
       <div class="modal-footer">
         <button class="btn btn-link" (click)="errorModalRef.hide()">Schließen</button>
       </div>
     </ng-template>
-    <!--<modal #errorModal modalClass="error" title="Fehler" submitButtonLabel="Ok" (onSubmit)="errorModal.close()">
-        <modal-content>
-            <p>Es ist ein Fehler aufgetreten:</p>
-            <p class="text-danger">{{dynDialog.errorMessage}}</p>
-            <p>{{dynDialog.errorMessageMore}}</p>
-        </modal-content>
-    </modal>-->
 
     <!-- Placeholder for dynamically created dialogs from plugins -->
     <div #dialogContainer id="dialogContainer"></div>
   `,
   styles: [`
     .igeContainer { height: 100%; overflow-x: hidden; }
+    .modal-body { overflow: auto; }
   `]
 } )
 export class AppComponent implements OnInit {
@@ -61,7 +61,7 @@ export class AppComponent implements OnInit {
   @ViewChild('dialogContainer', {read: ViewContainerRef}) dialogContainerRef: ViewContainerRef;
 
   errorModalRef: BsModalRef;
-  dynDialog: any = {errorMessage: ''};
+  dynDialogMessages: any = [];
 
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
@@ -72,10 +72,16 @@ export class AppComponent implements OnInit {
 
     // TODO: make more error info collapsible
     this.modalService.errorDialog$.subscribe( (content: any) => {
-      this.dynDialog.errorMessage = content.message;
-      this.dynDialog.errorMessageMore = content.moreInfo;
-      this.errorModalRef = this.bsModalService.show(this.errorModal, {class: 'modal-alert'});
+      if (this.errorModalRef) {
+        this.dynDialogMessages.push( { msg: content.message, detail: content.moreInfo } );
+      } else {
+        this.dynDialogMessages = [ { msg: content.message, detail: content.moreInfo } ];
+        this.errorModalRef = this.bsModalService.show(this.errorModal, {class: 'modal-alert modal-lg'});
+      }
     } );
+
+    // reset reference of dialog when dialog is closed
+    this.bsModalService.onHide.subscribe( _ => this.errorModalRef = null );
 
     const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly

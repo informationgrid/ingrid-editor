@@ -14,16 +14,6 @@ export const routing = RouterModule.forChild([
     data: { roles: ['author', 'admin'] },
     canDeactivate: [FormChangeDeactivateGuard],
     children: [
-      {path: '', component: ListFormWizardsComponent, outlet: 'wizard', pathMatch: 'full' }
-    ]
-  },
-  {
-    path: 'form/:id',
-    component: DynamicFormComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ['author', 'admin'] },
-    canDeactivate: [FormChangeDeactivateGuard],
-    children: [
       {path: '', component: ListFormWizardsComponent, outlet: 'wizard', pathMatch: 'full' },
       {path: 'opendata', component: OpenDataWizardComponent, outlet: 'wizard'}
     ]

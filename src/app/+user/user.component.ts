@@ -43,7 +43,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   fetchUsers() {
     this.userService.getUsers().subscribe(
       users => this.users = users,
-      error => this.errorService.handle(error)
+      error => this.errorService.handleOwn('Problem fetching all user', error)
     );
   }
 

@@ -51,7 +51,7 @@ export class RoleComponent implements OnInit {
         this.roles = roles;
         this.onRoleChange.next( roles );
       },
-      error => this.errorService.handle( error )
+      error => this.errorService.handleOwn('Problem fetching all roles', error)
     );
   }
 

@@ -44,7 +44,7 @@ export class StorageService {
         const json = <any[]>resp.json();
         return json.filter( item => item._profile !== 'FOLDER' );
       } )
-      .catch( err => this.errorService.handle( err ) );
+      .catch( err => this.errorService.handleOwn( 'Could not query documents', err ) );
   }
 
   getChildDocuments(parentId: string): Observable<any> {
@@ -63,7 +63,6 @@ export class StorageService {
 
   saveData(data: any, isNewDoc?: boolean): Promise<DocMainInfo> {
     console.log( 'TEST: save data' );
-    const previousId = data._id ? data._id : '-1';
     // let errors: any = {errors: []};
     // this.beforeSave.next(errors);
     // console.log('After validation:', errors);
@@ -81,7 +80,6 @@ export class StorageService {
       console.log( 'Response:', response );
       response.subscribe( res => {
         console.log( 'received:', res );
-        data._previousId = previousId;
         data._id = res.json()._id;
         data._state = res.json()._state;
         this.afterSave.next( data );
@@ -99,7 +97,6 @@ export class StorageService {
   // FIXME: this should be added with a plugin
   publish(data: any) {
     console.log( 'PUBLISHING' );
-    const previousId = data._id ? data._id : '-1';
     const errors: any = {errors: []};
     this.beforeSave.next( errors );
     console.log( 'After validation:', data );
@@ -123,7 +120,6 @@ export class StorageService {
     console.log( 'Response:', response );
     response.subscribe( res => {
       console.log( 'received:', res );
-      data._previousId = previousId;
       data._id = res.json()._id;
       data._state = res.json()._state;
       this.afterSave.next( data );

@@ -98,7 +98,7 @@
 
         <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
 
-            <!-- bottom info bar -->
+            <!-- form info bar -->
             <div class="form-info-bar" style="position:relative;" [class.expanded]="showDateBar"
                  (click)="showDateBar = !showDateBar">
                 <span class="text-muted">
@@ -161,26 +161,6 @@
                 <strong>Form contains the following values</strong><br>{{form.value | json}}
                 <!--<p>Form is valid: {{form.valid}}</p>-->
             </div>
-
-            <!-- WIZARD -->
-            <!-- TODO: show within sidebar with vertical style? -->
-            <!--<div *ngIf="showWizard" class="padding wizard-container">
-                <wizard [navBarLocation]="'bottom'">
-                    <wizard-step title="Schritt 1">
-                        Content of Step 1
-                        <button type="button" nextStep>Next Step</button>
-                    </wizard-step>
-                    <wizard-step title="Schritt 2" optionalStep>
-                        Content of Step 2
-                        <button type="button" previousStep>Go to previous step</button>
-                        <button type="button" nextStep>Go to next step</button>
-                    </wizard-step>
-                    <wizard-step title="Schritt 3">
-                        Content of Step 3
-                        <button type="button" previousStep>Previous Step</button>
-                    </wizard-step>
-                </wizard>
-            </div>-->
 
         </form>
     </split-area>

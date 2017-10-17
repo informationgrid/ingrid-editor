@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { StorageService } from '../../../services/storage/storage.service';
 import { IActionMapping, ITreeOptions, TREE_ACTIONS, TreeComponent, TreeNode } from 'angular-tree-component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { ErrorService } from '../../../services/error.service';
 import { FormToolbarService } from '../../toolbar/form-toolbar.service';
 import { SelectedDocument } from '../selected-document.model';
 import { DocMainInfo } from '../../../models/update-dataset-info.model';
+import { Subscription } from 'rxjs/Subscription';
 
 const actionMapping: IActionMapping = {
   mouse: {
@@ -42,7 +43,7 @@ const actionMapping: IActionMapping = {
     }
   `]
 } )
-export class MetadataTreeComponent implements OnInit {
+export class MetadataTreeComponent implements OnInit, OnDestroy {
 
   @ViewChild( TreeComponent ) private tree: TreeComponent;
 
@@ -55,6 +56,7 @@ export class MetadataTreeComponent implements OnInit {
   copiedNodes: TreeNode[] = [];
   cutNodes: TreeNode[] = [];
 
+  subscriptions: Subscription[] = [];
 
   options: ITreeOptions = {
     getChildren: (node: TreeNode) => {
@@ -77,39 +79,43 @@ export class MetadataTreeComponent implements OnInit {
         // only let this function be called once, since we only need it during first visit of the page
         setTimeout( () => initialSet.unsubscribe(), 0 );
 
-        if (selectedId && selectedId !== '-1') {
+        if (selectedId) {
           // get path to node
-          this.storageService.getPathToDataset( selectedId ).subscribe( path => {
-            console.debug( 'path: ' + path );
-            this.expandToPath( path.reverse() );
-          } );
+          this.subscriptions.push(
+            this.storageService.getPathToDataset( selectedId ).subscribe( path => {
+              console.debug( 'path: ' + path );
+              this.expandToPath( path.reverse() );
+            } )
+          );
         }
       } );
     }, (err) => console.error( 'Error:', err ) );
 
-    this.storageService.datasetsChanged$.subscribe( (info) => {
-      console.debug( 'Tree: dataset changed event', info );
-      // only update changes in the tree instead of reloading everything and recover previous state
-      switch (info.type) {
-        case UpdateType.New:
-          this.onNewDataset( info.data );
-          break;
+    this.subscriptions.push(
+      this.storageService.datasetsChanged$.subscribe( (info) => {
+        console.debug( 'Tree: dataset changed event', info );
+        // only update changes in the tree instead of reloading everything and recover previous state
+        switch (info.type) {
+          case UpdateType.New:
+            this.onNewDataset( info.data );
+            break;
 
-        case UpdateType.Update:
-          this.onUpdateDataset( info.data );
-          break;
+          case UpdateType.Update:
+            this.onUpdateDataset( info.data );
+            break;
 
-        case UpdateType.Delete:
-          this.onDeleteDataset( info.data );
-          break;
-        case UpdateType.Copy:
-          this.copy();
-          break;
-        case UpdateType.Paste:
-          this.paste();
-          break;
-      }
-    } );
+          case UpdateType.Delete:
+            this.onDeleteDataset( info.data );
+            break;
+          case UpdateType.Copy:
+            this.copy();
+            break;
+          case UpdateType.Paste:
+            this.paste();
+            break;
+        }
+      } )
+    );
 
     // inform interested components which documents are selected
     // this.formularService.selectedDocuments$.subscribe( (ids) => {
@@ -117,6 +123,10 @@ export class MetadataTreeComponent implements OnInit {
     // });
 
     this.handleToolbarEvents();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach( _ => _.unsubscribe() );
   }
 
   onNewDataset(docs: DocMainInfo[]) {
@@ -127,7 +137,7 @@ export class MetadataTreeComponent implements OnInit {
         this.tree.treeModel.update();
         // FIXME: set route to new node id, for correct refresh
         // this however does conflict when creating a new node when first visiting the form page
-        this.router.navigate( ['/form', id] );
+        // this.router.navigate( ['/form', id] );
 
         const node = this.tree.treeModel.getNodeById( id );
 
@@ -164,31 +174,17 @@ export class MetadataTreeComponent implements OnInit {
   private createNewDatasetTemplate(doc: any) {
     const name = this.formularService.getTitle( doc._profile, doc );
 
-    return {
-      id: doc._id ? doc._id : '-1',
-      name: name && name !== this.formularService.untitledLabel ? name : 'Neuer Datensatz',
-      _profile: doc._profile,
-      _state: 'W',
-      _iconClass: this.formularService.getIconClass( doc._profile )
-    };
+    const docNode = this.prepareNode( doc );
+    docNode.name = 'Neuer Datensatz';
+    return docNode;
   }
 
   onUpdateDataset(docs: DocMainInfo[]) {
     docs.forEach( doc => {
 
-      // when a new node (with id="-1") is saved than it gets a new ID
-      // but we have to find the node to be replaced by it's old one
-      const id = doc._previousId ? doc._previousId : doc._id;
-
-      const nodeParentUpdate = this.getNodeFromModel( id );
+      const nodeParentUpdate = this.getNodeFromModel( doc._id );
       Object.assign( nodeParentUpdate, this.prepareNode( doc ) );
       this.tree.treeModel.update();
-
-      // re-select node if id has changed (after a new dataset has been saved and given an id)
-      if (doc._previousId !== doc._id) {
-        const node = this.tree.treeModel.getNodeById( doc._id );
-        this.tree.treeModel.setActiveNode( node, true );
-      }
     } );
   }
 

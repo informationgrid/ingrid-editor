@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {FormArray, FormGroup} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
 import {Container, FieldBase} from './controls';
@@ -35,11 +35,9 @@ export interface FormDataContainer {
 }
 
 @Component({
-  selector: 'dynamic-form',
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.css'],
-  providers: [FormControlService],
-  host: {'(window:keydown)': 'hotkeys($event)'}
+  providers: [FormControlService]
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -52,10 +50,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   debugEnabled = false;
 
-  showWizard = true;
-
-  NEW_DOCUMENT = '-1';
-
   // when editing a folder this flag must be set
   // editMode: boolean = false;
 
@@ -67,7 +61,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   error = false;
   choiceNewDoc = 'UVP';
   addToDoc = false;
-  newDocAdded = false;
   sideTab = 'tree';
   showDateBar = false;
 
@@ -128,14 +121,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // this.editMode = params['editMode'] === "true";
         // this.load(thisid);
       });
-      this.route.params.subscribe(params => {
-        const id = params['id'];
-        if (id !== this.NEW_DOCUMENT) {
-          this.load(id);
-        } else if (this.form) {
-          // this.form = null;
-        }
-      });
+      this.route.params.subscribe(params => this.load( params['id'] ) );
     });
 
     this.toastyConfig.theme = 'bootstrap';
@@ -179,7 +165,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       // load dataset when one was updated
       this.storageService.datasetsChanged$.subscribe((msg) => {
         if (msg.type === UpdateType.Update && msg.data.length === 1) {
-          this.load( msg.data[0]._id, msg.data[0]._previousId );
+          this.load( msg.data[0]._id );
         }
       })
     );
@@ -196,7 +182,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  /*canDeactivate(component: DynamicFormComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<DynamicFormComponent>|Promise<DynamicFormComponent>|boolean {
+  /*canDeactivate(component: DynamicFormComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot)
+      W: Observable<DynamicFormComponent>|Promise<DynamicFormComponent>|boolean {
     console.log( 'can deactive (form)' );
     /!*if (this.form && this.form.dirty) {
       this.pendingId = null;
@@ -210,9 +197,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return true;
   }*/
 
+  @HostListener( 'window: keydown', ['$event'] )
   hotkeys(event: KeyboardEvent) {
     if (event.ctrlKey && event.keyCode === 83) { // CTRL + S (Save)
-      console.log("SAVE");
+      console.log( 'SAVE' );
       event.stopImmediatePropagation();
       event.stopPropagation();
       event.preventDefault();
@@ -268,30 +256,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.storageService.afterProfileSwitch.next(this.form.value);
 
       // notify browser/tree of new dataset
-      this.storageService.datasetsChanged.next({
-        type: UpdateType.New,
-        data: [{_id: '-1', _profile: profile, _parent: this.data._parent}]
-      });
-      this.newDocAdded = true;
+      const newDoc = { _profile: profile, _parent: this.data._parent };
+      this.storageService.saveData( newDoc, true );
+
     } catch (ex) {
       console.error( 'Error adding new document: ', ex );
     }
     this.newDocModalRef.hide();
   }
 
-  handleNewDatasetOnLeave() {
-    // remove new doc if one was created
-    if (this.newDocAdded) {
-      this.storageService.datasetsChanged.next({type: UpdateType.Delete, data: [{_id: '-1', _parent: this.data._parent}]});
-      this.newDocAdded = false;
-    }
-  }
-
   discardChanges() {
     // this.form.reset();
     this.load(this.pendingId);
-
-    this.handleNewDatasetOnLeave();
 
     // this.discardConfirmModal.close();
   }
@@ -323,9 +299,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.router.navigate( ['/form', doc.id]);
+    this.router.navigate( ['/form', {id: doc.id}]);
   }
 
+  /**
+   * Load a document and prepare the form for the data.
+   * @param {string} id is the ID of document to be loaded
+   * @param {string} previousId is the ID of the previous document in case we want to switch back!???
+   */
   load(id: string, previousId?: string) {
 
     // since data always stays the same there's no change detection if we load the same data again
@@ -341,12 +322,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       // TODO: notify sidebar to select previously dataset before we changed
       return;
     } else {*/
-      // only remove new node if this one was not saved
-      if (previousId === '-1') {
-        this.newDocAdded = false;
-      } else {
-        this.handleNewDatasetOnLeave();
-      }
+
     // }
 
     // TODO: remove new dataset if not saved already -> we only want at most one new dataset at a time!
@@ -402,9 +378,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // during save the listeners for dataset changes are already called
     // this.form.reset(this.form.value);
     this.form.markAsPristine();
-    const isNewDoc = data._id === '-1' ? true : false;
 
-    this.storageService.saveData(data, isNewDoc).then(res => {
+    this.storageService.saveData(data, false).then(res => {
       this.data._id = res._id;
       this.showToast();
     }, (err) => {
@@ -533,7 +508,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   markFavorite($event: Event) {
     // TODO: mark favorite
     $event.stopImmediatePropagation();
-    console.log("TODO: Mark document as favorite");
+    console.log('TODO: Mark document as favorite');
   }
 
 }

@@ -1,10 +1,11 @@
-import {Component, OnInit, Output, EventEmitter, Input} from "@angular/core";
+import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from "@angular/core";
 import {StorageService} from "../../../services/storage/storage.service";
 // import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
 import {ActivatedRoute} from "@angular/router";
 import {FormularService} from "../../../services/formular/formular.service";
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {UpdateType} from '../../../models/update-type.enum';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component( {
   selector: 'browser',
@@ -13,14 +14,16 @@ import {UpdateType} from '../../../models/update-type.enum';
     li { cursor: pointer; }
   `]
 })
-export class BrowserComponent implements OnInit {
+export class BrowserComponent implements OnInit, OnDestroy {
 
   @Input() filter: any;
   @Output() onSelected = new EventEmitter<any>();
 
   entries: any[] = [];
-  searchString: string = '';
+  searchString = '';
   selectedId: string;
+
+  subscription: Subscription;
 
   constructor(private storageService: StorageService, private route: ActivatedRoute,
     private formularService: FormularService) {
@@ -28,7 +31,7 @@ export class BrowserComponent implements OnInit {
       this.selectedId = params['id'];
     });
 
-    storageService.datasetsChanged$.subscribe( (event) => {
+    this.subscription = storageService.datasetsChanged$.subscribe( (event) => {
       if (event.type === UpdateType.Update) {
         this.query();
       }
@@ -40,8 +43,12 @@ export class BrowserComponent implements OnInit {
     this.query();
   }
 
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
   matchFilter(doc: any): boolean {
-    let keys = Object.keys(this.filter);
+    const keys = Object.keys(this.filter);
     return keys.every( key => doc[key] === this.filter[key] );
   }
 
