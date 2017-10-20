@@ -38,6 +38,7 @@ public class OrientDbService {
         server.startup( getClass().getResourceAsStream( "/db.config.xml" ) );
         server.activate();
 
+        initSystemDBs();
         initDatabase("igedb");
     }
 
@@ -77,7 +78,11 @@ public class OrientDbService {
     }
 
     public String addDocTo(String classType, Object data, Object id) {
-        ODatabaseDocumentTx db = openDB("igedb");
+        return addDocTo( "igedb", classType, data, id );
+    }
+    
+    public String addDocTo(String dbId, String classType, Object data, Object id) {
+        ODatabaseDocumentTx db = openDB(dbId);
         String json = null;
 
         db.begin();
@@ -318,6 +323,23 @@ public class OrientDbService {
         server.shutdown();
     }
 
+    
+
+    private void initSystemDBs() {
+        ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/users" );
+        if (!db.exists()) {
+            db.create();
+            
+            OSequenceLibrary sequenceLibrary = db.getMetadata().getSequenceLibrary();
+            OSequence seq = sequenceLibrary.createSequence( "idseq", SEQUENCE_TYPE.ORDERED, new OSequence.CreateParams().setStart( 0l ).setIncrement( 1 ) );
+            seq.save();
+            
+            OClass docClass = db.getMetadata().getSchema().createClass( "info" );
+            addDocTo( "users", "info", "{ 'id': 'ige', 'catalogId': 'igedb' }", null );
+            
+        }
+    }
+    
     private void initDatabase(String databaseName) {
         try {
             ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/" + databaseName );
@@ -333,11 +355,11 @@ public class OrientDbService {
                 OClass docClass = db.getMetadata().getSchema().createClass( "Documents" );
                 docClass.createProperty( "_id", OType.INTEGER );
                 docClass.createProperty( "_parent", OType.INTEGER );
-                docClass.createIndex( "idIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
+                docClass.createIndex( "didIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
 
                 OClass behaviourClass = db.getMetadata().getSchema().createClass( "Behaviours" );
                 behaviourClass.createProperty( "_id", OType.STRING );
-                behaviourClass.createIndex( "idIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
+                behaviourClass.createIndex( "bidIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
                 
                 OClass userClass = db.getMetadata().getSchema().createClass( "Users" );
                 OClass roleClass = db.getMetadata().getSchema().createClass( "Roles" );

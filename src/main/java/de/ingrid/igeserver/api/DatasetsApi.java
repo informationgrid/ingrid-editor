@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import de.ingrid.igeserver.model.Data1;
-import de.ingrid.igeserver.model.Data2;
 import de.ingrid.igeserver.model.InlineResponse200;
 import de.ingrid.igeserver.model.InlineResponseDefault;
 import io.swagger.annotations.Api;
@@ -71,8 +70,8 @@ public interface DatasetsApi {
             @ApiResponse(code = 200, message = "", response = Void.class),
             @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
     @RequestMapping(value = "/datasets/{id}", produces = { "application/json" }, method = RequestMethod.DELETE)
-    ResponseEntity<Void> deleteById(
-            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id);
+    ResponseEntity<String> deleteById(
+            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids);
 
     @ApiOperation(value = "Export a dataset to a specific format", notes = "...", response = Void.class, tags = { "Datasets", })
     @ApiResponses(value = {
@@ -153,7 +152,7 @@ public interface DatasetsApi {
     @RequestMapping(value = "/datasets/{ids}/move", produces = { "application/json" }, method = RequestMethod.POST)
     ResponseEntity<Void> moveDatasets(
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
-            @ApiParam(value = "...", required = true) @Valid @RequestBody Data2 data);
+            @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data);
 
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Datasets" })

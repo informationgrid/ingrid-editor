@@ -18,7 +18,14 @@ public class DBToJsonService extends MapperService {
     public JsonNode mapDocument(String dbDoc) throws Exception {
         return mapDocument( dbDoc, null );
     }
-
+    
+    public JsonNode updateParent( String dbDoc, String parent ) throws Exception {
+        ObjectNode map = (ObjectNode) getJsonMap( dbDoc );
+        map.put( FIELD_PARENT, parent );
+        
+        return map;
+    }
+    
     public JsonNode mapDocument(String dbDoc, String[] fields) throws Exception {
         JsonNode map = getJsonMap( dbDoc );
 

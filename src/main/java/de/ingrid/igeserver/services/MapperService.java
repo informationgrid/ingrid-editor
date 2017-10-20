@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class MapperService {
     
@@ -27,6 +28,17 @@ public class MapperService {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         return mapper.writeValueAsString( jsonMap );
+    }
+    
+    /**
+     * Remove all fields add by database for internal management. Those are @rid, @class, @type, @fieldTypes.
+     * @param jsonMap
+     */
+    public void removeDBManagementFields(ObjectNode jsonMap) {
+        jsonMap.remove( "@rid" );
+        jsonMap.remove( "@class" );
+        jsonMap.remove( "@type" );
+        jsonMap.remove( "@fieldTypes" ); 
     }
     
 }

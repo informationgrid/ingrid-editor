@@ -23,10 +23,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.ingrid.igeserver.OrientDbService;
 import de.ingrid.igeserver.model.Data1;
-import de.ingrid.igeserver.model.Data2;
 import de.ingrid.igeserver.services.DBToJsonService;
 import de.ingrid.igeserver.services.ExportService;
 import de.ingrid.igeserver.services.JsonToDBService;
+import de.ingrid.igeserver.services.MapperService;
 import de.ingrid.igeserver.utils.DBUtils;
 import io.swagger.annotations.ApiParam;
 
@@ -36,6 +36,9 @@ import io.swagger.annotations.ApiParam;
 public class DatasetsApiController implements DatasetsApi {
 
     private static final String COLLECTION = "Documents";
+    
+    private enum CopyMoveOperation { COPY, MOVE };
+    
     @Autowired
     private OrientDbService dbService;
 
@@ -44,10 +47,10 @@ public class DatasetsApiController implements DatasetsApi {
 
     @Autowired
     private DBToJsonService jsonToService;
-    
+
     @Autowired
     private ExportService exportService;
-    
+
     @Autowired
     private DBUtils dbUtils;
 
@@ -55,17 +58,17 @@ public class DatasetsApiController implements DatasetsApi {
      * Create dataset.
      */
     public ResponseEntity<String> createDataset(
-    		@RequestHeader(value="Authorization") String auth,
+            @RequestHeader(value = "Authorization") String auth,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish) {
 
         try {
-        	String userId = getUserIdFromHeader(auth);
+            String userId = getUserIdFromHeader( auth );
             String mapDocument = this.jsonFromService.mapDocument( data, publish, userId );
             String result = this.dbService.addDocTo( COLLECTION, mapDocument );
             JsonNode mapDoc = this.jsonToService.mapDocument( result );
-            
-            return ResponseEntity.ok( jsonToService.toJsonString(mapDoc) );
+
+            return ResponseEntity.ok( jsonToService.toJsonString( mapDoc ) );
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -78,7 +81,7 @@ public class DatasetsApiController implements DatasetsApi {
      * Update dataset.
      */
     public ResponseEntity<String> updateDataset(
-            @RequestHeader(value="Authorization") String auth,
+            @RequestHeader(value = "Authorization") String auth,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish,
@@ -86,9 +89,13 @@ public class DatasetsApiController implements DatasetsApi {
 
         try {
             String mapDocument = null;
-            String userId = getUserIdFromHeader(auth);
+            String userId = getUserIdFromHeader( auth );
             String dbId = this.dbUtils.getCatalogForUser( userId );
-            
+
+            if (dbId == null) {
+                return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "The user does not seem to be assigned to any database." );
+            }
+
             if (revert) {
                 mapDocument = this.jsonFromService.revertDocument( id );
             } else {
@@ -97,7 +104,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             String result = this.dbService.updateDocTo( dbId, COLLECTION, id, mapDocument );
             JsonNode mapDoc = this.jsonToService.mapDocument( result );
-            return ResponseEntity.ok( jsonToService.toJsonString(mapDoc) );
+            return ResponseEntity.ok( jsonToService.toJsonString( mapDoc ) );
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -108,47 +115,93 @@ public class DatasetsApiController implements DatasetsApi {
 
     }
 
-	private String getUserIdFromHeader(String auth) {
-		String userId = null;
-		try {
-		    DecodedJWT jwt = JWT.decode(auth.replace("Bearer", ""));
-		    userId  = jwt.getClaim("preferred_username").asString();
-		} catch (JWTDecodeException exception){
-		    //Invalid token
-		}
-		return userId;
-	}
+    private String getUserIdFromHeader(String auth) {
+        String userId = null;
+        try {
+            DecodedJWT jwt = JWT.decode( auth.replace( "Bearer", "" ) );
+            userId = jwt.getClaim( "preferred_username" ).asString();
+        } catch (JWTDecodeException exception) {
+            // Invalid token
+        }
+        return userId;
+    }
 
-    public ResponseEntity<Void> deleteById(@ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id) {
-        this.dbService.deleteDocFrom( "Documents", id );
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> deleteById(@ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids) {
+
+        try {
+            for (String id : ids) {
+                this.dbService.deleteDocFrom( "Documents", id );
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception ex) {
+            return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( "One or more documents could not be deleted: " + ex.getMessage() );
+        }
     }
 
     public ResponseEntity<Void> copyDatasets(
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
             @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data) {
-        // do some magic!
-        return new ResponseEntity<Void>( HttpStatus.OK );
+
+        try {
+            
+            copyOrMove(CopyMoveOperation.COPY, ids, data.getDestId());
+            return new ResponseEntity<Void>( HttpStatus.OK );
+
+        } catch (Exception ex) {
+            return new ResponseEntity<Void>( HttpStatus.INTERNAL_SERVER_ERROR );
+        }
+    }
+    
+    public ResponseEntity<Void> moveDatasets(@ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
+            @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data) {
+        try {
+            
+            copyOrMove(CopyMoveOperation.MOVE, ids, data.getDestId());
+            return new ResponseEntity<Void>( HttpStatus.OK );
+
+        } catch (Exception ex) {
+            return new ResponseEntity<Void>( HttpStatus.INTERNAL_SERVER_ERROR );
+        }
+    }
+    
+    private void copyOrMove(CopyMoveOperation operation, List<String> ids, String destId) throws Exception {
+        for (String id : ids) {
+            String doc = this.dbService.getById( COLLECTION, id );
+
+            // add new parent to document
+            ObjectNode updatedDoc = (ObjectNode) jsonToService.updateParent( doc, destId );
+            
+            if (operation == CopyMoveOperation.COPY) {
+                // remove internal dataset info (TODO: this should be done by the dbService)
+                jsonToService.removeDBManagementFields( updatedDoc );
+    
+                // when we copy the node, then we also have to reset the id
+                updatedDoc.set( MapperService.FIELD_ID, null );
+            }
+
+            this.dbService.addDocTo( COLLECTION, jsonToService.toJsonString( updatedDoc ) );
+
+        }
     }
 
     public ResponseEntity<String> exportDataset(
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
             @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) {
 
-    	// TODO: refactor
-    	String doc = this.dbService.getById( COLLECTION, id );
+        // TODO: refactor
+        String doc = this.dbService.getById( COLLECTION, id );
 
         JsonNode data = null;
-		try {
-			data = this.jsonToService.mapDocument( doc );
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		// export doc
-    	String exportedDoc = (String) exportService.doExport(data, format);
-    	
+        try {
+            data = this.jsonToService.mapDocument( doc );
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        // export doc
+        String exportedDoc = (String) exportService.doExport( data, format );
+
         return ResponseEntity.ok( exportedDoc );
     }
 
@@ -172,7 +225,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             for (String doc : docs) {
                 String[] splitFields = fields == null ? null : fields.split( "," );
-                mappedDocs.add( jsonToService.toJsonString(this.jsonToService.mapDocument( doc, splitFields ) ) );
+                mappedDocs.add( jsonToService.toJsonString( this.jsonToService.mapDocument( doc, splitFields ) ) );
             }
 
             return ResponseEntity.ok( "[" + String.join( ",", mappedDocs ) + "]" );
@@ -196,11 +249,11 @@ public class DatasetsApiController implements DatasetsApi {
         JsonNode mapDoc = null;
         try {
             mapDoc = this.jsonToService.mapDocument( doc );
-            
-            String[] refDocs = dbUtils.getReferencedDocs(mapDoc);
-            jsonToService.addReferencedDocsTo(refDocs, (ObjectNode) mapDoc);
-            
-            return ResponseEntity.ok( jsonToService.toJsonString(mapDoc) );
+
+            String[] refDocs = dbUtils.getReferencedDocs( mapDoc );
+            jsonToService.addReferencedDocsTo( refDocs, (ObjectNode) mapDoc );
+
+            return ResponseEntity.ok( jsonToService.toJsonString( mapDoc ) );
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -215,11 +268,6 @@ public class DatasetsApiController implements DatasetsApi {
         return ResponseEntity.ok( result );
     }
 
-    public ResponseEntity<Void> moveDatasets(@ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
-            @ApiParam(value = "...", required = true) @Valid @RequestBody Data2 data) {
-        // do some magic!
-        return new ResponseEntity<Void>( HttpStatus.OK );
-    }
 
     /**
      * OPTION - CALLS
