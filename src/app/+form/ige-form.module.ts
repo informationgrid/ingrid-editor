@@ -36,9 +36,9 @@ import {BsDatepickerModule, PopoverModule} from 'ngx-bootstrap';
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTableComponent, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
-    FocusDirective, ScrollToDirective, MainFormComponent, MainFormTabsComponent, DropDownComponent],
+    ScrollToDirective, MainFormComponent, MainFormTabsComponent, DropDownComponent],
   providers: [CodelistService, NominatimService],
-  exports: [ToastyModule, FormsModule, FocusDirective, ScrollToDirective, MainFormTabsComponent]
+  exports: [ToastyModule, FormsModule, ScrollToDirective, MainFormTabsComponent]
 })
 export class IgeFormModule {
 }

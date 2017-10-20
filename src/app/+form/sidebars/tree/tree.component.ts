@@ -175,7 +175,9 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
     const name = this.formularService.getTitle( doc._profile, doc );
 
     const docNode = this.prepareNode( doc );
-    docNode.name = 'Neuer Datensatz';
+    /*if (!name) {
+      docNode.name = 'Neuer Datensatz';
+    }*/
     return docNode;
   }
 

@@ -179,7 +179,7 @@ export class StorageService {
    */
   moveDocuments(srcIDs: string[], dest: string, includeTree: boolean) {
     const body = this.prepareCopyCutBody( dest, includeTree );
-    return this.http.post( this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + 'move', body );
+    return this.http.post( this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + '/move', body );
   }
 
   private prepareCopyCutBody(dest: string, includeTree: boolean): any {

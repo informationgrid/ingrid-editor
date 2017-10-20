@@ -172,9 +172,9 @@
 <ng-template #newDocModal>
     <div class="modal-header">
         <h4 class="modal-title">Neues Dokument</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <!--<button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
             <span aria-hidden="true">&times;</span>
-        </button>
+        </button>-->
     </div>
     <div class="modal-body">
         <div class="radio" *ngFor="let type of newDocOptions.docTypes">
@@ -186,7 +186,9 @@
         </div>
         <div class="checkbox">
             <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" [disabled]="!newDocOptions.rootOption" [(ngModel)]="addToDoc">
+                <input type="checkbox" class="custom-control-input" [disabled]="!newDocOptions.rootOption"
+                       [focus]="true"
+                       [(ngModel)]="addToDoc">
                 <span class="custom-control-indicator"></span>
                 <span class="custom-control-description">unter ausgewähltem Dokument/Ordner anlegen</span>
             </label>

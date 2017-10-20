@@ -4,7 +4,10 @@
     </div>
     <div class="modal-body">
         <label class="control-label">Ordnername</label>
-        <input #name type="text" class="form-control" (blur)="folderName = name.value" required>
+        <input #name type="text" class="form-control"
+               [focus]="true"
+               (keyup.enter)="handleCreate(name.value)"
+               required>
 
         <div class="checkbox" *ngIf="parent.profile === 'FOLDER'">
             <label class="custom-control custom-checkbox">
@@ -20,7 +23,7 @@
     </div>
     <div class="modal-footer">
         <button class="btn btn-link" (click)="createFolderModalRef.hide()">Abbrechen</button>
-        <button class="btn btn-link" (click)="handleCreate()">Erstellen</button>
+        <button class="btn btn-link" (click)="handleCreate(name.value)">Erstellen</button>
     </div>
 </ng-template>
 

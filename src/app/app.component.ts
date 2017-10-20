@@ -60,6 +60,7 @@ export class AppComponent implements OnInit {
   @ViewChild( 'errorModal' ) errorModal: TemplateRef<any>;
   @ViewChild('dialogContainer', {read: ViewContainerRef}) dialogContainerRef: ViewContainerRef;
 
+  errorModalIsActive = false;
   errorModalRef: BsModalRef;
   dynDialogMessages: any = [];
 
@@ -77,11 +78,19 @@ export class AppComponent implements OnInit {
       } else {
         this.dynDialogMessages = [ { msg: content.message, detail: content.moreInfo } ];
         this.errorModalRef = this.bsModalService.show(this.errorModal, {class: 'modal-alert modal-lg'});
+
+        // conflict with onHide, which waits for backdrop animation until event is called
+        setTimeout( _ => this.errorModalIsActive = true, 500 );
       }
     } );
 
     // reset reference of dialog when dialog is closed
-    this.bsModalService.onHide.subscribe( _ => this.errorModalRef = null );
+    this.bsModalService.onHide.subscribe( _ => {
+      if (this.errorModalIsActive) {
+        this.errorModalRef = null;
+        this.errorModalIsActive = false;
+      }
+    } );
 
     const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly

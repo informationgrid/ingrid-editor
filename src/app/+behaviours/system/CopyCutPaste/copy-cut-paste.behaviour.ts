@@ -102,9 +102,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   cut() {
     // remove last remembered copied documents
-    this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => doc.id);
-
-    this.toastService.show('Datensatz verschoben');
+    this.cutDatasets = this.formService.getSelectedDocuments().map(doc => doc.id);
 
     // show dialog where to copy the dataset(s)
     const factory = this._cr.resolveComponentFactory(PasteDialogComponent);

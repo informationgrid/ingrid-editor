@@ -7,9 +7,9 @@ import {CopyMoveEnum, MoveMode, PasteCallback} from './enums';
     <ng-template #pasteModal>
       <div class="modal-header">
         <h4 class="modal-title pull-left">Einfügen</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="pasteModalRef.hide()">
+        <!--<button type="button" class="close pull-right" aria-label="Close" (click)="pasteModalRef.hide()">
           <span aria-hidden="true">&times;</span>
-        </button>
+        </button>-->
       </div>
       <div class="modal-body">
         <p>Wohin wollen Sie die ausgewählten Datensätze kopieren?</p>
