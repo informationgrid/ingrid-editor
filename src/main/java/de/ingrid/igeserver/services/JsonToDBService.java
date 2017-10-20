@@ -1,5 +1,8 @@
 package de.ingrid.igeserver.services;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +26,22 @@ public class JsonToDBService extends MapperService {
         String oldDoc = dbService.getById( "Documents", id );
 
         ObjectNode oldMap = null;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
         if (oldDoc == null) {
             oldMap = new ObjectMapper().createObjectNode();
             oldMap.put( FIELD_PROFILE, map.path( FIELD_PROFILE ).asText() );
             oldMap.put( FIELD_PARENT, map.path( FIELD_PARENT ).asText(null) );
+            oldMap.put( FIELD_CREATED, format.format( new Date() ) );
+            
         } else {
             oldMap = (ObjectNode) getJsonMap( oldDoc );
         }
 
         map.put( FIELD_MODIFIED_BY, userId );
+        
+        // TODO: should we store modified/create date in wrapper or actual data document?
+        oldMap.put( FIELD_MODIFIED, format.format( new Date() ) );
 
         // remove all referenced data except the ID
         // this data is fetched on each load (TODO: should be cached!)

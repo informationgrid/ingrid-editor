@@ -9,6 +9,8 @@ public class MapperService {
     public static final String FIELD_STATE = "_state";
     public static final String FIELD_PROFILE = "_profile";
     public static final String FIELD_ID = "_id";
+    public static final String FIELD_CREATED = "_created";
+    public static final String FIELD_MODIFIED = "_modified";
     public static final String FIELD_HAS_CHILDREN = "_hasChildren";
     public static final String FIELD_PARENT = "_parent";
     public static final String FIELD_MODIFIED_BY = "_modifiedBy";

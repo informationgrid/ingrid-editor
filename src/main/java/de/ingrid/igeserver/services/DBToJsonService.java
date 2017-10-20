@@ -44,6 +44,8 @@ public class DBToJsonService extends MapperService {
         currentDoc.put( FIELD_PROFILE, map.path( FIELD_PROFILE ).asText() );
         currentDoc.put( FIELD_STATE, determineState( map ) );
         currentDoc.put( FIELD_HAS_CHILDREN, map.path( FIELD_HAS_CHILDREN ).asText() );
+        currentDoc.put( FIELD_CREATED, map.path( FIELD_CREATED ).asText() );
+        currentDoc.put( FIELD_MODIFIED, map.path( FIELD_MODIFIED ).asText() );
 
         return currentDoc;
     }
@@ -54,9 +56,9 @@ public class DBToJsonService extends MapperService {
         if (!published.isMissingNode() && !draft.isMissingNode()) {
             return "PW";
         } else if (published.isMissingNode()) {
-            return "P";
-        } else {
             return "W";
+        } else {
+            return "P";
         }
     }
 
