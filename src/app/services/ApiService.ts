@@ -32,7 +32,7 @@ export class ApiService {
 
     return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm +
                       '/clients?clientId=ige-ng' )
-        // .map( res => res.json() )
+        .map( res => res.json() )
         .flatMap( client => {
           return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm +
                           '/clients/' + client[0].id + '/roles' )
