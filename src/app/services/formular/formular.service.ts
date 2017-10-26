@@ -56,7 +56,7 @@ export class FormularService {
   }
 
   getProfile(id: string): Profile {
-    const profile = this.profileDefinitions.find( profile => profile.id === id);
+    const profile = this.profileDefinitions.find( p => p.id === id);
     if (!profile) {
       // throw Error('Unknown profile: ' + id);
       console.error('Unknown profile: ' + id);
@@ -82,7 +82,9 @@ export class FormularService {
   getFieldsNeededForTitle(): string[] {
     const fields: string[] = [];
     this.profileDefinitions.forEach(profile => fields.push(...profile.getTitleFields()));
-    return fields;
+
+    // return unique items in array
+    return fields.filter( (x, i, a) => x && a.indexOf(x) === i);
   }
 
   requestFormValues(): any {

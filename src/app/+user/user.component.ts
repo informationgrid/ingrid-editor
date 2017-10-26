@@ -42,7 +42,7 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   fetchUsers() {
     this.userService.getUsers().subscribe(
-      users => this.users = users,
+      users => this.users = users ? users : [],
       error => this.errorService.handleOwn('Problem fetching all user', error)
     );
   }
@@ -65,15 +65,14 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   addUser() {
     this.isNewUser = true;
-    this.selectedUser = null;
+    this.selectedUser = new User();
     setTimeout(() => this.loginRef.nativeElement.focus(), 200);
   }
 
   deleteUser(login: string) {
     this.userService.deleteUser(login)
-      .subscribe(
-        () => {
-          this.selectedUser = null;
+      .subscribe(() => {
+          this.selectedUser = new User();
           this.fetchUsers();
         },
         (err: any) => this.modalService.showError(err, err.text())
