@@ -42,6 +42,7 @@ import {IsoInformationSystemProfile} from './services/formular/iso/iso-informati
 import {IsoLiteratureProfile} from './services/formular/iso/iso-literature.profile';
 import {IsoProjectProfile} from './services/formular/iso/iso-project.profile';
 import {IsoTaskProfile} from './services/formular/iso/iso-task.profile';
+import {TreeModule} from 'primeng/primeng';
 
 export function HttpLoader(backend: XHRBackend, defaultOptions: RequestOptions) {
   return new Http(backend, defaultOptions);
@@ -68,6 +69,7 @@ export function KeycloakLoader(configService: ConfigService) {
   declarations: [AppComponent, HelpComponent, MenuComponent],
   imports: [BrowserModule, BrowserAnimationsModule, HttpModule,
     Ng2SmartTableModule,
+    TreeModule,
     PopoverModule.forRoot(), BsDatepickerModule.forRoot(), AccordionModule.forRoot(),
     IgeFormModule, DashboardModule, FieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule.forRoot()],

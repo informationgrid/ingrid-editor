@@ -10,7 +10,7 @@ import { routing } from './ige-form.routing';
 import { BrowserComponent } from './sidebars/browser/browser.component';
 import { OpenTable } from './opentable/opentable.component';
 import { PartialGenerator } from './partialGenerator/partial-generator.component';
-import { TreeModule } from 'angular-tree-component';
+// import { TreeModule } from 'angular-tree-component';
 import { LinkDatasetComponent } from './linkDataset/link-dataset.component';
 import { FocusDirective } from '../directives/focus.directive';
 import { SharedModule } from '../shared.module';
@@ -20,19 +20,23 @@ import { MainFormComponent } from './main-form/main-form.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component';
 import { OpentableModule } from './opentable/opentable.module';
-import { ComboBoxModule } from 'ng2-combobox';
 import { DropDownComponent } from './drop-down/drop-down.component';
 import { WizardModule } from 'ng2-archwizard/dist';
 import {IgeWizardModule} from '../wizard/wizard.module';
 import {ScrollToDirective} from '../directives/scrollTo.directive';
 import {FileUploadModule} from 'ng2-file-upload'
-import {BsDatepickerModule, PopoverModule} from 'ngx-bootstrap';
+import {BsDatepickerModule, DatepickerModule, PopoverModule} from 'ngx-bootstrap';
+import {
+  ButtonModule, CalendarModule, CheckboxModule, DropdownModule, MenubarModule, RadioButtonModule,
+  ToolbarModule
+} from 'primeng/primeng';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule, FileUploadModule,
-    PopoverModule, ComboBoxModule, WizardModule, IgeWizardModule, BsDatepickerModule,
-    SharedModule, routing, TreeModule, OpentableModule],
+    PopoverModule, WizardModule, IgeWizardModule, BsDatepickerModule,
+    CheckboxModule, RadioButtonModule, DropdownModule, MenubarModule, ToolbarModule, ButtonModule, CalendarModule,
+    SharedModule, routing, OpentableModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, OpenTable, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,

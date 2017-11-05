@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {StorageService} from '../../../services/storage/storage.service';
-import {IActionMapping, ITreeOptions, TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
+// import {IActionMapping, ITreeOptions, TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
 import {Router, ActivatedRoute} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateType} from '../../../models/update-type.enum';
@@ -9,7 +9,8 @@ import {FormToolbarService} from '../../toolbar/form-toolbar.service';
 import {SelectedDocument} from '../selected-document.model';
 import {DocMainInfo} from '../../../models/update-dataset-info.model';
 import {TREE_EVENTS} from 'angular-tree-component/dist/constants/events';
-
+import {TreeNode} from 'primeng/primeng';
+/*
 const actionMapping: IActionMapping = {
   mouse: {
     click(tree, node, $event) {
@@ -18,7 +19,7 @@ const actionMapping: IActionMapping = {
         : TREE_ACTIONS.SELECT( tree, node, $event )
     }
   }
-};
+};*/
 
 @Component( {
   selector: 'tree',
@@ -45,13 +46,16 @@ const actionMapping: IActionMapping = {
 } )
 export class MetadataTreeComponent implements OnInit {
 
-  @ViewChild( TreeComponent ) private tree: TreeComponent;
+  nodes: TreeNode[] = [];
+
+  selectedNodes: TreeNode[];
+
 
   @Input() showFolderEditButton = true;
   @Output() selected = new EventEmitter<SelectedDocument[]>();
   @Output() activate = new EventEmitter<SelectedDocument[]>();
 
-  nodes: any[] = [];
+  /*@ViewChild( TreeComponent ) private tree: TreeComponent;
 
   copiedNodes: TreeNode[] = [];
   cutNodes: TreeNode[] = [];
@@ -64,14 +68,14 @@ export class MetadataTreeComponent implements OnInit {
     },
     actionMapping
   };
+*/
 
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
               private formularService: FormularService, private errorService: ErrorService,
               private toolbarService: FormToolbarService) {
   }
-
   ngOnInit() {
-    this.query( null ).then( () => {
+    this.query( null, null ).then( () => {
       const initialSet = this.route.params.subscribe( params => {
         const selectedId = params['id'];
 
@@ -82,13 +86,15 @@ export class MetadataTreeComponent implements OnInit {
           // get path to node
           this.storageService.getPathToDataset( selectedId ).subscribe( path => {
             console.debug( 'path: ' + path );
-            this.expandToPath( path.reverse() );
+            // this.expandToPath( path.reverse() );
+            this.selectedNodes = this.nodes.filter( n => n.data.id === path[0]);
+            this.open(null);
           } );
         }
       } );
     }, (err) => console.error( 'Error:', err ) );
 
-    this.storageService.datasetsChanged$.subscribe( (info) => {
+    /*this.storageService.datasetsChanged$.subscribe( (info) => {
       console.debug( 'Tree: dataset changed event', info );
       // only update changes in the tree instead of reloading everything and recover previous state
       switch (info.type) {
@@ -110,16 +116,16 @@ export class MetadataTreeComponent implements OnInit {
           this.paste();
           break;
       }
-    } );
+    } );*/
 
     // inform interested components which documents are selected
     // this.formularService.selectedDocuments$.subscribe( (ids) => {
     //   ids.push(this.selectedId);
     // });
 
-    this.handleToolbarEvents();
+    // this.handleToolbarEvents();
   }
-
+/*
   onNewDataset(docs: DocMainInfo[]) {
     docs.forEach( doc => {
       const newDataset = this.createNewDatasetTemplate( doc );
@@ -270,13 +276,21 @@ export class MetadataTreeComponent implements OnInit {
       return Promise.resolve();
     }
   }
+*/
 
-  query(id: string): Promise<any> {
+  loadNode(event) {
+    if(event.node) {
+      //in a real application, make a call to a remote url to load children of the current node and add the new nodes as children
+      this.query( event.node, event.node.data.id );
+    }
+  }
+
+  query(node: TreeNode, id: string): Promise<any> {
     return new Promise( (resolve, reject) => {
       this.storageService.getChildDocuments( id ).subscribe( response => {
         console.debug( 'got children', response );
         try {
-          this.setNodes( response, id );
+          this.setNodes( response, node );
         } catch (error) {
           reject( error );
           return;
@@ -288,57 +302,60 @@ export class MetadataTreeComponent implements OnInit {
 
   prepareNode(doc: any): any {
     const node: any = {
-      id: doc._id + '',
-      name: this.formularService.getTitle( doc._profile, doc ),
-      _iconClass: this.formularService.getIconClass( doc._profile ),
-      _profile: doc._profile,
-      _state: doc._state
+      data: {
+        id: doc._id + '',
+        _profile: doc._profile,
+        _state: doc._state
+      },
+      label: this.formularService.getTitle( doc._profile, doc ),
+      icon: this.formularService.getIconClass( doc._profile ),
+      leaf: true
     };
-    if (doc._hasChildren) {
-      node.hasChildren = true;
+    if (doc._hasChildren === "true") {
+      node.leaf = false;
     }
 
     return node;
   }
 
-  setNodes(docs: any[], parentId: string) {
-    let updatedNodes: any = this.nodes;
-    if (parentId) {
-      updatedNodes = this.getNodeFromModel( parentId );
+  setNodes(docs: any[], parentNode: TreeNode) {
+    let updatedNodes: any = parentNode ? parentNode : this.nodes;
+    if (parentNode && !parentNode.leaf) {
+      // updatedNodes = this.getNodeFromModel( parentId );
       updatedNodes.children = [];
     }
 
     docs
       .filter( doc => doc._profile !== undefined )
-      .sort( (doc1, doc2) => {
+      .sort( (doc1, doc2) => { // TODO: sort after conversion, then we don't need to call getTitle function
         return this.formularService.getTitle(doc1._profile, doc1).localeCompare(this.formularService.getTitle(doc2._profile, doc2))
       } )
       .forEach( doc => {
-        if (parentId) {
+        if (parentNode) {
           updatedNodes.children.push( this.prepareNode( doc ) );
         } else {
           updatedNodes.push( this.prepareNode( doc ) );
         }
       } );
-    this.tree.treeModel.update();
+    // this.tree.treeModel.update();
   }
 
-  private getSelectedNodes(treeModel: TreeModel): any {
-    return treeModel.getActiveNodes()
+  private getSelectedNodes(nodes: TreeNode[]): any {
+    return nodes
       .map( node => ({
         id: node.data.id,
-        label: node.displayField,
+        label: node.label,
         profile: node.data._profile
       } ) );
   }
 
   open(event: TreeNode) {
-    const data = this.getSelectedNodes( event.treeModel );
+    const data = this.getSelectedNodes( this.selectedNodes );
 
     this.activate.next( data );
     this.selected.next( data );
   }
-
+/*
   deselected(event: TreeNode) {
     const data = this.getSelectedNodes( event.treeModel );
 
@@ -387,5 +404,5 @@ export class MetadataTreeComponent implements OnInit {
 
     // insert/move nodes or just refresh?
 
-  }
+  }*/
 }

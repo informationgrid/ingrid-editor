@@ -25,6 +25,8 @@
         "../node_modules/leaflet/dist/leaflet.css",
         "../node_modules/ng2-toasty/bundles/style-bootstrap.css",
         "../node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
+        "../node_modules/primeng/resources/themes/omega/theme.css",
+        "../node_modules/primeng/resources/primeng.min.css",
         "styles.css"
       ],
       "scripts": [

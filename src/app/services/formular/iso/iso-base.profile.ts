@@ -7,6 +7,7 @@ import { FieldBase } from '../../../+form/controls/field-base';
 import { CodelistService } from '../../../+form/services/codelist.service';
 import { Container } from '../../../+form/controls/container';
 import {Injectable} from '@angular/core';
+import {DatepickerField} from '../../../+form/controls/field-datepicker';
 
 @Injectable()
 export class IsoBaseProfile implements Profile {
@@ -94,8 +95,8 @@ export class IsoBaseProfile implements Profile {
             domClass: 'half',
             order: 26,
             options: [
-              {label: 'konform', value: 'conform'},
-              {label: 'nicht konform', value: 'not_conform'}
+              {label: 'konform', value: true},
+              {label: 'nicht konform', value: false}
             ]
           })
         ]
@@ -227,6 +228,10 @@ export class IsoBaseProfile implements Profile {
         label: 'Zeitbezug',
         order: 30,
         children: [
+          new DatepickerField({
+            key: 'startDate',
+            label: 'Start'
+          }),
           new OpenTableField({
             key: 'timeReference',
             label: 'Zeitbezug der Ressource',

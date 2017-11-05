@@ -14,7 +14,7 @@ import {CopyMoveEnum, MoveMode, PasteCallback} from './enums';
       </div>
       <div class="modal-body">
         <p>Wohin wollen Sie die ausgewählten Datensätze kopieren?</p>
-        <tree [showFolderEditButton]="false" (selected)="handleSelected($event)"></tree>
+        <!--<tree [showFolderEditButton]="false" (selected)="handleSelected($event)"></tree>-->
       </div>
       <div class="modal-footer">
         <button class="btn btn-link" (click)="submit()">{{copyOrMoveText}}</button>

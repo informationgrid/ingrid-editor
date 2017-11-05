@@ -31,7 +31,7 @@ export class ApiService {
 
   getGroups(): Observable<Role[]> {
     // return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng') ///7556e61a-4520-4f2a-b4d7-f948b3ad943b/roles' )
-    const promise = new Promise((resolve) => {
+    const promise = new Promise<Role[]>((resolve) => {
 
 
       this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng' )
