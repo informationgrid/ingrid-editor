@@ -4,7 +4,8 @@ import {RouterModule, Routes} from '@angular/router';
 export const routes: Routes = [
   {path: 'dashboard', loadChildren: './+dashboard/dashboard.module'},
   // {path: 'form', loadChildren: '+form/ige-form.module', canActivate: [AuthGuard]},
-  {path: 'form/:id', loadChildren: './+form/ige-form.module#IgeFormModule'},
+  {path: 'form', loadChildren: './+form/ige-form.module#IgeFormModule'},
+  // {path: 'form/:id', loadChildren: './+form/ige-form.module#IgeFormModule'},
   {path: 'plugins', loadChildren: './+behaviours/behaviours.module'},
   {path: 'fields', loadChildren: './+fields/fields.module'},
   {path: 'user', loadChildren: './+user/user.module'}, // TODO: check canActivateChild: [AuthGuard],

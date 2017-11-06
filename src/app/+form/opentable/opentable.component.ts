@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, forwardRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, forwardRef, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FieldBase } from '../controls';
 import { LocalDataSource } from 'ng2-smart-table';
@@ -8,32 +8,43 @@ import { SelectRenderComponent } from './renderComponents/select.render.componen
 import { ComboEditorComponent } from './editorComponents/combo.editor.component';
 import { Ng2SmartTableComponent } from 'ng2-smart-table/ng2-smart-table.component';
 import { Row } from 'ng2-smart-table/lib/data-set/row';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { TitleRenderComponent } from './renderComponents/title.render.component';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => OpenTable),
+  useExisting: forwardRef(() => OpenTableComponent),
   multi: true
 };
 
 
 // more info here: http://almerosteyn.com/2016/04/linkup-custom-control-to-ngcontrol-ngmodel
 @Component({
-  selector: 'open-table',
+  selector: 'ige-open-table',
   templateUrl: './opentable.component.html',
   styleUrls: ['./opentable.component.css'],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 })
-export class OpenTable implements ControlValueAccessor, OnInit {
+export class OpenTableComponent implements ControlValueAccessor, OnInit {
 
   @Input() columns: FieldBase<string>[];
 
   @Input() hideTableHeader: boolean;
 
+  @Input() addWithDialog = false;
+
   @ViewChild(Ng2SmartTableComponent) public smartTable: Ng2SmartTableComponent;
+
+  @ViewChild('addRowModal') addModal: TemplateRef<any> = null;
+
+  addModalRef: BsModalRef = null;
 
   source: LocalDataSource;
 
   showAddButton = true;
+
+  // the model to store data from a dialog
+  addModel = {};
 
   settings: any = {
     // mode: 'click-to-edit',
@@ -71,7 +82,7 @@ export class OpenTable implements ControlValueAccessor, OnInit {
 
   private _onChangeCallback: (x: any) => void;
 
-  constructor(private eRef: ElementRef) {
+  constructor(private eRef: ElementRef, private modalService: BsModalService) {
   }
 
   ngOnInit() {
@@ -149,14 +160,30 @@ export class OpenTable implements ControlValueAccessor, OnInit {
 
   addRow($event) {
     // TODO: choice between inline editing and dialog
-    this.smartTable.grid.createFormShown = true;
+    if (this.addWithDialog) {
+      this.addModalRef = this.modalService.show(this.addModal);
+    } else {
+      this.smartTable.grid.createFormShown = true;
+    }
+  }
+
+  addRowFromDialog() {
+    this._value.push( this.addModel );
+    this.source = new LocalDataSource(this._value);
+    this.addModalRef.hide();
+    this.handleChange();
+  }
+
+  addFromTree(event, fieldId) {
+    this.addModel[fieldId] = event;
   }
 
   private mapColumns(): any {
     const mappedColumns = {};
     this.columns.forEach((col: any) => {
       const editor = this.mapEditor(col.editor);
-      const renderComponent = null; // this.getRenderComponent(col.editor);
+      // const renderComponent = null;
+      const renderComponent = this.getRenderComponent(col.editor);
 
       mappedColumns[col.editor.key] = {
         title: col.editor.label,
@@ -200,9 +227,13 @@ export class OpenTable implements ControlValueAccessor, OnInit {
     return editor;
   }
 
-  private getRenderComponent(editor: any) {
-    if (editor.useCodelist) {
-      return SelectRenderComponent;
+  private getRenderComponent(editor: FieldBase<string>) {
+    if (editor.controlType === 'tree') {
+      return TitleRenderComponent;
+    } else if (editor.controlType === 'dropdown') {
+      if ((<DropdownField>editor).useCodelist) {
+        return SelectRenderComponent;
+      }
     } else {
       return null;
     }

@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Subject, Observable} from 'rxjs';
 import {Http} from '@angular/http';
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 
 export interface DocumentInterface {
   id: string;
@@ -21,7 +22,7 @@ export class StorageDummyService {
   }
 
   findDocuments(query: string): Observable<any> {
-    let subject = new Subject();
+    const subject = new Subject();
     setTimeout( () => {
       subject.next( [
         {'title': 'Meine erste UVP', '_id': '0', _profile: 'UVP'},
@@ -34,7 +35,7 @@ export class StorageDummyService {
   }
 
   loadData(id: string): Observable<any> {
-    let subject = new Subject();
+    const subject = new Subject();
 
     let data: FormFields = {_profile: 'UVP'};
     if (id === '0') {
@@ -122,10 +123,10 @@ export class StorageDummyService {
 
   saveData(data: any) {
     console.log( 'TEST: save data' );
-    let errors: any = {errors: []};
+    const errors: any = {errors: []};
     this.beforeSave.next( errors );
     console.log( 'After validation:', errors );
-    let response = this.http.post( 'http://localhost:8080/v1/dataset/1', data )
+    const response = this.http.post( 'http://localhost:8080/v1/dataset/1', data )
       .catch( (err: any) => {
         console.error( 'Error: ', err );
         return Observable.throw( err );
@@ -137,7 +138,7 @@ export class StorageDummyService {
 
   publish() {
     console.log( 'PUBLISHING' );
-    let data: any = {errors: []};
+    const data: any = {errors: []};
     this.beforeSave.next( data );
     console.log( 'After validation:', data );
   }

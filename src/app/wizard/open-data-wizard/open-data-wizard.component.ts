@@ -35,4 +35,9 @@ export class OpenDataWizardComponent implements OnInit {
   private notifyPageturn() {
     this.wizardService.focusElements$.next( this.focusByPage[this.page - 1] );
   }
+
+  close() {
+    this.location.back();
+    this.wizardService.focusElements$.next('');
+  }
 }

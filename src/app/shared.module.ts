@@ -4,11 +4,12 @@ import {MetadataTreeComponent} from './+form/sidebars/tree/tree.component';
 import {CommonModule} from '@angular/common';
 import {AngularSplitModule} from 'angular-split';
 import {TreeModule} from 'primeng/primeng';
+import { FocusDirective } from './directives/focus.directive';
 
 @NgModule({
   imports: [CommonModule, TreeModule, AngularSplitModule],
-  declarations: [MetadataTreeComponent],
-  exports: [MetadataTreeComponent, AngularSplitModule]
+  declarations: [MetadataTreeComponent, FocusDirective],
+  exports: [MetadataTreeComponent, AngularSplitModule, FocusDirective]
 })
 export class SharedModule {
 }

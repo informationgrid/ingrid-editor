@@ -44,7 +44,7 @@ export class StorageService {
         const json = <any[]>resp.json();
         return json.filter( item => item._profile !== 'FOLDER' );
       } )
-      .catch( err => this.errorService.handle( err ) );
+      .catch( err => this.errorService.handleOwn( 'Could not query documents', err ) );
   }
 
   getChildDocuments(parentId: string): Observable<any> {
@@ -61,9 +61,8 @@ export class StorageService {
       .map( resp => resp.json() );
   }
 
-  saveData(data: any): Promise<DocMainInfo> {
+  saveData(data: any, isNewDoc?: boolean): Promise<DocMainInfo> {
     console.log( 'TEST: save data' );
-    const previousId = data._id ? data._id : '-1';
     // let errors: any = {errors: []};
     // this.beforeSave.next(errors);
     // console.log('After validation:', errors);
@@ -81,14 +80,11 @@ export class StorageService {
       console.log( 'Response:', response );
       response.subscribe( res => {
         console.log( 'received:', res );
-        data._previousId = previousId;
         data._id = res.json()._id;
         data._state = res.json()._state;
         this.afterSave.next( data );
-        // FIXME: UpdateNew is not called for new docs
         this.datasetsChanged.next( {
-          // type: previousId === '-1' ? UpdateType.New : UpdateType.Update,
-          type: UpdateType.Update,
+          type: isNewDoc ? UpdateType.New : UpdateType.Update,
           data: [data]
         } );
         resolve( data );
@@ -101,7 +97,6 @@ export class StorageService {
   // FIXME: this should be added with a plugin
   publish(data: any) {
     console.log( 'PUBLISHING' );
-    const previousId = data._id ? data._id : '-1';
     const errors: any = {errors: []};
     this.beforeSave.next( errors );
     console.log( 'After validation:', data );
@@ -125,7 +120,6 @@ export class StorageService {
     console.log( 'Response:', response );
     response.subscribe( res => {
       console.log( 'received:', res );
-      data._previousId = previousId;
       data._id = res.json()._id;
       data._state = res.json()._state;
       this.afterSave.next( data );
@@ -185,7 +179,7 @@ export class StorageService {
    */
   moveDocuments(srcIDs: string[], dest: string, includeTree: boolean) {
     const body = this.prepareCopyCutBody( dest, includeTree );
-    return this.http.post( this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + 'move', body );
+    return this.http.post( this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + '/move', body );
   }
 
   private prepareCopyCutBody(dest: string, includeTree: boolean): any {

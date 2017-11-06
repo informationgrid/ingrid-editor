@@ -40,7 +40,7 @@ export class IsoViewPlugin extends Plugin {
     this.formService.selectedDocuments$.subscribe( data => {
       this.formToolbarService.setButtonState(
         'toolBtnIso',
-        data.length === 1 && data[0].profile === 'ISO' );
+        data.length === 1 && data[0].profile.startsWith('ISO') );
     } );
   };
 

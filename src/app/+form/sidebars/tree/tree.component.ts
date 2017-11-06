@@ -1,14 +1,14 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {StorageService} from '../../../services/storage/storage.service';
-// import {IActionMapping, ITreeOptions, TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
-import {Router, ActivatedRoute} from '@angular/router';
-import {FormularService} from '../../../services/formular/formular.service';
-import {UpdateType} from '../../../models/update-type.enum';
-import {ErrorService} from '../../../services/error.service';
-import {FormToolbarService} from '../../toolbar/form-toolbar.service';
-import {SelectedDocument} from '../selected-document.model';
-import {DocMainInfo} from '../../../models/update-dataset-info.model';
-import {TREE_EVENTS} from 'angular-tree-component/dist/constants/events';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { StorageService } from '../../../services/storage/storage.service';
+// import { IActionMapping, ITreeOptions, TREE_ACTIONS, TreeComponent, TreeNode } from 'angular-tree-component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormularService } from '../../../services/formular/formular.service';
+import { UpdateType } from '../../../models/update-type.enum';
+import { ErrorService } from '../../../services/error.service';
+import { FormToolbarService } from '../../toolbar/form-toolbar.service';
+import { SelectedDocument } from '../selected-document.model';
+import { DocMainInfo } from '../../../models/update-dataset-info.model';
+import { Subscription } from 'rxjs/Subscription';
 import {TreeNode} from 'primeng/primeng';
 /*
 const actionMapping: IActionMapping = {
@@ -44,7 +44,7 @@ const actionMapping: IActionMapping = {
     }
   `]
 } )
-export class MetadataTreeComponent implements OnInit {
+export class MetadataTreeComponent implements OnInit, OnDestroy {
 
   nodes: TreeNode[] = [];
 
@@ -60,6 +60,7 @@ export class MetadataTreeComponent implements OnInit {
   copiedNodes: TreeNode[] = [];
   cutNodes: TreeNode[] = [];
 
+  subscriptions: Subscription[] = [];
 
   options: ITreeOptions = {
     getChildren: (node: TreeNode) => {
@@ -82,41 +83,42 @@ export class MetadataTreeComponent implements OnInit {
         // only let this function be called once, since we only need it during first visit of the page
         setTimeout( () => initialSet.unsubscribe(), 0 );
 
-        if (selectedId && selectedId !== '-1') {
+        if (selectedId) {
           // get path to node
-          this.storageService.getPathToDataset( selectedId ).subscribe( path => {
+          this.subscriptions.push(this.storageService.getPathToDataset( selectedId ).subscribe( path => {
             console.debug( 'path: ' + path );
-            // this.expandToPath( path.reverse() );
-            this.selectedNodes = this.nodes.filter( n => n.data.id === path[0]);
-            this.open(null);
-          } );
+            //this.expandToPath( path.reverse() );
+          this.selectedNodes = this.nodes.filter( n => n.data.id === path[0]);
+            this.open(null);} ));
         }
       } );
     }, (err) => console.error( 'Error:', err ) );
 
-    /*this.storageService.datasetsChanged$.subscribe( (info) => {
-      console.debug( 'Tree: dataset changed event', info );
-      // only update changes in the tree instead of reloading everything and recover previous state
-      switch (info.type) {
-        case UpdateType.New:
-          this.onNewDataset( info.data );
-          break;
+    /*this.subscriptions.push(
+      this.storageService.datasetsChanged$.subscribe( (info) => {
+        console.debug( 'Tree: dataset changed event', info );
+        // only update changes in the tree instead of reloading everything and recover previous state
+        switch (info.type) {
+          case UpdateType.New:
+            this.onNewDataset( info.data );
+            break;
 
-        case UpdateType.Update:
-          this.onUpdateDataset( info.data );
-          break;
+          case UpdateType.Update:
+            this.onUpdateDataset( info.data );
+            break;
 
-        case UpdateType.Delete:
-          this.onDeleteDataset( info.data );
-          break;
-        case UpdateType.Copy:
-          this.copy();
-          break;
-        case UpdateType.Paste:
-          this.paste();
-          break;
-      }
-    } );*/
+          case UpdateType.Delete:
+            this.onDeleteDataset( info.data );
+            break;
+          case UpdateType.Copy:
+            this.copy();
+            break;
+          case UpdateType.Paste:
+            this.paste();
+            break;
+        }
+      } )
+    );*/
 
     // inform interested components which documents are selected
     // this.formularService.selectedDocuments$.subscribe( (ids) => {
@@ -126,17 +128,22 @@ export class MetadataTreeComponent implements OnInit {
     // this.handleToolbarEvents();
   }
 /*
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach( _ => _.unsubscribe() );
+  }
+
   onNewDataset(docs: DocMainInfo[]) {
     docs.forEach( doc => {
       const newDataset = this.createNewDatasetTemplate( doc );
 
-      const updateTree = () => {
+      const updateTree = (id: string) => {
         this.tree.treeModel.update();
         // FIXME: set route to new node id, for correct refresh
         // this however does conflict when creating a new node when first visiting the form page
-        this.router.navigate( ['/form', '-1'] );
+        // this.router.navigate( ['/form', id] );
 
-        const node = this.tree.treeModel.getNodeById( '-1' );
+        const node = this.tree.treeModel.getNodeById( id );
 
         // make sure parent is expanded
         node.parent.expand();
@@ -156,14 +163,14 @@ export class MetadataTreeComponent implements OnInit {
               pNode.children = [];
             }
             pNode.children.push( newDataset );
-            updateTree();
+            updateTree( newDataset.id );
           // } );
         } catch (err) {
           console.error( 'error expanding node', err );
         }
       } else {
         this.nodes.push( newDataset );
-        updateTree();
+        updateTree( newDataset.id );
       }
     } );
   }
@@ -171,31 +178,16 @@ export class MetadataTreeComponent implements OnInit {
   private createNewDatasetTemplate(doc: any) {
     const name = this.formularService.getTitle( doc._profile, doc );
 
-    return {
-      id: doc._id ? doc._id : '-1',
-      name: name && name !== this.formularService.untitledLabel ? name : 'Neuer Datensatz',
-      _profile: doc._profile,
-      _state: 'W',
-      _iconClass: this.formularService.getIconClass( doc._profile )
-    };
+    const docNode = this.prepareNode( doc );
+    return docNode;
   }
 
   onUpdateDataset(docs: DocMainInfo[]) {
     docs.forEach( doc => {
 
-      // when a new node (with id="-1") is saved than it gets a new ID
-      // but we have to find the node to be replaced by it's old one
-      const id = doc._previousId ? doc._previousId : doc._id;
-
-      const nodeParentUpdate = this.getNodeFromModel( id );
+      const nodeParentUpdate = this.getNodeFromModel( doc._id );
       Object.assign( nodeParentUpdate, this.prepareNode( doc ) );
       this.tree.treeModel.update();
-
-      // re-select node if id has changed (after a new dataset has been saved and given an id)
-      if (doc._previousId !== doc._id) {
-        const node = this.tree.treeModel.getNodeById( doc._id );
-        this.tree.treeModel.setActiveNode( node, true );
-      }
     } );
   }
 
@@ -357,7 +349,7 @@ export class MetadataTreeComponent implements OnInit {
   }
 /*
   deselected(event: TreeNode) {
-    const data = this.getSelectedNodes( event.treeModel );
+    const data = this.getSelectedNodes();
 
     this.selected.next( data );
   }

@@ -3,10 +3,10 @@ import {ModalService} from '../services/modal/modal.service';
 import {ErrorService} from '../services/error.service';
 import {RoleService} from './role.service';
 import {MenuService} from '../menu/menu.service';
-import {Observable} from 'rxjs';
 import {Role, RoleAttribute} from '../models/user-role';
 import {MetadataTreeComponent} from '../+form/sidebars/tree/tree.component';
 import {BsModalRef} from 'ngx-bootstrap';
+import { Observable } from 'rxjs/Observable';
 
 @Component( {
   selector: 'role-gui',
@@ -24,7 +24,7 @@ export class RoleComponent implements OnInit {
   selectedRole = new Role();
   dialogTab = 'dataset';
 
-  private isNewRole: boolean = false;
+  private isNewRole = false;
   private markForSelection: any[] = [];
 
   constructor(private modalService: ModalService,
@@ -51,7 +51,7 @@ export class RoleComponent implements OnInit {
         this.roles = roles;
         this.onRoleChange.next( roles );
       },
-      error => this.errorService.handle( error )
+      error => this.errorService.handleOwn('Problem fetching all roles', error)
     );
   }
 
@@ -59,9 +59,9 @@ export class RoleComponent implements OnInit {
     this.modalService.showNotImplemented();
   }
 
-  loadRole(role: Role) {
+  loadRole(roleToLoad: Role) {
     this.isNewRole = false;
-    this.roleService.getRoleMapping( role.name )
+    this.roleService.getRoleMapping( roleToLoad.name )
       .subscribe(
         role => {
           this.selectedRole = role;
@@ -72,7 +72,7 @@ export class RoleComponent implements OnInit {
   }
 
   saveRole(role: Role) {
-    let observer: Observable<any> = null;
+    let observer: Observable<Role> = null;
 
     if (this.isNewRole) {
       observer = this.roleService.createRole( role );
@@ -116,12 +116,12 @@ export class RoleComponent implements OnInit {
   }
 
   removeDataset(id: string): void {
-    let pos = this.selectedRole.datasets.indexOf( id );
+    const pos = this.selectedRole.datasets.indexOf( id );
     this.selectedRole.datasets.splice( pos, 1 );
   }
 
   removeAttribute(attribute: RoleAttribute): void {
-    let pos = this.selectedRole.attributes.indexOf( attribute );
+    const pos = this.selectedRole.attributes.indexOf( attribute );
     this.selectedRole.attributes.splice( pos, 1 );
   }
 

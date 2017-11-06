@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
-import {Subject} from 'rxjs';
+import { Subject } from 'rxjs/Subject';
 
 interface MenuItem {
   name: string;
@@ -16,7 +16,7 @@ export class MenuService {
 
   _menuItems: MenuItem[] = [
     {name: 'Dashboard', path: '/dashboard'},
-    {name: 'Form', path: '/form'},
+    {name: 'Formular', path: '/form'},
     {name: 'Plugins', path: '/plugins', onlyAdmin: true},
     // {name: 'Fields', path: '/fields'}
     {name: 'Benutzer', path: '/user', onlyAdmin: true},

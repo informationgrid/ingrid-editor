@@ -17,6 +17,7 @@ export interface CodelistEntry {
 export class CodelistService {
 
   codelists: { [id: string]: Codelist } = {};
+  pendingCodelists: { [id: string]: Promise<CodelistEntry[]> } = {};
   private configuration: Configuration;
 
   static getLocalisedValue(locals: any[]) {
@@ -30,30 +31,44 @@ export class CodelistService {
 
   byId(id: string): Promise<CodelistEntry[]> {
 
-    return new Promise( (resolve, reject) => {
-      if (this.codelists[id]) {
+    if (this.codelists[id]) {
+      return Promise.resolve( this.codelists[id].entries );
+    }
 
-        resolve( this.codelists[id].entries );
+    // if codelist is being loaded then return the promise
+    if (this.pendingCodelists[id]) {
+      return this.pendingCodelists[id];
+    }
 
-      } else {
+    const myPromise = new Promise<CodelistEntry[]>( (resolve, reject) => {
 
-        this.http.get( this.configuration.backendUrl + 'codelist/' + id )
-          .catch( (err: any) => this.errorService.handle( err ) )
-          .subscribe( (data: any) => {
-            if (data.json() === null) {
-              reject( 'Codelist could not be read: ' + id );
+      this.http.get( this.configuration.backendUrl + 'codelist/' + id )
+        .catch( (err) => {
+          this.codelists[id] = null;
+          return this.errorService.handleOwn( 'Could not load codelist: ' + id, err.message );
+        } )
+        .subscribe( (data: any) => {
+          if (data.json() === null) {
+            reject( 'Codelist could not be read: ' + id );
+          } else {
+            this.codelists[id] = data.json();
+            const entries = (<Codelist>this.codelists[id]).entries;
+            if (entries) {
+              resolve( this.prepareEntries( entries ) );
             } else {
-              this.codelists[id] = data.json();
-              const entries = this.codelists[id].entries;
-              if (entries) {
-                resolve( this.prepareEntries( entries ) );
-              } else {
-                reject( 'This codelist does not exist: ' + id );
-              }
+              reject( 'This codelist does not exist: ' + id );
             }
-          }, (err) => reject( err ) );
-      }
+            this.pendingCodelists[id] = null;
+          }
+        }, (err) => reject( err ) );
+
     } );
+
+    if (this.codelists[id] === undefined) {
+      this.pendingCodelists[id] = myPromise;
+    }
+
+    return myPromise;
   }
 
   byIds(ids: string[]): Promise<Array<CodelistEntry[]>> {

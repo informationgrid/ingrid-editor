@@ -35,6 +35,10 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
   ngOnInit() {
   }
 
+  get value() {
+    return this._value.value;
+  }
+
   handleChange(value) {
     console.log('table changed', value);
     let mappedValue = this.options.find(option => option.value === value);

@@ -1,14 +1,13 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { ConfigService, Configuration } from '../config/config.service';
-import {ErrorService} from './error.service';
-import {Http, Response} from '@angular/http';
-import {KeycloakService} from '../keycloak/keycloak.service';
-import {User} from '../+user/user';
-import {Role} from '../models/user-role';
-import {environment} from '../../environments/environment';
+import { ErrorService } from './error.service';
+import { Http, Response } from '@angular/http';
+import { KeycloakService } from '../keycloak/keycloak.service';
+import { User } from '../+user/user';
+import { Role } from '../models/user-role';
 
 
 @Injectable()
@@ -30,14 +29,13 @@ export class ApiService {
   }
 
   getGroups(): Observable<Role[]> {
-    // return this.http.get( environment.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng') ///7556e61a-4520-4f2a-b4d7-f948b3ad943b/roles' )
-    const promise = new Promise<Role[]>((resolve) => {
 
-
-      this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients?clientId=ige-ng' )
+    return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm +
+                      '/clients?clientId=ige-ng' )
         .map( res => res.json() )
-        .map( client => {
-          this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/clients/' + client[0].id + '/roles' )
+        .flatMap( client => {
+          return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm +
+                          '/clients/' + client[0].id + '/roles' )
             .map( response => response.json() )
             .map( (json: any[]) => {
               const result: Role[] = [];
@@ -50,12 +48,9 @@ export class ApiService {
                   pages: null
                 } );
               } );
-              resolve(result);
-            } ).subscribe();
-        } ).subscribe();
-
-    });
-    return Observable.fromPromise(promise);
+              return result;
+            } )
+        } );
   }
 
   getUsers(): Observable<User[]> {
@@ -81,7 +76,7 @@ export class ApiService {
     return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users/' + id )
       .map( response => response.json() )
       .map( (json: any) => {
-        const result: User = {
+        return {
           id: json.id,
           login: json.username,
           firstName: json.firstName,
@@ -89,7 +84,6 @@ export class ApiService {
           roles: json.roles,
           attributes: json.attributes
         };
-        return result;
       } );
   }
 
@@ -97,14 +91,13 @@ export class ApiService {
     return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/roles-by-id/' + id )
       .map( response => response.json() )
       .map( (json: any) => {
-        const result: Role = {
+        return {
           id: json.id,
           name: '?',
           attributes: [],
           datasets: [],
           pages: null
         };
-        return result;
       } );
   }
 }

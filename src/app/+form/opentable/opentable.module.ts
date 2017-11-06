@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { SelectRenderComponent } from './renderComponents/select.render.component';
 import { ComboEditorComponent } from './editorComponents/combo.editor.component';
 import { FormsModule } from '@angular/forms';
+import { TitleRenderComponent } from './renderComponents/title.render.component';
 
 @NgModule({
   imports: [
@@ -10,9 +11,10 @@ import { FormsModule } from '@angular/forms';
   ],
   declarations: [
     SelectRenderComponent,
+    TitleRenderComponent,
     ComboEditorComponent
   ],
-  entryComponents: [SelectRenderComponent, ComboEditorComponent]
+  entryComponents: [SelectRenderComponent, TitleRenderComponent, ComboEditorComponent]
 })
 export class OpentableModule {
 }

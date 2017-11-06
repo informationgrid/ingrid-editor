@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import { Subject } from 'rxjs/Subject';
 
 export interface DefaultToolbarItem {
   id: string;
@@ -10,7 +10,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   eventId: string;
   active?: boolean;
 }
-export interface Separator extends DefaultToolbarItem{
+export interface Separator extends DefaultToolbarItem {
   isSeparator: boolean;
 }
 
@@ -42,21 +42,15 @@ export class FormToolbarService {
     return this.toolbarEvent$.asObservable();
   }
 
-  /**
-   * Get an observable to subscribe to changes to the toolbar (e.g. new button)
-   * @returns {Observable<string>}
-   */
-  getItemObserver() {
-    return this.toolbarEvent$.asObservable();
-  }
-
-
   get buttons(): Array<ToolbarItem|Separator> {
     return this._buttons;
   }
 
   addButton(button: ToolbarItem|Separator, pos?: number) {
-    if (!pos) pos = this._buttons.length;
+    if (!pos) {
+      pos = this._buttons.length;
+    }
+
     this._buttons.splice(pos, 0, button);
     this.toolbar$.next(button);
   }
@@ -81,7 +75,7 @@ export class FormToolbarService {
    * @param active
    */
   setButtonState(eventId: string, active: boolean) {
-    let button = <ToolbarItem>this.getButtonById( eventId );
+    const button = <ToolbarItem>this.getButtonById( eventId );
     button.active = active;
   }
 

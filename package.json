@@ -39,6 +39,7 @@
     "ngx-bootstrap": "^2.0.0-beta.6",
     "primeng": "^4.3.0",
     "rxjs": "^5.5.2",
+    "web-animations-js": "^2.3.1",
     "xmlbuilder": "^9.0.4",
     "zone.js": "^0.8.18"
   },

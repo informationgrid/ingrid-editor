@@ -62,15 +62,15 @@
                         <!-- Default panel contents -->
                         <div class="panel-heading">Favoriten</div>
                         <div class="list-group">
-                            <button (click)="load()" class="list-group-item list-group-item-action">
+                            <button (click)="load('1')" class="list-group-item list-group-item-action">
                                 <span class="fa fa-file-o"></span>
                                 Document 1 (TEST)
                             </button>
-                            <button (click)="load()" class="list-group-item list-group-item-action">
+                            <button (click)="load('2')" class="list-group-item list-group-item-action">
                                 <span class="fa fa-file-o"></span>
                                 Document 5 (TEST)
                             </button>
-                            <button (click)="load()" class="list-group-item list-group-item-action">
+                            <button (click)="load('3')" class="list-group-item list-group-item-action">
                                 <span class="fa fa-address-card-o"></span>
                                 Document 6 (TEST)
                             </button>
@@ -98,8 +98,8 @@
 
         <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
 
-            <!-- bottom info bar -->
-            <div class="bottom-bar" style="position:relative;" [class.expanded]="showDateBar"
+            <!-- form info bar -->
+            <div class="form-info-bar" style="position:relative;" [class.expanded]="showDateBar"
                  (click)="showDateBar = !showDateBar">
                 <span class="text-muted">
                     <div class="pull-left padding-sm"
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                     <!--<span class="fa fa-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
-                    <div class="text-center" style="position:absolute; margin: 0 50%; bottom: -5px;">
+                    <div class="text-center" style="position:absolute; margin: 0 50%; bottom: -3px;">
                         <span class="fa"
                               [class.fa-chevron-down]="!showDateBar"
                               [class.fa-chevron-up]="showDateBar"></span>
@@ -162,26 +162,6 @@
                 <!--<p>Form is valid: {{form.valid}}</p>-->
             </div>
 
-            <!-- WIZARD -->
-            <!-- TODO: show within sidebar with vertical style? -->
-            <!--<div *ngIf="showWizard" class="padding wizard-container">
-                <wizard [navBarLocation]="'bottom'">
-                    <wizard-step title="Schritt 1">
-                        Content of Step 1
-                        <button type="button" nextStep>Next Step</button>
-                    </wizard-step>
-                    <wizard-step title="Schritt 2" optionalStep>
-                        Content of Step 2
-                        <button type="button" previousStep>Go to previous step</button>
-                        <button type="button" nextStep>Go to next step</button>
-                    </wizard-step>
-                    <wizard-step title="Schritt 3">
-                        Content of Step 3
-                        <button type="button" previousStep>Previous Step</button>
-                    </wizard-step>
-                </wizard>
-            </div>-->
-
         </form>
     </split-area>
 
@@ -192,9 +172,9 @@
 <ng-template #newDocModal>
     <div class="modal-header">
         <h4 class="modal-title">Neues Dokument</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <!--<button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
             <span aria-hidden="true">&times;</span>
-        </button>
+        </button>-->
     </div>
     <div class="modal-body">
         <div class="radio" *ngFor="let type of newDocOptions.docTypes">
@@ -206,7 +186,9 @@
         </div>
         <div class="checkbox">
             <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" [disabled]="!newDocOptions.rootOption" [(ngModel)]="addToDoc">
+                <input type="checkbox" class="custom-control-input" [disabled]="!newDocOptions.rootOption"
+                       [focus]="true"
+                       [(ngModel)]="addToDoc">
                 <span class="custom-control-indicator"></span>
                 <span class="custom-control-description">unter ausgewähltem Dokument/Ordner anlegen</span>
             </label>

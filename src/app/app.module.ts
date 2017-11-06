@@ -10,7 +10,7 @@ import {DashboardModule} from './+dashboard/dashboard.module';
 import {IgeFormModule} from './+form/ige-form.module';
 import {Http, HttpModule, RequestOptions, XHRBackend} from '@angular/http';
 import {BrowserModule} from '@angular/platform-browser';
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import {MenuComponent} from './menu/menu.component';
 import {BehavioursDefault} from './+behaviours/behaviours';
 import {FormularService} from './services/formular/formular.service';
@@ -42,6 +42,9 @@ import {IsoInformationSystemProfile} from './services/formular/iso/iso-informati
 import {IsoLiteratureProfile} from './services/formular/iso/iso-literature.profile';
 import {IsoProjectProfile} from './services/formular/iso/iso-project.profile';
 import {IsoTaskProfile} from './services/formular/iso/iso-task.profile';
+import { CatalogModule } from './+catalog/catalog.module';
+import { LoginComponent } from './security/login.component';
+import { GlobalErrorHandler } from './error-handler';
 import {TreeModule} from 'primeng/primeng';
 
 export function HttpLoader(backend: XHRBackend, defaultOptions: RequestOptions) {
@@ -66,12 +69,12 @@ export function KeycloakLoader(configService: ConfigService) {
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent],
+  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent],
   imports: [BrowserModule, BrowserAnimationsModule, HttpModule,
     Ng2SmartTableModule,
     TreeModule,
     PopoverModule.forRoot(), BsDatepickerModule.forRoot(), AccordionModule.forRoot(),
-    IgeFormModule, DashboardModule, FieldsModule,
+    IgeFormModule, DashboardModule, FieldsModule, CatalogModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule.forRoot()],
   providers: [
     appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
@@ -91,6 +94,10 @@ export function KeycloakLoader(configService: ConfigService) {
       useFactory: KeycloakLoader,
       deps: [ConfigService],
       multi: true
+    },
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
     },
 
     {provide: PROFILES, useClass: UVPProfile, multi: true},

@@ -3,3 +3,27 @@
     <span class="fa fa-plus"></span>
 </button>
 <ng2-smart-table [settings]="settings" [source]="source"></ng2-smart-table>
+
+<ng-template #addRowModal>
+    <div class="modal-header">
+        <h4 class="modal-title">Hinzufügen</h4>
+    </div>
+    <div class="modal-body">
+        <form #addForm="ngForm">
+            <div class="form-group">
+                <div *ngFor="let col of columns; let i=index" class="padding">
+                    <label class="control-label">{{col.editor.label}}</label>
+                    <input *ngIf="col.editor.controlType === 'textbox'" [focus]="i === focusNumber" [type]="col.editor.type" class="form-control" [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
+                    <select class="form-control" *ngIf="col.editor.controlType === 'dropdown'" [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
+                        <option *ngFor="let option of col.editor.options" [value]="option.id">{{option.value}}</option>
+                    </select>
+                    <tree *ngIf="col.editor.controlType === 'tree'" (selected)="addFromTree($event, col.editor.key)"></tree>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-link" (click)="addRowFromDialog()">Hinzufügen</button>
+        <button class="btn btn-link" (click)="isoViewModalRef.hide()">Schließen</button>
+    </div>
+</ng-template>

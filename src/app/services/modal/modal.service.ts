@@ -28,7 +28,7 @@ export class ModalService {
     };
     if (moreInfo) {
       errorObj.moreInfo = moreInfo;
-    } else if (message._body) {
+    } else if (message && message._body) {
       errorObj.moreInfo = message._body;
     }
 

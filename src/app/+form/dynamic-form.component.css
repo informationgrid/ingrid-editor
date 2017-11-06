@@ -24,7 +24,7 @@ split {
     flex-grow: 1;
 }*/
 
-.bottom-bar {
+.form-info-bar {
     /*position: absolute;*/
     /*left: 0;*/
     /*right: 0;*/
@@ -44,7 +44,7 @@ split {
     transition: max-width 0.5s ease-in-out;
 }*/
 
-.bottom-bar.expanded {
+.form-info-bar.expanded {
     /*max-height: 100px;*/
     transition: max-width 1s ease-in-out;
 }

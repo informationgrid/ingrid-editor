@@ -2,15 +2,14 @@ import {AfterViewInit, Component, Injector, OnInit, TemplateRef, ViewChild} from
 import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 import {CopyMoveEnum, MoveMode, PasteCallback} from './enums';
 
-
 @Component({
   template: `
     <ng-template #pasteModal>
       <div class="modal-header">
         <h4 class="modal-title pull-left">Einfügen</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="pasteModalRef.hide()">
+        <!--<button type="button" class="close pull-right" aria-label="Close" (click)="pasteModalRef.hide()">
           <span aria-hidden="true">&times;</span>
-        </button>
+        </button>-->
       </div>
       <div class="modal-body">
         <p>Wohin wollen Sie die ausgewählten Datensätze kopieren?</p>
@@ -32,7 +31,6 @@ export class PasteDialogComponent implements OnInit, AfterViewInit {
 
   @ViewChild('pasteModal') pasteModal: TemplateRef<any> = null;
 
-
   pasteModalRef: BsModalRef = null;
   callback: any = null;
   selection: any = null;
@@ -52,7 +50,7 @@ export class PasteDialogComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.copyOrMoveText = this.moveMode.mode === CopyMoveEnum.COPY ? "Kopieren" : "Verschieben";
+    this.copyOrMoveText = this.moveMode.mode === CopyMoveEnum.COPY ? 'Kopieren' : 'Verschieben';
     setTimeout( () => this.pasteModalRef = this.modalService.show(this.pasteModal), 0);
 
   }
