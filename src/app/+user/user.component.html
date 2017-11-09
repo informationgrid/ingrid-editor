@@ -54,7 +54,7 @@
                             <option *ngFor="let role of roles" value="{{role.id}}">{{role.name}}</option>
                         </select>-->
                         <div class="clearfix"></div>
-                        <ss-multiselect-dropdown [options]="roles" name="roles" [(ngModel)]="selectedUser.roles"></ss-multiselect-dropdown>
+                        <!-- TODO: <ss-multiselect-dropdown [options]="roles" name="roles" [(ngModel)]="selectedUser.roles"></ss-multiselect-dropdown>-->
                     </div>
 
                     <button class="btn btn-primary pull-right" [disabled]="!userForm.form.valid"

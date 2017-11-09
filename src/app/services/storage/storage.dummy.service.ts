@@ -1,7 +1,8 @@
-import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import { Injectable } from '@angular/core';
+import { Http } from '@angular/http';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
+import { _throw } from 'rxjs/observable/throw';
 
 export interface DocumentInterface {
   id: string;
@@ -129,7 +130,7 @@ export class StorageDummyService {
     const response = this.http.post( 'http://localhost:8080/v1/dataset/1', data )
       .catch( (err: any) => {
         console.error( 'Error: ', err );
-        return Observable.throw( err );
+        return _throw( err );
       } );
     console.log( 'Response:', response );
     response.subscribe( res => console.log( 'received:', res ) );

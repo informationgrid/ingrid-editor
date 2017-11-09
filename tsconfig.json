@@ -16,5 +16,6 @@
       "es2016",
       "dom"
     ]
-  }
+  },
+  "exclude": [ "server/*" ]
 }

@@ -6,6 +6,11 @@ body {
   padding-top: 56px;
 }
 
+.ui-growl {
+  top: initial;
+  bottom: 10px;
+}
+
 .modal .modal-content {
   background-color: #03a9f4;
   color: #fff;

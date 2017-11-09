@@ -4,7 +4,14 @@
 
 <!-- TODO: show input error for non-combo boxes; when no filter then jump at least to the language -->
 
-<p-dropdown [options]="options" [optionLabel]="'value'" [dataKey]="'id'" [editable]="isCombo" [style]="{'width':'100%'}" [(ngModel)]="selected"></p-dropdown>
+<p-dropdown [options]="options"
+            placeholder="Bitte auswählen"
+            optionLabel="value"
+            dataKey="id"
+            [editable]="isCombo"
+            [style]="{'width':'100%'}"
+            [(ngModel)]="selected"
+            (onChange)="handleChange($event)"></p-dropdown>
 <!--
 <combo-box #box [listData]="options"
            [forceSelection]="!isCombo"

@@ -15,20 +15,22 @@
                                 <span class='badge badge-pill badge-info'>1</span>
                                 <span>Datensatz auswählen</span>
                             </div>
-                            <div ng2FileDrop
-                                 [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
-                                 (fileOver)="fileOverBase($event)"
-                                 [uploader]="uploader"
-                                 class="card-body text-center border-dashed">
-                                Import-Datei ablegen
-                            </div>
+
+                            <p-fileUpload name="importFiles[]"
+                                          [url]="uploadUrl"
+                                          multiple="multiple"
+                                          accept="image/*"
+                                          (onUpload)="onUpload($event)"
+                                          (onError)="handleError($event)"
+                                          maxFileSize="1000000">
+
+                            </p-fileUpload>
 
                             <p class="text-center padding-sm">oder</p>
 
                             <div>
                                 <label class="custom-file w-100">
-                                    <input #fileInput type="file" class="custom-file-input">
-                                    <span class="custom-file-control"></span>
+                                    <p-fileUpload mode="basic" name="demo[]" url="./upload.php" accept="image/*" maxFileSize="1000000"></p-fileUpload>
                                 </label>
                             </div>
                         </accordion-group>
@@ -38,8 +40,8 @@
                                 <span>Analyse</span>
                             </div>
                             <div class="text-center padding">
-                                <span class="text-muted">{{fileInput.value}}</span>
-                                <button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Start Import</button>
+                                <!--<span class="text-muted">{{fileInput.value}}</span>-->
+                                <!--<button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Start Import</button>-->
                             </div>
                         </accordion-group>
                         <accordion-group [isDisabled]="true">

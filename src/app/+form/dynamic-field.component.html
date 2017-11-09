@@ -21,44 +21,37 @@
         </ng-container>
 
         <!-- TEXTBOX -->
-        <input *ngSwitchCase="'textbox'" [formControlName]="field.key" class="form-control"
-               [id]="field.key" [attr.type]="field.type">
+        <input *ngSwitchCase="'textbox'"
+               [id]="field.key"
+               class="form-control"
+               [formControlName]="field.key"
+               [attr.type]="field.type">
 
         <!-- DATEPICKER -->
-        <p-calendar *ngSwitchCase="'datepicker'"
-                    [style.width]="'100%'"
-                    [formControlName]="field.key"
-                    [monthNavigator]="true"
-                    [yearNavigator]="true"
-                    [showIcon]="true"
-                    [dataType]="'string'"
-                    dateFormat="dd.mm.yy"></p-calendar>
-        <!--<input *ngSwitchCase="'datepicker'"
-               class="form-control"
-               value="{{field.value | date:'dd.MM.YYYY'}}"
-               [formControlName]="field.key"
-               bsDatepicker
-               [bsConfig]="bsConfig"
-        >-->
+        <ige-datebox *ngSwitchCase="'datepicker'"
+                     [formControlName]="field.key"></ige-datebox>
 
         <!-- CHECKBOX -->
-        <div *ngSwitchCase="'checkbox'" class="checkbox">
-            <p-checkbox [formControlName]="field.key" [value]="true" [label]="field.label" binary="true"></p-checkbox>
+        <ige-checkbox *ngSwitchCase="'checkbox'" [label]="field.label" [formControlName]="field.key"></ige-checkbox>
+            <!--<p-checkbox *ngSwitchCase="'checkbox'" [formControlName]="field.key" [value]="true" [label]="field.label" binary="true"></p-checkbox>-->
             <!--<label class="custom-control custom-checkbox">
                 <input [formControlName]="field.key" [id]="field.key" type="checkbox" class="custom-control-input">
                 <span class="custom-control-indicator"></span>
                 <span class="custom-control-description">{{field.label}}</span>
             </label>-->
-        </div>
 
-        <!-- TODO: https://github.com/pleerock/ng2-radio-group -->
         <!-- RADIO BUTTON-->
         <span *ngSwitchCase="'radio'">
-            <p-radioButton *ngFor="let opt of field.options"
+            <ige-radiobox *ngFor="let opt of field.options"
+                          [formControlName]="field.key"
+                          [label]="opt.label"
+                          [radioName]="field.key"
+                          [radioValue]="opt.value"></ige-radiobox>
+            <!--<p-radioButton *ngFor="let opt of field.options"
                            [formControlName]="field.key"
                            [name]="field.key"
                            label="{{opt.label}}"
-                           value="{{opt.value}}"></p-radioButton>
+                           value="{{opt.value}}"></p-radioButton>-->
             <!--<label *ngFor="let opt of field.options" class="custom-control custom-radio">
                 <input [formControlName]="field.key" type="radio"
                        class="custom-control-input"
@@ -85,11 +78,11 @@
                     [ngModel]="value[field.key]">
         </data-table>-->
 
-        <ige-open-table *ngSwitchCase="'opentable'"
+        <ige-data-grid *ngSwitchCase="'opentable'"
                         [formControlName]="field.key"
                         [columns]="field.columns"
                         [addWithDialog]="field.addWithDialog"
-                        [hideTableHeader]="field.hideHeader"></ige-open-table>
+                        [hideTableHeader]="field.hideHeader"></ige-data-grid>
 
         <!-- LEAFLET-->
         <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [formControlName]="field.key"></leaflet>

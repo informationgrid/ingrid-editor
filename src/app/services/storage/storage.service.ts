@@ -1,14 +1,14 @@
-import {Injectable} from '@angular/core';
-import {ModalService} from '../modal/modal.service';
-import {FormularService} from '../formular/formular.service';
+import { Injectable } from '@angular/core';
+import { ModalService } from '../modal/modal.service';
+import { FormularService } from '../formular/formular.service';
 import { ConfigService, Configuration } from '../../config/config.service';
-import {UpdateType} from '../../models/update-type.enum';
-import {DocMainInfo, UpdateDatasetInfo} from '../../models/update-dataset-info.model';
-import {ErrorService} from '../error.service';
-import {Subject} from 'rxjs/Subject';
-import {Observable} from 'rxjs/Observable';
-import {Http} from '@angular/http';
-import {KeycloakService} from '../../keycloak/keycloak.service';
+import { UpdateType } from '../../models/update-type.enum';
+import { DocMainInfo, UpdateDatasetInfo } from '../../models/update-dataset-info.model';
+import { ErrorService } from '../error.service';
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { KeycloakService } from '../../keycloak/keycloak.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class StorageService {
@@ -27,7 +27,7 @@ export class StorageService {
   titleFields: string;
   private configuration: Configuration;
 
-  constructor(private http: Http, private modalService: ModalService, private formularService: FormularService,
+  constructor(private http: HttpClient, private modalService: ModalService, private formularService: FormularService,
               configService: ConfigService,
               private errorService: ErrorService) {
     if (KeycloakService.auth.loggedIn) {
@@ -38,10 +38,9 @@ export class StorageService {
 
   findDocuments(query: string) {
     // TODO: use general sort filter
-    return this.http.get(
+    return this.http.get<any[]>(
       this.configuration.backendUrl + 'datasets?query=' + query + '&sort=title&fields=_id,_profile,_state,' + this.titleFields )
-      .map( resp => {
-        const json = <any[]>resp.json();
+      .map( json => {
         return json.filter( item => item._profile !== 'FOLDER' );
       } )
       .catch( err => this.errorService.handleOwn( 'Could not query documents', err ) );
@@ -52,13 +51,11 @@ export class StorageService {
     const idQuery = parentId === null ? '' : '&parentId=' + parentId;
     // headers.append('Content-Type', 'text/plain');
     return this.http.get( this.configuration.backendUrl + 'datasets?children=true&' + fields + idQuery )
-      .map( resp => resp.json() )
       .catch( (err) => this.errorService.handle( err ) );
   }
 
   loadData(id: string): Observable<DocMainInfo> {
-    return this.http.get( this.configuration.backendUrl + 'datasets/' + id )
-      .map( resp => resp.json() );
+    return this.http.get<DocMainInfo>( this.configuration.backendUrl + 'datasets/' + id );
   }
 
   saveData(data: any, isNewDoc?: boolean): Promise<DocMainInfo> {
@@ -78,10 +75,9 @@ export class StorageService {
       response.catch( (err) => this.errorService.handle( err ) );
 
       console.log( 'Response:', response );
-      response.subscribe( res => {
-        console.log( 'received:', res );
-        data._id = res.json()._id;
-        data._state = res.json()._state;
+      response.subscribe( json => {
+        data._id = json._id;
+        data._state = json._state;
         this.afterSave.next( data );
         this.datasetsChanged.next( {
           type: isNewDoc ? UpdateType.New : UpdateType.Update,
@@ -118,17 +114,16 @@ export class StorageService {
     response.catch( err => this.errorService.handle( err ) );
 
     console.log( 'Response:', response );
-    response.subscribe( res => {
-      console.log( 'received:', res );
-      data._id = res.json()._id;
-      data._state = res.json()._state;
+    response.subscribe( json => {
+      data._id = json._id;
+      data._state = json._state;
       this.afterSave.next( data );
       this.datasetsChanged.next( {type: UpdateType.Update, data: [data]} );
     }, err => this.errorService.handle( err ) );
   }
 
   delete(ids: string[]): any {
-    const response = this.http.delete( this.configuration.backendUrl + 'datasets/' + ids )
+    const response = this.http.delete( this.configuration.backendUrl + 'datasets/' + ids, { responseType: 'text'} )
       .catch( err => this.errorService.handle( err ) );
 
     response.subscribe( res => {
@@ -141,9 +136,8 @@ export class StorageService {
   }
 
   revert(id: string): Observable<any> {
-    console.debug( 'REVERTING', id );
     return this.http.put( this.configuration.backendUrl + 'datasets/' + id + '?revert=true', {} )
-      .do( (res: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: [res.json()]} ) )
+      .do( (json: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: [json]} ) )
       .catch( err => this.errorService.handle( err ) );
 
     // return response.subscribe(res => {
@@ -154,7 +148,6 @@ export class StorageService {
 
   getPathToDataset(id: string): Observable<string[]> {
     return this.http.get( this.configuration.backendUrl + 'datasets/' + id + '/path' )
-      .map( resp => resp.json() )
       .catch( err => this.errorService.handle( err ) );
   }
 

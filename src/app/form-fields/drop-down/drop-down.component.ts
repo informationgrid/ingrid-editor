@@ -23,6 +23,7 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
 
   // The internal data model
   private _value: any = {};
+  selected: any;
 
   // Placeholders for the callbacks
   private _onTouchedCallback: () => void;
@@ -39,18 +40,9 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
     return this._value.value;
   }
 
-  handleChange(value) {
-    console.log('table changed', value);
-    let mappedValue = this.options.find(option => option.value === value);
-
-    // handle free values
-    if (!mappedValue) {
-      mappedValue = {
-        id: '-1',
-        value: value
-      }
-    }
-    this._onChangeCallback(mappedValue);
+  handleChange(event) {
+    console.log('drop down changed', event);
+    this._onChangeCallback(event.value);
   }
 
   writeValue(optionValue: any): void {
@@ -69,6 +61,7 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
     } else {
       this._value = {};
     }
+    this.selected = this._value;
   }
 
   registerOnChange(fn: any): void {

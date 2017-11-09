@@ -1,12 +1,12 @@
 <!-- Toolbar -->
 <form-toolbar></form-toolbar>
 
-<div class="notifyWrapper" [class.active]="error">
+<!--<div class="notifyWrapper" [class.active]="error">
     <div class="tn-box tn-box-color-1">
-        <p>An error occured: {{error}}</p>
+        <p>An error occured: {{error | json}}</p>
         <div class="tn-progress"></div>
     </div>
-</div>
+</div>-->
 
 <div class="tabs-left menu">
     <ul class="nav nav-tabs flex-column">
@@ -47,8 +47,8 @@
         <div class="tabs-left">
             <div class="tab-content">
                 <div class="tab-pane" [class.active]="sideTab === 'tree'">
-                    <tree (activate)="handleLoad($event)"
-                          (selected)="handleSelection($event)"></tree>
+                    <ige-tree (activate)="handleLoad($event)"
+                          (selected)="handleSelection($event)"></ige-tree>
                 </div>
                 <div class="tab-pane" [class.active]="sideTab === 'search'">
                     <browser (onSelected)="load($event.id)"></browser>
@@ -157,15 +157,13 @@
                                     (onAddSection)="addSection($event)"></ige-main-form-tabs>
                 <!--</div>-->
             </div>
-            <div *ngIf="debugEnabled" class="card-body text-muted">
+            <div *ngIf="debugEnabled" class="card-body text-muted" [style.flex]="0">
                 <strong>Form contains the following values</strong><br>{{form.value | json}}
                 <!--<p>Form is valid: {{form.valid}}</p>-->
             </div>
 
         </form>
     </split-area>
-
-    <ng2-toasty [position]="'bottom-center'"></ng2-toasty>
 
 </split>
 

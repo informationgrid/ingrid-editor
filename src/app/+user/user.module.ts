@@ -7,10 +7,9 @@ import {FormsModule} from '@angular/forms';
 import {RoleService} from './role.service';
 import {RoleComponent} from './role.component';
 import {SharedModule} from '../shared.module';
-import {MultiselectDropdownModule} from 'angular-2-dropdown-multiselect';
 
 @NgModule({
-  imports: [FormsModule, CommonModule, MultiselectDropdownModule, routing, SharedModule],
+  imports: [FormsModule, CommonModule, routing, SharedModule],
   declarations: [UserComponent, RoleComponent],
   providers: [UserService, RoleService],
   exports: []

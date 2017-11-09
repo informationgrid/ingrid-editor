@@ -9,6 +9,7 @@ export interface KeycloakAuthData {
   clientId: string;
   authServerUrl: string;
   token?: string;
+  tokenParsed?: any;
   resourceAccess: any;
   init(options: any): any;
   updateToken(n: number): any;
@@ -49,10 +50,15 @@ export class KeycloakService {
             + document.baseURI;
           resolve();
         } )
-        .error( () => {
-          reject();
+        .error( (e) => {
+          console.error('Error initializing Keycloak', e);
+          reject(e);
         } );
     } );
+  }
+
+  isInitialized(): boolean {
+    return KeycloakService.auth.authz !== undefined;
   }
 
   logout() {

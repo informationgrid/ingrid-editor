@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { ConfigService, Configuration } from '../config/config.service';
 import { ErrorService } from '../services/error.service';
 import { Role } from '../models/user-role';
-import { Http } from '@angular/http';
 import { ApiService } from '../services/ApiService';
 import { Observable } from 'rxjs/Observable';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class RoleService {
@@ -12,21 +12,19 @@ export class RoleService {
   public activeUserRoles: Role[];
   private configuration: Configuration;
 
-  constructor(private http: Http, private configService: ConfigService, private apiService: ApiService,
+  constructor(private http: HttpClient, private configService: ConfigService, private apiService: ApiService,
               private errorService: ErrorService) {
     this.configuration = configService.getConfiguration();
   }
 
   getRoles(): Observable<Role[]> {
     return this.apiService.getGroups();
-    // return this.http.get( this.configService.backendUrl + 'roles' )
-    //   .map( resp => this.prepareRoles(resp.json()));
   }
 
   getRoleMapping(id: string): Observable<Role> {
     // return this.apiService.getGroup( id );
     return this.http.get(this.configuration.backendUrl + 'roles/' + id)
-      .map(resp => this.prepareRoles([resp.json()])[0])
+      .map(json => this.prepareRoles([json])[0])
       .catch(err => this.errorService.handle(err));
   }
 
@@ -47,13 +45,11 @@ export class RoleService {
   saveRole(role: Role): Observable<any> {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
     return this.http.put(this.configuration.backendUrl + 'roles/' + role.name, role)
-    // .map( resp => resp.json() )
       .catch(err => this.errorService.handle(err));
   }
 
   createRole(role: Role): Observable<any> {
     return this.http.post(this.configuration.backendUrl + 'roles/' + role.name, role)
-    // .map( resp => resp.json() )
       .catch(err => this.errorService.handle(err));
   }
 

@@ -1,14 +1,16 @@
-import {Directive, ElementRef, Input, Renderer} from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 
 @Directive( {selector: '[focus]'} )
-export class FocusDirective {
+export class FocusDirective implements OnChanges {
 
   @Input() focus: boolean;
 
-  constructor(private el: ElementRef, renderer: Renderer) {}
+  constructor(private el: ElementRef) {}
 
   // TODO: find better way since too many watchers are active, try to put directive only on needed elements without parameter here
-  protected ngOnChanges() {
-    if (this.focus === true) this.el.nativeElement.focus();
+  public ngOnChanges() {
+    if (this.focus === true) {
+      this.el.nativeElement.focus();
+    }
   }
 }

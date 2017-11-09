@@ -8,39 +8,32 @@ import { DynamicFormComponent } from './dynamic-form.component';
 import { LeafletComponent } from './leaflet/leaflet.component';
 import { routing } from './ige-form.routing';
 import { BrowserComponent } from './sidebars/browser/browser.component';
-import { OpenTableComponent } from './opentable/opentable.component';
 import { PartialGenerator } from './partialGenerator/partial-generator.component';
-// import { TreeModule } from 'angular-tree-component';
 import { LinkDatasetComponent } from './linkDataset/link-dataset.component';
-import { FocusDirective } from '../directives/focus.directive';
 import { SharedModule } from '../shared.module';
 import { CodelistService } from './services/codelist.service';
 import { NominatimService } from './leaflet/nominatim.service';
 import { MainFormComponent } from './main-form/main-form.component';
-import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component';
-import { OpentableModule } from './opentable/opentable.module';
-import { DropDownComponent } from './drop-down/drop-down.component';
-import { WizardModule } from 'ng2-archwizard/dist';
-import {IgeWizardModule} from '../wizard/wizard.module';
-import {ScrollToDirective} from '../directives/scrollTo.directive';
-import {FileUploadModule} from 'ng2-file-upload'
-import {BsDatepickerModule, DatepickerModule, PopoverModule} from 'ngx-bootstrap';
+import { IgeWizardModule } from '../wizard/wizard.module';
+import { ScrollToDirective } from '../directives/scrollTo.directive';
+import { FileUploadModule } from 'ng2-file-upload'
+import { PopoverModule } from 'ngx-bootstrap';
 import {
-  ButtonModule, CalendarModule, CheckboxModule, DropdownModule, MenubarModule, RadioButtonModule,
+  ButtonModule, GrowlModule, MenubarModule,
   ToolbarModule
 } from 'primeng/primeng';
 
 @NgModule({
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), Ng2SmartTableModule, FileUploadModule,
-    PopoverModule, WizardModule, IgeWizardModule, BsDatepickerModule,
-    CheckboxModule, RadioButtonModule, DropdownModule, MenubarModule, ToolbarModule, ButtonModule, CalendarModule,
-    SharedModule, routing, OpentableModule],
+    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), FileUploadModule,
+    PopoverModule, IgeWizardModule, SharedModule,
+    MenubarModule, ToolbarModule, ButtonModule, GrowlModule,
+    SharedModule, routing],
   declarations: [
-    FormToolbarComponent, DynamicFieldComponent, OpenTableComponent, PartialGenerator,
+    FormToolbarComponent, DynamicFieldComponent, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
-    ScrollToDirective, MainFormComponent, MainFormTabsComponent, DropDownComponent],
+    ScrollToDirective, MainFormComponent, MainFormTabsComponent],
   providers: [CodelistService, NominatimService],
   exports: [ToastyModule, FormsModule, ScrollToDirective, MainFormTabsComponent]
 })

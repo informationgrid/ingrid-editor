@@ -1,25 +1,27 @@
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import {FormArray, FormGroup} from '@angular/forms';
-import {FormControlService} from '../services/form-control.service';
-import {Container, FieldBase} from './controls';
-import {BehaviourService} from '../+behaviours/behaviour.service';
-import {FormularService} from '../services/formular/formular.service';
-import {Behaviour} from '../+behaviours/behaviours';
-import {FormToolbarService} from './toolbar/form-toolbar.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {StorageService} from '../services/storage/storage.service';
-import {ModalService} from '../services/modal/modal.service';
-import {PartialGeneratorField} from './controls/field-partial-generator';
-import {UpdateType} from '../models/update-type.enum';
-import {ErrorService} from '../services/error.service';
-import {ToastOptions, ToastyConfig, ToastyService} from 'ng2-toasty';
-import {Role} from '../models/user-role';
-import {SelectedDocument} from './sidebars/selected-document.model';
-import {KeycloakService} from '../keycloak/keycloak.service';
-import {RoleService} from '../+user/role.service';
+import { FormArray, FormGroup } from '@angular/forms';
+import { FormControlService } from '../services/form-control.service';
+import { Container, FieldBase } from './controls';
+import { BehaviourService } from '../+behaviours/behaviour.service';
+import { FormularService } from '../services/formular/formular.service';
+import { Behaviour } from '../+behaviours/behaviours';
+import { FormToolbarService } from './toolbar/form-toolbar.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { StorageService } from '../services/storage/storage.service';
+import { ModalService } from '../services/modal/modal.service';
+import { PartialGeneratorField } from './controls/field-partial-generator';
+import { UpdateType } from '../models/update-type.enum';
+import { ErrorService } from '../services/error.service';
+import { ToastyConfig } from 'ng2-toasty';
+import { Role } from '../models/user-role';
+import { SelectedDocument } from './sidebars/selected-document.model';
+import { KeycloakService } from '../keycloak/keycloak.service';
+import { RoleService } from '../+user/role.service';
 import { Subscription } from 'rxjs/Subscription';
-import {WizardService} from '../wizard/wizard.service';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import { WizardService } from '../wizard/wizard.service';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MessageService } from 'primeng/components/common/messageservice';
 
 interface FormData extends Object {
   _id?: string;
@@ -84,7 +86,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
   pendingId: string;
 
-  constructor( private toastyService: ToastyService, private toastyConfig: ToastyConfig,
+  constructor( private messageService: MessageService, private toastyConfig: ToastyConfig,
               private modal2Service: BsModalService,
               private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
@@ -164,7 +166,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // load dataset when one was updated
       this.storageService.datasetsChanged$.subscribe((msg) => {
-        if (msg.type === UpdateType.Update && msg.data.length === 1) {
+        if (msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
           this.load( msg.data[0]._id );
         }
       })
@@ -381,14 +383,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.storageService.saveData(data, false).then(res => {
       this.data._id = res._id;
-      this.showToast();
-    }, (err) => {
-      this.error = err;
-      setTimeout(() => this.error = false, 5000);
+      // this.messageService.show( 'Dokument wurde gespeichert' );
+      this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});
+    }, (err: HttpErrorResponse) => {
+      this.errorService.handleOwn(err.message, err.error)
+      // setTimeout(() => this.error = false, 5000);
     });
   }
 
-  showToast() {
+/*  showToast() {
         // Or create the instance of ToastOptions
     const toastOptions: ToastOptions = {
             title: 'Dokument wurde gespeichert',
@@ -398,7 +401,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         };
         // Add see all possible types in one shot
         this.toastyService.info(toastOptions);
-    }
+    }*/
 
   createFormWithData(data: any) {
     this.form = this.qcs.toFormGroup(this.fields, data);
