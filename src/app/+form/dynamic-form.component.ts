@@ -166,7 +166,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // load dataset when one was updated
       this.storageService.datasetsChanged$.subscribe((msg) => {
-        if (msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
+        if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
           this.load( msg.data[0]._id );
         }
       })

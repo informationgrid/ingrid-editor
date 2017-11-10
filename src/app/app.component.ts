@@ -4,8 +4,6 @@ import {BehaviourService} from './+behaviours/behaviour.service';
 import {RoleService} from './+user/role.service';
 import {KeycloakService} from './keycloak/keycloak.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
-import { defineLocale } from 'ngx-bootstrap/bs-moment';
-import { de } from 'ngx-bootstrap/locale';
 import { MessageService } from 'primeng/components/common/messageservice';
 
 @Component( {
@@ -73,8 +71,6 @@ export class AppComponent implements OnInit {
   constructor(private bsModalService: BsModalService, private behaviourService: BehaviourService, private modalService: ModalService,
               private messageService: MessageService,
               private roleService: RoleService) {
-
-    defineLocale('de', de);
 
     // TODO: make more error info collapsible
     this.modalService.errorDialog$.subscribe( (content: any) => {

@@ -9,13 +9,8 @@
             <div class="row" style="flex: 1;">
                 <div class="col">
 
-                    <accordion [closeOthers]="true">
-                        <accordion-group [isOpen]="true">
-                            <div accordion-heading>
-                                <span class='badge badge-pill badge-info'>1</span>
-                                <span>Datensatz auswählen</span>
-                            </div>
-
+                    <p-accordion>
+                        <p-accordionTab [selected]="true" header="1. Datensatz auswählen">
                             <p-fileUpload name="importFiles[]"
                                           [url]="uploadUrl"
                                           multiple="multiple"
@@ -33,26 +28,16 @@
                                     <p-fileUpload mode="basic" name="demo[]" url="./upload.php" accept="image/*" maxFileSize="1000000"></p-fileUpload>
                                 </label>
                             </div>
-                        </accordion-group>
-                        <accordion-group>
-                            <div accordion-heading>
-                                <span class='badge badge-pill badge-info'>2</span>
-                                <span>Analyse</span>
-                            </div>
+                        </p-accordionTab>
+                        <p-accordionTab header="2. Analyse">
                             <div class="text-center padding">
                                 <!--<span class="text-muted">{{fileInput.value}}</span>-->
                                 <!--<button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Start Import</button>-->
                             </div>
-                        </accordion-group>
-                        <accordion-group [isDisabled]="true">
-                            <div accordion-heading>
-                                <div>
-                                    <span class='badge badge-pill badge-info'>3</span>
-                                    <span>Start</span>
-                                </div>
-                            </div>
-                        </accordion-group>
-                    </accordion>
+                        </p-accordionTab>
+                        <p-accordionTab disabled="true" header="Start">
+                        </p-accordionTab>
+                    </p-accordion>
 
                 </div>
 

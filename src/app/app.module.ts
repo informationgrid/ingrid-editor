@@ -31,7 +31,7 @@ import { IsoServiceProfile } from './services/formular/iso/iso-service.profile';
 import { UVPProfile } from './services/formular/uvp/uvp.profile';
 import { AddressProfile } from './services/formular/address/address.profile';
 import { FolderProfile } from './services/formular/folder/folder.profile';
-import { AccordionModule, ModalModule, PopoverModule } from 'ngx-bootstrap';
+import { ModalModule, PopoverModule } from 'ngx-bootstrap';
 import { IsoDataPoolingProfile } from './services/formular/iso/iso-data-pooling.profile';
 import { IsoDatasetProfile } from './services/formular/iso/iso-dataset.profile';
 import { IsoInformationSystemProfile } from './services/formular/iso/iso-information-system.profile';
@@ -73,7 +73,7 @@ export function KeycloakLoader(configService: ConfigService) {
     // angular
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
     // ngx-bootstrap
-    PopoverModule.forRoot(), AccordionModule.forRoot(),
+    PopoverModule.forRoot(),
     // PrimeNG
     TreeModule, GrowlModule,
     // IGE-Modules

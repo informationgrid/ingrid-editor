@@ -50,10 +50,6 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   copiedNodes: TreeNode[] = [];
   cutNodes: TreeNode[] = [];
 
-  /*@ViewChild( TreeComponent ) private tree: TreeComponent;
-
-*/
-
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
               private formularService: FormularService, private errorService: ErrorService,
               private toolbarService: FormToolbarService) {
@@ -72,7 +68,6 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
           this.subscriptions.push(this.storageService.getPathToDataset(selectedId).subscribe(path => {
             console.log('path: ' + path);
             this.expandToPath(this.nodes, path.reverse());
-            this.selectedNodes = this.nodes.filter(n => n.data.id === path[0]);
             this.open(null);
           }));
         }
@@ -228,21 +223,6 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
       // select node
       this.selectedNodes = children.filter(n => n.data.id === id );
     }
-
-    // only expand if there're more nodes to be expanded
-    // if (path.length > 0) {
-    //   return node.expand().then( () => {
-    //     return this.expandToPath( path );
-    //   } );
-    // } else {
-    //   // mark the last node as active
-    //   if (node !== undefined) {
-    //     setTimeout( () => this.tree.treeModel.setActiveNode( node, true ), 100 );
-    //   } else {
-    //     console.warn( 'Could not find node to set active: ' + id );
-    //   }
-    //   return Promise.resolve();
-    // }
   }
 
   loadNode(event): Promise<any> {
