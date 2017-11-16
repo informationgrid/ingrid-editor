@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mapstruct.factory.Mappers;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,8 @@ import de.ingrid.igeserver.services.MapperService;
 
 @Service
 public class DBUtils {
+    
+    private static Logger log = LogManager.getLogger( DBUtils.class );
 
     @Autowired
     private OrientDbService dbService;
@@ -27,6 +30,11 @@ public class DBUtils {
         // TODO: use cache!
 
         List<String> list = this.dbService.find( "users", "info", query, "catalogId" );
+        
+        if (list.size() == 0) {
+            String msg = "The user does not seem to be assigned to any database: " + userId;
+            log.error( msg );
+        }
 
         return list.size() == 0 ? null : list.get( 0 );
     }

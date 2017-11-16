@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.7.RELEASE</version>
+    <version>1.5.8.RELEASE</version>
   </parent>
 
 <!--   <dependencyManagement>
@@ -53,6 +53,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -69,11 +75,15 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- <dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <optional>true</optional>
-    </dependency> -->
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+    </dependency>
     
     <dependency>
 	    <groupId>com.auth0</groupId>
@@ -116,6 +126,12 @@
 	  <groupId>de.ingrid</groupId>
 	  <artifactId>ingrid-codelist-service</artifactId>
 	  <version>4.0.4-SNAPSHOT</version>
+	  <exclusions>
+	    <exclusion>
+	      <groupId>log4j</groupId>
+	      <artifactId>log4j</artifactId>
+	    </exclusion>
+	  </exclusions>
 	</dependency>
 
     <dependency>
@@ -143,6 +159,10 @@
     	<artifactId>junit</artifactId>
     	<version>4.12</version>
     	<scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
     </dependency>
   </dependencies>
   

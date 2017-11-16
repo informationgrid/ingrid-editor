@@ -87,7 +87,7 @@ public interface DatasetsApi {
             @ApiResponse(code = 200, message = "Datasets found", response = Void.class) })
     @RequestMapping(value = "/datasets", produces = { "application/json" }, method = RequestMethod.GET)
     ResponseEntity<String> find(
-            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String fields,
+            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String[] fields,
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
             @ApiParam(value = "Get all children of a dataset. The parameter 'parentId' is also needed for this request.") @RequestParam(value = "children", required = false) Boolean children,
             @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId,

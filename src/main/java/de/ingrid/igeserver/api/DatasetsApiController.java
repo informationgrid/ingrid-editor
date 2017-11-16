@@ -1,11 +1,15 @@
 package de.ingrid.igeserver.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +38,8 @@ import io.swagger.annotations.ApiParam;
 
 @Controller
 public class DatasetsApiController implements DatasetsApi {
+    
+    private static Logger log = LogManager.getLogger( DatasetsApiController.class );
 
     private static final String COLLECTION = "Documents";
     
@@ -70,8 +76,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             return ResponseEntity.ok( jsonToService.toJsonString( mapDoc ) );
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error( "Error during creation of document", e );
             return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( e.getMessage() );
         }
 
@@ -107,9 +112,7 @@ public class DatasetsApiController implements DatasetsApi {
             return ResponseEntity.ok( jsonToService.toJsonString( mapDoc ) );
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-
+            log.error( "Error during updating of document", e );
             return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( e.getMessage() );
         }
 
@@ -134,6 +137,7 @@ public class DatasetsApiController implements DatasetsApi {
             }
             return ResponseEntity.ok().build();
         } catch (Exception ex) {
+            log.error( "Error during delete", ex );
             return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( "One or more documents could not be deleted: " + ex.getMessage() );
         }
     }
@@ -148,6 +152,7 @@ public class DatasetsApiController implements DatasetsApi {
             return new ResponseEntity<Void>( HttpStatus.OK );
 
         } catch (Exception ex) {
+            log.error( "Error during copy", ex );
             return new ResponseEntity<Void>( HttpStatus.INTERNAL_SERVER_ERROR );
         }
     }
@@ -160,6 +165,7 @@ public class DatasetsApiController implements DatasetsApi {
             return new ResponseEntity<Void>( HttpStatus.OK );
 
         } catch (Exception ex) {
+            log.error( "Error during move", ex );
             return new ResponseEntity<Void>( HttpStatus.INTERNAL_SERVER_ERROR );
         }
     }
@@ -206,7 +212,7 @@ public class DatasetsApiController implements DatasetsApi {
     }
 
     public ResponseEntity<String> find(
-            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String fields,
+            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String[] fields,
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
             @ApiParam(value = "Get all children of a dataset. The parameter 'parentId' is also needed for this request.") @RequestParam(value = "children", defaultValue = "false", required = false) Boolean children,
             @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId,
@@ -220,17 +226,21 @@ public class DatasetsApiController implements DatasetsApi {
             if (children) {
                 docs = this.dbService.getChildDocuments( parentId );
             } else {
-                docs = this.dbService.find( "igedb", COLLECTION, null, null );
+                Map<String, String> queryMap = new HashMap<String, String>();
+                for (String field : fields) {
+                    queryMap.put( field, query );
+                }
+                docs = this.dbService.find( "igedb", COLLECTION, queryMap, (String[])null ); // fields );
             }
 
             for (String doc : docs) {
-                String[] splitFields = fields == null ? null : fields.split( "," );
-                mappedDocs.add( jsonToService.toJsonString( this.jsonToService.mapDocument( doc, splitFields ) ) );
+                mappedDocs.add( jsonToService.toJsonString( this.jsonToService.mapDocument( doc, fields ) ) );
             }
 
             return ResponseEntity.ok( "[" + String.join( ",", mappedDocs ) + "]" );
 
         } catch (Exception e) {
+            log.error( "Error during search", e );
             return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( e.getMessage() );
         }
 
@@ -255,8 +265,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             return ResponseEntity.ok( jsonToService.toJsonString( mapDoc ) );
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error( "Error during getting document by ID", e );
             return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( e.getMessage() );
         }
 

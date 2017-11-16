@@ -2,13 +2,14 @@ package de.ingrid.igeserver;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
@@ -155,9 +156,24 @@ public class OrientDbService {
     public List<String> find(String dbName, String classType, Map<String, String> query, String... fields) {
         ODatabaseDocumentTx db = openDB(dbName);
 
-        OSQLSynchQuery<ODocument> oQuery = new OSQLSynchQuery<ODocument>(
-                "SELECT * FROM " + classType );
-
+        OSQLSynchQuery<ODocument> oQuery;
+        if (query == null) {
+            oQuery = new OSQLSynchQuery<ODocument>("SELECT * FROM " + classType );
+        } else {
+            // select * from `Documents` where (draft.firstName like "%er%" or draft.lastName like "%es%")
+            // TODO: try to use lucene index!
+            List<String> where = new ArrayList<String>();
+            for (String key : query.keySet()) {
+                String value = query.get( key );
+                if (value == null) {
+                    where.add( key + ".toLowerCase() IS NULL" );
+                } else {
+                    where.add( key + ".toLowerCase() like '%"+ value.toLowerCase() +"%'" );
+                }
+            }
+            oQuery = new OSQLSynchQuery<ODocument>("SELECT * FROM " + classType + " WHERE (" + String.join( " or ", where ) + ")");
+        }
+        
         List<String> list = new ArrayList<String>();
         List<ODocument> docs = db.query( oQuery );
         for (ODocument doc : docs) {
@@ -166,7 +182,8 @@ public class OrientDbService {
             } else {
                 // TODO: fix fields!
                 String field = fields[0];
-                list.add( doc.field( field ) );
+                Object docField = doc.field( field );
+                list.add( docField instanceof Integer ? String.valueOf( docField ) : (String) docField );
             }
         }
 
@@ -279,10 +296,27 @@ public class OrientDbService {
         // get document first to get the identifier
         ODocument doc = getDocById( db, classType, id );
         
+        String parent = doc.field( "_parent", String.class );
+        
         // delete record by their identifier
         db.delete( doc.getIdentity() );
         
         closeDB( db );
+        
+        
+        // update parent if it still has any children
+        Map<String, String> query = new HashMap<String, String>();
+        query.put( "_parent", parent );
+        List<String> childDocs = find( "igedb", classType, query, "_id" );
+        
+        if (childDocs.size() == 0) {
+            db = openDB("igedb");
+            ODocument parentDoc = getDocById( db, classType, parent );
+            parentDoc.field( "_hasChildren", false );
+            parentDoc.save();
+            closeDB( db );
+        }
+        
     }
 
 
