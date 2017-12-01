@@ -5,6 +5,8 @@
  */
 package de.ingrid.igeserver.api;
 
+import java.security.Principal;
+
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -29,7 +31,7 @@ public interface BehavioursApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Behaviours are returned.", response = Void.class) })
     @RequestMapping(value = "/behaviours", produces = { "application/json" }, method = RequestMethod.GET)
-    ResponseEntity<String> getBehaviours();
+    ResponseEntity<String> getBehaviours(Principal principal);
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Behaviour" })
     @ApiResponses(value = {

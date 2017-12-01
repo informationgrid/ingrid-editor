@@ -69,6 +69,7 @@ public class DatasetsApiController implements DatasetsApi {
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish) {
 
         try {
+            // TODO: use Principal with Spring Security (see Behaviours::get())
             String userId = getUserIdFromHeader( auth );
             String mapDocument = this.jsonFromService.mapDocument( data, publish, userId );
             String result = this.dbService.addDocTo( COLLECTION, mapDocument );
@@ -118,6 +119,12 @@ public class DatasetsApiController implements DatasetsApi {
 
     }
 
+    /**
+     * Don't use this function since Spring Security offers Principal injection. See Behaviours::get()
+     * @param auth
+     * @return
+     */
+    @Deprecated
     private String getUserIdFromHeader(String auth) {
         String userId = null;
         try {

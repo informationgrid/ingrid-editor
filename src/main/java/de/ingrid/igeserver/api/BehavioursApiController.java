@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api;
 
+import java.security.Principal;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -25,7 +26,9 @@ public class BehavioursApiController implements BehavioursApi {
     @Autowired
     private JsonToDBService jsonService;
 
-    public ResponseEntity<String> getBehaviours() {
+    public ResponseEntity<String> getBehaviours(Principal principal) {
+        System.out.println(principal == null ? "principal is null" : principal.getName());
+        
         try {
             List<String> behaviours = this.dbService.getAllFrom( "Behaviours" );
             
