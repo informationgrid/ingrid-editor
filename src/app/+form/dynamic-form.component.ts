@@ -12,7 +12,6 @@ import { ModalService } from '../services/modal/modal.service';
 import { PartialGeneratorField } from './controls/field-partial-generator';
 import { UpdateType } from '../models/update-type.enum';
 import { ErrorService } from '../services/error.service';
-import { ToastyConfig } from 'ng2-toasty';
 import { Role } from '../models/user-role';
 import { SelectedDocument } from './sidebars/selected-document.model';
 import { KeycloakService } from '../keycloak/keycloak.service';
@@ -86,7 +85,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
   pendingId: string;
 
-  constructor( private messageService: MessageService, private toastyConfig: ToastyConfig,
+  constructor( private messageService: MessageService,
               private modal2Service: BsModalService,
               private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
@@ -125,8 +124,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
       this.route.params.subscribe(params => this.load( params['id'] ) );
     });
-
-    this.toastyConfig.theme = 'bootstrap';
   }
 
   ngOnDestroy() {

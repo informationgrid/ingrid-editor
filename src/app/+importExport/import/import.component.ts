@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FileUploader } from 'ng2-file-upload';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ImportExportService } from '../import-export-service';
 import { ConfigService } from '../../config/config.service';

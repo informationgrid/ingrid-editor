@@ -6,6 +6,16 @@ body {
   padding-top: 56px;
 }
 
+.invalid-feedback {
+  position: absolute;
+  font-size: 75%;
+  margin-top: 0;
+}
+
+.ng-invalid .invalid-feedback {
+  /*display: block;*/
+}
+
 .ui-growl {
   top: initial;
   bottom: 10px;

@@ -1,4 +1,3 @@
-import { ToastyModule } from 'ng2-toasty';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DynamicFieldComponent } from './dynamic-field.component';
@@ -17,7 +16,6 @@ import { MainFormComponent } from './main-form/main-form.component';
 import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component';
 import { IgeWizardModule } from '../wizard/wizard.module';
 import { ScrollToDirective } from '../directives/scrollTo.directive';
-import { FileUploadModule } from 'ng2-file-upload'
 import { PopoverModule } from 'ngx-bootstrap';
 import {
   ButtonModule, GrowlModule, MenubarModule,
@@ -26,7 +24,7 @@ import {
 
 @NgModule({
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule, ToastyModule.forRoot(), FileUploadModule,
+    CommonModule, FormsModule, ReactiveFormsModule,
     PopoverModule, IgeWizardModule, SharedModule,
     MenubarModule, ToolbarModule, ButtonModule, GrowlModule,
     SharedModule, routing],
@@ -35,7 +33,7 @@ import {
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
     ScrollToDirective, MainFormComponent, MainFormTabsComponent],
   providers: [CodelistService, NominatimService],
-  exports: [ToastyModule, FormsModule, ScrollToDirective, MainFormTabsComponent]
+  exports: [FormsModule, ScrollToDirective, MainFormTabsComponent]
 })
 export class IgeFormModule {
 }
