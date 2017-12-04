@@ -1,7 +1,6 @@
 import {Component, Input, EventEmitter, Output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {FieldBase} from './controls';
-import {BsDatepickerConfig} from 'ngx-bootstrap/datepicker';
 
 
 @Component({
@@ -21,10 +20,10 @@ export class DynamicFieldComponent {
 
   dateDisabled = false;
 
-  private bsConfig: Partial<BsDatepickerConfig>;
+  // private bsConfig: Partial<BsDatepickerConfig>;
 
   constructor() {
-    this.bsConfig = Object.assign({}, {locale: 'de'});
+    // this.bsConfig = Object.assign({}, {locale: 'de'});
   }
 
   /*get isValid() {

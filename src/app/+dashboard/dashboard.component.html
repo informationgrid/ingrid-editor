@@ -1,12 +1,9 @@
 <div class="container-fluid has-navbar">
 
     <div class="chart pull-left">
-        <canvas baseChart
-                [data]="pieChartData"
-                [labels]="pieChartLabels"
-                [chartType]="pieChartType"
-                (chartHover)="chartHovered($event)"
-                (chartClick)="chartClicked($event)"></canvas>
+        <p-chart type="pie"
+                 [data]="data"
+                 (onDataSelect)="chartClicked($event)"></p-chart>
     </div>
 
     <div class="content">

@@ -1,0 +1,7 @@
+<p-calendar [style.width]="'100%'"
+            [(ngModel)]="value"
+            [monthNavigator]="true"
+            [yearNavigator]="true"
+            [showIcon]="true"
+            (onSelect)="handleChange($event)"
+            dateFormat="dd.mm.yy"></p-calendar>

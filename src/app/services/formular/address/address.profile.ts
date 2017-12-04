@@ -1,12 +1,12 @@
-import { TextboxField } from "../../../+form/controls/index";
-import { OpenTableField } from "../../../+form/controls/field-opentable";
-import { Container } from "../../../+form/controls/container";
-import { DropdownField } from "../../../+form/controls/field-dropdown";
-import { Profile } from "../profile";
+import { TextboxField } from '../../../+form/controls/index';
+import { OpenTableField } from '../../../+form/controls/field-opentable';
+import { Container } from '../../../+form/controls/container';
+import { DropdownField } from '../../../+form/controls/field-dropdown';
+import { Profile } from '../profile';
 import { CodelistService } from '../../../+form/services/codelist.service';
 import { ModalService } from '../../modal/modal.service';
 import { TextareaField } from '../../../+form/controls/field-textarea';
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AddressProfile implements Profile {
@@ -118,7 +118,7 @@ export class AddressProfile implements Profile {
     this.codelistService.byIds(['6200', '6400']).then(codelists => {
       this.countrySelect.options = codelists[0];
       this.adminAreaSelect.options = codelists[1];
-    }).catch( err => modalService.showError(err));
+    }).catch(err => modalService.showError(err));
   }
 
   getTitle(doc: any) {

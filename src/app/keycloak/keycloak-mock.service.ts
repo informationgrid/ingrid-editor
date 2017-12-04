@@ -1,7 +1,5 @@
-import {Injectable} from '@angular/core';
-
-import {environment} from '../../environments/environment';
-import {AuthInfo, KeycloakAuthData, KeycloakService} from './keycloak.service';
+import { Injectable } from '@angular/core';
+import { AuthInfo, KeycloakAuthData, KeycloakService } from './keycloak.service';
 import { Configuration } from '../config/config.service';
 
 // access token with a very long expiry date
@@ -33,6 +31,10 @@ export class KeycloakMockService {
       realm: 'InGrid',
       clientId: 'ige-ng',
       authServerUrl: '',
+      tokenParsed: {
+        auth_time: 1499186118,
+        exp: 1585499718
+      },
       resourceAccess: {
         'ige-ng': {
           roles: []
@@ -42,7 +44,7 @@ export class KeycloakMockService {
       updateToken: () => {}
     };
 
-    return new Promise( (resolve, reject) => {
+    return new Promise( resolve => {
       KeycloakService.auth.loggedIn = true;
       KeycloakService.auth.authz = keycloakAuth;
       // will be initialized later
@@ -60,7 +62,7 @@ export class KeycloakMockService {
     } );
   }
 
-  logout() {
+  static logout() {
     console.log( '*** LOGOUT' );
     KeycloakService.auth.loggedIn = false;
     KeycloakService.auth.authz = null;

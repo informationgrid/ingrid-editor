@@ -1,31 +1,32 @@
 import { Component, ElementRef, forwardRef, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { FieldBase } from '../controls';
+import { FieldBase } from '../../+form/controls/index';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Observable } from 'rxjs/Observable';
-import { DropdownField } from '../controls/field-dropdown';
+import { DropdownField } from '../../+form/controls/field-dropdown';
 import { SelectRenderComponent } from './renderComponents/select.render.component';
 import { ComboEditorComponent } from './editorComponents/combo.editor.component';
 import { Ng2SmartTableComponent } from 'ng2-smart-table/ng2-smart-table.component';
 import { Row } from 'ng2-smart-table/lib/data-set/row';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { TitleRenderComponent } from './renderComponents/title.render.component';
+import { merge } from 'rxjs/observable/merge';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => OpenTableComponent),
+  useExisting: forwardRef(() => DataGridComponent),
   multi: true
 };
 
 
 // more info here: http://almerosteyn.com/2016/04/linkup-custom-control-to-ngcontrol-ngmodel
 @Component({
-  selector: 'ige-open-table',
-  templateUrl: './opentable.component.html',
-  styleUrls: ['./opentable.component.css'],
+  selector: 'ige-data-grid',
+  templateUrl: './data-grid.component.html',
+  styleUrls: ['./data-grid.component.css'],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 })
-export class OpenTableComponent implements ControlValueAccessor, OnInit {
+export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   @Input() columns: FieldBase<string>[];
 
@@ -141,7 +142,7 @@ export class OpenTableComponent implements ControlValueAccessor, OnInit {
     this.source = new LocalDataSource(this._value);
 
     // register on data store
-    Observable.merge(
+    merge(
       this.source.onAdded(),
       this.source.onRemoved(),
       this.source.onUpdated()

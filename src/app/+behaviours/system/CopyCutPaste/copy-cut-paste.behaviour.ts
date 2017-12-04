@@ -4,7 +4,6 @@ import { FormularService } from '../../../services/formular/formular.service';
 import { StorageService } from '../../../services/storage/storage.service';
 import { Plugin } from '../../plugin';
 import { FormToolbarService, Separator, ToolbarItem } from '../../../+form/toolbar/form-toolbar.service';
-import { ToastService } from '../../../services/toast.service';
 import { UpdateType } from '../../../models/update-type.enum';
 import { ModalService } from '../../../services/modal/modal.service';
 import { PasteDialogComponent } from './paste-dialog.component';
@@ -29,10 +28,10 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   constructor(private formService: FormularService,
+              // private messageService: MessageService,
               private toolbarService: FormToolbarService,
               private storageService: StorageService,
               private modalService: ModalService,
-              private toastService: ToastService,
               private _cr: ComponentFactoryResolver) {
     super();
   }
@@ -49,7 +48,9 @@ export class CopyCutPastePlugin extends Plugin {
 
     this.subscription = this.storageService.afterLoadAndSet$.subscribe((data) => {
 
-      if (data === null) return;
+      if (data === null) {
+        return;
+      }
 
       this.toolbarService.setButtonState('toolBtnCopy', true);
       this.toolbarService.setButtonState('toolBtnCut', true);
@@ -136,7 +137,7 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private handleAfterPaste() {
-    this.toastService.show('Datensatz eingefügt');
+    // TODO: this.messageService.add({severity: 'success', summary: 'Datensatz eingefügt'});
   }
 
   unregister() {

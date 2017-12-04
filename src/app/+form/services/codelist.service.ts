@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ConfigService, Configuration } from '../../config/config.service';
-import {ErrorService} from '../../services/error.service';
-import {Http} from '@angular/http';
+import { ErrorService } from '../../services/error.service';
+import { HttpClient } from '@angular/common/http';
 
 export interface Codelist {
   id: string;
@@ -25,7 +25,7 @@ export class CodelistService {
     return result[0][1];
   }
 
-  constructor(private http: Http, private configService: ConfigService, private errorService: ErrorService) {
+  constructor(private http: HttpClient, private configService: ConfigService, private errorService: ErrorService) {
     this.configuration = configService.getConfiguration();
   }
 
@@ -48,10 +48,10 @@ export class CodelistService {
           return this.errorService.handleOwn( 'Could not load codelist: ' + id, err.message );
         } )
         .subscribe( (data: any) => {
-          if (data.json() === null) {
+          if (data === null) {
             reject( 'Codelist could not be read: ' + id );
           } else {
-            this.codelists[id] = data.json();
+            this.codelists[id] = data;
             const entries = (<Codelist>this.codelists[id]).entries;
             if (entries) {
               resolve( this.prepareEntries( entries ) );

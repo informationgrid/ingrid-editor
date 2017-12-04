@@ -4,12 +4,13 @@ import {BehaviourService} from './+behaviours/behaviour.service';
 import {RoleService} from './+user/role.service';
 import {KeycloakService} from './keycloak/keycloak.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
-import { defineLocale } from 'ngx-bootstrap/bs-moment';
-import { de } from 'ngx-bootstrap/locale';
+import { MessageService } from 'primeng/components/common/messageservice';
 
 @Component( {
   selector: 'ige-root',
   template: `
+    <p-growl></p-growl>
+
     <div class="igeContainer">
       <!-- MENU -->
       <main-menu></main-menu>
@@ -53,7 +54,8 @@ import { de } from 'ngx-bootstrap/locale';
   styles: [`
     .igeContainer { height: 100%; overflow-x: hidden; }
     .modal-body { overflow: auto; }
-  `]
+  `],
+  providers: [MessageService]
 } )
 export class AppComponent implements OnInit {
 
@@ -67,9 +69,8 @@ export class AppComponent implements OnInit {
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
   constructor(private bsModalService: BsModalService, private behaviourService: BehaviourService, private modalService: ModalService,
+              private messageService: MessageService,
               private roleService: RoleService) {
-
-    defineLocale('de', de);
 
     // TODO: make more error info collapsible
     this.modalService.errorDialog$.subscribe( (content: any) => {

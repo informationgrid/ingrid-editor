@@ -1,27 +1,17 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { StorageService } from '../../../services/storage/storage.service';
-import { IActionMapping, ITreeOptions, TREE_ACTIONS, TreeComponent, TreeNode } from 'angular-tree-component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormularService } from '../../../services/formular/formular.service';
-import { UpdateType } from '../../../models/update-type.enum';
 import { ErrorService } from '../../../services/error.service';
 import { FormToolbarService } from '../../toolbar/form-toolbar.service';
 import { SelectedDocument } from '../selected-document.model';
-import { DocMainInfo } from '../../../models/update-dataset-info.model';
 import { Subscription } from 'rxjs/Subscription';
+import { TreeNode } from 'primeng/primeng';
+import { UpdateType } from '../../../models/update-type.enum';
+import { DocMainInfo } from '../../../models/update-dataset-info.model';
 
-const actionMapping: IActionMapping = {
-  mouse: {
-    click(tree, node, $event) {
-      $event.ctrlKey
-        ? TREE_ACTIONS.TOGGLE_SELECTED_MULTI( tree, node, $event )
-        : TREE_ACTIONS.SELECT( tree, node, $event )
-    }
-  }
-};
-
-@Component( {
-  selector: 'tree',
+@Component({
+  selector: 'ige-tree',
   templateUrl: './tree.component.html',
   styles: [`
     .clickable {
@@ -42,29 +32,23 @@ const actionMapping: IActionMapping = {
       z-index: 1000
     }
   `]
-} )
+})
 export class MetadataTreeComponent implements OnInit, OnDestroy {
 
-  @ViewChild( TreeComponent ) private tree: TreeComponent;
+  nodes: TreeNode[] = [];
+  flatNodes: TreeNode[] = [];
+
+  selectedNodes: TreeNode[];
+
 
   @Input() showFolderEditButton = true;
   @Output() selected = new EventEmitter<SelectedDocument[]>();
   @Output() activate = new EventEmitter<SelectedDocument[]>();
 
-  nodes: any[] = [];
+  subscriptions: Subscription[] = [];
 
   copiedNodes: TreeNode[] = [];
   cutNodes: TreeNode[] = [];
-
-  subscriptions: Subscription[] = [];
-
-  options: ITreeOptions = {
-    getChildren: (node: TreeNode) => {
-      console.debug( 'get children ...', node.id );
-      return this.query( node.id );
-    },
-    actionMapping
-  };
 
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
               private formularService: FormularService, private errorService: ErrorService,
@@ -72,28 +56,27 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.query( null ).then( () => {
-      const initialSet = this.route.params.subscribe( params => {
+    this.query(null, null).then(() => {
+      const initialSet = this.route.params.subscribe(params => {
         const selectedId = params['id'];
 
         // only let this function be called once, since we only need it during first visit of the page
-        setTimeout( () => initialSet.unsubscribe(), 0 );
+        setTimeout(() => initialSet.unsubscribe(), 0);
 
         if (selectedId) {
           // get path to node
-          this.subscriptions.push(
-            this.storageService.getPathToDataset( selectedId ).subscribe( path => {
-              console.debug( 'path: ' + path );
-              this.expandToPath( path.reverse() );
-            } )
-          );
+          this.subscriptions.push(this.storageService.getPathToDataset(selectedId).subscribe(path => {
+            console.log('path: ' + path);
+            this.expandToPath(this.nodes, path.reverse());
+            this.open(null);
+          }));
         }
-      } );
-    }, (err) => console.error( 'Error:', err ) );
+      });
+    }, (err) => console.error('Error:', err));
 
     this.subscriptions.push(
       this.storageService.datasetsChanged$.subscribe( (info) => {
-        console.debug( 'Tree: dataset changed event', info );
+        console.log( 'Tree: dataset changed event', info );
         // only update changes in the tree instead of reloading everything and recover previous state
         switch (info.type) {
           case UpdateType.New:
@@ -108,10 +91,10 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
             this.onDeleteDataset( info.data );
             break;
           case UpdateType.Copy:
-            this.copy();
+            // this.copy();
             break;
           case UpdateType.Paste:
-            this.paste();
+            // this.paste();
             break;
         }
       } )
@@ -122,33 +105,44 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
     //   ids.push(this.selectedId);
     // });
 
-    this.handleToolbarEvents();
+    // this.handleToolbarEvents();
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach( _ => _.unsubscribe() );
+    this.subscriptions.forEach(_ => _.unsubscribe());
   }
+
 
   onNewDataset(docs: DocMainInfo[]) {
     docs.forEach( doc => {
       const newDataset = this.createNewDatasetTemplate( doc );
 
       const updateTree = (id: string) => {
-        this.tree.treeModel.update();
+        // this.tree.treeModel.update();
         // FIXME: set route to new node id, for correct refresh
         // this however does conflict when creating a new node when first visiting the form page
         // this.router.navigate( ['/form', id] );
 
-        const node = this.tree.treeModel.getNodeById( id );
+       /* const node = this.tree.treeModel.getNodeById( id );
 
         // make sure parent is expanded
         node.parent.expand();
 
-        this.tree.treeModel.setActiveNode( node, true );
+        this.tree.treeModel.setActiveNode( node, true );*/
       };
 
       if (doc._parent) {
-        const parentNode = this.tree.treeModel.getNodeById( doc._parent );
+
+        const node = this.flatNodes.filter(n => n.data.id === doc._parent)[0];
+
+        this.loadNode( { node: node } ).then( () => {
+          const newChild = this.flatNodes.filter(n => n.data.id === doc._id)[0];
+          // node.leaf = false;
+          // node will be already added implicitly by query after save
+          this.selectedNodes = [newChild];
+        });
+
+        /*const parentNode = this.tree.treeModel.getNodeById( doc._parent );
         // TODO: make it bullet proof by expecting a promise from expand
         try {
           // parentNode.expand().then( () => {
@@ -163,11 +157,15 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
           // } );
         } catch (err) {
           console.error( 'error expanding node', err );
-        }
+        }*/
       } else {
         this.nodes.push( newDataset );
-        updateTree( newDataset.id );
+        this.selectedNodes = [newDataset];
       }
+
+      // add node to flat list for easier management
+      this.flatNodes.push( newDataset );
+
     } );
   }
 
@@ -175,214 +173,183 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
     const name = this.formularService.getTitle( doc._profile, doc );
 
     const docNode = this.prepareNode( doc );
-    /*if (!name) {
-      docNode.name = 'Neuer Datensatz';
-    }*/
     return docNode;
   }
 
   onUpdateDataset(docs: DocMainInfo[]) {
     docs.forEach( doc => {
 
-      const nodeParentUpdate = this.getNodeFromModel( doc._id );
-      Object.assign( nodeParentUpdate, this.prepareNode( doc ) );
-      this.tree.treeModel.update();
+      const node = this.flatNodes.filter(n => n.data.id === doc._id);
+      Object.assign( node[0], this.prepareNode( doc ) );
+
     } );
   }
 
   onDeleteDataset(docs: DocMainInfo[]) {
 
     docs.forEach( doc => {
-      const path = this.getNodeIdPath( doc._id );
+      const node = this.flatNodes.filter( _ => _.data.id === doc._id )[0];
 
-      if (!path) {
-        console.warn( 'path is null after delete!?', doc );
-        return;
-      }
-
-      // since we don't have the parent we determine the parent from the node path
-      // and get the parent from that to finally get the wanted node from the model
-      const nodeParent = this.getNodeFromModel( path[path.length - 2] );
-
-      const index = nodeParent.children.findIndex( (c: any) => c.id === doc._id );
+      const parentNode = node.parent;
+      const parentNodeChildren = parentNode ? parentNode.children : this.nodes;
+      const index = parentNodeChildren.findIndex( (c: TreeNode) => c.data.id === doc._id );
 
       // only remove node from tree if it's still there
       // TODO: optimize by call update only once after all docs are removed from tree
       if (index !== -1) {
-        nodeParent.children.splice( index, 1 );
-        this.tree.treeModel.update();
+        parentNodeChildren.splice( index, 1 );
+        // remove expansion property from node if it does not have any children anymore
+        if (parentNodeChildren.length === 0 && parentNode) {
+          parentNode.leaf = true;
+        }
       }
     } );
   }
 
-  getNodeIdPath(id: string): string[] {
-    let path: string[] = null;
-    if (id) {
-      const parentNode = this.tree.treeModel.getNodeById( id );
-      if (parentNode) {
-        path = parentNode.path;
-      }
-    }
-    return path;
-  }
-
-  getNodeFromModel(id: string): any {
-    let nodeParent: any = null;
-
-    const path = this.getNodeIdPath( id );
-
-    if (path) {
-      let kids = this.nodes;
-      path.forEach( id => {
-        kids.some( child => {
-          if (child.id === id) {
-            nodeParent = child;
-            kids = child.children;
-            return true;
-          }
-        } );
-      } );
-    } else {
-      nodeParent = {children: this.nodes};
-    }
-    return nodeParent;
-  }
-
-  expandToPath(path: string[]): Promise<any> {
+  expandToPath(children: TreeNode[], path: string[]) {
     const id = path.pop();
-    const node = this.tree.treeModel.getNodeById( id );
 
-    // only expand if there're more nodes to be expanded
     if (path.length > 0) {
-      return node.expand().then( () => {
-        return this.expandToPath( path );
-      } );
+      this.nodes.some(n => {
+        if (n.data.id === id) {
+          this.loadNode({node: n}).then( () => {
+            n.expanded = true;
+            this.expandToPath(n.children, path);
+          });
+          return true;
+        }
+      });
     } else {
-      // mark the last node as active
-      if (node !== undefined) {
-        setTimeout( () => this.tree.treeModel.setActiveNode( node, true ), 100 );
-      } else {
-        console.warn( 'Could not find node to set active: ' + id );
-      }
-      return Promise.resolve();
+      // select node
+      this.selectedNodes = children.filter(n => n.data.id === id );
     }
   }
 
-  query(id: string): Promise<any> {
-    return new Promise( (resolve, reject) => {
-      this.storageService.getChildDocuments( id ).subscribe( response => {
-        console.debug( 'got children', response );
+  loadNode(event): Promise<any> {
+    if (event.node) {
+      return this.query(event.node, event.node.data.id);
+    }
+  }
+
+  query(node: TreeNode, id: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.storageService.getChildDocuments(id).subscribe(response => {
+        console.log('got children', response);
         try {
-          this.setNodes( response, id );
+          this.setNodes(response, node);
         } catch (error) {
-          reject( error );
+          reject(error);
           return;
         }
         resolve();
-      }, (err) => this.errorService.handle( err ) );
-    } );
+      }, (err) => this.errorService.handle(err));
+    });
   }
 
   prepareNode(doc: any): any {
     const node: any = {
-      id: doc._id + '',
-      name: this.formularService.getTitle( doc._profile, doc ),
-      _iconClass: this.formularService.getIconClass( doc._profile ),
-      _profile: doc._profile,
-      _state: doc._state
+      data: {
+        id: doc._id + '',
+        _profile: doc._profile,
+        _state: doc._state
+      },
+      label: this.formularService.getTitle(doc._profile, doc),
+      icon: this.formularService.getIconClass(doc._profile),
+      leaf: true
     };
-    if (doc._hasChildren) {
-      node.hasChildren = true;
+    if (doc._hasChildren === 'true') { // TODO: expect real boolean value!
+      node.leaf = false;
     }
 
     return node;
   }
 
-  setNodes(docs: any[], parentId: string) {
-    let updatedNodes: any = this.nodes;
-    if (parentId) {
-      updatedNodes = this.getNodeFromModel( parentId );
-      updatedNodes.children = [];
+  setNodes(docs: any[], parentNode: TreeNode) {
+    if (parentNode && !parentNode.children) {
+      parentNode.leaf = false;
+      parentNode.children = [];
     }
 
+    const updatedNodes: any = parentNode ? parentNode : this.nodes;
+
     docs
-      .filter( doc => doc._profile !== undefined )
-      .sort( (doc1, doc2) => {
-        return this.formularService.getTitle(doc1._profile, doc1).localeCompare(this.formularService.getTitle(doc2._profile, doc2))
-      } )
-      .forEach( doc => {
-        if (parentId) {
-          updatedNodes.children.push( this.prepareNode( doc ) );
+      .filter(doc => doc._profile !== undefined)
+      .sort((doc1, doc2) => { // TODO: sort after conversion, then we don't need to call getTitle function
+        return this.formularService.getTitle(doc1._profile, doc1).localeCompare(this.formularService.getTitle(doc2._profile, doc2));
+      })
+      .forEach(doc => {
+        const newNode = this.prepareNode(doc);
+        if (parentNode) {
+          updatedNodes.children.push(newNode);
         } else {
-          updatedNodes.push( this.prepareNode( doc ) );
+          updatedNodes.push(newNode);
         }
-      } );
-    this.tree.treeModel.update();
+        this.flatNodes.push(newNode);
+      });
+    // this.tree.treeModel.update();
   }
 
-  private getSelectedNodes(): any {
-    return this.tree.treeModel.getActiveNodes()
-      .map( node => ({
+  private getSelectedNodes(nodes: TreeNode[]): any {
+    return nodes
+      .map(node => ({
         id: node.data.id,
-        label: node.displayField,
+        label: node.label,
         profile: node.data._profile
-      } ) );
+      }));
   }
 
   open(event: TreeNode) {
-    const data = this.getSelectedNodes();
+    const data = this.getSelectedNodes(this.selectedNodes);
 
-    this.activate.next( data );
-    this.selected.next( data );
-  }
-
-  deselected(event: TreeNode) {
-    const data = this.getSelectedNodes();
-
-    this.selected.next( data );
-  }
-
-  editFolder(data: any) {
-    // this.router.navigate( ['/form', data.id], { queryParams: { editMode: true } } );
-    this.activate.next( [
-      {id: data.id, label: data.name, profile: data.profile, forceLoad: true}
-    ] );
+    this.activate.next(data);
+    this.selected.next(data);
   }
 
   refresh(): Promise<any> {
     this.nodes = [];
-    this.tree.treeModel.expandedNodeIds = {};
-    // this.tree.treeModel.expandedNodes = [];
-    this.tree.treeModel.activeNodeIds = {};
-    // this.tree.treeModel.activeNodes = [];
-    return this.query( null );
+    this.flatNodes = [];
+    return this.query(null, null);
   }
 
-  private handleToolbarEvents() {
-    this.toolbarService.toolbarEvent$.subscribe( eventId => {
-      if (eventId === 'COPY') {
-        this.copy();
-      } else if (eventId === 'CUT') {
-        this.cut();
-      } else if (eventId === 'PASTE') {
-        this.paste();
-      }
-    } );
-  }
+  /*
+    deselected(event: TreeNode) {
+      const data = this.getSelectedNodes();
 
-  private copy() {
-    this.copiedNodes = this.tree.treeModel.getActiveNodes();
-  }
+      this.selected.next( data );
+    }
 
-  private cut() {
-    this.cutNodes = this.tree.treeModel.getActiveNodes();
-  }
+    editFolder(data: any) {
+      // this.router.navigate( ['/form', data.id], { queryParams: { editMode: true } } );
+      this.activate.next( [
+        {id: data.id, label: data.name, profile: data.profile, forceLoad: true}
+      ] );
+    }
 
-  private paste() {
-    // send event to paste nodes in backend
-    // NO -> we only make sure that the tree updates correctly and the init event has to do the backend action
+    private handleToolbarEvents() {
+      this.toolbarService.toolbarEvent$.subscribe( eventId => {
+        if (eventId === 'COPY') {
+          this.copy();
+        } else if (eventId === 'CUT') {
+          this.cut();
+        } else if (eventId === 'PASTE') {
+          this.paste();
+        }
+      } );
+    }
 
-    // insert/move nodes or just refresh?
+    private copy() {
+      this.copiedNodes = this.tree.treeModel.getActiveNodes();
+    }
 
-  }
+    private cut() {
+      this.cutNodes = this.tree.treeModel.getActiveNodes();
+    }
+
+    private paste() {
+      // send event to paste nodes in backend
+      // NO -> we only make sure that the tree updates correctly and the init event has to do the backend action
+
+      // insert/move nodes or just refresh?
+
+    }*/
 }

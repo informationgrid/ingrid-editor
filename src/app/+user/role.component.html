@@ -33,7 +33,7 @@
                     <option *ngFor="let page of pages" value="{{page.path}}">{{page.name}}</option>
                 </select>-->
                 <div class="clearfix"></div>
-                <ss-multiselect-dropdown [options]="pages" name="pages" [(ngModel)]="selectedRole.pages"></ss-multiselect-dropdown>
+                <!-- TODO: <ss-multiselect-dropdown [options]="pages" name="pages" [(ngModel)]="selectedRole.pages"></ss-multiselect-dropdown>-->
             </div>
 
             <!-- SPECIAL RIGHTS -->
@@ -96,7 +96,7 @@
         <!-- BY DATASET-->
         <div [class.hide]="dialogTab !== 'dataset'" class="padding">
             <div class="pull-left" style="width: 250px; height: 200px; overflow: auto;">
-                <tree #datasetTree [showFolderEditButton]="false" (onSelected)="rememberSelection($event)"></tree>
+                <!--<tree #datasetTree [showFolderEditButton]="false" (onSelected)="rememberSelection($event)"></tree>-->
             </div>
             <div *ngFor="let dataset of selectedRole.datasets">
                 <!-- TODO: show document name for this ID -->

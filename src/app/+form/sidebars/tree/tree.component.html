@@ -3,7 +3,13 @@
      title="Aktualisieren"
      (click)="refresh()"></a>
 
-  <tree-root #tree [nodes]="nodes" [options]="options" (activate)="open($event)" (deactivate)="deselected($event)">
+    <p-tree [value]="nodes" selectionMode="multiple"
+            [style.width]="'100%'"
+            (onNodeSelect)="open($event)"
+            [(selection)]="selectedNodes"
+            (onNodeExpand)="loadNode($event)"></p-tree>
+
+  <!--<tree-root #tree [nodes]="nodes" [options]="options" (activate)="open($event)" (deactivate)="deselected($event)">
     <ng-template #treeNodeTemplate let-node>
       <div class="myTreeNode">
         <div [class.active]="selectedId === node.data.id">
@@ -20,11 +26,11 @@
                 ></span>
           <span>{{ node.data.name }}</span>
         </div>
-        <!-- TODO: refactor into css -->
+        &lt;!&ndash; TODO: refactor into css &ndash;&gt;
         <span *ngIf="showFolderEditButton && node.data._profile === 'FOLDER'" class="folder fa fa-edit"
               (click)="editFolder(node.data)"
         ></span>
       </div>
     </ng-template>
-  </tree-root>
+  </tree-root>-->
 </div>

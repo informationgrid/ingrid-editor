@@ -4,6 +4,15 @@
 
 <!-- TODO: show input error for non-combo boxes; when no filter then jump at least to the language -->
 
+<p-dropdown [options]="options"
+            placeholder="Bitte auswählen"
+            optionLabel="value"
+            dataKey="id"
+            [editable]="isCombo"
+            [style]="{'width':'100%'}"
+            [(ngModel)]="selected"
+            (onChange)="handleChange($event)"></p-dropdown>
+<!--
 <combo-box #box [listData]="options"
            [forceSelection]="!isCombo"
            [displayField]="'value'"
@@ -15,4 +24,5 @@
            (onSelect)="handleChange($event.value)"
            (onCreate)="handleChange($event)"
            (onBlur)="handleChange(box._currVal)"
-           [currVal]="value"> </combo-box>
+           [currVal]="_value.value"> </combo-box>
+-->

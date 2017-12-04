@@ -1,14 +1,13 @@
-import {Injectable} from '@angular/core';
-import {FormGroup} from '@angular/forms';
-import {Behaviour, BehavioursDefault} from './behaviours';
-import {EventManager} from '@angular/platform-browser';
-import {Http, Response} from '@angular/http';
-import {ModalService} from '../services/modal/modal.service';
+import { Injectable } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { Behaviour, BehavioursDefault } from './behaviours';
+import { EventManager } from '@angular/platform-browser';
+import { ModalService } from '../services/modal/modal.service';
 import { ConfigService, Configuration } from '../config/config.service';
-import {AuthHttpError} from 'angular2-jwt';
-import {Plugin} from './plugin';
-import {Observable} from 'rxjs/Observable';
-import {KeycloakService} from '../keycloak/keycloak.service';
+import { Plugin } from './plugin';
+import { KeycloakService } from '../keycloak/keycloak.service';
+import { HttpClient } from '@angular/common/http';
+import { _throw } from 'rxjs/observable/throw';
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -24,7 +23,7 @@ export class BehaviourService {
 
   constructor(private defaultBehaves: BehavioursDefault,
               private eventManager: EventManager,
-              private http: Http, private modalService: ModalService, private configService: ConfigService) {
+              private http: HttpClient, private modalService: ModalService, private configService: ConfigService) {
 
     this.behaviours = defaultBehaves.behaviours;
     this.systemBehaviours = defaultBehaves.systemBehaviours;
@@ -70,9 +69,7 @@ export class BehaviourService {
   }
 
   loadStoredBehaviours() {
-    return this.http.get( this.configuration.backendUrl + 'behaviours' ).toPromise().then( (response: Response) => {
-      const storedBehaviours = response.json();
-
+    return this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' ).toPromise().then( storedBehaviours => {
       // set correct active state to each behaviour
       this.behaviours.forEach( (behaviour) => {
         const stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
@@ -86,9 +83,9 @@ export class BehaviourService {
       } );
 
     } ).catch( (err: Error) => {
-      if (!(err instanceof AuthHttpError)) {
-        this.modalService.showError( err.message );
-      }
+      // if (!(err instanceof AuthHttpError)) {
+      this.modalService.showError( err.message );
+      // }
     } );
   }
 
@@ -116,7 +113,7 @@ export class BehaviourService {
     };
     this.http.post( this.configuration.backendUrl + 'behaviours', stripped ).toPromise().catch( err => {
       this.modalService.showError( err );
-      return Observable.throw( err );
+      return _throw( err );
     } );
   }
 

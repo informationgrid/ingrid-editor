@@ -51,8 +51,10 @@ IGE - NG Server
 # Keycloak
 
 * Setup Realm InGrid
-* Setup Client 'ige-ng' with:
-** Settings:
+* Setup Client 'ige-ng' autoomatically with:
+** Click on "Master" -> "Add Realm" and import InGrid-Realm file
+** Click on "Manage"->"Import" and import user file
+** check the following settings:
 *** Client protocol: openid-connect
 *** accesstype: confidential
 *** valid redirect URLs: http://localhost/*

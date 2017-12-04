@@ -1,3 +1,20 @@
+<p-toolbar>
+    <div class="ui-toolbar-group-left">
+        <ng-container *ngFor="let button of buttons">
+            <button *ngIf="!button.isSeparator" pButton type="button"
+                    icon="{{button.cssClasses}}"
+                    class="ui-button-secondary"
+                    [disabled]="!button.active"
+                    [title]="button.tooltip"
+                    (click)="sendEvent(button.eventId)"></button>
+
+            <span *ngIf="button.isSeparator"
+                  class="separator"></span>
+        </ng-container>
+    </div>
+
+</p-toolbar>
+<!--
 <div class="btn-toolbar" role="toolbar" aria-label="Form-Toolbar">
     <div class="text-muted w-100" role="group" aria-label="...">
         <span *ngFor="let button of buttons">
@@ -12,3 +29,4 @@
         </span>
     </div>
 </div>
+-->

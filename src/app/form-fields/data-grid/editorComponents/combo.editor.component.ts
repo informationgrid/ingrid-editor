@@ -3,7 +3,7 @@ import { DefaultEditor } from 'ng2-smart-table';
 
 @Component({
   template: `
-    <combo-box #box [listData]="types"
+    <!--<combo-box #box [listData]="types"
                [forceSelection]="false"
                [displayField]="'title'"
                [valueField]="'value'"
@@ -12,7 +12,7 @@ import { DefaultEditor } from 'ng2-smart-table';
                (onSelect)="updateValue($event.title)"
                (onCreate)="updateValue($event)"
                (onBlur)="updateValue(box._currVal)"
-               [currVal]="model.type"> </combo-box>
+               [currVal]="model.type"> </combo-box>-->
   `,
 })
 export class ComboEditorComponent extends DefaultEditor implements AfterViewInit, OnInit {

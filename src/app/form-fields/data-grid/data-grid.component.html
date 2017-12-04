@@ -17,7 +17,7 @@
                     <select class="form-control" *ngIf="col.editor.controlType === 'dropdown'" [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
                         <option *ngFor="let option of col.editor.options" [value]="option.id">{{option.value}}</option>
                     </select>
-                    <tree *ngIf="col.editor.controlType === 'tree'" (selected)="addFromTree($event, col.editor.key)"></tree>
+                    <!--<tree *ngIf="col.editor.controlType === 'tree'" (selected)="addFromTree($event, col.editor.key)"></tree>-->
                 </div>
             </div>
         </form>

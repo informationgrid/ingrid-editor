@@ -2,10 +2,10 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {routing} from './dashboard.routing';
 import {DashboardComponent} from './dashboard.component';
-import {ChartsModule} from 'ng2-charts';
+import { ChartModule } from 'primeng/primeng';
 
 @NgModule({
-  imports: [CommonModule, routing, ChartsModule],
+  imports: [CommonModule, routing, ChartModule],
   declarations: [DashboardComponent],
   exports: []
 })
