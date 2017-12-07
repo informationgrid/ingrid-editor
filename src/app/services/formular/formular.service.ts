@@ -5,6 +5,8 @@ import {SelectedDocument} from '../../+form/sidebars/selected-document.model';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {KeycloakService} from '../../keycloak/keycloak.service';
+import { HttpClient } from '@angular/common/http';
+import { ConfigService, Configuration } from '../../config/config.service';
 
 @Injectable()
 export class FormularService {
@@ -31,10 +33,14 @@ export class FormularService {
 
   profileDefinitions: Profile[];
 
-  constructor(@Inject(PROFILES) private profiles: Profile[]) {
+  private configuration: Configuration;
+
+  constructor(private http: HttpClient, configService: ConfigService, @Inject(PROFILES) private profiles: Profile[]) {
+    this.configuration = configService.getConfiguration();
+
     // create profiles after we have logged in
     const init = () => {
-      this.profileDefinitions = profiles
+      this.profileDefinitions = profiles;
     };
 
     console.log('init profiles');

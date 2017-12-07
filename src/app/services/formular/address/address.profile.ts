@@ -7,6 +7,7 @@ import { CodelistService } from '../../../+form/services/codelist.service';
 import { ModalService } from '../../modal/modal.service';
 import { TextareaField } from '../../../+form/controls/field-textarea';
 import { Injectable } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 
 @Injectable()
 export class AddressProfile implements Profile {
@@ -35,14 +36,37 @@ export class AddressProfile implements Profile {
       key: 'firstName',
       label: 'Vorname',
       domClass: 'half',
-      order: 10
+      order: 10,
+      validator: [
+        Validators.required,
+        Validators.minLength(4),
+        function (fc: FormControl) {
+          const firstNameIsLong = fc.value && fc.value.length >= 5;
+          const lastNameHasValue = fc.root.get('lastName') ? fc.root.get('lastName').value.length > 0 : false;
+          return firstNameIsLong || lastNameHasValue
+            ? null
+            : {
+              validateTop: {
+                valid: false,
+                error: 'Der Titel muss aus mindestens 5 Zeichen bestehen oder es muss ein Nachname gesetzt sein.',
+                special: 'abc'
+              }
+            };
+        }
+      ]
     }),
 
     new TextboxField({
       key: 'lastName',
       label: 'Nachname',
       domClass: 'half',
-      order: 20
+      order: 20,
+      validator: function (fc: FormControl) {
+        const firstName = fc.root.get('firstName');
+        if (firstName) {
+          firstName.updateValueAndValidity();
+        }
+      }
     }),
 
     new OpenTableField({

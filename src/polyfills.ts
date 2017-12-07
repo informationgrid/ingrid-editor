@@ -68,3 +68,5 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
 // import 'intl';  // Run `npm install --save intl`.
 
 import 'leaflet';
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/observable/of';

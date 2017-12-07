@@ -1,5 +1,6 @@
-import {Injectable} from '@angular/core';
-import {Configuration} from '../config/config.service';
+import { Injectable } from '@angular/core';
+import { Configuration } from '../config/config.service';
+import { Subject } from 'rxjs/Subject';
 
 declare let Keycloak: any;
 
@@ -25,6 +26,8 @@ export interface AuthInfo {
 @Injectable()
 export class KeycloakService {
   static auth: AuthInfo = {};
+
+  static tokenObserver = new Subject<any>();
 
   static init(config: Configuration): Promise<any> {
     const keycloakAuth: KeycloakAuthData = Keycloak( {
@@ -73,11 +76,13 @@ export class KeycloakService {
     return new Promise<string>( (resolve, reject) => {
       if (KeycloakService.auth.authz.token) {
         KeycloakService.auth.authz
-          .updateToken( 5 )
+          .updateToken( -1 ) // on every request (otherwise minutes before expiration)
           .success( () => {
+            KeycloakService.tokenObserver.next( KeycloakService.auth.authz.tokenParsed );
             resolve( <string>KeycloakService.auth.authz.token );
           } )
           .error( () => {
+            window.location.reload(true );
             reject( 'Failed to refresh token' );
           } );
       } else {

@@ -89,7 +89,19 @@
 
         <link-dataset *ngSwitchCase="'linkDataset'" [formControlName]="field.key" [filter]="field.filter"></link-dataset>
 
-        <div class="invalid-feedback" [class.show]="form.controls[field.key].invalid && !form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>
+        <!--<div class="invalid-feedback" [class.show]="form.controls[field.key].invalid && !form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>-->
+
+        <div *ngIf="form.controls[field.key].invalid && (form.controls[field.key].dirty || form.controls[field.key].touched)" class="invalid-feedback show">
+            <div *ngIf="form.controls[field.key].errors.required">
+                Feld darf nicht leer sein.
+            </div>
+            <div *ngIf="form.controls[field.key].errors.minlength">
+                Der eingegebene Wert ist zu kurz.
+            </div>
+            <div *ngIf="form.controls[field.key].errors.other">
+                {{ form.controls[field.key].errors.other.error }}
+            </div>
+        </div>
     </ng-container>
 
 </div>

@@ -130,7 +130,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('destroy');
     this.observers.forEach(observer => observer.unsubscribe());
     this.behaviourService.behaviours
-      .filter(behave => behave.isActive)
+      .filter(behave => behave.isActive && behave.unregister)
       .forEach(behave => behave.unregister());
 
     // reset selected documents if we revisit the page

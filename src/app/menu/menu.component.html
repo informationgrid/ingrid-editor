@@ -12,7 +12,7 @@
         </ul>
 
         <div>
-            <span>{{sessionCounter}}</span>
+            <span>{{sessionCounter | number:'1.0-0'}}s</span>
             <select #catalogSelect class="custom-select" (change)="changeCatalog(catalogSelect.value)">
                 <option value="catNiedersachsen">Niedersachsen</option>
                 <option value="catBrandenburg">Brandenburg</option>

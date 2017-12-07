@@ -8,49 +8,7 @@ import { MessageService } from 'primeng/components/common/messageservice';
 
 @Component( {
   selector: 'ige-root',
-  template: `
-    <p-growl></p-growl>
-
-    <div class="igeContainer">
-      <!-- MENU -->
-      <main-menu></main-menu>
-
-      <help-panel></help-panel>
-
-      <!-- PAGES -->
-      <router-outlet></router-outlet>
-
-      <!-- TEST -->
-      <!--<button (click)="addMenuItem('dynamic Item')">Add menu item</button>-->
-    </div>
-
-
-    <ng-template #errorModal>
-      <div class="modal-header">
-        <h4 class="modal-title pull-left">Fehler</h4>
-        <!--<button type="button" class="close pull-right" aria-label="Close" (click)="errorModalRef.hide()">
-          <span aria-hidden="true">&times;</span>
-        </button>-->
-      </div>
-      <div class="modal-body">
-        <p>Es ist ein Fehler aufgetreten:</p>
-        <ul>
-          <ng-container *ngFor="let item of dynDialogMessages">
-            <li >{{item.msg}}</li>
-            <ul *ngIf="item.detail">
-              <li>{{item.detail}}</li>
-            </ul>
-          </ng-container>
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-link" (click)="errorModalRef.hide()">Schließen</button>
-      </div>
-    </ng-template>
-
-    <!-- Placeholder for dynamically created dialogs from plugins -->
-    <div #dialogContainer id="dialogContainer"></div>
-  `,
+  templateUrl: './app.component.html',
   styles: [`
     .igeContainer { height: 100%; overflow-x: hidden; }
     .modal-body { overflow: auto; }
