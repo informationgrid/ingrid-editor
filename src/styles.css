@@ -10,10 +10,16 @@ body {
   position: absolute;
   font-size: 75%;
   margin-top: 0;
+  bottom: -20px;
+  white-space: nowrap;
 }
 
 .ng-invalid .invalid-feedback {
   /*display: block;*/
+}
+
+div.has-error {
+  position: relative;
 }
 
 .ui-growl {

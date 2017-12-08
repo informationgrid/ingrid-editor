@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { _throw } from 'rxjs/observable/throw';
 import $script from 'scriptjs';
 import { environment } from '../../environments/environment';
+import { StorageService } from '../services/storage/storage.service';
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -27,6 +28,7 @@ export class BehaviourService {
 
   constructor(private defaultBehaves: BehavioursDefault,
               private eventManager: EventManager,
+              storageService: StorageService,
               private http: HttpClient, private modalService: ModalService, private configService: ConfigService) {
 
     this.behaviours = defaultBehaves.behaviours;
@@ -37,13 +39,25 @@ export class BehaviourService {
     if (environment.profileFromServer) {
       $script(this.configuration.backendUrl + 'profiles', (mod) => {
         const dynModule: any[] = webpackJsonp([], null, ['_profile_']);
-        dynModule['profiles'].forEach(Profile => this.userProfiles.push(new Profile()));
+        dynModule['profiles'].forEach(Profile => this.userProfiles.push(new Profile(storageService)));
+        this.userProfiles.forEach(profile => {
+          profile.behaviours.forEach(_ => {
+            _.forProfile = profile.id;
+            this.behaviours.push(_);
+          });
+        });
         console.log('webpack:', this.userProfiles);
       });
     } else {
       import( '../../profiles/pack-lgv' ).then(module => {
         console.log('Loaded module: ', module);
-        module.profiles.forEach(Profile => this.userProfiles.push(new Profile()));
+        module.profiles.forEach(Profile => this.userProfiles.push(new Profile(storageService)));
+        this.userProfiles.forEach(profile => {
+          profile.behaviours.forEach(_ => {
+            _.forProfile = profile.id;
+            this.behaviours.push(_);
+          });
+        });
       });
     }
 
@@ -124,6 +138,11 @@ export class BehaviourService {
     this.userProfiles.some(profileClass => {
       if (profileClass.id === profile) {
         profileClass.applyValidations(form);
+        profileClass.behaviours
+          .filter(_ => _.isActive)
+          .forEach(behaviour => {
+            behaviour.register(form, this.eventManager);
+          });
         return true;
       }
     });

@@ -8,3 +8,11 @@
         </div>
     </div>
 </div>
+
+<p-fileUpload name="profileFile"
+              [url]="uploadUrl"
+              multiple="false"
+              accept=".js"
+              (onUpload)="onUpload($event)"
+              (onError)="handleError($event)"
+              maxFileSize="1000000">

@@ -19,6 +19,8 @@ export class StorageService {
   afterProfileSwitch: Subject<any> = new Subject<any>();
   datasetsChanged: Subject<UpdateDatasetInfo> = new Subject<UpdateDatasetInfo>();
 
+  beforeLoad = new Subject<void>();
+
   afterLoadAndSet$ = this.afterLoadAndSet.asObservable();
   afterProfileSwitch$ = this.afterProfileSwitch.asObservable();
   datasetsChanged$ = this.datasetsChanged.asObservable();

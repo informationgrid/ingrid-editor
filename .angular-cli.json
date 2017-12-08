@@ -30,8 +30,7 @@
       ],
       "scripts": [
         "../node_modules/chart.js/dist/Chart.js",
-        "assets/leaflet/leaflet-areaselect.js",
-        "../node_modules/hammerjs/hammer.min.js"
+        "assets/leaflet/leaflet-areaselect.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

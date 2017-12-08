@@ -333,6 +333,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storageService.loadData(id).subscribe(data => {
       console.log('loaded data:', data);
 
+      this.storageService.beforeLoad.next();
+
       // if (data._profile === 'FOLDER' && !this.editMode) return;
 
       const profile = data._profile;

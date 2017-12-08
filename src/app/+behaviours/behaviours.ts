@@ -25,7 +25,7 @@ export interface Behaviour {
   title: string;
   description: string;
   defaultActive: boolean;
-  forProfile: string;
+  forProfile?: string;
   isActive?: boolean;
   register: (form: FormGroup, eventManager: EventManager) => void;
   unregister: () => void;
