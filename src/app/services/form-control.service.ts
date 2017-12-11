@@ -1,15 +1,15 @@
 import { PartialGeneratorField } from '../+form/controls/field-partial-generator';
-import {Injectable} from '@angular/core';
-import {FormControl, FormGroup, Validators, FormArray} from '@angular/forms';
-import {FieldBase} from '../+form/controls/field-base';
-import {Container} from '../+form/controls/container';
+import { Injectable } from '@angular/core';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Container } from '../+form/controls/container';
+import { IFieldBase } from '../+form/controls';
 
 @Injectable()
 export class FormControlService {
   constructor() {
   }
 
-  toFormGroup(fields: FieldBase<any>[], data: any) {
+  toFormGroup(fields: IFieldBase<any>[], data: any) {
     const group: any = {};
     fields.forEach( field => {
       if (field instanceof Container) {

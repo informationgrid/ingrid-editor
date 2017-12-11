@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { TreeNode } from 'primeng/primeng';
 import { UpdateType } from '../../../models/update-type.enum';
 import { DocMainInfo } from '../../../models/update-dataset-info.model';
+import { ProfileService } from '../../../services/profile.service';
 
 @Component({
   selector: 'ige-tree',
@@ -52,60 +53,65 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
 
   constructor(private storageService: StorageService, private router: Router, private route: ActivatedRoute,
               private formularService: FormularService, private errorService: ErrorService,
-              private toolbarService: FormToolbarService) {
+              private toolbarService: FormToolbarService, private profileService: ProfileService) {
   }
 
   ngOnInit() {
-    this.query(null, null).then(() => {
-      const initialSet = this.route.params.subscribe(params => {
-        const selectedId = params['id'];
+    this.profileService.initialized.then(() => {
 
-        // only let this function be called once, since we only need it during first visit of the page
-        setTimeout(() => initialSet.unsubscribe(), 0);
+      this.query(null, null).then(() => {
+        const initialSet = this.route.params.subscribe(params => {
+          const selectedId = params['id'];
 
-        if (selectedId) {
-          // get path to node
-          this.subscriptions.push(this.storageService.getPathToDataset(selectedId).subscribe(path => {
-            console.log('path: ' + path);
-            this.expandToPath(this.nodes, path.reverse());
-            this.open(null);
-          }));
-        }
-      });
-    }, (err) => console.error('Error:', err));
+          // only let this function be called once, since we only need it during first visit of the page
+          setTimeout(() => initialSet.unsubscribe(), 0);
 
-    this.subscriptions.push(
-      this.storageService.datasetsChanged$.subscribe( (info) => {
-        console.log( 'Tree: dataset changed event', info );
-        // only update changes in the tree instead of reloading everything and recover previous state
-        switch (info.type) {
-          case UpdateType.New:
-            this.onNewDataset( info.data );
-            break;
+          if (selectedId) {
+            // get path to node
+            this.subscriptions.push(this.storageService.getPathToDataset(selectedId).subscribe(path => {
+              console.log('path: ' + path);
+              this.expandToPath(this.nodes, path.reverse())
+                .then( () => {
+                  this.open(null);
+                });
+            }));
+          }
+        });
+      }, (err) => console.error('Error:', err));
 
-          case UpdateType.Update:
-            this.onUpdateDataset( info.data );
-            break;
+      this.subscriptions.push(
+        this.storageService.datasetsChanged$.subscribe((info) => {
+          console.log('Tree: dataset changed event', info);
+          // only update changes in the tree instead of reloading everything and recover previous state
+          switch (info.type) {
+            case UpdateType.New:
+              // this.onNewDataset(info.data);
+              break;
 
-          case UpdateType.Delete:
-            this.onDeleteDataset( info.data );
-            break;
-          case UpdateType.Copy:
-            // this.copy();
-            break;
-          case UpdateType.Paste:
-            // this.paste();
-            break;
-        }
-      } )
-    );
+            case UpdateType.Update:
+              this.onUpdateDataset(info.data);
+              break;
 
-    // inform interested components which documents are selected
-    // this.formularService.selectedDocuments$.subscribe( (ids) => {
-    //   ids.push(this.selectedId);
-    // });
+            case UpdateType.Delete:
+              this.onDeleteDataset(info.data);
+              break;
+            case UpdateType.Copy:
+              // this.copy();
+              break;
+            case UpdateType.Paste:
+              // this.paste();
+              break;
+          }
+        })
+      );
 
-    // this.handleToolbarEvents();
+      // inform interested components which documents are selected
+      // this.formularService.selectedDocuments$.subscribe( (ids) => {
+      //   ids.push(this.selectedId);
+      // });
+
+      // this.handleToolbarEvents();
+    });
   }
 
   ngOnDestroy(): void {
@@ -114,8 +120,8 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
 
 
   onNewDataset(docs: DocMainInfo[]) {
-    docs.forEach( doc => {
-      const newDataset = this.createNewDatasetTemplate( doc );
+    docs.forEach(doc => {
+      const newDataset = this.createNewDatasetTemplate(doc);
 
       const updateTree = (id: string) => {
         // this.tree.treeModel.update();
@@ -123,19 +129,19 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
         // this however does conflict when creating a new node when first visiting the form page
         // this.router.navigate( ['/form', id] );
 
-       /* const node = this.tree.treeModel.getNodeById( id );
+        /* const node = this.tree.treeModel.getNodeById( id );
 
-        // make sure parent is expanded
-        node.parent.expand();
+         // make sure parent is expanded
+         node.parent.expand();
 
-        this.tree.treeModel.setActiveNode( node, true );*/
+         this.tree.treeModel.setActiveNode( node, true );*/
       };
 
       if (doc._parent) {
 
         const node = this.flatNodes.filter(n => n.data.id === doc._parent)[0];
 
-        this.loadNode( { node: node } ).then( () => {
+        this.loadNode({node: node}).then(() => {
           const newChild = this.flatNodes.filter(n => n.data.id === doc._id)[0];
           // node.leaf = false;
           // node will be already added implicitly by query after save
@@ -159,70 +165,78 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
           console.error( 'error expanding node', err );
         }*/
       } else {
-        this.nodes.push( newDataset );
+        this.nodes.push(newDataset);
         this.selectedNodes = [newDataset];
       }
 
       // add node to flat list for easier management
-      this.flatNodes.push( newDataset );
+      this.flatNodes.push(newDataset);
 
-    } );
+    });
   }
 
   private createNewDatasetTemplate(doc: any) {
-    const name = this.formularService.getTitle( doc._profile, doc );
+    const name = this.formularService.getTitle(doc._profile, doc);
 
-    const docNode = this.prepareNode( doc );
+    const docNode = this.prepareNode(doc);
     return docNode;
   }
 
   onUpdateDataset(docs: DocMainInfo[]) {
-    docs.forEach( doc => {
+    docs.forEach(doc => {
 
       const node = this.flatNodes.filter(n => n.data.id === doc._id);
-      Object.assign( node[0], this.prepareNode( doc ) );
+      Object.assign(node[0], this.prepareNode(doc));
 
-    } );
+    });
   }
 
   onDeleteDataset(docs: DocMainInfo[]) {
 
-    docs.forEach( doc => {
-      const node = this.flatNodes.filter( _ => _.data.id === doc._id )[0];
+    docs.forEach(doc => {
+      const node = this.flatNodes.filter(_ => _.data.id === doc._id)[0];
 
       const parentNode = node.parent;
       const parentNodeChildren = parentNode ? parentNode.children : this.nodes;
-      const index = parentNodeChildren.findIndex( (c: TreeNode) => c.data.id === doc._id );
+      const index = parentNodeChildren.findIndex((c: TreeNode) => c.data.id === doc._id);
 
       // only remove node from tree if it's still there
       // TODO: optimize by call update only once after all docs are removed from tree
       if (index !== -1) {
-        parentNodeChildren.splice( index, 1 );
+        parentNodeChildren.splice(index, 1);
         // remove expansion property from node if it does not have any children anymore
         if (parentNodeChildren.length === 0 && parentNode) {
           parentNode.leaf = true;
         }
       }
-    } );
+    });
   }
 
   expandToPath(children: TreeNode[], path: string[]) {
     const id = path.pop();
 
-    if (path.length > 0) {
-      this.nodes.some(n => {
-        if (n.data.id === id) {
-          this.loadNode({node: n}).then( () => {
-            n.expanded = true;
-            this.expandToPath(n.children, path);
-          });
-          return true;
-        }
-      });
-    } else {
-      // select node
-      this.selectedNodes = children.filter(n => n.data.id === id );
-    }
+    return new Promise((resolve, reject) => {
+
+      if (path.length > 0) {
+        this.nodes.some(n => {
+          if (n.data.id === id) {
+            this.loadNode({node: n}).then(() => {
+              n.expanded = true;
+              return this.expandToPath(n.children, path);
+            }).then( () => {
+              resolve();
+            });
+            return true;
+          } else {
+            // resolve();
+          }
+        });
+      } else {
+        // select node
+        this.selectedNodes = children.filter(n => n.data.id === id);
+        resolve();
+      }
+    });
   }
 
   loadNode(event): Promise<any> {

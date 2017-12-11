@@ -3,14 +3,15 @@ import { FormGroup } from '@angular/forms';
 import { Behaviour, BehavioursDefault } from './behaviours';
 import { EventManager } from '@angular/platform-browser';
 import { ModalService } from '../services/modal/modal.service';
-import { ConfigService, Configuration } from '../config/config.service';
+import { ConfigService, Configuration } from '../services/config.service';
 import { Plugin } from './plugin';
-import { KeycloakService } from '../keycloak/keycloak.service';
+import { KeycloakService } from '../security/keycloak/keycloak.service';
 import { HttpClient } from '@angular/common/http';
 import { _throw } from 'rxjs/observable/throw';
 import $script from 'scriptjs';
 import { environment } from '../../environments/environment';
 import { StorageService } from '../services/storage/storage.service';
+import { ProfileService } from '../services/profile.service';
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -24,78 +25,56 @@ export class BehaviourService {
 
   initialized: Promise<any>;
   private configuration: Configuration;
-  private userProfiles: any[] = [];
 
   constructor(private defaultBehaves: BehavioursDefault,
               private eventManager: EventManager,
-              storageService: StorageService,
+              private profileService: ProfileService,
               private http: HttpClient, private modalService: ModalService, private configService: ConfigService) {
 
     this.behaviours = defaultBehaves.behaviours;
     this.systemBehaviours = defaultBehaves.systemBehaviours;
     this.configuration = configService.getConfiguration();
 
-    // load user behaviours
-    if (environment.profileFromServer) {
-      $script(this.configuration.backendUrl + 'profiles', (mod) => {
-        const dynModule: any[] = webpackJsonp([], null, ['_profile_']);
-        dynModule['profiles'].forEach(Profile => this.userProfiles.push(new Profile(storageService)));
-        this.userProfiles.forEach(profile => {
-          profile.behaviours.forEach(_ => {
-            _.forProfile = profile.id;
-            this.behaviours.push(_);
-          });
-        });
-        console.log('webpack:', this.userProfiles);
-      });
-    } else {
-      import( '../../profiles/pack-lgv' ).then(module => {
-        console.log('Loaded module: ', module);
-        module.profiles.forEach(Profile => this.userProfiles.push(new Profile(storageService)));
-        this.userProfiles.forEach(profile => {
-          profile.behaviours.forEach(_ => {
-            _.forProfile = profile.id;
-            this.behaviours.push(_);
-          });
-        });
-      });
-    }
+    // this.initialized = new Promise((resolve, reject) => {
+    // $script( './+behaviours/additionalBehaviours.js', () => {
+    //   console.log( 'loaded additional behaviours', additionalBehaviours );
 
-    this.initialized = new Promise((resolve, reject) => {
-      // $script( './+behaviours/additionalBehaviours.js', () => {
-      //   console.log( 'loaded additional behaviours', additionalBehaviours );
+    // add all additional behaviours to the default ones
+    // this.behaviours.push(...additionalBehaviours);
 
-      // add all additional behaviours to the default ones
-      this.behaviours.push(...additionalBehaviours);
-
-      if (KeycloakService.auth.loggedIn) {
-        this.loadStoredBehaviours()
-          .then(() => resolve())
-          .catch(() => reject);
-      }
-
-      // keycloak.getGroupsOfUser('');
-      /*
-
-      // if (this.authService.loggedIn()) {
-        // request stored behaviour states from backend
-        this.loadStoredBehaviours()
-          .then( () => resolve() )
-          .catch( () => reject );
-
-      } else {
-        /*const loginSubscriber = this.authService.loginStatusChange$.subscribe( loggedIn => {
-          // console.log( 'logged in state changed to: ' + loggedIn );
-          if (loggedIn) {
-            loginSubscriber.unsubscribe();
-            this.loadStoredBehaviours()
-              .then( () => resolve() )
-              .catch( () => reject );
+    this.initialized = profileService.getProfiles()
+      .then((profiles) => {
+        profiles.forEach(p => {
+          if (p.behaviours) {
+            p.behaviours.forEach(behaviour => behaviour.forProfile = p.id);
+            this.behaviours.push(...p.behaviours);
           }
-        });*/
-      // }
-      // } );
-    });
+        });
+      })
+      .then(() => this.loadStoredBehaviours());
+
+    // keycloak.getGroupsOfUser('');
+    /*
+
+    // if (this.authService.loggedIn()) {
+      // request stored behaviour states from backend
+      this.loadStoredBehaviours()
+        .then( () => resolve() )
+        .catch( () => reject );
+
+    } else {
+      /*const loginSubscriber = this.authService.loginStatusChange$.subscribe( loggedIn => {
+        // console.log( 'logged in state changed to: ' + loggedIn );
+        if (loggedIn) {
+          loginSubscriber.unsubscribe();
+          this.loadStoredBehaviours()
+            .then( () => resolve() )
+            .catch( () => reject );
+        }
+      });*/
+    // }
+    // } );
+    // });
   }
 
   loadStoredBehaviours() {
@@ -135,16 +114,20 @@ export class BehaviourService {
         }
       });
 
-    this.userProfiles.some(profileClass => {
-      if (profileClass.id === profile) {
-        profileClass.applyValidations(form);
-        profileClass.behaviours
-          .filter(_ => _.isActive)
-          .forEach(behaviour => {
-            behaviour.register(form, this.eventManager);
-          });
-        return true;
-      }
+    this.profileService.getProfiles().then(profiles => {
+      profiles.some(profileClass => {
+        if (profileClass.id === profile) {
+          profileClass.applyValidations(form);
+          if (profileClass.behaviours) {
+            profileClass.behaviours
+              .filter(_ => _.isActive)
+              .forEach(behaviour => {
+                behaviour.register(form, this.eventManager);
+              });
+          }
+          return true;
+        }
+      });
     });
   }
 

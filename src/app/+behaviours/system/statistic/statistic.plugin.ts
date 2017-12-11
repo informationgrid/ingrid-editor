@@ -2,7 +2,7 @@ import {StatisticComponent} from './statistic.component';
 import {Injectable} from '@angular/core';
 import {MenuService} from '../../../menu/menu.service';
 import {Plugin} from '../../plugin';
-import { ConfigService } from '../../../config/config.service';
+import { ConfigService } from '../../../services/config.service';
 
 @Injectable()
 export class StatisticPlugin extends Plugin {

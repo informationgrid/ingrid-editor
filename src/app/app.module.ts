@@ -22,33 +22,19 @@ import { HelpComponent } from './help/help.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ImportExportModule } from './+importExport/import-export.module';
 import { ApiService } from './services/ApiService';
-import { KeycloakService } from './keycloak/keycloak.service';
+import { KeycloakService } from './security/keycloak/keycloak.service';
 import { environment } from '../environments/environment';
-import { ConfigService } from './config/config.service';
-import { KeycloakMockService } from './keycloak/keycloak-mock.service';
-import { PROFILES } from './services/formular/profile';
-import { IsoServiceProfile } from './services/formular/iso/iso-service.profile';
-import { UVPProfile } from './services/formular/uvp/uvp.profile';
-import { AddressProfile } from './services/formular/address/address.profile';
-import { FolderProfile } from './services/formular/folder/folder.profile';
+import { ConfigService } from './services/config.service';
+import { KeycloakMockService } from './security/keycloak/keycloak-mock.service';
 import { ModalModule, PopoverModule } from 'ngx-bootstrap';
-import { IsoDataPoolingProfile } from './services/formular/iso/iso-data-pooling.profile';
-import { IsoDatasetProfile } from './services/formular/iso/iso-dataset.profile';
-import { IsoInformationSystemProfile } from './services/formular/iso/iso-information-system.profile';
-import { IsoLiteratureProfile } from './services/formular/iso/iso-literature.profile';
-import { IsoProjectProfile } from './services/formular/iso/iso-project.profile';
-import { IsoTaskProfile } from './services/formular/iso/iso-task.profile';
 import { CatalogModule } from './+catalog/catalog.module';
 import { LoginComponent } from './security/login.component';
 import { GlobalErrorHandler } from './error-handler';
-import { ChartModule, GrowlModule, TreeModule } from 'primeng/primeng';
-import {
-  HTTP_INTERCEPTORS,
-  HttpClientModule,
-  HttpClientXsrfModule,
-} from '@angular/common/http';
+import { GrowlModule, TreeModule } from 'primeng/primeng';
+import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 import { FormFieldsModule } from './form-fields/form-fields.module';
-import { AuthInterceptor } from './keycloak/auth.interceptor';
+import { AuthInterceptor } from './security/keycloak/auth.interceptor';
+import { ProfileService } from './services/profile.service';
 
 export function KeycloakLoader(configService: ConfigService) {
   const keycloakService = environment.mockKeycloak ? KeycloakMockService : KeycloakService;
@@ -83,7 +69,7 @@ export function KeycloakLoader(configService: ConfigService) {
     appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     KeycloakService,
     ErrorService, ConfigService, FormToolbarService, FormularService, StorageService,
-    StorageDummyService, BehavioursDefault, ModalService, ApiService, FormularService,
+    StorageDummyService, BehavioursDefault, ModalService, ApiService, FormularService, ProfileService,
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy
@@ -105,9 +91,9 @@ export function KeycloakLoader(configService: ConfigService) {
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    },
+    }
     // definition of profiles to be loaded
-    {provide: PROFILES, useClass: UVPProfile, multi: true},
+    /*{provide: PROFILES, useClass: UVPProfile, multi: true},
     {provide: PROFILES, useClass: AddressProfile, multi: true},
     {provide: PROFILES, useClass: FolderProfile, multi: true},
     {provide: PROFILES, useClass: IsoDataPoolingProfile, multi: true},
@@ -116,7 +102,7 @@ export function KeycloakLoader(configService: ConfigService) {
     {provide: PROFILES, useClass: IsoLiteratureProfile, multi: true},
     {provide: PROFILES, useClass: IsoProjectProfile, multi: true},
     {provide: PROFILES, useClass: IsoServiceProfile, multi: true},
-    {provide: PROFILES, useClass: IsoTaskProfile, multi: true}
+    {provide: PROFILES, useClass: IsoTaskProfile, multi: true}*/
   ], // additional providers
 
   bootstrap: [AppComponent]

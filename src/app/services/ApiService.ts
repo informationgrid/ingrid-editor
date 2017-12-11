@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { ConfigService, Configuration } from '../config/config.service';
+import { ConfigService, Configuration } from './config.service';
 import { ErrorService } from './error.service';
-import { KeycloakService } from '../keycloak/keycloak.service';
+import { KeycloakService } from '../security/keycloak/keycloak.service';
 import { User } from '../+user/user';
 import { Role } from '../models/user-role';
 import { HttpClient } from '@angular/common/http';

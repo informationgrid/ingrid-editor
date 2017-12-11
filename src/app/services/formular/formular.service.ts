@@ -1,12 +1,13 @@
-import {Inject, Injectable} from '@angular/core';
-import {FieldBase} from '../../+form/controls';
-import {Profile, PROFILES} from './profile';
-import {SelectedDocument} from '../../+form/sidebars/selected-document.model';
-import {Subject} from 'rxjs/Subject';
-import {Observable} from 'rxjs/Observable';
-import {KeycloakService} from '../../keycloak/keycloak.service';
+import { Injectable } from '@angular/core';
+import { IFieldBase } from '../../+form/controls';
+import { Profile } from './profile';
+import { SelectedDocument } from '../../+form/sidebars/selected-document.model';
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { KeycloakService } from '../../security/keycloak/keycloak.service';
 import { HttpClient } from '@angular/common/http';
-import { ConfigService, Configuration } from '../../config/config.service';
+import { ConfigService, Configuration } from '../config.service';
+import { ProfileService } from '../profile.service';
 
 @Injectable()
 export class FormularService {
@@ -35,25 +36,20 @@ export class FormularService {
 
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService, @Inject(PROFILES) private profiles: Profile[]) {
+  constructor(private http: HttpClient, configService: ConfigService, private profiles: ProfileService) {
     this.configuration = configService.getConfiguration();
 
     // create profiles after we have logged in
-    const init = () => {
-      this.profileDefinitions = profiles;
-    };
 
     console.log('init profiles');
 
-    if (KeycloakService.auth.loggedIn) {
-      init();
-    }
+    profiles.getProfiles().then(_ => this.profileDefinitions = _);
   }
 
   getFields(profile: string) {
-    let fields: FieldBase<any>[];
+    let fields: IFieldBase<any>[];
 
-    fields = this.getProfile(profile).profile;
+    fields = this.getProfile(profile).fields;
 
     this.currentProfile = profile;
 
@@ -62,13 +58,17 @@ export class FormularService {
   }
 
   getProfile(id: string): Profile {
-    const profile = this.profileDefinitions.find( p => p.id === id);
-    if (!profile) {
-      // throw Error('Unknown profile: ' + id);
-      console.error('Unknown profile: ' + id);
+    if (this.profileDefinitions) {
+      const profile = this.profileDefinitions.find(p => p.id === id);
+      if (!profile) {
+        // throw Error('Unknown profile: ' + id);
+        console.error('Unknown profile: ' + id);
+        return null;
+      }
+      return profile;
+    } else {
       return null;
     }
-    return profile;
   }
 
   getTitle(profile: string, doc: any) {
@@ -90,7 +90,7 @@ export class FormularService {
     this.profileDefinitions.forEach(profile => fields.push(...profile.getTitleFields()));
 
     // return unique items in array
-    return fields.filter( (x, i, a) => x && a.indexOf(x) === i);
+    return fields.filter((x, i, a) => x && a.indexOf(x) === i);
   }
 
   requestFormValues(): any {
@@ -108,7 +108,7 @@ export class FormularService {
     return this.selectedDocs;
   }
 
-  getDocTypes(): {id: string, label: string}[] {
-    return this.profileDefinitions.map( profile => ({id: profile.id, label: profile.label}) );
+  getDocTypes(): { id: string, label: string }[] {
+    return this.profileDefinitions.map(profile => ({id: profile.id, label: profile.label}));
   }
 }

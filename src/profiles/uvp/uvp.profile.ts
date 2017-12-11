@@ -1,14 +1,14 @@
-import { Container, DropdownField, TextareaField, TextboxField } from '../../../+form/controls';
-import { MapField } from '../../../+form/controls/field-map';
+import { Container, DropdownField, FieldBase, TextareaField, TextboxField } from '../../app/+form/controls';
+import { MapField } from '../../app/+form/controls/field-map';
 import { LatLng, TileLayer } from 'leaflet';
-import { PartialGeneratorField } from '../../../+form/controls/field-partial-generator';
-import { OpenTableField } from '../../../+form/controls/field-opentable';
-import { Profile } from '../profile';
-import { LinkDatasetField } from '../../../+form/controls/field-link-dataset';
-import { CodelistService } from '../../../+form/services/codelist.service';
-import { FieldBase } from '../../../+form/controls/field-base';
-import {Injectable} from '@angular/core';
-import {DatepickerField} from '../../../+form/controls/field-datepicker';
+import { PartialGeneratorField } from '../../app/+form/controls/field-partial-generator';
+import { OpenTableField } from '../../app/+form/controls/field-opentable';
+import { Profile } from '../../app/services/formular/profile';
+import { LinkDatasetField } from '../../app/+form/controls/field-link-dataset';
+import { CodelistService } from '../../app/+form/services/codelist.service';
+import { Injectable } from '@angular/core';
+import { DatepickerField } from '../../app/+form/controls/field-datepicker';
+import { StorageService } from '../../app/services/storage/storage.service';
 
 @Injectable()
 export class UVPProfile implements Profile {
@@ -19,11 +19,11 @@ export class UVPProfile implements Profile {
 
   codelistService: CodelistService = null;
 
-  profile: Array<FieldBase<any>> = null;
+  fields: Array<FieldBase<any>> = null;
 
   treeIconClass = 'fa fa-file-o'; // TODO: make icons same size for better presentation in tree/browser
 
-  constructor(codelistService: CodelistService) {
+  constructor(storageService: StorageService, codelistService: CodelistService) {
     this.codelistService = codelistService;
     const uvpNumberSelect = new DropdownField( {
       key: 'uvpNumber',
@@ -35,7 +35,7 @@ export class UVPProfile implements Profile {
       uvpNumberSelect.options = codelist;
     } );
 
-    this.profile = [
+    this.fields = [
 
       new Container( {
         domClass: 'half',
@@ -378,4 +378,8 @@ export class UVPProfile implements Profile {
   getTitleFields(): string[] {
     return ['title'];
   }
+
+  applyValidations(form) {
+    console.log('UVP Form validation !?', form);
+  };
 }

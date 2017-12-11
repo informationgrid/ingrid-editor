@@ -6,6 +6,7 @@ import {FormularService} from "../../../services/formular/formular.service";
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {UpdateType} from '../../../models/update-type.enum';
 import { Subscription } from 'rxjs/Subscription';
+import { ProfileService } from '../../../services/profile.service';
 
 @Component( {
   selector: 'browser',
@@ -26,21 +27,23 @@ export class BrowserComponent implements OnInit, OnDestroy {
   subscription: Subscription;
 
   constructor(private storageService: StorageService, private route: ActivatedRoute,
-    private formularService: FormularService) {
+    private formularService: FormularService, private profileService: ProfileService) {
+  }
+
+  ngOnInit() {
     this.route.params.subscribe(params => {
       this.selectedId = params['id'];
     });
 
-    this.subscription = storageService.datasetsChanged$.subscribe( (event) => {
+    this.subscription = this.storageService.datasetsChanged$.subscribe( (event) => {
       if (event.type === UpdateType.Update) {
         this.query();
       }
     } );
 
-  }
-
-  ngOnInit() {
-    this.query();
+    this.profileService.initialized.then( () => {
+      this.query();
+    });
   }
 
   ngOnDestroy(): void {

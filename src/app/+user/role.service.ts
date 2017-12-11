@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConfigService, Configuration } from '../config/config.service';
+import { ConfigService, Configuration } from '../services/config.service';
 import { ErrorService } from '../services/error.service';
 import { Role } from '../models/user-role';
 import { ApiService } from '../services/ApiService';

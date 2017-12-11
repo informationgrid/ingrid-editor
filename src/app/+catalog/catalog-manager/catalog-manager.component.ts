@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Catalog, CatalogService } from '../catalog.service';
-import { ConfigService, Configuration } from '../../config/config.service';
+import { ConfigService, Configuration } from '../../services/config.service';
 
 @Component({
   selector: 'ige-catalog-manager',

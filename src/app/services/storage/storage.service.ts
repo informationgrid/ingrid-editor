@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { ModalService } from '../modal/modal.service';
-import { FormularService } from '../formular/formular.service';
-import { ConfigService, Configuration } from '../../config/config.service';
+import { ConfigService, Configuration } from '../config.service';
 import { UpdateType } from '../../models/update-type.enum';
 import { DocMainInfo, UpdateDatasetInfo } from '../../models/update-dataset-info.model';
 import { ErrorService } from '../error.service';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
-import { KeycloakService } from '../../keycloak/keycloak.service';
+import { KeycloakService } from '../../security/keycloak/keycloak.service';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()
@@ -29,11 +28,11 @@ export class StorageService {
   titleFields: string;
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, private modalService: ModalService, private formularService: FormularService,
+  constructor(private http: HttpClient, private modalService: ModalService,
               configService: ConfigService,
               private errorService: ErrorService) {
     if (KeycloakService.auth.loggedIn) {
-      this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
+      // TODO: this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
     }
     this.configuration = configService.getConfiguration();
   }

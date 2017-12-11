@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ConfigService, Configuration } from '../config/config.service';
+import { ConfigService, Configuration } from '../services/config.service';
 import { ErrorService } from '../services/error.service';
 import { FormularService } from '../services/formular/formular.service';
 import { HttpClient } from '@angular/common/http';

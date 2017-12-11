@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MenuService} from './menu.service';
-import {KeycloakService} from '../keycloak/keycloak.service';
+import {KeycloakService} from '../security/keycloak/keycloak.service';
 import { Observable } from 'rxjs/Observable';
 import { environment } from '../../environments/environment';
 

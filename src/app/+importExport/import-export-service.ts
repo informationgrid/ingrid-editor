@@ -1,5 +1,5 @@
 import {ErrorService} from '../services/error.service';
-import { ConfigService, Configuration } from '../config/config.service';
+import { ConfigService, Configuration } from '../services/config.service';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';

@@ -1,7 +1,8 @@
-import {Component, OnInit, trigger, animate, style, transition, state} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Plugin} from './plugin';
 import {Behaviour} from './behaviours';
 import {BehaviourService} from './behaviour.service';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component( {
   templateUrl: './behaviours.component.html',

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { FormControlService } from '../services/form-control.service';
-import { Container, FieldBase } from './controls';
+import { Container, FieldBase, IFieldBase } from './controls';
 import { BehaviourService } from '../+behaviours/behaviour.service';
 import { FormularService } from '../services/formular/formular.service';
 import { Behaviour } from '../+behaviours/behaviours';
@@ -14,7 +14,7 @@ import { UpdateType } from '../models/update-type.enum';
 import { ErrorService } from '../services/error.service';
 import { Role } from '../models/user-role';
 import { SelectedDocument } from './sidebars/selected-document.model';
-import { KeycloakService } from '../keycloak/keycloak.service';
+import { KeycloakService } from '../security/keycloak/keycloak.service';
 import { RoleService } from '../+user/role.service';
 import { Subscription } from 'rxjs/Subscription';
 import { WizardService } from '../wizard/wizard.service';
@@ -54,7 +54,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // when editing a folder this flag must be set
   // editMode: boolean = false;
 
-  fields: FieldBase<any>[] = [];
+  fields: IFieldBase<any>[] = [];
   form: FormGroup = null;
   data: FormData = {};
   behaviours: Behaviour[];

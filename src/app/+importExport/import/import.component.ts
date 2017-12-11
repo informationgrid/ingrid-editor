@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ImportExportService } from '../import-export-service';
-import { ConfigService } from '../../config/config.service';
+import { ConfigService } from '../../services/config.service';
 import { TextboxField } from '../../+form/controls';
 import { ErrorService } from '../../services/error.service';
 import { Message } from 'primeng/primeng';
