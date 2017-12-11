@@ -22,6 +22,9 @@
     <Logger name="net.meta" level="info" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>
+    <Logger name="com" level="info" additivity="false">
+      <AppenderRef ref="Console" />
+    </Logger>
     <Root level="warn">
       <AppenderRef ref="Console" />
     </Root>

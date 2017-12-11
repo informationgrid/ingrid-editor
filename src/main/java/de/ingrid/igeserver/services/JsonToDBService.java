@@ -70,10 +70,14 @@ public class JsonToDBService extends MapperService {
         // TODO: make dynamic
         String profile = map.get( MapperService.FIELD_PROFILE ).asText();
         if ("UVP".equals( profile ) ) {
-            String id = map.get("publisher").get( MapperService.FIELD_ID ).asText();
-            ObjectNode refNode = new ObjectMapper().createObjectNode();
             
-            map.set( "publisher", refNode.put( MapperService.FIELD_ID, id ) );
+            JsonNode publisher = map.get("publisher");
+            if (publisher != null && !"".equals( publisher.textValue() )) {
+                String id = publisher.get( MapperService.FIELD_ID ).asText();
+                ObjectNode refNode = new ObjectMapper().createObjectNode();
+                
+                map.set( "publisher", refNode.put( MapperService.FIELD_ID, id ) );
+            }
         }
     }
 

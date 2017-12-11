@@ -50,7 +50,7 @@ public class DBUtils {
             // TODO: use info map for each document type, which references it has and receive reference Id
             JsonNode publisher = mapDoc.get( "publisher" );
             
-            if (!"".equals( publisher.textValue() )) {
+            if (publisher != null && !"".equals( publisher.textValue() )) {
                 String refId = publisher.get( MapperService.FIELD_ID ).asText();
                 
                 // TODO: get referenced document in a loop

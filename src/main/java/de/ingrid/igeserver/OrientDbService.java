@@ -318,6 +318,17 @@ public class OrientDbService {
         }
         
     }
+    
+    public void addRawDocTo(String dbId, String classType, Object id, String field, Object data) {
+        ODatabaseDocumentTx db = openDB(dbId);
+        db.begin();
+        
+        ODocument doc = new ODocument( classType );
+        doc.field( field, data );
+        doc.save();
+        
+        db.commit();
+    }
 
 
     /**
@@ -390,6 +401,10 @@ public class OrientDbService {
                 docClass.createProperty( "_id", OType.INTEGER );
                 docClass.createProperty( "_parent", OType.INTEGER );
                 docClass.createIndex( "didIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
+                
+                OClass catalogClass = db.getMetadata().getSchema().createClass( "Info" );
+                catalogClass.createProperty( "_id", OType.INTEGER );
+                catalogClass.createIndex( "iidIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
 
                 OClass behaviourClass = db.getMetadata().getSchema().createClass( "Behaviours" );
                 behaviourClass.createProperty( "_id", OType.STRING );
