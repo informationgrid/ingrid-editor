@@ -36,18 +36,10 @@ import { FormFieldsModule } from './form-fields/form-fields.module';
 import { AuthInterceptor } from './security/keycloak/auth.interceptor';
 import { ProfileService } from './services/profile.service';
 
-export function KeycloakLoader(configService: ConfigService) {
-  const keycloakService = environment.mockKeycloak ? KeycloakMockService : KeycloakService;
-
+export function ConfigLoader(configService: ConfigService) {
   return () => {
-    return configService.load(environment.configFile).then(() => {
-      return keycloakService.init(configService.getConfiguration());
-    }).catch(err => {
-      console.error('Keycloak could not be initialized', err);
-      debugger;
-      if (!environment.mockKeycloak) {
-        window.location.reload();
-      }
+    return configService.load(environment.configFile).catch(err => {
+      console.error('Config could not be loaded', err);
     });
   }
 }
@@ -77,7 +69,7 @@ export function KeycloakLoader(configService: ConfigService) {
     // make sure we are authenticated by keycloak before bootstrap
     {
       provide: APP_INITIALIZER,
-      useFactory: KeycloakLoader,
+      useFactory: ConfigLoader,
       deps: [ConfigService],
       multi: true
     },
@@ -92,17 +84,6 @@ export function KeycloakLoader(configService: ConfigService) {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
     }
-    // definition of profiles to be loaded
-    /*{provide: PROFILES, useClass: UVPProfile, multi: true},
-    {provide: PROFILES, useClass: AddressProfile, multi: true},
-    {provide: PROFILES, useClass: FolderProfile, multi: true},
-    {provide: PROFILES, useClass: IsoDataPoolingProfile, multi: true},
-    {provide: PROFILES, useClass: IsoDatasetProfile, multi: true},
-    {provide: PROFILES, useClass: IsoInformationSystemProfile, multi: true},
-    {provide: PROFILES, useClass: IsoLiteratureProfile, multi: true},
-    {provide: PROFILES, useClass: IsoProjectProfile, multi: true},
-    {provide: PROFILES, useClass: IsoServiceProfile, multi: true},
-    {provide: PROFILES, useClass: IsoTaskProfile, multi: true}*/
   ], // additional providers
 
   bootstrap: [AppComponent]

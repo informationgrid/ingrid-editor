@@ -10,7 +10,7 @@ import { ConfigService, Configuration } from '../../services/config.service';
 export class CatalogManagerComponent implements OnInit {
 
   _catalog: Catalog[];
-  private uploadUrl: string;
+  uploadUrl: string;
   private config: Configuration;
 
   constructor(private catalogService: CatalogService, configService: ConfigService) {

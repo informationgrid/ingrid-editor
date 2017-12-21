@@ -51,12 +51,12 @@ export class AppComponent implements OnInit {
       }
     } );
 
-    const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
+    // const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly
     this.roleService.getRoleMapping('admin' )
       .subscribe(role => {
         console.log('my roles:', role);
-        KeycloakService.auth.roleMapping.push(role);
+        // KeycloakService.auth.roleMapping.push(role);
       });
 
   }

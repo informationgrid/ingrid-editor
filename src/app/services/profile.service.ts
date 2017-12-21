@@ -5,8 +5,6 @@ import { ConfigService, Configuration } from './config.service';
 import { Profile } from './formular/profile';
 import { StorageService } from './storage/storage.service';
 import { CodelistService } from '../+form/services/codelist.service';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
 
 declare const webpackJsonp: any;
 
@@ -23,6 +21,7 @@ export class ProfileService {
 
     this.initialized = new Promise((resolve, reject) => {
       if (environment.profileFromServer) {
+        console.log('Requesting URL: ' + this.configuration.backendUrl + 'profiles');
         $script(this.configuration.backendUrl + 'profiles', () => {
           try {
             const dynModule: any[] = webpackJsonp([], null, ['_profile_']);

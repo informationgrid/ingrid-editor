@@ -95,7 +95,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     // TODO: get roles definiton
-    this.userRoles = KeycloakService.auth.roleMapping; // authService.rolesDetail;
+    this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
 
     // KeycloakService.auth.authz.
 

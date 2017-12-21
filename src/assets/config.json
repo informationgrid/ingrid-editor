@@ -1,4 +1,4 @@
 {
-  "keykloakBaseUrl": "http://localhost:8080/auth/",
-  "backendUrl": "http://localhost:8081/v1/"
+  "keykloakBaseUrl": "http://localhost:8999/auth/",
+  "backendUrl": "./api/"
 }

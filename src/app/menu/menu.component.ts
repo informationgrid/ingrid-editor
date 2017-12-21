@@ -52,7 +52,7 @@ export class MenuComponent implements OnInit {
       this.sessionCounter = timeExpireInSeconds;
     });
 
-    if (!environment.mockKeycloak) {
+    /*if (!environment.mockKeycloak) {
       Observable.interval(1000).subscribe(() => {
         this.sessionCounter--;
         if (this.sessionCounter < 0) {
@@ -60,7 +60,7 @@ export class MenuComponent implements OnInit {
           console.warn('session timeout ... should inform user and/or reload');
         }
       });
-    }
+    }*/
   }
 
   changeCatalog(catalogId: string) {

@@ -117,7 +117,9 @@ export class BehaviourService {
     this.profileService.getProfiles().then(profiles => {
       profiles.some(profileClass => {
         if (profileClass.id === profile) {
-          profileClass.applyValidations(form);
+          if (profileClass.applyValidations) {
+            profileClass.applyValidations(form);
+          }
           if (profileClass.behaviours) {
             profileClass.behaviours
               .filter(_ => _.isActive)
