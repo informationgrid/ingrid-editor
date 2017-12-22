@@ -11,7 +11,6 @@ import { Injectable } from '@angular/core';
 import { TreeField } from '../../app/+form/controls/field-tree';
 import { StorageService } from '../../app/services/storage/storage.service';
 
-@Injectable()
 export class IsoBaseProfile implements Profile {
 
   id = 'ISOService';

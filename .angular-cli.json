@@ -29,6 +29,7 @@
         "styles.css"
       ],
       "scripts": [
+        "../node_modules/scriptjs/dist/script.js",
         "../node_modules/chart.js/dist/Chart.js",
         "assets/leaflet/leaflet-areaselect.js"
       ],
@@ -48,8 +49,8 @@
     {
       "project": "src/tsconfig.app.json",
       "exclude": [
-        "**/*tree.component.ts"
-      ]
+  "**/*tree.component.ts"
+]
     },
     {
       "project": "src/tsconfig.spec.json"

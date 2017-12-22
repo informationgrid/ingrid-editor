@@ -1,12 +1,11 @@
-import {TextboxField} from '../../app/+form/controls/index';
-import {Rubric} from '../../app/+form/controls/rubric';
-import {CodelistService} from '../../app/+form/services/codelist.service';
-import {Injectable} from '@angular/core';
-import {IsoBaseProfile} from './iso-base.profile';
-import {Container} from '../../app/+form/controls/container';
+import { TextboxField } from '../../app/+form/controls/index';
+import { Rubric } from '../../app/+form/controls/rubric';
+import { CodelistService } from '../../app/+form/services/codelist.service';
+import { Injectable } from '@angular/core';
+import { IsoBaseProfile } from './iso-base.profile';
+import { Container } from '../../app/+form/controls/container';
 import { StorageService } from '../../app/services/storage/storage.service';
 
-@Injectable()
 export class IsoLiteratureProfile extends IsoBaseProfile {
 
   id = 'ISOLiterature';

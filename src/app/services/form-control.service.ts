@@ -12,11 +12,11 @@ export class FormControlService {
   toFormGroup(fields: IFieldBase<any>[], data: any) {
     const group: any = {};
     fields.forEach( field => {
-      if (field instanceof Container) {
+      if (field.controlType === 'container' || field.controlType === 'rubric') {
         let result: any = null;
-        if (field.isRepeatable) {
+        if ((<Container>field).isRepeatable) {
           const array: any[] = [];
-          field.children.forEach(groups => {
+          (<Container>field).children.forEach(groups => {
             const subGroup = field.key ? {} : group;
             groups.forEach((child: any) => {
               subGroup[child.key] = this._addValidator(child, this.getDataValue(data, [child.key]));
@@ -29,7 +29,7 @@ export class FormControlService {
           /*field.children.forEach(child => {
             subGroup[child.key] = this._addValidator(child, this.getDataValue(data, [field.key, child.key]));
           });*/
-          result = this.toFormGroup(field.children, field.key ? data[field.key] : data); // new FormGroup(subGroup);
+          result = this.toFormGroup((<Container>field).children, field.key ? data[field.key] : data); // new FormGroup(subGroup);
         }
         if (field.key) {
           group[field.key] = result;

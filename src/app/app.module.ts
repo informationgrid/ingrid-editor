@@ -25,7 +25,6 @@ import { ApiService } from './services/ApiService';
 import { KeycloakService } from './security/keycloak/keycloak.service';
 import { environment } from '../environments/environment';
 import { ConfigService } from './services/config.service';
-import { KeycloakMockService } from './security/keycloak/keycloak-mock.service';
 import { ModalModule, PopoverModule } from 'ngx-bootstrap';
 import { CatalogModule } from './+catalog/catalog.module';
 import { LoginComponent } from './security/login.component';

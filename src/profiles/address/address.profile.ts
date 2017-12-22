@@ -34,8 +34,8 @@ export class ProfileAddress implements Profile {
       domClass: 'half',
       order: 10,
       validator: [
-        Validators.required,
-        Validators.minLength(4),
+        // Validators.required,
+        // Validators.minLength(4),
         function (fc: FormControl) {
           const firstNameIsLong = fc.value && fc.value.length >= 5;
           const lastNameHasValue = fc.root.get('lastName') && fc.root.get('lastName').value
@@ -195,7 +195,7 @@ export class ProfileAddress implements Profile {
         validateTop: {valid: false, error: 'Der Titel muss aus mindestens 3 Zeichen bestehen!'}
       };
     };*/
-    form.root.get('address.postbox').validator = Validators.required;
+    // form.root.get('address.postbox').validator = Validators.required;
 
 
   };

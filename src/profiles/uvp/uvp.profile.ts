@@ -1,23 +1,20 @@
 import { Container, DropdownField, FieldBase, TextareaField, TextboxField } from '../../app/+form/controls';
 import { MapField } from '../../app/+form/controls/field-map';
-import { LatLng, TileLayer } from 'leaflet';
 import { PartialGeneratorField } from '../../app/+form/controls/field-partial-generator';
 import { OpenTableField } from '../../app/+form/controls/field-opentable';
 import { Profile } from '../../app/services/formular/profile';
 import { LinkDatasetField } from '../../app/+form/controls/field-link-dataset';
 import { CodelistService } from '../../app/+form/services/codelist.service';
-import { Injectable } from '@angular/core';
 import { DatepickerField } from '../../app/+form/controls/field-datepicker';
 import { StorageService } from '../../app/services/storage/storage.service';
 
-@Injectable()
 export class UVPProfile implements Profile {
 
   id = 'UVP';
 
   label = 'UVP-Verfahren';
 
-  codelistService: CodelistService = null;
+  codelistService = null;
 
   fields: Array<FieldBase<any>> = null;
 
@@ -69,13 +66,19 @@ export class UVPProfile implements Profile {
         height: 365,
         options: {
           zoomControl: true,
-          center: new LatLng( 40.731253, -73.996139 ),
+          center: [ 40.731253, -73.996139 ],
           zoom: 12,
           minZoom: 4,
           maxZoom: 19,
-          layers: [new TileLayer( 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          } )]
+          layers: [
+            {
+              urlTemplate: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+              attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }
+            /*new TileLayer( 'http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            } )*/
+          ]
         },
         settings: {}
       } ),
