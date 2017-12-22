@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiResponses;
 
 @CrossOrigin(origins = "http://localhost:4300", maxAge = 3600)
 @Api(value = "roles", description = "the roles API")
+@RequestMapping(path="/api")
 public interface RolesApi {
 
     @ApiOperation(value = "Creates a new role. If role with a given login already exists an error will be returned.", notes = "", response = Void.class, tags = { "Role", })

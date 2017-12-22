@@ -10,7 +10,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 public class HomeController {
 
-    @GetMapping(value = "/")
+    @GetMapping(value = "/swagger")
     public RedirectView index() {
         return new RedirectView( "swagger-ui.html" );
     }

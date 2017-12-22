@@ -1,5 +1,8 @@
 package de.ingrid.igeserver.configuration;
 
+import javax.servlet.ServletContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -11,6 +14,7 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.paths.RelativePathProvider;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -19,6 +23,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerDocumentationConfig extends WebMvcConfigurerAdapter {
+    
+    @Autowired
+    private SwaggerProperties swaggerProperties;
 
     ApiInfo apiInfo() {
         return new ApiInfoBuilder()
@@ -38,16 +45,42 @@ public class SwaggerDocumentationConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public Docket customImplementation() {
+    public Docket customImplementation(ServletContext servletContext) {
         return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                    .apis(RequestHandlerSelectors.basePackage("de.ingrid.igeserver.api"))
-                    .build()
+//                .host( "localhost:8081" )
+//                .pathProvider(new RelativePathProvider(servletContext) {
+//                    @Override
+//                    public String getApplicationBasePath() {
+//                        return "/api";
+//                    }
+//                })
                 .directModelSubstitute(org.joda.time.LocalDate.class, java.sql.Date.class)
                 .directModelSubstitute(org.joda.time.DateTime.class, java.util.Date.class)
                 .apiInfo(apiInfo())
-                .pathMapping("");
+                .pathMapping(swaggerProperties.getInvokingBasePath());
     }
+    
+//    @Bean
+//    public HandlerMapping swagger2ControllerProxyMapping(
+//        Environment environment,
+//        DocumentationCache documentationCache,
+//        ServiceModelToSwagger2Mapper mapper,
+//        JsonSerializer jsonSerializer) {
+//
+//        return new Swagger2ControllerRequestMappingHandlerMapping(
+//            environment,
+//            new Swagger2Controller(environment, documentationCache, mapper, jsonSerializer),
+//            swaggerProperties.getBrowsingBasePath());
+//    }
+//
+//    @Bean
+//    public HandlerMapping apiResourceControllerProxyMapping(
+//        ApiResourceController apiResourceController) {
+//
+//        return new ProxiedControllerRequestMappingHandlerMapping(
+//            apiResourceController,
+//            swaggerProperties.getBrowsingBasePath());
+//    }
     
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

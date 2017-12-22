@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiResponses;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
 @Api(value = "refreshToken", description = "the refreshToken API")
+@RequestMapping(path="/api")
 public interface RefreshTokenApi {
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Security" })

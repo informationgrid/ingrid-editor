@@ -32,6 +32,7 @@ import io.swagger.annotations.ApiResponses;
 
 @CrossOrigin(origins = "http://localhost:4300", maxAge = 3600)
 @Api(value = "datasets", description = "the datasets API")
+@RequestMapping(path="/api")
 public interface DatasetsApi {
 
     @ApiOperation(value = "Create a complete dataset", notes = "xxx", response = Void.class, tags = { "Datasets", })
@@ -40,7 +41,6 @@ public interface DatasetsApi {
             @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
     @RequestMapping(value = "/datasets", produces = { "application/json" }, method = RequestMethod.POST)
     ResponseEntity<String> createDataset(
-    		@RequestHeader(value="Authorization") String auth,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish);
     
@@ -50,7 +50,6 @@ public interface DatasetsApi {
             @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
     @RequestMapping(value = "/datasets/{id}", produces = { "application/json" }, method = RequestMethod.PUT)
     ResponseEntity<String> updateDataset(
-            @RequestHeader(value="Authorization") String auth,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish,

@@ -7,3 +7,4 @@ target/
 .project
 .classpath
 src/main/resources/www/
+src/main/resources/static/

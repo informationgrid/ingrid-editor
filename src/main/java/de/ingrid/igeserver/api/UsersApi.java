@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiResponses;
 
 @CrossOrigin(origins = "http://localhost:4300", maxAge = 3600)
 @Api(value = "users", description = "the users API")
+@RequestMapping(path="/api")
 public interface UsersApi {
 
     @ApiOperation(value = "Create a new user. If the user already exists an error will be returned.", notes = "", response = Void.class, tags={ "User", })

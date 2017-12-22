@@ -25,6 +25,7 @@ import io.swagger.annotations.ApiResponses;
 
 @CrossOrigin(origins = "http://localhost:4300", maxAge = 3600)
 @Api(value = "behaviours", description = "the behaviours API")
+@RequestMapping(path="/api")
 public interface ProfileApi {
 
 

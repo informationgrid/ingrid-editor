@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
@@ -74,7 +76,8 @@ public class ProfileApiController implements ProfileApi {
         String userId = "ige";
 
         if (principal != null) {
-            userId = principal.getName();
+            userId = ((KeycloakPrincipal<KeycloakSecurityContext>)principal).getKeycloakSecurityContext().getToken().getPreferredUsername();
+            // userId = principal.getName();
         }
 
         String dbId = this.dbUtils.getCatalogForUser( userId );
@@ -98,6 +101,17 @@ public class ProfileApiController implements ProfileApi {
         // dbFields.put( key, value )
         // dbFields.put( "fileContent", fileContent );
 
+        List<String> infos = dbService.getAllFrom( "Info" );
+        if (infos.size() > 0) {
+            String rid;
+            try {
+                rid = jsonService.getJsonMap( infos.get( 0 ) ).get( "@rid" ).textValue();
+                dbService.deleteRawDoc( "Info", rid );
+            } catch (Exception e) {
+                log.error( "Error removing profile document", e );
+            }
+        }
+        
         dbService.addRawDocTo( dbId, "Info", null, "profile", fileContent );
         return ResponseEntity.ok().build();
     }
@@ -110,7 +124,9 @@ public class ProfileApiController implements ProfileApi {
     private String prepareProfileContent(String fileContent) {
         // dbService.deleteDocFrom( classType, id );
         // return fileContent.replaceFirst("(.*?):(.*)", "webpackJsonp([\"_profile_\"],{\"_profile_\":$2");
-        return fileContent.replaceFirst( "(?<=\").*pack.*.ts(?=\")", "_profile_" );
+        // fileContent = fileContent.replaceFirst( "(?<=\\{).*?:", "\"_profile_\":" );
+        // return fileContent.replaceFirst( "(?<=\").*pack.*.ts(?=\")", "_profile_" );
+        return fileContent.replaceAll( "\"./src/profiles/pack.*.ts\"", "\"_profile_\"" );
     }
 
 }

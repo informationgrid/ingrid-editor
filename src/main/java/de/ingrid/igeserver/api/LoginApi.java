@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiResponses;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
 @Api(value = "login", description = "the login API")
+@RequestMapping(path="/api")
 public interface LoginApi {
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Security", })

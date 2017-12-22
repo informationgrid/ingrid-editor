@@ -13,12 +13,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.sequence.OSequence;
 import com.orientechnologies.orient.core.metadata.sequence.OSequence.SEQUENCE_TYPE;
 import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibrary;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.parser.ORid;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
@@ -319,6 +321,14 @@ public class OrientDbService {
         
     }
     
+    public void deleteRawDoc(String classType, String dbIdentifier) {
+        ODatabaseDocumentTx db = openDB("igedb");
+        
+        db.delete( new ORecordId( dbIdentifier ) );
+        
+        closeDB( db );
+    }
+    
     public void addRawDocTo(String dbId, String classType, Object id, String field, Object data) {
         ODatabaseDocumentTx db = openDB(dbId);
         db.begin();
@@ -371,7 +381,7 @@ public class OrientDbService {
     
 
     private void initSystemDBs() {
-        ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/users" );
+        ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/management" );
         if (!db.exists()) {
             db.create();
             
@@ -380,9 +390,14 @@ public class OrientDbService {
             seq.save();
             
             OClass docClass = db.getMetadata().getSchema().createClass( "info" );
-            addDocTo( "users", "info", "{ 'id': 'ige', 'catalogId': 'igedb' }", null );
+            addDocTo( "management", "Connections", "{ 'id': 'ige', 'catalogId': 'igedb' }", null );
+            
+            OClass catalogClass = db.getMetadata().getSchema().createClass( "Catalogs" );
+            catalogClass.createProperty( "_id", OType.INTEGER );
+            catalogClass.createIndex( "iidIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
             
         }
+        db.close();
     }
     
     private void initDatabase(String databaseName) {
@@ -402,10 +417,6 @@ public class OrientDbService {
                 docClass.createProperty( "_parent", OType.INTEGER );
                 docClass.createIndex( "didIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
                 
-                OClass catalogClass = db.getMetadata().getSchema().createClass( "Info" );
-                catalogClass.createProperty( "_id", OType.INTEGER );
-                catalogClass.createIndex( "iidIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
-
                 OClass behaviourClass = db.getMetadata().getSchema().createClass( "Behaviours" );
                 behaviourClass.createProperty( "_id", OType.STRING );
                 behaviourClass.createIndex( "bidIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );

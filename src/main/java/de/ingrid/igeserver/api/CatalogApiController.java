@@ -26,4 +26,10 @@ public class CatalogApiController implements CatalogApi {
         return null;
     }
 
+    @Override
+    public void testFunction(BehavioursApi behInterface) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

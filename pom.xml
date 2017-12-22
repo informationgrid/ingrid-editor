@@ -8,9 +8,10 @@
   <properties>
     <java.version>1.8</java.version>
     <orient-db>2.2.30</orient-db>
+    <keycloak.version>3.4.0.Final</keycloak.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <springfox-version>2.6.1</springfox-version>
+    <springfox-version>2.7.0</springfox-version>
     <argLine>-XX:MaxDirectMemorySize=512g</argLine>
   </properties>
   <parent>
@@ -19,20 +20,17 @@
     <version>1.5.9.RELEASE</version>
   </parent>
 
-<!--   <dependencyManagement>
+  <dependencyManagement>
     <dependencies>
-      <dependency>
-        Import dependency management from Spring Boot
-        <groupId>org.springframework.data</groupId>
-        <artifactId>spring-data-orientdb-parent</artifactId>
-        <version>0.10.0-SNAPSHOT</version>
-        <relativePath />
-         lookup parent from repository
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+        <dependency>
+            <groupId>org.keycloak.bom</groupId>
+            <artifactId>keycloak-adapter-bom</artifactId>
+            <version>${keycloak.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
     </dependencies>
-  </dependencyManagement> -->
+  </dependencyManagement>
 
   <build>
     <plugins>
@@ -65,7 +63,7 @@
       <artifactId>spring-boot-starter-tomcat</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
       <exclusions>
@@ -74,7 +72,14 @@
           <artifactId>spring-boot-starter-logging</artifactId>
         </exclusion>
       </exclusions>
+    </dependency> -->
+    
+    <!-- Security with Keycloak -->
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-spring-boot-starter</artifactId>
     </dependency>
+  
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -163,6 +168,11 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-1.2-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
     </dependency>
   </dependencies>
   

@@ -64,13 +64,13 @@ public class DatasetsApiController implements DatasetsApi {
      * Create dataset.
      */
     public ResponseEntity<String> createDataset(
-            @RequestHeader(value = "Authorization") String auth,
+            // @RequestHeader(value = "Authorization") String auth,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish) {
 
         try {
             // TODO: use Principal with Spring Security (see Behaviours::get())
-            String userId = getUserIdFromHeader( auth );
+            String userId = "ige"; // getUserIdFromHeader( auth );
             String mapDocument = this.jsonFromService.mapDocument( data, publish, userId );
             String result = this.dbService.addDocTo( COLLECTION, mapDocument );
             JsonNode mapDoc = this.jsonToService.mapDocument( result );
@@ -87,7 +87,7 @@ public class DatasetsApiController implements DatasetsApi {
      * Update dataset.
      */
     public ResponseEntity<String> updateDataset(
-            @RequestHeader(value = "Authorization") String auth,
+            // @RequestHeader(value = "Authorization") String auth,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish,
@@ -95,7 +95,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         try {
             String mapDocument = null;
-            String userId = getUserIdFromHeader( auth );
+            String userId = "ige"; // getUserIdFromHeader( auth );
             String dbId = this.dbUtils.getCatalogForUser( userId );
 
             if (dbId == null) {
@@ -272,6 +272,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             return ResponseEntity.ok( jsonToService.toJsonString( mapDoc ) );
         } catch (Exception e) {
+            // TODO: try to externalize error handler?
             log.error( "Error during getting document by ID", e );
             return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( e.getMessage() );
         }

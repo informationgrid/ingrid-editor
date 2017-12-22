@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiResponses;
 
 @CrossOrigin(origins = "http://localhost:4300", maxAge = 3600)
 @Api(value = "statistic", description = "the statistic API")
+@RequestMapping(path="/api")
 public interface StatisticApi {
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Statistic", })

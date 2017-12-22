@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiResponses;
 
 @CrossOrigin(origins = "http://localhost:4300", maxAge = 3600)
 @Api(value = "codelist", description = "the codelist API")
+@RequestMapping(path="/api")
 public interface CodelistApi {
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Codelist", })

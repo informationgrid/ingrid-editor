@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiResponses;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
 @Api(value = "import", description = "the import API")
+@RequestMapping(path="/api")
 public interface ImportApi {
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Import"})
