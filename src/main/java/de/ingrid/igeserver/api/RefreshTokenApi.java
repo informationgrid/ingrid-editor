@@ -20,13 +20,6 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(path="/api")
 public interface RefreshTokenApi {
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Security" })
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Options for this operation are returned.", response = Void.class) })
-
-    @RequestMapping(value = "/refreshToken", produces = { "application/json" }, method = RequestMethod.OPTIONS)
-    ResponseEntity<Void> getRefreshOp();
-
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Security", })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Returns a new access token to the requested client", response = Void.class) })

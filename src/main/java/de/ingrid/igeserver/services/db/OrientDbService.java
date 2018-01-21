@@ -1,4 +1,4 @@
-package de.ingrid.igeserver;
+package de.ingrid.igeserver.services.db;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ import com.orientechnologies.orient.core.metadata.sequence.OSequence;
 import com.orientechnologies.orient.core.metadata.sequence.OSequence.SEQUENCE_TYPE;
 import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibrary;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.parser.ORid;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
@@ -390,7 +389,7 @@ public class OrientDbService {
             seq.save();
             
             OClass docClass = db.getMetadata().getSchema().createClass( "info" );
-            addDocTo( "management", "Connections", "{ 'id': 'ige', 'catalogId': 'igedb' }", null );
+            //addDocTo( "management", "Connections", "{ 'id': 'ige', 'catalogId': 'igedb' }", null );
             
             OClass catalogClass = db.getMetadata().getSchema().createClass( "Catalogs" );
             catalogClass.createProperty( "_id", OType.INTEGER );
@@ -454,4 +453,18 @@ public class OrientDbService {
         } finally {}
     }
 
+	public Object beginTransaction() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void commit(Object transaction) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void rollback(Object transaction) {
+		// TODO Auto-generated method stub
+		
+	}
 }

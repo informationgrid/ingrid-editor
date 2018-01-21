@@ -2,7 +2,6 @@ package de.ingrid.igeserver.configuration;
 
 import javax.servlet.ServletContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -10,11 +9,9 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.paths.RelativePathProvider;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -24,8 +21,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerDocumentationConfig extends WebMvcConfigurerAdapter {
     
-    @Autowired
-    private SwaggerProperties swaggerProperties;
+    //@Autowired
+    //private SwaggerProperties swaggerProperties;
 
     ApiInfo apiInfo() {
         return new ApiInfoBuilder()
@@ -57,7 +54,7 @@ public class SwaggerDocumentationConfig extends WebMvcConfigurerAdapter {
                 .directModelSubstitute(org.joda.time.LocalDate.class, java.sql.Date.class)
                 .directModelSubstitute(org.joda.time.DateTime.class, java.util.Date.class)
                 .apiInfo(apiInfo())
-                .pathMapping(swaggerProperties.getInvokingBasePath());
+                .pathMapping("");//swaggerProperties.getInvokingBasePath());
     }
     
 //    @Bean

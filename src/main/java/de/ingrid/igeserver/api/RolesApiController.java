@@ -33,16 +33,6 @@ public class RolesApiController implements RolesApi {
         return ResponseEntity.ok("{ \"id\": -1 }");
     }
 
-    public ResponseEntity<Void> getRoleOp(@ApiParam(value = "",required=true ) @PathVariable("id") String id) {
-        // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
-
-    public ResponseEntity<Void> getRolesOp() {
-        // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
-
     public ResponseEntity<String> listRoles() {
         return ResponseEntity.ok("[]");
     }

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import de.ingrid.igeserver.OrientDbService;
 import de.ingrid.igeserver.services.MapperService;
+import de.ingrid.igeserver.services.db.OrientDbService;
 
 @Service
 public class DBUtils {

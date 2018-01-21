@@ -31,11 +31,4 @@ public interface StatisticApi {
     @RequestMapping(value = "/statistic", produces = { "application/json" }, method = RequestMethod.GET)
     ResponseEntity<String> getStatistic();
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Statistic" })
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Options for this operation are returned.", response = Void.class) })
-
-    @RequestMapping(value = "/statistic", produces = { "application/json" }, method = RequestMethod.OPTIONS)
-    ResponseEntity<Void> getStatisticOp();
-
 }

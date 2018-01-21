@@ -15,8 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import de.ingrid.igeserver.OrientDbService;
 import de.ingrid.igeserver.services.JsonToDBService;
+import de.ingrid.igeserver.services.db.OrientDbService;
 import io.swagger.annotations.ApiParam;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
@@ -54,11 +54,6 @@ public class BehavioursApiController implements BehavioursApi {
             // TODO: log.error
             return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( e.getMessage() );
         }
-    }
-    
-    public ResponseEntity<Void> getBehavioursOp() {
-        // do some magic!
-        return new ResponseEntity<Void>( HttpStatus.OK );
     }
 
 }

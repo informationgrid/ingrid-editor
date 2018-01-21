@@ -27,18 +27,11 @@ import io.swagger.annotations.ApiResponses;
 @Api(value = "behaviours", description = "the behaviours API")
 @RequestMapping(path="/api")
 public interface ProfileApi {
-
-
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Profile" })
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Options for this operation are returned.", response = Void.class) })
-    @RequestMapping(value = "/profiles", produces = { "application/json" }, method = RequestMethod.OPTIONS)
-    ResponseEntity<Void> getProfilesOp();
     
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Profile", })
     @ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class) })
     @RequestMapping(value = "/profiles", produces = { "text/javascript" }, method = RequestMethod.GET)
-    public ResponseEntity<String> getProfile() throws IOException;
+    public ResponseEntity<String> getProfile(Principal principal) throws IOException;
     
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Profile", })
     @ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class) })

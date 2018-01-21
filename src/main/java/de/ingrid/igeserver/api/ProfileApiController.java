@@ -21,8 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import de.ingrid.igeserver.OrientDbService;
 import de.ingrid.igeserver.services.JsonToDBService;
+import de.ingrid.igeserver.services.db.OrientDbService;
+import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
@@ -42,13 +43,7 @@ public class ProfileApiController implements ProfileApi {
     private DBUtils dbUtils;
 
     @Override
-    public ResponseEntity<Void> getProfilesOp() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<String> getProfile() throws IOException {
+    public ResponseEntity<String> getProfile(Principal principal) throws IOException {
         // ClassPathResource resource = new ClassPathResource( "/profile-uvp.chunk.js" );
         String profile = null; // new String( Files.readAllBytes( Paths.get( resource.getURI() ) ) );
 
@@ -73,12 +68,7 @@ public class ProfileApiController implements ProfileApi {
     public ResponseEntity<String> uploadProfile(Principal principal, @RequestParam("profileFile") MultipartFile file,
             RedirectAttributes redirectAttributes) {
 
-        String userId = "ige";
-
-        if (principal != null) {
-            userId = ((KeycloakPrincipal<KeycloakSecurityContext>)principal).getKeycloakSecurityContext().getToken().getPreferredUsername();
-            // userId = principal.getName();
-        }
+        String userId = AuthUtils.getUsernameFromPrincipal(principal);
 
         String dbId = this.dbUtils.getCatalogForUser( userId );
 

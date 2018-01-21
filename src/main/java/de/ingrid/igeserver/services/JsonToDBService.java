@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import de.ingrid.igeserver.OrientDbService;
+import de.ingrid.igeserver.services.db.OrientDbService;
 
 @Service
 public class JsonToDBService extends MapperService {

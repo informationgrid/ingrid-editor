@@ -41,11 +41,6 @@ public class CodelistApiController implements CodelistApi {
     	
         return ResponseEntity.ok( createJSON(found));
     }
-
-    public ResponseEntity<Void> getCodelistOp(@ApiParam(value = "",required=true ) @PathVariable("id") String id) {
-        // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
     
     private String createJSON(Object obj) {
         XStream xstream = new XStream(new JsonHierarchicalStreamDriver() {

@@ -14,13 +14,6 @@ import io.swagger.annotations.ApiParam;
 @Controller
 public class ImportApiController implements ImportApi {
 
-
-
-    public ResponseEntity<Void> getImportOp() {
-        // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
-
     public ResponseEntity<Void> importDataset(@ApiParam(value = "The dataset to be imported." ,required=true )  @Valid @RequestBody Data4 data) {
         // do some magic!
         return new ResponseEntity<Void>(HttpStatus.OK);

@@ -39,11 +39,6 @@ public class UsersApiController implements UsersApi {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    public ResponseEntity<Void> getUserOp(@ApiParam(value = "",required=true ) @PathVariable("id") String id) {
-        // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
-
     public ResponseEntity<Void> list() {
         // do some magic!
         return new ResponseEntity<Void>(HttpStatus.OK);

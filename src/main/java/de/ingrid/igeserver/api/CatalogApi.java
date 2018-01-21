@@ -6,12 +6,12 @@
 package de.ingrid.igeserver.api;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import de.ingrid.igeserver.model.Behaviour;
 import de.ingrid.igeserver.model.InlineResponseDefault;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,21 +23,20 @@ import io.swagger.annotations.ApiResponses;
 
 @CrossOrigin(origins = "http://localhost:4300", maxAge = 3600)
 @Api(value = "catalogs", description = "the catalog API")
-@RequestMapping(path="/api")
+@RequestMapping(path = "/api")
 public interface CatalogApi {
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Catalog", })
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
+	@ApiOperation(value = "", notes = "", response = Void.class, tags = { "Catalog", })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
+			@ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
 
-    @RequestMapping(value = "/catalogs", produces = { "application/json" }, method = RequestMethod.GET)
-    ResponseEntity<String> getCatalogs();
-    
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Catalog", })
-    @RequestMapping(value = "/catalogs/{name}", produces = { "application/json" }, method = RequestMethod.POST)
-    public ResponseEntity<String> createCatalog(@ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name);
+	@RequestMapping(value = "/catalogs", produces = { "application/json" }, method = RequestMethod.GET)
+	ResponseEntity<String> getCatalogs();
 
-    
-    public void testFunction(BehavioursApi behInterface);
+	@PreAuthorize("hasRole('superadmin')")
+	@ApiOperation(value = "", notes = "", response = Void.class, tags = { "Catalog", })
+	@RequestMapping(value = "/catalogs/{name}", produces = { "application/json" }, method = RequestMethod.POST)
+	public ResponseEntity<String> createCatalog(
+			@ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name);
+
 }

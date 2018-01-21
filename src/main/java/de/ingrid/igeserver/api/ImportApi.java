@@ -26,13 +26,6 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(path="/api")
 public interface ImportApi {
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Import"})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Options for this operation are returned.", response = Void.class) })
-
-    @RequestMapping(value = "/import", produces = { "application/json" }, method = RequestMethod.OPTIONS)
-    ResponseEntity<Void> getImportOp();
-
     @ApiOperation(value = "...", notes = "...", response = Void.class, tags = { "Import", })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The stored dataset, which might contain additional storage information.", response = Void.class),

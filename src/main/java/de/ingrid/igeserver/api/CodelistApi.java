@@ -33,11 +33,4 @@ public interface CodelistApi {
     @RequestMapping(value = "/codelist/{id}", produces = { "application/json" }, method = RequestMethod.GET)
     ResponseEntity<String> getCodelistById(@ApiParam(value = "The ID of the codelist.", required = true) @PathVariable("id") String id);
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Codelist" })
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Options for this operation are returned.", response = Void.class) })
-
-    @RequestMapping(value = "/codelist/{id}", produces = { "application/json" }, method = RequestMethod.OPTIONS)
-    ResponseEntity<Void> getCodelistOp(@ApiParam(value = "", required = true) @PathVariable("id") String id);
-
 }

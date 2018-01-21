@@ -12,8 +12,6 @@ import io.swagger.annotations.ApiParam;
 @Controller
 public class LoginApiController implements LoginApi {
 
-
-
     public ResponseEntity<Void> login(@ApiParam(value = "") @RequestPart(value="username", required=false)  String username,
         @ApiParam(value = "") @RequestPart(value="password", required=false)  String password) {
         // do some magic!

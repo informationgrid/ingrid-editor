@@ -9,13 +9,6 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class RefreshTokenApiController implements RefreshTokenApi {
 
-
-
-    public ResponseEntity<Void> getRefreshOp() {
-        // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
-
     public ResponseEntity<Void> refreshToken() {
         // do some magic!
         return new ResponseEntity<Void>(HttpStatus.OK);
