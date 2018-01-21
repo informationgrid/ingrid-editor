@@ -34,16 +34,17 @@ import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule } from '@angu
 import { FormFieldsModule } from './form-fields/form-fields.module';
 import { AuthInterceptor } from './security/keycloak/auth.interceptor';
 import { ProfileService } from './services/profile.service';
+import { ButtonModule } from 'primeng/components/button/button';
 
 export function ConfigLoader(configService: ConfigService) {
   return () => {
-    return configService.load(environment.configFile).catch(err => {
-      console.error('Config could not be loaded', err);
-    });
+    return configService.load( environment.configFile ).catch( err => {
+      console.error( 'Config could not be loaded', err );
+    } );
   }
 }
 
-@NgModule({
+@NgModule( {
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent],
   imports: [
@@ -52,7 +53,7 @@ export function ConfigLoader(configService: ConfigService) {
     // ngx-bootstrap
     PopoverModule.forRoot(),
     // PrimeNG
-    TreeModule, GrowlModule,
+    TreeModule, GrowlModule, ButtonModule,
     // IGE-Modules
     IgeFormModule, DashboardModule, FieldsModule, CatalogModule, FormFieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule.forRoot()],
@@ -86,7 +87,7 @@ export function ConfigLoader(configService: ConfigService) {
   ], // additional providers
 
   bootstrap: [AppComponent]
-})
+} )
 
 export class AppModule {
 }

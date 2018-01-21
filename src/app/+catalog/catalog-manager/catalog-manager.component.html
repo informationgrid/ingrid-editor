@@ -1,3 +1,7 @@
+<div>
+    <button pButton type="button" label="Neuen Katalog erstellen ..." (click)="createCatalog()" ></button>
+</div>
+
 <div class="card-deck">
     <div *ngFor="let cat of catalog" class="card bg-light mb-3" style="max-width: 20rem;">
         <div class="card-header">{{cat.label}}</div>

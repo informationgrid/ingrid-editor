@@ -141,7 +141,13 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     this.leaflet.nativeElement.style.height = this.height + 'px';
     this.leaflet.nativeElement.style.width = '100%';
 
-    this.leafletReference = new Map( this.leaflet.nativeElement, this.options );
+    try {
+      this.leafletReference = new Map( this.leaflet.nativeElement, this.options );
+    } catch (e) {
+      console.error('Problem initializing the map component.', e);
+      this.modalService.showError('Problem initializing the map component.', e);
+      return;
+    }
     this.toggleSearch( false );
     (<MyMap>this.leafletReference)._onResize();
 

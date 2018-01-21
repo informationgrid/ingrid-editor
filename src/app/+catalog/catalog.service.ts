@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { NavigationExtras, Router } from '@angular/router';
+import { ConfigService, Configuration } from '../services/config.service';
+import { ErrorService } from '../services/error.service';
+import { HttpClient } from '@angular/common/http';
 
 export interface Catalog {
   id: string;
@@ -11,17 +14,20 @@ export interface Catalog {
 @Injectable()
 export class CatalogService {
   private demoCatalogs: Catalog[] = [
-    { id: 'c1', label: 'Katalog Niedersachsen', adminUser: 'Michael Meier' },
-    { id: 'c2', label: 'Katalog Brandenburg', adminUser: 'Maria Blume' },
-    { id: 'c3', label: 'Katalog Hamburg', adminUser: 'Hubert Stroh' }
+    {id: 'c1', label: 'Katalog Niedersachsen', adminUser: 'Michael Meier'},
+    {id: 'c2', label: 'Katalog Brandenburg', adminUser: 'Maria Blume'},
+    {id: 'c3', label: 'Katalog Hamburg', adminUser: 'Hubert Stroh'}
   ];
 
   private _forcedCatalog: string = null;
+  private configuration: Configuration;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private http: HttpClient, configService: ConfigService, private errorService: ErrorService) {
+    this.configuration = configService.getConfiguration();
+  }
 
   getCatalogs(): Observable<Catalog[]> {
-    return Observable.of(this.demoCatalogs);
+    return Observable.of( this.demoCatalogs );
   }
 
   forceCatalog(id: string) {
@@ -30,9 +36,14 @@ export class CatalogService {
     this._forcedCatalog = id;
 
     const extras: NavigationExtras = {
-      queryParams: { forceCatalog: id }
+      queryParams: {forceCatalog: id}
     };
 
-    this.router.navigate(['/form'], extras );
+    this.router.navigate( ['/form'], extras );
+  }
+
+  createCatalog(name: string) {
+    return this.http.post( this.configuration.backendUrl + 'catalogs/' + name, null )
+      .catch( err => this.errorService.handle( err ) );
   }
 }

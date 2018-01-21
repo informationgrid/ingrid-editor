@@ -10,16 +10,37 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Get the auth header from the service.
-    if (!this.auth.isInitialized()) {
-      return next.handle(req);
-    }
-    const authHeaderPromise = this.auth.getToken();
-    const authHeaderObservable = fromPromise(authHeaderPromise);
+    //send the newly created request
+    return next.handle( req )
+      .catch( (error, caught) => {
+        debugger;
+        // if we have been logged out during a request then redirect to the start page
+        // so that the keycloak login screen is shown
+        if (error.status === 403) {
+          // TODO: redirect
+          console.error( 'You do not have permission to this resource or are logged out' );
+        } else if (error.url.indexOf( '/auth/realms/' ) !== -1) {
+          // TODO: redirect
+          console.info( 'We have been logged out. Redirecting to login page.' )
+        }
+        //intercept the respons error and displace it to the console
+        console.log( "Error Occurred" );
+        console.log( error );
+        //return the error to the method that called it
+        return Observable.throw( error );
+      } ) as any;
 
-    return authHeaderObservable.flatMap(token => {
-      const authReq = req.clone({headers: req.headers.set('Authorization', 'Bearer ' + token)});
-      return next.handle(authReq);
-    });
+    //
+    // // Get the auth header from the service.
+    // if (!this.auth.isInitialized()) {
+    //   return next.handle(req);
+    // }
+    // const authHeaderPromise = this.auth.getToken();
+    // const authHeaderObservable = fromPromise(authHeaderPromise);
+    //
+    // return authHeaderObservable.flatMap(token => {
+    //   const authReq = req.clone({headers: req.headers.set('Authorization', 'Bearer ' + token)});
+    //   return next.handle(authReq);
+    // });
   }
 }

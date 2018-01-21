@@ -27,6 +27,10 @@ export class CatalogManagerComponent implements OnInit {
     return this._catalog;
   }
 
+  createCatalog() {
+    this.catalogService.createCatalog('myNewCatalog').subscribe();
+  }
+
   chooseCatalog(id: string) {
     this.catalogService.forceCatalog( id );
   }
