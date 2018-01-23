@@ -6,7 +6,8 @@ import {ImportExportService} from './import-export-service';
 import {IgeFormModule} from '../+form/ige-form.module';
 import { ExportComponent } from './export/export.component';
 import {SharedModule} from '../shared.module';
-import { AccordionModule, FileUploadModule } from 'primeng/primeng';
+import { AccordionModule } from 'primeng/accordion';
+import { FileUploadModule } from 'primeng/fileupload';
 
 @NgModule({
   imports: [CommonModule, routing, FileUploadModule, AccordionModule, SharedModule, IgeFormModule],

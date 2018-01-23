@@ -6,7 +6,7 @@ import { ErrorService } from '../../../services/error.service';
 import { FormToolbarService } from '../../toolbar/form-toolbar.service';
 import { SelectedDocument } from '../selected-document.model';
 import { Subscription } from 'rxjs/Subscription';
-import { TreeNode } from 'primeng/primeng';
+import { TreeNode } from 'primeng/api';
 import { UpdateType } from '../../../models/update-type.enum';
 import { DocMainInfo } from '../../../models/update-dataset-info.model';
 import { ProfileService } from '../../../services/profile.service';

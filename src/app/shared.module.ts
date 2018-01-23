@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { MetadataTreeComponent } from './+form/sidebars/tree/tree.component';
 import { CommonModule } from '@angular/common';
 import { AngularSplitModule } from 'angular-split';
-import { TreeModule } from 'primeng/primeng';
+import { TreeModule } from 'primeng/tree';
 import { FocusDirective } from './directives/focus.directive';
 import { FormFieldsModule } from './form-fields/form-fields.module';
 import { DropDownComponent } from './form-fields/drop-down/drop-down.component';

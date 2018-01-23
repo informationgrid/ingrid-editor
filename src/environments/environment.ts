@@ -5,7 +5,7 @@
 
 export const environment = {
   production: false,
-  profileFromServer: true,
+  profileFromServer: false,
   mockKeycloak: true,
   configFile: 'assets/config.json'
 };
