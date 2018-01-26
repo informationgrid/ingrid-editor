@@ -25,16 +25,19 @@ import { ApiService } from './services/ApiService';
 import { KeycloakService } from './security/keycloak/keycloak.service';
 import { environment } from '../environments/environment';
 import { ConfigService } from './services/config.service';
-import { ModalModule, PopoverModule } from 'ngx-bootstrap';
+import { ModalModule} from 'ngx-bootstrap/modal';
+import { PopoverModule } from 'ngx-bootstrap/popover';
 import { CatalogModule } from './+catalog/catalog.module';
 import { LoginComponent } from './security/login.component';
 import { GlobalErrorHandler } from './error-handler';
-import { GrowlModule, TreeModule } from 'primeng/primeng';
+import { TreeModule } from 'primeng/tree';
+import { GrowlModule } from 'primeng/growl';
 import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 import { FormFieldsModule } from './form-fields/form-fields.module';
 import { AuthInterceptor } from './security/keycloak/auth.interceptor';
 import { ProfileService } from './services/profile.service';
-import { ButtonModule } from 'primeng/components/button/button';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
 export function ConfigLoader(configService: ConfigService) {
   return () => {
@@ -53,7 +56,7 @@ export function ConfigLoader(configService: ConfigService) {
     // ngx-bootstrap
     PopoverModule.forRoot(),
     // PrimeNG
-    TreeModule, GrowlModule, ButtonModule,
+    TreeModule, GrowlModule, ButtonModule, InputTextModule,
     // IGE-Modules
     IgeFormModule, DashboardModule, FieldsModule, CatalogModule, FormFieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule.forRoot()],

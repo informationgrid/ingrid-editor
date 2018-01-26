@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Catalog, CatalogService } from '../catalog.service';
 import { ConfigService, Configuration } from '../../services/config.service';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'ige-catalog-manager',
@@ -9,26 +11,44 @@ import { ConfigService, Configuration } from '../../services/config.service';
 })
 export class CatalogManagerComponent implements OnInit {
 
-  _catalog: Catalog[];
+  // _catalog: Catalog[];
+  catalogs: Observable<Catalog[]>;
   uploadUrl: string;
   private config: Configuration;
 
-  constructor(private catalogService: CatalogService, configService: ConfigService) {
+  @ViewChild('newCatalogModal') newCatalogModal: TemplateRef<any>;
+  newCatalogModalRef: BsModalRef;
+
+  @ViewChild('uploadProfileModal') uploadProfileModal: TemplateRef<any>;
+  uploadProfileModalRef: BsModalRef;
+
+  constructor(private catalogService: CatalogService, configService: ConfigService, private modal2Service: BsModalService) {
     this.config = configService.getConfiguration();
   }
 
   ngOnInit() {
-    this.catalogService.getCatalogs().subscribe( data => this._catalog = data );
+    this.catalogs = this.catalogService.getCatalogs();
 
     this.uploadUrl = this.config.backendUrl + 'profiles';
   }
 
-  get catalog(): Catalog[] {
-    return this._catalog;
+  // get catalog(): Catalog[] {
+  //   return this._catalog;
+  // }
+
+  showCreateCatalogDialog() {
+    this.newCatalogModalRef = this.modal2Service.show(this.newCatalogModal);
   }
 
-  createCatalog() {
-    this.catalogService.createCatalog('myNewCatalog').subscribe();
+  showUploadProfileDialog() {
+    this.uploadProfileModalRef = this.modal2Service.show(this.uploadProfileModal);
+  }
+
+  createCatalog(name: string) {
+    this.catalogService.createCatalog(name).subscribe( () => {
+      this.catalogs = this.catalogService.getCatalogs();
+    });
+    this.newCatalogModalRef.hide();
   }
 
   chooseCatalog(id: string) {

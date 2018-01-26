@@ -4,6 +4,7 @@ html, body {
 
 body {
   padding-top: 56px;
+  font-size: 85%;
 }
 
 .invalid-feedback {

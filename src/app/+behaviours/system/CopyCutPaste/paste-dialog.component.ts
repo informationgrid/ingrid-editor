@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Injector, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {CopyMoveEnum, MoveMode, PasteCallback} from './enums';
 
 @Component({

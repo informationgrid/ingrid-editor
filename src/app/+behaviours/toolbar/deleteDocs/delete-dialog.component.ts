@@ -1,7 +1,7 @@
 import {Component, Injector, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Router} from '@angular/router';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 
 @Component({
   template: `

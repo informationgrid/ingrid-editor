@@ -18,7 +18,7 @@ import { KeycloakService } from '../security/keycloak/keycloak.service';
 import { RoleService } from '../+user/role.service';
 import { Subscription } from 'rxjs/Subscription';
 import { WizardService } from '../wizard/wizard.service';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MessageService } from 'primeng/components/common/messageservice';
 

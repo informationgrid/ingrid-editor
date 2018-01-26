@@ -16,11 +16,11 @@ import { MainFormComponent } from './main-form/main-form.component';
 import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component';
 import { IgeWizardModule } from '../wizard/wizard.module';
 import { ScrollToDirective } from '../directives/scrollTo.directive';
-import { PopoverModule } from 'ngx-bootstrap';
-import {
-  ButtonModule, GrowlModule, MenubarModule,
-  ToolbarModule
-} from 'primeng/primeng';
+import { PopoverModule } from 'ngx-bootstrap/popover';
+import { ButtonModule } from 'primeng/button';
+import { GrowlModule } from 'primeng/growl';
+import { MenubarModule } from 'primeng/menubar';
+import { ToolbarModule } from 'primeng/toolbar';
 
 @NgModule({
   imports: [

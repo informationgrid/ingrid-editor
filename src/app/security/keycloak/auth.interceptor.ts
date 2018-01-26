@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { KeycloakService } from './keycloak.service';
-import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
@@ -10,7 +9,7 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    //send the newly created request
+    // send the newly created request
     return next.handle( req )
       .catch( (error, caught) => {
         debugger;
@@ -21,12 +20,12 @@ export class AuthInterceptor implements HttpInterceptor {
           console.error( 'You do not have permission to this resource or are logged out' );
         } else if (error.url.indexOf( '/auth/realms/' ) !== -1) {
           // TODO: redirect
-          console.info( 'We have been logged out. Redirecting to login page.' )
+          console.log( 'We have been logged out. Redirecting to login page.' );
         }
-        //intercept the respons error and displace it to the console
-        console.log( "Error Occurred" );
+        // intercept the respons error and displace it to the console
+        console.log( 'Error Occurred' );
         console.log( error );
-        //return the error to the method that called it
+        // return the error to the method that called it
         return Observable.throw( error );
       } ) as any;
 

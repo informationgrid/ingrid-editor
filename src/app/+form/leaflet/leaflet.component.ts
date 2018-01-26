@@ -8,12 +8,11 @@ import {
   OnDestroy,
   ViewChild
 } from '@angular/core';
-import * as L from 'leaflet';
 import {Map, LatLngBounds, MapOptions, Rectangle} from 'leaflet';
-import {} from 'leaflet-areaselect';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ModalService} from '../../services/modal/modal.service';
 import {NominatimService} from './nominatim.service';
+import { LeafletAreaSelect } from './leaflet-area-select';
 
 class MyMap extends Map {
   _onResize: () => {};
@@ -290,9 +289,9 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   private setupAreaSelect() {
     const box = this.drawnBBox ? this.drawnBBox._path.getBBox() : null;
     if (box) {
-      this.areaSelect = L.areaSelect( box );
+      this.areaSelect = new LeafletAreaSelect( box );
     } else {
-      this.areaSelect = L.areaSelect( {width: 50, height: 50} );
+      this.areaSelect = new LeafletAreaSelect( {width: 50, height: 50} );
     }
     this.areaSelect.addTo( this.leafletReference );
   }

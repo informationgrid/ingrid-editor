@@ -2,7 +2,7 @@ import {Component, Injector, OnInit, TemplateRef, ViewChild} from '@angular/core
 import {FormularService} from '../../../services/formular/formular.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {UpdateType} from '../../../models/update-type.enum';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 
 @Component( {
   templateUrl: './create-folder.component.html'

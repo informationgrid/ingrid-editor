@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { DefaultEditor } from 'ng2-smart-table';
+// import { DefaultEditor } from 'ng2-smart-table';
 
 @Component({
   template: `
@@ -15,7 +15,7 @@ import { DefaultEditor } from 'ng2-smart-table';
                [currVal]="model.type"> </combo-box>-->
   `,
 })
-export class ComboEditorComponent extends DefaultEditor implements AfterViewInit, OnInit {
+export class ComboEditorComponent implements AfterViewInit, OnInit {
 
   types;
   model = {
@@ -23,12 +23,12 @@ export class ComboEditorComponent extends DefaultEditor implements AfterViewInit
   };
 
   constructor() {
-    super();
+    // super();
   }
 
   ngOnInit() {
-    this.types = this.cell.getColumn().editor.config.list;
-    this.model.type = this.cell.getValue();
+    // this.types = this.cell.getColumn().editor.config.list;
+    // this.model.type = this.cell.getValue();
   }
 
   ngAfterViewInit() {
@@ -36,6 +36,6 @@ export class ComboEditorComponent extends DefaultEditor implements AfterViewInit
   }
 
   updateValue(value) {
-    this.cell.newValue = value;
+    // this.cell.newValue = value;
   }
 }

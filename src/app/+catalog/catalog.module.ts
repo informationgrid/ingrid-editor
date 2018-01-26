@@ -4,11 +4,13 @@ import { CatalogManagerComponent } from './catalog-manager/catalog-manager.compo
 import { routing } from './catalog.routing';
 import { CatalogService } from './catalog.service';
 import { FileUploadModule } from 'primeng/fileupload';
+import { InputTextModule } from 'primeng/inputtext';
 
 @NgModule({
   imports: [
     CommonModule,
     FileUploadModule,
+    InputTextModule,
     routing
   ],
   providers: [

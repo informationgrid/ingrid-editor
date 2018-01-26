@@ -1,9 +1,10 @@
 <div>
-    <button pButton type="button" label="Neuen Katalog erstellen ..." (click)="createCatalog()" ></button>
+    <button pButton type="button" label="Neuen Katalog erstellen ..." (click)="showCreateCatalogDialog()"></button>
+    <button pButton type="button" label="Profil hochladen ..." (click)="showUploadProfileDialog()"></button>
 </div>
 
 <div class="card-deck">
-    <div *ngFor="let cat of catalog" class="card bg-light mb-3" style="max-width: 20rem;">
+    <div *ngFor="let cat of catalogs | async" class="card bg-light mb-3" style="max-width: 20rem;">
         <div class="card-header">{{cat.label}}</div>
         <div class="card-body">
             <!--<h4 class="card-title">Light card title</h4>-->
@@ -13,10 +14,37 @@
     </div>
 </div>
 
-<p-fileUpload name="profileFile"
-              [url]="uploadUrl"
-              multiple="false"
-              accept=".js"
-              (onUpload)="onUpload($event)"
-              (onError)="handleError($event)"
-              maxFileSize="1000000">
+<ng-template #newCatalogModal>
+    <div class="modal-header">
+        <h4 class="modal-title">Neuer Katalog</h4>
+        <!--<button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>-->
+    </div>
+    <div class="modal-body">
+        <h3 class="first">Katalogname</h3>
+        <input type="text" #newCatalogName pInputText>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-link" (click)="createCatalog(newCatalogName.value)">Anlegen</button>
+        <!--<button type="button" class="btn btn-link" (click)="modalRef.hide()">Nein</button>-->
+    </div>
+</ng-template>
+
+<ng-template #uploadProfileModal>
+    <div class="modal-header">
+        <h4 class="modal-title">Profil hochladen</h4>
+        <!--<button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>-->
+    </div>
+    <div class="modal-body">
+        <p-fileUpload name="profileFile"
+                      [url]="uploadUrl"
+                      multiple="false"
+                      accept=".js"
+                      (onUpload)="onUpload($event)"
+                      (onError)="handleError($event)"
+                      maxFileSize="1000000"></p-fileUpload>
+    </div>
+</ng-template>

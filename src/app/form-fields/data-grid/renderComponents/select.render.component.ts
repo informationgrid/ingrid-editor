@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ViewCell } from 'ng2-smart-table';
+// import { ViewCell } from 'ng2-smart-table';
 
 @Component({
   template: `
     {{renderValue}}
   `,
 })
-export class SelectRenderComponent implements ViewCell, OnInit {
+export class SelectRenderComponent implements OnInit {
 
   renderValue: string;
 

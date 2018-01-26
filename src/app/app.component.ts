@@ -3,7 +3,7 @@ import {ModalService} from './services/modal/modal.service';
 import {BehaviourService} from './+behaviours/behaviour.service';
 import {RoleService} from './+user/role.service';
 import {KeycloakService} from './security/keycloak/keycloak.service';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import { MessageService } from 'primeng/components/common/messageservice';
 
 @Component( {

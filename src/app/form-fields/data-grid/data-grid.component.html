@@ -1,8 +1,49 @@
-
 <button *ngIf="showAddButton" class="btn btn-outline-secondary btn-xs addButton" type="button" (click)="addRow($event)">
     <span class="fa fa-plus"></span>
 </button>
-<ng2-smart-table [settings]="settings" [source]="source"></ng2-smart-table>
+
+<p-table [columns]="settings.columns" [value]="value">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th style="width: 2.25em">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of settings.columns">{{col.header}}</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="settings.columns">
+        <tr [pSelectableRow]="rowData">
+            <td>
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of settings.columns; let colIndex=index" pEditableColumn>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input *ngIf="col.controlType === 'textbox'" type="text" [(ngModel)]="rowData[col.field]">
+                        <!--<p-inputMask *ngIf="col.controlType === 'textbox'" [(ngModel)]="rowData[col.field]" mask="*?@*?.*?"></p-inputMask>-->
+                        <!-- <select *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]">
+                            <option *ngFor="let option of col.options" [value]="option.id">{{option.value}}</option>
+                        </select>-->
+                        <ige-drop-down *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]"
+                                       [id]="col.field"
+                                       [isCombo]="col.isCombo"
+                                       [options]="col.options">
+                        </ige-drop-down>
+                    </ng-template>
+                    <ng-template *ngIf="col.controlType === 'dropdown'" pTemplate="output">
+                        {{rowData[col.field]?.value}}
+                    </ng-template>
+                    <ng-template *ngIf="col.controlType === 'textbox'" pTemplate="output">
+                        {{rowData[col.field]}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template *ngIf="value.length === 0" pTemplate="summary">
+        <div class="text-center" title="Fügen Sie neue Zeilen hinzu mit '+' über der Tabelle.">Tabelle ist leer</div>
+    </ng-template>
+</p-table>
 
 <ng-template #addRowModal>
     <div class="modal-header">
@@ -13,8 +54,11 @@
             <div class="form-group">
                 <div *ngFor="let col of columns; let i=index" class="padding">
                     <label class="control-label">{{col.editor.label}}</label>
-                    <input *ngIf="col.editor.controlType === 'textbox'" [focus]="i === focusNumber" [type]="col.editor.type" class="form-control" [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
-                    <select class="form-control" *ngIf="col.editor.controlType === 'dropdown'" [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
+                    <input *ngIf="col.editor.controlType === 'textbox'" [focus]="i === focusNumber"
+                           [type]="col.editor.type" class="form-control" [(ngModel)]="addModel[col.editor.key]"
+                           [name]="col.editor.key">
+                    <select class="form-control" *ngIf="col.editor.controlType === 'dropdown'"
+                            [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
                         <option *ngFor="let option of col.editor.options" [value]="option.id">{{option.value}}</option>
                     </select>
                     <!--<tree *ngIf="col.editor.controlType === 'tree'" (selected)="addFromTree($event, col.editor.key)"></tree>-->

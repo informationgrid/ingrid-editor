@@ -22,12 +22,21 @@ export class CatalogService {
   private _forcedCatalog: string = null;
   private configuration: Configuration;
 
+  catalogs$: Observable<any> = new Observable<any>();
+
   constructor(private router: Router, private http: HttpClient, configService: ConfigService, private errorService: ErrorService) {
     this.configuration = configService.getConfiguration();
   }
 
   getCatalogs(): Observable<Catalog[]> {
-    return Observable.of( this.demoCatalogs );
+    return this.http.get<string[]>( this.configuration.backendUrl + 'catalogs')
+      .map( catalogs => {
+        const result = [];
+        catalogs.forEach( cat => result.push({id: cat, label: cat}) );
+        return result;
+      } )
+      .catch( err => this.errorService.handle( err ) );
+    // return Observable.of( this.demoCatalogs );
   }
 
   forceCatalog(id: string) {

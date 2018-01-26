@@ -1,7 +1,7 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormularService } from '../../../services/formular/formular.service';
 import { ApiService } from '../../../services/ApiService';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 @Component( {
   templateUrl: './iso-view.component.html'
