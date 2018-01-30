@@ -7,7 +7,8 @@
             [style.width]="'100%'"
             (onNodeSelect)="open($event)"
             [(selection)]="selectedNodes"
-            (onNodeExpand)="loadNode($event)"></p-tree>
+            (onNodeExpand)="loadNode($event)">
+    </p-tree>
 
   <!--<tree-root #tree [nodes]="nodes" [options]="options" (activate)="open($event)" (deactivate)="deselected($event)">
     <ng-template #treeNodeTemplate let-node>

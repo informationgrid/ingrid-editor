@@ -11,29 +11,11 @@ import { UpdateType } from '../../../models/update-type.enum';
 import { DocMainInfo } from '../../../models/update-dataset-info.model';
 import { ProfileService } from '../../../services/profile.service';
 
-@Component({
+@Component( {
   selector: 'ige-tree',
   templateUrl: './tree.component.html',
-  styles: [`
-    .clickable {
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .folder {
-      position: absolute;
-      right: 5px;
-      margin-top: -15px;
-      display: none;
-    }
-
-    .refresh {
-      position: absolute;
-      right: 0;
-      z-index: 1000
-    }
-  `]
-})
+  styleUrls: ['./tree.component.css']
+} )
 export class MetadataTreeComponent implements OnInit, OnDestroy {
 
   nodes: TreeNode[] = [];
@@ -57,31 +39,31 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.profileService.initialized.then(() => {
+    this.profileService.initialized.then( () => {
 
-      this.query(null, null).then(() => {
-        const initialSet = this.route.params.subscribe(params => {
+      this.query( null, null ).then( () => {
+        const initialSet = this.route.params.subscribe( params => {
           const selectedId = params['id'];
 
           // only let this function be called once, since we only need it during first visit of the page
-          setTimeout(() => initialSet.unsubscribe(), 0);
+          setTimeout( () => initialSet.unsubscribe(), 0 );
 
           if (selectedId) {
             // get path to node
-            this.subscriptions.push(this.storageService.getPathToDataset(selectedId).subscribe(path => {
-              console.log('path: ' + path);
-              this.expandToPath(this.nodes, path.reverse())
+            this.subscriptions.push( this.storageService.getPathToDataset( selectedId ).subscribe( path => {
+              console.log( 'path: ' + path );
+              this.expandToPath( this.nodes, path.reverse() )
                 .then( () => {
-                  this.open(null);
-                });
-            }));
+                  this.open( null );
+                } );
+            } ) );
           }
-        });
-      }, (err) => console.error('Error:', err));
+        } );
+      }, (err) => console.error( 'Error:', err ) );
 
       this.subscriptions.push(
-        this.storageService.datasetsChanged$.subscribe((info) => {
-          console.log('Tree: dataset changed event', info);
+        this.storageService.datasetsChanged$.subscribe( (info) => {
+          console.log( 'Tree: dataset changed event', info );
           // only update changes in the tree instead of reloading everything and recover previous state
           switch (info.type) {
             case UpdateType.New:
@@ -89,11 +71,11 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
               break;
 
             case UpdateType.Update:
-              this.onUpdateDataset(info.data);
+              this.onUpdateDataset( info.data );
               break;
 
             case UpdateType.Delete:
-              this.onDeleteDataset(info.data);
+              this.onDeleteDataset( info.data );
               break;
             case UpdateType.Copy:
               // this.copy();
@@ -102,7 +84,7 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
               // this.paste();
               break;
           }
-        })
+        } )
       );
 
       // inform interested components which documents are selected
@@ -111,17 +93,17 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
       // });
 
       // this.handleToolbarEvents();
-    });
+    } );
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(_ => _.unsubscribe());
+    this.subscriptions.forEach( _ => _.unsubscribe() );
   }
 
 
   onNewDataset(docs: DocMainInfo[]) {
-    docs.forEach(doc => {
-      const newDataset = this.createNewDatasetTemplate(doc);
+    docs.forEach( doc => {
+      const newDataset = this.createNewDatasetTemplate( doc );
 
       const updateTree = (id: string) => {
         // this.tree.treeModel.update();
@@ -139,14 +121,14 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
 
       if (doc._parent) {
 
-        const node = this.flatNodes.filter(n => n.data.id === doc._parent)[0];
+        const node = this.flatNodes.filter( n => n.data.id === doc._parent )[0];
 
-        this.loadNode({node: node}).then(() => {
-          const newChild = this.flatNodes.filter(n => n.data.id === doc._id)[0];
+        this.loadNode( {node: node} ).then( () => {
+          const newChild = this.flatNodes.filter( n => n.data.id === doc._id )[0];
           // node.leaf = false;
           // node will be already added implicitly by query after save
           this.selectedNodes = [newChild];
-        });
+        } );
 
         /*const parentNode = this.tree.treeModel.getNodeById( doc._parent );
         // TODO: make it bullet proof by expecting a promise from expand
@@ -165,99 +147,99 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
           console.error( 'error expanding node', err );
         }*/
       } else {
-        this.nodes.push(newDataset);
+        this.nodes.push( newDataset );
         this.selectedNodes = [newDataset];
       }
 
       // add node to flat list for easier management
-      this.flatNodes.push(newDataset);
+      this.flatNodes.push( newDataset );
 
-    });
+    } );
   }
 
   private createNewDatasetTemplate(doc: any) {
-    const name = this.formularService.getTitle(doc._profile, doc);
+    const name = this.formularService.getTitle( doc._profile, doc );
 
-    const docNode = this.prepareNode(doc);
+    const docNode = this.prepareNode( doc );
     return docNode;
   }
 
   onUpdateDataset(docs: DocMainInfo[]) {
-    docs.forEach(doc => {
+    docs.forEach( doc => {
 
-      const node = this.flatNodes.filter(n => n.data.id === doc._id);
-      Object.assign(node[0], this.prepareNode(doc));
+      const node = this.flatNodes.filter( n => n.data.id === doc._id );
+      Object.assign( node[0], this.prepareNode( doc ) );
 
-    });
+    } );
   }
 
   onDeleteDataset(docs: DocMainInfo[]) {
 
-    docs.forEach(doc => {
-      const node = this.flatNodes.filter(_ => _.data.id === doc._id)[0];
+    docs.forEach( doc => {
+      const node = this.flatNodes.filter( _ => _.data.id === doc._id )[0];
 
       const parentNode = node.parent;
       const parentNodeChildren = parentNode ? parentNode.children : this.nodes;
-      const index = parentNodeChildren.findIndex((c: TreeNode) => c.data.id === doc._id);
+      const index = parentNodeChildren.findIndex( (c: TreeNode) => c.data.id === doc._id );
 
       // only remove node from tree if it's still there
       // TODO: optimize by call update only once after all docs are removed from tree
       if (index !== -1) {
-        parentNodeChildren.splice(index, 1);
+        parentNodeChildren.splice( index, 1 );
         // remove expansion property from node if it does not have any children anymore
         if (parentNodeChildren.length === 0 && parentNode) {
           parentNode.leaf = true;
         }
       }
-    });
+    } );
   }
 
   expandToPath(children: TreeNode[], path: string[]) {
     const id = path.pop();
 
-    return new Promise((resolve, reject) => {
+    return new Promise( (resolve, reject) => {
 
       if (path.length > 0) {
-        this.nodes.some(n => {
+        this.nodes.some( n => {
           if (n.data.id === id) {
-            this.loadNode({node: n}).then(() => {
+            this.loadNode( {node: n} ).then( () => {
               n.expanded = true;
-              return this.expandToPath(n.children, path);
-            }).then( () => {
+              return this.expandToPath( n.children, path );
+            } ).then( () => {
               resolve();
-            });
+            } );
             return true;
           } else {
             // resolve();
           }
-        });
+        } );
       } else {
         // select node
-        this.selectedNodes = children.filter(n => n.data.id === id);
+        this.selectedNodes = children.filter( n => n.data.id === id );
         resolve();
       }
-    });
+    } );
   }
 
   loadNode(event): Promise<any> {
     if (event.node) {
-      return this.query(event.node, event.node.data.id);
+      return this.query( event.node, event.node.data.id );
     }
   }
 
   query(node: TreeNode, id: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.storageService.getChildDocuments(id).subscribe(response => {
-        console.log('got children', response);
+    return new Promise( (resolve, reject) => {
+      this.storageService.getChildDocuments( id ).subscribe( response => {
+        console.log( 'got children', response );
         try {
-          this.setNodes(response, node);
+          this.setNodes( response, node );
         } catch (error) {
-          reject(error);
+          reject( error );
           return;
         }
         resolve();
-      }, (err) => this.errorService.handle(err));
-    });
+      }, (err) => this.errorService.handle( err ) );
+    } );
   }
 
   prepareNode(doc: any): any {
@@ -267,8 +249,8 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
         _profile: doc._profile,
         _state: doc._state
       },
-      label: this.formularService.getTitle(doc._profile, doc),
-      icon: this.formularService.getIconClass(doc._profile),
+      label: this.formularService.getTitle( doc._profile, doc ),
+      icon: this.getTreeIcon( doc ),
       leaf: true
     };
     if (doc._hasChildren === 'true') { // TODO: expect real boolean value!
@@ -276,6 +258,17 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
     }
 
     return node;
+  }
+
+  getTreeIcon(doc): string {
+    const classType = this.formularService.getIconClass( doc._profile );
+    const classState = doc._state === 'P'
+      ? 'badge-primary'
+      : doc._state === 'W'
+        ? 'badge-warning'
+        : 'pubished-working-label';
+
+    return classType + ' ' + classState;
   }
 
   setNodes(docs: any[], parentNode: TreeNode) {
@@ -287,43 +280,43 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
     const updatedNodes: any = parentNode ? parentNode : this.nodes;
 
     docs
-      .filter(doc => doc._profile !== undefined)
-      .sort((doc1, doc2) => { // TODO: sort after conversion, then we don't need to call getTitle function
-        return this.formularService.getTitle(doc1._profile, doc1).localeCompare(this.formularService.getTitle(doc2._profile, doc2));
-      })
-      .forEach(doc => {
-        const newNode = this.prepareNode(doc);
+      .filter( doc => doc._profile !== undefined )
+      .sort( (doc1, doc2) => { // TODO: sort after conversion, then we don't need to call getTitle function
+        return this.formularService.getTitle( doc1._profile, doc1 ).localeCompare( this.formularService.getTitle( doc2._profile, doc2 ) );
+      } )
+      .forEach( doc => {
+        const newNode = this.prepareNode( doc );
         if (parentNode) {
-          updatedNodes.children.push(newNode);
+          updatedNodes.children.push( newNode );
         } else {
-          updatedNodes.push(newNode);
+          updatedNodes.push( newNode );
         }
-        this.flatNodes.push(newNode);
-      });
+        this.flatNodes.push( newNode );
+      } );
     // this.tree.treeModel.update();
   }
 
   private getSelectedNodes(nodes: TreeNode[]): SelectedDocument[] {
     return nodes
-      .map(node => ({
+      .map( node => ({
         id: node.data.id,
         label: node.label,
         profile: node.data._profile,
         state: node.data._state
-      }));
+      }) );
   }
 
   open(event: TreeNode) {
-    const data = this.getSelectedNodes(this.selectedNodes);
+    const data = this.getSelectedNodes( this.selectedNodes );
 
-    this.activate.next(data);
-    this.selected.next(data);
+    this.activate.next( data );
+    this.selected.next( data );
   }
 
   refresh(): Promise<any> {
     this.nodes = [];
     this.flatNodes = [];
-    return this.query(null, null);
+    return this.query( null, null );
   }
 
   /*

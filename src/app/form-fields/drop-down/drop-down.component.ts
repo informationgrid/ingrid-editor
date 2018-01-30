@@ -4,20 +4,21 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export const DROPDOWN_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => DropDownComponent),
+  useExisting: forwardRef( () => DropDownComponent ),
   multi: true
 };
 
-@Component({
+@Component( {
   selector: 'ige-drop-down',
   templateUrl: './drop-down.component.html',
   styleUrls: ['./drop-down.component.css'],
   providers: [DROPDOWN_CONTROL_VALUE_ACCESSOR]
-})
+} )
 export class DropDownComponent implements ControlValueAccessor, OnInit {
   @Input() options: any[];
   @Input() isCombo = false;
   @Input() useFilter = true;
+  @Input() appendTo: string;
 
   isDisabled = false;
 
@@ -41,23 +42,27 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
   }
 
   handleChange(event) {
-    console.log('drop down changed', event);
-    this._onChangeCallback(event.value);
+    console.log( 'drop down changed', event );
+    let result = event.value;
+    if (typeof result !== 'object') {
+      result = {
+        id: '-1',
+        value: event.value
+      };
+    }
+    this._onChangeCallback( result );
   }
 
   writeValue(optionValue: any): void {
     if (optionValue && optionValue.id !== '-1') {
-      const value = this.options.find(option => option.id === optionValue.id);
+      const value = this.options.find( option => option.id === optionValue.id );
       if (value) {
         this._value = value;
       } else {
-        console.error('Could not find option value for: ', optionValue);
+        console.error( 'Could not find option value for: ', optionValue );
       }
     } else if (optionValue) {
-      this._value = {
-        id: '-1',
-        value: optionValue.value
-      }
+      this._value = optionValue.value;
     } else {
       this._value = {};
     }

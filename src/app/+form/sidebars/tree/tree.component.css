@@ -1,0 +1,17 @@
+.clickable {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.folder {
+  position: absolute;
+  right: 5px;
+  margin-top: -15px;
+  display: none;
+}
+
+.refresh {
+  position: absolute;
+  right: 0;
+  z-index: 1000
+}

@@ -72,6 +72,7 @@ export class ProfileAddress implements Profile {
       label: 'Kommunikation',
       order: 30,
       domClass: 'half',
+      height: 145,
       columns: [
         {
           editor: new DropdownField({

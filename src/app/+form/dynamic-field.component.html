@@ -79,10 +79,11 @@
         </data-table>-->
 
         <ige-data-grid *ngSwitchCase="'opentable'"
-                        [formControlName]="field.key"
-                        [columns]="field.columns"
-                        [addWithDialog]="field.addWithDialog"
-                        [hideTableHeader]="field.hideHeader"></ige-data-grid>
+                       [formControlName]="field.key"
+                       [columns]="field.columns"
+                       [addWithDialog]="field.addWithDialog"
+                       [height]="field.height"
+                       [hideTableHeader]="field.hideHeader"></ige-data-grid>
 
         <!-- LEAFLET-->
         <leaflet *ngSwitchCase="'map'" [options]="field.options" [height]="field.height" [formControlName]="field.key"></leaflet>

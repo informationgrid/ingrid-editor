@@ -1,8 +1,27 @@
-<button *ngIf="showAddButton" class="btn btn-outline-secondary btn-xs addButton" type="button" (click)="addRow($event)">
+<!--<button *ngIf="showAddButton" class="btn btn-outline-secondary btn-xs addButton" type="button" (click)="addRow($event)">
     <span class="fa fa-plus"></span>
 </button>
+<button class="btn btn-outline-secondary btn-xs addButton" type="button" (click)="deleteRows()">
+    <span class="fa fa-minus"></span>
+</button>-->
 
-<p-table [columns]="settings.columns" [value]="value">
+<p-table [columns]="settings.columns" [value]="value" [(selection)]="rowSelection" [scrollable]="height !== null && true" [scrollHeight]="height + 'px'">
+    <ng-template pTemplate="caption">
+        <!--Table name-->
+        <button *ngIf="showAddButton" pButton class="ui-button-secondary addButton"
+                type="button"
+                title="Zeile hinzufügen"
+                (click)="addRow($event)">
+            <span class="fa fa-plus"></span>
+        </button>
+        <button *ngIf="rowSelection.length > 0" pButton class="ui-button-danger addButton"
+                type="button"
+                title="Ausgewählte Zeilen löschen"
+                (click)="deleteRows()">
+            <span class="fa fa-minus"></span>
+        </button>
+        <div class="clearfix"></div>
+    </ng-template>
     <ng-template pTemplate="header" let-columns>
         <tr>
             <th style="width: 2.25em">
@@ -19,31 +38,41 @@
             <td *ngFor="let col of settings.columns; let colIndex=index" pEditableColumn>
                 <p-cellEditor>
                     <ng-template pTemplate="input">
-                        <input *ngIf="col.controlType === 'textbox'" type="text" [(ngModel)]="rowData[col.field]">
+                        <input *ngIf="col.controlType === 'textbox'" type="text" [(ngModel)]="rowData[col.field]" (blur)="onBlur()">
+
+                        <p-calendar *ngIf="col.controlType === 'datepicker'" [(ngModel)]="rowData[col.field]" appendTo="body" selectionMode="single"
+                                    [dateFormat]="'dd.mm.yy'"
+                                    dataType="string"
+                        ></p-calendar>
                         <!--<p-inputMask *ngIf="col.controlType === 'textbox'" [(ngModel)]="rowData[col.field]" mask="*?@*?.*?"></p-inputMask>-->
                         <!-- <select *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]">
                             <option *ngFor="let option of col.options" [value]="option.id">{{option.value}}</option>
                         </select>-->
-                        <ige-drop-down *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]"
-                                       [id]="col.field"
-                                       [isCombo]="col.isCombo"
-                                       [options]="col.options">
+
+                        <ige-drop-down *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]" appendTo="body"
+                                   [id]="col.field"
+                                   [isCombo]="true"
+                                   [options]="col.options">
                         </ige-drop-down>
-                    </ng-template>
-                    <ng-template *ngIf="col.controlType === 'dropdown'" pTemplate="output">
-                        {{rowData[col.field]?.value}}
                     </ng-template>
                     <ng-template *ngIf="col.controlType === 'textbox'" pTemplate="output">
                         {{rowData[col.field]}}
+                    </ng-template>
+                    <ng-template *ngIf="col.controlType === 'datepicker'" pTemplate="output">
+                        <!--{{rowData[col.field] | date:'dd.MM.yyyy' || 'n/a'}}-->
+                        {{rowData[col.field]}}
+                    </ng-template>
+                    <ng-template *ngIf="col.controlType === 'dropdown'" pTemplate="output">
+                        {{rowData[col.field]?.value}}
                     </ng-template>
                 </p-cellEditor>
             </td>
         </tr>
     </ng-template>
-    <ng-template *ngIf="value.length === 0" pTemplate="summary">
-        <div class="text-center" title="Fügen Sie neue Zeilen hinzu mit '+' über der Tabelle.">Tabelle ist leer</div>
-    </ng-template>
 </p-table>
+
+<!-- Show this content if table is empty -->
+<div *ngIf="value.length === 0" class="text-center" title="Fügen Sie neue Zeilen hinzu mit '+' über der Tabelle.">Tabelle ist leer</div>
 
 <ng-template #addRowModal>
     <div class="modal-header">
