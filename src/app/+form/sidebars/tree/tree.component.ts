@@ -303,12 +303,13 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
     // this.tree.treeModel.update();
   }
 
-  private getSelectedNodes(nodes: TreeNode[]): any {
+  private getSelectedNodes(nodes: TreeNode[]): SelectedDocument[] {
     return nodes
       .map(node => ({
         id: node.data.id,
         label: node.label,
-        profile: node.data._profile
+        profile: node.data._profile,
+        state: node.data._state
       }));
   }
 

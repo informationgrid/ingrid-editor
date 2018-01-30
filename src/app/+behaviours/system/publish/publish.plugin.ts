@@ -122,7 +122,7 @@ export class PublishPlugin extends Plugin {
 
     this.formService.selectedDocuments$.subscribe( data => {
       this.formToolbarService.setButtonState( 'toolBtnPublish', data.length === 1 );
-      this.formToolbarService.setButtonState( 'toolBtnRevert', data.length === 1 );
+      this.formToolbarService.setButtonState( 'toolBtnRevert', data.length === 1 && data[0].state === 'PW' );
     } );
   }
 }
