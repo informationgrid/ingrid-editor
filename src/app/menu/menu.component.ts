@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {MenuService} from './menu.service';
 import {KeycloakService} from '../security/keycloak/keycloak.service';
-import { Observable } from 'rxjs/Observable';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'main-menu',
-  templateUrl: './menu.component.html'
+  templateUrl: './menu.component.html',
+  styles: [`
+    nav { z-index: 999; }
+  `]
 })
 export class MenuComponent implements OnInit {
 

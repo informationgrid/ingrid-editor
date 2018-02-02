@@ -16,7 +16,7 @@ export const DATEBOX_CONTROL_VALUE_ACCESSOR = {
 export class DateboxComponent implements ControlValueAccessor, OnInit {
 
   // The internal data model
-  private _value: any = {};
+  private _value: Date;
 
   // Placeholders for the callbacks
   private _onTouchedCallback: () => void;
@@ -30,7 +30,7 @@ export class DateboxComponent implements ControlValueAccessor, OnInit {
   }
 
   get value() {
-    return this._value.value;
+    return this._value;
   }
 
   set value(val) {

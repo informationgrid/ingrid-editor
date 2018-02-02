@@ -3,6 +3,7 @@ import { Catalog, CatalogService } from '../catalog.service';
 import { ConfigService, Configuration } from '../../services/config.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Observable } from 'rxjs/Observable';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ige-catalog-manager',
@@ -22,7 +23,7 @@ export class CatalogManagerComponent implements OnInit {
   @ViewChild('uploadProfileModal') uploadProfileModal: TemplateRef<any>;
   uploadProfileModalRef: BsModalRef;
 
-  constructor(private catalogService: CatalogService, configService: ConfigService, private modal2Service: BsModalService) {
+  constructor(private router: Router, private catalogService: CatalogService, configService: ConfigService, private modal2Service: BsModalService) {
     this.config = configService.getConfiguration();
   }
 
@@ -53,6 +54,10 @@ export class CatalogManagerComponent implements OnInit {
 
   chooseCatalog(id: string) {
     this.catalogService.forceCatalog( id );
+  }
+
+  showCatalogDetail(id: string) {
+    this.router.navigate(['/catalogs', id]);
   }
 
   onUpload(event) {

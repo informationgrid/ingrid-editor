@@ -4,7 +4,7 @@
 </div>
 
 <div class="card-deck">
-    <div *ngFor="let cat of catalogs | async" class="card bg-light mb-3" style="max-width: 20rem;">
+    <div *ngFor="let cat of catalogs | async" class="card bg-light mb-3" style="max-width: 20rem;" (click)="showCatalogDetail(cat.id)">
         <div class="card-header">{{cat.label}}</div>
         <div class="card-body">
             <!--<h4 class="card-title">Light card title</h4>-->

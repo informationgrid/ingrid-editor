@@ -47,7 +47,7 @@ export class ApiService {
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users' )
+    return this.http.get( 'http://localhost:8550/api/users' )
       .map( (json: any[]) => {
         const result: User[] = [];
         json.forEach( item => {

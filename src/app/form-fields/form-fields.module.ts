@@ -8,18 +8,17 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DataGridComponent } from './data-grid/data-grid.component';
 import { DataGridModule } from './data-grid/data-grid.module';
-// import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FocusDirective } from '../directives/focus.directive';
 import { DateboxComponent } from './datebox/datebox.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
 import { RadioboxComponent } from './radiobox/radiobox.component';
 import { TableModule } from 'primeng/table';
-// import { InputMaskModule } from 'primeng/inputmask';
+import { InputTextModule } from 'primeng/inputtext';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
-    DropdownModule, CalendarModule, DataGridModule, CheckboxModule, RadioButtonModule, TableModule
+    DropdownModule, CalendarModule, DataGridModule, CheckboxModule, RadioButtonModule, TableModule, InputTextModule
   ],
   declarations: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent],
   exports: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent]

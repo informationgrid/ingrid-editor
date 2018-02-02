@@ -21,12 +21,14 @@ import { ButtonModule } from 'primeng/button';
 import { GrowlModule } from 'primeng/growl';
 import { MenubarModule } from 'primeng/menubar';
 import { ToolbarModule } from 'primeng/toolbar';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     PopoverModule, IgeWizardModule, SharedModule,
-    MenubarModule, ToolbarModule, ButtonModule, GrowlModule,
+    MenubarModule, ToolbarModule, ButtonModule, GrowlModule, InputTextModule, InputTextareaModule,
     SharedModule, routing],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,

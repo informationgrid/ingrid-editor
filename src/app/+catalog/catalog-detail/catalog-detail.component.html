@@ -1,0 +1,14 @@
+<button pButton (click)="showCatAdmins()" label="Katalog-Administrator zuweisen"></button>
+
+<a routerLink="/catalogs">Zurück</a>
+
+
+<!--<p-listbox [options]="users | async" optionLabel="firstName">
+</p-listbox>-->
+
+<p-dialog header="Katalog-Administrator hinzufügen" [(visible)]="display" [modal]="true" [dismissableMask]="true">
+    <p-listbox [options]="cars" optionLabel="brand"></p-listbox>
+
+    <button pButton label="Auswählen" (click)="addUserAsCatAdmin()"></button>
+</p-dialog>
+

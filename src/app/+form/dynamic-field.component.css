@@ -9,3 +9,7 @@
 .ng-invalid:not(.ng-untouched):not(div):not(form) {
   border-left: 2px solid red;
 }
+
+/deep/ .ui-inputtext {
+  width: 100%;
+}

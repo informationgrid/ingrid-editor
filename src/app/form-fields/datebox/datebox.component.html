@@ -2,6 +2,9 @@
             [(ngModel)]="value"
             [monthNavigator]="true"
             [yearNavigator]="true"
+            yearRange="1900:2030"
             [showIcon]="true"
             (onSelect)="handleChange($event)"
+            appendTo="body"
+            selectionMode="single"
             dateFormat="dd.mm.yy"></p-calendar>

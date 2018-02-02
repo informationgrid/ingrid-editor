@@ -1,12 +1,19 @@
-import {RouterModule} from '@angular/router';
-import {AuthGuard} from '../security/auth.guard';
-import {CatalogManagerComponent} from './catalog-manager/catalog-manager.component';
+import { RouterModule } from '@angular/router';
+import { AuthGuard } from '../security/auth.guard';
+import { CatalogManagerComponent } from './catalog-manager/catalog-manager.component';
+import { CatalogDetailComponent } from './catalog-detail/catalog-detail.component';
 
-export const routing = RouterModule.forChild([
+export const routing = RouterModule.forChild( [
   {
     path: 'catalogs',
     component: CatalogManagerComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['admin', 'author'] }
+    data: {roles: ['admin', 'author']}
+  },
+  {
+    path: 'catalogs/:id',
+    component: CatalogDetailComponent,
+    canActivate: [AuthGuard],
+    data: {roles: ['admin', 'author']}
   }
-]);
+] );

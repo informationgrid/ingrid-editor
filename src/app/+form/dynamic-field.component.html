@@ -22,8 +22,8 @@
 
         <!-- TEXTBOX -->
         <input *ngSwitchCase="'textbox'"
+               pInputText
                [id]="field.key"
-               class="form-control"
                [formControlName]="field.key"
                [attr.type]="field.type">
 
@@ -70,7 +70,7 @@
 
         <!-- TEXTAREA -->
         <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"
-                  class="form-control">
+                  pInputTextarea>
         </textarea>
 
         <!-- TABLE -->
