@@ -7,6 +7,7 @@ import de.ingrid.igeserver.annotations.PublishedLink;
 
 public class PublishedLinkValidator implements ConstraintValidator<PublishedLink, String> {
 
+    @SuppressWarnings("unused")
     private String link;
 
     @Override

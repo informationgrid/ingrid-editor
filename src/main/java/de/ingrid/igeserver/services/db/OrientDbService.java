@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.orientechnologies.orient.client.remote.OServerAdmin;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -26,6 +27,8 @@ import com.orientechnologies.orient.server.OServerMain;
 
 @Service
 public class OrientDbService {
+    
+    // TODO: optimize server: https://github.com/orientechnologies/orientdb/issues/6922
 
     Logger log = LogManager.getLogger( OrientDbService.class );
 
@@ -361,6 +364,7 @@ public class OrientDbService {
         }
     }
 
+    @Deprecated
     private ODatabaseDocumentTx openDB(String databaseName) {
         ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/" + databaseName );
         db.open( "admin", "admin" );
@@ -388,7 +392,7 @@ public class OrientDbService {
             OSequence seq = sequenceLibrary.createSequence( "idseq", SEQUENCE_TYPE.ORDERED, new OSequence.CreateParams().setStart( 0l ).setIncrement( 1 ) );
             seq.save();
             
-            OClass docClass = db.getMetadata().getSchema().createClass( "info" );
+            db.getMetadata().getSchema().createClass( "info" );
             //addDocTo( "management", "Connections", "{ 'id': 'ige', 'catalogId': 'igedb' }", null );
             
             OClass catalogClass = db.getMetadata().getSchema().createClass( "Catalogs" );
@@ -420,8 +424,8 @@ public class OrientDbService {
                 behaviourClass.createProperty( "_id", OType.STRING );
                 behaviourClass.createIndex( "bidIdx", OClass.INDEX_TYPE.UNIQUE, "_id" );
                 
-                OClass userClass = db.getMetadata().getSchema().createClass( "Users" );
-                OClass roleClass = db.getMetadata().getSchema().createClass( "Roles" );
+                db.getMetadata().getSchema().createClass( "Users" );
+                db.getMetadata().getSchema().createClass( "Roles" );
 
                 OSequenceLibrary sequenceLibrary = db.getMetadata().getSequenceLibrary();
                 if (sequenceLibrary.getSequence( "idseq" ) == null) {
@@ -453,18 +457,35 @@ public class OrientDbService {
         } finally {}
     }
 
-	public Object beginTransaction() {
-		// TODO Auto-generated method stub
-		return null;
+	public Object beginTransaction(String databaseName) {
+	    
+	    // TODO: use Database Pools: https://orientdb.com/docs/2.2/Document-API-Database.html#using-database-pools
+	    
+	    
+	    ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/" + databaseName );
+        db.open( "admin", "admin" );
+        db.begin();
+        return db;
 	}
 
 	public void commit(Object transaction) {
-		// TODO Auto-generated method stub
-		
+	    ((ODatabaseDocumentTx)transaction).commit();
 	}
 
 	public void rollback(Object transaction) {
-		// TODO Auto-generated method stub
-		
+	    ((ODatabaseDocumentTx)transaction).rollback();
 	}
+
+    public String[] getDatabases() {
+        OServerAdmin oServerAdmin;
+        try {
+            oServerAdmin = new OServerAdmin( "remote:localhost" );
+            oServerAdmin.connect( "root", "root" );
+            return oServerAdmin.listDatabases().keySet().toArray( new String[0] );
+        } catch (Exception e) {
+            log.error( "Error connecting to OrientDB server to get all databases.", e );
+        }
+        return null;
+        
+    }
 }

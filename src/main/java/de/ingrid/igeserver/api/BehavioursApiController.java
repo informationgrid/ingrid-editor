@@ -1,21 +1,16 @@
 package de.ingrid.igeserver.api;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import de.ingrid.igeserver.services.JsonToDBService;
 import de.ingrid.igeserver.services.db.OrientDbService;
 import io.swagger.annotations.ApiParam;
 
@@ -27,11 +22,11 @@ public class BehavioursApiController implements BehavioursApi {
     @Autowired
     private OrientDbService dbService;
     
-    @Autowired
-    private JsonToDBService jsonService;
+    //@Autowired
+    //private JsonToDBService jsonService;
 
     public ResponseEntity<String> getBehaviours(Principal principal) {
-        System.out.println(principal == null ? "principal is null" : principal.getName());
+        System.out.println(principal == null ? "principal is null" : "principal is " + principal.getName());
         
         try {
             List<String> behaviours = this.dbService.getAllFrom( "Behaviours" );

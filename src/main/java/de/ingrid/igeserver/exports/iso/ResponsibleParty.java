@@ -3,6 +3,7 @@ package de.ingrid.igeserver.exports.iso;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+@SuppressWarnings("unused")
 public class ResponsibleParty {
 	
 	@XmlAttribute

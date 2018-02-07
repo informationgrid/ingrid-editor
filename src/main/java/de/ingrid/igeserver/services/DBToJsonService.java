@@ -1,8 +1,5 @@
 package de.ingrid.igeserver.services;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -42,7 +39,7 @@ public class DBToJsonService extends MapperService {
 
         // if fields are defined, then filter only those from the document
         if (fields != null) {
-            List<String> fieldList = Arrays.asList( fields );
+            // List<String> fieldList = Arrays.asList( fields );
             // TODO: currentDoc.keySet().retainAll( fieldList );
         }
 

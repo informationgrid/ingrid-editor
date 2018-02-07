@@ -70,14 +70,14 @@ public class DatasetsApiController implements DatasetsApi {
             String userId = AuthUtils.getUsernameFromPrincipal(principal);
             String mapDocument = this.jsonFromService.mapDocument( data, publish, userId );
             
-            // start transaction
-            Object transaction = this.dbService.beginTransaction();
+            // TODO: start transaction
+            // Object transaction = this.dbService.beginTransaction();
             
             // db action
             String result = this.dbService.addDocTo( COLLECTION, mapDocument );
             
-            // commit transaction
-            this.dbService.commit(transaction);
+            // TODO: commit transaction
+            // this.dbService.commit(transaction);
             
             
             JsonNode mapDoc = this.jsonToService.mapDocument( result );

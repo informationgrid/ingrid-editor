@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+@SuppressWarnings("unused")
 @XmlRootElement(name = "MD_Metadata")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(

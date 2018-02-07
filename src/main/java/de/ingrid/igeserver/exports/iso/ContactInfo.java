@@ -44,6 +44,7 @@ public class ContactInfo {
 //        public Address contactInstructions;
     }
     
+    @SuppressWarnings("unused")
     private static class Address {
         
         public CharacterString deliveryPoint;

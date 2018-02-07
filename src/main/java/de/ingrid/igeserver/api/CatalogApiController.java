@@ -13,18 +13,27 @@ public class CatalogApiController implements CatalogApi {
     
     @Autowired
     private OrientDbService dbService;
-
+    
     @Override
     public ResponseEntity<String> getCatalogs() {
-        // TODO Auto-generated method stub
-        return null;
+        String[] databases = this.dbService.getDatabases();
+        
+        String response = "[";
+        for (int i=0; i<databases.length; i++) {
+            response += "\"" + databases[i] + "\"";
+            if (i < databases.length - 1) {
+                response += ",";
+            }
+        }
+        response += "]";
+        return ResponseEntity.ok().body( response );
     }
     
     @Override
     public ResponseEntity<String> createCatalog(@ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name) {
-    	Object transaction = this.dbService.beginTransaction();
+    	// Object transaction = this.dbService.beginTransaction();
         this.dbService.createDatabase( name );
-        this.dbService.commit(transaction);
+        // this.dbService.commit(transaction);
         return null;
     }
 
