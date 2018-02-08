@@ -38,11 +38,15 @@ export class DateboxComponent implements ControlValueAccessor, OnInit {
   }
 
   writeValue(val: any): void {
-    this.value = new Date(val);
+    this.value = val === '' ? null : new Date(val);
   }
 
   handleChange(event) {
     this._onChangeCallback( event );
+  }
+
+  handleBlur() {
+    this._onChangeCallback( this.value );
   }
 
   registerOnChange(fn: any): void {

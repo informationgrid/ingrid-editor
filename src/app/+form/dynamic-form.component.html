@@ -96,7 +96,7 @@
             Kein Dokument ausgewählt. Laden Sie ein vorhandenes oder erstellen Sie ein neues Dokument über die Toolbar.
         </div>
 
-        <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
+        <form *ngIf="form" [formGroup]="form">
 
             <!-- form info bar -->
             <div class="form-info-bar" style="position:relative;" [class.expanded]="showDateBar"

@@ -5,6 +5,7 @@
             yearRange="1900:2030"
             [showIcon]="true"
             (onSelect)="handleChange($event)"
+            (onBlur)="handleBlur()"
             appendTo="body"
             selectionMode="single"
             dateFormat="dd.mm.yy"></p-calendar>

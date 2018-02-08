@@ -23,7 +23,8 @@ export class CatalogManagerComponent implements OnInit {
   @ViewChild('uploadProfileModal') uploadProfileModal: TemplateRef<any>;
   uploadProfileModalRef: BsModalRef;
 
-  constructor(private router: Router, private catalogService: CatalogService, configService: ConfigService, private modal2Service: BsModalService) {
+  constructor(private router: Router, private catalogService: CatalogService, configService: ConfigService,
+              private modal2Service: BsModalService) {
     this.config = configService.getConfiguration();
   }
 

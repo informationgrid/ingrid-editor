@@ -29,17 +29,5 @@ export class AuthInterceptor implements HttpInterceptor {
         return Observable.throw( error );
       } ) as any;
 
-    //
-    // // Get the auth header from the service.
-    // if (!this.auth.isInitialized()) {
-    //   return next.handle(req);
-    // }
-    // const authHeaderPromise = this.auth.getToken();
-    // const authHeaderObservable = fromPromise(authHeaderPromise);
-    //
-    // return authHeaderObservable.flatMap(token => {
-    //   const authReq = req.clone({headers: req.headers.set('Authorization', 'Bearer ' + token)});
-    //   return next.handle(authReq);
-    // });
   }
 }

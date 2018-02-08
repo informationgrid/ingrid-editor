@@ -11,8 +11,8 @@
             [editable]="isCombo"
             [style]="{'width':'100%'}"
             [(ngModel)]="selected"
-            [appendTo]="appendTo"
-            (onChange)="handleChange($event)"></p-dropdown>
+            appendTo="body"
+            (onChange)="handleChange($event.value)"></p-dropdown>
 <!--
 <combo-box #box [listData]="options"
            [forceSelection]="!isCombo"

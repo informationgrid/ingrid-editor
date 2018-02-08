@@ -14,13 +14,14 @@ import { CheckboxComponent } from './checkbox/checkbox.component';
 import { RadioboxComponent } from './radiobox/radiobox.component';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
+import { DialogComponent } from './dialog/dialog.component';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     DropdownModule, CalendarModule, DataGridModule, CheckboxModule, RadioButtonModule, TableModule, InputTextModule
   ],
-  declarations: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent],
+  declarations: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent, DialogComponent],
   exports: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent]
 })
 export class FormFieldsModule { }

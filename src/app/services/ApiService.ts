@@ -25,29 +25,42 @@ export class ApiService {
 
   getGroups(): Observable<Role[]> {
 
-    return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm +
-                      '/clients?clientId=ige-ng' )
-        .flatMap( client => {
-          return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm +
-                          '/clients/' + client[0].id + '/roles' )
-            .map( (json: any[]) => {
-              const result: Role[] = [];
-              json.forEach( item => {
-                result.push( {
-                  id: item.id,
-                  name: item.name,
-                  attributes: [],
-                  datasets: [],
-                  pages: null
-                } );
-              } );
-              return result;
-            } )
-        } );
+    try {
+      return this.http.get( this.configuration.backendUrl + 'groups' )
+        .map( (json: any[]) => {
+          const result: Role[] = [];
+          json.forEach( item => {
+            result.push( {
+              id: item.id,
+              name: item.name,
+              attributes: [],
+              datasets: [],
+              pages: null
+            } );
+          } );
+          return result;
+        } )
+    } catch (e) {
+      console.error('Could not get groups');
+      return Observable.of([]);
+    }
+  }
+
+  getGroup(id: string): Observable<Role> {
+    return this.http.get( this.configuration.backendUrl + 'groups/' + id )
+      .map( (json: any) => {
+        return {
+          id: json.id,
+          name: '?',
+          attributes: [],
+          datasets: [],
+          pages: null
+        };
+      } );
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get( 'http://localhost:8550/api/users' )
+    return this.http.get( this.configuration.backendUrl + 'users' )
       .map( (json: any[]) => {
         const result: User[] = [];
         json.forEach( item => {
@@ -65,7 +78,7 @@ export class ApiService {
   }
 
   getUser(id: string): Observable<User> {
-    return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/users/' + id )
+    return this.http.get( this.configuration.backendUrl + 'users/' + id )
       .map( (json: any) => {
         return {
           id: json.id,
@@ -78,16 +91,4 @@ export class ApiService {
       } );
   }
 
-  getGroup(id: string): Observable<Role> {
-    return this.http.get( this.configuration.keykloakBaseUrl + 'admin/realms/' + KeycloakService.auth.authz.realm + '/roles-by-id/' + id )
-      .map( (json: any) => {
-        return {
-          id: json.id,
-          name: '?',
-          attributes: [],
-          datasets: [],
-          pages: null
-        };
-      } );
-  }
 }

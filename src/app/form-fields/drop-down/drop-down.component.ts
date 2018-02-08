@@ -41,13 +41,12 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
     return this._value.value;
   }
 
-  handleChange(event) {
-    console.log( 'drop down changed', event );
-    let result = event.value;
+  handleChange(value: string|any) {
+    let result = value;
     if (typeof result !== 'object') {
       result = {
         id: '-1',
-        value: event.value
+        value: value
       };
     }
     this._onChangeCallback( result );

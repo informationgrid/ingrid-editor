@@ -38,6 +38,7 @@ import { AuthInterceptor } from './security/keycloak/auth.interceptor';
 import { ProfileService } from './services/profile.service';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { mockKeycloakProvider } from './services/mock-keycloak.interceptor';
 
 export function ConfigLoader(configService: ConfigService) {
   return () => {
@@ -86,7 +87,10 @@ export function ConfigLoader(configService: ConfigService) {
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    }
+    },
+    // TODO: only for development!
+    mockKeycloakProvider
+
   ], // additional providers
 
   bootstrap: [AppComponent]
