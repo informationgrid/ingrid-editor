@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.orientechnologies.orient.client.remote.OServerAdmin;
+import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -33,6 +34,8 @@ public class OrientDbService {
     Logger log = LogManager.getLogger( OrientDbService.class );
 
     private OServer server = null;
+    
+    private static HashMap<String, OPartitionedDatabasePool> poolMap = new HashMap<>();
 
     public OrientDbService() throws Exception {
 
@@ -364,15 +367,34 @@ public class OrientDbService {
         }
     }
 
+    /**
+     * We should use beginTransaction and get the db document from there, with which we can close the connection again.
+     * @param databaseName
+     * @return
+     */
     @Deprecated
     private ODatabaseDocumentTx openDB(String databaseName) {
-        ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/" + databaseName );
-        db.open( "admin", "admin" );
-        return db;
+        return getDatabasePool( "plocal:./databases/" + databaseName ).acquire();
     }
 
     private void closeDB(ODatabaseDocumentTx db) {
         db.close();
+    }
+
+    /**
+     * Get a database pool for a specific connection. If this pool does not exist yet
+     * then create a new pool for this connection.
+     * @param url is the name for the connection to the db to get the pool from
+     * @return a pool for a given connection
+     */
+    private OPartitionedDatabasePool getDatabasePool(String url) {
+        if (poolMap.containsKey( url )) {
+            return poolMap.get( url );
+        } else {
+            OPartitionedDatabasePool pool = new OPartitionedDatabasePool(url , "admin", "admin");
+            poolMap.put( url, pool );
+            return pool;
+        }
     }
 
     @PreDestroy
@@ -459,11 +481,10 @@ public class OrientDbService {
 
 	public Object beginTransaction(String databaseName) {
 	    
-	    // TODO: use Database Pools: https://orientdb.com/docs/2.2/Document-API-Database.html#using-database-pools
+	    // use Database Pools: https://orientdb.com/docs/2.2/Document-API-Database.html#using-database-pools
+	    OPartitionedDatabasePool pool =  new OPartitionedDatabasePool("plocal:./databases/" + databaseName , "admin", "admin");
 	    
-	    
-	    ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/" + databaseName );
-        db.open( "admin", "admin" );
+	    ODatabaseDocumentTx db = pool.acquire();
         db.begin();
         return db;
 	}

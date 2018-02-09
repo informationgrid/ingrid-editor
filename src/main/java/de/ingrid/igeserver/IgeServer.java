@@ -6,7 +6,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-//@ComponentScan(basePackages = { "io.swagger", "io.swagger.api" })
 public class IgeServer implements CommandLineRunner {
 
     @Override
