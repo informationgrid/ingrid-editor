@@ -5,6 +5,7 @@
 
 export const environment = {
   production: false,
+  hmr: false,
   profileFromServer: false,
   mockKeycloak: true,
   configFile: 'assets/config.json'
