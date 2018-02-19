@@ -26,9 +26,15 @@ public interface LoginApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return the JWT", response = Void.class),
             @ApiResponse(code = 403, message = "Error when user is not accepted.", response = Void.class) })
-
     @RequestMapping(value = "/login", produces = { "application/json" }, consumes = { "application/x-www-form-urlencoded" }, method = RequestMethod.POST)
     ResponseEntity<Void> login(@ApiParam(value = "") @RequestPart(value = "username", required = false) String username,
             @ApiParam(value = "") @RequestPart(value = "password", required = false) String password);
+    
+//    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Security", })
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "Return the JWT", response = Void.class),
+//            @ApiResponse(code = 403, message = "Error when user is not accepted.", response = Void.class) })
+//    @RequestMapping(value = "/logout", produces = { "application/json" }, method = RequestMethod.POST)
+//    ResponseEntity<Void> logout();
 
 }

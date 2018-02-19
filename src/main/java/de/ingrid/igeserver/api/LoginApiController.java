@@ -1,6 +1,9 @@
 package de.ingrid.igeserver.api;
 
 
+import java.security.Principal;
+
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,5 +20,4 @@ public class LoginApiController implements LoginApi {
         // do some magic!
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
-
 }

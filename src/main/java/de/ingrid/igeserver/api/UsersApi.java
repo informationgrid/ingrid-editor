@@ -33,11 +33,15 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(path = "/api")
 public interface UsersApi {
 
-    @ApiOperation(value = "Create a new user. If the user already exists an error will be returned.", notes = "", response = Void.class, tags = {
-            "User", })
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "User was successfully updated", response = Void.class),
-            @ApiResponse(code = 406, message = "A user with the given login does not exist and cannot be updated", response = Void.class) })
-
+    @ApiOperation(
+            value = "Create a new user. If the user already exists an error will be returned.", 
+            notes = "", 
+            response = Void.class, 
+            tags = {"User", })
+    @ApiResponses(
+            value = { 
+                    @ApiResponse(code = 200, message = "User was successfully updated", response = Void.class),
+                    @ApiResponse(code = 406, message = "A user with the given login does not exist and cannot be updated", response = Void.class) })
     @RequestMapping(value = "/users/{id}", produces = { "application/json" }, method = RequestMethod.POST)
     ResponseEntity<Void> createUser(
             @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id,
