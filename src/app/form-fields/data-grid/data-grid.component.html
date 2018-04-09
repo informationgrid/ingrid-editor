@@ -5,9 +5,9 @@
     <span class="fa fa-minus"></span>
 </button>-->
 
-<p-table [columns]="settings.columns" [value]="value" [(selection)]="rowSelection" [scrollable]="height !== null && true" [scrollHeight]="height + 'px'">
+<!--<p-table [columns]="settings.columns" [value]="value" [(selection)]="rowSelection" [scrollable]="height !== null && true" [scrollHeight]="height + 'px'">
     <ng-template pTemplate="caption">
-        <!--Table name-->
+        &lt;!&ndash;Table name&ndash;&gt;
         <button *ngIf="showAddButton" pButton class="ui-button-secondary addButton"
                 type="button"
                 title="Zeile hinzufügen"
@@ -32,7 +32,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="settings.columns">
         <tr [pSelectableRow]="rowData">
-            <td>
+            <td style="width: 2.25em">
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td *ngFor="let col of settings.columns; let colIndex=index" pEditableColumn>
@@ -44,10 +44,10 @@
                                     [dateFormat]="'dd.mm.yy'"
                                     dataType="string"
                         ></p-calendar>
-                        <!--<p-inputMask *ngIf="col.controlType === 'textbox'" [(ngModel)]="rowData[col.field]" mask="*?@*?.*?"></p-inputMask>-->
-                        <!-- <select *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]">
+                        &lt;!&ndash;<p-inputMask *ngIf="col.controlType === 'textbox'" [(ngModel)]="rowData[col.field]" mask="*?@*?.*?"></p-inputMask>&ndash;&gt;
+                        &lt;!&ndash; <select *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]">
                             <option *ngFor="let option of col.options" [value]="option.id">{{option.value}}</option>
-                        </select>-->
+                        </select>&ndash;&gt;
 
                         <ige-drop-down *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]" appendTo="body"
                                    [id]="col.field"
@@ -59,7 +59,7 @@
                         {{rowData[col.field]}}
                     </ng-template>
                     <ng-template *ngIf="col.controlType === 'datepicker'" pTemplate="output">
-                        <!--{{rowData[col.field] | date:'dd.MM.yyyy' || 'n/a'}}-->
+                        &lt;!&ndash;{{rowData[col.field] | date:'dd.MM.yyyy' || 'n/a'}}&ndash;&gt;
                         {{rowData[col.field]}}
                     </ng-template>
                     <ng-template *ngIf="col.controlType === 'dropdown'" pTemplate="output">
@@ -69,7 +69,38 @@
             </td>
         </tr>
     </ng-template>
-</p-table>
+</p-table>-->
+
+<mat-table #table [dataSource]="value" style="overflow: auto; max-height: 300px;">
+    <ng-container *ngFor="let col of settings.columns" [matColumnDef]="col.field">
+        <mat-header-cell *matHeaderCellDef> {{col.header}} </mat-header-cell>
+        <ng-container *ngIf="col.controlType === 'textbox'">
+            <mat-cell *matCellDef="let element"> {{element[col.field]}} </mat-cell>
+        </ng-container>
+        <ng-container *ngIf="col.controlType === 'dropdown'">
+            <mat-cell *matCellDef="let element"> {{element[col.field]?.value}} </mat-cell>
+        </ng-container>
+        <ng-container *ngIf="col.controlType === 'datepicker'">
+            <mat-cell *matCellDef="let element"> {{element[col.field]}} </mat-cell>
+        </ng-container>
+<!--        <ng-template *ngIf="col.controlType === 'datepicker'">
+            <mat-cell *matCellDef="let element"> {{element[col.field]}} </mat-cell>
+        </ng-template>-->
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="settings.availableColumns" style="position: sticky;top: 0;background-color: inherit;"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: settings.availableColumns;"></mat-row>
+</mat-table>
+
+<!--<mat-table #table [dataSource]="dataSource" style="overflow: auto; max-height: 300px;">
+    <ng-container matColumnDef="position">
+        <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns" style="position: sticky;top: 0;background-color: inherit;"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>-->
 
 <!-- Show this content if table is empty -->
 <div *ngIf="value.length === 0" class="text-center" title="Fügen Sie neue Zeilen hinzu mit '+' über der Tabelle.">Tabelle ist leer</div>

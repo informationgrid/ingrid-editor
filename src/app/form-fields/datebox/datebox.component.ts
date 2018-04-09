@@ -11,7 +11,9 @@ export const DATEBOX_CONTROL_VALUE_ACCESSOR = {
   selector: 'ige-datebox',
   templateUrl: './datebox.component.html',
   styleUrls: ['./datebox.component.css'],
-  providers: [DATEBOX_CONTROL_VALUE_ACCESSOR]
+  providers: [
+    DATEBOX_CONTROL_VALUE_ACCESSOR
+  ]
 })
 export class DateboxComponent implements ControlValueAccessor, OnInit {
 

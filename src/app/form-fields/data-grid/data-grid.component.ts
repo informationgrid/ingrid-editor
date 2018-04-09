@@ -10,7 +10,6 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   multi: true
 };
 
-
 // more info here: http://almerosteyn.com/2016/04/linkup-custom-control-to-ngcontrol-ngmodel
 @Component( {
   selector: 'ige-data-grid',
@@ -60,6 +59,7 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   ngOnInit() {
     this.settings.columns = this.mapColumns();
+    this.settings.availableColumns = this.settings.columns.map( c => c.field );
     this.settings.hideHeader = this.hideTableHeader;
   }
 

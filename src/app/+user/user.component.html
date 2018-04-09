@@ -11,7 +11,7 @@
 
     <div [class.active]="currentTab === 'users'" class="userTabContainer tab-pane">
         <split>
-            <split-area [size]="25" id="sidebarUser" class="split-pane-content-primary container">
+            <split-area [visible]="show" [size]="25" id="sidebarUser" class="split-pane-content-primary container">
                 <div class="list-group">
                     <button *ngFor="let user of users" type="button" class="list-group-item"
                             [class.disabled]="user === selectedUser"
@@ -23,7 +23,7 @@
                     <button class="btn btn-primary fa fa-plus" (click)="addUser()"></button>
                 </div>
             </split-area>
-            <split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
+            <split-area [visible]="show" [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
                 <form (ngSubmit)="onSubmit()" #userForm="ngForm">
                     <div class="form-group">
                         <label i18n>Login</label>

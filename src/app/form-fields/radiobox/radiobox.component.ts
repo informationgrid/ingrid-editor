@@ -1,5 +1,6 @@
 import { Component, forwardRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { MatRadioChange } from '@angular/material';
 
 export const RADIOBOX_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -15,9 +16,8 @@ export const RADIOBOX_CONTROL_VALUE_ACCESSOR = {
 })
 export class RadioboxComponent implements ControlValueAccessor, OnInit {
 
+  @Input() options: any[];
   @Input() radioName: string;
-  @Input() radioValue: string;
-  @Input() label: string;
 
   // The internal data model
   private _value: string;
@@ -45,8 +45,8 @@ export class RadioboxComponent implements ControlValueAccessor, OnInit {
     this.value = val === '' ? undefined : val;
   }
 
-  handleChange() {
-    this._onChangeCallback( this.value );
+  handleChange(event: MatRadioChange) {
+    this._onChangeCallback( event.value );
   }
 
   registerOnChange(fn: any): void {

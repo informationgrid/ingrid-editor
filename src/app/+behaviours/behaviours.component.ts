@@ -3,6 +3,7 @@ import {Plugin} from './plugin';
 import {Behaviour} from './behaviours';
 import {BehaviourService} from './behaviour.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component( {
   templateUrl: './behaviours.component.html',
@@ -23,18 +24,21 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 } )
 export class PluginsComponent implements OnInit {
 
-  plugins: any[] = [];
+  plugins: Plugin[] = [];
   behaviours: any;
   behavioursLabel: string[];
 
   behaviourTab: string;
   expanded: any = {};
 
+  pluginForm: FormGroup = new FormGroup({});
+  behaviourForm: FormGroup = new FormGroup({});
+
   static toggleField(plugin: any) {
     plugin._state === 'collapsed' ? plugin._state = 'expanded' : plugin._state = 'collapsed';
   }
 
-  constructor(private behaviourService: BehaviourService) {
+  constructor(private formBuilder: FormBuilder, private behaviourService: BehaviourService) {
   }
 
   ngOnInit() {
@@ -45,11 +49,24 @@ export class PluginsComponent implements OnInit {
       this.behaviours = this.prepareFormBehaviours(this.behaviourService.behaviours);
       this.behavioursLabel = Object.keys(this.behaviours);
       this.behaviourTab = 'SYSTEM';
+
+      const pluginFormGroup = {};
+      const behaviourFormGroup = {};
+      this.plugins.forEach( p => {
+        pluginFormGroup[p.id] = p.isActive;
+      } );
+      // debugger;
+      this.behaviourService.behaviours.forEach( b => {
+        behaviourFormGroup[b.id] = b.isActive;
+      } );
+      this.pluginForm = this.formBuilder.group(pluginFormGroup);
+      this.behaviourForm = this.formBuilder.group(behaviourFormGroup);
     });
   }
 
   togglePlugin(plugin: Plugin, isChecked: boolean, event: Event) {
-    event.stopImmediatePropagation();
+    // debugger;
+    // event.stopImmediatePropagation();
     if (isChecked) {
       plugin.register();
       this.behaviourService.enable( plugin.id );

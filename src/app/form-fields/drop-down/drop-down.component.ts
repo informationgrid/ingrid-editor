@@ -63,7 +63,7 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
     } else if (optionValue) {
       this._value = optionValue.value;
     } else {
-      this._value = {};
+      this._value = null;
     }
     this.selected = this._value;
   }

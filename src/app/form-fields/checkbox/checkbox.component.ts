@@ -1,5 +1,7 @@
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import { Component, forwardRef, Input, OnInit, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { MatCheckboxChange } from '@angular/material';
+import { Subject } from 'rxjs/Subject';
 
 export const CHECKBOX_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -16,6 +18,8 @@ export const CHECKBOX_CONTROL_VALUE_ACCESSOR = {
 export class CheckboxComponent implements ControlValueAccessor, OnInit {
 
   @Input() label;
+
+  @Output() change = new Subject<boolean>();
 
   // The internal data model
   private _value: boolean;
@@ -43,8 +47,9 @@ export class CheckboxComponent implements ControlValueAccessor, OnInit {
     this.value = val === '' ? false : val;
   }
 
-  handleChange(event) {
-    this._onChangeCallback(event);
+  handleChange(event: MatCheckboxChange) {
+    this._onChangeCallback(event.checked);
+    this.change.next(event.checked);
   }
 
   registerOnChange(fn: any): void {

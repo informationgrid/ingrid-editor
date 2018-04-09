@@ -23,12 +23,14 @@ import { MenubarModule } from 'primeng/menubar';
 import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { MatFormFieldModule, MatIconModule, MatInputModule, MatTableModule, MatToolbarModule } from '@angular/material';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     PopoverModule, IgeWizardModule, SharedModule,
     MenubarModule, ToolbarModule, ButtonModule, GrowlModule, InputTextModule, InputTextareaModule,
+    MatFormFieldModule, MatToolbarModule, MatIconModule, MatInputModule, MatTableModule,
     SharedModule, routing],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,

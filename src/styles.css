@@ -1,3 +1,5 @@
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
 html, body {
   height: 100%;
 }
@@ -68,7 +70,6 @@ form-toolbar {
   top: 56px;
   width: 100%;
   background-color: #ececec;
-  padding: 4px;
   z-index: 10;
 }
 

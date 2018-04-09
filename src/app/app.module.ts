@@ -25,7 +25,7 @@ import { ApiService } from './services/ApiService';
 import { KeycloakService } from './security/keycloak/keycloak.service';
 import { environment } from '../environments/environment';
 import { ConfigService } from './services/config.service';
-import { ModalModule} from 'ngx-bootstrap/modal';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { CatalogModule } from './+catalog/catalog.module';
 import { LoginComponent } from './security/login.component';
@@ -39,6 +39,7 @@ import { ProfileService } from './services/profile.service';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { mockKeycloakProvider } from './services/mock-keycloak.interceptor';
+import { MAT_DATE_LOCALE, MatIconModule, MatToolbarModule } from '@angular/material';
 
 export function ConfigLoader(configService: ConfigService) {
   return () => {
@@ -57,7 +58,9 @@ export function ConfigLoader(configService: ConfigService) {
     // ngx-bootstrap
     PopoverModule.forRoot(),
     // PrimeNG
-    TreeModule, GrowlModule, ButtonModule, InputTextModule,
+    TreeModule, GrowlModule,
+    // Material
+    MatToolbarModule, MatIconModule,
     // IGE-Modules
     IgeFormModule, DashboardModule, FieldsModule, CatalogModule, FormFieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule.forRoot()],
@@ -76,6 +79,11 @@ export function ConfigLoader(configService: ConfigService) {
       useFactory: ConfigLoader,
       deps: [ConfigService],
       multi: true
+    },
+    // date locale
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: 'de'
     },
     // add authorization header to all requests
     {

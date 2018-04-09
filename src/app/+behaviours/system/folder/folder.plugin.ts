@@ -34,7 +34,7 @@ export class FolderPlugin extends Plugin {
     this.formToolbarService.addButton( {
       id: 'toolBtnFolder',
       tooltip: 'Create Folder',
-      cssClasses: 'fa fa-folder-o',
+      cssClasses: 'create_new_folder',
       eventId: this.eventCreateFolderId,
       active: true
     }, 1 );

@@ -8,7 +8,7 @@ import {
   OnDestroy,
   ViewChild
 } from '@angular/core';
-import {Map, LatLngBounds, MapOptions, Rectangle} from 'leaflet';
+import { Map, LatLngBounds, MapOptions, Rectangle, TileLayer } from 'leaflet';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ModalService} from '../../services/modal/modal.service';
 import {NominatimService} from './nominatim.service';
@@ -141,6 +141,11 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     this.leaflet.nativeElement.style.width = '100%';
 
     try {
+      this.options.layers = [new TileLayer(
+        '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+           attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+        } )];
       this.leafletReference = new Map( this.leaflet.nativeElement, this.options );
     } catch (e) {
       console.error('Problem initializing the map component.', e);

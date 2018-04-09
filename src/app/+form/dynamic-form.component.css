@@ -1,5 +1,5 @@
 split {
-    padding-top: 42px;
+    padding-top: 32px;
 }
 .info-no-selection {
     margin: 20px;
@@ -170,7 +170,7 @@ li.toggle {
   position: absolute;
   bottom: 0;
   top: 0;
-  padding-top: 110px;
+  padding-top: 100px;
   padding-bottom: 10px;
 }
 

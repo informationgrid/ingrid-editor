@@ -1,4 +1,4 @@
-<p-toolbar>
+<!--<p-toolbar>
     <div class="ui-toolbar-group-left">
         <ng-container *ngFor="let button of buttons">
             <button *ngIf="!button.isSeparator" pButton type="button"
@@ -13,20 +13,15 @@
         </ng-container>
     </div>
 
-</p-toolbar>
-<!--
-<div class="btn-toolbar" role="toolbar" aria-label="Form-Toolbar">
-    <div class="text-muted w-100" role="group" aria-label="...">
-        <span *ngFor="let button of buttons">
-            <button *ngIf="!button.isSeparator"
-                    class="btn {{button.cssClasses}}"
-                    [disabled]="!button.active"
-                    [title]="button.tooltip"
-                    (click)="sendEvent(button.eventId)"></button>
-
+</p-toolbar>-->
+<mat-toolbar>
+    <mat-toolbar-row>
+        <ng-container *ngFor="let button of buttons">
+            <a *ngIf="!button.isSeparator" href="#" (click)="sendEvent(button.eventId)">
+                <mat-icon aria-hidden="true">{{button.cssClasses}}</mat-icon>
+            </a>
             <span *ngIf="button.isSeparator"
-                 class="separator"></span>
-        </span>
-    </div>
-</div>
--->
+                  class="separator"></span>
+        </ng-container>
+    </mat-toolbar-row>
+</mat-toolbar>

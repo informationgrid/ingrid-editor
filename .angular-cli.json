@@ -20,7 +20,6 @@
       "prefix": "ige",
       "styles": [
         "assets/tree.css",
-        "../node_modules/bootstrap/dist/css/bootstrap.min.css",
         "../node_modules/font-awesome/css/font-awesome.min.css",
         "../node_modules/leaflet/dist/leaflet.css",
         "../node_modules/primeng/resources/themes/omega/theme.css",

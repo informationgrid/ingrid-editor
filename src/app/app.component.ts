@@ -12,7 +12,7 @@ import { MessageService } from 'primeng/components/common/messageservice';
   styles: [`
     :host {
       display: block;
-      padding-top: 56px;
+      /*padding-top: 56px;*/
       font-size: 85%;
     }
     .igeContainer { height: 100%; overflow-x: hidden; }

@@ -4,6 +4,7 @@ import {
   HttpResponse
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 
 @Injectable()
@@ -15,6 +16,10 @@ export class MockKeycloakInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // array in local storage for registered users
     // const users: any[] = JSON.parse( localStorage.getItem( 'users' ) ) || [];
+
+    if (environment.production) {
+      return next.handle( request );
+    }
 
     // wrap in delayed observable to simulate server api call
     return Observable.of( null ).mergeMap( () => {

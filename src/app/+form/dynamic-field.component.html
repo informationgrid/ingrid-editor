@@ -3,14 +3,14 @@
      (mouseenter)="showHelp = true"
      (mouseleave)="showHelp = false">
 
-    <label *ngIf="!field.hideLabel" class="control-label" [attr.for]="field.key">{{field.label}}
+    <!--<label *ngIf="!field.hideLabel" class="control-label" [attr.for]="field.key">{{field.label}}
         <span *ngIf="showHelp" class="btnHelp text-muted fa fa-question-circle-o"
               popoverTitle="Hilfe (Header kann entfallen)"
               popover="{{field.help}}"
               triggers="click:tap"
               popoverPlacement="top"
         ></span>
-    </label>
+    </label>-->
 
     <ng-container [ngSwitch]="field.controlType">
 
@@ -21,11 +21,23 @@
         </ng-container>
 
         <!-- TEXTBOX -->
-        <input *ngSwitchCase="'textbox'"
-               pInputText
-               [id]="field.key"
-               [formControlName]="field.key"
-               [attr.type]="field.type">
+        <mat-form-field *ngSwitchCase="'textbox'">
+            <input matInput
+                   [placeholder]="field.label"
+                   [id]="field.key"
+                   [formControlName]="field.key"
+                   [attr.type]="field.type">
+        </mat-form-field>
+
+        <!-- TEXTAREA -->
+        <mat-form-field *ngSwitchCase="'textarea'">
+            <textarea matInput
+                      [placeholder]="field.label"
+                      rows="{{field.rows}}"
+                      [formControlName]="field.key"
+                      [id]="field.key">
+            </textarea>
+        </mat-form-field>
 
         <!-- DATEPICKER -->
         <ige-datebox *ngSwitchCase="'datepicker'"
@@ -42,11 +54,9 @@
 
         <!-- RADIO BUTTON-->
         <span *ngSwitchCase="'radio'">
-            <ige-radiobox *ngFor="let opt of field.options"
+            <ige-radiobox [options]="field.options"
                           [formControlName]="field.key"
-                          [label]="opt.label"
-                          [radioName]="field.key"
-                          [radioValue]="opt.value"></ige-radiobox>
+                          [radioName]="field.key"></ige-radiobox>
             <!--<p-radioButton *ngFor="let opt of field.options"
                            [formControlName]="field.key"
                            [name]="field.key"
@@ -67,11 +77,6 @@
                        [isCombo]="field.isCombo"
                        [options]="field.options">
         </ige-drop-down>
-
-        <!-- TEXTAREA -->
-        <textarea *ngSwitchCase="'textarea'" rows="{{field.rows}}" [formControlName]="field.key" [id]="field.key"
-                  pInputTextarea>
-        </textarea>
 
         <!-- TABLE -->
         <!--<data-table *ngSwitchCase="'table'" [formControlName]="field.key" [id]="field.key" [columns]="field.columns"

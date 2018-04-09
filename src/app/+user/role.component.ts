@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import {ModalService} from '../services/modal/modal.service';
 import {ErrorService} from '../services/error.service';
 import {RoleService} from './role.service';

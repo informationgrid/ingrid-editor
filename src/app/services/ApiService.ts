@@ -91,4 +91,8 @@ export class ApiService {
       } );
   }
 
+  logout() {
+    return this.http.get( this.configuration.backendUrl + 'logout' )
+  }
+
 }

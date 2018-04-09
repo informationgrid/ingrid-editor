@@ -1,5 +1,8 @@
-<p-checkbox [(ngModel)]="value"
+<!--<p-checkbox [(ngModel)]="value"
             [label]="label"
             binary="true"
-            (onChange)="handleChange($event)"></p-checkbox>
+            (onChange)="handleChange($event)"></p-checkbox>-->
 
+<mat-checkbox
+    [(ngModel)]="value"
+    (change)="handleChange($event)">{{label}}</mat-checkbox>

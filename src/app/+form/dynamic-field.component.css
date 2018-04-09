@@ -2,12 +2,17 @@
   width: 100%;
 }
 
+:host > div {
+  display: flex;
+  flex-direction: column;
+}
+
 .show {
   display: block;
 }
 
 .ng-invalid:not(.ng-untouched):not(div):not(form) {
-  border-left: 2px solid red;
+  /*border-left: 2px solid red;*/
 }
 
 /deep/ .ui-inputtext {

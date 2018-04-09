@@ -1,12 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {MenuService} from './menu.service';
 import {KeycloakService} from '../security/keycloak/keycloak.service';
+import { ApiService } from '../services/ApiService';
 
 @Component({
   selector: 'main-menu',
   templateUrl: './menu.component.html',
   styles: [`
     nav { z-index: 999; }
+    .example-spacer {
+      flex: 1 1 auto;
+    }
   `]
 })
 export class MenuComponent implements OnInit {
@@ -16,7 +20,7 @@ export class MenuComponent implements OnInit {
 
   sessionCounter = -1;
 
-  constructor(private menuService: MenuService, private keycloak: KeycloakService) {
+  constructor(private menuService: MenuService, private apiService: ApiService) {
     this.routes = this.menuService.menuItems;
   }
 
@@ -70,6 +74,8 @@ export class MenuComponent implements OnInit {
 
   logout() {
     // this.authService.logout();
-    this.keycloak.logout();
+    this.apiService.logout().subscribe( () => {
+      window.location.reload( true );
+    })
   }
 }

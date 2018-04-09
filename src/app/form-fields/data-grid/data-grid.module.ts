@@ -4,7 +4,6 @@ import { SelectRenderComponent } from './renderComponents/select.render.componen
 import { ComboEditorComponent } from './editorComponents/combo.editor.component';
 import { FormsModule } from '@angular/forms';
 import { TitleRenderComponent } from './renderComponents/title.render.component';
-// import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 @NgModule({
   imports: [

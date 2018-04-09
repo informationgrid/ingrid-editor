@@ -40,8 +40,8 @@ export class CopyCutPastePlugin extends Plugin {
     super.register();
 
     const buttons: Array<ToolbarItem | Separator> = [
-      {id: 'toolBtnCopy', tooltip: 'Copy', cssClasses: 'fa fa-files-o', eventId: 'COPY', active: false},
-      {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'fa fa-scissors', eventId: 'CUT', active: false},
+      {id: 'toolBtnCopy', tooltip: 'Copy', cssClasses: 'content_copy', eventId: 'COPY', active: false},
+      {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'content_cut', eventId: 'CUT', active: false},
       {id: 'toolBtnCopyCutSeparator', isSeparator: true}
     ];
     buttons.forEach((button, index) => this.toolbarService.addButton(button, index + 3));

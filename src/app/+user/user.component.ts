@@ -30,6 +30,8 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   isNewUser = false;
 
+  show = false;
+
   constructor(private modalService: ModalService, private userService: UserService,
               private errorService: ErrorService) {
   }
@@ -47,7 +49,11 @@ export class UserComponent implements OnInit, AfterViewInit {
     );
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    setTimeout( () => {
+      this.show = true;
+    }, 0 );
+  }
 
   updateRoles(roles: Role[]) {
     this.roles = roles;
