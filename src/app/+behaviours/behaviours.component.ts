@@ -12,6 +12,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
     .clickable {
       cursor: pointer;
     }
+    .mat-tab-body-content { height: 100%; }
   `],
   animations: [
     trigger('openClose', [

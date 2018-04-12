@@ -1,5 +1,5 @@
 <!-- RENDER ALL RUBRICS AS TABS -->
-<ng-container *ngIf="categories.length > 0">
+<!--<ng-container *ngIf="categories.length > 0">
     <ul class="nav nav-tabs">
         <ng-container *ngFor="let category of categories">
             <li class="nav-item" role="presentation" [class.active]="currentCategory === category.label">
@@ -7,12 +7,12 @@
             </li>
         </ng-container>
     </ul>
-</ng-container>
+</ng-container>-->
 
 <!-- RENDER ALL FIELDS -->
 <!--<div *ngIf="field.controlType !== 'rubric' || (field.controlType === 'rubric' && currentCategory === field.label)"-->
 <!-- only directly below ul-container with tabs! -->
-<div [class.rubricContent]="isRootLevel">
+<ng-container [class.rubricContent]="isRootLevel">
     <ng-container *ngFor="let field of fields">
          <!--class="{{field.domClass}}"
          [ngClass]="{
@@ -117,4 +117,4 @@
         </ng-container>
         <!--</div>-->
     </ng-container>
-</div>
+</ng-container>

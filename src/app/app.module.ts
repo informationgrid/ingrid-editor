@@ -39,7 +39,9 @@ import { ProfileService } from './services/profile.service';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { mockKeycloakProvider } from './services/mock-keycloak.interceptor';
-import { MAT_DATE_LOCALE, MatIconModule, MatToolbarModule } from '@angular/material';
+import { MAT_DATE_LOCALE, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule } from '@angular/material';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { ErrorDialogComponent } from './dialogs/error-dialog.component';
 
 export function ConfigLoader(configService: ConfigService) {
   return () => {
@@ -51,16 +53,18 @@ export function ConfigLoader(configService: ConfigService) {
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent],
+  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent],
   imports: [
     // angular
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
+    // Flex layout
+    FlexLayoutModule,
     // ngx-bootstrap
     PopoverModule.forRoot(),
     // PrimeNG
     TreeModule, GrowlModule,
     // Material
-    MatToolbarModule, MatIconModule,
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule,
     // IGE-Modules
     IgeFormModule, DashboardModule, FieldsModule, CatalogModule, FormFieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing, ModalModule.forRoot()],
@@ -101,7 +105,8 @@ export function ConfigLoader(configService: ConfigService) {
 
   ], // additional providers
 
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [ErrorDialogComponent]
 } )
 
 export class AppModule {

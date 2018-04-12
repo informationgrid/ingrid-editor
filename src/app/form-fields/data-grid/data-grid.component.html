@@ -1,6 +1,9 @@
-<!--<button *ngIf="showAddButton" class="btn btn-outline-secondary btn-xs addButton" type="button" (click)="addRow($event)">
-    <span class="fa fa-plus"></span>
+<label>{{label}}</label>
+
+<button *ngIf="showAddButton" mat-button title="Add a new row" (click)="addRow($event)">
+    <mat-icon>add</mat-icon>
 </button>
+<!--
 <button class="btn btn-outline-secondary btn-xs addButton" type="button" (click)="deleteRows()">
     <span class="fa fa-minus"></span>
 </button>-->
@@ -71,11 +74,21 @@
     </ng-template>
 </p-table>-->
 
+<!-- TODO: check out
+    https://github.com/krishna-agarwal/momentum-table
+    https://porter.io/github.com/iamisti/mdDataTable
+-->
+
 <mat-table #table [dataSource]="value" style="overflow: auto; max-height: 300px;">
     <ng-container *ngFor="let col of settings.columns" [matColumnDef]="col.field">
         <mat-header-cell *matHeaderCellDef> {{col.header}} </mat-header-cell>
         <ng-container *ngIf="col.controlType === 'textbox'">
-            <mat-cell *matCellDef="let element"> {{element[col.field]}} </mat-cell>
+            <!--<mat-cell *matCellDef="let element"> {{element[col.field]}} </mat-cell>-->
+            <mat-cell *matCellDef="let element">
+                <mat-form-field floatLabel="never">
+                    <input matInput placeholder="???" [value]="element[col.field]" (input)="editField(col.field, $event.target.value, element)">
+                </mat-form-field>
+            </mat-cell>
         </ng-container>
         <ng-container *ngIf="col.controlType === 'dropdown'">
             <mat-cell *matCellDef="let element"> {{element[col.field]?.value}} </mat-cell>

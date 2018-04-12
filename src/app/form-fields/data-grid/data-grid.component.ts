@@ -3,6 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DropdownField } from '../../+form/controls';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { IColumn } from '../../+form/controls/field-opentable';
+import { MatTableDataSource } from '@angular/material';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -27,6 +28,8 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   @Input() height: number;
 
+  @Input() label: string;
+
   // @ViewChild(Ng2SmartTableComponent) public smartTable: Ng2SmartTableComponent;
 
   @ViewChild( 'addRowModal' ) addModal: TemplateRef<any> = null;
@@ -47,7 +50,7 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
   rowSelection: any[] = [];
 
   // The internal data model
-  private _value: any[] = [{}];
+  private _value = new MatTableDataSource([]);
 
   // Placeholders for the callbacks
   private _onTouchedCallback: () => void;
@@ -95,9 +98,9 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
   // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value instanceof Array) {
-      this._value = value;
+      this._value = new MatTableDataSource(value);
     } else {
-      this._value = [];
+      this._value = new MatTableDataSource([]);
     }
   }
 
@@ -116,21 +119,29 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
     if (this.addWithDialog) {
       this.addModalRef = this.modalService.show( this.addModal );
     } else {
-      this._value.push( {} );
+      // this._value = [ ...this.value, {} ];
+      this._value.data.push( {} );
+      this._value.data = this._value.data.slice();
       this.handleChange();
     }
   }
 
   addRowFromDialog() {
-    this._value.push( this.addModel );
+    // this._value.push( this.addModel );
     this.addModalRef.hide();
     this.handleChange();
   }
 
   deleteRows() {
     console.log(this.rowSelection);
-    this._value = this._value.filter( item => !this.rowSelection.includes(item));
+    // this._value = this._value.filter( item => !this.rowSelection.includes(item));
     this.handleChange();
+  }
+
+
+  editField(field: string, editValue: string, el: any) {
+    const idx = this._value.data.findIndex(ele => el.name === ele.name);
+    this._value.data[idx][field] = editValue;
   }
 
   addFromTree(event, fieldId) {

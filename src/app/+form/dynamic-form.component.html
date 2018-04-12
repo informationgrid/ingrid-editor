@@ -1,3 +1,6 @@
+<div fxLayout="column" fxFill>
+
+
 <!-- Toolbar -->
 <form-toolbar></form-toolbar>
 
@@ -8,164 +11,208 @@
     </div>
 </div>-->
 
-<div class="tabs-left menu">
-    <ul class="nav nav-tabs flex-column">
-        <li class="nav-item" [class.active]="sideTab === 'tree'">
-            <a class="nav-link" (click)="sideTab = 'tree'" title="Baumstruktur" data-toggle="tab">
-                <span class="fa fa-tree"></span>
-            </a>
-        </li>
-        <li class="nav-item" [class.active]="sideTab === 'search'">
-            <a class="nav-link" (click)="sideTab = 'search'" title="Suche" data-toggle="tab">
-                <span class="fa fa-search"></span>
-            </a>
-        </li>
-        <li class="nav-item" [class.active]="sideTab === 'wizards'">
-            <a class="nav-link" (click)="sideTab = 'wizards'" title="Assistenten" data-toggle="tab">
-                <span class="fa fa-magic"></span>
-            </a>
-        </li>
-        <li class="nav-item" [class.active]="sideTab === 'favorites'">
-            <a class="nav-link" (click)="sideTab = 'favorites'" title="Favoriten" data-toggle="tab">
-                <span class="fa fa-star"></span>
-            </a>
-        </li>
-        <li class="nav-item" class="toggle">
-            <a class="nav-link" title="Ein-/Ausklappen" (click)="hideSidebar = !hideSidebar">
+<!--<div>-->
+    <!--<div class="tabs-left menu">
+        <ul class="nav-tabs flex-column">
+            <li [class.active]="sideTab === 'tree'">
+                <a mat-button (click)="sideTab = 'tree'" title="Baumstruktur" data-toggle="tab">
+                    <span class="fa fa-tree"></span>
+                </a>
+            </li>
+            <li [class.active]="sideTab === 'search'">
+                <a mat-button (click)="sideTab = 'search'" title="Suche" data-toggle="tab">
+                    <span class="fa fa-search"></span>
+                </a>
+            </li>
+            <li [class.active]="sideTab === 'wizards'">
+                <a mat-button (click)="sideTab = 'wizards'" title="Assistenten" data-toggle="tab">
+                    <span class="fa fa-magic"></span>
+                </a>
+            </li>
+            <li [class.active]="sideTab === 'favorites'">
+                <a mat-button (click)="sideTab = 'favorites'" title="Favoriten" data-toggle="tab">
+                    <span class="fa fa-star"></span>
+                </a>
+            </li>
+            <li class="toggle">
+                <a title="Ein-/Ausklappen" (click)="hideSidebar = !hideSidebar">
                 <span class="fa"
                       [class.fa-chevron-left]="!hideSidebar"
                       [class.fa-chevron-right]="hideSidebar"></span>
-            </a>
-        </li>
-    </ul>
-</div>
+                </a>
+            </li>
+        </ul>
+    </div>-->
 
-<split [disabled]="hideSidebar" [useTransition]="true">
-    <!-- exchangable sidebar -->
-    <split-area [size]="sidebarWidth" [visible]="!hideSidebar" id="sidebar">
-        <!--<div class="col-md-4 col-sm-5">-->
-        <div class="tabs-left">
-            <div class="tab-content">
-                <div class="tab-pane" [class.active]="sideTab === 'tree'">
-                    <ige-tree (activate)="handleLoad($event)"
-                          (selected)="handleSelection($event)"></ige-tree>
-                </div>
-                <div class="tab-pane" [class.active]="sideTab === 'search'">
-                    <browser (onSelected)="load($event.id)"></browser>
-                </div>
-                <div class="tab-pane" [class.active]="sideTab === 'wizards'">
-                    <!--<a [routerLink]="['/form/10']">Zurück</a>-->
-                    <router-outlet name="wizard"></router-outlet>
-                </div>
-                <div class="tab-pane" [class.active]="sideTab === 'favorites'">
-                    <div class="panel panel-default">
-                        <!-- Default panel contents -->
-                        <div class="panel-heading">Favoriten</div>
-                        <div class="list-group">
-                            <button (click)="load('1')" class="list-group-item list-group-item-action">
-                                <span class="fa fa-file-o"></span>
-                                Document 1 (TEST)
-                            </button>
-                            <button (click)="load('2')" class="list-group-item list-group-item-action">
-                                <span class="fa fa-file-o"></span>
-                                Document 5 (TEST)
-                            </button>
-                            <button (click)="load('3')" class="list-group-item list-group-item-action">
-                                <span class="fa fa-address-card-o"></span>
-                                Document 6 (TEST)
-                            </button>
+    <split [useTransition]="true">
+        <!--<split-area [size]="5">
+            <div class="tabs-left menu">
+                <ul class="nav-tabs flex-column">
+                    <li [class.active]="sideTab === 'tree'">
+                        <a mat-button (click)="sideTab = 'tree'" title="Baumstruktur" data-toggle="tab">
+                            <span class="fa fa-tree"></span>
+                        </a>
+                    </li>
+                    <li [class.active]="sideTab === 'search'">
+                        <a mat-button (click)="sideTab = 'search'" title="Suche" data-toggle="tab">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </li>
+                    <li [class.active]="sideTab === 'wizards'">
+                        <a mat-button (click)="sideTab = 'wizards'" title="Assistenten" data-toggle="tab">
+                            <span class="fa fa-magic"></span>
+                        </a>
+                    </li>
+                    <li [class.active]="sideTab === 'favorites'">
+                        <a mat-button (click)="sideTab = 'favorites'" title="Favoriten" data-toggle="tab">
+                            <span class="fa fa-star"></span>
+                        </a>
+                    </li>
+                    <li class="toggle">
+                        <a title="Ein-/Ausklappen" (click)="hideSidebar = !hideSidebar">
+                    <span class="fa"
+                          [class.fa-chevron-left]="!hideSidebar"
+                          [class.fa-chevron-right]="hideSidebar"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </split-area>-->
+
+        <!-- exchangable sidebar -->
+        <split-area [size]="25" id="sidebar">
+            <!--<div class="col-md-4 col-sm-5">-->
+            <div class="tabs-left">
+                <div class="tab-content">
+                    <div class="tab-pane" [class.active]="sideTab === 'tree'">
+                        <ige-tree (activate)="handleLoad($event)"
+                                  (selected)="handleSelection($event)"></ige-tree>
+                    </div>
+                    <div class="tab-pane hide" [class.active]="sideTab === 'search'">
+                        <browser (onSelected)="load($event.id)"></browser>
+                    </div>
+                    <div class="tab-pane hide" [class.active]="sideTab === 'wizards'">
+                        <!--<a [routerLink]="['/form/10']">Zurück</a>-->
+                        <router-outlet name="wizard"></router-outlet>
+                    </div>
+                    <div class="tab-pane hide" [class.active]="sideTab === 'favorites'">
+                        <div class="panel panel-default">
+                            <!-- Default panel contents -->
+                            <div class="panel-heading">Favoriten</div>
+                            <div class="list-group">
+                                <button (click)="load('1')" class="list-group-item list-group-item-action">
+                                    <span class="fa fa-file-o"></span>
+                                    Document 1 (TEST)
+                                </button>
+                                <button (click)="load('2')" class="list-group-item list-group-item-action">
+                                    <span class="fa fa-file-o"></span>
+                                    Document 5 (TEST)
+                                </button>
+                                <button (click)="load('3')" class="list-group-item list-group-item-action">
+                                    <span class="fa fa-address-card-o"></span>
+                                    Document 6 (TEST)
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div><!-- /tab-content -->
-        </div><!-- /tabbable -->
-        <!--</div>&lt;!&ndash; /col &ndash;&gt;-->
-        <!--<ul class="nav nav-tabs">
-            <li role="presentation" [class.active]="sideTab === 'tree'"><a (click)="sideTab = 'tree'">Baum</a></li>
-            <li role="presentation" [class.active]="sideTab === 'search'"><a (click)="sideTab = 'search'">Suche</a></li>
-        </ul>
-        <tree [class.hide]="sideTab !== 'tree'"
-              (activate)="handleLoad($event)"
-              (selected)="handleSelection($event)"></tree>
-        <browser [class.hide]="sideTab !== 'search'" (onSelected)="load($event.id)"></browser>-->
-    </split-area>
+                </div><!-- /tab-content -->
+            </div><!-- /tabbable -->
+        </split-area>
 
-    <!-- The form -->
-    <split-area [size]="75" id="form" class="formWrapper">
-        <div *ngIf="!form" class="info-no-selection card-body text-center">
-            Kein Dokument ausgewählt. Laden Sie ein vorhandenes oder erstellen Sie ein neues Dokument über die Toolbar.
-        </div>
+        <!-- The form -->
+        <split-area [size]="75" id="form" class="formWrapper" style="height: auto !important;">
+            <div *ngIf="!form" class="info-no-selection card-body text-center">
+                Kein Dokument ausgewählt. Laden Sie ein vorhandenes oder erstellen Sie ein neues Dokument über die Toolbar.
+            </div>
 
-        <form *ngIf="form" [formGroup]="form">
+            <form *ngIf="form" [formGroup]="form" style="height: 100%;flex-direction: column;display: flex;">
 
-            <!-- form info bar -->
-            <div class="form-info-bar" style="position:relative;" [class.expanded]="showDateBar"
-                 (click)="showDateBar = !showDateBar">
-                <span class="text-muted">
-                    <div class="pull-left padding-sm"
-                         title="Als Favoriten merken"
-                         (mouseover)="markFavoriteHovered = true"
-                         (mouseout)="markFavoriteHovered = false"
-                         (click)="markFavorite($event)">
-                        <span class="fa"
-                              [class.fa-star]="false || markFavoriteHovered"
-                              [class.fa-star-o]="true && !markFavoriteHovered"
-                        ></span>
-                        {{getTitle()}}
-                    </div>
-                    <div class="padding-sm pull-right">
-                        <span class="fa fa-user"></span>
-                        <small>
-                            <strong>Autor:</strong> {{data._modifiedBy}}
-                        </small>
-                    </div>
-                    <div class="padding-sm pull-right">
-                        <span class="fa fa-clock-o" [class.active]="showDateBar"
-                              title="Zeige Datumsinformation"></span>
-                        <small>
-                            <strong>Geändert:</strong> {{data._modified | date:'HH:mm - dd.MM.yyyy'}}
-                        </small>
-                    </div>
-                    <div style="clear: both;"></div>
-                    <div [class.d-none]="!showDateBar" style="clear: both;">
+                <!-- form info bar -->
+                <div class="form-info-bar" style="position:relative;" [class.expanded]="showDateBar"
+                     (click)="showDateBar = !showDateBar">
+                    <span class="text-muted">
+                        <div class="pull-left padding-sm"
+                             title="Als Favoriten merken"
+                             (mouseover)="markFavoriteHovered = true"
+                             (mouseout)="markFavoriteHovered = false"
+                             (click)="markFavorite($event)">
+                            <span class="fa"
+                                  [class.fa-star]="false || markFavoriteHovered"
+                                  [class.fa-star-o]="true && !markFavoriteHovered"
+                            ></span>
+                            {{getTitle()}}
+                        </div>
                         <div class="padding-sm pull-right">
+                            <span class="fa fa-user"></span>
                             <small>
-                                <strong>Erstellt:</strong> {{data._created | date:'HH:mm - dd.MM.yyyy'}}
+                                <strong>Autor:</strong> {{data._modifiedBy}}
                             </small>
                         </div>
-                    </div>
-                    <!--<span class="fa fa-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
-                    <div class="text-center" style="position:absolute; margin: 0 50%; bottom: -3px;">
-                        <span class="fa"
-                              [class.fa-chevron-down]="!showDateBar"
-                              [class.fa-chevron-up]="showDateBar"></span>
-                    </div>
-                    <!--<div style="position: absolute; left: 50%;">
-                        <div style="position: relative; left: -50%; border: dotted red 1px;">
-                          <span class="fa fa-chevron-down"></span>
+                        <div class="padding-sm pull-right">
+                            <span class="fa fa-clock-o" [class.active]="showDateBar"
+                                  title="Zeige Datumsinformation"></span>
+                            <small>
+                                <strong>Geändert:</strong> {{data._modified | date:'HH:mm - dd.MM.yyyy'}}
+                            </small>
                         </div>
-                    </div>-->
-                </span>
-            </div>
 
-            <div class="main-form-flex">
-                <!--<div class="main-form">-->
-                <!--<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>-->
-                <ige-main-form-tabs [fields]="fields" [form]="form"
-                                    style="display: flex;"
-                                    [blurAllBut]="wizardFocusElement"
-                                    (onAddSection)="addSection($event)"></ige-main-form-tabs>
+                        <div [class.d-none]="!showDateBar" style="clear: both;">
+                            <div class="padding-sm pull-right">
+                                <small>
+                                    <strong>Erstellt:</strong> {{data._created | date:'HH:mm - dd.MM.yyyy'}}
+                                </small>
+                            </div>
+                        </div>
+                        <!--<span class="fa fa-chevron-left" (click)="showDateBar = !showDateBar"></span>-->
+                        <div class="text-center" style="position:absolute; margin: 0 50%; bottom: -3px;">
+                            <span class="fa"
+                                  [class.fa-chevron-down]="!showDateBar"
+                                  [class.fa-chevron-up]="showDateBar"></span>
+                        </div>
+                        <!--<div style="position: absolute; left: 50%;">
+                            <div style="position: relative; left: -50%; border: dotted red 1px;">
+                              <span class="fa fa-chevron-down"></span>
+                            </div>
+                        </div>-->
+                        <div style="clear: both;"></div>
+                    </span>
+                </div>
+
+                <!--<div class="main-form-flex">-->
+                    <!--<div class="main-form">-->
+                    <!--<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>-->
+                    <mat-tab-group *ngIf="fields[0].controlType === 'rubric'" class="md-no-animation">
+                        <ng-container *ngFor="let field of fields">
+                            <mat-tab [label]="field.label" *ngIf="field.controlType === 'rubric'">
+                                <ige-main-form-tabs [fields]="field.children" [form]="form"
+                                                    [isRootLevel]="false"
+                                                    [blurAllBut]="wizardFocusElement"
+                                                    (onAddSection)="addSection($event)"></ige-main-form-tabs>
+                                <div style="clear: both;"></div>
+                            </mat-tab>
+                        </ng-container>
+
+                    </mat-tab-group>
+
+                    <ng-container *ngIf="fields[0].controlType !== 'rubric'">
+                        <ige-main-form-tabs [fields]="fields" [form]="form"
+                                            [isRootLevel]="true"
+                                            [blurAllBut]="wizardFocusElement"
+                                            (onAddSection)="addSection($event)"></ige-main-form-tabs>
+                    </ng-container>
                 <!--</div>-->
-            </div>
-            <div *ngIf="debugEnabled" class="card-body text-muted" [style.flex]="0">
-                <strong>Form contains the following values</strong><br>{{form.value | json}}
-                <!--<p>Form is valid: {{form.valid}}</p>-->
-            </div>
+                <div *ngIf="debugEnabled" class="card-body text-muted" [style.flex]="0">
+                    <strong>Form contains the following values</strong><br>{{form.value | json}}
+                    <!--<p>Form is valid: {{form.valid}}</p>-->
+                </div>
 
-        </form>
-    </split-area>
+            </form>
+        </split-area>
 
-</split>
+    </split>
+<!--</div>-->
+</div>
+
 
 <ng-template #newDocModal>
     <div class="modal-header">

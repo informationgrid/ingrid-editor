@@ -12,11 +12,14 @@ import { MessageService } from 'primeng/components/common/messageservice';
   styles: [`
     :host {
       display: block;
+      width: 100%;
+      height: 100%;
+      /*display: block;*/
       /*padding-top: 56px;*/
-      font-size: 85%;
+      /*font-size: 85%;*/
     }
-    .igeContainer { height: 100%; overflow-x: hidden; }
-    .modal-body { overflow: auto; }
+    /*.igeContainer { height: 100%; overflow-x: hidden; }*/
+    /*.modal-body { overflow: auto; }*/
   `],
   providers: [MessageService]
 } )

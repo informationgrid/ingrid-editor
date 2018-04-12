@@ -1,11 +1,10 @@
-import {ComponentFactoryResolver, Injectable, ReflectiveInjector, ValueProvider} from '@angular/core';
-import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
-import {FormularService} from '../../../services/formular/formular.service';
-import {ModalService} from '../../../services/modal/modal.service';
-import {StorageService} from '../../../services/storage/storage.service';
-import {Plugin} from '../../plugin';
-import {CreateFolderComponent} from './create-folder.component';
-import {SelectedDocument} from '../../../+form/sidebars/selected-document.model';
+import { ComponentFactoryResolver, Injectable } from '@angular/core';
+import { FormToolbarService } from '../../../+form/toolbar/form-toolbar.service';
+import { FormularService } from '../../../services/formular/formular.service';
+import { ModalService } from '../../../services/modal/modal.service';
+import { Plugin } from '../../plugin';
+import { CreateFolderComponent } from './create-folder.component';
+import { MatDialog } from '@angular/material';
 
 @Injectable()
 export class FolderPlugin extends Plugin {
@@ -21,6 +20,7 @@ export class FolderPlugin extends Plugin {
   constructor(private formToolbarService: FormToolbarService,
               private formService: FormularService,
               private modalService: ModalService,
+              private dialog: MatDialog,
               private _cr: ComponentFactoryResolver) {
     super();
     this.isActive = true;
@@ -60,21 +60,13 @@ export class FolderPlugin extends Plugin {
   }
 
   createFolder() {
-    // let formData = this.formService.requestFormValues();
-    // if (formData.form) {
-    //
-    // }
-
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
     const parents = this.formService.getSelectedDocuments();
-    const factory = this._cr.resolveComponentFactory( CreateFolderComponent );
 
-    const providers = ReflectiveInjector.resolve( [
-      <ValueProvider>{provide: 'parent', useValue: parents ? parents[0] : null}
-    ] );
-    const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
-    this.modalService.containerRef.createComponent( factory, null, popInjector );
+    this.dialog.open(CreateFolderComponent, {
+      data: { parent: parents ? parents[0] : null }
+    });
   }
 
   unregister() {

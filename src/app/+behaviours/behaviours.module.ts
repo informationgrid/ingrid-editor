@@ -20,10 +20,14 @@ import { StatisticComponent } from './system/statistic/statistic.component';
 import { IsoViewComponent } from './toolbar/isoView/iso-view.component';
 import { IsoViewPlugin } from './toolbar/isoView/iso-view.plugin';
 import { UndoPlugin } from './system/undo/undo.plugin';
-import { MatCardModule, MatTabsModule } from '@angular/material';
+import {
+  MatButtonModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatInputModule,
+  MatTabsModule
+} from '@angular/material';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedModule, routing, MatCardModule, MatTabsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedModule, routing, MatCardModule, MatTabsModule,
+  MatDialogModule, MatButtonModule, MatInputModule, MatCheckboxModule],
   declarations: [
     PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewComponent, IsoViewComponent,
     CreateFolderComponent, DeleteDialogComponent, StatisticComponent],

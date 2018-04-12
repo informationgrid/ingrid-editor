@@ -27,6 +27,9 @@
                    [id]="field.key"
                    [formControlName]="field.key"
                    [attr.type]="field.type">
+            <mat-error *ngIf="form.controls[field.key].errors?.other">
+                {{ form.controls[field.key].errors.other.error }}
+            </mat-error>
         </mat-form-field>
 
         <!-- TEXTAREA -->
@@ -37,6 +40,9 @@
                       [formControlName]="field.key"
                       [id]="field.key">
             </textarea>
+            <mat-error *ngIf="form.controls[field.key].errors?.other">
+                {{ form.controls[field.key].errors.other.error }}
+            </mat-error>
         </mat-form-field>
 
         <!-- DATEPICKER -->
@@ -84,6 +90,7 @@
         </data-table>-->
 
         <ige-data-grid *ngSwitchCase="'opentable'"
+                       [label]="field.label"
                        [formControlName]="field.key"
                        [columns]="field.columns"
                        [addWithDialog]="field.addWithDialog"
@@ -97,19 +104,19 @@
 
         <!--<div class="invalid-feedback" [class.show]="form.controls[field.key].invalid && !form.controls[field.key].untouched">{{showError(form.controls[field.key].errors)}}</div>-->
 
-        <ng-container *ngIf="form.controls[field.key]">
+<!--        <ng-container *ngIf="form.controls[field.key]">
             <div *ngIf="form.controls[field.key].invalid && (form.controls[field.key].dirty || form.controls[field.key].touched)" class="invalid-feedback show">
-                <div *ngIf="form.controls[field.key].errors.required">
+                <mat-error *ngIf="form.controls[field.key].errors.required">
                     Feld darf nicht leer sein.
-                </div>
-                <div *ngIf="form.controls[field.key].errors.minlength">
+                </mat-error>
+                <mat-error *ngIf="form.controls[field.key].errors.minlength">
                     Der eingegebene Wert ist zu kurz.
-                </div>
-                <div *ngIf="form.controls[field.key].errors.other">
+                </mat-error>
+                <mat-error *ngIf="form.controls[field.key].errors.other">
                     {{ form.controls[field.key].errors.other.error }}
-                </div>
+                </mat-error>
             </div>
-        </ng-container>
+        </ng-container>-->
     </ng-container>
 
 </div>

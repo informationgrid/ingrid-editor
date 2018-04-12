@@ -1,10 +1,10 @@
-:host-context .nav > li > a {
+/*:host-context .nav > li > a {
   padding: 5px 10px;
 }
 
 :host {
-  /*display: inherit;*/
-  /*display: block;*/
+  !*display: inherit;*!
+  !*display: block;*!
   flex-direction: column;
   flex: 1;
 }
@@ -19,8 +19,8 @@
 }
 
 div > dyn-field {
-  padding: 10px;
-}
+  !*padding: 10px;*!
+}*/
 
 .blur {
   filter: blur(2px);

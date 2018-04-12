@@ -1,4 +1,29 @@
-<ng-template #createFolderModal>
+<h2 mat-dialog-title>Ordner erstellen</h2>
+<mat-dialog-content>
+    <mat-form-field>
+        <input matInput #name
+               placeholder="Ordnername"
+               (keyup.enter)="handleCreate(name.value)"
+               required>
+    </mat-form-field>
+
+    <div>
+        <mat-checkbox *ngIf="parent.profile === 'FOLDER'" (change)="asSubFolder = $event.checked">unter ausgewähltem Ordner anlegen</mat-checkbox>
+    </div>
+
+    <div>
+        <small class="form-text" *ngIf="parent.profile !== 'FOLDER'">
+            Wenn Sie einen Unterordner erstellen möchten, müssen Sie zuerst einen Ordner auswählen.
+        </small>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Abbrechen</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-button [mat-dialog-close]="true">Erstellen</button>
+</mat-dialog-actions>
+
+<!--<ng-template #createFolderModal>
     <div class="modal-header">
         <h4 class="modal-title">Ordner erstellen</h4>
     </div>
@@ -25,25 +50,5 @@
         <button class="btn btn-link" (click)="createFolderModalRef.hide()">Abbrechen</button>
         <button class="btn btn-link" (click)="handleCreate(name.value)">Erstellen</button>
     </div>
-</ng-template>
+</ng-template>-->
 
-<!--
-<modal #createFolderModal modalClass="info" title="Ordner erstellen" submitButtonLabel="Erstellen"
-       (onSubmit)="handleCreate()">
-    <modal-content>
-        <label class="control-label">Ordnername</label>
-        <input #name type="text" class="form-control" (blur)="folderName = name.value" required>
-
-        <div class="checkbox" *ngIf="parent.profile === 'FOLDER'">
-            <label>
-                <input #subFolder type="checkbox"
-                       (change)="asSubFolder = subFolder.checked">
-                unter ausgewähltem Ordner anlegen
-            </label>
-        </div>
-        <span class="text-info" *ngIf="parent.profile !== 'FOLDER'">
-          Wenn Sie einen Unterordner erstellen möchten, müssen Sie zuerst einen Ordner auswählen.
-        </span>
-    </modal-content>
-</modal>
--->

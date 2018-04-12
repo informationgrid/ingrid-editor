@@ -1,8 +1,8 @@
-import {Component, Injector, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import { Component, Inject, Injector, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {FormularService} from '../../../services/formular/formular.service';
 import {StorageService} from '../../../services/storage/storage.service';
-import {UpdateType} from '../../../models/update-type.enum';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
+import { MAT_DIALOG_DATA } from '@angular/material';
 
 @Component( {
   templateUrl: './create-folder.component.html'
@@ -28,9 +28,9 @@ export class CreateFolderComponent implements OnInit {
   }
 
   constructor(private modalService: BsModalService, private formService: FormularService,
-              private storageService: StorageService, injector: Injector) {
-    const parent = injector.get('parent');
-    this.parent = parent ? parent : {};
+              private storageService: StorageService,
+              @Inject(MAT_DIALOG_DATA) public data: any) {
+    this.parent = data.parent;
   }
 
   ngOnInit() {

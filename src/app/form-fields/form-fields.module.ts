@@ -16,8 +16,9 @@ import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogComponent } from './dialog/dialog.component';
 import {
+  MatButtonModule,
   MatCheckboxModule,
-  MatDatepickerModule,
+  MatDatepickerModule, MatIconModule,
   MatInputModule,
   MatNativeDateModule,
   MatRadioModule, MatTableModule
@@ -27,7 +28,8 @@ import {
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     DropdownModule, CalendarModule, DataGridModule, CheckboxModule, RadioButtonModule, TableModule, InputTextModule,
-    MatInputModule, MatDatepickerModule, MatNativeDateModule, MatCheckboxModule, MatRadioModule, MatTableModule
+    MatInputModule, MatDatepickerModule, MatNativeDateModule, MatCheckboxModule, MatRadioModule, MatTableModule, MatButtonModule,
+    MatIconModule,
   ],
   declarations: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent, DialogComponent],
   exports: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent]

@@ -44,7 +44,7 @@ export class ProfileAddress implements Profile {
           return firstNameIsLong || lastNameHasValue
             ? null
             : {
-              validateTop: {
+              other: {
                 valid: false,
                 error: 'Der Titel muss aus mindestens 5 Zeichen bestehen oder es muss ein Nachname gesetzt sein.',
                 special: 'abc'

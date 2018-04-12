@@ -2,6 +2,24 @@
 
 html, body {
   height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Roboto,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+}
+
+.hide {
+  display: none;
+}
+
+.mat-header-row {
+  min-height: 40px;
+}
+
+.mat-row {
+  padding: 0 10px;
+  min-height: 32px;
 }
 
 .invalid-feedback {
@@ -65,13 +83,13 @@ div.has-error {
   border: dotted 3px lightgray;
 }
 
-form-toolbar {
+/*form-toolbar {
   position: fixed;
   top: 56px;
   width: 100%;
   background-color: #ececec;
   z-index: 10;
-}
+}*/
 
 form-toolbar + div {
   /*padding-top: 30px;*/
