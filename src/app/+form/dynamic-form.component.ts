@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { FormControlService } from '../services/form-control.service';
-import { Container, FieldBase, IFieldBase } from './controls';
+import { Container, IFieldBase } from './controls';
 import { BehaviourService } from '../+behaviours/behaviour.service';
 import { FormularService } from '../services/formular/formular.service';
 import { Behaviour } from '../+behaviours/behaviours';
@@ -14,13 +14,10 @@ import { UpdateType } from '../models/update-type.enum';
 import { ErrorService } from '../services/error.service';
 import { Role } from '../models/user-role';
 import { SelectedDocument } from './sidebars/selected-document.model';
-import { KeycloakService } from '../security/keycloak/keycloak.service';
 import { RoleService } from '../+user/role.service';
-import { Subscription } from 'rxjs/Subscription';
-import { WizardService } from '../wizard/wizard.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MessageService } from 'primeng/components/common/messageservice';
+import { Subscription } from 'rxjs/index';
 
 interface FormData extends Object {
   _id?: string;
@@ -85,13 +82,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
   pendingId: string;
 
-  constructor( private messageService: MessageService,
-              private modal2Service: BsModalService,
+  constructor(private modal2Service: BsModalService,
               private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
               private roleService: RoleService,
-              private wizardService: WizardService,
+              // private wizardService: WizardService,
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     // TODO: get roles definiton
@@ -141,7 +137,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.formularService.currentProfile = null;
 
-    this.wizardService.focusElements$.subscribe( fields => this.wizardFocusElement = fields );
+    // this.wizardService.focusElements$.subscribe( fields => this.wizardFocusElement = fields );
 
     // register to an publisher in the form/storage service and send the value of this form
     // this can be used for publish, revert, detail, compare, ...
@@ -383,7 +379,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storageService.saveData(data, false).then(res => {
       this.data._id = res._id;
       // this.messageService.show( 'Dokument wurde gespeichert' );
-      this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});
+      // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});
     }, (err: HttpErrorResponse) => {
       this.errorService.handleOwn(err.message, err.error)
       // setTimeout(() => this.error = false, 5000);

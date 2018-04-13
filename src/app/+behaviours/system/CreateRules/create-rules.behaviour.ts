@@ -2,7 +2,7 @@ import {Inject} from '@angular/core';
 import {FormularService} from '../../../services/formular/formular.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Plugin} from '../../plugin';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs/index';
 
 export class CreateDocRulesPlugin extends Plugin {
   id = 'plugin.create.doc';

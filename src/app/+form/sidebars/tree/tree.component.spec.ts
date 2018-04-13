@@ -8,9 +8,8 @@ import { StorageService } from '../../../services/storage/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UpdateDatasetInfo } from '../../../models/update-dataset-info.model';
 import { UpdateType } from '../../../models/update-type.enum';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
 import { FormToolbarService } from '../../toolbar/form-toolbar.service';
+import { Observable, Subject } from 'rxjs/index';
 
 let fixture: any, comp: any, el: any;
 
@@ -20,12 +19,12 @@ class RouterMock {
 }
 const ActivatedRouteMock = {
   params: {
-    subscribe: () => Observable.of( {id: '-1'} )
+    subscribe: () => Observable.create( {id: '-1'} )
   }
 };
 const formToolbarServiceStub = {
   toolbarEvent$: {
-    subscribe: () => Observable.of( 'invalid_event_id' )
+    subscribe: () => Observable.create( 'invalid_event_id' )
   }
 };
 
@@ -43,11 +42,11 @@ describe( 'TreeComponent', () => {
       datasetsChanged$: subject.asObservable(),
       getChildDocuments: (id: string) => {
         if (!id) {
-          return Observable.of( childrenTree );
+          return Observable.create( childrenTree );
         } else if (id === '3') {
-          return Observable.of( [{_id: '4', _profile: 'A'}] );
+          return Observable.create( [{_id: '4', _profile: 'A'}] );
         } else {
-          return Observable.of( [{_id: 'x', _profile: 'A'}] );
+          return Observable.create( [{_id: 'x', _profile: 'A'}] );
         }
       }
     };

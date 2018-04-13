@@ -2,12 +2,10 @@ import { Injectable } from '@angular/core';
 import { IFieldBase } from '../../+form/controls';
 import { Profile } from './profile';
 import { SelectedDocument } from '../../+form/sidebars/selected-document.model';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
-import { KeycloakService } from '../../security/keycloak/keycloak.service';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService, Configuration } from '../config.service';
 import { ProfileService } from '../profile.service';
+import { Observable, Subject } from 'rxjs/index';
 
 @Injectable()
 export class FormularService {
@@ -42,7 +40,6 @@ export class FormularService {
     // create profiles after we have logged in
 
     console.log('init profiles');
-
     profiles.getProfiles().then(_ => this.profileDefinitions = _);
   }
 

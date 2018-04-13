@@ -6,7 +6,7 @@ import {MenuService} from '../menu/menu.service';
 import {Role, RoleAttribute} from '../models/user-role';
 import {MetadataTreeComponent} from '../+form/sidebars/tree/tree.component';
 import {BsModalRef} from 'ngx-bootstrap/modal';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs/index';
 
 @Component( {
   selector: 'role-gui',

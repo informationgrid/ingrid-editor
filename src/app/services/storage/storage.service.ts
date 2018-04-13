@@ -4,10 +4,10 @@ import { ConfigService, Configuration } from '../config.service';
 import { UpdateType } from '../../models/update-type.enum';
 import { DocMainInfo, UpdateDatasetInfo } from '../../models/update-dataset-info.model';
 import { ErrorService } from '../error.service';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
 import { KeycloakService } from '../../security/keycloak/keycloak.service';
 import { HttpClient } from '@angular/common/http';
+import { Observable, Subject } from 'rxjs/index';
+import { catchError, map, tap } from 'rxjs/internal/operators';
 
 @Injectable()
 export class StorageService {
@@ -41,10 +41,12 @@ export class StorageService {
     // TODO: use general sort filter
     return this.http.get<any[]>(
       this.configuration.backendUrl + 'datasets?query=' + query + '&sort=title&fields=_id,_profile,_state,' + this.titleFields )
-      .map( json => {
-        return json.filter( item => item._profile !== 'FOLDER' );
-      } )
-      .catch( err => this.errorService.handleOwn( 'Could not query documents', err ) );
+      .pipe(
+        map( json => {
+          return json.filter( item => item._profile !== 'FOLDER' );
+        } ),
+        catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
+      );
   }
 
   getChildDocuments(parentId: string): Observable<any> {
@@ -52,7 +54,9 @@ export class StorageService {
     const idQuery = parentId === null ? '' : '&parentId=' + parentId;
     // headers.append('Content-Type', 'text/plain');
     return this.http.get( this.configuration.backendUrl + 'datasets?children=true&' + fields + idQuery )
-      .catch( (err) => this.errorService.handle( err ) );
+      .pipe(
+        catchError( (err) => this.errorService.handle( err ) )
+      );
   }
 
   loadData(id: string): Observable<DocMainInfo> {
@@ -124,8 +128,8 @@ export class StorageService {
   }
 
   delete(ids: string[]): any {
-    const response = this.http.delete( this.configuration.backendUrl + 'datasets/' + ids, { responseType: 'text'} )
-      .catch( err => this.errorService.handle( err ) );
+    const response = this.http.delete( this.configuration.backendUrl + 'datasets/' + ids, {responseType: 'text'} )
+      .pipe( catchError( err => this.errorService.handle( err ) ) );
 
     response.subscribe( res => {
       console.log( 'ok', res );
@@ -138,8 +142,10 @@ export class StorageService {
 
   revert(id: string): Observable<any> {
     return this.http.put( this.configuration.backendUrl + 'datasets/' + id + '?revert=true', {} )
-      .do( (json: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: [json]} ) )
-      .catch( err => this.errorService.handle( err ) );
+      .pipe(
+        tap( (json: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: [json]} ) ),
+        catchError( err => this.errorService.handle( err ) )
+      );
 
     // return response.subscribe(res => {
     //   console.log( 'ok, res' );
@@ -148,8 +154,8 @@ export class StorageService {
   }
 
   getPathToDataset(id: string): Observable<string[]> {
-    return this.http.get( this.configuration.backendUrl + 'datasets/' + id + '/path' )
-      .catch( err => this.errorService.handle( err ) );
+    return this.http.get<string[]>( this.configuration.backendUrl + 'datasets/' + id + '/path' )
+      .pipe( catchError( err => this.errorService.handle( err ) ) );
   }
 
   /**
@@ -161,7 +167,7 @@ export class StorageService {
    */
   copyDocuments(srcIDs: string[], dest: string, includeTree: boolean) {
     const body = this.prepareCopyCutBody( dest, includeTree );
-    return this.http.post( this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + '/copy', body );
+    return this.http.post( this.configuration.backendUrl + 'datasets/' + srcIDs.join( ',' ) + '/copy', body );
   }
 
   /**
@@ -173,7 +179,7 @@ export class StorageService {
    */
   moveDocuments(srcIDs: string[], dest: string, includeTree: boolean) {
     const body = this.prepareCopyCutBody( dest, includeTree );
-    return this.http.post( this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + '/move', body );
+    return this.http.post( this.configuration.backendUrl + 'datasets/' + srcIDs.join( ',' ) + '/move', body );
   }
 
   private prepareCopyCutBody(dest: string, includeTree: boolean): any {

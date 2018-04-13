@@ -5,7 +5,7 @@ import { ModalService } from '../../../services/modal/modal.service';
 import { StorageService } from '../../../services/storage/storage.service';
 import { Plugin } from '../../plugin';
 import { FormGroup } from '@angular/forms';
-import {Subscription} from 'rxjs/Subscription';
+import { Subscription } from 'rxjs/index';
 
 @Injectable()
 export class UndoPlugin extends Plugin {
@@ -101,7 +101,7 @@ export class UndoPlugin extends Plugin {
 
     this.form = formData.form;
     this.formValueSubscription = this.form.valueChanges
-      .debounceTime(500)
+    // TODO: .debounceTime(500)
       .subscribe((value) => {
         console.log('The form value changed:', value);
         // only push if other field was changed, otherwise remove last change and push new value

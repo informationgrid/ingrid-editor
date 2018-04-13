@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {Plugin} from '../../plugin';
-import {Subscription} from 'rxjs/Subscription';
+import { Subscription } from 'rxjs/index';
 
 @Injectable()
 export class WorkflowPlugin extends Plugin {

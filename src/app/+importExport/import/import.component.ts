@@ -4,7 +4,6 @@ import { ImportExportService } from '../import-export-service';
 import { ConfigService } from '../../services/config.service';
 import { TextboxField } from '../../+form/controls';
 import { ErrorService } from '../../services/error.service';
-import { Message } from 'primeng/api';
 
 @Component({
   templateUrl: './import.component.html',
@@ -19,7 +18,7 @@ export class ImportExportComponent implements OnInit {
   formFields = [];
   form = null;
 
-  msgs: Message[];
+  msgs: any[];
   uploadedFiles: any[] = [];
 
   uploadUrl: string;

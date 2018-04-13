@@ -5,7 +5,7 @@ import {ModalService} from '../../../services/modal/modal.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Plugin} from '../../plugin';
 import {DeleteDialogComponent} from './delete-dialog.component';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs/index';
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {

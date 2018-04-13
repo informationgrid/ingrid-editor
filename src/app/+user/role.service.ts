@@ -3,8 +3,9 @@ import { ConfigService, Configuration } from '../services/config.service';
 import { ErrorService } from '../services/error.service';
 import { Role } from '../models/user-role';
 import { ApiService } from '../services/ApiService';
-import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
+import { catchError, map } from 'rxjs/internal/operators';
+import { Observable } from 'rxjs/index';
 
 @Injectable()
 export class RoleService {
@@ -24,8 +25,10 @@ export class RoleService {
   getRoleMapping(id: string): Observable<Role> {
     // return this.apiService.getGroup( id );
     return this.http.get(this.configuration.backendUrl + 'roles/' + id)
-      .map(json => this.prepareRoles([json])[0])
-      .catch(err => this.errorService.handle(err));
+      .pipe(
+        map(json => this.prepareRoles([json])[0]),
+        catchError(err => this.errorService.handle(err))
+      );
   }
 
   prepareRoles(roles: any[]) {
@@ -45,18 +48,24 @@ export class RoleService {
   saveRole(role: Role): Observable<any> {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
     return this.http.put(this.configuration.backendUrl + 'roles/' + role.name, role)
-      .catch(err => this.errorService.handle(err));
+      .pipe(
+        catchError(err => this.errorService.handle(err))
+      );
   }
 
   createRole(role: Role): Observable<any> {
     return this.http.post(this.configuration.backendUrl + 'roles/' + role.name, role)
-      .catch(err => this.errorService.handle(err));
+      .pipe(
+        catchError(err => this.errorService.handle(err))
+      );
   }
 
   // delete group metadata from backend
   deleteRole(id: string): Observable<any> {
     return this.http.delete(this.configuration.backendUrl + 'roles/' + name)
-      .catch(err => this.errorService.handle(err));
+      .pipe(
+        catchError(err => this.errorService.handle(err))
+      );
 
     // TODO: also delete from keycloak
     // this.apiService.removeGroup(id);

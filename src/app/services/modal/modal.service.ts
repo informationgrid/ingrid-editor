@@ -1,7 +1,5 @@
 import { Injectable, ViewContainerRef } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
-import { MatDialog } from '@angular/material';
-import { ErrorDialogComponent } from '../../dialogs/error-dialog.component';
+import { Subject } from 'rxjs/index';
 
 interface DialogContent {
   message: string;

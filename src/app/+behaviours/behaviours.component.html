@@ -12,7 +12,6 @@
     <!-- System behaviours -->
     <mat-tab-group>
         <mat-tab label="System" [formGroup]="pluginForm">
-            <div cdk-scrollable>
             <mat-card *ngFor="let plugin of plugins">
                 <mat-card-header (click)="toggleField(plugin)">
                     <ige-checkbox #plug
@@ -35,7 +34,6 @@
                     <p>{{plugin.description}}</p>
                 </mat-card-content>
             </mat-card>
-            </div>
         </mat-tab>
 
         <!-- Behaviours for each profile -->

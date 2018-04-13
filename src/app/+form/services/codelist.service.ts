@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { ConfigService, Configuration } from '../../services/config.service';
 import { ErrorService } from '../../services/error.service';
 import { HttpClient } from '@angular/common/http';
+import { catchError } from 'rxjs/internal/operators';
 
 export interface Codelist {
   id: string;
   entries: CodelistEntry[];
 }
+
 export interface CodelistEntry {
   id: string;
   value: string;
@@ -43,10 +45,12 @@ export class CodelistService {
     const myPromise = new Promise<CodelistEntry[]>( (resolve, reject) => {
 
       this.http.get( this.configuration.backendUrl + 'codelist/' + id )
-        .catch( (err) => {
-          this.codelists[id] = null;
-          return this.errorService.handleOwn( 'Could not load codelist: ' + id, err.message );
-        } )
+        .pipe(
+          catchError( (err) => {
+            this.codelists[id] = null;
+            return this.errorService.handleOwn( 'Could not load codelist: ' + id, err.message );
+          } )
+        )
         .subscribe( (data: any) => {
           if (data === null) {
             reject( 'Codelist could not be read: ' + id );
@@ -75,9 +79,9 @@ export class CodelistService {
     const promises = [];
 
     ids.forEach( id => {
-      promises.push( this.byId(id) );
-    });
-    return Promise.all(promises);
+      promises.push( this.byId( id ) );
+    } );
+    return Promise.all( promises );
   }
 
   prepareEntries(entries: any[]) {

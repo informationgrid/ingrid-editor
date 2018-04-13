@@ -1,5 +1,4 @@
 import { ComponentFactoryResolver, Injectable, ReflectiveInjector } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
 import { FormularService } from '../../../services/formular/formular.service';
 import { StorageService } from '../../../services/storage/storage.service';
 import { Plugin } from '../../plugin';
@@ -8,6 +7,7 @@ import { UpdateType } from '../../../models/update-type.enum';
 import { ModalService } from '../../../services/modal/modal.service';
 import { PasteDialogComponent } from './paste-dialog.component';
 import { CopyMoveEnum, MoveMode, PasteCallback } from './enums';
+import { Subscription } from 'rxjs/index';
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {

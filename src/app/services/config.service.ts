@@ -15,11 +15,21 @@ export class ConfigService {
   load(url: string) {
     console.log('=== ConfigService ===');
 
-    return new Promise((resolve) => {
-      this.http.get<Configuration>(url).subscribe(config => {
-        this.config = config;
-        resolve();
-      });
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.overrideMimeType('application/json');
+      xhr.open('GET', url, true);
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            this.config = JSON.parse(xhr.responseText);
+            resolve();
+          } else {
+            reject(`Could not load file '${url}': ${xhr.status}`);
+          }
+        }
+      };
+      xhr.send(null);
     });
   }
 

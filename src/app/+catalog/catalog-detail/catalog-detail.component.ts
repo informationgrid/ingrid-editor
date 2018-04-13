@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../+user/user.service';
-import { Observable } from 'rxjs/Observable';
 import { User } from '../../+user/user';
+import { Observable } from 'rxjs/index';
 
 @Component({
   selector: 'ige-catalog-detail',

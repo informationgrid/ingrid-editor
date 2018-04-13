@@ -3,6 +3,8 @@ import { ConfigService, Configuration } from '../services/config.service';
 import { ErrorService } from '../services/error.service';
 import { FormularService } from '../services/formular/formular.service';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/internal/operators';
+import { ProfileService } from '../services/profile.service';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -28,12 +30,14 @@ export class DashboardComponent implements OnInit {
 
 
   constructor(private http: HttpClient, configService: ConfigService, private errorService: ErrorService,
-              private formularService: FormularService) {
+              private formularService: FormularService, private profileService: ProfileService) {
     this.configuration = configService.getConfiguration();
   }
 
   ngOnInit() {
-    this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
+    this.profileService.initialized.then( () => {
+      this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
+    } );
     this.fetchStatistic();
     this.fetchData();
   }
@@ -52,9 +56,11 @@ export class DashboardComponent implements OnInit {
 
     this.http.get<any[]>(this.configuration.backendUrl + 'datasets?query=' + query +
       '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
-      .map(json => {
-        return json.filter(item => item._profile !== 'FOLDER');
-      })
+      .pipe(
+        map(json => {
+          return json.filter(item => item._profile !== 'FOLDER');
+        })
+      )
       .subscribe(data => {
           console.log('Data received: ', data);
           this.datasets = this.prepareTableData(data);

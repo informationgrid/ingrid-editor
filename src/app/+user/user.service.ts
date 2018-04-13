@@ -3,8 +3,9 @@ import { ConfigService, Configuration } from '../services/config.service';
 import { ErrorService } from '../services/error.service';
 import { User } from './user';
 import { ApiService } from '../services/ApiService';
-import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/index';
+import { catchError } from 'rxjs/internal/operators';
 
 @Injectable()
 export class UserService {
@@ -24,18 +25,24 @@ export class UserService {
   }
 
   saveUser(user: User): Observable<User> {
-    return this.http.put( this.configuration.backendUrl + 'users/' + user.login, user )
-      .catch( err => this.errorService.handle( err ) );
+    return this.http.put<User>( this.configuration.backendUrl + 'users/' + user.login, user )
+      .pipe(
+        catchError( err => this.errorService.handle( err ) )
+      );
   }
 
   createUser(user: User): Observable<User> {
-    return this.http.post( this.configuration.backendUrl + 'users/' + user.login, user )
-      .catch( err => this.errorService.handle( err ) );
+    return this.http.post<User>( this.configuration.backendUrl + 'users/' + user.login, user )
+      .pipe(
+        catchError( err => this.errorService.handle( err ) )
+      );
   }
 
-  deleteUser(login: string): Observable<null> {
+  deleteUser(login: string): Observable<any> {
     return this.http.delete( this.configuration.backendUrl + 'users/' + login )
-      .catch( err => this.errorService.handle( err ) );
+      .pipe(
+        catchError( err => this.errorService.handle( err ) )
+      );
   }
 
 }

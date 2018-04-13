@@ -17,12 +17,6 @@ import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component
 import { IgeWizardModule } from '../wizard/wizard.module';
 import { ScrollToDirective } from '../directives/scrollTo.directive';
 import { PopoverModule } from 'ngx-bootstrap/popover';
-import { ButtonModule } from 'primeng/button';
-import { GrowlModule } from 'primeng/growl';
-import { MenubarModule } from 'primeng/menubar';
-import { ToolbarModule } from 'primeng/toolbar';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 import {
   MatButtonModule,
   MatDividerModule, MatFormFieldModule, MatIconModule, MatInputModule, MatTableModule, MatTabsModule,
@@ -34,7 +28,6 @@ import { FlexLayoutModule } from '@angular/flex-layout';
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     PopoverModule, IgeWizardModule, SharedModule,
-    MenubarModule, ToolbarModule, ButtonModule, GrowlModule, InputTextModule, InputTextareaModule,
     MatFormFieldModule, MatToolbarModule, MatIconModule, MatInputModule, MatTableModule, MatDividerModule, MatButtonModule,
     MatTabsModule, MatDividerModule,
     FlexLayoutModule,

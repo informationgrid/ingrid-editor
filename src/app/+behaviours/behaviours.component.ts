@@ -56,7 +56,7 @@ export class PluginsComponent implements OnInit {
       this.plugins.forEach( p => {
         pluginFormGroup[p.id] = p.isActive;
       } );
-      // debugger;
+
       this.behaviourService.behaviours.forEach( b => {
         behaviourFormGroup[b.id] = b.isActive;
       } );
@@ -66,7 +66,6 @@ export class PluginsComponent implements OnInit {
   }
 
   togglePlugin(plugin: Plugin, isChecked: boolean, event: Event) {
-    // debugger;
     // event.stopImmediatePropagation();
     if (isChecked) {
       plugin.register();

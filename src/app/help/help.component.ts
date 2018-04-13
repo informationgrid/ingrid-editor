@@ -1,5 +1,6 @@
-import {Component, OnInit, animate, transition, style, state, trigger} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router, NavigationEnd} from '@angular/router';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component( {
   selector: 'help-panel',
@@ -23,12 +24,17 @@ export class HelpComponent implements OnInit {
   text: string;
   previousPath: string;
 
+  static preparePreviousPath(url: string) {
+    const pos = url.indexOf('/', 1);
+    return (pos > 0) ? url.substring(0, pos) : url;
+  }
+
   constructor(private router: Router) {
   }
 
   ngOnInit() {
     this.router.events.subscribe( (event: NavigationEnd) => {
-      let url = event.url;
+      const url = event.url;
       if (event instanceof NavigationEnd && url.indexOf(this.previousPath) === -1) {
         console.log( 'fetch help:', url );
         this.text = url;
@@ -37,10 +43,6 @@ export class HelpComponent implements OnInit {
     } );
   }
 
-  static preparePreviousPath(url: string) {
-    let pos = url.indexOf('/', 1);
-    return (pos > 0) ? url.substring(0, pos) : url;
-  }
 
   toggleState() {
     this.menuState === 'collapsed' ? this.menuState = 'expanded' : this.menuState = 'collapsed';

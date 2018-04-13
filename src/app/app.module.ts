@@ -31,13 +31,10 @@ import { CatalogModule } from './+catalog/catalog.module';
 import { LoginComponent } from './security/login.component';
 import { GlobalErrorHandler } from './error-handler';
 import { TreeModule } from 'primeng/tree';
-import { GrowlModule } from 'primeng/growl';
 import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 import { FormFieldsModule } from './form-fields/form-fields.module';
 import { AuthInterceptor } from './security/keycloak/auth.interceptor';
 import { ProfileService } from './services/profile.service';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
 import { mockKeycloakProvider } from './services/mock-keycloak.interceptor';
 import { MAT_DATE_LOCALE, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -62,7 +59,7 @@ export function ConfigLoader(configService: ConfigService) {
     // ngx-bootstrap
     PopoverModule.forRoot(),
     // PrimeNG
-    TreeModule, GrowlModule,
+    TreeModule,
     // Material
     MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule,
     // IGE-Modules
@@ -99,9 +96,9 @@ export function ConfigLoader(configService: ConfigService) {
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    },
+    }
     // TODO: only for development!
-    mockKeycloakProvider
+    // mockKeycloakProvider
 
   ], // additional providers
 

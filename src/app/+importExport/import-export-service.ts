@@ -1,8 +1,9 @@
-import {ErrorService} from '../services/error.service';
+import { ErrorService } from '../services/error.service';
 import { ConfigService, Configuration } from '../services/config.service';
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/index';
+import { catchError } from 'rxjs/internal/operators';
 
 @Injectable()
 export class ImportExportService {
@@ -16,10 +17,12 @@ export class ImportExportService {
 
   import(file: File): Observable<any> {
     return this.http.post( this.configuration.backendUrl + 'import', file )
-      .catch( err => {
-        this.errorService.handle( err );
-        return err;
-      } );
+      .pipe(
+        catchError( err => {
+          this.errorService.handle( err );
+          return err;
+        } )
+      );
   }
 
   export(docId: string, inclSubDocs?: boolean) {

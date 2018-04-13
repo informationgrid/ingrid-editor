@@ -2,8 +2,8 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Catalog, CatalogService } from '../catalog.service';
 import { ConfigService, Configuration } from '../../services/config.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs/index';
 
 @Component({
   selector: 'ige-catalog-manager',

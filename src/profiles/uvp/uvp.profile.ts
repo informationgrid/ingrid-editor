@@ -7,7 +7,6 @@ import { LinkDatasetField } from '../../app/+form/controls/field-link-dataset';
 import { CodelistService } from '../../app/+form/services/codelist.service';
 import { DatepickerField } from '../../app/+form/controls/field-datepicker';
 import { StorageService } from '../../app/services/storage/storage.service';
-import { TileLayer } from 'leaflet';
 
 export class UVPProfile implements Profile {
 
@@ -73,12 +72,12 @@ export class UVPProfile implements Profile {
           maxZoom: 19,
           layers: [
             // {
-            //   urlTemplate: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-            //   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            //   urlTemplate: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            //   attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
             // }
-            new TileLayer( '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-            } )
+            // new TileLayer( '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            //   attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+            // } )
           ]
         },
         settings: {}

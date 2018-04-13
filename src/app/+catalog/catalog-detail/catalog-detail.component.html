@@ -2,11 +2,12 @@
 
 <a routerLink="/catalogs">Zurück</a>
 
+<!-- TODO: dialog
 <p-dialog header="Katalog-Administrator hinzufügen" [(visible)]="display" [modal]="true" [dismissableMask]="true">
-    <!--
+    &lt;!&ndash;
         The first element of a dialog must be focusable and a listbox is not!?
         (see https://github.com/primefaces/primeng/issues/5004#issuecomment-363682256)
-    -->
+    &ndash;&gt;
     <input type="text">
 
     <p-listbox [options]="users | async" optionLabel="firstName"></p-listbox>
@@ -14,3 +15,4 @@
     <button pButton label="Auswählen" (click)="addUserAsCatAdmin()"></button>
 </p-dialog>
 
+-->

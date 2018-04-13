@@ -4,9 +4,6 @@ import { CatalogManagerComponent } from './catalog-manager/catalog-manager.compo
 import { routing } from './catalog.routing';
 import { CatalogService } from './catalog.service';
 import { FileUploadModule } from 'primeng/fileupload';
-import { InputTextModule } from 'primeng/inputtext';
-import { DialogModule } from 'primeng/dialog';
-import { ListboxModule } from 'primeng/listbox';
 import { CatalogDetailComponent } from './catalog-detail/catalog-detail.component';
 import { FormsModule } from '@angular/forms';
 
@@ -15,9 +12,6 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     FormsModule,
     FileUploadModule,
-    InputTextModule,
-    DialogModule,
-    ListboxModule,
     routing
   ],
   providers: [

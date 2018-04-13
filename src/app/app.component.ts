@@ -1,10 +1,8 @@
-import {Component, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {ModalService} from './services/modal/modal.service';
-import {BehaviourService} from './+behaviours/behaviour.service';
-import {RoleService} from './+user/role.service';
-import {KeycloakService} from './security/keycloak/keycloak.service';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
-import { MessageService } from 'primeng/components/common/messageservice';
+import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { ModalService } from './services/modal/modal.service';
+import { BehaviourService } from './+behaviours/behaviour.service';
+import { RoleService } from './+user/role.service';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 @Component( {
   selector: 'ige-root',
@@ -20,8 +18,7 @@ import { MessageService } from 'primeng/components/common/messageservice';
     }
     /*.igeContainer { height: 100%; overflow-x: hidden; }*/
     /*.modal-body { overflow: auto; }*/
-  `],
-  providers: [MessageService]
+  `]
 } )
 export class AppComponent implements OnInit {
 
@@ -35,7 +32,6 @@ export class AppComponent implements OnInit {
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
   constructor(private bsModalService: BsModalService, private behaviourService: BehaviourService, private modalService: ModalService,
-              private messageService: MessageService,
               private roleService: RoleService) {
 
     // TODO: make more error info collapsible

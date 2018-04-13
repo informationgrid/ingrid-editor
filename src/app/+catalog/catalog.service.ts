@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { NavigationExtras, Router } from '@angular/router';
 import { ConfigService, Configuration } from '../services/config.service';
 import { ErrorService } from '../services/error.service';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/index';
+import { catchError, map } from 'rxjs/internal/operators';
 
 export interface Catalog {
   id: string;
@@ -29,13 +30,15 @@ export class CatalogService {
   }
 
   getCatalogs(): Observable<Catalog[]> {
-    return this.http.get<string[]>( this.configuration.backendUrl + 'catalogs')
-      .map( catalogs => {
-        const result = [];
-        catalogs.forEach( cat => result.push({id: cat, label: cat}) );
-        return result;
-      } )
-      .catch( err => this.errorService.handle( err ) );
+    return this.http.get<string[]>( this.configuration.backendUrl + 'catalogs' )
+      .pipe(
+        map( catalogs => {
+          const result = [];
+          catalogs.forEach( cat => result.push( {id: cat, label: cat} ) );
+          return result;
+        } ),
+        catchError( err => this.errorService.handle( err ) )
+      );
     // return Observable.of( this.demoCatalogs );
   }
 
@@ -53,6 +56,8 @@ export class CatalogService {
 
   createCatalog(name: string) {
     return this.http.post( this.configuration.backendUrl + 'catalogs/' + name, null )
-      .catch( err => this.errorService.handle( err ) );
+      .pipe(
+        catchError( err => this.errorService.handle( err ) )
+      );
   }
 }

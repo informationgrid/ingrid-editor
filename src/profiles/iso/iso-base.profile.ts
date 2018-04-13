@@ -103,6 +103,7 @@ export class IsoBaseProfile implements Profile {
           })
         ]
       }),
+/*
 
       new Rubric({
         label: 'Verschlagwortung',
@@ -259,6 +260,7 @@ export class IsoBaseProfile implements Profile {
           })
         ]
       }),
+*/
 
       new Rubric({
         label: 'Zusatzinformation',

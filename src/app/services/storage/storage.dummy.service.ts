@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
-import { _throw } from 'rxjs/observable/throw';
+import { Observable, Subject, throwError } from 'rxjs/index';
+import { catchError } from 'rxjs/internal/operators';
 
 export interface DocumentInterface {
   id: string;
@@ -128,10 +127,12 @@ export class StorageDummyService {
     this.beforeSave.next( errors );
     console.log( 'After validation:', errors );
     const response = this.http.post( 'http://localhost:8080/v1/dataset/1', data )
-      .catch( (err: any) => {
-        console.error( 'Error: ', err );
-        return _throw( err );
-      } );
+      .pipe(
+        catchError( (err: any) => {
+          console.error( 'Error: ', err );
+          return throwError( err );
+        } )
+      );
     console.log( 'Response:', response );
     response.subscribe( res => console.log( 'received:', res ) );
     this.afterSave.next();

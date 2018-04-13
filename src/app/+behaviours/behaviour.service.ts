@@ -5,13 +5,11 @@ import { EventManager } from '@angular/platform-browser';
 import { ModalService } from '../services/modal/modal.service';
 import { ConfigService, Configuration } from '../services/config.service';
 import { Plugin } from './plugin';
-import { KeycloakService } from '../security/keycloak/keycloak.service';
 import { HttpClient } from '@angular/common/http';
-import { _throw } from 'rxjs/observable/throw';
-import $script from 'scriptjs';
-import { environment } from '../../environments/environment';
-import { StorageService } from '../services/storage/storage.service';
 import { ProfileService } from '../services/profile.service';
+import { of, throwError } from 'rxjs/index';
+import { Observable } from 'rxjs/Rx';
+import { catchError, tap } from 'rxjs/internal/operators';
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -43,15 +41,15 @@ export class BehaviourService {
     // this.behaviours.push(...additionalBehaviours);
 
     this.initialized = profileService.getProfiles()
-      .then((profiles) => {
-        profiles.forEach(p => {
+      .then( (profiles) => {
+        profiles.forEach( p => {
           if (p.behaviours) {
-            p.behaviours.forEach(behaviour => behaviour.forProfile = p.id);
-            this.behaviours.push(...p.behaviours);
+            p.behaviours.forEach( behaviour => behaviour.forProfile = p.id );
+            this.behaviours.push( ...p.behaviours );
           }
-        });
-      })
-      .then(() => this.loadStoredBehaviours());
+        } );
+      } )
+      .then( () => this.loadStoredBehaviours() );
 
     // keycloak.getGroupsOfUser('');
     /*
@@ -78,31 +76,53 @@ export class BehaviourService {
   }
 
   loadStoredBehaviours() {
-    return this.http.get<any[]>(this.configuration.backendUrl + 'behaviours').toPromise().then(storedBehaviours => {
-      // set correct active state to each behaviour
-      this.behaviours.forEach((behaviour) => {
-        const stored = storedBehaviours.filter((sb: any) => sb._id === behaviour.id);
-        behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-      });
+    return this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' )
+      .pipe(
+        tap(b => console.log(`fetched behaviours`, b)),
+        catchError(this.handleError('loadStoredBehaviours', []))
+      )
+      .subscribe( (storedBehaviours: any[]) => {
+        // set correct active state to each behaviour
+        this.behaviours.forEach( (behaviour) => {
+          const stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
+          behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+        } );
 
-      // set correct active state to each system behaviour
-      this.systemBehaviours.forEach((behaviour) => {
-        const stored = storedBehaviours.filter((sb: any) => sb._id === behaviour.id);
-        behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-      });
+        // set correct active state to each system behaviour
+        this.systemBehaviours.forEach( (behaviour) => {
+          const stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
+          behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+        } );
 
-    }).catch((err: Error) => {
-      // if (!(err instanceof AuthHttpError)) {
-      this.modalService.showError(err.message);
-      // }
-    });
+      } )
+    ;
+  }
+
+  /**
+   * Handle Http operation that failed.
+   * Let the app continue.
+   * @param operation - name of the operation that failed
+   * @param result - optional value to return as the observable result
+   */
+  private handleError<T> (operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+
+      // TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
+
+      // TODO: better job of transforming error for user consumption
+      // this.log(`${operation} failed: ${error.message}`);
+
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 
   apply(form: FormGroup, profile: string) {
     // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
     this.behaviours
-      .filter(beh => beh.isActive && beh.forProfile === profile)
-      .forEach(behaviour => {
+      .filter( beh => beh.isActive && beh.forProfile === profile )
+      .forEach( behaviour => {
         if (!behaviour.title) {
           return;
         }
@@ -110,27 +130,27 @@ export class BehaviourService {
         if (behaviour.isActive) {
           // we need to run code in this context
           // TODO: add parameters for behaviour
-          behaviour.register(form, this.eventManager);
+          behaviour.register( form, this.eventManager );
         }
-      });
+      } );
 
-    this.profileService.getProfiles().then(profiles => {
-      profiles.some(profileClass => {
+    this.profileService.getProfiles().then( profiles => {
+      profiles.some( profileClass => {
         if (profileClass.id === profile) {
           if (profileClass.applyValidations) {
-            profileClass.applyValidations(form);
+            profileClass.applyValidations( form );
           }
           if (profileClass.behaviours) {
             profileClass.behaviours
-              .filter(_ => _.isActive)
-              .forEach(behaviour => {
-                behaviour.register(form, this.eventManager);
-              });
+              .filter( _ => _.isActive )
+              .forEach( behaviour => {
+                behaviour.register( form, this.eventManager );
+              } );
           }
           return true;
         }
-      });
-    });
+      } );
+    } );
   }
 
   saveBehaviour(behaviour: Behaviour | Plugin) {
@@ -138,43 +158,43 @@ export class BehaviourService {
       _id: behaviour.id,
       active: behaviour.isActive
     };
-    this.http.post(this.configuration.backendUrl + 'behaviours', stripped).toPromise().catch(err => {
-      this.modalService.showError(err);
-      return _throw(err);
-    });
+    this.http.post( this.configuration.backendUrl + 'behaviours', stripped ).toPromise().catch( err => {
+      this.modalService.showError( err );
+      return throwError( err );
+    } );
   }
 
   enable(id: string) {
-    this.updateBehaviour(id, true);
+    this.updateBehaviour( id, true );
   }
 
   disable(id: string) {
-    this.updateBehaviour(id, false);
+    this.updateBehaviour( id, false );
   }
 
   private updateBehaviour(id: string, isActive: boolean) {
     const found = this.behaviours
-      .filter(beh => beh.id === id)
-      .some(behaviour => {
+      .filter( beh => beh.id === id )
+      .some( behaviour => {
         behaviour.isActive = isActive;
-        this.saveBehaviour(behaviour);
+        this.saveBehaviour( behaviour );
         return true;
-      });
+      } );
 
     if (!found) {
       this.systemBehaviours
-        .filter(beh => beh.id === id)
-        .forEach(behaviour => {
+        .filter( beh => beh.id === id )
+        .forEach( behaviour => {
           behaviour.isActive = isActive;
-          this.saveBehaviour(behaviour);
-        });
+          this.saveBehaviour( behaviour );
+        } );
     }
   }
 
   unregisterAll() {
     this.behaviours
     // unregister all active behaviours that do have an unregister function
-      .filter(beh => beh.isActive && beh.unregister)
-      .forEach(behaviour => behaviour.unregister());
+      .filter( beh => beh.isActive && beh.unregister )
+      .forEach( behaviour => behaviour.unregister() );
   }
 }

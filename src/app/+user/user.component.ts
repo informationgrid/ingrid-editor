@@ -1,10 +1,10 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {ModalService} from '../services/modal/modal.service';
-import {UserService} from './user.service';
-import {ErrorService} from '../services/error.service';
-import {User} from './user';
-import {Role} from '../models/user-role';
-import { Observable } from 'rxjs/Observable';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ModalService } from '../services/modal/modal.service';
+import { UserService } from './user.service';
+import { ErrorService } from '../services/error.service';
+import { User } from './user';
+import { Role } from '../models/user-role';
+import { Observable } from 'rxjs/index';
 
 @Component({
   templateUrl: './user.component.html',

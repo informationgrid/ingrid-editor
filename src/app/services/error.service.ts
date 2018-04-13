@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ModalService } from './modal/modal.service';
 import { Router } from '@angular/router';
-import { _throw } from 'rxjs/observable/throw';
+import { throwError } from 'rxjs/index';
 
 @Injectable()
 export class ErrorService {
@@ -16,12 +16,12 @@ export class ErrorService {
         console.error('Error: ', error);
         const moreInfo = error.text ? error.text() : undefined;
         this.modalService.showError(error.toString(), moreInfo);
-        return _throw(error);
+        return throwError(error);
       }
     }
 
     handleOwn(msg: string, detail: any) {
       this.modalService.showError(msg, detail);
-      return _throw(msg);
+      return throwError(msg);
     }
 }

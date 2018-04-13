@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-// import { ToastOptions, ToastyService } from 'ng2-toasty';
-import { MessageService } from 'primeng/components/common/messageservice';
 
 @Injectable()
 export class ToastService {
