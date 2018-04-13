@@ -6,12 +6,16 @@ import { CatalogService } from './catalog.service';
 import { FileUploadModule } from 'primeng/fileupload';
 import { CatalogDetailComponent } from './catalog-detail/catalog-detail.component';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule, MatCardModule } from '@angular/material';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule( {
   imports: [
     CommonModule,
     FormsModule,
     FileUploadModule,
+    FlexLayoutModule,
+    MatCardModule, MatButtonModule,
     routing
   ],
   providers: [

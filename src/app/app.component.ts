@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@an
 import { ModalService } from './services/modal/modal.service';
 import { BehaviourService } from './+behaviours/behaviour.service';
 import { RoleService } from './+user/role.service';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { MatDialog } from '@angular/material';
 
 @Component( {
   selector: 'ige-root',
@@ -26,33 +26,32 @@ export class AppComponent implements OnInit {
   @ViewChild('dialogContainer', {read: ViewContainerRef}) dialogContainerRef: ViewContainerRef;
 
   errorModalIsActive = false;
-  errorModalRef: BsModalRef;
   dynDialogMessages: any = [];
 
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
-  constructor(private bsModalService: BsModalService, private behaviourService: BehaviourService, private modalService: ModalService,
+  constructor(private bsdialog: MatDialog, private behaviourService: BehaviourService, private modalService: ModalService,
               private roleService: RoleService) {
 
     // TODO: make more error info collapsible
     this.modalService.errorDialog$.subscribe( (content: any) => {
-      if (this.errorModalRef) {
-        this.dynDialogMessages.push( { msg: content.message, detail: content.moreInfo } );
-      } else {
+      // if (this.errorModalRef) {
+      //   this.dynDialogMessages.push( { msg: content.message, detail: content.moreInfo } );
+      // } else {
         this.dynDialogMessages = [ { msg: content.message, detail: content.moreInfo } ];
-        this.errorModalRef = this.bsModalService.show(this.errorModal, {class: 'modal-alert modal-lg'});
+        // TODO: this.errorModalRef = this.bsModalService.show(this.errorModal, {class: 'modal-alert modal-lg'});
 
         // conflict with onHide, which waits for backdrop animation until event is called
         setTimeout( _ => this.errorModalIsActive = true, 500 );
-      }
-    } );
+      // }
+    // } );
 
     // reset reference of dialog when dialog is closed
-    this.bsModalService.onHide.subscribe( _ => {
+    /*this.bsModalService.onHide.subscribe( _ => {
       if (this.errorModalIsActive) {
         this.errorModalRef = null;
         this.errorModalIsActive = false;
-      }
+      }*/
     } );
 
     // const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;

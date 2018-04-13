@@ -7,9 +7,14 @@ import {FormsModule} from '@angular/forms';
 import {RoleService} from './role.service';
 import {RoleComponent} from './role.component';
 import {SharedModule} from '../shared.module';
+import { MatButtonModule, MatIconModule, MatInputModule, MatTabsModule } from '@angular/material';
+import { FlexModule } from '@angular/flex-layout';
 
 @NgModule({
-  imports: [FormsModule, CommonModule, routing, SharedModule],
+  imports: [FormsModule, CommonModule, routing, SharedModule,
+            MatTabsModule, MatIconModule, MatButtonModule, MatInputModule,
+            FlexModule
+  ],
   declarations: [UserComponent, RoleComponent],
   providers: [UserService, RoleService],
   exports: []

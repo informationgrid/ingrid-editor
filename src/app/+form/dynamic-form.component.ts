@@ -15,7 +15,6 @@ import { ErrorService } from '../services/error.service';
 import { Role } from '../models/user-role';
 import { SelectedDocument } from './sidebars/selected-document.model';
 import { RoleService } from '../+user/role.service';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs/index';
 
@@ -43,8 +42,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('newDocModal') newDocModal: TemplateRef<any>;
   @ViewChild('deleteConfirmModal') deleteConfirmModal: TemplateRef<any>;
   @ViewChild('discardConfirmModal') discardConfirmModal: TemplateRef<any>;
-
-  newDocModalRef: BsModalRef;
 
   debugEnabled = false;
 
@@ -82,8 +79,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
   pendingId: string;
 
-  constructor(private modal2Service: BsModalService,
-              private qcs: FormControlService, private behaviourService: BehaviourService,
+  constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
               private roleService: RoleService,
@@ -216,7 +212,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .sort( (a, b) => a.label.localeCompare(b.label));
     this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
     this.formularService.newDocumentSubject.next(this.newDocOptions);
-    this.newDocModalRef = this.modal2Service.show(this.newDocModal);
+    // TODO: this.newDocModalRef = this.modal2Service.show(this.newDocModal);
   }
 
   prepareNewDoc() {
@@ -257,7 +253,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     } catch (ex) {
       console.error( 'Error adding new document: ', ex );
     }
-    this.newDocModalRef.hide();
   }
 
   discardChanges() {

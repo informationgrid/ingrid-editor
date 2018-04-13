@@ -1,9 +1,8 @@
 import { Component, ElementRef, forwardRef, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DropdownField } from '../../+form/controls';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { IColumn } from '../../+form/controls/field-opentable';
-import { MatTableDataSource } from '@angular/material';
+import { MatDialog, MatTableDataSource } from '@angular/material';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -34,8 +33,6 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   @ViewChild( 'addRowModal' ) addModal: TemplateRef<any> = null;
 
-  addModalRef: BsModalRef = null;
-
   source: any; // LocalDataSource;
 
   showAddButton = true;
@@ -57,7 +54,7 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   private _onChangeCallback: (x: any) => void;
 
-  constructor(private eRef: ElementRef, private modalService: BsModalService) {
+  constructor(private eRef: ElementRef, private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -117,7 +114,7 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
   addRow($event) {
     // TODO: choice between inline editing and dialog
     if (this.addWithDialog) {
-      this.addModalRef = this.modalService.show( this.addModal );
+      // TODO: this.addModalRef = this.modalService.show( this.addModal );
     } else {
       // this._value = [ ...this.value, {} ];
       this._value.data.push( {} );
@@ -128,7 +125,6 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   addRowFromDialog() {
     // this._value.push( this.addModel );
-    this.addModalRef.hide();
     this.handleChange();
   }
 

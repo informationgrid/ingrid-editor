@@ -1,8 +1,11 @@
-import {Component, forwardRef, Input, ViewChild, Output, EventEmitter, TemplateRef} from '@angular/core';
+import {
+  Component, forwardRef, Input, ViewChild, Output, EventEmitter, TemplateRef,
+  AfterViewInit
+} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {FormControlService} from '../../services/form-control.service';
 import {PartialGeneratorField} from '../controls/field-partial-generator';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
+import { MatDialog } from '@angular/material';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -17,7 +20,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   templateUrl: './partial-generator.component.html',
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 })
-export class PartialGenerator implements ControlValueAccessor {
+export class PartialGenerator implements ControlValueAccessor, AfterViewInit {
 
   @Input() form: any;
   @Input() field: PartialGeneratorField;
@@ -35,9 +38,8 @@ export class PartialGenerator implements ControlValueAccessor {
   private _onTouchedCallback: () => void;
 
   private _onChangeCallback: (x: any) => void;
-  private addPartialModalRef: BsModalRef;
 
-  constructor(private modalService: BsModalService, private qcs: FormControlService) {
+  constructor(private dialog: MatDialog, private qcs: FormControlService) {
   }
 
   ngAfterViewInit(): any {
@@ -58,7 +60,7 @@ export class PartialGenerator implements ControlValueAccessor {
    */
   showPartialChoice() {
     if (this.types.length > 1) {
-      this.addPartialModalRef = this.modalService.show(this.addPartialModal);
+      // TODO: this.addPartialModalRef = this.modalService.show(this.addPartialModal);
     } else {
       this.onAddSection.emit({key: this.field.key, section: this.types[0].id});
     }
@@ -66,8 +68,6 @@ export class PartialGenerator implements ControlValueAccessor {
 
   addPartialToForm() {
     this.onAddSection.emit({key: this.field.key, section: this.choiceType});
-    this.addPartialModalRef.hide();
-
   }
 
   handleChange() {

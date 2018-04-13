@@ -8,11 +8,11 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 @Component( {
   templateUrl: './behaviours.component.html',
   styles: [`
-    .panel-default>.panel-heading { background-color: #ffffff;}
-    .clickable {
-      cursor: pointer;
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
-    .mat-tab-body-content { height: 100%; }
   `],
   animations: [
     trigger('openClose', [

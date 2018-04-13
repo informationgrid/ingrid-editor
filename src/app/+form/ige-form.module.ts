@@ -16,7 +16,6 @@ import { MainFormComponent } from './main-form/main-form.component';
 import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component';
 import { IgeWizardModule } from '../wizard/wizard.module';
 import { ScrollToDirective } from '../directives/scrollTo.directive';
-import { PopoverModule } from 'ngx-bootstrap/popover';
 import {
   MatButtonModule,
   MatDividerModule, MatFormFieldModule, MatIconModule, MatInputModule, MatTableModule, MatTabsModule,
@@ -27,7 +26,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
-    PopoverModule, IgeWizardModule, SharedModule,
+    IgeWizardModule, SharedModule,
     MatFormFieldModule, MatToolbarModule, MatIconModule, MatInputModule, MatTableModule, MatDividerModule, MatButtonModule,
     MatTabsModule, MatDividerModule,
     FlexLayoutModule,

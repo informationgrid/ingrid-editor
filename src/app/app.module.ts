@@ -25,8 +25,6 @@ import { ApiService } from './services/ApiService';
 import { KeycloakService } from './security/keycloak/keycloak.service';
 import { environment } from '../environments/environment';
 import { ConfigService } from './services/config.service';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import { PopoverModule } from 'ngx-bootstrap/popover';
 import { CatalogModule } from './+catalog/catalog.module';
 import { LoginComponent } from './security/login.component';
 import { GlobalErrorHandler } from './error-handler';
@@ -56,15 +54,13 @@ export function ConfigLoader(configService: ConfigService) {
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
     // Flex layout
     FlexLayoutModule,
-    // ngx-bootstrap
-    PopoverModule.forRoot(),
     // PrimeNG
     TreeModule,
     // Material
     MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule,
     // IGE-Modules
     IgeFormModule, DashboardModule, FieldsModule, CatalogModule, FormFieldsModule,
-    UserModule, ImportExportModule, PluginsModule, routing, ModalModule.forRoot()],
+    UserModule, ImportExportModule, PluginsModule, routing],
   providers: [
     appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     KeycloakService,

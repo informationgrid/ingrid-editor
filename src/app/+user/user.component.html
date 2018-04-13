@@ -1,77 +1,64 @@
-<ul class="nav nav-tabs">
-    <li class="nav-item" role="presentation" [class.active]="currentTab === 'users'">
-        <a class="nav-link" (click)="currentTab = 'users'">Benutzer</a>
-    </li>
-    <li class="nav-item" role="presentation" [class.active]="currentTab === 'roles'">
-        <a class="nav-link" (click)="currentTab = 'roles'">Rollen</a>
-    </li>
-</ul>
+<mat-tab-group>
 
-<div class="tab-content">
-
-    <div [class.active]="currentTab === 'users'" class="userTabContainer tab-pane">
+    <mat-tab label="Benutzer">
         <split>
             <split-area [visible]="show" [size]="25" id="sidebarUser" class="split-pane-content-primary container">
                 <div class="list-group">
-                    <button *ngFor="let user of users" type="button" class="list-group-item"
+                    <button mat-button *ngFor="let user of users" type="button" class="list-group-item"
                             [class.disabled]="user === selectedUser"
                             (click)="loadUser(user)">
                         {{user.login}}
                     </button>
                 </div>
                 <div class="text-center">
-                    <button class="btn btn-primary fa fa-plus" (click)="addUser()"></button>
+                    <button mat-icon-button (click)="addUser()">
+                        <mat-icon>add</mat-icon>
+                    </button>
                 </div>
             </split-area>
             <split-area [visible]="show" [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
-                <form (ngSubmit)="onSubmit()" #userForm="ngForm">
-                    <div class="form-group">
-                        <label i18n>Login</label>
-                        <input #loginRef type="text" [disabled]="!isNewUser" required class="form-control" autocomplete="off"
+                <form (ngSubmit)="onSubmit()" #userForm="ngForm" fxLayout="column">
+                    <mat-form-field>
+                        <input matInput placeholder="Login" #loginRef type="text" [disabled]="!isNewUser" required autocomplete="off"
                                name="login"
                                [(ngModel)]="selectedUser.login">
-                    </div>
-                    <div class="form-group">
-                        <label i18n>Vorname</label>
-                        <input type="text" class="form-control" autocomplete="off" [(ngModel)]="selectedUser.firstName"
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput placeholder="Vorname" autocomplete="off" [(ngModel)]="selectedUser.firstName"
                                name="firstName">
-                    </div>
-                    <div class="form-group">
-                        <label i18n>Nachname</label>
-                        <input type="text" class="form-control" autocomplete="off" [(ngModel)]="selectedUser.lastName"
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput placeholder="Nachname" autocomplete="off" [(ngModel)]="selectedUser.lastName"
                                name="lastName">
-                    </div>
-                    <div class="form-group">
-                        <label i18n>Passwort</label>
-                        <input type="password" class="form-control" autocomplete="new-password"
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput placeholder="Passwort" type="password" autocomplete="new-password"
                                [required]="isNewUser"
                                name="password"
                                [(ngModel)]="selectedUser.password">
-                    </div>
-                    <div class="form-group">
+                    </mat-form-field>
+                    <div>
                         <label i18n>Rollen</label>
-                        <!--<select multiple class="form-control" [(ngModel)]="selectedUser.roles" name="roles">
+                        <!--<select multiple [(ngModel)]="selectedUser.roles" name="roles">
                             <option *ngFor="let role of roles" value="{{role.id}}">{{role.name}}</option>
                         </select>-->
                         <div class="clearfix"></div>
                         <!-- TODO: <ss-multiselect-dropdown [options]="roles" name="roles" [(ngModel)]="selectedUser.roles"></ss-multiselect-dropdown>-->
                     </div>
 
-                    <button class="btn btn-primary pull-right" [disabled]="!userForm.form.valid"
-                            type="button"
+                    <button mat-button [disabled]="!userForm.form.valid"
                             (click)="saveUser(selectedUser)">Speichern
                     </button>
-                    <button class="btn btn-danger pull-left" [disabled]="isNewUser"
-                            type="button"
+                    <button mat-button [disabled]="isNewUser"
                             (click)="deleteUser(selectedUser.login)">Löschen
                     </button>
                 </form>
             </split-area>
         </split>
-    </div>
+    </mat-tab>
 
-    <div [class.active]="currentTab === 'roles'" class="roleTabContainer tab-pane">
+    <mat-tab label="Rollen">
         <role-gui (onRoleChange)="updateRoles($event)"></role-gui>
-    </div>
+    </mat-tab>
 
-</div>
+</mat-tab-group>

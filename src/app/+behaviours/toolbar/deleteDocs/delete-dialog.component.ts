@@ -1,7 +1,7 @@
-import {Component, Injector, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import { Component, Inject, Injector, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Router} from '@angular/router';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 
 @Component({
   template: `
@@ -36,16 +36,14 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 export class DeleteDialogComponent implements OnInit {
 
   @ViewChild('deleteConfirmModal') deleteConfirmModal: TemplateRef<any>;
-  modalRef: BsModalRef;
   docsToDelete: any[];
 
-  constructor(injector: Injector, private modalService: BsModalService, private storageService: StorageService,
-              private router: Router) {
-    this.docsToDelete = injector.get('docs' );
+  constructor(injector: Injector, private dialog: MatDialog, private storageService: StorageService,
+              private router: Router, @Inject(MAT_DIALOG_DATA) public data: any) {
+    this.docsToDelete = data.docs;
   }
 
   ngOnInit() {
-    setTimeout( () => this.modalRef = this.modalService.show(this.deleteConfirmModal, {class: 'modal-alert'}), 0);
   }
 
   doDelete() {
@@ -63,6 +61,5 @@ export class DeleteDialogComponent implements OnInit {
     } catch (ex) {
       console.error( 'Could not delete' );
     }
-    this.modalRef.hide();
   }
 }

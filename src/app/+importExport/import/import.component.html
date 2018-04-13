@@ -1,14 +1,50 @@
-<ul class="nav nav-tabs">
-    <li class="nav-item" role="presentation" [class.active]="currentTab === 'import'"><a class="nav-link" (click)="currentTab = 'import'">Import</a></li>
-    <li class="nav-item" role="presentation" [class.active]="currentTab === 'export'"><a class="nav-link" (click)="currentTab = 'export'">Export</a></li>
-</ul>
-<div class="padding tab-content d-flex fl" style="flex: 1;">
+<mat-tab-group>
 
-    <div class="tab-pane" [class.active]="currentTab === 'import'" style="flex: 1;">
-        <div class="container-fluid d-flex h-100">
-            <div class="row" style="flex: 1;">
-                <div class="col">
+    <mat-tab label="Import">
 
+            <div fxLayout="row">
+                <div fxFlex="30">
+
+                    <mat-accordion>
+                        <mat-expansion-panel [expanded]="true">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    1. Datensatz auswählen
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <p-fileUpload name="importFiles[]"
+                                          [url]="uploadUrl"
+                                          multiple="multiple"
+                                          accept="image/*"
+                                          (onUpload)="onUpload($event)"
+                                          (onError)="handleError($event)"
+                                          maxFileSize="1000000">
+
+                            </p-fileUpload>
+
+                            <p class="text-center padding-sm">oder</p>
+
+                            <div>
+                                <label class="custom-file w-100">
+                                    <p-fileUpload mode="basic" name="demo[]" url="./upload.php" accept="image/*" maxFileSize="1000000"></p-fileUpload>
+                                </label>
+                            </div>
+                        </mat-expansion-panel>
+
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    2. Analyse
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <div class="text-center padding">
+                                <!--<span class="text-muted">{{fileInput.value}}</span>-->
+                                <!--<button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Start Import</button>-->
+                            </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
                     <!-- TODO: <p-accordion>
                         <p-accordionTab [selected]="true" header="1. Datensatz auswählen">
                             <p-fileUpload name="importFiles[]"
@@ -41,22 +77,21 @@
 
                 </div>
 
-                <div class="col-1 text-center">
+                <div fxFlex="10">
                     <span class="fa fa-chevron-right text-info" style="font-size: 7rem;"></span>
                     <p>Vorschau</p>
                 </div>
 
-                <div class="col">
-                    <div class="h-100 border-dashed">
+                <div fxFlex="60">
+                    <!--<div class="h-100 border-dashed">-->
                         <ige-main-form-tabs [fields]="formFields" [form]="form"></ige-main-form-tabs>
-                    </div>
+                    <!--</div>-->
                 </div>
             </div>
-        </div>
-    </div>
+    </mat-tab>
 
-    <div class="tab-pane w-100" [class.active]="currentTab === 'export'">
+    <mat-tab label="Export">
         <ige-export></ige-export>
-    </div>
+    </mat-tab>
 
-</div>
+</mat-tab-group>

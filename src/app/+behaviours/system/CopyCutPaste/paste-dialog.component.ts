@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Injector, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {CopyMoveEnum, MoveMode, PasteCallback} from './enums';
+import { MatDialog } from '@angular/material';
 
 @Component({
   template: `
@@ -31,14 +31,13 @@ export class PasteDialogComponent implements OnInit, AfterViewInit {
 
   @ViewChild('pasteModal') pasteModal: TemplateRef<any> = null;
 
-  pasteModalRef: BsModalRef = null;
   callback: any = null;
   selection: any = null;
   moveMode: MoveMode = null;
 
   copyOrMoveText: string;
 
-  constructor(injector: Injector, private modalService: BsModalService) {
+  constructor(injector: Injector, private dialog: MatDialog) {
     // TODO: also show button for document or tree copy/cut
     this.moveMode = injector.get(MoveMode);
     this.callback = injector.get(PasteCallback);
@@ -51,7 +50,7 @@ export class PasteDialogComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.copyOrMoveText = this.moveMode.mode === CopyMoveEnum.COPY ? 'Kopieren' : 'Verschieben';
-    setTimeout( () => this.pasteModalRef = this.modalService.show(this.pasteModal), 0);
+    // TODO: const pasteModalRef = this.dialog.open(this.pasteModal);
 
   }
 
@@ -60,7 +59,7 @@ export class PasteDialogComponent implements OnInit, AfterViewInit {
   }
 
   submit() {
-    this.pasteModalRef.hide();
+    // this.pasteModalRef.hide();
     // TODO: adapt move mode when sub trees shall be copied/moved
     this.callback(this.selection, this.moveMode.mode);
   }

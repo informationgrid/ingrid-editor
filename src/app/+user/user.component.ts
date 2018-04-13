@@ -9,12 +9,13 @@ import { Observable } from 'rxjs/index';
 @Component({
   templateUrl: './user.component.html',
   styles: [`
-    .userTabContainer, .roleTabContainer {
-      position: absolute;
-      top: 98px;
-      bottom: 0;
-      left: 0;
-      right: 0;
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    ::ng-deep .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
+      flex: 1;
     }
   `]
 })
