@@ -22,6 +22,17 @@ body {
   min-height: 32px;
 }
 
+main-menu .mat-toolbar-row {
+  height: 50px;
+}
+main-menu .mat-toolbar-multiple-rows {
+  min-height: 50px;
+}
+
+.mat-expansion-panel {
+  background-color: #c9e4ff;
+}
+
 .invalid-feedback {
   position: absolute;
   font-size: 75%;

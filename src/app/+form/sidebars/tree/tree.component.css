@@ -1,3 +1,10 @@
+::ng-deep mat-tree .mat-tree-node {
+  min-height: 20px;
+}
+
+
+
+
 .clickable {
   cursor: pointer;
   text-decoration: none;

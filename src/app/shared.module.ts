@@ -10,11 +10,21 @@ import { DataGridComponent } from './form-fields/data-grid/data-grid.component';
 import { DateboxComponent } from './form-fields/datebox/datebox.component';
 import { CheckboxComponent } from './form-fields/checkbox/checkbox.component';
 import { RadioboxComponent } from './form-fields/radiobox/radiobox.component';
+import {
+  MatButtonModule, MatCheckboxModule,
+  MatExpansionModule,
+  MatIconModule,
+  MatProgressBarModule,
+  MatTreeModule
+} from '@angular/material';
 
 @NgModule({
-  imports: [CommonModule, TreeModule, AngularSplitModule, FormFieldsModule],
+  imports: [CommonModule, TreeModule,
+    MatTreeModule, MatIconModule, MatProgressBarModule, MatButtonModule, MatExpansionModule, MatCheckboxModule,
+    AngularSplitModule,
+    FormFieldsModule],
   declarations: [MetadataTreeComponent],
-  exports: [MetadataTreeComponent, AngularSplitModule,
+  exports: [MetadataTreeComponent, AngularSplitModule, MatExpansionModule, MatCheckboxModule,
     FocusDirective,
     DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent
   ]

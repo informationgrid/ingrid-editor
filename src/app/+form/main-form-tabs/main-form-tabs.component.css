@@ -22,6 +22,14 @@ div > dyn-field {
   !*padding: 10px;*!
 }*/
 
+mat-panel-title {
+  align-items: center;
+}
+mat-panel-description {
+  flex-direction: row-reverse;
+}
+
+
 .blur {
   filter: blur(2px);
 }

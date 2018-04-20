@@ -3,12 +3,31 @@
      title="Aktualisieren"
      (click)="refresh()"></a>
 
-    <p-tree [value]="nodes" selectionMode="multiple"
+    <!--<p-tree [value]="nodes" selectionMode="multiple"
             [style.width]="'100%'"
             (onNodeSelect)="open($event)"
             [(selection)]="selectedNodes"
             (onNodeExpand)="loadNode($event)">
-    </p-tree>
+    </p-tree>-->
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        <mat-tree-node *matTreeNodeDef="let node" (click)="open(node)" matTreeNodePadding>
+            <button mat-icon-button disabled></button>
+            {{node.label}}
+        </mat-tree-node>
+        <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+            <button mat-icon-button
+                    [attr.aria-label]="'toggle ' + node.filename" matTreeNodeToggle>
+                <mat-icon>
+                    {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                </mat-icon>
+            </button>
+            {{node.label}}
+            <mat-progress-bar *ngIf="node.isLoading"
+                              mode="indeterminate"
+                              class="example-tree-progress-bar"></mat-progress-bar>
+        </mat-tree-node>
+    </mat-tree>
 
   <!--<tree-root #tree [nodes]="nodes" [options]="options" (activate)="open($event)" (deactivate)="deselected($event)">
     <ng-template #treeNodeTemplate let-node>

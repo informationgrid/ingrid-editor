@@ -28,13 +28,18 @@ import { ConfigService } from './services/config.service';
 import { CatalogModule } from './+catalog/catalog.module';
 import { LoginComponent } from './security/login.component';
 import { GlobalErrorHandler } from './error-handler';
-import { TreeModule } from 'primeng/tree';
 import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 import { FormFieldsModule } from './form-fields/form-fields.module';
 import { AuthInterceptor } from './security/keycloak/auth.interceptor';
 import { ProfileService } from './services/profile.service';
-import { mockKeycloakProvider } from './services/mock-keycloak.interceptor';
-import { MAT_DATE_LOCALE, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule } from '@angular/material';
+import {
+  MAT_DATE_LOCALE,
+  MatButtonModule,
+  MatDialogModule,
+  MatExpansionModule,
+  MatIconModule,
+  MatToolbarModule
+} from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrorDialogComponent } from './dialogs/error-dialog.component';
 
@@ -54,10 +59,8 @@ export function ConfigLoader(configService: ConfigService) {
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
     // Flex layout
     FlexLayoutModule,
-    // PrimeNG
-    TreeModule,
     // Material
-    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule,
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatExpansionModule,
     // IGE-Modules
     IgeFormModule, DashboardModule, FieldsModule, CatalogModule, FormFieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing],

@@ -80,6 +80,23 @@
 -->
 
 <mat-table #table [dataSource]="value" style="overflow: auto; max-height: 300px;">
+    <!-- Checkbox for selection -->
+    <ng-container matColumnDef="select">
+        <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null"
+                          [checked]="selection.hasValue() && isAllSelected()"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()">
+            </mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? selection.toggle(row) : null"
+                          [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+        </mat-cell>
+    </ng-container>
+
+    <!-- All other columns of the table -->
     <ng-container *ngFor="let col of settings.columns" [matColumnDef]="col.field">
         <mat-header-cell *matHeaderCellDef> {{col.header}} </mat-header-cell>
         <ng-container *ngIf="col.controlType === 'textbox'">

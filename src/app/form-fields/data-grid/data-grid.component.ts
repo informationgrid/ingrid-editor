@@ -3,6 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DropdownField } from '../../+form/controls';
 import { IColumn } from '../../+form/controls/field-opentable';
 import { MatDialog, MatTableDataSource } from '@angular/material';
+import { SelectionModel } from '@angular/cdk/collections';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -41,7 +42,8 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
   addModel = {};
 
   settings: any = {
-    columns: []
+    columns: [],
+    availableColumns: []
   };
 
   rowSelection: any[] = [];
@@ -54,13 +56,20 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   private _onChangeCallback: (x: any) => void;
 
+  private selection: SelectionModel<any>;
+
   constructor(private eRef: ElementRef, private dialog: MatDialog) {
   }
 
   ngOnInit() {
     this.settings.columns = this.mapColumns();
     this.settings.availableColumns = this.settings.columns.map( c => c.field );
+    this.settings.availableColumns.unshift( 'select' );
     this.settings.hideHeader = this.hideTableHeader;
+
+    const initialSelection = [];
+    const allowMultiSelect = true;
+    this.selection = new SelectionModel<any>(allowMultiSelect, initialSelection);
   }
 
   get value() {
@@ -83,7 +92,7 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   handleChange() {
     console.log( 'table changed' );
-    this._onChangeCallback( this._value );
+    this._onChangeCallback( this._value.data );
   }
 
   // Set touched on blur
@@ -109,6 +118,20 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
   // From ControlValueAccessor interface
   registerOnTouched(fn: any) {
     this._onTouchedCallback = fn;
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this._value.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this._value.data.forEach(row => this.selection.select(row));
   }
 
   addRow($event) {
