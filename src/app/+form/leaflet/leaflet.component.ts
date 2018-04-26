@@ -13,6 +13,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ModalService} from '../../services/modal/modal.service';
 import {NominatimService} from './nominatim.service';
 import { LeafletAreaSelect } from './leaflet-area-select';
+import { MatSelectionList } from '@angular/material';
 
 class MyMap extends Map {
   _onResize: () => {};
@@ -35,8 +36,11 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
         Longitude: <input type="text" class="form-control" [(ngModel)]="_bbox.lon" (change)="handleChange()">
     </div>-->
     <div class="full">
-      <button *ngIf="!showSearch" type="button" title="Bearbeiten"
-              class="btn btn-outline-secondary fa fa-pencil-square-o pull-left" (click)="toggleSearch(true)"></button>
+      <button *ngIf="!showSearch" mat-icon-button title="Bearbeiten"
+              class="pull-left"
+              (click)="toggleSearch(true)">
+        <mat-icon>edit</mat-icon>
+      </button>
       <div class="text-muted text-center">
         <small *ngIf="drawnBBox">
           Latitude: {{_bbox.lat1 | number:'1.0-4'}} - {{_bbox.lat2 | number:'1.0-4'}}
@@ -48,14 +52,24 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
         </small>
       </div>
       <div *ngIf="showSearch" class="nominatimContainer">
-        <input #locationQuery type="text" class="form-control" (keyup)="searchLocation(locationQuery.value)"
-               [focus]="showSearch">
-        <select #locationResult name="nominatimResult" multiple (change)="showBoundingBox(locationResult.value)">
-          <option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>
-        </select>
+        <mat-form-field>
+          <input matInput #locationQuery type="text" class="form-control" (keyup)="searchLocation(locationQuery.value)"
+                 [focus]="showSearch">
+        </mat-form-field>
+        <mat-selection-list dense (selectionChange)="handleSelection($event)">
+          <ng-container *ngFor="let entry of nominatimResult">
+            <mat-list-option value="entry.boundingbox" (click)="showBoundingBox(entry.boundingbox)">
+              <p matLine>{{entry.display_name}}</p>
+            </mat-list-option>
+            <mat-divider></mat-divider>
+          </ng-container>
+        </mat-selection-list>
+        <!--<select #locationResult name="nominatimResult" multiple (change)="showBoundingBox(locationResult.value)">-->
+          <!--<option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>-->
+        <!--</select>-->
         <div class="bottom">
-          <button type="button" class="btn btn-secondary pull-left" (click)="cancelEdit()">Abbrechen</button>
-          <button type="button" class="btn btn-primary pull-right" (click)="applyEdit()">Übernehmen</button>
+          <button mat-button class="pull-left" (click)="cancelEdit()">Abbrechen</button>
+          <button mat-button class="pull-right" (click)="applyEdit()">Übernehmen</button>
         </div>
       </div>
     </div>
@@ -70,10 +84,15 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
       display: block;
     }
 
-    select {
+    mat-selection-list {
       flex-grow: 1;
       margin: 10px 0;
+      overflow: auto;
     }
+
+    /*.mat-list .mat-list-item {*/
+      /*font-size: 14px;*/
+    /*}*/
 
     .nominatimContainer {
       position: absolute;
@@ -81,7 +100,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
       top: 0;
       bottom: 0;
       right: calc(100% + 10px);
-      background-color: #eee;
+      background-color: #fff;
       padding: 10px;
       box-shadow: 0px 0px 20px -5px #000;
       display: flex;
@@ -107,7 +126,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
       cursor: move;
     }
   `],
-  providers: [LEAFLET_CONTROL_VALUE_ACCESSOR]
+  providers: [LEAFLET_CONTROL_VALUE_ACCESSOR, MatSelectionList]
 } )
 export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
 
@@ -189,6 +208,13 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     }
   }
 
+  handleSelection(event) {
+    if (event.option.selected) {
+      event.source.deselectAll();
+      event.option._setSelected(true);
+    }
+  }
+
   private zoomToInitialBox(): Map {
     const initialBox = {
       lat1: 46.9203,
@@ -236,9 +262,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     } );
   }
 
-  showBoundingBox(box: any) {
-    const coords = box.split( ',' );
-    console.log( box );
+  showBoundingBox(coords: string[]) {
     this._bbox = {
       lat1: coords[0],
       lon1: coords[2],

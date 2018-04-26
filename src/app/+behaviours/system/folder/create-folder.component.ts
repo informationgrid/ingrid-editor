@@ -1,7 +1,7 @@
-import { Component, Inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormularService } from '../../../services/formular/formular.service';
 import { StorageService } from '../../../services/storage/storage.service';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import { MAT_DIALOG_DATA } from '@angular/material';
 
 @Component( {
   templateUrl: './create-folder.component.html'
@@ -22,7 +22,7 @@ export class CreateFolderComponent implements OnInit {
     return data;
   }
 
-  constructor(private dialog: MatDialog, private formService: FormularService,
+  constructor(private formService: FormularService,
               private storageService: StorageService,
               @Inject(MAT_DIALOG_DATA) public data: any) {
     this.parent = data.parent;

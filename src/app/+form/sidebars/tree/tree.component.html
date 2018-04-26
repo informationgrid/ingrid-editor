@@ -1,8 +1,9 @@
 <div style="position: relative;">
-  <a class="refresh clickable text-muted padding pull-right fa fa-refresh"
-     title="Aktualisieren"
-     (click)="refresh()"></a>
-
+  <button mat-icon-button title="Aktualisieren"
+          class="pull-right"
+          (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
+  </button>
     <!--<p-tree [value]="nodes" selectionMode="multiple"
             [style.width]="'100%'"
             (onNodeSelect)="open($event)"
@@ -11,17 +12,20 @@
     </p-tree>-->
 
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-        <mat-tree-node *matTreeNodeDef="let node" (click)="open(node)" matTreeNodePadding>
-            <button mat-icon-button disabled></button>
+        <mat-tree-node *matTreeNodeDef="let node" (click)="open(node)" matTreeNodePadding [class.selected]="selectedNodes?.includes(node)">
+            <!--<button mat-icon-button>-->
+                <mat-icon [class]="'docType ' + node.icon"></mat-icon>
+            <!--</button>-->
             {{node.label}}
         </mat-tree-node>
-        <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+        <mat-tree-node *matTreeNodeDef="let node; when: hasChild" (click)="open(node)" matTreeNodePadding>
             <button mat-icon-button
-                    [attr.aria-label]="'toggle ' + node.filename" matTreeNodeToggle>
+                    [attr.aria-label]="'toggle ' + node.state" matTreeNodeToggle>
                 <mat-icon>
                     {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                 </mat-icon>
             </button>
+            <mat-icon [class]="'docType expandable ' + node.icon"></mat-icon>
             {{node.label}}
             <mat-progress-bar *ngIf="node.isLoading"
                               mode="indeterminate"

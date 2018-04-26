@@ -17,6 +17,8 @@ import { SelectedDocument } from './sidebars/selected-document.model';
 import { RoleService } from '../+user/role.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs/index';
+import { MatDialog } from '@angular/material';
+import { NewDocumentComponent } from '../dialogs/new-document/new-document.component';
 
 interface FormData extends Object {
   _id?: string;
@@ -31,17 +33,17 @@ export interface FormDataContainer {
   value: any;
 }
 
-@Component({
+@Component( {
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.css'],
   providers: [FormControlService]
   // changeDetection: ChangeDetectionStrategy.OnPush
-})
+} )
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild('newDocModal') newDocModal: TemplateRef<any>;
-  @ViewChild('deleteConfirmModal') deleteConfirmModal: TemplateRef<any>;
-  @ViewChild('discardConfirmModal') discardConfirmModal: TemplateRef<any>;
+  @ViewChild( 'newDocModal' ) newDocModal: TemplateRef<any>;
+  @ViewChild( 'deleteConfirmModal' ) deleteConfirmModal: TemplateRef<any>;
+  @ViewChild( 'discardConfirmModal' ) discardConfirmModal: TemplateRef<any>;
 
   debugEnabled = false;
 
@@ -55,7 +57,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   observers: Subscription[] = [];
   error = false;
   choiceNewDoc = 'UVP';
-  addToDoc = false;
   sideTab = 'tree';
   showDateBar = false;
 
@@ -82,6 +83,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private storageService: StorageService, private modalService: ModalService,
+              private dialog: MatDialog,
               private roleService: RoleService,
               // private wizardService: WizardService,
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
@@ -91,42 +93,42 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // KeycloakService.auth.authz.
 
-    const loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
-      console.log('generic toolbar handler', eventId);
+    const loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe( eventId => {
+      console.log( 'generic toolbar handler', eventId );
       if (eventId === 'SAVE') {
         this.save();
       } else if (eventId === 'NEW_DOC') {
         this.newDoc();
       }
-    });
+    } );
 
     this.formularService.selectedDocuments$.subscribe( data => {
       this.formToolbarService.setButtonState(
         'toolBtnSave',
-        data.length === 1);
+        data.length === 1 );
     } );
 
-    this.observers.push(loadSaveSubscriber);
+    this.observers.push( loadSaveSubscriber );
 
-    this.behaviourService.initialized.then(() => {
-      this.route.queryParams.subscribe(params => {
+    this.behaviourService.initialized.then( () => {
+      this.route.queryParams.subscribe( params => {
         this.debugEnabled = params['debug'] !== undefined;
         // this.editMode = params['editMode'] === "true";
         // this.load(thisid);
-      });
-      this.route.params.subscribe(params => this.load( params['id'] ) );
-    });
+      } );
+      this.route.params.subscribe( params => this.load( params['id'] ) );
+    } );
   }
 
   ngOnDestroy() {
-    console.log('destroy');
-    this.observers.forEach(observer => observer.unsubscribe());
+    console.log( 'destroy' );
+    this.observers.forEach( observer => observer.unsubscribe() );
     this.behaviourService.behaviours
-      .filter(behave => behave.isActive && behave.unregister)
-      .forEach(behave => behave.unregister());
+      .filter( behave => behave.isActive && behave.unregister )
+      .forEach( behave => behave.unregister() );
 
     // reset selected documents if we revisit the page
-    this.formularService.setSelectedDocuments([]);
+    this.formularService.setSelectedDocuments( [] );
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -149,16 +151,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // if form was already initialized then map values to the response
         if (this.form) {
-          Object.assign(container.value, this.form.value);
+          Object.assign( container.value, this.form.value );
         }
-      }),
+      } ),
 
       // load dataset when one was updated
-      this.storageService.datasetsChanged$.subscribe((msg) => {
+      this.storageService.datasetsChanged$.subscribe( (msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
           this.load( msg.data[0]._id );
         }
-      })
+      } )
     );
   }
 
@@ -166,10 +168,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): any {
     // add form errors check when saving/publishing
     this.observers.push(
-      this.storageService.beforeSave$.subscribe((message: any) => {
-        message.errors.push({ invalid: this.form.invalid });
-        console.log('in observer');
-      })
+      this.storageService.beforeSave$.subscribe( (message: any) => {
+        message.errors.push( {invalid: this.form.invalid} );
+        console.log( 'in observer' );
+      } )
     );
   }
 
@@ -208,21 +210,31 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // };
     const selectedDocs = this.formularService.getSelectedDocuments();
     this.newDocOptions.docTypes = this.formularService.getDocTypes()
-      .filter( type => type.id !== 'FOLDER')
-      .sort( (a, b) => a.label.localeCompare(b.label));
+      .filter( type => type.id !== 'FOLDER' )
+      .sort( (a, b) => a.label.localeCompare( b.label ) );
     this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
-    this.formularService.newDocumentSubject.next(this.newDocOptions);
-    // TODO: this.newDocModalRef = this.modal2Service.show(this.newDocModal);
+    this.formularService.newDocumentSubject.next( this.newDocOptions );
+
+    const dlg = this.dialog.open( NewDocumentComponent, {
+      data:
+        {
+          docTypes: this.newDocOptions.docTypes,
+          rootOption: this.newDocOptions.rootOption,
+          choice: null
+        }
+    } );
+    dlg.afterClosed().subscribe( result => {
+      this.prepareNewDoc(result.choice, result.addBelowDoc);
+    })
   }
 
-  prepareNewDoc() {
-    const profile = this.choiceNewDoc;
+  prepareNewDoc(type: string, addBelowDoc: boolean) {
     let previousId = null;
     const selectedDocs = this.formularService.getSelectedDocuments();
     if (selectedDocs.length === 1) {
       previousId = this.formularService.getSelectedDocuments()[0].id;
     }
-    const needsProfileSwitch = this.formularService.currentProfile !== profile;
+    const needsProfileSwitch = this.formularService.currentProfile !== type;
 
     if (this.form) {
       this.form.reset();
@@ -230,24 +242,24 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     try {
       if (needsProfileSwitch) {
-        this.switchProfile(profile);
+        this.switchProfile( type );
       }
 
       this.data = {};
-      if (this.addToDoc) {
+      if (addBelowDoc) {
         this.data._parent = previousId;
       }
 
-      this.updateRepeatableFields(this.data);
+      this.updateRepeatableFields( this.data );
 
-      this.createFormWithData(this.data);
+      this.createFormWithData( this.data );
 
-      this.behaviourService.apply(this.form, profile);
-      // after profile switch inform the subscribers about it to recognize initial data set
-      this.storageService.afterProfileSwitch.next(this.form.value);
+      this.behaviourService.apply( this.form, type );
+      // after type switch inform the subscribers about it to recognize initial data set
+      this.storageService.afterProfileSwitch.next( this.form.value );
 
       // notify browser/tree of new dataset
-      const newDoc = { _profile: profile, _parent: this.data._parent };
+      const newDoc = {_profile: type, _parent: this.data._parent};
       this.storageService.saveData( newDoc, true );
 
     } catch (ex) {
@@ -257,13 +269,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   discardChanges() {
     // this.form.reset();
-    this.load(this.pendingId);
+    this.load( this.pendingId );
 
     // this.discardConfirmModal.close();
   }
 
   handleSelection(selectedDocs: SelectedDocument[]) {
-    this.formularService.setSelectedDocuments(selectedDocs);
+    this.formularService.setSelectedDocuments( selectedDocs );
 
     // when multiple nodes were selected then do not show any form
     if (this.form) {
@@ -289,7 +301,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.router.navigate( ['/form', {id: doc.id}]);
+    this.router.navigate( ['/form', {id: doc.id}] );
   }
 
   /**
@@ -318,11 +330,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // TODO: remove new dataset if not saved already -> we only want at most one new dataset at a time!
 
     if (id === undefined) {
-        return;
+      return;
     }
 
-    this.storageService.loadData(id).subscribe(data => {
-      console.log('loaded data:', data);
+    this.storageService.loadData( id ).subscribe( data => {
+      console.log( 'loaded data:', data );
 
       this.storageService.beforeLoad.next();
 
@@ -336,28 +348,28 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // switch to the right profile depending on the data
         if (needsProfileSwitch) {
-          this.switchProfile(profile);
+          this.switchProfile( profile );
         }
 
-        this.updateRepeatableFields(data);
+        this.updateRepeatableFields( data );
 
-        this.createFormWithData(data);
+        this.createFormWithData( data );
 
-        this.behaviourService.apply(this.form, profile);
-        this.storageService.afterProfileSwitch.next(data);
+        this.behaviourService.apply( this.form, profile );
+        this.storageService.afterProfileSwitch.next( data );
 
-        this.storageService.afterLoadAndSet.next(data);
+        this.storageService.afterLoadAndSet.next( data );
 
       } catch (ex) {
         console.error( ex );
-        this.modalService.showError(ex);
+        this.modalService.showError( ex );
         this.data._id = id;
       }
-    }, (err) => this.errorService.handle(err));
+    }, (err) => this.errorService.handle( err ) );
   }
 
   save() {
-    console.log('valid:', this.form.valid);
+    console.log( 'valid:', this.form.valid );
 
     // let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
@@ -371,35 +383,35 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.form.reset(this.form.value);
     this.form.markAsPristine();
 
-    this.storageService.saveData(data, false).then(res => {
+    this.storageService.saveData( data, false ).then( res => {
       this.data._id = res._id;
       // this.messageService.show( 'Dokument wurde gespeichert' );
       // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});
     }, (err: HttpErrorResponse) => {
-      this.errorService.handleOwn(err.message, err.error)
+      this.errorService.handleOwn( err.message, err.error );
       // setTimeout(() => this.error = false, 5000);
-    });
+    } );
   }
 
-/*  showToast() {
-        // Or create the instance of ToastOptions
-    const toastOptions: ToastOptions = {
-            title: 'Dokument wurde gespeichert',
-            // msg: 'Dokument wurde gespeichert',
-            showClose: false,
-            timeout: 2000,
-        };
-        // Add see all possible types in one shot
-        this.toastyService.info(toastOptions);
-    }*/
+  /*  showToast() {
+          // Or create the instance of ToastOptions
+      const toastOptions: ToastOptions = {
+              title: 'Dokument wurde gespeichert',
+              // msg: 'Dokument wurde gespeichert',
+              showClose: false,
+              timeout: 2000,
+          };
+          // Add see all possible types in one shot
+          this.toastyService.info(toastOptions);
+      }*/
 
   createFormWithData(data: any) {
-    this.form = this.qcs.toFormGroup(this.fields, data);
+    this.form = this.qcs.toFormGroup( this.fields, data );
 
     // disable form if we don't have the permission
     // delay a bit for form to be created
     // TODO: try to get permission beforehand and create form with this information
-    setTimeout( () => this.hasPermission(data) ? this.form && this.form.enable() : this.form.disable(), 0);
+    setTimeout( () => this.hasPermission( data ) ? this.form && this.form.enable() : this.form.disable(), 0 );
   }
 
   // TODO: extract to permission service class
@@ -407,10 +419,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // TODO: check all roles
     if (this.userRoles.length > 0) {
       const attr = this.userRoles[0].attributes;
-      const docIDs = this.userRoles[0].datasets.map(dataset => dataset.id);
+      const docIDs = this.userRoles[0].datasets.map( dataset => dataset.id );
       // TODO: show why we don't have permission by remembering failed rule
-      const permissionByAttribute = !attr || attr.every(a => data[a.id] === a.value);
-      const permissionByDatasetId = !docIDs || docIDs.length === 0 || docIDs.some(id => data._id === id);
+      const permissionByAttribute = !attr || attr.every( a => data[a.id] === a.value );
+      const permissionByDatasetId = !docIDs || docIDs.length === 0 || docIDs.some( id => data._id === id );
 
       return permissionByAttribute && permissionByDatasetId;
     }
@@ -420,47 +432,47 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   switchProfile(profile: string) {
     this.behaviourService.unregisterAll();
-    this.fields = this.formularService.getFields(profile);
+    this.fields = this.formularService.getFields( profile );
 
     // add controls from active behaviours
     // TODO: refactor to a function
     this.behaviours = this.behaviourService.behaviours;
     this.behaviours
-      .filter(behave => behave.isActive && behave.forProfile === profile)
-      .forEach((behave) => {
+      .filter( behave => behave.isActive && behave.forProfile === profile )
+      .forEach( (behave) => {
         if (behave.controls) {
-          behave.controls.forEach((additionalField => {
-            this.fields.push(additionalField);
-          }));
+          behave.controls.forEach( (additionalField => {
+            this.fields.push( additionalField );
+          }) );
         }
-      });
+      } );
 
     // TODO: introduce order by field IDs as an array to make it easier to squeeze in a new field
     //       => [ 'title', 'description', ... ]
     // sort fields by its order field
-    this.fields.sort((a, b) => a.order - b.order).slice(0);
+    this.fields.sort( (a, b) => a.order - b.order ).slice( 0 );
 
     this.formularService.currentProfile = profile;
   }
 
   updateRepeatableFields(data: any) {
     // set repeatable fields according to loaded data
-    const repeatFields = this.fields.filter(pField => (<Container>pField).isRepeatable);
+    const repeatFields = this.fields.filter( pField => (<Container>pField).isRepeatable );
 
-    repeatFields.forEach((repeatField: Container) => {
-      this.resetArrayGroup(repeatField.key);
+    repeatFields.forEach( (repeatField: Container) => {
+      this.resetArrayGroup( repeatField.key );
       if (data[repeatField.key]) {
         const repeatData = data[repeatField.key];
         for (let i = 0; i < repeatData.length; i++) {
-          const partialKey = Object.keys(repeatData[i])[0];
-          this.addArrayGroup(repeatField, partialKey);
+          const partialKey = Object.keys( repeatData[i] )[0];
+          this.addArrayGroup( repeatField, partialKey );
         }
       }
-    });
+    } );
   }
 
   resetArrayGroup(name: string) {
-    const group = <Container>this.fields.filter(f => (<Container>f).key === name)[0];
+    const group = <Container>this.fields.filter( f => (<Container>f).key === name )[0];
 
     // remove from definition fields
     while (group.children.length > 0) {
@@ -469,39 +481,39 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   addArrayGroup(repeatField: any, key: string) {
-    this.addPartialToField(repeatField, key);
+    this.addPartialToField( repeatField, key );
   }
 
   addPartialToField(field: any, partialKey: string): any {
     const partial = field.partials.filter( (part: any) => part.key === partialKey )[0];
-    const clonedPartial = Object.assign({}, partial);
-    field.children.push(clonedPartial);
+    const clonedPartial = Object.assign( {}, partial );
+    field.children.push( clonedPartial );
     return partial;
   }
 
   addPartialToForm(partial: any, formArray: FormArray, data: any) {
-    const additionalFormGroup = this.qcs.toFormGroup([partial], data);
-    additionalFormGroup.setParent(formArray);
-    formArray.controls.push(additionalFormGroup);
+    const additionalFormGroup = this.qcs.toFormGroup( [partial], data );
+    additionalFormGroup.setParent( formArray );
+    formArray.controls.push( additionalFormGroup );
   }
 
   addSection(data: any) {
     // use target-key or similar to have no conflicts with other fields with same name
-    const field = <PartialGeneratorField>this.fields.filter(f => (<Container>f).key === data.key)[0];
-    const partial = this.addPartialToField(field, data.section);
+    const field = <PartialGeneratorField>this.fields.filter( f => (<Container>f).key === data.key )[0];
+    const partial = this.addPartialToField( field, data.section );
     const formArray = <FormArray>this.form.controls[data.key];
-    this.addPartialToForm(partial, formArray, {});
+    this.addPartialToForm( partial, formArray, {} );
   }
 
   getTitle() {
     // console.log( '.' );
-    return this.formularService.getTitle(null, this.data);
+    return this.formularService.getTitle( null, this.data );
   }
 
   markFavorite($event: Event) {
     // TODO: mark favorite
     $event.stopImmediatePropagation();
-    console.log('TODO: Mark document as favorite');
+    console.log( 'TODO: Mark document as favorite' );
   }
 
 }

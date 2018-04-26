@@ -5,14 +5,16 @@
     <!-- ROLE LIST -->
     <split-area [size]="25" id="sidebarRoles" class="container">
         <div class="list-group">
-            <button *ngFor="let role of roles" type="button" class="list-group-item"
+            <button *ngFor="let role of roles" class="list-group-item"
                     [class.disabled]="role === selectedRole"
                     (click)="loadRole(role)">
                 {{role.name}}
             </button>
         </div>
         <div class="text-center">
-            <button class="btn btn-primary fa fa-plus" (click)="addRole()"></button>
+            <button mat-icon-button (click)="addRole()">
+                <mat-icon>add</mat-icon>
+            </button>
         </div>
     </split-area>
 

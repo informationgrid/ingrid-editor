@@ -13,18 +13,19 @@ import { RadioboxComponent } from './form-fields/radiobox/radiobox.component';
 import {
   MatButtonModule, MatCheckboxModule,
   MatExpansionModule,
-  MatIconModule,
-  MatProgressBarModule,
+  MatIconModule, MatListModule,
+  MatProgressBarModule, MatSelectModule,
   MatTreeModule
 } from '@angular/material';
 
 @NgModule({
   imports: [CommonModule, TreeModule,
-    MatTreeModule, MatIconModule, MatProgressBarModule, MatButtonModule, MatExpansionModule, MatCheckboxModule,
+    MatTreeModule, MatIconModule, MatProgressBarModule, MatButtonModule, MatExpansionModule, MatCheckboxModule, MatListModule,
+    MatSelectModule,
     AngularSplitModule,
     FormFieldsModule],
   declarations: [MetadataTreeComponent],
-  exports: [MetadataTreeComponent, AngularSplitModule, MatExpansionModule, MatCheckboxModule,
+  exports: [MetadataTreeComponent, AngularSplitModule, MatExpansionModule, MatCheckboxModule, MatListModule, MatSelectModule,
     FocusDirective,
     DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent
   ]

@@ -5,42 +5,23 @@ import { MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 
 @Component({
   template: `
-    <ng-template #deleteConfirmModal>
-      <div class="modal-header">
-        <h4 class="modal-title">Löschen</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Möchten Sie wirklich diese Datensätze löschen:</p>
-        <ul>
-          <li *ngFor="let doc of docsToDelete">{{doc.label}}</li>
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-link" (click)="doDelete()">Ja</button>
-        <button type="button" class="btn btn-link" (click)="modalRef.hide()">Nein</button>
-      </div>
-    </ng-template>
-    <!--<modal #deleteConfirmModal title="Löschen" cancelButtonLabel="Nein" submitButtonLabel="Ja" (onSubmit)="doDelete()">
-      <modal-content>
-        <p>Möchten Sie wirklich diese Datensätze löschen:</p>
-        <ul>
-          <li *ngFor="let doc of docsToDelete">{{doc.label}}</li>
-        </ul>
-      </modal-content>
-    </modal>-->
+    <h2 mat-dialog-title>Löschen</h2>
+    <mat-dialog-content>
+      <p>Möchten Sie wirklich diese Datensätze löschen:</p>
+      <ul>
+        <li *ngFor="let doc of docsToDelete">{{doc.label}}</li>
+      </ul>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button [mat-dialog-close]>Abbrechen</button>
+      <button mat-button [mat-dialog-close] (click)="doDelete()">Löschen</button>
+    </mat-dialog-actions>
   `
 })
 export class DeleteDialogComponent implements OnInit {
 
-  @ViewChild('deleteConfirmModal') deleteConfirmModal: TemplateRef<any>;
-  docsToDelete: any[];
-
-  constructor(injector: Injector, private dialog: MatDialog, private storageService: StorageService,
-              private router: Router, @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.docsToDelete = data.docs;
+  constructor(private storageService: StorageService,
+              private router: Router, @Inject(MAT_DIALOG_DATA) public docsToDelete: any[]) {
   }
 
   ngOnInit() {
@@ -59,7 +40,7 @@ export class DeleteDialogComponent implements OnInit {
         this.router.navigate( ['/form']);
       // }
     } catch (ex) {
-      console.error( 'Could not delete' );
+      console.error( 'Could not delete', ex );
     }
   }
 }

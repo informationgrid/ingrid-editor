@@ -4,8 +4,8 @@ import { ConfigService, Configuration } from '../../services/config.service';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/index';
 import { MatDialog } from '@angular/material';
-import { NewCatalogDialogComponent } from '../../dialogs/new-catalog-dialog.component';
-import { UploadProfileDialogComponent } from '../../dialogs/upload-profile-dialog.component';
+import { NewCatalogDialogComponent } from '../../dialogs/new-catalog/new-catalog-dialog.component';
+import { UploadProfileDialogComponent } from '../../dialogs/upload-profile/upload-profile-dialog.component';
 
 @Component({
   selector: 'ige-catalog-manager',

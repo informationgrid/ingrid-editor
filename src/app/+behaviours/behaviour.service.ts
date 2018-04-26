@@ -75,27 +75,28 @@ export class BehaviourService {
     // });
   }
 
-  loadStoredBehaviours() {
-    return this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' )
-      .pipe(
-        tap(b => console.log(`fetched behaviours`, b)),
-        catchError(this.handleError('loadStoredBehaviours', []))
-      )
-      .subscribe( (storedBehaviours: any[]) => {
-        // set correct active state to each behaviour
-        this.behaviours.forEach( (behaviour) => {
-          const stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
-          behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-        } );
+  loadStoredBehaviours(): Promise<any> {
+    return new Promise<any>(resolve => {
+      this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' )
+        .pipe(
+          tap(b => console.log(`fetched behaviours`, b)),
+          catchError(this.handleError('loadStoredBehaviours', []))
+        )
+        .subscribe( (storedBehaviours: any[]) => {
+          // set correct active state to each behaviour
+          this.behaviours.forEach( (behaviour) => {
+            const stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
+            behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+          } );
 
-        // set correct active state to each system behaviour
-        this.systemBehaviours.forEach( (behaviour) => {
-          const stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
-          behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+          // set correct active state to each system behaviour
+          this.systemBehaviours.forEach( (behaviour) => {
+            const stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
+            behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+          } );
+          resolve();
         } );
-
-      } )
-    ;
+    });
   }
 
   /**

@@ -34,14 +34,18 @@ import { AuthInterceptor } from './security/keycloak/auth.interceptor';
 import { ProfileService } from './services/profile.service';
 import {
   MAT_DATE_LOCALE,
-  MatButtonModule,
+  MatButtonModule, MatCheckboxModule,
   MatDialogModule,
-  MatExpansionModule,
-  MatIconModule,
+  MatExpansionModule, MatFormFieldModule,
+  MatIconModule, MatInputModule, MatRadioModule, MatSelectModule,
   MatToolbarModule
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ErrorDialogComponent } from './dialogs/error-dialog.component';
+import { ErrorDialogComponent } from './dialogs/error/error-dialog.component';
+import { NewDocumentComponent } from './dialogs/new-document/new-document.component';
+import { NewCatalogDialogComponent } from './dialogs/new-catalog/new-catalog-dialog.component';
+import { UploadProfileDialogComponent } from './dialogs/upload-profile/upload-profile-dialog.component';
+import { FileUploadModule } from 'primeng/primeng';
 
 export function ConfigLoader(configService: ConfigService) {
   return () => {
@@ -53,17 +57,25 @@ export function ConfigLoader(configService: ConfigService) {
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent],
+  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent,
+    ErrorDialogComponent, NewDocumentComponent, NewCatalogDialogComponent, UploadProfileDialogComponent
+  ],
   imports: [
     // angular
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
+    // PrimeNG
+    FileUploadModule,
     // Flex layout
     FlexLayoutModule,
     // Material
-    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatExpansionModule,
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatExpansionModule, MatRadioModule, MatCheckboxModule,
+    MatInputModule, MatFormFieldModule, MatSelectModule,
     // IGE-Modules
     IgeFormModule, DashboardModule, FieldsModule, CatalogModule, FormFieldsModule,
     UserModule, ImportExportModule, PluginsModule, routing],
+  exports: [
+    MatRadioModule
+  ],
   providers: [
     appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
     KeycloakService,
@@ -102,7 +114,7 @@ export function ConfigLoader(configService: ConfigService) {
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent]
+  entryComponents: [ErrorDialogComponent, NewDocumentComponent, NewCatalogDialogComponent, UploadProfileDialogComponent]
 } )
 
 export class AppModule {

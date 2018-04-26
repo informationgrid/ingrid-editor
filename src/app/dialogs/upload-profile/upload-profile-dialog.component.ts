@@ -2,7 +2,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Component, Inject } from '@angular/core';
 
 @Component( {
-  templateUrl: 'new-catalog-dialog.component.html'
+  templateUrl: 'upload-profile-dialog.component.html'
 } )
 export class UploadProfileDialogComponent {
 

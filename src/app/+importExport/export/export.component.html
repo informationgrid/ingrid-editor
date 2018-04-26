@@ -16,21 +16,11 @@
             <span class="wizard-title">Exportoptionen</span>
 
             <div class="padding">
-                <label class="custom-control custom-radio">
-                    <input #plug class="custom-control-input" type="radio" name="exportOption" checked>
-                    <span class="custom-control-indicator"></span>
-                    <span class="custom-control-description">nur diesen Datensatz</span>
-                </label>
-                <label class="custom-control custom-radio">
-                    <input #plug class="custom-control-input" type="radio" name="exportOption">
-                    <span class="custom-control-indicator"></span>
-                    <span class="custom-control-description">alle untergeordneten</span>
-                </label>
-                <label class="custom-control custom-radio">
-                    <input #plug class="custom-control-input" type="radio" name="exportOption">
-                    <span class="custom-control-indicator"></span>
-                    <span class="custom-control-description">dieser und alle untergeordneten</span>
-                </label>
+                <mat-radio-group>
+                    <mat-radio-button name="exportOption">nur diesen Datensatz</mat-radio-button>
+                    <mat-radio-button name="exportOption">alle untergeordneten</mat-radio-button>
+                    <mat-radio-button name="exportOption">dieser und alle untergeordneten</mat-radio-button>
+                </mat-radio-group>
             </div>
         </div>
 
@@ -42,7 +32,7 @@
             <span class="wizard-title">Start</span>
 
             <div class="padding">
-                <button class="btn btn-lg btn-outline-info"
+                <button mat-raised-button
                         [disabled]="selection.length === 0">
                     Exportieren
                 </button>

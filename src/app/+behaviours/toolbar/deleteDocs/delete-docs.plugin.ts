@@ -6,6 +6,7 @@ import {StorageService} from '../../../services/storage/storage.service';
 import {Plugin} from '../../plugin';
 import {DeleteDialogComponent} from './delete-dialog.component';
 import { Subscription } from 'rxjs/index';
+import { MatDialog } from '@angular/material';
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
@@ -22,7 +23,7 @@ export class DeleteDocsPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private formService: FormularService,
-              private modalService: ModalService,
+              private dialog: MatDialog,
               private storageService: StorageService,
               private _cr: ComponentFactoryResolver) {
     super();
@@ -51,16 +52,10 @@ export class DeleteDocsPlugin extends Plugin {
 
   deleteDoc() {
     const docs = this.formService.getSelectedDocuments();
-    this.docsToDelete = docs;
 
-    // show dialog where to copy the dataset(s)
-    let factory = this._cr.resolveComponentFactory( DeleteDialogComponent );
-
-    let providers = ReflectiveInjector.resolve( [
-      {provide: 'docs', useValue: docs}
-    ] );
-    const popInjector = ReflectiveInjector.fromResolvedProviders( providers, this.modalService.containerRef.parentInjector );
-    this.modalService.containerRef.createComponent( factory, null, popInjector );
+    this.dialog.open(DeleteDialogComponent, {
+      data: docs
+    });
   }
 
   unregister() {

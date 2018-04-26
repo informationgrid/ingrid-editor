@@ -1,6 +1,6 @@
 <label>{{label}}</label>
 
-<button *ngIf="showAddButton" mat-button title="Add a new row" (click)="addRow($event)">
+<button *ngIf="showAddButton" mat-button title="Add a new row" (click)="addRow($event)" class="pull-right">
     <mat-icon>add</mat-icon>
 </button>
 <!--
@@ -79,7 +79,7 @@
     https://porter.io/github.com/iamisti/mdDataTable
 -->
 
-<mat-table #table [dataSource]="value" style="overflow: auto; max-height: 300px;">
+<mat-table #table [dataSource]="value" style="overflow: auto; max-height: 300px; clear: both;">
     <!-- Checkbox for selection -->
     <ng-container matColumnDef="select">
         <mat-header-cell *matHeaderCellDef>

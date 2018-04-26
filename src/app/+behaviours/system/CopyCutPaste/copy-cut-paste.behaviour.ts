@@ -8,6 +8,7 @@ import { ModalService } from '../../../services/modal/modal.service';
 import { PasteDialogComponent } from './paste-dialog.component';
 import { CopyMoveEnum, MoveMode, PasteCallback } from './enums';
 import { Subscription } from 'rxjs/index';
+import { MatDialog } from '@angular/material';
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -32,7 +33,7 @@ export class CopyCutPastePlugin extends Plugin {
               private toolbarService: FormToolbarService,
               private storageService: StorageService,
               private modalService: ModalService,
-              private _cr: ComponentFactoryResolver) {
+              private dialog: MatDialog) {
     super();
   }
 
@@ -90,30 +91,24 @@ export class CopyCutPastePlugin extends Plugin {
     // remove last remembered copied documents
     this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => doc.id);
 
-    // show dialog where to copy the dataset(s)
-    const factory = this._cr.resolveComponentFactory(PasteDialogComponent);
-
-    const providers = ReflectiveInjector.resolve([
-      {provide: MoveMode, useValue: {mode: CopyMoveEnum.COPY}},
-      {provide: PasteCallback, useValue: this.paste.bind(this)}
-    ]);
-    const popInjector = ReflectiveInjector.fromResolvedProviders(providers, this.modalService.containerRef.parentInjector);
-    this.modalService.containerRef.createComponent(factory, null, popInjector);
+    this.dialog.open(PasteDialogComponent, {
+      data: { mode: CopyMoveEnum.COPY }
+    }).afterClosed().subscribe( result => {
+      console.log('result', result);
+      this.paste(result, CopyMoveEnum.COPY);
+    });
   }
 
   cut() {
     // remove last remembered copied documents
     this.cutDatasets = this.formService.getSelectedDocuments().map(doc => doc.id);
 
-    // show dialog where to copy the dataset(s)
-    const factory = this._cr.resolveComponentFactory(PasteDialogComponent);
-
-    const providers = ReflectiveInjector.resolve([
-      {provide: MoveMode, useValue: {mode: CopyMoveEnum.MOVE}},
-      {provide: PasteCallback, useValue: this.paste.bind(this)}
-    ]);
-    const popInjector = ReflectiveInjector.fromResolvedProviders(providers, this.modalService.containerRef.parentInjector);
-    this.modalService.containerRef.createComponent(factory, null, popInjector);
+    this.dialog.open(PasteDialogComponent, {
+      data: { mode: CopyMoveEnum.MOVE }
+    }).afterClosed().subscribe( result => {
+      console.log('result', result);
+      this.paste(result, CopyMoveEnum.MOVE);
+    });
   }
 
   paste(targetNode: any, mode: CopyMoveEnum) {

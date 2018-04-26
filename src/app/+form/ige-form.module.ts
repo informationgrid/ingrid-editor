@@ -18,7 +18,13 @@ import { IgeWizardModule } from '../wizard/wizard.module';
 import { ScrollToDirective } from '../directives/scrollTo.directive';
 import {
   MatButtonModule,
-  MatDividerModule, MatFormFieldModule, MatIconModule, MatInputModule, MatTableModule, MatTabsModule, MatExpansionModule,
+  MatDividerModule,
+  MatFormFieldModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
+  MatTableModule,
+  MatTabsModule,
   MatToolbarModule
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -28,7 +34,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     CommonModule, FormsModule, ReactiveFormsModule,
     IgeWizardModule, SharedModule,
     MatFormFieldModule, MatToolbarModule, MatIconModule, MatInputModule, MatTableModule, MatDividerModule, MatButtonModule,
-    MatTabsModule, MatDividerModule,
+    MatTabsModule, MatDividerModule, MatListModule,
     FlexLayoutModule,
     SharedModule, routing],
   declarations: [

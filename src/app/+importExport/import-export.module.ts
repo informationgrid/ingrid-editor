@@ -7,12 +7,12 @@ import { IgeFormModule } from '../+form/ige-form.module';
 import { ExportComponent } from './export/export.component';
 import { SharedModule } from '../shared.module';
 import { FileUploadModule } from 'primeng/fileupload';
-import { MatExpansionModule, MatTabsModule } from '@angular/material';
+import { MatButtonModule, MatExpansionModule, MatRadioModule, MatTabsModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   imports: [CommonModule, routing, FileUploadModule, SharedModule, IgeFormModule,
-            MatExpansionModule, MatTabsModule,
+            MatExpansionModule, MatTabsModule, MatRadioModule, MatButtonModule,
             FlexLayoutModule
   ],
   declarations: [ImportExportComponent, ExportComponent],
