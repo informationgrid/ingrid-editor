@@ -1,12 +1,8 @@
-<ng-template #isoViewModal>
-    <div class="modal-header">
-        <h4 class="modal-title">ISO-Ansicht</h4>
-    </div>
-    <div class="modal-body">
-        ISO
-        <pre>{{doc ? doc : 'Laden ...'}}</pre>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-link" (click)="isoViewModalRef.hide()">Schließen</button>
-    </div>
-</ng-template>
+<h2 mat-dialog-title="ISO-Ansicht"></h2>
+<mat-dialog-content>
+    ISO
+    <pre>{{doc ? doc : 'Laden ...'}}</pre>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button>Schließen</button>
+</mat-dialog-actions>

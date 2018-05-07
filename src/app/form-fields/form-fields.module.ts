@@ -7,7 +7,6 @@ import { FocusDirective } from '../directives/focus.directive';
 import { DateboxComponent } from './datebox/datebox.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
 import { RadioboxComponent } from './radiobox/radiobox.component';
-import { DialogComponent } from './dialog/dialog.component';
 import {
   MatButtonModule,
   MatCheckboxModule,
@@ -25,7 +24,7 @@ import { DropdownModule } from 'primeng/primeng';
     MatInputModule, MatDatepickerModule, MatNativeDateModule, MatCheckboxModule, MatRadioModule, MatTableModule, MatButtonModule,
     MatIconModule,
   ],
-  declarations: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent, DialogComponent],
+  declarations: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent],
   exports: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent]
 })
 export class FormFieldsModule { }

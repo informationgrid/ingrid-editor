@@ -1,18 +1,15 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormularService } from '../../../services/formular/formular.service';
 import { ApiService } from '../../../services/ApiService';
-import { MatDialog } from '@angular/material';
 
 @Component( {
   templateUrl: './iso-view.component.html'
 } )
 export class IsoViewComponent implements OnInit {
 
-  @ViewChild( 'isoViewModal' ) isoViewModal: TemplateRef<any>;
-
   doc: any;
 
-  constructor(private dialog: MatDialog, private formService: FormularService, private apiService: ApiService) {
+  constructor(private formService: FormularService, private apiService: ApiService) {
   }
 
   ngOnInit() {

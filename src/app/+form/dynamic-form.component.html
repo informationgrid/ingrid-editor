@@ -212,17 +212,3 @@
     </split>
 <!--</div>-->
 </div>
-
-
-<ng-template #discardConfirmModal>
-    <div class="modal-header">
-        <h4 class="modal-title">Daten wurden geändert</h4>
-    </div>
-    <div class="modal-body">
-        <p>Der Datensatz wurde geändert. Wollen Sie die Änderungen verwerfen und einen anderen Datensatz laden?</p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-link" (click)="discardChanges()">Verwerfen</button>
-        <button class="btn btn-link" (click)="isoViewModalRef.hide()">Abbrechen</button>
-    </div>
-</ng-template>

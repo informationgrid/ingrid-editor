@@ -1,9 +1,9 @@
-import {ComponentFactoryResolver, Injectable, ReflectiveInjector} from '@angular/core';
-import {Plugin} from '../../plugin';
-import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
-import {ModalService} from '../../../services/modal/modal.service';
-import {IsoViewComponent} from './iso-view.component';
-import {FormularService} from '../../../services/formular/formular.service';
+import { Injectable } from '@angular/core';
+import { Plugin } from '../../plugin';
+import { FormToolbarService } from '../../../+form/toolbar/form-toolbar.service';
+import { IsoViewComponent } from './iso-view.component';
+import { FormularService } from '../../../services/formular/formular.service';
+import { MatDialog } from '@angular/material';
 
 @Injectable()
 export class IsoViewPlugin extends Plugin {
@@ -13,8 +13,7 @@ export class IsoViewPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private formService: FormularService,
-              private modalService: ModalService,
-              private _cr: ComponentFactoryResolver) {
+              private dialog: MatDialog) {
     super();
   }
 
@@ -46,11 +45,7 @@ export class IsoViewPlugin extends Plugin {
 
   private showISODialog() {
     // show dialog where to copy the dataset(s)
-    const factory = this._cr.resolveComponentFactory(IsoViewComponent);
-
-    const providers = ReflectiveInjector.resolve([]);
-    const popInjector = ReflectiveInjector.fromResolvedProviders(providers, this.modalService.containerRef.parentInjector);
-    this.modalService.containerRef.createComponent(factory, null, popInjector);
+    this.dialog.open(IsoViewComponent);
   }
 
   unregister() {

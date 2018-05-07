@@ -10,7 +10,6 @@ import { BehaviourService } from './behaviour.service';
 import { MenuService } from '../menu/menu.service';
 import { PasteDialogComponent } from './system/CopyCutPaste/paste-dialog.component';
 import { SharedModule } from '../shared.module';
-import { PrintViewComponent } from './system/printView/print-view.component';
 import { CreateFolderComponent } from './system/folder/create-folder.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FolderPlugin, CopyCutPastePlugin, StatisticPlugin, WorkflowPlugin, PrintViewPlugin } from '.';
@@ -24,18 +23,19 @@ import {
   MatButtonModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatInputModule,
   MatTabsModule
 } from '@angular/material';
+import { PrintViewDialogComponent } from '../dialogs/print-view/print-view-dialog.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedModule, routing, MatCardModule, MatTabsModule,
   MatDialogModule, MatButtonModule, MatInputModule, MatCheckboxModule],
   declarations: [
-    PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewComponent, IsoViewComponent,
+    PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewDialogComponent, IsoViewComponent,
     CreateFolderComponent, DeleteDialogComponent, StatisticComponent],
   providers: [
     MenuService, BehaviourService, PublishPlugin, CreateDocRulesPlugin, StatisticPlugin, WorkflowPlugin,
     PrintViewPlugin, IsoViewPlugin, CopyCutPastePlugin, FolderPlugin, DeleteDocsPlugin, UndoPlugin],
   entryComponents: [
-    PrintViewComponent, IsoViewComponent, PasteDialogComponent, CreateFolderComponent, DeleteDialogComponent,
+    PrintViewDialogComponent, IsoViewComponent, PasteDialogComponent, CreateFolderComponent, DeleteDialogComponent,
     StatisticComponent]
 })
 export class PluginsModule {

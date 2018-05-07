@@ -22,33 +22,3 @@
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
     <button mat-button [mat-dialog-close]="true">Erstellen</button>
 </mat-dialog-actions>
-
-<!--<ng-template #createFolderModal>
-    <div class="modal-header">
-        <h4 class="modal-title">Ordner erstellen</h4>
-    </div>
-    <div class="modal-body">
-        <label class="control-label">Ordnername</label>
-        <input #name type="text" class="form-control"
-               [focus]="true"
-               (keyup.enter)="handleCreate(name.value)"
-               required>
-
-        <div class="checkbox" *ngIf="parent.profile === 'FOLDER'">
-            <label class="custom-control custom-checkbox">
-                <input #subFolder type="checkbox" class="custom-control-input"
-                       (change)="asSubFolder = subFolder.checked">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">unter ausgewähltem Ordner anlegen</span>
-            </label>
-        </div>
-        <small class="form-text" *ngIf="parent.profile !== 'FOLDER'">
-          Wenn Sie einen Unterordner erstellen möchten, müssen Sie zuerst einen Ordner auswählen.
-        </small>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-link" (click)="createFolderModalRef.hide()">Abbrechen</button>
-        <button class="btn btn-link" (click)="handleCreate(name.value)">Erstellen</button>
-    </div>
-</ng-template>-->
-

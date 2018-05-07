@@ -1,11 +1,18 @@
 import {
-  Component, forwardRef, Input, ViewChild, Output, EventEmitter, TemplateRef,
-  AfterViewInit
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  Output,
+  TemplateRef,
+  ViewChild
 } from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {FormControlService} from '../../services/form-control.service';
-import {PartialGeneratorField} from '../controls/field-partial-generator';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { FormControlService } from '../../services/form-control.service';
+import { PartialGeneratorField } from '../controls/field-partial-generator';
 import { MatDialog } from '@angular/material';
+import { AddPartialDialogComponent } from './dialog/add-partial-dialog.component';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -61,6 +68,7 @@ export class PartialGenerator implements ControlValueAccessor, AfterViewInit {
   showPartialChoice() {
     if (this.types.length > 1) {
       // TODO: this.addPartialModalRef = this.modalService.show(this.addPartialModal);
+      this.dialog.open(AddPartialDialogComponent).afterClosed().subscribe( result => {});
     } else {
       this.onAddSection.emit({key: this.field.key, section: this.types[0].id});
     }
