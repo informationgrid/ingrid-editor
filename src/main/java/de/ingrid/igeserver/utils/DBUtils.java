@@ -24,7 +24,7 @@ public class DBUtils {
     private OrientDbService dbService;
 
     public String getCatalogForUser(String userId) {
-        Map<String, String> query = new HashMap<String, String>();
+        Map<String, String> query = new HashMap<>();
         query.put( "id", userId );
 
         // TODO: use cache!
@@ -40,7 +40,7 @@ public class DBUtils {
     }
 
     public String[] getReferencedDocs(JsonNode mapDoc) {
-        List<String> refNodes = new ArrayList<String>();
+        List<String> refNodes = new ArrayList<>();
 
         String profile = mapDoc.get( MapperService.FIELD_PROFILE ).asText();
 

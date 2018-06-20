@@ -252,6 +252,7 @@ public class DatasetsApiController implements DatasetsApi {
             @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) {
 
         String doc = this.dbService.getById( COLLECTION, id );
+        log.debug("Getting dataset: " + id);
 
         if (doc == null) {
             return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "No document with the ID: " + id );

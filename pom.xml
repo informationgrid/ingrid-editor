@@ -7,8 +7,8 @@
   <version>1.0.0-SNAPSHOT</version>
   <properties>
     <java.version>1.8</java.version>
-    <orient-db>2.2.31</orient-db>
-    <keycloak.version>3.4.3.Final</keycloak.version>
+    <orient-db>3.0.2</orient-db>
+    <keycloak.version>4.0.0.Beta3</keycloak.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <springfox-version>2.7.0</springfox-version>
@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.9.RELEASE</version>
+    <version>2.0.2.RELEASE</version>
   </parent>
 
   <dependencyManagement>
@@ -61,7 +61,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-tomcat</artifactId>
-      <scope>provided</scope>
+      <!--<scope>provided</scope>-->
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -77,7 +77,8 @@
     <!-- Security with Keycloak -->
     <dependency>
       <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-spring-boot-starter</artifactId>
+      <artifactId>keycloak-spring-boot-2-starter</artifactId>
+      <!--<version>4.0.0.Beta2</version>-->
     </dependency>
   
     <dependency>
@@ -130,7 +131,7 @@
 	<dependency>
 	  <groupId>de.ingrid</groupId>
 	  <artifactId>ingrid-codelist-service</artifactId>
-	  <version>4.0.4-SNAPSHOT</version>
+	  <version>4.4.0-SNAPSHOT</version>
 	  <exclusions>
 	    <exclusion>
 	      <groupId>log4j</groupId>
@@ -156,7 +157,7 @@
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
-      <scope>provided</scope>
+      <!--<scope>provided</scope>-->
     </dependency>
     <dependency>
     	<groupId>junit</groupId>
@@ -172,6 +173,13 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.4</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-maven-plugin</artifactId>
+      <version>2.0.2.RELEASE</version>
+    </dependency>
+
   </dependencies>
   
   <repositories>
