@@ -23,9 +23,7 @@ export class DeleteDocsPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private formService: FormularService,
-              private dialog: MatDialog,
-              private storageService: StorageService,
-              private _cr: ComponentFactoryResolver) {
+              private dialog: MatDialog) {
     super();
     this.isActive = true;
   }
@@ -34,7 +32,7 @@ export class DeleteDocsPlugin extends Plugin {
     super.register();
 
     this.formToolbarService.addButton(
-      {id: 'toolBtnRemove', tooltip: 'Remove', cssClasses: 'delete', eventId: 'DELETE', active: false}
+      {id: 'toolBtnRemove', tooltip: 'Remove', cssClasses: 'delete', eventId: 'DELETE', pos: 100, active: false}
     );
 
     const loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {

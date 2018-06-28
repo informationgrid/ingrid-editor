@@ -1,5 +1,7 @@
 import { Injectable, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs/index';
+import { MatDialog } from '@angular/material';
+import { ErrorDialogComponent } from '../../dialogs/error/error-dialog.component';
 
 interface DialogContent {
   message: string;
@@ -14,7 +16,7 @@ export class ModalService {
 
   containerRef: ViewContainerRef = null;
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
   }
 
   /**
@@ -40,6 +42,10 @@ export class ModalService {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });*/
+
+    this.dialog.open(ErrorDialogComponent, {
+      data: errorObj
+    });
 
     this.errorDialog.next(errorObj);
   }

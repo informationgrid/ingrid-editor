@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, forwardRef, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatRadioChange } from '@angular/material';
 

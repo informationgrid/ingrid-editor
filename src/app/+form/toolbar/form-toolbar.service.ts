@@ -3,6 +3,7 @@ import { Subject } from 'rxjs/index';
 
 export interface DefaultToolbarItem {
   id: string;
+  pos: number;
 }
 export interface ToolbarItem extends DefaultToolbarItem {
   tooltip: string;
@@ -24,9 +25,8 @@ export class FormToolbarService {
   toolbarEvent$: Subject<string>;
 
   _buttons: Array<ToolbarItem|Separator> = [
-    {id: 'toolBtnNew', tooltip: 'New', cssClasses: 'add', eventId: 'NEW_DOC', active: true},
-    {id: 'toolBtnSave', tooltip: 'Save', cssClasses: 'save', eventId: 'SAVE', active: false},
-    {id: 'toolBtnLoadSaveSeparator', isSeparator: true}
+    {id: 'toolBtnNew', tooltip: 'New', cssClasses: 'add', eventId: 'NEW_DOC', pos: 10, active: true},
+    {id: 'toolBtnSave', tooltip: 'Save', cssClasses: 'save', eventId: 'SAVE', pos: 20, active: false}
   ];
 
   constructor() {
@@ -46,12 +46,14 @@ export class FormToolbarService {
     return this._buttons;
   }
 
-  addButton(button: ToolbarItem|Separator, pos?: number) {
-    if (!pos) {
-      pos = this._buttons.length;
-    }
+  addButton(button: ToolbarItem|Separator) {
+    const pos = this._buttons.length;
 
     this._buttons.splice(pos, 0, button);
+
+    // sort buttons
+    this._buttons.sort( (a, b) => a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1 );
+
     this.toolbar$.next(button);
   }
 

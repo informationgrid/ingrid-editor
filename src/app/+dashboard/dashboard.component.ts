@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit {
       '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
       .pipe(
         map(json => {
-          return json.filter(item => item._profile !== 'FOLDER');
+          return json.filter(item => item && item._profile !== 'FOLDER');
         })
       )
       .subscribe(data => {
@@ -83,18 +83,9 @@ export class DashboardComponent implements OnInit {
 
     const newData: any = {};
     newData.labels = Object.keys(data);
-    newData.datasets = [ {
-      data: [],
-      backgroundColor: [
-        '#FF6384',
-        '#4BC0C0',
-        '#FFCE56',
-        '#E7E9ED',
-        '#36A2EB'
-      ]
-    }];
+    newData.series = [[]];
     newData.labels.forEach(label => {
-      newData.datasets[0].data.push(data[label]);
+      newData.series[0].push(data[label]);
     });
 
     this.data = newData;

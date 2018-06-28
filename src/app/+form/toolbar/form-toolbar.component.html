@@ -17,11 +17,12 @@
 <mat-toolbar>
     <mat-toolbar-row>
         <ng-container *ngFor="let button of buttons">
-            <!--<a *ngIf="!button.isSeparator" href="#" (click)="sendEvent(button.eventId)">
-                <mat-icon aria-hidden="true">{{button.cssClasses}}</mat-icon>
-            </a>-->
-            <button *ngIf="!button.isSeparator" mat-icon-button (click)="sendEvent(button.eventId)">
-                <mat-icon aria-label="???">{{button.cssClasses}}</mat-icon>
+            <button *ngIf="!button.isSeparator" mat-icon-button
+                    [title]="button.tooltip"
+                    (click)="sendEvent(button.eventId)"
+                    [disabled]="!button.active">
+                    <!--aria-label="{{button.tooltip}}"-->
+                <mat-icon>{{button.cssClasses}}</mat-icon>
             </button>
             <mat-divider *ngIf="button.isSeparator" [vertical]="true" style="height: 20px"></mat-divider>
         </ng-container>

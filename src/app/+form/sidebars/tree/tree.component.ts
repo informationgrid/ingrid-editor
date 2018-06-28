@@ -5,9 +5,7 @@ import { FormularService } from '../../../services/formular/formular.service';
 import { ErrorService } from '../../../services/error.service';
 import { FormToolbarService } from '../../toolbar/form-toolbar.service';
 import { SelectedDocument } from '../selected-document.model';
-import { TreeNode } from 'primeng/api';
 import { DocMainInfo } from '../../../models/update-dataset-info.model';
-import { ProfileService } from '../../../services/profile.service';
 import { Subscription } from 'rxjs/index';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { UpdateType } from '../../../models/update-type.enum';
@@ -33,8 +31,8 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
 
   subscriptions: Subscription[] = [];
 
-  copiedNodes: TreeNode[] = [];
-  cutNodes: TreeNode[] = [];
+  copiedNodes: any[] = [];
+  cutNodes: any[] = [];
 
 
   treeControl: FlatTreeControl<DynamicFlatNode>;
@@ -54,11 +52,10 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   };
 
   constructor(private database: DynamicDatabase, private storageService: StorageService, private router: Router,
-              private route: ActivatedRoute, private formularService: FormularService, private errorService: ErrorService,
-              private toolbarService: FormToolbarService, private profileService: ProfileService) {
+              private route: ActivatedRoute, private formularService: FormularService) {
 
     this.treeControl = new FlatTreeControl<DynamicFlatNode>( this.getLevel, this.isExpandable );
-    this.dataSource = new DynamicDataSource( this.treeControl, database );
+    this.dataSource = new DynamicDataSource( this.treeControl, database, formularService );
 
   }
 
@@ -197,7 +194,8 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   // }
 
   onUpdateDataset(docs: DocMainInfo[]) {
-    docs.forEach( doc => {
+    const mappedDocs = this.database.prepareNodes(docs);
+    mappedDocs.forEach( doc => {
       this.dataSource.updateNode(doc._id, doc);
     } );
   }

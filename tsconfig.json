@@ -17,5 +17,5 @@
       "dom"
     ]
   },
-  "exclude": [ "server/*" ]
+  "exclude": [ "server/*", "node_modules" ]
 }

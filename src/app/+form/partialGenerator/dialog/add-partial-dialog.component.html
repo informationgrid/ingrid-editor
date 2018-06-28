@@ -1,10 +1,8 @@
-<h2 mat-dialog-title="Hinzufügen"></h2>
+<h2 mat-dialog-title>Hinzufügen</h2>
 <mat-dialog-content>
-    <div class="radio" *ngFor="let type of types">
-        <label>
-            <input name="type" type="radio" [(ngModel)]="choiceType" [value]="type.id"> {{type.label}}
-        </label>
-    </div>
+    <mat-radio-group>
+        <mat-radio-button *ngFor="let type of types" [value]="type.id">{{type.label}}</mat-radio-button>
+    </mat-radio-group>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button [mat-dialog-close]="">Hinzufügen</button>

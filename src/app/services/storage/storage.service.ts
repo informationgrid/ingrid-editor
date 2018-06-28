@@ -43,7 +43,7 @@ export class StorageService {
       this.configuration.backendUrl + 'datasets?query=' + query + '&sort=title&fields=_id,_profile,_state,' + this.titleFields )
       .pipe(
         map( json => {
-          return json.filter( item => item._profile !== 'FOLDER' );
+          return json.filter( item => item && item._profile !== 'FOLDER' );
         } ),
         catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       );

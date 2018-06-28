@@ -26,8 +26,8 @@ export class IsoViewPlugin extends Plugin {
 
     // add button to toolbar
     this.formToolbarService.addButton({
-      id: 'toolBtnIso', tooltip: 'ISO Ansicht', cssClasses: 'remove_red_eye', eventId: 'ISO', active: false
-    }, 7);
+      id: 'toolBtnIso', tooltip: 'ISO Ansicht', cssClasses: 'remove_red_eye', eventId: 'ISO', pos: 80, active: false
+    });
 
     // react on event when button is clicked
     this.formToolbarService.toolbarEvent$.subscribe(eventId => {

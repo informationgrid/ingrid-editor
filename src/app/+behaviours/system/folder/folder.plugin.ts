@@ -36,8 +36,9 @@ export class FolderPlugin extends Plugin {
       tooltip: 'Create Folder',
       cssClasses: 'create_new_folder',
       eventId: this.eventCreateFolderId,
+      pos: 15,
       active: true
-    }, 1 );
+    } );
 
     // add event handler for revert
     this.formToolbarService.toolbarEvent$.subscribe( eventId => {

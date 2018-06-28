@@ -19,7 +19,7 @@ export class WorkflowPlugin extends Plugin {
     super.register();
 
     this.formToolbarService.addButton( {
-      id: this.toolbarBtnId, tooltip: 'Send to QA', cssClasses: 'glyphicon glyphicon-hand-right', eventId: 'SEND_TO_QA'
+      id: this.toolbarBtnId, tooltip: 'Send to QA', cssClasses: 'glyphicon glyphicon-hand-right', pos: 140, eventId: 'SEND_TO_QA'
     } );
 
     this.subscription = this.formToolbarService.toolbarEvent$.subscribe( eventId => {

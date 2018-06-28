@@ -12,7 +12,7 @@
     </p-tree>-->
 
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-        <mat-tree-node *matTreeNodeDef="let node" (click)="open(node)" matTreeNodePadding [class.selected]="selectedNodes?.includes(node)">
+        <mat-tree-node *matTreeNodeDef="let node" (click)="open(node)" matTreeNodePadding [class.selected]="selectedNodes?.indexOf(node) !== -1">
             <!--<button mat-icon-button>-->
                 <mat-icon [class]="'docType ' + node.icon"></mat-icon>
             <!--</button>-->

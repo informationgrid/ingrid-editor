@@ -67,8 +67,9 @@ export class PartialGenerator implements ControlValueAccessor, AfterViewInit {
    */
   showPartialChoice() {
     if (this.types.length > 1) {
-      // TODO: this.addPartialModalRef = this.modalService.show(this.addPartialModal);
-      this.dialog.open(AddPartialDialogComponent).afterClosed().subscribe( result => {});
+      this.dialog.open(AddPartialDialogComponent, {
+        data: this.types
+      }).afterClosed().subscribe( result => {});
     } else {
       this.onAddSection.emit({key: this.field.key, section: this.types[0].id});
     }

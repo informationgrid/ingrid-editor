@@ -1,9 +1,10 @@
 <div fxFill style="overflow: auto;">
 
     <div class="chart pull-left">
-        <p-chart type="pie"
+        <!--<p-chart type="pie"
                  [data]="data"
-                 (onDataSelect)="chartClicked($event)"></p-chart>
+                 (onDataSelect)="chartClicked($event)"></p-chart>-->
+        <x-chartist type="Bar" [data]="data" ></x-chartist>
     </div>
 
     <div class="content">

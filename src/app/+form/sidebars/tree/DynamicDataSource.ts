@@ -7,6 +7,8 @@ import { merge } from 'rxjs/index';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { DynamicFlatNode } from './DynamicFlatNode';
 import { DynamicDatabase } from './DynamicDatabase';
+import { ProfileService } from '../../../services/profile.service';
+import { FormularService } from '../../../services/formular/formular.service';
 
 /**
  * File database, it can build a tree structured Json object from string.
@@ -32,7 +34,7 @@ export class DynamicDataSource {
   }
 
   constructor(private treeControl: FlatTreeControl<DynamicFlatNode>,
-              private database: DynamicDatabase) {
+              private database: DynamicDatabase, private formularService: FormularService) {
   }
 
   connect(collectionViewer: CollectionViewer): Observable<DynamicFlatNode[]> {
@@ -100,7 +102,8 @@ export class DynamicDataSource {
   }
 
   private mapDynamicFlatNode(level: number, child: DocMainInfo): DynamicFlatNode {
-    return new DynamicFlatNode( child._id, child.title, child._profile, child._state, level,
+    const label = this.formularService.getTitle(child._profile, child);
+    return new DynamicFlatNode( child._id, label, child._profile, child._state, level,
       this.database.isExpandable( child ), child.icon );
   }
 
@@ -112,6 +115,9 @@ export class DynamicDataSource {
       doc );
     this.data.splice( index + 1, 0, newNode );
 
+    if (!this.cachedChildren[parentNode.id]) {
+      this.cachedChildren[parentNode.id] = [];
+    }
     this.cachedChildren[parentNode.id].push( newNode );
     this.dataChange.next( this.data );
   }

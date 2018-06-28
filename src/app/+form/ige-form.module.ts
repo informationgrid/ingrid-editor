@@ -17,32 +17,34 @@ import { MainFormTabsComponent } from './main-form-tabs/main-form-tabs.component
 import { IgeWizardModule } from '../wizard/wizard.module';
 import { ScrollToDirective } from '../directives/scrollTo.directive';
 import {
-  MatButtonModule,
+  MatButtonModule, MatDialogModule,
   MatDividerModule,
   MatFormFieldModule,
   MatIconModule,
   MatInputModule,
-  MatListModule,
+  MatListModule, MatRadioModule,
   MatTableModule,
   MatTabsModule,
   MatToolbarModule
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { AddPartialDialogComponent } from './partialGenerator/dialog/add-partial-dialog.component';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     IgeWizardModule, SharedModule,
     MatFormFieldModule, MatToolbarModule, MatIconModule, MatInputModule, MatTableModule, MatDividerModule, MatButtonModule,
-    MatTabsModule, MatDividerModule, MatListModule,
+    MatTabsModule, MatDividerModule, MatListModule, MatDialogModule, MatRadioModule,
     FlexLayoutModule,
     SharedModule, routing],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,
-    BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
+    BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent, AddPartialDialogComponent,
     ScrollToDirective, MainFormComponent, MainFormTabsComponent],
   providers: [CodelistService, NominatimService],
-  exports: [FormsModule, ScrollToDirective, MainFormTabsComponent]
+  exports: [FormsModule, ScrollToDirective, MainFormTabsComponent],
+  entryComponents: [AddPartialDialogComponent]
 })
 export class IgeFormModule {
 }

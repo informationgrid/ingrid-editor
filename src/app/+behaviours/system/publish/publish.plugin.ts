@@ -30,15 +30,15 @@ export class PublishPlugin extends Plugin {
 
     console.log( 'register publish plugin' );
     // add button to toolbar for publish action
-    this.formToolbarService.addButton( {id: 'toolBtnPublishSeparator',  isSeparator: true } );
+    this.formToolbarService.addButton( {id: 'toolBtnPublishSeparator',  isSeparator: true, pos: 100 } );
 
     this.formToolbarService.addButton( {
-      id: 'toolBtnPublish', tooltip: 'Publish', cssClasses: 'publish', eventId: this.eventPublishId, active: false
+      id: 'toolBtnPublish', tooltip: 'Publish', cssClasses: 'publish', eventId: this.eventPublishId, pos: 25, active: false
     } );
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton( {
-      id: 'toolBtnRevert', tooltip: 'Revert', cssClasses: 'backspace', eventId: this.eventRevertId, active: false
+      id: 'toolBtnRevert', tooltip: 'Revert', cssClasses: 'backspace', eventId: this.eventRevertId, pos: 110, active: false
     } );
 
     // add event handler for revert

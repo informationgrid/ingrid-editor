@@ -41,11 +41,11 @@ export class CopyCutPastePlugin extends Plugin {
     super.register();
 
     const buttons: Array<ToolbarItem | Separator> = [
-      {id: 'toolBtnCopy', tooltip: 'Copy', cssClasses: 'content_copy', eventId: 'COPY', active: false},
-      {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'content_cut', eventId: 'CUT', active: false},
-      {id: 'toolBtnCopyCutSeparator', isSeparator: true}
+      {id: 'toolBtnCopyCutSeparator', pos: 30, isSeparator: true},
+      {id: 'toolBtnCopy', tooltip: 'Copy', cssClasses: 'content_copy', eventId: 'COPY', pos: 40, active: false},
+      {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'content_cut', eventId: 'CUT', pos: 50, active: false}
     ];
-    buttons.forEach((button, index) => this.toolbarService.addButton(button, index + 3));
+    buttons.forEach((button, index) => this.toolbarService.addButton(button));
 
     this.subscription = this.storageService.afterLoadAndSet$.subscribe((data) => {
 

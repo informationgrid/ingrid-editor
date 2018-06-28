@@ -32,23 +32,18 @@ export class DynamicDatabase {
     return new Promise( (resolve, reject) => {
       this.storageService.getChildDocuments( id ).subscribe( response => {
         console.log( 'got children', response );
-        const nodes = this.prepareNodes( response, null );
+        const nodes = this.prepareNodes( response );
         resolve( nodes );
       } );
       // }, (err) => this.errorService.handle( err ) );
     } );
   }
 
-  prepareNodes(docs: any[], parentNode: any): any[] {
-    if (parentNode && !parentNode.children) {
-      parentNode.leaf = false;
-      parentNode.children = [];
-    }
-
+  prepareNodes(docs: any[]): any[] {
     // const updatedNodes: any = parentNode ? parentNode : this.nodes;
 
     const modDocs = docs
-      .filter( doc => doc._profile !== undefined )
+      .filter( doc => doc !== null && doc._profile !== undefined )
       .sort( (doc1, doc2) => { // TODO: sort after conversion, then we don't need to call getTitle function
         return this.formularService.getTitle( doc1._profile, doc1 ).localeCompare( this.formularService.getTitle( doc2._profile, doc2 ) );
       } );
@@ -70,10 +65,10 @@ export class DynamicDatabase {
   private getTreeIcon(doc): string {
     const classType = this.formularService.getIconClass( doc._profile );
     const classState = doc._state === 'P'
-      ? 'badge-primary'
+      ? 'published-label'
       : doc._state === 'W'
-        ? 'badge-warning'
-        : 'pubished-working-label';
+        ? 'working-label'
+        : 'published-working-label';
 
     return classType + ' ' + classState;
   }

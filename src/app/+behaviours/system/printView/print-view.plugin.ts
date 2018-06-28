@@ -11,7 +11,7 @@ export class PrintViewPlugin extends Plugin {
   _name = 'Print View Plugin';
   defaultActive = true;
 
-  constructor(private formToolbarService: FormToolbarService,
+  constructor(private toolbarService: FormToolbarService,
               private formService: FormularService,
               private dialog: MatDialog) {
     super();
@@ -25,12 +25,14 @@ export class PrintViewPlugin extends Plugin {
     super.register();
 
     // add button to toolbar
-    this.formToolbarService.addButton({
-      id: 'toolBtnPrint', tooltip: 'Print', cssClasses: 'print', eventId: 'PRINT', active: false
-    }, 6);
+    const buttons = [
+      { id: 'toolBtnCopyCutSeparator', pos: 60, isSeparator: true },
+      { id: 'toolBtnPrint', tooltip: 'Print', cssClasses: 'print', eventId: 'PRINT', pos: 70, active: false }
+    ];
+    buttons.forEach((button, index) => this.toolbarService.addButton(button));
 
     // react on event when button is clicked
-    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
+    this.toolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'PRINT') {
         console.log('print');
         this.showPrintDialog();
@@ -38,7 +40,7 @@ export class PrintViewPlugin extends Plugin {
     });
 
     this.formService.selectedDocuments$.subscribe( data => {
-      this.formToolbarService.setButtonState(
+      this.toolbarService.setButtonState(
         'toolBtnPrint',
         data.length === 1);
     } );

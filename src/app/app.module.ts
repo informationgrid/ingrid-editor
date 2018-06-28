@@ -45,7 +45,7 @@ import { ErrorDialogComponent } from './dialogs/error/error-dialog.component';
 import { NewDocumentComponent } from './dialogs/new-document/new-document.component';
 import { NewCatalogDialogComponent } from './dialogs/new-catalog/new-catalog-dialog.component';
 import { UploadProfileDialogComponent } from './dialogs/upload-profile/upload-profile-dialog.component';
-import { FileUploadModule } from 'primeng/primeng';
+import { FileUploadModule } from 'primeng/fileupload';
 
 export function ConfigLoader(configService: ConfigService) {
   return () => {

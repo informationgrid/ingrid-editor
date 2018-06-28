@@ -6,6 +6,7 @@ import { StorageService } from '../../../services/storage/storage.service';
 import { Plugin } from '../../plugin';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs/index';
+import { debounceTime } from 'rxjs/operators';
 
 @Injectable()
 export class UndoPlugin extends Plugin {
@@ -13,9 +14,12 @@ export class UndoPlugin extends Plugin {
   _name = 'Undo Plugin';
 
   eventUndoId = 'UNDO';
+  eventRedoId = 'REDO';
 
   form: FormGroup;
-  history: any[] = [];
+  private history: any[] = [];
+  private redoHistory: any[] = [];
+  private actionTriggered = false;
 
   formValueSubscription: Subscription;
 
@@ -34,12 +38,25 @@ export class UndoPlugin extends Plugin {
   register() {
     super.register();
 
+    this.formToolbarService.addButton( {id: 'toolBtnUndoSeparator',  isSeparator: true, pos: 140 } );
+
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
       id: 'toolBtnUndo',
       tooltip: 'Undo',
       cssClasses: 'undo',
       eventId: this.eventUndoId,
+      pos: 150,
+      active: false
+    });
+
+    // add button to toolbar for revert action
+    this.formToolbarService.addButton({
+      id: 'toolBtnRedo',
+      tooltip: 'Redo',
+      cssClasses: 'redo',
+      eventId: this.eventRedoId,
+      pos: 160,
       active: false
     });
 
@@ -47,12 +64,17 @@ export class UndoPlugin extends Plugin {
     this.formToolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === this.eventUndoId) {
         this.undo();
+      } else if (eventId === this.eventRedoId) {
+        this.redo();
       }
     });
 
     this.storageService.afterLoadAndSet.subscribe((data) => {
       if (data) {
         this.history = [];
+        this.redoHistory = [];
+        // this.actionTriggered = true;
+
         this.formToolbarService.setButtonState('toolBtnUndo', false);
 
         // remove old subscription
@@ -69,18 +91,39 @@ export class UndoPlugin extends Plugin {
 
   }
 
-  undo() {
+  private undo() {
+    this.actionTriggered = true;
+
     // ignore the last value, which is the current value
-    this.history.pop();
+    this.redoHistory.push( this.history.pop() );
 
     // get the value before the current
     const recentValue = this.history.pop();
 
     this.form.setValue(recentValue);
 
+    // deactivate undo button if history only contains the initial document
     if (this.history.length < 2) {
       this.formToolbarService.setButtonState('toolBtnUndo', false);
     }
+
+    // enable redo button
+    this.formToolbarService.setButtonState('toolBtnRedo', true);
+
+  }
+
+  private redo() {
+    this.actionTriggered = true;
+
+    const updatedValue = this.redoHistory.pop();
+
+    this.form.setValue(updatedValue);
+
+    if (this.redoHistory.length === 0) {
+      this.formToolbarService.setButtonState('toolBtnRedo', false);
+    }
+
+    // FIXME: problem when undo/redo is happening too fast since debounce time will register change less often
   }
 
   unregister() {
@@ -101,9 +144,18 @@ export class UndoPlugin extends Plugin {
 
     this.form = formData.form;
     this.formValueSubscription = this.form.valueChanges
-    // TODO: .debounceTime(500)
+      .pipe(
+        debounceTime(500)
+      )
       .subscribe((value) => {
         console.log('The form value changed:', value);
+
+        // if we used the undo/redo button then ignore this event
+        if (this.actionTriggered) {
+          this.actionTriggered = false;
+          // return;
+        }
+
         // only push if other field was changed, otherwise remove last change and push new value
         // => so we only remember complete field changes instead of each character
         this.history.push(value);
