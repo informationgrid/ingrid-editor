@@ -6,9 +6,11 @@
 package de.ingrid.igeserver.api;
 
 import java.security.Principal;
+import java.util.List;
 
 import javax.validation.Valid;
 
+import org.codehaus.jettison.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +33,7 @@ public interface BehavioursApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Behaviours are returned.", response = Void.class) })
     @RequestMapping(value = "/behaviours", produces = { "application/json" }, method = RequestMethod.GET)
-    ResponseEntity<String> getBehaviours(Principal principal);
+    ResponseEntity<List<JSONObject>> getBehaviours(Principal principal);
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Behaviour", })
     @ApiResponses(value = {

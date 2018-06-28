@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.db;
 
+import com.orientechnologies.orient.client.remote.OServerAdmin;
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.*;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
@@ -149,14 +150,28 @@ public class OrientDBDatabase implements DBApi {
         return true;
     }
 
+
     @Override
-    public boolean createDB(String name) {
+    public String[] getDatabases() {
+        OServerAdmin oServerAdmin;
+        try {
+            oServerAdmin = new OServerAdmin( "remote:localhost" );
+            oServerAdmin.connect( "root", "root" );
+            return oServerAdmin.listDatabases().keySet().toArray( new String[0] );
+        } catch (Exception e) {
+            log.error( "Error connecting to OrientDB server to get all databases.", e );
+        }
+        return null;
+    }
+
+    @Override
+    public boolean createDatabase(String name) {
         orientDB.create(name, ODatabaseType.PLOCAL);
         return true;
     }
 
     @Override
-    public boolean removeDB(String name) {
+    public boolean removeDatabase(String name) {
         return false;
     }
 

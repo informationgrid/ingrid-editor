@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.ingrid.igeserver.db.DBApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ import de.ingrid.igeserver.services.db.OrientDbService;
 public class JsonToDBService extends MapperService {
 
     @Autowired
-    private OrientDbService dbService;
+    private DBApi dbService;
 
     public String mapDocument(String json, boolean published, String userId) throws Exception {
         ObjectNode map = (ObjectNode) getJsonMap( json );

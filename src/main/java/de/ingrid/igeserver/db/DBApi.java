@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface DBApi {
 
-    public static enum DBClass {Document, User, Role};
+    public static enum DBClass {Document, User, Role, Info, Behavior};
 
     /**
      * Find a document of a certain type with a given ID.
@@ -34,15 +34,22 @@ public interface DBApi {
      */
     public boolean remove(String name);
 
+
+    /**
+     * Get all databases
+     * @return an array of database names
+     */
+    public String[] getDatabases();
+
     /**
      * Create a database with a given name.
      */
-    public boolean createDB(String name);
+    public boolean createDatabase(String name);
 
     /**
      * Delete a database with a given name.
      */
-    public boolean removeDB(String name);
+    public boolean removeDatabase(String name);
 
     /**
      * Open a session to a database with name dbName. With that it's possible to

@@ -131,7 +131,7 @@
 	<dependency>
 	  <groupId>de.ingrid</groupId>
 	  <artifactId>ingrid-codelist-service</artifactId>
-	  <version>4.4.0-SNAPSHOT</version>
+	  <version>4.4.0</version>
 	  <exclusions>
 	    <exclusion>
 	      <groupId>log4j</groupId>
@@ -141,18 +141,10 @@
 	</dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-joda</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
     <!-- Bean Validation API support -->
     <dependency>
       <groupId>javax.validation</groupId>
@@ -186,9 +178,9 @@
     <!-- Repo of parent pom needed, parent pom may not be installed locally
       yet -->
     <repository>
-      <id>de.ingrid.all</id>
-      <name>Maven Repo InGrid</name>
-      <url>https://dev.informationgrid.eu/archiva/repository/ingrid-all</url>
+      <id>nexus</id>
+      <name>Nexus Maven Repo</name>
+      <url>https://nexus.informationgrid.eu/repository/maven-public</url>
     </repository>
   </repositories>
 </project>

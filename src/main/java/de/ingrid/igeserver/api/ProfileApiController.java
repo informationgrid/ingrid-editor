@@ -3,7 +3,9 @@ package de.ingrid.igeserver.api;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
+import de.ingrid.igeserver.db.DBApi;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ public class ProfileApiController implements ProfileApi {
     private static Logger log = LogManager.getLogger( ProfileApiController.class );
 
     @Autowired
-    private OrientDbService dbService;
+    private DBApi dbService;
 
     @Autowired
     private JsonToDBService jsonService;
@@ -42,7 +44,7 @@ public class ProfileApiController implements ProfileApi {
         // ClassPathResource resource = new ClassPathResource( "/profile-uvp.chunk.js" );
         String profile = null; // new String( Files.readAllBytes( Paths.get( resource.getURI() ) ) );
 
-        List<String> allFrom = dbService.getAllFrom( "Info" );
+        List<Map> allFrom = dbService.findAll( DBApi.DBClass.Info );
         try {
             if (allFrom.size() > 0) {
                 JsonNode map = jsonService.getJsonMap( allFrom.get( 0 ) );
@@ -86,18 +88,18 @@ public class ProfileApiController implements ProfileApi {
         // dbFields.put( key, value )
         // dbFields.put( "fileContent", fileContent );
 
-        List<String> infos = dbService.getAllFrom( "Info" );
+        List<Map> infos = dbService.findAll( DBApi.DBClass.Info );
         if (infos.size() > 0) {
             String rid;
             try {
                 rid = jsonService.getJsonMap( infos.get( 0 ) ).get( "@rid" ).textValue();
-                dbService.deleteRawDoc( "Info", rid );
+                dbService.remove(DBApi.DBClass.Info, rid );
             } catch (Exception e) {
                 log.error( "Error removing profile document", e );
             }
         }
         
-        dbService.addRawDocTo( dbId, "Info", null, "profile", fileContent );
+        dbService.save( DBApi.DBClass.Info, "profile", fileContent );
         return ResponseEntity.ok().build();
     }
 

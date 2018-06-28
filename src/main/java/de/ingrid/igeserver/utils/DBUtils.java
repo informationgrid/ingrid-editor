@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.ingrid.igeserver.db.DBApi;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class DBUtils {
     private static Logger log = LogManager.getLogger( DBUtils.class );
 
     @Autowired
-    private OrientDbService dbService;
+    private DBApi dbService;
 
     public String getCatalogForUser(String userId) {
         Map<String, String> query = new HashMap<>();
@@ -29,7 +30,7 @@ public class DBUtils {
 
         // TODO: use cache!
 
-        List<String> list = this.dbService.find( "users", "info", query, "catalogId" );
+        List<String> list = this.dbService.findAll( DBApi.DBClass.User, "info", query, "catalogId" );
         
         if (list.size() == 0) {
             String msg = "The user does not seem to be assigned to any database: " + userId;
@@ -54,7 +55,7 @@ public class DBUtils {
                 String refId = publisher.get( MapperService.FIELD_ID ).asText();
                 
                 // TODO: get referenced document in a loop
-                String refJson = this.dbService.getById( "Documents", refId );
+                Map refJson = this.dbService.find(DBApi.DBClass.Document, refId );
                 
                 refNodes.add( refJson );
             }

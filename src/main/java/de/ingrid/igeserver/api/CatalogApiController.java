@@ -1,38 +1,38 @@
 package de.ingrid.igeserver.api;
 
+import de.ingrid.igeserver.db.DBApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import de.ingrid.igeserver.services.db.OrientDbService;
 import io.swagger.annotations.ApiParam;
 
 @Controller
 public class CatalogApiController implements CatalogApi {
-    
+
     @Autowired
-    private OrientDbService dbService;
-    
+    private DBApi dbService;
+
     @Override
     public ResponseEntity<String> getCatalogs() {
         String[] databases = this.dbService.getDatabases();
-        
+
         String response = "[";
-        for (int i=0; i<databases.length; i++) {
+        for (int i = 0; i < databases.length; i++) {
             response += "\"" + databases[i] + "\"";
             if (i < databases.length - 1) {
                 response += ",";
             }
         }
         response += "]";
-        return ResponseEntity.ok().body( response );
+        return ResponseEntity.ok().body(response);
     }
-    
+
     @Override
     public ResponseEntity<String> createCatalog(@ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name) {
-    	// Object transaction = this.dbService.beginTransaction();
-        this.dbService.createDatabase( name );
+        //this.dbService.acquire("")
+        this.dbService.createDatabase(name);
         // this.dbService.commit(transaction);
         return null;
     }

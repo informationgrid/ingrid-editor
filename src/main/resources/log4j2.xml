@@ -2,7 +2,7 @@
 <Configuration status="WARN" monitorInterval="30">
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%5level [%d{yyyy-MM-dd HH:mm:ss}] (%40.40F:%3L) - %m%n" />
+      <PatternLayout pattern="%5level [%d{yyyy-MM-dd HH:mm:ss}] .(%40.40F:%L) - %m%n" />
     </Console>
     <RollingFile name="LogFile" fileName="logs/log.log" filePattern="logs/log.log.%i">
       <PatternLayout pattern="%5level [%d{yyyy-MM-dd HH:mm:ss}] (%F:%L) - %m%n" />
@@ -16,22 +16,10 @@
     <Logger name="de.ingrid" level="info" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>
-    <Logger name="org.springframework" level="info" additivity="false">
-      <AppenderRef ref="Console" />
-    </Logger>
-    <Logger name="net.meta" level="info" additivity="false">
-      <AppenderRef ref="Console" />
-    </Logger>
-    <Logger name="com" level="info" additivity="false">
-      <AppenderRef ref="Console" />
-    </Logger>
-    <Logger name="org.apache" level="info" additivity="false">
-      <AppenderRef ref="Console" />
-    </Logger>
     <Logger name="org.keycloak" level="info" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>
-    <Root level="warn">
+    <Root level="info">
       <AppenderRef ref="Console" />
     </Root>
   </Loggers>

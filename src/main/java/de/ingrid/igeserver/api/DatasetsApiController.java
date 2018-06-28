@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.ingrid.igeserver.db.DBApi;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class DatasetsApiController implements DatasetsApi {
     private enum CopyMoveOperation { COPY, MOVE };
     
     @Autowired
-    private OrientDbService dbService;
+    private DBApi dbService;
 
     @Autowired
     private JsonToDBService jsonFromService;

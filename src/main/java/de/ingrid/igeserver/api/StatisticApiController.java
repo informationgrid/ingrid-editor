@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api;
 
+import de.ingrid.igeserver.db.DBApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,7 +12,7 @@ import de.ingrid.igeserver.services.db.OrientDbService;
 public class StatisticApiController implements StatisticApi {
 
     @Autowired
-    private OrientDbService dbService;
+    private DBApi dbService;
 
     public ResponseEntity<String> getStatistic() {
         String statistic = this.dbService.getDocStatistic();

@@ -26,18 +26,20 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 
-@Service
+// @Service
 public class OrientDbService {
     
     // TODO: optimize server: https://github.com/orientechnologies/orientdb/issues/6922
 
-    Logger log = LogManager.getLogger( OrientDbService.class );
+    private static Logger log = LogManager.getLogger( OrientDbService.class );
 
     private OServer server = null;
     
     private static HashMap<String, OPartitionedDatabasePool> poolMap = new HashMap<>();
 
     public OrientDbService() throws Exception {
+
+        log.info("Init DB Service");
 
         String orientdbHome = new File( "" ).getAbsolutePath(); // Set OrientDB home to current directory
         System.setProperty( "ORIENTDB_HOME", orientdbHome );
