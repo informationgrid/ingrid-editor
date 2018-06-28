@@ -8,6 +8,9 @@ import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
+import com.orientechnologies.orient.core.Orient;
+import com.orientechnologies.orient.core.db.ODefaultEmbeddedDatabaseInstanceFactory;
+import com.orientechnologies.orient.core.db.OEmbeddedDatabaseInstanceFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -50,6 +53,11 @@ public class OrientDbService {
 
         initSystemDBs();
         initDatabase("igedb");
+    }
+
+    @PreDestroy
+    private void shutdown() {
+        server.shutdown();
     }
 
     public OServer getServer() {
@@ -394,6 +402,7 @@ public class OrientDbService {
             return poolMap.get( url );
         } else {
             OPartitionedDatabasePool pool = new OPartitionedDatabasePool(url , "admin", "admin");
+            ODefaultEmbeddedDatabaseInstanceFactory embDBFactory = new ODefaultEmbeddedDatabaseInstanceFactory();
             poolMap.put( url, pool );
             return pool;
         }
@@ -425,9 +434,23 @@ public class OrientDbService {
             
         }
         db.close();
+
+        db = new ODatabaseDocumentTx( "plocal:./databases/users" );
+        if (!db.exists()) {
+            db.create();
+
+            OSequenceLibrary sequenceLibrary = db.getMetadata().getSequenceLibrary();
+            OSequence seq = sequenceLibrary.createSequence( "idUserSeq", SEQUENCE_TYPE.ORDERED, new OSequence.CreateParams().setStart( 0l ).setIncrement( 1 ) );
+            seq.save();
+
+            db.getMetadata().getSchema().createClass( "info" );
+//            addDocTo( "users", "info", "{ 'id': 'ige', 'catalogId': 'igedb' }", null );
+        }
+        db.close();
     }
     
     private void initDatabase(String databaseName) {
+        Orient.instance().startup();
         try {
             ODatabaseDocumentTx db = new ODatabaseDocumentTx( "plocal:./databases/" + databaseName );
 

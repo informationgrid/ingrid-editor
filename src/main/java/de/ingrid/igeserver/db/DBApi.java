@@ -32,7 +32,14 @@ public interface DBApi {
     /**
      * Delete a document with a given ID.
      */
-    public boolean remove(String name);
+    public boolean remove(String id);
+
+    /**
+     * Delete documents that match a given query.
+     *
+     * @return a list of IDs of the deleted documents
+     */
+    public List<String> remove(Map<String, String> query);
 
 
     /**

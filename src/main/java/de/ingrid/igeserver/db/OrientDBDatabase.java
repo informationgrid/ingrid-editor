@@ -165,6 +165,12 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
+    public List<String> remove(Map<String, String> query) {
+        // TODO: implement
+        return null;
+    }
+
+    @Override
     public boolean createDatabase(String name) {
         orientDB.create(name, ODatabaseType.PLOCAL);
         return true;
