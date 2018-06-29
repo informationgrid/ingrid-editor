@@ -35,7 +35,7 @@ import io.swagger.annotations.ApiParam;
 public class UsersApiController implements UsersApi {
     
     //@Autowired
-    //private DBToJsonService jsonService;
+    //private DocumentService jsonService;
     
     static class UserList extends ArrayList<UserRepresentation> {
 

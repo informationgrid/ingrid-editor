@@ -97,7 +97,7 @@ public interface DatasetsApi {
             @ApiParam(value = "Get all children of a dataset. The parameter 'parentId' is also needed for this request.") @RequestParam(value = "children", required = false) Boolean children,
             @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId,
             @ApiParam(value = "Sort by a given field.") @RequestParam(value = "sort", required = false) String sort,
-            @ApiParam(value = "Reverse sort.") @RequestParam(value = "reverse", required = false) String reverse);
+            @ApiParam(value = "Reverse sort.") @RequestParam(value = "reverse", required = false) String reverse) throws Exception;
 
     @ApiOperation(value = "A complete dataset", notes = "Retrieve a dataset by a given ID.", response = InlineResponse200.class, tags = { "Datasets", })
     @ApiResponses(value = {
@@ -107,7 +107,7 @@ public interface DatasetsApi {
     ResponseEntity<String> getByID(
     		Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish);
+            @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) throws Exception;
 
     @ApiOperation(value = "Get the hierarchical path of a document", notes = "Retrieve an array of ID of all parents leading to the given dataset ID.", response = Void.class, tags = { "Datasets", })
     @ApiResponses(value = {
@@ -124,6 +124,6 @@ public interface DatasetsApi {
     ResponseEntity<Void> moveDatasets(
     		Principal principal,
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
-            @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data);
+            @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data) throws Exception;
 
 }

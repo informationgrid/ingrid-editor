@@ -2,8 +2,10 @@ package de.ingrid.igeserver.services;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.utils.DBUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,20 +13,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import de.ingrid.igeserver.services.db.OrientDbService;
-
 @Service
 public class JsonToDBService extends MapperService {
 
     @Autowired
     private DBApi dbService;
 
-    public String mapDocument(String json, boolean published, String userId) throws Exception {
+    @Autowired
+    private DBUtils dbUtils;
+
+    public Map mapDocument(String json, boolean published, String userId) throws Exception {
         ObjectNode map = (ObjectNode) getJsonMap( json );
 
         String id = map.path( FIELD_ID ).asText(null);
 
-        String oldDoc = dbService.getById( "Documents", id );
+        Map oldDoc = dbService.find( DBApi.DBClass.Documents, id );
 
         ObjectNode oldMap = null;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -64,7 +67,7 @@ public class JsonToDBService extends MapperService {
         // apply specific fields to document (id, profile, state, ...)
         oldMap.put( FIELD_ID, id );
 
-        return toJsonString( oldMap );
+        return dbUtils.getMapFromObject(oldMap);
     }
 
     private void cleanupReferences(ObjectNode map) {
@@ -98,12 +101,11 @@ public class JsonToDBService extends MapperService {
     }
 
     public String revertDocument(String id) throws Exception {
-        String doc = dbService.getById( "Documents", id );
+        Map doc = dbService.find( DBApi.DBClass.Documents, id );
 
-        ObjectNode map = (ObjectNode) getJsonMap( doc );
-        map.remove( FIELD_DRAFT );
+        doc.remove( FIELD_DRAFT );
 
-        return toJsonString( map );
+        return toJsonString( doc );
     }
 
 }

@@ -7,10 +7,11 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.utils.DBUtils;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,9 @@ public class BehavioursApiController implements BehavioursApi {
 
     @Autowired
     private DBApi dbService;
+
+    @Autowired
+    private DBUtils dbUtils;
     
     //@Autowired
     //private JsonToDBService jsonService;
@@ -40,15 +44,12 @@ public class BehavioursApiController implements BehavioursApi {
         return ResponseEntity.ok( collect ); //"[" + String.join( ",", behaviours ) + "]" );
     }
 
-    public ResponseEntity<String> setBehaviours(@ApiParam(value = "", required = true) @Valid @RequestBody String behaviour) {
-        try {
+    public ResponseEntity<Map> setBehaviours(@ApiParam(value = "", required = true) @Valid @RequestBody String behaviour) {
+        try (ODatabaseSession session = dbService.acquire("igedb")) {
             String id = "???";
-            String doc = this.dbService.save(DBApi.DBClass.Behavior, id, new JSONObject(behaviour).toString() );
+            Map doc = this.dbService.save(DBApi.DBClass.Behavior, id, dbUtils.getMapFromObject(behaviour) );
             return ResponseEntity.ok(doc);
 
-        } catch (Exception e) {
-            // TODO: log.error
-            return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( e.getMessage() );
         }
     }
 

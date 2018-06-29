@@ -145,13 +145,13 @@ public class OrientDBDatabaseTest {
         try (ODatabaseSession session = dbService.acquire("test")) {
 
             // create document class with linked list property to address-references
-            OClass docClass = session.createClass(DBApi.DBClass.Document.name());
+            OClass docClass = session.createClass(DBApi.DBClass.Documents.name());
             docClass.createProperty("addresses", OType.LINKLIST, docClass);
 
             // add first document
             Map<String, Object> doc1 = new HashMap<>();
             doc1.put("title", "my document");
-            Map doc1Result = dbService.save(DBApi.DBClass.Document, null, doc1);
+            Map doc1Result = dbService.save(DBApi.DBClass.Documents, null, doc1);
 
             // add second document with reference to doc1
             Map<String, Object> doc2 = new HashMap<>();
@@ -159,12 +159,12 @@ public class OrientDBDatabaseTest {
             List<ORecordId> addressReferences = new ArrayList<>();
             addressReferences.add((ORecordId) doc1Result.get("@rid"));
             doc2.put("addresses", addressReferences);
-            Map doc2Result = dbService.save(DBApi.DBClass.Document, null, doc2);
+            Map doc2Result = dbService.save(DBApi.DBClass.Documents, null, doc2);
 
         }
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            List<Map> docs = dbService.findAll(DBApi.DBClass.Document);
+            List<Map> docs = dbService.findAll(DBApi.DBClass.Documents);
             assertEquals(2, docs.size());
             assertEquals("my document", ((ODocument)((List)docs.get(1).get("addresses")).get(0)).field("title"));
         }

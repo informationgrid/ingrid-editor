@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface DBApi {
 
-    public static enum DBClass {Document, User, Role, Info, Behavior};
+    public static enum DBClass {Documents, User, Role, Info, Behavior};
 
     /**
      * Find a document of a certain type with a given ID.
@@ -29,17 +29,23 @@ public interface DBApi {
      */
     public Map save(DBClass type, String id, Map<String, Object> data);
 
+
+    /**
+     * Save a raw object with a given ID (like file uploads).
+     */
+    public Map save(DBClass type, String id, Object data);
+
     /**
      * Delete a document with a given ID.
      */
-    public boolean remove(String id);
+    public boolean remove(DBClass type, String id);
 
     /**
      * Delete documents that match a given query.
      *
      * @return a list of IDs of the deleted documents
      */
-    public List<String> remove(Map<String, String> query);
+    public List<String> remove(DBClass type, Map<String, String> query);
 
 
     /**

@@ -7,6 +7,7 @@ package de.ingrid.igeserver.api;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -39,6 +40,6 @@ public interface BehavioursApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Behaviours have been set.", response = Void.class) })
     @RequestMapping(value = "/behaviours", produces = { "application/json" }, method = RequestMethod.POST)
-    ResponseEntity<String> setBehaviours(@ApiParam(value = "", required = true) @Valid @RequestBody String behaviour);
+    ResponseEntity<Map> setBehaviours(@ApiParam(value = "", required = true) @Valid @RequestBody String behaviour);
 
 }
