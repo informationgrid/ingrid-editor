@@ -7,9 +7,8 @@ import { ConfigService, Configuration } from '../services/config.service';
 import { Plugin } from './plugin';
 import { HttpClient } from '@angular/common/http';
 import { ProfileService } from '../services/profile.service';
-import { of, throwError } from 'rxjs/index';
-import { Observable } from 'rxjs/Rx';
-import { catchError, tap } from 'rxjs/internal/operators';
+import { throwError } from 'rxjs/index';
+import { tap } from 'rxjs/internal/operators';
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -77,10 +76,11 @@ export class BehaviourService {
 
   loadStoredBehaviours(): Promise<any> {
     return new Promise<any>(resolve => {
-      this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' )
+      resolve();
+      /*this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' )
         .pipe(
-          tap(b => console.log(`fetched behaviours`, b)),
-          catchError(this.handleError('loadStoredBehaviours', []))
+          tap(b => console.log(`fetched behaviours`, b))
+          // catchError(this.handleError('loadStoredBehaviours', []))
         )
         .subscribe( (storedBehaviours: any[]) => {
           // set correct active state to each behaviour
@@ -95,7 +95,7 @@ export class BehaviourService {
             behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
           } );
           resolve();
-        } );
+        } );*/
     });
   }
 
@@ -105,7 +105,7 @@ export class BehaviourService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T> (operation = 'operation', result?: T) {
+  /*private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
@@ -117,7 +117,7 @@ export class BehaviourService {
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
-  }
+  }*/
 
   apply(form: FormGroup, profile: string) {
     // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
@@ -160,7 +160,8 @@ export class BehaviourService {
       active: behaviour.isActive
     };
     this.http.post( this.configuration.backendUrl + 'behaviours', stripped ).toPromise().catch( err => {
-      this.modalService.showError( err );
+      // this.modalService.showError( err );
+      // TODO: remove since it's already handled
       return throwError( err );
     } );
   }

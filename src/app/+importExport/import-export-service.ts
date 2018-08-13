@@ -18,10 +18,10 @@ export class ImportExportService {
   import(file: File): Observable<any> {
     return this.http.post( this.configuration.backendUrl + 'import', file )
       .pipe(
-        catchError( err => {
+        /*catchError( err => {
           this.errorService.handle( err );
           return err;
-        } )
+        } )*/
       );
   }
 

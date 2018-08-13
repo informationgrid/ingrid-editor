@@ -44,8 +44,8 @@ export class StorageService {
       .pipe(
         map( json => {
           return json.filter( item => item && item._profile !== 'FOLDER' );
-        } ),
-        catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
+        } )
+        // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       );
   }
 
@@ -55,7 +55,7 @@ export class StorageService {
     // headers.append('Content-Type', 'text/plain');
     return this.http.get( this.configuration.backendUrl + 'datasets?children=true&' + fields + idQuery )
       .pipe(
-        catchError( (err) => this.errorService.handle( err ) )
+        // catchError( (err) => this.errorService.handle( err ) )
       );
   }
 
@@ -77,7 +77,7 @@ export class StorageService {
         response = this.http.post( this.configuration.backendUrl + 'datasets', data );
 
       }
-      response.catch( (err) => this.errorService.handle( err ) );
+      // response.catch( (err) => this.errorService.handle( err ) );
 
       console.log( 'Response:', response );
       response.subscribe( json => {
@@ -103,7 +103,7 @@ export class StorageService {
     console.log( 'After validation:', data );
     const formInvalid = errors.errors.filter( (err: any) => err.invalid )[0];
     if (formInvalid && formInvalid.invalid) {
-      this.modalService.showError( 'Der Datensatz kann nicht veröffentlicht werden.' );
+      this.modalService.showJavascriptError( 'Der Datensatz kann nicht veröffentlicht werden.' );
       return;
     }
     let response = null;
@@ -116,7 +116,7 @@ export class StorageService {
 
     }
 
-    response.catch( err => this.errorService.handle( err ) );
+    // response.catch( err => this.errorService.handle( err ) );
 
     console.log( 'Response:', response );
     response.subscribe( json => {
@@ -124,12 +124,14 @@ export class StorageService {
       data._state = json._state;
       this.afterSave.next( data );
       this.datasetsChanged.next( {type: UpdateType.Update, data: [data]} );
-    }, err => this.errorService.handle( err ) );
+    }
+    // , err => this.errorService.handle( err )
+    );
   }
 
   delete(ids: string[]): any {
-    const response = this.http.delete( this.configuration.backendUrl + 'datasets/' + ids, {responseType: 'text'} )
-      .pipe( catchError( err => this.errorService.handle( err ) ) );
+    const response = this.http.delete( this.configuration.backendUrl + 'datasets/' + ids, {responseType: 'text'} );
+      // .pipe( catchError( err => this.errorService.handle( err ) ) );
 
     response.subscribe( res => {
       console.log( 'ok', res );
@@ -143,8 +145,8 @@ export class StorageService {
   revert(id: string): Observable<any> {
     return this.http.put( this.configuration.backendUrl + 'datasets/' + id + '?revert=true', {} )
       .pipe(
-        tap( (json: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: [json]} ) ),
-        catchError( err => this.errorService.handle( err ) )
+        tap( (json: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: [json]} ) )
+        // catchError( err => this.errorService.handle( err ) )
       );
 
     // return response.subscribe(res => {
@@ -154,8 +156,8 @@ export class StorageService {
   }
 
   getPathToDataset(id: string): Observable<string[]> {
-    return this.http.get<string[]>( this.configuration.backendUrl + 'datasets/' + id + '/path' )
-      .pipe( catchError( err => this.errorService.handle( err ) ) );
+    return this.http.get<string[]>( this.configuration.backendUrl + 'datasets/' + id + '/path' );
+      // .pipe( catchError( err => this.errorService.handle( err ) ) );
   }
 
   /**

@@ -44,8 +44,8 @@ export class DashboardComponent implements OnInit {
 
   fetchStatistic() {
     this.http.get<any>(this.configuration.backendUrl + 'statistic').subscribe(
-      data => this.prepareData(data),
-      (err) => this.errorService.handle(err)
+      data => this.prepareData(data)
+      // (err) => this.errorService.handle(err)
     );
   }
 
@@ -64,8 +64,8 @@ export class DashboardComponent implements OnInit {
       .subscribe(data => {
           console.log('Data received: ', data);
           this.datasets = this.prepareTableData(data);
-        },
-        (err) => this.errorService.handle(err)
+        }
+        // (err) => this.errorService.handle(err)
       );
   }
 

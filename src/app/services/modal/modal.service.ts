@@ -1,7 +1,8 @@
-import { Injectable, ViewContainerRef } from '@angular/core';
+import { Injectable, NgZone, ViewContainerRef } from '@angular/core';
 import { Subject } from 'rxjs/index';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { ErrorDialogComponent } from '../../dialogs/error/error-dialog.component';
+import { IgeError } from '../../models/ige-error';
 
 interface DialogContent {
   message: string;
@@ -10,13 +11,31 @@ interface DialogContent {
 @Injectable()
 export class ModalService {
 
-  errorDialog = new Subject<DialogContent>();
-
-  errorDialog$ = this.errorDialog.asObservable();
-
   containerRef: ViewContainerRef = null;
+  private dialogRef: MatDialogRef<ErrorDialogComponent, any>;
+  errors: IgeError[] = [];
 
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog, private ngZone: NgZone) {
+  }
+
+  showIgeError(error: IgeError) {
+    this.errors.push( error );
+
+    if (this.dialogRef) {
+      console.log( 'Dialog already open, just updated error information' );
+      return;
+    }
+
+    // run the opening of the dialog within a zone, otherwise the dialog will not be closable (see #9676)
+    this.ngZone.run( () => {
+      this.dialogRef = this.dialog.open( ErrorDialogComponent, {
+        data: this.errors
+      } );
+      this.dialogRef.afterClosed().subscribe( () => {
+        this.dialogRef = null;
+        this.errors = [];
+      } );
+    } );
   }
 
   /**
@@ -24,14 +43,14 @@ export class ModalService {
    * @param message
    * @param moreInfo
    */
-  showError(message: string | any, moreInfo?: string) {
-    const errorObj: any = {
-      message: message
-    };
+  showJavascriptError(message: string | any, moreInfo?: string) {
+    const errorObj = new IgeError();
+    errorObj.message = message;
+
     if (moreInfo) {
-      errorObj.moreInfo = moreInfo;
+      errorObj.stacktrace = moreInfo;
     } else if (message && message._body) {
-      errorObj.moreInfo = message._body;
+      errorObj.stacktrace = message._body;
     }
 
     /*const dialogRef = this.dialog.open(ErrorDialogComponent, {
@@ -43,14 +62,15 @@ export class ModalService {
       console.log('The dialog was closed');
     });*/
 
-    this.dialog.open(ErrorDialogComponent, {
-      data: errorObj
+    this.ngZone.run( () => {
+      this.dialog.open( ErrorDialogComponent, {
+        data: errorObj
+      } );
     });
 
-    this.errorDialog.next(errorObj);
   }
 
   showNotImplemented() {
-    this.showError('Diese Funktion ist noch nicht implementiert!');
+    alert( 'Diese Funktion ist noch nicht implementiert!' );
   }
 }

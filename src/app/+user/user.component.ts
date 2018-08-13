@@ -6,7 +6,7 @@ import { User } from './user';
 import { Role } from '../models/user-role';
 import { Observable } from 'rxjs/index';
 
-@Component({
+@Component( {
   templateUrl: './user.component.html',
   styles: [`
     :host {
@@ -14,14 +14,15 @@ import { Observable } from 'rxjs/index';
       flex-direction: column;
       flex: 1;
     }
+
     ::ng-deep .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
       flex: 1;
     }
   `]
-})
+} )
 export class UserComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('loginRef') loginRef: ElementRef;
+  @ViewChild( 'loginRef' ) loginRef: ElementRef;
 
   users: User[];
   roles: Role[];
@@ -45,8 +46,8 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   fetchUsers() {
     this.userService.getUsers().subscribe(
-      users => this.users = users ? users : [],
-      error => this.errorService.handleOwn('Problem fetching all user', error)
+      users => this.users = users ? users : []
+      // error => this.errorService.handleOwn('Problem fetching all user', error)
     );
   }
 
@@ -61,28 +62,28 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   loadUser(userToLoad: User) {
-    console.log('user', userToLoad);
+    console.log( 'user', userToLoad );
     this.isNewUser = false;
-    this.userService.getUser(userToLoad.id)
-      .subscribe(
-        user => { this.selectedUser = user; console.log('selectedUser:', this.selectedUser); },
-        error => this.errorService.handle(error)
-      );
+    this.userService.getUser( userToLoad.login )
+      .subscribe( user => {
+        this.selectedUser = user;
+        console.log( 'selectedUser:', this.selectedUser );
+      } );
   }
 
   addUser() {
     this.isNewUser = true;
     this.selectedUser = new User();
-    setTimeout(() => this.loginRef.nativeElement.focus(), 200);
+    setTimeout( () => this.loginRef.nativeElement.focus(), 200 );
   }
 
   deleteUser(login: string) {
-    this.userService.deleteUser(login)
-      .subscribe(() => {
+    this.userService.deleteUser( login )
+      .subscribe( () => {
           this.selectedUser = new User();
           this.fetchUsers();
         },
-        (err: any) => this.modalService.showError(err, err.text())
+        (err: any) => this.modalService.showJavascriptError( err, err.text() )
       );
   }
 
@@ -93,10 +94,10 @@ export class UserComponent implements OnInit, AfterViewInit {
     user.roles = user.roles.map( role => +role );
 
     if (this.isNewUser) {
-      observer = this.userService.createUser(user);
+      observer = this.userService.createUser( user );
 
     } else {
-      observer = this.userService.saveUser(user);
+      observer = this.userService.saveUser( user );
 
     }
 
@@ -108,14 +109,14 @@ export class UserComponent implements OnInit, AfterViewInit {
       }, (err: any) => {
         if (err.status === 406) {
           if (this.isNewUser) {
-            this.modalService.showError('Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedUser.login);
+            this.modalService.showJavascriptError( 'Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedUser.login );
           } else {
-            this.modalService.showError('Es existiert kein Benutzer mit dem Login: ' + this.selectedUser.login);
+            this.modalService.showJavascriptError( 'Es existiert kein Benutzer mit dem Login: ' + this.selectedUser.login );
           }
         } else {
-          this.modalService.showError(err, err.text());
+          this.modalService.showJavascriptError( err, err.text() );
         }
-      });
+      } );
   }
 
   onSubmit() {

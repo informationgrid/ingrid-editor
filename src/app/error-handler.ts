@@ -1,5 +1,7 @@
 import { ErrorHandler, Injectable } from '@angular/core';
 import { ModalService } from './services/modal/modal.service';
+import { IgeError } from './models/ige-error';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
@@ -7,15 +9,20 @@ export class GlobalErrorHandler implements ErrorHandler {
   }
 
   handleError(error) {
-    // if (error instanceof Response) {
-    if (typeof error.text === 'function') {
-      this.modalService.showError(error.text());
-    } else {
-      this.modalService.showError(error.message, error.stack);
-    }
+    // debugger;
+    console.log("HANDLE ERROR", error);
 
-    // IMPORTANT: Rethrow the error otherwise it gets swallowed
-    throw error;
+    if (error instanceof IgeError) {
+      this.modalService.showIgeError( error );
+    } else if (error instanceof HttpErrorResponse) {
+      const e = new IgeError();
+      // e.setMessage(error.message, error.error);
+      e.setMessage(error.message, error.error.message ? error.error.message : error.error);
+      this.modalService.showIgeError(e);
+    } else {
+      // alert('This error should be handled differently!')
+      this.modalService.showJavascriptError(error.message, error.stack);
+    }
   }
 
 }

@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../+user/user.service';
-import { User } from '../../+user/user';
-import { Observable } from 'rxjs/index';
+import {Component, OnInit} from '@angular/core';
+import {UserService} from '../../+user/user.service';
+import {User} from '../../+user/user';
+import {Observable} from 'rxjs/index';
+import {CatalogService} from '../catalog.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'ige-catalog-detail',
@@ -14,8 +16,13 @@ export class CatalogDetailComponent implements OnInit {
   currentUserSelection: string;
 
   users: Observable<User[]>;
+  private catalogName: string;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private catalogService: CatalogService, private route: ActivatedRoute) {
+    this.route.params.subscribe(params => {
+      this.catalogName = params['id'];
+    });
+  }
 
   ngOnInit() {
     this.users = this.userService.getUsers();
@@ -25,8 +32,10 @@ export class CatalogDetailComponent implements OnInit {
     this.display = true;
   }
 
-  addUserAsCatAdmin() {
-    console.log('TODO');
+  addUserAsCatAdmin(selectedUser) {
+    console.log('TODO', selectedUser);
+    this.catalogService.setCatalogAdmin(this.catalogName, selectedUser.value.login)
+      .subscribe();
   }
 
 }

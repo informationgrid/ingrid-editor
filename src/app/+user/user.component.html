@@ -3,13 +3,12 @@
     <mat-tab label="Benutzer">
         <split>
             <split-area [visible]="show" [size]="25" id="sidebarUser" class="split-pane-content-primary container">
-                <div class="list-group">
-                    <button mat-button *ngFor="let user of users" type="button" class="list-group-item"
-                            [class.disabled]="user === selectedUser"
-                            (click)="loadUser(user)">
-                        {{user.login}}
-                    </button>
-                </div>
+                <mat-list>
+                    <mat-list-item *ngFor="let user of users" [class.disabled]="user === selectedUser"
+                                   (click)="loadUser(user)">
+                        <h4 mat-line>{{user.login}}</h4>
+                    </mat-list-item>
+                </mat-list>
                 <div class="text-center">
                     <button mat-icon-button (click)="addUser()">
                         <mat-icon>add</mat-icon>

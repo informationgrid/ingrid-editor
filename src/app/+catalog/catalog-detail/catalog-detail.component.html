@@ -1,18 +1,14 @@
-<button pButton (click)="showCatAdmins()" label="Katalog-Administrator zuweisen"></button>
+<button mat-button (click)="showCatAdmins()">Katalog-Administrator zuweisen</button>
 
 <a routerLink="/catalogs">Zurück</a>
 
-<!-- TODO: dialog
-<p-dialog header="Katalog-Administrator hinzufügen" [(visible)]="display" [modal]="true" [dismissableMask]="true">
-    &lt;!&ndash;
-        The first element of a dialog must be focusable and a listbox is not!?
-        (see https://github.com/primefaces/primeng/issues/5004#issuecomment-363682256)
-    &ndash;&gt;
-    <input type="text">
+<mat-selection-list #userList dense>
+    <ng-container *ngFor="let user of users | async">
+        <mat-list-option [value]="user" >
+            <p matLine>{{user.firstName}} {{user.lastName}} ({{user.login}})</p>
+        </mat-list-option>
+        <mat-divider></mat-divider>
+    </ng-container>
+</mat-selection-list>
 
-    <p-listbox [options]="users | async" optionLabel="firstName"></p-listbox>
-
-    <button pButton label="Auswählen" (click)="addUserAsCatAdmin()"></button>
-</p-dialog>
-
--->
+<button mat-button (click)="addUserAsCatAdmin(userList.selectedOptions.selected[0])">Auswählen</button>

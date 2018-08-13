@@ -3,7 +3,7 @@ import { NavigationExtras, Router } from '@angular/router';
 import { ConfigService, Configuration } from '../services/config.service';
 import { ErrorService } from '../services/error.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/index';
+import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/internal/operators';
 
 export interface Catalog {
@@ -36,8 +36,8 @@ export class CatalogService {
           const result = [];
           catalogs.forEach( cat => result.push( {id: cat, label: cat} ) );
           return result;
-        } ),
-        catchError( err => this.errorService.handle( err ) )
+        } )
+        // catchError( err => this.errorService.handle( err ) )
       );
     // return Observable.of( this.demoCatalogs );
   }
@@ -57,7 +57,14 @@ export class CatalogService {
   createCatalog(name: string) {
     return this.http.post( this.configuration.backendUrl + 'catalogs/' + name, null )
       .pipe(
-        catchError( err => this.errorService.handle( err ) )
+        // catchError( err => this.errorService.handle( err ) )
       );
+  }
+
+  setCatalogAdmin(catalogName: string, userId: string) {
+    return this.http.post( this.configuration.backendUrl + 'info/setCatalogAdmin', {
+      catalogName: catalogName,
+      userId: userId
+    } )
   }
 }

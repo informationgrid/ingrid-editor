@@ -19,8 +19,8 @@ export class ApiService {
   }
 
   getIsoDocument(id: number): Observable<any> {
-    return this.http.get( this.configuration.backendUrl + 'datasets/' + id + '/export/ISO', {responseType: 'text'} )
-      .pipe( catchError( error => this.errorService.handle( error ) ) );
+    return this.http.get( this.configuration.backendUrl + 'datasets/' + id + '/export/ISO', {responseType: 'text'} );
+      // .pipe( catchError( error => this.errorService.handle( error ) ) );
   }
 
   getGroups(): Observable<Role[]> {
@@ -70,8 +70,8 @@ export class ApiService {
           const result: User[] = [];
           json.forEach( item => {
             result.push( {
-              id: item.id,
-              login: item.username,
+              // id: item.id,
+              login: item.login,
               firstName: item.firstName,
               lastName: item.lastName,
               roles: item.roles,
@@ -88,8 +88,8 @@ export class ApiService {
       .pipe(
         map( (json: any) => {
           return {
-            id: json.id,
-            login: json.username,
+            // id: json.id,
+            login: json.login,
             firstName: json.firstName,
             lastName: json.lastName,
             roles: json.roles,

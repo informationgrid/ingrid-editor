@@ -64,7 +64,7 @@ export class ImportExportComponent implements OnInit {
     this.msgs.push({severity: 'info', summary: 'File Uploaded', detail: ''});
   }
 
-  handleError(event) {
+  /*handleError(event) {
     this.errorService.handle(event.xhr);
-  }
+  }*/
 }

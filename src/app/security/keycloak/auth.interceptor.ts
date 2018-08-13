@@ -13,7 +13,7 @@ export class AuthInterceptor implements HttpInterceptor {
     // send the newly created request
     return next.handle( req )
       .pipe(
-        catchError( (error, caught) => {
+        /*catchError( (error, caught) => {
           // if we have been logged out during a request then redirect to the start page
           // so that the keycloak login screen is shown
           if (error.status === 403) {
@@ -28,7 +28,8 @@ export class AuthInterceptor implements HttpInterceptor {
           console.log( error );
           // return the error to the method that called it
           return throwError( error );
-        } )
+          // throw error;
+        } )*/
       );
 
   }

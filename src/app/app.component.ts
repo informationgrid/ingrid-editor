@@ -34,15 +34,15 @@ export class AppComponent implements OnInit {
               private roleService: RoleService) {
 
     // TODO: make more error info collapsible
-    this.modalService.errorDialog$.subscribe( (content: any) => {
+    // this.modalService.errorDialog$.subscribe( (content: any) => {
       // if (this.errorModalRef) {
       //   this.dynDialogMessages.push( { msg: content.message, detail: content.moreInfo } );
       // } else {
-        this.dynDialogMessages = [ { msg: content.message, detail: content.moreInfo } ];
+      //   this.dynDialogMessages = [ { msg: content.message, detail: content.moreInfo } ];
         // TODO: this.errorModalRef = this.bsModalService.show(this.errorModal, {class: 'modal-alert modal-lg'});
 
         // conflict with onHide, which waits for backdrop animation until event is called
-        setTimeout( _ => this.errorModalIsActive = true, 500 );
+        // setTimeout( _ => this.errorModalIsActive = true, 500 );
       // }
     // } );
 
@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
         this.errorModalRef = null;
         this.errorModalIsActive = false;
       }*/
-    } );
+    // } );
 
     // const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly

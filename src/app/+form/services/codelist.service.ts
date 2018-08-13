@@ -46,10 +46,10 @@ export class CodelistService {
 
       this.http.get( this.configuration.backendUrl + 'codelist/' + id )
         .pipe(
-          catchError( (err) => {
+          /*catchError( (err) => {
             this.codelists[id] = null;
             return this.errorService.handleOwn( 'Could not load codelist: ' + id, err.message );
-          } )
+          } )*/
         )
         .subscribe( (data: any) => {
           if (data === null) {

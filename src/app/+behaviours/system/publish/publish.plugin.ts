@@ -4,6 +4,7 @@ import {FormularService} from '../../../services/formular/formular.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Plugin} from '../../plugin';
+import { IgeError } from '../../../models/ige-error';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -69,7 +70,7 @@ export class PublishPlugin extends Plugin {
     // this.storageService.beforeSave.next(errors);
 
     if (formData.form.invalid) {
-      this.modalService.showError('Es müssen alle Felder korrekt ausgefüllt werden.');
+      this.modalService.showJavascriptError('Es müssen alle Felder korrekt ausgefüllt werden.');
     } else {
       this.storageService.publish(formData.value);
     }
@@ -81,7 +82,7 @@ export class PublishPlugin extends Plugin {
     const formData = this.formService.requestFormValues();
     this.storageService.revert(formData.value._id).subscribe(null, err => {
       console.log( 'Error when reverting data', err );
-      this.modalService.showError(err.text());
+      throw(err);
     });
   }
 

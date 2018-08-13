@@ -4,13 +4,12 @@
 
     <!-- ROLE LIST -->
     <split-area [size]="25" id="sidebarRoles" class="container">
-        <div class="list-group">
-            <button *ngFor="let role of roles" class="list-group-item"
-                    [class.disabled]="role === selectedRole"
-                    (click)="loadRole(role)">
-                {{role.name}}
-            </button>
-        </div>
+        <mat-selection-list>
+            <mat-list-option *ngFor="let role of roles" [class.disabled]="role === selectedRole"
+                           (click)="loadRole(role)">
+                <h4 mat-line>{{role.name}}</h4>
+            </mat-list-option>
+        </mat-selection-list>
         <div class="text-center">
             <button mat-icon-button (click)="addRole()">
                 <mat-icon>add</mat-icon>

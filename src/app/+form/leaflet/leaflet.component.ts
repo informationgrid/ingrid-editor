@@ -168,7 +168,7 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
       this.leafletReference = new Map( this.leaflet.nativeElement, this.options );
     } catch (e) {
       console.error('Problem initializing the map component.', e);
-      this.modalService.showError('Problem initializing the map component.', e);
+      this.modalService.showJavascriptError('Problem initializing the map component.', e);
       return;
     }
     this.toggleSearch( false );

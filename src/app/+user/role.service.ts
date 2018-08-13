@@ -5,7 +5,7 @@ import { Role } from '../models/user-role';
 import { ApiService } from '../services/ApiService';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map } from 'rxjs/internal/operators';
-import { Observable } from 'rxjs/index';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class RoleService {
@@ -26,8 +26,8 @@ export class RoleService {
     // return this.apiService.getGroup( id );
     return this.http.get(this.configuration.backendUrl + 'roles/' + id)
       .pipe(
-        map(json => this.prepareRoles([json])[0]),
-        catchError(err => this.errorService.handle(err))
+        map(json => this.prepareRoles([json])[0])
+        // catchError(err => this.errorService.handle(err))
       );
   }
 
@@ -49,14 +49,14 @@ export class RoleService {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
     return this.http.put(this.configuration.backendUrl + 'roles/' + role.name, role)
       .pipe(
-        catchError(err => this.errorService.handle(err))
+        // catchError(err => this.errorService.handle(err))
       );
   }
 
   createRole(role: Role): Observable<any> {
     return this.http.post(this.configuration.backendUrl + 'roles/' + role.name, role)
       .pipe(
-        catchError(err => this.errorService.handle(err))
+        // catchError(err => this.errorService.handle(err))
       );
   }
 
@@ -64,7 +64,7 @@ export class RoleService {
   deleteRole(id: string): Observable<any> {
     return this.http.delete(this.configuration.backendUrl + 'roles/' + name)
       .pipe(
-        catchError(err => this.errorService.handle(err))
+        // catchError(err => this.errorService.handle(err))
       );
 
     // TODO: also delete from keycloak

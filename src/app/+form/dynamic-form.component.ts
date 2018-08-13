@@ -362,10 +362,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       } catch (ex) {
         console.error( ex );
-        this.modalService.showError( ex );
+        this.modalService.showJavascriptError( ex );
         this.data._id = id;
       }
-    }, (err) => this.errorService.handle( err ) );
+    }
+    // , (err) => this.errorService.handle( err )
+    );
   }
 
   save() {
@@ -388,8 +390,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       // this.messageService.show( 'Dokument wurde gespeichert' );
       // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});
     }, (err: HttpErrorResponse) => {
-      this.errorService.handleOwn( err.message, err.error );
+      // this.errorService.handleOwn( err.message, err.error );
       // setTimeout(() => this.error = false, 5000);
+      throw err;
     } );
   }
 

@@ -49,8 +49,8 @@ export class RoleComponent implements OnInit {
       roles => {
         this.roles = roles;
         this.onRoleChange.next( roles );
-      },
-      error => this.errorService.handleOwn('Problem fetching all roles', error)
+      }
+      // error => this.errorService.handleOwn('Problem fetching all roles', error)
     );
   }
 
@@ -65,8 +65,8 @@ export class RoleComponent implements OnInit {
         role => {
           this.selectedRole = role;
           console.log( 'selectedRole: ', this.selectedRole );
-        },
-        error => this.errorService.handle( error )
+        }
+        // error => this.errorService.handle( error )
       );
   }
 
@@ -89,12 +89,12 @@ export class RoleComponent implements OnInit {
       }, (err: any) => {
         if (err.status === 406) {
           if (this.isNewRole) {
-            this.modalService.showError( 'Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedRole.name );
+            this.modalService.showJavascriptError( 'Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedRole.name );
           } else {
-            this.modalService.showError( 'Es existiert kein Benutzer mit dem Login: ' + this.selectedRole.name );
+            this.modalService.showJavascriptError( 'Es existiert kein Benutzer mit dem Login: ' + this.selectedRole.name );
           }
         } else {
-          this.modalService.showError( err, err.text() );
+          this.modalService.showJavascriptError( err, err.text() );
         }
       } );
   }
@@ -131,7 +131,7 @@ export class RoleComponent implements OnInit {
           this.selectedRole = null;
           this.fetchRoles();
         },
-        (err: any) => this.modalService.showError( err, err.text() )
+        (err: any) => this.modalService.showJavascriptError( err, err.text() )
       );
   }
 

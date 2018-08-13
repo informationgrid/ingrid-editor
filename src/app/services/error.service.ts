@@ -13,15 +13,17 @@ export class ErrorService {
       if (error.status === 403) {
         console.log('Not logged in');
       } else {
+        debugger;
         console.error('Error: ', error);
         const moreInfo = error.text ? error.text() : undefined;
-        this.modalService.showError(error.toString(), moreInfo);
+        // this.modalService.showError(error.toString(), moreInfo);
         return throwError(error);
       }
     }
 
     handleOwn(msg: string, detail: any) {
-      this.modalService.showError(msg, detail);
+      // debugger;
+      // this.modalService.showError(msg, detail);
       return throwError(msg);
     }
 }
