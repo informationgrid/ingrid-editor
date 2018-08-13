@@ -29,6 +29,6 @@ public interface StatisticApi {
             @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
 
     @RequestMapping(value = "/statistic", produces = { "application/json" }, method = RequestMethod.GET)
-    ResponseEntity<String> getStatistic();
+    ResponseEntity<String> getStatistic() throws ApiException;
 
 }

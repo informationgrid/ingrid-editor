@@ -31,12 +31,12 @@ public interface ProfileApi {
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Profile", })
     @ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class) })
     @RequestMapping(value = "/profiles", produces = { "text/javascript" }, method = RequestMethod.GET)
-    public ResponseEntity<String> getProfile(Principal principal) throws IOException;
+    public ResponseEntity<String> getProfile(Principal principal) throws IOException, Exception;
     
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Profile", })
     @ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class) })
     @RequestMapping(value = "/profiles", produces = { "application/json" }, method = RequestMethod.POST)
     public ResponseEntity<String> uploadProfile(Principal principal, @RequestParam("file") MultipartFile file,
-            RedirectAttributes redirectAttributes) throws IOException;
+            RedirectAttributes redirectAttributes) throws IOException, ApiException;
 
 }

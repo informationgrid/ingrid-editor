@@ -35,7 +35,7 @@ public class JSPostProcessor implements ExportPostProcessors {
         engineScope.put("target", exportedDoc);
 		
 		try {
-			engine.eval("logMe.info('From Script!!!'); target.language = 'chinese';", newContext);
+			engine.eval("logMe.Info('From Script!!!'); target.language = 'chinese';", newContext);
 		} catch (ScriptException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

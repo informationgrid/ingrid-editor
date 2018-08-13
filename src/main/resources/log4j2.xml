@@ -13,7 +13,7 @@
     </RollingFile>
   </Appenders>
   <Loggers>
-    <Logger name="de.ingrid" level="info" additivity="false">
+    <Logger name="de.ingrid" level="debug" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>
     <Logger name="org.keycloak" level="info" additivity="false">

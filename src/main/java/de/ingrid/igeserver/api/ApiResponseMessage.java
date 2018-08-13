@@ -28,7 +28,7 @@ public class ApiResponseMessage {
             setType("warning");
             break;
         case INFO:
-            setType("info");
+            setType("Info");
             break;
         case OK:
             setType("ok");

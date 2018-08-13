@@ -43,7 +43,7 @@ public interface DatasetsApi {
     ResponseEntity<String> createDataset(
     		Principal principal,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
-            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish);
+            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) throws ApiException;
     
     @ApiOperation(value = "Update a complete dataset", notes = "xxx", response = Void.class, tags = { "Datasets", })
     @ApiResponses(value = {
@@ -55,7 +55,7 @@ public interface DatasetsApi {
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish,
-            @ApiParam(value = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) Boolean revert);
+            @ApiParam(value = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) Boolean revert) throws ApiException;
 
     
     @ApiOperation(value = "Copy a dataset or tree under another dataset", notes = "xxx", response = Void.class, tags = { "Datasets", })
@@ -74,7 +74,7 @@ public interface DatasetsApi {
     @RequestMapping(value = "/datasets/{id}", produces = { "application/json" }, method = RequestMethod.DELETE)
     ResponseEntity<String> deleteById(
     		Principal principal,
-            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids);
+            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids) throws ApiException;
 
     @ApiOperation(value = "Export a dataset to a specific format", notes = "...", response = Void.class, tags = { "Datasets", })
     @ApiResponses(value = {
@@ -83,7 +83,7 @@ public interface DatasetsApi {
     ResponseEntity<String> exportDataset(
     		Principal principal,
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format);
+            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException;
 
     @ApiOperation(value = "Get datasets by a query or as child documents", notes = "Get all datasets or those which match a given query. You can define the fields where the search should be, in case the documents have different attributes for their title. The results can also be sorted.", response = Void.class, tags = {
             "Datasets", })
@@ -115,7 +115,7 @@ public interface DatasetsApi {
     @RequestMapping(value = "/datasets/{id}/path", produces = { "application/json" }, method = RequestMethod.GET)
     ResponseEntity<List<String>> getPath(
     		Principal principal,
-            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id);
+            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id) throws ApiException;
 
     @ApiOperation(value = "Move a dataset or tree under another dataset", notes = "xxx", response = Void.class, tags = { "Datasets", })
     @ApiResponses(value = {

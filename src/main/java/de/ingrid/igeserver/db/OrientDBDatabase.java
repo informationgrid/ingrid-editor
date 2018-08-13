@@ -1,16 +1,16 @@
 package de.ingrid.igeserver.db;
 
-import com.orientechnologies.orient.client.remote.OServerAdmin;
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.*;
+import com.orientechnologies.orient.core.exception.OStorageException;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 import com.orientechnologies.orient.server.plugin.OServerPluginManager;
+import de.ingrid.igeserver.api.ApiException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class OrientDBDatabase implements DBApi {
 
     private OServer server = null;
 
-    public void setOrientDB(OrientDB orientDB) {
+    void setOrientDB(OrientDB orientDB) {
         this.orientDB = orientDB;
     }
 
@@ -47,7 +47,7 @@ public class OrientDBDatabase implements DBApi {
         boolean hasBeenCreated = orientDB.createIfNotExists("IgeUsers", ODatabaseType.PLOCAL);
         if (hasBeenCreated) {
             // after creation the database is already connected to and can be used
-            getDBFromThread().getMetadata().getSchema().createClass("info");
+            getDBFromThread().getMetadata().getSchema().createClass("Info");
 
             // after database creation we have to close orientDB to release resources correctly (login from studio)
             orientDB.close();
@@ -58,7 +58,7 @@ public class OrientDBDatabase implements DBApi {
     @PreDestroy
     void destroy() {
         log.info("Closing database before exit");
-        OrientDBDatabase.poolMap.values().forEach(pool -> pool.close());
+        OrientDBDatabase.poolMap.values().forEach(ODatabasePool::close);
         orientDB.close();
     }
 
@@ -96,15 +96,20 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public List<Map> findAll(DBClass type) {
-        ORecordIteratorClass<ODocument> oDocuments = getDBFromThread().browseClass(type.name());
-        List<Map> list = mapODocumentsToMap(oDocuments);
-        return list;
+        ORecordIteratorClass<ODocument> oDocuments = null;
+        try {
+            oDocuments = getDBFromThread().browseClass(type.name());
+            return mapODocumentsToMap(oDocuments);
+        } catch (Exception e) {
+            // TODO: can this happen? "class Info not found"
+            log.error(e);
+            return null;
+        }
     }
 
     @Override
-    public List<Map> findAll(DBClass type, Map<String, String> query) {
-        OSQLSynchQuery<ODocument> oQuery;
-        String queryString = "";
+    public List<Map> findAll(DBClass type, Map<String, String> query, boolean exactQuery) {
+        String queryString;
         if (query == null || query.isEmpty()) {
             queryString = "SELECT * FROM " + type;
         } else {
@@ -115,6 +120,8 @@ public class OrientDBDatabase implements DBApi {
                 String value = query.get(key);
                 if (value == null) {
                     where.add(key + ".toLowerCase() IS NULL");
+                } else if (exactQuery) {
+                    where.add(key + ".toLowerCase() like '" + value.toLowerCase() + "'");
                 } else {
                     where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
                 }
@@ -124,8 +131,7 @@ public class OrientDBDatabase implements DBApi {
 
 
         OResultSet docs = getDBFromThread().query(queryString);
-        List<Map> list = mapODocumentsToMap(docs);
-        return list;
+        return mapODocumentsToMap(docs);
     }
 
     @Override
@@ -155,11 +161,7 @@ public class OrientDBDatabase implements DBApi {
         ODocument docToSave;
 
         // if it's a new document
-        if (doc.isPresent()) {
-            docToSave = (ODocument) doc.get().getRecord().get();
-        } else {
-            docToSave = new ODocument(type.name());
-        }
+        docToSave = doc.map(oResult -> (ODocument) oResult.getRecord().get()).orElseGet(() -> new ODocument(type.name()));
 
         // map data
         for (String key: data.keySet()) {
@@ -176,11 +178,7 @@ public class OrientDBDatabase implements DBApi {
         ODocument docToSave;
 
         // if it's a new document
-        if (doc.isPresent()) {
-            docToSave = (ODocument) doc.get().getRecord().get();
-        } else {
-            docToSave = new ODocument(type.name());
-        }
+        docToSave = doc.map(oResult -> (ODocument) oResult.getRecord().get()).orElseGet(() -> new ODocument(type.name()));
 
         docToSave.save();
         return docToSave.toMap();
@@ -199,20 +197,22 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public String[] getDatabases() {
-        OServerAdmin oServerAdmin;
-        try {
-            oServerAdmin = new OServerAdmin("remote:localhost");
-            oServerAdmin.connect("root", "root");
-            return oServerAdmin.listDatabases().keySet().toArray(new String[0]);
-        } catch (Exception e) {
-            log.error("Error connecting to OrientDB server to get all databases.", e);
-        }
-        return null;
+        return orientDB.list().toArray(new String[0]);
     }
 
     @Override
-    public boolean createDatabase(String name) {
+    public boolean createDatabase(String name) throws ApiException {
         orientDB.create(name, ODatabaseType.PLOCAL);
+        try (ODatabaseSession session = acquire(name)) {
+            // TODO: set more constraints and information for a new catalog (name, email?, ...)
+            session.getMetadata().getSchema().createClass("Documents");
+            session.getMetadata().getSchema().createClass("Info");
+
+            Map<String, Object> catInfo = new HashMap<>();
+            catInfo.put("name", "New Catalog");
+            this.save(DBClass.Info, null, catInfo);
+        }
+
         return true;
     }
 
@@ -238,10 +238,6 @@ public class OrientDBDatabase implements DBApi {
      */
     private ODatabaseSession getDBFromThread() {
         return ODatabaseRecordThreadLocal.instance().get();
-    }
-
-    private List<Map> mapODocumentsToMap(List<ODocument> oDocs) {
-        return mapODocumentsToMap((ORecordIteratorClass<ODocument>) oDocs.iterator());
     }
 
     private List<Map> mapODocumentsToMap(ORecordIteratorClass<ODocument> oDocsIterator) {

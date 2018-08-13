@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,11 +20,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.ingrid.igeserver.services.JsonToDBService;
-import de.ingrid.igeserver.services.db.OrientDbService;
 import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
+import javax.annotation.Generated;
+
+@Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
 @Controller
 public class ProfileApiController implements ProfileApi {
@@ -39,13 +41,19 @@ public class ProfileApiController implements ProfileApi {
     @Autowired
     private DBUtils dbUtils;
 
+    @Autowired
+    private AuthUtils authUtils;
+
     @Override
-    public ResponseEntity<String> getProfile(Principal principal) throws IOException {
+    public ResponseEntity<String> getProfile(Principal principal) throws Exception {
         // ClassPathResource resource = new ClassPathResource( "/profile-uvp.chunk.js" );
         String profile = null; // new String( Files.readAllBytes( Paths.get( resource.getURI() ) ) );
 
-        List<Map> allFrom = dbService.findAll( DBApi.DBClass.Info );
-        try {
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
+            List<Map> allFrom = dbService.findAll( DBApi.DBClass.Info);
             if (allFrom.size() > 0) {
                 JsonNode map = jsonService.getJsonMap( allFrom.get( 0 ) );
                 profile = map.get( "profile" ).asText();
@@ -63,11 +71,10 @@ public class ProfileApiController implements ProfileApi {
 
     @Override
     public ResponseEntity<String> uploadProfile(Principal principal, @RequestParam("profileFile") MultipartFile file,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) throws ApiException {
 
-        String userId = AuthUtils.getUsernameFromPrincipal(principal);
-
-        String dbId = this.dbUtils.getCatalogForUser( userId );
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser( userId );
 
         log.info( "Received file:" + file.getOriginalFilename() );
         log.info( "file-size:" + file.getSize() );
@@ -87,20 +94,22 @@ public class ProfileApiController implements ProfileApi {
         // Map<String, Object> dbFields = new HashMap<String, Object>();
         // dbFields.put( key, value )
         // dbFields.put( "fileContent", fileContent );
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
 
-        List<Map> infos = dbService.findAll( DBApi.DBClass.Info );
-        if (infos.size() > 0) {
-            String rid;
-            try {
-                rid = jsonService.getJsonMap( infos.get( 0 ) ).get( "@rid" ).textValue();
-                dbService.remove(DBApi.DBClass.Info, rid );
-            } catch (Exception e) {
-                log.error( "Error removing profile document", e );
+            List<Map> infos = dbService.findAll(DBApi.DBClass.Info);
+            if (infos.size() > 0) {
+                String rid;
+                try {
+                    rid = jsonService.getJsonMap(infos.get(0)).get("@rid").textValue();
+                    dbService.remove(DBApi.DBClass.Info, rid);
+                } catch (Exception e) {
+                    log.error("Error removing profile document", e);
+                }
             }
+
+            dbService.save(DBApi.DBClass.Info, "profile", fileContent);
+            return ResponseEntity.ok().build();
         }
-        
-        dbService.save( DBApi.DBClass.Info, "profile", fileContent );
-        return ResponseEntity.ok().build();
     }
 
     /**

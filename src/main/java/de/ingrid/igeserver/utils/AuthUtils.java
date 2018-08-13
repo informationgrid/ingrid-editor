@@ -1,26 +1,32 @@
 package de.ingrid.igeserver.utils;
 
-import java.security.Principal;
-
+import de.ingrid.igeserver.api.ApiException;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+
+@Service
 public class AuthUtils {
     
-    @Value( "${keycloak.enabled:true}" )
-    private static boolean isKeycloakEnabled;
+    @Value( "${dev.keycloak.enabled:true}" )
+    boolean isKeycloakEnabled;
+
+    @Value( "${dev.user.login}" )
+    String mockedLogin;
 
     @SuppressWarnings("unchecked")
-    public static String getUsernameFromPrincipal(Principal principal) {
+    public String getUsernameFromPrincipal(Principal principal) throws ApiException {
         // return a user for development when security is switched off
         if (!isKeycloakEnabled) {
-            return "ige";
+            return mockedLogin;
         }
         
 		if (principal == null) {
-			throw new RuntimeException("There's no principal!");
+			throw new ApiException(500, "There's no principal!");
 		}
 
 		if (principal instanceof KeycloakAuthenticationToken) {

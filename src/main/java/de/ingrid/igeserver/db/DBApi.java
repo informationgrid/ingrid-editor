@@ -1,13 +1,14 @@
 package de.ingrid.igeserver.db;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
+import de.ingrid.igeserver.api.ApiException;
 
 import java.util.List;
 import java.util.Map;
 
 public interface DBApi {
 
-    public static enum DBClass {Documents, User, Role, Info, Behavior};
+    public static enum DBClass {Documents, User, Role, Info, Behaviours};
 
     /**
      * Find a document of a certain type with a given ID.
@@ -22,7 +23,7 @@ public interface DBApi {
     /**
      * Get all documents of a certain type that matches a given query.
      */
-    public List<Map> findAll(DBClass type, Map<String, String> query);
+    public List<Map> findAll(DBClass type, Map<String, String> query, boolean exactQuery);
 
     /**
      * Save a document with a given ID.
@@ -57,7 +58,7 @@ public interface DBApi {
     /**
      * Create a database with a given name.
      */
-    public boolean createDatabase(String name);
+    public boolean createDatabase(String name) throws ApiException;
 
     /**
      * Delete a database with a given name.
@@ -68,5 +69,5 @@ public interface DBApi {
      * Open a session to a database with name dbName. With that it's possible to
      * begin, commit and rollback transactions.
      */
-    public ODatabaseSession acquire(String dbName);
+    ODatabaseSession acquire(String dbName);
 }

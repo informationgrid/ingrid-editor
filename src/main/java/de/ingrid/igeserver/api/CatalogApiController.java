@@ -15,25 +15,15 @@ public class CatalogApiController implements CatalogApi {
     private DBApi dbService;
 
     @Override
-    public ResponseEntity<String> getCatalogs() {
+    public ResponseEntity<String[]> getCatalogs() {
         String[] databases = this.dbService.getDatabases();
 
-        String response = "[";
-        for (int i = 0; i < databases.length; i++) {
-            response += "\"" + databases[i] + "\"";
-            if (i < databases.length - 1) {
-                response += ",";
-            }
-        }
-        response += "]";
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(databases);
     }
 
     @Override
-    public ResponseEntity<String> createCatalog(@ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name) {
-        //this.dbService.acquire("")
+    public ResponseEntity<String> createCatalog(@ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name) throws ApiException {
         this.dbService.createDatabase(name);
-        // this.dbService.commit(transaction);
         return null;
     }
 

@@ -38,9 +38,7 @@ public class DatasetsApiController implements DatasetsApi {
 
     private static final String COLLECTION = "Documents";
 
-    private enum CopyMoveOperation {COPY, MOVE}
-
-    ;
+    private enum CopyMoveOperation {COPY, MOVE};
 
     @Autowired
     private DBApi dbService;
@@ -57,16 +55,22 @@ public class DatasetsApiController implements DatasetsApi {
     @Autowired
     private DBUtils dbUtils;
 
+    @Autowired
+    private AuthUtils authUtils;
+
     /**
      * Create dataset.
      */
     public ResponseEntity<String> createDataset(
             Principal principal,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
-            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish) {
+            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish) throws ApiException {
 
-        try (ODatabaseSession session = dbService.acquire("igedb")) {
-            String userId = AuthUtils.getUsernameFromPrincipal(principal);
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
+
             Map mapDocument = this.documentService.mapDocumentToDatabase(data, publish, userId);
 
             // TODO: start transaction
@@ -94,10 +98,10 @@ public class DatasetsApiController implements DatasetsApi {
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish,
-            @ApiParam(value = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", defaultValue = "false", required = false) Boolean revert) {
+            @ApiParam(value = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", defaultValue = "false", required = false) Boolean revert) throws ApiException {
 
-        String userId = AuthUtils.getUsernameFromPrincipal(principal);
-        String dbId = this.dbUtils.getCatalogForUser(userId);
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map mapDocument = null;
@@ -122,9 +126,12 @@ public class DatasetsApiController implements DatasetsApi {
 
     }
 
-    public ResponseEntity<String> deleteById(Principal principal, @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids) {
+    public ResponseEntity<String> deleteById(Principal principal, @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids) throws ApiException {
 
-        try (ODatabaseSession session = dbService.acquire("igedb")) {
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
             for (String id: ids) {
                 this.dbService.remove(DBApi.DBClass.Documents, id);
             }
@@ -150,7 +157,10 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<Void> moveDatasets(Principal principal, @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
                                              @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data) throws Exception {
-        try (ODatabaseSession session = dbService.acquire("igedb")) {
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
 
             copyOrMove(CopyMoveOperation.MOVE, ids, data.getDestId());
             return new ResponseEntity<Void>(HttpStatus.OK);
@@ -166,7 +176,7 @@ public class DatasetsApiController implements DatasetsApi {
             ObjectNode updatedDoc = (ObjectNode) documentService.updateParent(dbUtils.toJsonString(doc), destId);
 
             if (operation == CopyMoveOperation.COPY) {
-                // remove internal dataset info (TODO: this should be done by the dbService)
+                // remove internal dataset Info (TODO: this should be done by the dbService)
                 documentService.removeDBManagementFields(updatedDoc);
 
                 // when we copy the node, then we also have to reset the id
@@ -182,10 +192,13 @@ public class DatasetsApiController implements DatasetsApi {
     public ResponseEntity<String> exportDataset(
             Principal principal,
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) {
+            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException {
+
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         // TODO: refactor
-        try (ODatabaseSession session = dbService.acquire("igedb")) {
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map doc = this.dbService.find(DBApi.DBClass.Documents, id);
 
             JsonNode data = null;
@@ -210,16 +223,19 @@ public class DatasetsApiController implements DatasetsApi {
         List<Map> docs = null;
         List<String> mappedDocs = new ArrayList<>();
 
-        try (ODatabaseSession session = dbService.acquire("igedb")) {
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
             if (children) {
                 Map<String, String> queryMap = new HashMap<>();
-                docs = this.dbService.findAll(DBApi.DBClass.Documents, queryMap);
+                docs = this.dbService.findAll(DBApi.DBClass.Documents, queryMap, false);
             } else {
                 Map<String, String> queryMap = new HashMap<>();
                 for (String field: fields) {
                     queryMap.put(field, query);
                 }
-                docs = this.dbService.findAll(DBApi.DBClass.Documents, queryMap); // fields );
+                docs = this.dbService.findAll(DBApi.DBClass.Documents, queryMap, false); // fields );
             }
 
             for (Map doc: docs) {
@@ -236,12 +252,15 @@ public class DatasetsApiController implements DatasetsApi {
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) throws Exception {
 
-        try (ODatabaseSession session = dbService.acquire("igedb")) {
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map doc = this.dbService.find(DBApi.DBClass.Documents, id);
             log.debug("Getting dataset: " + id);
 
             if (doc == null) {
-                throw new RuntimeException("No document found with the ID: " + id);
+                throw new ApiException(500, "No document found with the ID: " + id);
                 // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document with the ID: " + id);
             }
 
@@ -261,11 +280,11 @@ public class DatasetsApiController implements DatasetsApi {
 
     }
 
-    public ResponseEntity<List<String>> getPath(Principal principal, @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id) {
+    public ResponseEntity<List<String>> getPath(Principal principal, @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id) throws ApiException {
 
         //List<String> result = this.dbService.getPathToDataset( id );
         //return ResponseEntity.ok( result );
-        throw new RuntimeException("getPath not yet supported");
+        throw new ApiException(500, "getPath not yet supported");
     }
 
 }

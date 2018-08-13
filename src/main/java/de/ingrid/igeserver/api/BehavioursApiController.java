@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,26 +29,40 @@ public class BehavioursApiController implements BehavioursApi {
 
     @Autowired
     private DBUtils dbUtils;
-    
+
+    @Autowired
+    private AuthUtils authUtils;
+
     //@Autowired
     //private JsonToDBService jsonService;
 
-    public ResponseEntity<List<JSONObject>> getBehaviours(Principal principal) {
+    public ResponseEntity<List<JSONObject>> getBehaviours(Principal principal) throws ApiException {
         System.out.println(principal == null ? "principal is null" : "principal is " + principal.getName());
-        
-        List<Map> behaviours = this.dbService.findAll( DBApi.DBClass.Behavior );
 
-        // String prepareBehaviour = jsonService.prepareBehaviour( behaviours.get( 0 ) );
-        // TODO: map behaviours to JSON
-        List<JSONObject> collect = behaviours.stream().map(b -> new JSONObject(b)).collect(Collectors.toList());
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
-        return ResponseEntity.ok( collect ); //"[" + String.join( ",", behaviours ) + "]" );
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
+
+            List<Map> behaviours = this.dbService.findAll(DBApi.DBClass.Behaviours);
+
+            // String prepareBehaviour = jsonService.prepareBehaviour( behaviours.get( 0 ) );
+            // TODO: map behaviours to JSON
+            List<JSONObject> collect = behaviours.stream().map(b -> new JSONObject(b)).collect(Collectors.toList());
+
+            return ResponseEntity.ok(collect); //"[" + String.join( ",", behaviours ) + "]" );
+        }
     }
 
-    public ResponseEntity<Map> setBehaviours(@ApiParam(value = "", required = true) @Valid @RequestBody String behaviour) {
-        try (ODatabaseSession session = dbService.acquire("igedb")) {
+    public ResponseEntity<Map> setBehaviours(
+            Principal principal,
+            @ApiParam(value = "", required = true) @Valid @RequestBody String behaviour) throws ApiException {
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
             String id = "???";
-            Map doc = this.dbService.save(DBApi.DBClass.Behavior, id, dbUtils.getMapFromObject(behaviour) );
+            Map doc = this.dbService.save(DBApi.DBClass.Behaviours, id, dbUtils.getMapFromObject(behaviour) );
             return ResponseEntity.ok(doc);
 
         }

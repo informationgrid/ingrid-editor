@@ -31,12 +31,12 @@ public interface CatalogApi {
 			@ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
 
 	@RequestMapping(value = "/catalogs", produces = { "application/json" }, method = RequestMethod.GET)
-	ResponseEntity<String> getCatalogs();
+    ResponseEntity<String[]> getCatalogs();
 
-	@PreAuthorize("hasRole('superadmin')")
+	// @PreAuthorize("hasRole('admin')")
 	@ApiOperation(value = "", notes = "", response = Void.class, tags = { "Catalog", })
 	@RequestMapping(value = "/catalogs/{name}", produces = { "application/json" }, method = RequestMethod.POST)
 	public ResponseEntity<String> createCatalog(
-			@ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name);
+			@ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name) throws ApiException;
 
 }

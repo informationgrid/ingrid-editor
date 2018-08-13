@@ -22,6 +22,7 @@
  */
 package de.ingrid.igeserver;
 
+import de.ingrid.igeserver.api.ApiException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.util.NestedServletException;
 
 /**
  * This class handles all REST errors globally. There's no need to handle each error individually in each controller.
@@ -48,9 +50,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
-    @ExceptionHandler(value = {Exception.class})
+    @ExceptionHandler(value = {Exception.class, ApiException.class})
     protected ResponseEntity<Object> handleOtherErrors(RuntimeException ex, WebRequest request) {
-        log.error("Exception happened:", ex);
+            log.error("Exception happened:", ex);
         String bodyOfResponse = ex.getMessage();
         return handleExceptionInternal(ex, bodyOfResponse,
                 new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);

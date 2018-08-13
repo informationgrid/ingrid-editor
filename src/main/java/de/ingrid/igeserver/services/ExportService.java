@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.services;
 
+import de.ingrid.igeserver.api.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class ExportService {
 	@Autowired(required = false)
 	private ExportPostProcessors[] postProcessors;
 
-	public String doExport(JsonNode jsonData, String format) {
+	public String doExport(JsonNode jsonData, String format) throws ApiException {
 
 		Object exportedDoc = null;
 		
@@ -40,7 +41,7 @@ public class ExportService {
 			break;
 			
 		default:
-			throw new RuntimeException("Export format not supported: " + format);
+			throw new ApiException(500, "Export format not supported: " + format);
 		}
 		
 		if (exportedDoc instanceof String) {

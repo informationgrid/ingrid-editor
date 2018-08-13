@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import de.ingrid.igeserver.api.ApiException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class OrientDBDatabaseTest {
     }
 
     @Before
-    public void cleanup() {
+    public void cleanup() throws ApiException {
         try (ODatabaseSession session = dbService.acquire("test")) {
             for (ODocument person: session.browseClass(DBApi.DBClass.User.name())) {
                 session.delete(person);
@@ -50,7 +51,7 @@ public class OrientDBDatabaseTest {
     }
 
     @Test
-    public void findAll() {
+    public void findAll() throws ApiException {
 
         try (ODatabaseSession session = dbService.acquire("test")) {
             session.begin();
@@ -83,7 +84,7 @@ public class OrientDBDatabaseTest {
     }
 
     @Test
-    public void findAllWithInitData() {
+    public void findAllWithInitData() throws ApiException {
         addTestData();
 
         try (ODatabaseSession session = dbService.acquire("test")) {
@@ -97,14 +98,14 @@ public class OrientDBDatabaseTest {
 
 
     @Test
-    public void findAllByQuery() {
+    public void findAllByQuery() throws ApiException {
         addTestData();
 
         try (ODatabaseSession session = dbService.acquire("test")) {
 
             Map<String, String> query = new HashMap<>();
             query.put("age", "48");
-            List<Map> persons = dbService.findAll(DBApi.DBClass.User, query);
+            List<Map> persons = dbService.findAll(DBApi.DBClass.User, query, false);
 
             assertEquals(1, persons.size());
 
@@ -112,7 +113,7 @@ public class OrientDBDatabaseTest {
     }
 
     @Test
-    public void updateDocument() {
+    public void updateDocument() throws ApiException {
         addTestData();
 
         ORecordId id;
@@ -120,7 +121,7 @@ public class OrientDBDatabaseTest {
         query.put("age", "48");
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            List<Map> docToUpdate = dbService.findAll(DBApi.DBClass.User, query);
+            List<Map> docToUpdate = dbService.findAll(DBApi.DBClass.User, query, false);
             id = (ORecordId)docToUpdate.get(0).get("@rid");
 
             Map<String, Object> data = new HashMap<>();
@@ -130,7 +131,7 @@ public class OrientDBDatabaseTest {
         }
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            Map updatedDoc = dbService.findAll(DBApi.DBClass.User, query).get(0);
+            Map updatedDoc = dbService.findAll(DBApi.DBClass.User, query, false).get(0);
 
             assertEquals("Johann", updatedDoc.get("name") );
             assertEquals("48", updatedDoc.get("age") );
@@ -171,7 +172,7 @@ public class OrientDBDatabaseTest {
         throw new Exception("Not complete testcase. Links are not maps");
     }
 
-    private void addTestData() {
+    private void addTestData() throws ApiException {
         try (ODatabaseSession session = dbService.acquire("test")) {
 
             Map<String, Object> person1Map = new HashMap<>();

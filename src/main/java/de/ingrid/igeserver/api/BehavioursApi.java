@@ -34,12 +34,12 @@ public interface BehavioursApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Behaviours are returned.", response = Void.class) })
     @RequestMapping(value = "/behaviours", produces = { "application/json" }, method = RequestMethod.GET)
-    ResponseEntity<List<JSONObject>> getBehaviours(Principal principal);
+    ResponseEntity<List<JSONObject>> getBehaviours(Principal principal) throws ApiException;
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Behaviour", })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Behaviours have been set.", response = Void.class) })
     @RequestMapping(value = "/behaviours", produces = { "application/json" }, method = RequestMethod.POST)
-    ResponseEntity<Map> setBehaviours(@ApiParam(value = "", required = true) @Valid @RequestBody String behaviour);
+    ResponseEntity<Map> setBehaviours(Principal principal, @ApiParam(value = "", required = true) @Valid @RequestBody String behaviour) throws ApiException;
 
 }
