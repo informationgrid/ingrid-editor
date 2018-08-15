@@ -1,25 +1,24 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { StorageService } from '../../../services/storage/storage.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormularService } from '../../../services/formular/formular.service';
-import { ErrorService } from '../../../services/error.service';
-import { FormToolbarService } from '../../toolbar/form-toolbar.service';
-import { SelectedDocument } from '../selected-document.model';
-import { DocMainInfo } from '../../../models/update-dataset-info.model';
-import { Subscription } from 'rxjs/index';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { UpdateType } from '../../../models/update-type.enum';
-import { DynamicDatabase } from './DynamicDatabase';
-import { DynamicFlatNode } from './DynamicFlatNode';
-import { DynamicDataSource } from './DynamicDataSource';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {StorageService} from '../../../services/storage/storage.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {FormularService} from '../../../services/formular/formular.service';
+import {SelectedDocument} from '../selected-document.model';
+import {DocMainInfo} from '../../../models/update-dataset-info.model';
+import {Subscription} from 'rxjs/index';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {UpdateType} from '../../../models/update-type.enum';
+import {DynamicDatabase} from './DynamicDatabase';
+import {DynamicFlatNode} from './DynamicFlatNode';
+import {DynamicDataSource} from './DynamicDataSource';
+import {ConfigService} from "../../../services/config.service";
 
 
-@Component( {
+@Component({
   selector: 'ige-tree',
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.css'],
   providers: [DynamicDatabase]
-} )
+})
 export class MetadataTreeComponent implements OnInit, OnDestroy {
 
   selectedNodes: DynamicFlatNode[];
@@ -52,10 +51,10 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   };
 
   constructor(private database: DynamicDatabase, private storageService: StorageService, private router: Router,
-              private route: ActivatedRoute, private formularService: FormularService) {
+              private route: ActivatedRoute, private formularService: FormularService, private configService: ConfigService) {
 
-    this.treeControl = new FlatTreeControl<DynamicFlatNode>( this.getLevel, this.isExpandable );
-    this.dataSource = new DynamicDataSource( this.treeControl, database, formularService );
+    this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
+    this.dataSource = new DynamicDataSource(this.treeControl, database, formularService);
 
   }
 
@@ -65,44 +64,47 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
       this.query( null, null ).then( () => {
       }, (err) => console.error( 'Error:', err ) );
 */
-    this.database.initialData()
-      .then( rootNodes => this.dataSource.data = rootNodes )
-      .then( () => {
-        // get route parameter and expand to defined node
-        const initialSet = this.route.params.subscribe( params => {
-          const selectedId = params['id'];
+    this.configService.promiseProfilePackageLoaded.then(() => {
 
-          // only let this function be called once, since we only need it during first visit of the page
-          setTimeout( () => initialSet.unsubscribe(), 0 );
+      this.database.initialData()
+        .then(rootNodes => this.dataSource.data = rootNodes)
+        .then(() => {
+          // get route parameter and expand to defined node
+          const initialSet = this.route.params.subscribe(params => {
+            const selectedId = params['id'];
 
-          if (selectedId) {
-            // get path to node
-            this.subscriptions.push( this.storageService.getPathToDataset( selectedId ).subscribe( path => {
-              console.log( 'path: ' + path );
-              this.expandToPath( path.reverse() )
-                .then( () => {
-                  this.open( this.selectedNodes[0] );
-                } );
-            } ) );
-          }
-        } );
-      });
+            // only let this function be called once, since we only need it during first visit of the page
+            setTimeout(() => initialSet.unsubscribe(), 0);
+
+            if (selectedId) {
+              // get path to node
+              this.subscriptions.push(this.storageService.getPathToDataset(selectedId).subscribe(path => {
+                console.log('path: ' + path);
+                this.expandToPath(path.reverse())
+                  .then(() => {
+                    this.open(this.selectedNodes[0]);
+                  });
+              }));
+            }
+          });
+        });
+    });
 
     this.subscriptions.push(
-      this.storageService.datasetsChanged$.subscribe( (info) => {
-        console.log( 'Tree: dataset changed event', info );
+      this.storageService.datasetsChanged$.subscribe((info) => {
+        console.log('Tree: dataset changed event', info);
         // only update changes in the tree instead of reloading everything and recover previous state
         switch (info.type) {
           case UpdateType.New:
-            this.onNewDataset( info.data );
+            this.onNewDataset(info.data);
             break;
 
           case UpdateType.Update:
-            this.onUpdateDataset( info.data );
+            this.onUpdateDataset(info.data);
             break;
 
           case UpdateType.Delete:
-            this.onDeleteDataset( info.data );
+            this.onDeleteDataset(info.data);
             break;
           case UpdateType.Copy:
             // this.copy();
@@ -111,7 +113,7 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
             // this.paste();
             break;
         }
-      } )
+      })
     );
     /*
           // inform interested components which documents are selected
@@ -124,13 +126,13 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach( _ => _.unsubscribe() );
+    this.subscriptions.forEach(_ => _.unsubscribe());
   }
 
 
   onNewDataset(docs: DocMainInfo[]) {
-    docs.forEach( doc => {
-      this.dataSource.addChildNode( doc._parent, doc );
+    docs.forEach(doc => {
+      this.dataSource.addChildNode(doc._parent, doc);
 
       /*const newDataset = this.createNewDatasetTemplate( doc );
 
@@ -183,34 +185,34 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
       // add node to flat list for easier management
       this.flatNodes.push( newDataset );
 */
-    } );
+    });
   }
 
   // private createNewDatasetTemplate(doc: any) {
-    // const name = this.formularService.getTitle( doc._profile, doc );
+  // const name = this.formularService.getTitle( doc._profile, doc );
 
-    // const docNode = this.prepareNode( doc );
-    // return docNode;
+  // const docNode = this.prepareNode( doc );
+  // return docNode;
   // }
 
   onUpdateDataset(docs: DocMainInfo[]) {
     const mappedDocs = this.database.prepareNodes(docs);
-    mappedDocs.forEach( doc => {
+    mappedDocs.forEach(doc => {
       this.dataSource.updateNode(doc._id, doc);
-    } );
+    });
   }
 
   onDeleteDataset(docs: DocMainInfo[]) {
 
-    docs.forEach( doc => {
+    docs.forEach(doc => {
       this.dataSource.removeNode(doc._id);
-    } );
+    });
   }
 
   expandToPath(path: string[]) {
     const id = path.pop();
 
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
       if (path.length > 0) {
         const node = this.dataSource.data
@@ -218,60 +220,60 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
 
         if (node.length > 0) {
           this.dataSource.toggleNode(node[0], true)
-            .then( () => this.expandToPath(path))
-            .then( () => resolve );
-            return true;
-          }
+            .then(() => this.expandToPath(path))
+            .then(() => resolve);
+          return true;
+        }
       } else {
         // select node
-        this.selectedNodes = this.dataSource.data.filter( n => n.id === id );
+        this.selectedNodes = this.dataSource.data.filter(n => n.id === id);
         resolve();
       }
-    } );
+    });
   }
 
   loadNode(event): Promise<any> {
     if (event.node) {
       // return this.query( event.node.data.id );
-      return this.dataSource.toggleNode( event.node.data.id, true );
+      return this.dataSource.toggleNode(event.node.data.id, true);
     }
   }
 
 
-/*  prepareNode(doc: any): any {
-    const node: any = {
-      data: {
-        id: doc._id + '',
-        _profile: doc._profile,
-        _state: doc._state
-      },
-      label: this.formularService.getTitle( doc._profile, doc ),
-      icon: this.getTreeIcon( doc ),
-      leaf: true
-    };
-    if (doc._hasChildren === 'true') { // TODO: expect real boolean value!
-      node.leaf = false;
-    }
+  /*  prepareNode(doc: any): any {
+      const node: any = {
+        data: {
+          id: doc._id + '',
+          _profile: doc._profile,
+          _state: doc._state
+        },
+        label: this.formularService.getTitle( doc._profile, doc ),
+        icon: this.getTreeIcon( doc ),
+        leaf: true
+      };
+      if (doc._hasChildren === 'true') { // TODO: expect real boolean value!
+        node.leaf = false;
+      }
 
-    return node;
-  }*/
+      return node;
+    }*/
 
   private getSelectedNodes(nodes: DynamicFlatNode[]): SelectedDocument[] {
     return nodes
-      .map( node => ({
+      .map(node => ({
         id: node.id,
         label: node.label,
         profile: node.profile,
         state: node.state
-      }) );
+      }));
   }
 
   open(node: DynamicFlatNode) {
     this.selectedNodes = [node];
-    const data = this.getSelectedNodes( this.selectedNodes );
+    const data = this.getSelectedNodes(this.selectedNodes);
 
-    this.activate.next( data );
-    this.selected.next( data );
+    this.activate.next(data);
+    this.selected.next(data);
   }
 
   refresh(): Promise<any> {

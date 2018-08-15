@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
-import { ConfigService, Configuration } from './config.service';
-import { Profile } from './formular/profile';
-import { StorageService } from './storage/storage.service';
-import { CodelistService } from '../+form/services/codelist.service';
+import {Injectable} from '@angular/core';
+import {environment} from '../../environments/environment';
+import {ConfigService, Configuration} from './config.service';
+import {Profile} from './formular/profile';
+import {StorageService} from './storage/storage.service';
+import {CodelistService} from '../+form/services/codelist.service';
 
 declare const $script: any;
 declare const webpackJsonp: any;
@@ -39,10 +39,24 @@ export class ProfileService {
           console.log('Loaded module: ', module);
           // TODO: use map instead of multiple parameters in case we want to add another dependency
           module.profiles.forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
+
+          this.setTitleFields(configService);
+
           resolve(this.profiles);
         });
       }
     });
+    configService.setProfilePackagePromise(this.initialized);
+  }
+
+  private setTitleFields(configService: ConfigService) {
+    const fields: string[] = [];
+    this.profiles.forEach(profile => fields.push(...profile.getTitleFields()));
+
+    // return unique items in array
+    const titleFields = fields.filter((x, i, a) => x && a.indexOf(x) === i);
+
+    configService.setTitleFields(titleFields);
   }
 
   getProfiles(): Promise<Profile[]> {

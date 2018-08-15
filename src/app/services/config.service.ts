@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { s } from '@angular/core/src/render3';
-import { IgeError } from '../models/ige-error';
+import {Profile} from "./formular/profile";
 
 export class Configuration {
   constructor(public keykloakBaseUrl: string, public backendUrl: string) {
@@ -21,6 +20,8 @@ export class ConfigService {
   private config: Configuration;
 
   private userInfo: UserInfo;
+  private titleFields: string[];
+  promiseProfilePackageLoaded: Promise<Profile[]>;
 
   load(url: string): Promise<Configuration> {
     console.log( '=== ConfigService ===' );
@@ -62,4 +63,15 @@ export class ConfigService {
     return this.config;
   }
 
+  setTitleFields(titleFields: string[]) {
+    this.titleFields = titleFields;
+  }
+
+  getTitleFields(): string[] {
+    return this.titleFields;
+  }
+
+  setProfilePackagePromise(initialized: Promise<Profile[]>) {
+    this.promiseProfilePackageLoaded = initialized;
+  }
 }

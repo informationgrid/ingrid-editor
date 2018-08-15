@@ -6,8 +6,8 @@ import { DocMainInfo, UpdateDatasetInfo } from '../../models/update-dataset-info
 import { ErrorService } from '../error.service';
 import { KeycloakService } from '../../security/keycloak/keycloak.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs/index';
-import { catchError, map, tap } from 'rxjs/internal/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, tap } from 'rxjs/internal/operators';
 
 @Injectable()
 export class StorageService {
@@ -34,6 +34,12 @@ export class StorageService {
     if (KeycloakService.auth.loggedIn) {
       // TODO: this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
     }
+
+    setTimeout(() => {
+      configService.promiseProfilePackageLoaded.then(() => {
+        this.titleFields = configService.getTitleFields().join(',');
+      });
+    }, 0);
     this.configuration = configService.getConfiguration();
   }
 
