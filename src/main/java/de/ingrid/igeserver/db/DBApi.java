@@ -8,6 +8,8 @@ import java.util.Map;
 
 public interface DBApi {
 
+    Object getRecordId(DBClass dbClass, Map<String, String> query) throws ApiException;
+
     public static enum DBClass {Documents, User, Role, Info, Behaviours};
 
     /**
@@ -27,14 +29,18 @@ public interface DBApi {
 
     /**
      * Save a document with a given ID.
+     *
+     * @param type is the database class (table)
+     * @param dbDocId  is the ID of the document given by the database system
+     * @param data contains the data to be stored
      */
-    public Map save(DBClass type, String id, Map<String, Object> data);
+    Map save(DBClass type, String dbDocId, Map<String, Object> data);
 
 
     /**
      * Save a raw object with a given ID (like file uploads).
      */
-    public Map save(DBClass type, String id, Object data);
+    Map save(DBClass type, String dbDocId, Object data);
 
     /**
      * Delete a document with a given ID.

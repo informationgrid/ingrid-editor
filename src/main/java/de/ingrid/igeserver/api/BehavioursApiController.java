@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.api;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,13 +57,24 @@ public class BehavioursApiController implements BehavioursApi {
 
     public ResponseEntity<Map> setBehaviours(
             Principal principal,
-            @ApiParam(value = "", required = true) @Valid @RequestBody String behaviour) throws ApiException {
+            @ApiParam(value = "", required = true) @Valid @RequestBody String behavior) throws ApiException {
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
+
+            // TODO: get correct rid from database table
+            // query by _id==""
             String id = "???";
-            Map doc = this.dbService.save(DBApi.DBClass.Behaviours, id, dbUtils.getMapFromObject(behaviour) );
+
+            Map<String, Object> mappedBehavior = dbUtils.getMapFromObject(behavior);
+            Map<String, String> query = new HashMap<>();
+            query.put("_id", (String) mappedBehavior.get("_id"));
+
+            Object rid = this.dbService.getRecordId(DBApi.DBClass.Behaviours, query);
+            mappedBehavior.put("@rid", rid);
+
+            Map doc = this.dbService.save(DBApi.DBClass.Behaviours, id, mappedBehavior);
             return ResponseEntity.ok(doc);
 
         }

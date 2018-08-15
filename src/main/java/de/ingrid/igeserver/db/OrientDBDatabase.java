@@ -2,8 +2,12 @@ package de.ingrid.igeserver.db;
 
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.*;
-import com.orientechnologies.orient.core.exception.OStorageException;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.metadata.sequence.OSequence;
+import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibrary;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
@@ -116,7 +120,7 @@ public class OrientDBDatabase implements DBApi {
             // select * from `Documents` where (draft.firstName like "%er%" or draft.lastName like "%es%")
             // TODO: try to use lucene index!
             List<String> where = new ArrayList<>();
-            for (String key: query.keySet()) {
+            for (String key : query.keySet()) {
                 String value = query.get(key);
                 if (value == null) {
                     where.add(key + ".toLowerCase() IS NULL");
@@ -135,9 +139,22 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
+    public Object getRecordId(DBClass dbClass, Map<String, String> query) throws ApiException {
+        List<Map> behaviorFromDB = this.findAll(DBApi.DBClass.Behaviours, query, true);
+
+        if (behaviorFromDB.size() == 1) {
+            return behaviorFromDB.get(0).get("@rid");
+        } else if (behaviorFromDB.size() > 1) {
+            throw new ApiException("There is more than one result for dbClass: " + dbClass.name() + " query: " + query.toString());
+        }
+
+        return null;
+    }
+
+    @Override
     public Map find(DBClass type, String id) {
-//        String query = "SELECT * FROM " + type + " WHERE @rid = " + id;
-        String query = "SELECT * FROM " + type + " WHERE _id = " + id;
+        String query = "SELECT * FROM " + type + " WHERE @rid = " + id;
+//        String query = "SELECT * FROM " + type + " WHERE _id = " + id;
 
         OResultSet result = getDBFromThread().query(query);
         List<Map> list = mapODocumentsToMap(result);
@@ -156,15 +173,29 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public Map save(DBClass type, String id, Map<String, Object> data) {
-        Optional<OResult> doc = getById(type, id);
+    public Map save(DBClass type, @Deprecated String dbDocId, Map<String, Object> data) {
         ODocument docToSave;
+        ORecordId recId = ((ORecordId) data.get("@rid"));
+
+        if (recId == null) {
+            docToSave = new ODocument(type.name());
+        } else {
+            String id = recId.toString();
+            Optional<OResult> doc = getById(type, id);
+            docToSave = (ODocument) doc.get().getRecord().get();
+
+        }
 
         // if it's a new document
-        docToSave = doc.map(oResult -> (ODocument) oResult.getRecord().get()).orElseGet(() -> new ODocument(type.name()));
+        // docToSave = doc.map(oResult -> (ODocument) oResult.getRecord().get()).orElseGet(() -> new ODocument(type.name()));
 
         // map data
-        for (String key: data.keySet()) {
+        // TODO: can the update be done differently?
+        for (String key : data.keySet()) {
+            // ignore @rid since it contains the version which might be obsolete by now
+            // we also do not want to change the dbDocId manually!
+            if ("@rid".equals(key)) continue;
+
             docToSave.field(key, data.get(key));
         }
 
@@ -197,7 +228,9 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public String[] getDatabases() {
-        return orientDB.list().toArray(new String[0]);
+        return orientDB.list().stream()
+                .filter(item -> !(item.equals("IgeUsers") || item.equals("OSystem") || item.equals("management")))
+                .toArray(String[]::new);
     }
 
     @Override
@@ -205,7 +238,19 @@ public class OrientDBDatabase implements DBApi {
         orientDB.create(name, ODatabaseType.PLOCAL);
         try (ODatabaseSession session = acquire(name)) {
             // TODO: set more constraints and information for a new catalog (name, email?, ...)
-            session.getMetadata().getSchema().createClass("Documents");
+            OClass docClass = session.getMetadata().getSchema().createClass("Documents");
+            docClass.createProperty("_id", OType.INTEGER);
+            docClass.createProperty("_parent", OType.INTEGER);
+            docClass.createIndex("didIdx", OClass.INDEX_TYPE.UNIQUE, "_id");
+
+            OSequenceLibrary sequenceLibrary = session.getMetadata().getSequenceLibrary();
+            if (sequenceLibrary.getSequence("idseq") == null) {
+                OSequence seq = sequenceLibrary.createSequence("idseq", OSequence.SEQUENCE_TYPE.ORDERED, new OSequence.CreateParams().setStart(0l).setIncrement(1));
+                seq.save();
+
+                // TODO: CREATE INDEX items.ID ON items (ID) UNIQUE
+            }
+
             session.getMetadata().getSchema().createClass("Info");
 
             Map<String, Object> catInfo = new HashMap<>();

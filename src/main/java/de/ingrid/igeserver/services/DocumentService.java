@@ -1,8 +1,8 @@
 package de.ingrid.igeserver.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.utils.DBUtils;
 import org.apache.logging.log4j.LogManager;
@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DocumentService extends MapperService {
@@ -65,12 +62,12 @@ public class DocumentService extends MapperService {
         }
 
         // apply specific fields to document (id, profile, state, ...)
-        currentDoc.put(FIELD_ID, (Integer) map.get(FIELD_ID));
-        currentDoc.put(FIELD_PROFILE, (String) map.get(FIELD_PROFILE));
+        currentDoc.put(FIELD_ID, map.get(FIELD_ID));
+        currentDoc.put(FIELD_PROFILE, map.get(FIELD_PROFILE));
         currentDoc.put(FIELD_STATE, determineState(map));
-        currentDoc.put(FIELD_HAS_CHILDREN, (Boolean) map.get(FIELD_HAS_CHILDREN));
-        currentDoc.put(FIELD_CREATED, (String) map.get(FIELD_CREATED));
-        currentDoc.put(FIELD_MODIFIED, (String) map.get(FIELD_MODIFIED));
+        currentDoc.put(FIELD_HAS_CHILDREN, map.get(FIELD_HAS_CHILDREN));
+        currentDoc.put(FIELD_CREATED, map.get(FIELD_CREATED));
+        currentDoc.put(FIELD_MODIFIED, map.get(FIELD_MODIFIED));
 
         return currentDoc;
     }
@@ -82,53 +79,65 @@ public class DocumentService extends MapperService {
      * @param userId is the ID of the user who performs the action
      * @return a HashMap containing the transformed document ready to be inserted into the database
      */
-    public Map mapDocumentToDatabase(String json, boolean published, String userId) {
+    public Map mapDocumentToDatabase(String json, boolean published, String userId) throws ApiException {
         // ObjectNode map = (ObjectNode) getJsonMap( json );
-        Map<String, Object> map = dbUtils.getMapFromObject(json);
+        Map<String, Object> newDocument = dbUtils.getMapFromObject(json);
 
-        String id = (String) map.get( FIELD_ID );
-
-        Map<String, Object> oldDoc = dbService.find( DBApi.DBClass.Documents, id );
-
-        Map<String, Object> oldMap;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
-        if (oldDoc == null) {
-            oldMap = new HashMap<>();
-            oldMap.put( FIELD_PROFILE, (String) map.get( FIELD_PROFILE ));
-            oldMap.put( FIELD_PARENT, (Integer) map.get( FIELD_PARENT ));
-            oldMap.put( FIELD_CREATED, format.format( new Date() ) );
+        Map<String, Object> currentDoc = getDocOrInitialize(newDocument, format);
 
-        } else {
-            oldMap = oldDoc;
-        }
 
-        map.put( FIELD_MODIFIED_BY, userId );
+        newDocument.put( FIELD_MODIFIED_BY, userId );
 
-        // TODO: should we store modified/create date in wrapper or actual data document?
-        oldMap.put( FIELD_MODIFIED, format.format( new Date() ) );
 
         // remove all referenced data except the ID
         // this data is fetched on each load (TODO: should be cached!)
-        cleanupReferences( map );
+        cleanupReferences( newDocument );
 
         // cleanup document to save
-        map.remove( FIELD_ID );
-        map.remove( FIELD_PROFILE );
-        map.remove( FIELD_STATE );
-        map.remove( FIELD_PARENT );
+        newDocument.remove( FIELD_ID );
+        newDocument.remove( FIELD_PROFILE );
+        newDocument.remove( FIELD_STATE );
+        newDocument.remove( FIELD_PARENT );
 
         if (published) {
-            oldMap.put( FIELD_PUBLISHED, map );
-            oldMap.remove( FIELD_DRAFT );
+            currentDoc.put( FIELD_PUBLISHED, newDocument );
+            currentDoc.remove( FIELD_DRAFT );
         } else {
-            oldMap.put( FIELD_DRAFT, map );
+            currentDoc.put( FIELD_DRAFT, newDocument );
         }
 
         // apply specific fields to document (id, profile, state, ...)
-        oldMap.put( FIELD_ID, id );
+        // the ID is automatically generated and applied -> oldMap.put( FIELD_ID, id );
 
-        return dbUtils.getMapFromObject(oldMap);
+        return currentDoc;
+    }
+
+    private Map<String, Object> getDocOrInitialize(Map<String, Object> newDocument, SimpleDateFormat format) throws ApiException {
+        String id = String.valueOf(newDocument.get( FIELD_ID ));
+        // get database id from doc id  or just query for correct document then we also get the rid!
+        Map<String, String> query = new HashMap<>();
+        query.put("_id", id);
+        List<Map> docInDatabase = dbService.findAll( DBApi.DBClass.Documents, query, true);
+
+        Map<String, Object> currentDoc;
+
+        if (docInDatabase.size() == 0) {
+            currentDoc = new HashMap<>();
+            currentDoc.put( FIELD_PROFILE, newDocument.get( FIELD_PROFILE ));
+            currentDoc.put( FIELD_PARENT, newDocument.get( FIELD_PARENT ));
+            currentDoc.put( FIELD_CREATED, format.format( new Date() ) );
+
+        } else if (docInDatabase.size() == 1){
+            currentDoc = docInDatabase.get(0);
+        } else {
+            throw new ApiException("Document to be updated exists multiple times: " + id);
+        }
+
+        // TODO: should we store modified/create date in wrapper or actual data document?
+        currentDoc.put( FIELD_MODIFIED, format.format( new Date() ) );
+        return currentDoc;
     }
 
     private void cleanupReferences(Map<String, Object> map) {

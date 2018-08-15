@@ -49,7 +49,10 @@ public class DBUtils {
 
             String currentCatalogId = (String) catInfo.get("currentCatalogId");
             if (currentCatalogId == null) {
-                currentCatalogId = (String) ((OTrackedSet)catInfo.get("catalogIds")).toArray()[0];
+                Object[] catalogIds = ((OTrackedSet) catInfo.get("catalogIds")).toArray();
+                if (catalogIds.length > 0) {
+                    currentCatalogId = (String) catalogIds[0];
+                }
             }
             return currentCatalogId;
         }
@@ -120,8 +123,8 @@ public class DBUtils {
 
     public Map<String, Object> getMapFromObject(Object object) {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.valueToTree(object);
-        /*try {
+        // return mapper.valueToTree(object);
+        try {
             if (object instanceof String) {
                 return mapper.readValue((String) object, HashMap.class);
             } else {
@@ -130,7 +133,7 @@ public class DBUtils {
         } catch (IOException e) {
             log.error(e);
             return null;
-        }*/
+        }
     }
 
     public String toJsonString(Object map) throws Exception {
@@ -149,7 +152,7 @@ public class DBUtils {
             Map<String, Object> catUserRef = list.get(0);
             catUserRef.put("catalogIds", assignedCatalogs);
 
-            this.dbService.save(DBApi.DBClass.Info, catUserRef.get("@rid").toString(), catUserRef);
+            this.dbService.save(DBApi.DBClass.Info, "IGNORE", catUserRef);
         }
     }
 }

@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.metadata.sequence.OSequence;
 import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.services.DocumentService;
@@ -76,13 +77,20 @@ public class DatasetsApiController implements DatasetsApi {
             // TODO: start transaction
             // Object transaction = this.dbService.beginTransaction();
 
+            // add generated id to document (_id)
+            // this one is different from the internal database id (@rid)
+            // TODO: refactor getting sequence
+            OSequence sequence = session.getMetadata().getSequenceLibrary().getSequence( "idseq" );
+            mapDocument.put( "_id", String.valueOf(sequence.next()) );
+
             // db action
             Map result = this.dbService.save(DBApi.DBClass.Documents, null, mapDocument);
 
             // TODO: commit transaction
             // this.dbService.commit(transaction);
+            Map docResult = this.documentService.mapDocumentFromDatabase(result);
 
-            return ResponseEntity.ok(dbUtils.toJsonString(result));
+            return ResponseEntity.ok(dbUtils.toJsonString(docResult));
         } catch (Exception e) {
             log.error("Error during creation of document", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -116,8 +124,11 @@ public class DatasetsApiController implements DatasetsApi {
                 mapDocument = this.documentService.mapDocumentToDatabase(data, publish, userId);
             }
 
-            Map result = this.dbService.save(DBApi.DBClass.Documents, id, mapDocument);
-            return ResponseEntity.ok(dbUtils.toJsonString(result));
+            Map result = this.dbService.save(DBApi.DBClass.Documents, "IGNORE???", mapDocument);
+
+            Map docResult = this.documentService.mapDocumentFromDatabase(result);
+
+            return ResponseEntity.ok(dbUtils.toJsonString(docResult));
 
         } catch (Exception e) {
             log.error("Error during updating of document", e);
@@ -184,6 +195,8 @@ public class DatasetsApiController implements DatasetsApi {
             }
 
             // TODO: which ID?
+            // null should be fine since a new document is created when copied
+            // when moved however it should have the same ID!
             this.dbService.save(DBApi.DBClass.Documents, null, dbUtils.getMapFromObject(updatedDoc));
 
         }
@@ -256,26 +269,35 @@ public class DatasetsApiController implements DatasetsApi {
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
-            Map doc = this.dbService.find(DBApi.DBClass.Documents, id);
-            log.debug("Getting dataset: " + id);
+            Map<String, String> query = new HashMap<>();
+            query.put("_id", id);
+            List<Map> docs = this.dbService.findAll(DBApi.DBClass.Documents, query, true);
 
-            if (doc == null) {
-                throw new ApiException(500, "No document found with the ID: " + id);
-                // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document with the ID: " + id);
+            if (docs.size() > 0) {
+                Map doc = docs.get(0);
+                log.debug("Getting dataset: " + id);
+
+                if (doc == null) {
+                    throw new ApiException(500, "No document found with the ID: " + id);
+                    // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document with the ID: " + id);
+                }
+
+                Map mapDoc = null;
+
+                // TODO: is this needed since it's not used anyway?
+                doc.remove("@rid");
+                doc.remove("@class");
+
+
+                mapDoc = this.documentService.mapDocumentFromDatabase(doc);
+
+                String[] refDocs = dbUtils.getReferencedDocs(mapDoc);
+                documentService.addReferencedDocsTo(refDocs, mapDoc);
+
+                return ResponseEntity.ok(documentService.toJsonString(mapDoc));
+            } else {
+                throw new ApiException("Document not found with id: " + id);
             }
-
-            Map mapDoc = null;
-
-            doc.remove("@rid");
-            doc.remove("@class");
-
-
-            mapDoc = this.documentService.mapDocumentFromDatabase(doc);
-
-            String[] refDocs = dbUtils.getReferencedDocs(mapDoc);
-            documentService.addReferencedDocsTo(refDocs, mapDoc);
-
-            return ResponseEntity.ok(documentService.toJsonString(mapDoc));
         }
 
     }
