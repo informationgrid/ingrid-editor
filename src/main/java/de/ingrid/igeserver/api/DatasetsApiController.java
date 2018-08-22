@@ -306,6 +306,22 @@ public class DatasetsApiController implements DatasetsApi {
 
         //List<String> result = this.dbService.getPathToDataset( id );
         //return ResponseEntity.ok( result );
+        String destId = id;
+        List<String> path = new ArrayList<>();
+        path.add(id);
+
+        while (destId != null) {
+            Map doc = this.documentService.getByDocId(destId);
+            destId = (String) doc.get("_id");
+            path.add(destId);
+        }
+
+        // remove last element which is null
+
+        // turn path around
+
+
+
         throw new ApiException(500, "getPath not yet supported");
     }
 

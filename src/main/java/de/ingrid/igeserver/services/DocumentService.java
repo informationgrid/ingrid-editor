@@ -178,4 +178,12 @@ public class DocumentService extends MapperService {
         }
 
     }
+
+    public Map getByDocId(String id) {
+
+        Map<String, String> query = new HashMap<>();
+        query.put("_id", id);
+        List<Map> docs = this.dbService.findAll(DBApi.DBClass.Documents, query, true);
+        return docs.size() > 0 ? docs.get(0) : null;
+    }
 }
