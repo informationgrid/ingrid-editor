@@ -32,6 +32,10 @@ export class ConfigService {
 
   }
 
+  getUserInfo(): UserInfo {
+    return this.userInfo;
+  }
+
   getCurrentUserInfo(): Promise<any> {
     return this.sendRequest('GET', this.config.backendUrl + 'info/currentUser' )
       .then( response => {

@@ -51,6 +51,7 @@ import {NewCatalogDialogComponent} from './dialogs/new-catalog/new-catalog-dialo
 import {UploadProfileDialogComponent} from './dialogs/upload-profile/upload-profile-dialog.component';
 import {FileUploadModule} from 'primeng/fileupload';
 import {IgeError} from './models/ige-error';
+import {NoCatalogAssignedGuard} from "./security/no-catalog-assigned.guard";
 
 export function ConfigLoader(configService: ConfigService, modal: ModalService) {
   return () => {
@@ -101,7 +102,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     MatRadioModule
   ],
   providers: [
-    appRoutingProviders, AuthGuard, FormChangeDeactivateGuard,
+    appRoutingProviders, AuthGuard, NoCatalogAssignedGuard, FormChangeDeactivateGuard,
     KeycloakService,
     ErrorService, ConfigService, FormToolbarService, FormularService, StorageService,
     StorageDummyService, BehavioursDefault, ModalService, ApiService, FormularService, ProfileService,

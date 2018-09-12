@@ -74,6 +74,7 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "ige-remastered-cli:build",
+            "proxyConfig": "src/environments/proxy.config.json",
             "port": 4300
           },
           "configurations": {

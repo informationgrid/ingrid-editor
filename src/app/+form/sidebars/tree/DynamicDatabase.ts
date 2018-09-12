@@ -23,7 +23,7 @@ export class DynamicDatabase {
     return this.profileService.initialized.then( () => {
 
       return this.query( null ).then( (data) => {
-        return data.map( item => new DynamicFlatNode( item._id, item.title, item._profile, item._state, 0, item._hasChildren, item.icon ) );
+        return data.map( item => new DynamicFlatNode( item._id + '', item.title, item._profile, item._state, 0, item._hasChildren, item.icon ) );
       } );
     } );
   }
@@ -34,8 +34,9 @@ export class DynamicDatabase {
         console.log( 'got children', response );
         const nodes = this.prepareNodes( response );
         resolve( nodes );
+      }, error => {
+        reject(error);
       } );
-      // }, (err) => this.errorService.handle( err ) );
     } );
   }
 

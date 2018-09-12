@@ -115,11 +115,13 @@ export class DynamicDataSource {
       doc );
     this.data.splice( index + 1, 0, newNode );
 
-    if (!this.cachedChildren[parentNode.id]) {
-      this.cachedChildren[parentNode.id] = [];
+    if (parentNode) {
+      if (!this.cachedChildren[parentNode.id]) {
+        this.cachedChildren[parentNode.id] = [];
+      }
+      this.cachedChildren[parentNode.id].push(newNode);
     }
-    this.cachedChildren[parentNode.id].push( newNode );
-    this.dataChange.next( this.data );
+    this.dataChange.next(this.data);
   }
 
   removeNode(nodeId: string) {

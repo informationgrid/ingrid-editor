@@ -11,6 +11,7 @@ import {DynamicDatabase} from './DynamicDatabase';
 import {DynamicFlatNode} from './DynamicFlatNode';
 import {DynamicDataSource} from './DynamicDataSource';
 import {ConfigService} from "../../../services/config.service";
+import {IgeError} from "../../../models/ige-error";
 
 
 @Component({
@@ -21,7 +22,7 @@ import {ConfigService} from "../../../services/config.service";
 })
 export class MetadataTreeComponent implements OnInit, OnDestroy {
 
-  selectedNodes: DynamicFlatNode[];
+  selectedNodes: DynamicFlatNode[] = [];
 
 
   @Input() showFolderEditButton = true;
@@ -213,7 +214,6 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
     const id = path.pop();
 
     return new Promise((resolve, reject) => {
-
       if (path.length > 0) {
         const node = this.dataSource.data
           .filter(n => n.id === id);
