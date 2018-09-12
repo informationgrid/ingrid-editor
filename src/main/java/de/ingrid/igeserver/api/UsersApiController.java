@@ -103,14 +103,12 @@ public class UsersApiController implements UsersApi {
 
         List<Catalog> assignedCatalogs = new ArrayList<>();
 
-        if (dbIds != null) {
-            for (String dbId : dbIds) {
-                if (dbId != null) {
-                    Catalog catalogById = this.dbUtils.getCatalogById(dbId);
-                    if (catalogById != null) {
-                        assignedCatalogs.add(catalogById);
-                        dbIdsValid.add(dbId);
-                    }
+        for (String dbId : dbIds) {
+            if (dbId != null) {
+                Catalog catalogById = this.dbUtils.getCatalogById(dbId);
+                if (catalogById != null) {
+                    assignedCatalogs.add(catalogById);
+                    dbIdsValid.add(dbId);
                 }
             }
         }

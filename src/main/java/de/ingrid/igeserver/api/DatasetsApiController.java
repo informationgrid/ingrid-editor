@@ -25,10 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static de.ingrid.igeserver.services.MapperService.*;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
@@ -39,7 +38,9 @@ public class DatasetsApiController implements DatasetsApi {
 
     private static final String COLLECTION = "Documents";
 
-    private enum CopyMoveOperation {COPY, MOVE};
+    private enum CopyMoveOperation {COPY, MOVE}
+
+    ;
 
     @Autowired
     private DBApi dbService;
@@ -74,20 +75,26 @@ public class DatasetsApiController implements DatasetsApi {
 
             Map mapDocument = this.documentService.mapDocumentToDatabase(data, publish, userId);
 
-            // TODO: start transaction
-            // Object transaction = this.dbService.beginTransaction();
-
             // add generated id to document (_id)
             // this one is different from the internal database id (@rid)
             // TODO: refactor getting sequence
-            OSequence sequence = session.getMetadata().getSequenceLibrary().getSequence( "idseq" );
-            mapDocument.put( "_id", String.valueOf(sequence.next()) );
+            OSequence sequence = session.getMetadata().getSequenceLibrary().getSequence("idseq");
+            mapDocument.put(FIELD_ID, String.valueOf(sequence.next()));
+            mapDocument.put(FIELD_HAS_CHILDREN, false);
 
             // db action
             Map result = this.dbService.save(DBApi.DBClass.Documents, null, mapDocument);
 
-            // TODO: commit transaction
-            // this.dbService.commit(transaction);
+            // update parent that it has children if needed
+            Object parentId = result.get(PARENT_ID);
+            if (parentId != null) {
+                Map parentDoc = this.documentService.getByDocId(String.valueOf(parentId));
+                if (!(boolean)parentDoc.get(FIELD_HAS_CHILDREN)) {
+                    parentDoc.put(FIELD_HAS_CHILDREN, true);
+                    this.dbService.save(DBApi.DBClass.Documents, null, parentDoc);
+                }
+            }
+
             Map docResult = this.documentService.mapDocumentFromDatabase(result);
 
             return ResponseEntity.ok(dbUtils.toJsonString(docResult));
@@ -143,7 +150,7 @@ public class DatasetsApiController implements DatasetsApi {
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
-            for (String id: ids) {
+            for (String id : ids) {
                 this.dbService.remove(DBApi.DBClass.Documents, id);
             }
             return ResponseEntity.ok().build();
@@ -180,7 +187,7 @@ public class DatasetsApiController implements DatasetsApi {
     }
 
     private void copyOrMove(CopyMoveOperation operation, List<String> ids, String destId) throws Exception {
-        for (String id: ids) {
+        for (String id : ids) {
             Map doc = this.dbService.find(DBApi.DBClass.Documents, id);
 
             // add new parent to document
@@ -242,16 +249,17 @@ public class DatasetsApiController implements DatasetsApi {
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             if (children) {
                 Map<String, String> queryMap = new HashMap<>();
+                queryMap.put("_parent", parentId);
                 docs = this.dbService.findAll(DBApi.DBClass.Documents, queryMap, false);
             } else {
                 Map<String, String> queryMap = new HashMap<>();
-                for (String field: fields) {
+                for (String field : fields) {
                     queryMap.put(field, query);
                 }
                 docs = this.dbService.findAll(DBApi.DBClass.Documents, queryMap, false); // fields );
             }
 
-            for (Map doc: docs) {
+            for (Map doc : docs) {
                 mappedDocs.add(this.dbUtils.toJsonString(this.documentService.mapDocumentFromDatabase(doc, fields)));
             }
 
@@ -304,25 +312,29 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<List<String>> getPath(Principal principal, @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id) throws ApiException {
 
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
         //List<String> result = this.dbService.getPathToDataset( id );
         //return ResponseEntity.ok( result );
-        String destId = id;
+        Object destId = id;
         List<String> path = new ArrayList<>();
         path.add(id);
 
-        while (destId != null) {
-            Map doc = this.documentService.getByDocId(destId);
-            destId = (String) doc.get("_id");
-            path.add(destId);
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
+            while (destId != null) {
+                Map doc = this.documentService.getByDocId(String.valueOf(destId));
+                destId = doc.get("_parent");
+                path.add(String.valueOf(destId));
+            }
         }
-
         // remove last element which is null
+        path.remove(path.size() - 1);
 
         // turn path around
+        Collections.reverse(path);
 
-
-
-        throw new ApiException(500, "getPath not yet supported");
+        return ResponseEntity.ok(path);
     }
 
 }

@@ -73,7 +73,7 @@ public class DBUtils {
             }
 
             // return (Set<String>) list.get(0).get("catalogIds");
-            return list.size() == 0 ? null : (Set<String>) list.get(0).get("catalogIds");
+            return list.size() == 0 ? new HashSet<>() : (Set<String>) list.get(0).get("catalogIds");
         }
     }
 

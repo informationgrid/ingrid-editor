@@ -7,7 +7,7 @@
   <version>1.0.0-SNAPSHOT</version>
   <properties>
     <java.version>1.8</java.version>
-    <orient-db>3.0.5</orient-db>
+    <orient-db>3.0.7</orient-db>
     <keycloak.version>4.2.1.Final</keycloak.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
