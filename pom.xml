@@ -1,13 +1,192 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>de.ingrid</groupId>
-  <artifactId>ige-ng-project</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <artifactId>ige-ng-server</artifactId>
+  <packaging>jar</packaging>
+  <name>IGE-NG Server</name>
+  <version>1.0.0-SNAPSHOT</version>
+  <properties>
+    <java.version>1.8</java.version>
+    <orient-db>3.0.7</orient-db>
+    <keycloak.version>4.2.1.Final</keycloak.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <springfox-version>2.7.0</springfox-version>
+    <argLine>-XX:MaxDirectMemorySize=512g</argLine>
+  </properties>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.0.4.RELEASE</version>
+  </parent>
+
+  <dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.keycloak.bom</groupId>
+            <artifactId>keycloak-adapter-bom</artifactId>
+            <version>${keycloak.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-tomcat</artifactId>
+      <!--<scope>provided</scope>-->
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <!-- Security with Keycloak -->
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-spring-boot-2-starter</artifactId>
+      <version>4.0.0.Final</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+    </dependency>
+    
+    <dependency>
+	    <groupId>com.auth0</groupId>
+	    <artifactId>java-jwt</artifactId>
+	    <version>3.2.0</version>
+	</dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    
+        <!--SpringFox dependencies -->
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+      <version>${springfox-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+      <version>${springfox-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.orientechnologies</groupId>
+      <artifactId>orientdb-core</artifactId>
+      <version>${orient-db}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.orientechnologies</groupId>
+      <artifactId>orientdb-server</artifactId>
+      <version>${orient-db}</version>
+    </dependency>
 
 
+    <!-- https://mvnrepository.com/artifact/com.github.fge/json-schema-validator -->
+    <dependency>
+      <groupId>com.github.fge</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>2.2.6</version>
+    </dependency>
 
+	<dependency>
+	  <groupId>de.ingrid</groupId>
+	  <artifactId>ingrid-codelist-service</artifactId>
+	  <version>4.4.0</version>
+	  <exclusions>
+	    <exclusion>
+	      <groupId>log4j</groupId>
+	      <artifactId>log4j</artifactId>
+	    </exclusion>
+	  </exclusions>
+	</dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+    </dependency>
+
+    <!-- Bean Validation API support -->
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <!--<scope>provided</scope>-->
+    </dependency>
+    <dependency>
+    	<groupId>junit</groupId>
+    	<artifactId>junit</artifactId>
+    	<scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-maven-plugin</artifactId>
+      <version>2.0.2.RELEASE</version>
+    </dependency>
+
+  </dependencies>
+  
+  <repositories>
+    <!-- Repo of parent pom needed, parent pom may not be installed locally
+      yet -->
+    <repository>
+      <id>nexus</id>
+      <name>Nexus Maven Repo</name>
+      <url>https://nexus.informationgrid.eu/repository/maven-public</url>
+    </repository>
+  </repositories>
 </project>

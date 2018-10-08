@@ -1,0 +1,10 @@
+.settings/
+databases/
+.vscode/
+.swagger-codegen/
+target/
+.swagger-codegen-ignore
+.project
+.classpath
+src/main/resources/www/
+src/main/resources/static/
