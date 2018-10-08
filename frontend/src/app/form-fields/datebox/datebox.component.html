@@ -1,0 +1,19 @@
+<!--
+<p-calendar [style.width]="'100%'"
+            [(ngModel)]="value"
+            [monthNavigator]="true"
+            [yearNavigator]="true"
+            yearRange="1900:2030"
+            [showIcon]="true"
+            (onSelect)="handleChange($event)"
+            (onBlur)="handleBlur()"
+            appendTo="body"
+            selectionMode="single"
+            dateFormat="dd.mm.yy"></p-calendar>
+-->
+
+<mat-form-field>
+    <input matInput [matDatepicker]="picker" placeholder="Choose a date">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+</mat-form-field>

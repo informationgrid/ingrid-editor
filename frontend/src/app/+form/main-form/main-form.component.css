@@ -1,0 +1,8 @@
+.panel-heading:hover {
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+.well {
+  margin: 5px;
+}

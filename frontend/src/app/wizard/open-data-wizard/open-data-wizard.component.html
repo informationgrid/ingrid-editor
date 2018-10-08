@@ -1,0 +1,25 @@
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            Schritt {{page}}
+            <a (click)="close()">
+                <div class="pull-right fa fa-close"></div>
+            </a>
+        </h3>
+    </div>
+    <div class="panel-body">
+        <p *ngIf="page === 1">
+            Geben Sie zuerst einen Titel für den Datensatz ein. Dieser wird in den Suchergebnissen verwendet.
+        </p>
+        <p *ngIf="page === 2">
+            Wählen Sie die Checkbox "Open data" aus, um diesen Datensatz entsprechend zu markieren.
+        </p>
+    </div>
+    <div class="panel-footer">
+        <button (click)="nextPage()" class="btn btn-primary pull-right">Weiter</button>
+        <button (click)="previousPage()" class="btn btn-secondary pull-left">Zurück</button>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+

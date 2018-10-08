@@ -1,0 +1,36 @@
+::ng-deep mat-tree .mat-tree-node {
+  min-height: 20px;
+}
+
+mat-tree-node.selected {
+  background-color: #03a9f4;
+}
+
+.docType {
+  padding-right: 10px;
+  padding-left: 15px;
+  line-height: 40px;
+}
+.docType.expandable {
+  padding-right: 10px;
+  padding-left: 0px;
+}
+
+
+.clickable {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.folder {
+  position: absolute;
+  right: 5px;
+  margin-top: -15px;
+  display: none;
+}
+
+.refresh {
+  position: absolute;
+  right: 0;
+  z-index: 1000
+}

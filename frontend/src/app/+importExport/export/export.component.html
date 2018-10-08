@@ -1,0 +1,54 @@
+    <div fxLayout="row">
+
+        <div fxFlex="30">
+            <div>
+                <span class="badge badge-pill badge-info">1</span>
+                <span class="wizard-title">Datensatz auswählen</span>
+                <!--<tree [showFolderEditButton]="false" (selected)="handleSelected($event)"></tree>-->
+            </div>
+            <div class="padding">
+
+            </div>
+        </div>
+
+        <div fxFlex="20">
+            <span class="badge badge-pill badge-info">2</span>
+            <span class="wizard-title">Exportoptionen</span>
+
+            <div class="padding">
+                <mat-radio-group>
+                    <mat-radio-button name="exportOption">nur diesen Datensatz</mat-radio-button>
+                    <mat-radio-button name="exportOption">alle untergeordneten</mat-radio-button>
+                    <mat-radio-button name="exportOption">dieser und alle untergeordneten</mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </div>
+
+        <div fxFlex="20">
+            <span class="badge badge-pill"
+                  [class.badge-info]="selection.length !== 0"
+                  [class.badge-secondary]="selection.length === 0"
+            >3</span>
+            <span class="wizard-title">Start</span>
+
+            <div class="padding">
+                <button mat-raised-button
+                        [disabled]="selection.length === 0">
+                    Exportieren
+                </button>
+            </div>
+        </div>
+
+        <div fxFlex="30">
+            <span class="badge badge-pill"
+                  [class.badge-info]="false"
+                  [class.badge-secondary]="true">4</span>
+
+            <span class="wizard-title">Ergebnis</span>
+
+            <div class="padding">
+
+            </div>
+        </div>
+
+    </div>

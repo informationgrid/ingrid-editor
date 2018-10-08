@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>Neues Dokument</h2>
+<mat-dialog-content>
+    <mat-radio-group [(ngModel)]="result.choice">
+        <mat-radio-button
+            *ngFor="let type of data.docTypes" [value]="type.id">{{type.label}}
+        </mat-radio-button>
+    </mat-radio-group>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <mat-checkbox [disabled]="!data.rootOption" [(ngModel)]="result.addBelowDoc">unter ausgewähltem Dokument/Ordner
+        anlegen
+    </mat-checkbox>
+    <button mat-button [mat-dialog-close]="result">Anlegen</button>
+</mat-dialog-actions>

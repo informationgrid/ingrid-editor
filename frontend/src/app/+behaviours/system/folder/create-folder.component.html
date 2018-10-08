@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>Ordner erstellen</h2>
+<mat-dialog-content>
+    <mat-form-field>
+        <input matInput #name
+               placeholder="Ordnername"
+               (keyup.enter)="handleCreate(name.value)"
+               required>
+    </mat-form-field>
+
+    <div>
+        <mat-checkbox *ngIf="parent.profile === 'FOLDER'" (change)="asSubFolder = $event.checked">unter ausgewähltem Ordner anlegen</mat-checkbox>
+    </div>
+
+    <div>
+        <small class="form-text" *ngIf="parent.profile !== 'FOLDER'">
+            Wenn Sie einen Unterordner erstellen möchten, müssen Sie zuerst einen Ordner auswählen.
+        </small>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Abbrechen</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-button [mat-dialog-close]="true">Erstellen</button>
+</mat-dialog-actions>

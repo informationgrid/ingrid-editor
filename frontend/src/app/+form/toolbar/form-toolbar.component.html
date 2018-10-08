@@ -1,0 +1,30 @@
+<!--<p-toolbar>
+    <div class="ui-toolbar-group-left">
+        <ng-container *ngFor="let button of buttons">
+            <button *ngIf="!button.isSeparator" pButton type="button"
+                    icon="{{button.cssClasses}}"
+                    class="ui-button-secondary"
+                    [disabled]="!button.active"
+                    [title]="button.tooltip"
+                    (click)="sendEvent(button.eventId)"></button>
+
+            <span *ngIf="button.isSeparator"
+                  class="separator"></span>
+        </ng-container>
+    </div>
+
+</p-toolbar>-->
+<mat-toolbar>
+    <mat-toolbar-row>
+        <ng-container *ngFor="let button of buttons">
+            <button *ngIf="!button.isSeparator" mat-icon-button
+                    [title]="button.tooltip"
+                    (click)="sendEvent(button.eventId)"
+                    [disabled]="!button.active">
+                    <!--aria-label="{{button.tooltip}}"-->
+                <mat-icon>{{button.cssClasses}}</mat-icon>
+            </button>
+            <mat-divider *ngIf="button.isSeparator" [vertical]="true" style="height: 20px"></mat-divider>
+        </ng-container>
+    </mat-toolbar-row>
+</mat-toolbar>

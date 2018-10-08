@@ -1,0 +1,318 @@
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Roboto,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+}
+
+.hide {
+  display: none;
+}
+
+.mat-header-row {
+  min-height: 40px;
+}
+
+.mat-row {
+  padding: 0 10px;
+  min-height: 32px;
+}
+
+main-menu .mat-toolbar-row {
+  height: 50px;
+}
+main-menu .mat-toolbar-multiple-rows {
+  min-height: 50px;
+}
+
+.mat-expansion-panel {
+  background-color: #c9e4ff;
+}
+
+.invalid-feedback {
+  position: absolute;
+  font-size: 75%;
+  margin-top: 0;
+  bottom: -20px;
+  white-space: nowrap;
+}
+
+.ng-invalid .invalid-feedback {
+  /*display: block;*/
+}
+
+div.has-error {
+  position: relative;
+}
+
+.ui-growl {
+  top: initial;
+  bottom: 10px;
+}
+
+.ui-tree {
+  width: auto;
+}
+
+.modal .modal-content {
+  background-color: #03a9f4;
+  color: #fff;
+}
+
+.modal-alert .modal-content {
+  background-color: #f44336;
+}
+
+.modal .modal-header {
+  padding: 23px 26px;
+  border-bottom: 1px solid transparent;
+}
+
+.modal .modal-footer {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid transparent;
+}
+
+.modal .modal-footer .btn-link {
+  color: #fff;
+  text-decoration: none;
+  border-radius: 2px;
+}
+.modal .modal-footer .btn-link:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+}
+.modal .modal-footer .btn-link:focus {
+  outline: 1px solid #03a9f4;
+}
+
+.border-dashed {
+  border: dotted 3px lightgray;
+}
+
+/*form-toolbar {
+  position: fixed;
+  top: 56px;
+  width: 100%;
+  background-color: #ececec;
+  z-index: 10;
+}*/
+
+form-toolbar + div {
+  /*padding-top: 30px;*/
+}
+
+.btnHelp {
+  cursor: pointer;
+}
+
+.btn.btn-xs {
+  /*// line-height: ensure proper height of button next to extra small input*/
+  /*@include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);*/
+  font-size: 0.5rem;
+  padding: 8px;
+}
+
+.help-block {
+  /*position: absolute;*/
+  /*font-size: 80%;*/
+  /*margin-top: 1px !important;*/
+  /*animation: slideIn 0.3s linear forwards;*/
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+  background-color: #c9eeff !important;
+}
+
+.navbar-default .navbar-nav > li > a:focus, nav a.active, nav a:focus.active {
+  background-color: #ececec;
+}
+
+.has-navbar {
+  padding-top: 10px;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.half, .full, .quarter, .three-quarter, .third, .two-third {
+  float: left;
+}
+
+.full {
+  width: 100% !important;
+}
+
+.half {
+  width: 50% !important;
+}
+
+.quarter {
+  width: 25% !important;
+}
+
+.third {
+  width: 33% !important;
+}
+
+.three-quarter {
+  width: 75% !important;
+}
+
+.two-third {
+  width: 67% !important;
+}
+
+.padding {
+  padding: 10px;
+}
+
+.padding-sm {
+  padding: 5px;
+}
+
+.padding-vertical {
+  padding: 10px 0;
+}
+
+.field-padding {
+  padding: 0 10px 0 0;
+}
+
+dyn-field {
+  padding-bottom: 10px;
+  display: block;
+}
+
+.hasChildren dyn-field {
+  display: inline-block;
+}
+
+dynamic-form input[type=text],
+dynamic-form input[type=date],
+dynamic-form input[type=number],
+dynamic-form select,
+dynamic-form textarea {
+  width: 100%;
+}
+
+.fieldContainer {
+  display: inline-block;
+  vertical-align: top;
+}
+
+p-dataTable {
+  width: 100%;
+  height: 100px;
+}
+
+/*
+.splitWrapper {
+    position: absolute;
+    top: 92px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.split {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.gutter {
+    background-color: #eee;
+
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+    background-image: url('./assets/grips/vertical.png');
+    cursor: ew-resize;
+}
+
+.gutter.gutter-vertical {
+    background-image: url('./assets/grips/horizontal.png');
+    cursor: ns-resize;
+}
+
+.split.split-horizontal, .gutter.gutter-horizontal {
+    height: 100%;
+    float: left;
+}*/
+
+.ag-body-viewport {
+  -webkit-overflow-scrolling: touch;
+}
+
+sidebar .list-group-item {
+  cursor: pointer;
+}
+
+sidebar .list-group-item:hover {
+  background-color: #ececec;
+}
+
+.error .modal-header {
+  background-color: #a94442;
+  color: #ffffff;
+}
+
+.label-primary {
+  background-color: #87c2da !important;
+}
+
+.working-label::before {
+  background: #ffc107;
+}
+
+.published-label::before {
+  background: #87c2da;
+}
+
+.published-working-label::before {
+  background: linear-gradient(-90deg, #ffc107 50%, #87c2da 50%);
+}
+
+.list-group-item.active {
+  background-color: #5999d0;
+  border-color: #5999d0;
+}
+
+.cell select {
+  height: 25px;
+}
+
+.nav-tabs li {
+  cursor: pointer;
+}
+
+.tree {
+  width: 100%;
+}
+
+tree-node:hover .folder {
+  display: block;
+}

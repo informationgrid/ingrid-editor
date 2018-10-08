@@ -1,0 +1,814 @@
+---
+swagger: "2.0"
+info:
+  description: "Necessary API to support requests from IGE remastered"
+  version: "1.0.0"
+  title: "IGE remastered API"
+host: "localhost"
+basePath: "/v1"
+schemes:
+- "http"
+- "https"
+produces:
+- "application/json"
+paths:
+  /users:
+    options:
+      operationId: get
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      operationId: list
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: Returns the list of users
+      tags:
+      - "User"
+    x-swagger-router-controller: "User"
+  /users/{id}:
+    options:
+      operationId: getUserOp
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      operationId: getUser
+      summary: ""
+      description: "Get the user with the given ID."
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique login of the user."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Returns the user
+      tags:
+      - "User"
+    post:
+      operationId: createUser
+      summary: "Create a new user. If the user already exists an error will be returned."
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique login of the user."
+        required: true
+        type: "string"
+      - name: "user"
+        in: "body"
+        description: "Save the user data into the database."
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        '200':
+          description: User was successfully updated
+        '406':
+          description: A user with the given login does not exist and cannot be updated
+      tags:
+      - "User"
+    put:
+      operationId: updateUser
+      summary: "Updates an existing user user. If the user does not exist an error will be returned."
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique login of the user."
+        required: true
+        type: "string"
+      - name: "user"
+        in: "body"
+        description: "Save the user data into the database."
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        '200':
+          description: User was successfully created
+        '406':
+          description: A user already exists with the given login
+      tags:
+      - "User"
+    delete:
+      operationId: deleteUser
+      summary: "Deletes a user."
+      description: "The user with the given ID is deleted. If user with a given login does not exists an error will be returned."
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique login of the user."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: User was successfully deleted
+        '406':
+          description: A user with the given login does not exist and cannot be deleted
+      tags:
+      - "User"
+    x-swagger-router-controller: "User"
+  /login:
+    post:
+      operationId: login
+      consumes:
+      - application/x-www-form-urlencoded
+      parameters:
+      - name: username
+        in: formData
+        type: string
+        required: false
+      - name: password
+        in: formData
+        type: string
+        required: false
+      responses:
+        '200':
+          description: Return the JWT
+        '403':
+          description: Error when user is not accepted.
+      tags:
+      - "Security"
+    x-swagger-router-controller: "User"
+  /refreshToken:
+    options:
+      operationId: getRefreshOp
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      operationId: refreshToken
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: Returns a new access token to the requested client
+      tags:
+      - "Security"
+    x-swagger-router-controller: "User"
+  /roles:
+    options:
+      operationId: getRolesOp
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      operationId: listRoles
+      summary: ""
+      description: ""
+      responses:
+        '200':
+          description: Returns the list of roles
+      tags:
+      - "Role"
+    x-swagger-router-controller: "Role"
+  /roles/{id}:
+    options:
+      operationId: getRoleOp
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      operationId: getRole
+      summary: "Get a role"
+      description: "Get the role with the given ID."
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique id of the role."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Returns the role
+      tags:
+      - "Role"
+    post:
+      operationId: createRole
+      summary: "Creates a new role. If role with a given login already exists an error will be returned."
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique id of the user."
+        required: true
+        type: "string"
+      - name: "role"
+        in: "body"
+        description: "Save the role into the database."
+        required: true
+        schema:
+          $ref: "#/definitions/Role"
+      responses:
+        '200':
+          description: Role was successfully updated
+        '406':
+          description: A role with the given login does not exist and cannot be updated
+      tags:
+      - "Role"
+    put:
+      operationId: updateRole
+      summary: "Updates a role. If role could not be found an error will be returned."
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique id of the role."
+        required: true
+        type: "string"
+      - name: "role"
+        in: "body"
+        description: "Save the role into the database."
+        required: true
+        schema:
+          $ref: "#/definitions/Role"
+      responses:
+        '200':
+          description: Role was successfully created
+        '406':
+          description: A role already exists with the given login
+      tags:
+      - "Role"
+    delete:
+      operationId: deleteRole
+      summary: "Deletes a role."
+      description: "Delete a role with a given ID. If role with a given id does not exists an error will be returned."
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The unique id of the role."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Role was successfully deleted
+        '406':
+          description: A role with the given id does not exist and cannot be deleted
+      tags:
+      - "Role"
+    x-swagger-router-controller: Role
+  /behaviours:
+    options:
+      operationId: getBehavioursOp
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      summary: ""
+      description: ""
+      operationId: getBehaviours
+      responses:
+        '200':
+          description: Behaviours are returned.
+      tags:
+      - "Behaviour"
+    post:
+      summary: ""
+      description: ""
+      operationId: setBehaviours
+      parameters:
+        - name: "behaviour"
+          in: "body"
+          description: ""
+          required: true
+          schema:
+            $ref: "#/definitions/Behaviour"
+      responses:
+        '200':
+          description: Behaviours have been set.
+      tags:
+      - "Behaviour"
+    x-swagger-router-controller: "Behaviours"
+  /datasets:
+    options:
+      operationId: getDatasetsOp
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      tags:
+      - "Datasets"
+      summary: Get datasets by a query or as child documents
+      description: "Get all datasets or those which match a given query. You can define the fields where the search should be, in case the documents have different attributes for their title. The results can also be sorted."
+      operationId: find
+      parameters:
+      - name: "query"
+        in: "query"
+        description: "Find datasets by a search query."
+        required: false
+        type: "string"
+      - name: "children"
+        in: "query"
+        description: "Get all children of a dataset. The parameter 'parentId' is also needed for this request."
+        required: false
+        type: "boolean"
+      - name: "parentId"
+        in: "query"
+        description: "The ID of the parent dataset to get the children from. If empty then the root datasets are returned."
+        required: false
+        type: "string"
+      - name: "fields"
+        in: "query"
+        description: ""
+        required: true
+        type: "string"
+      - name: sort
+        in: "query"
+        description: "Sort by a given field."
+        required: false
+        type: "string"
+      - name: reverse
+        in: "query"
+        description: "Reverse sort."
+        required: false
+        type: "string"
+      responses:
+        '200':
+          description: Datasets found
+    x-swagger-router-controller: "Datasets"
+    post:
+      tags:
+      - "Datasets"
+      summary: "Set a complete dataset"
+      description: "xxx"
+      operationId: "createDataset"
+#      security: [{"jwt": []}]
+      parameters:
+      - name: "data"
+        in: "body"
+        description: "The dataset to be stored."
+        required: true
+        schema:
+          $ref: "#/definitions/DatasetClient"
+      - name: "publish"
+        in: "query"
+        description: "If we want to store the published version then this parameter\
+          \ has to be set to true."
+        required: false
+        type: "boolean"
+      responses:
+        200:
+          description: "The stored dataset, which might contain additional storage\
+            \ information."
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "Datasets"
+  /datasets/{ids}/copy:
+    options:
+      operationId: getCopyOp
+      parameters:
+      - name: ids
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    post:
+      tags:
+      - "Datasets"
+      summary: "Copy a dataset or tree under another dataset"
+      description: "xxx"
+      operationId: "copyDatasets"
+#      security: [{"jwt": []}]
+      parameters:
+      - name: ids
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
+      - name: "data"
+        in: "body"
+        description: "..."
+        required: true
+        schema:
+          $ref: "#/definitions/CopyCutBody"
+      responses:
+        '200':
+          description: Datasets have been copied successfully.
+    x-swagger-router-controller: "Datasets"
+  /datasets/{ids}/move:
+    options:
+      operationId: getMoveOp
+      parameters:
+      - name: ids
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    post:
+      tags:
+      - "Datasets"
+      summary: "Move a dataset or tree under another dataset"
+      description: "xxx"
+      operationId: "moveDatasets"
+#      security: [{"jwt": []}]
+      parameters:
+      - name: ids
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
+      - name: "data"
+        in: "body"
+        description: "..."
+        required: true
+        schema:
+          $ref: "#/definitions/CopyCutBody"
+      responses:
+        '200':
+          description: Datasets have been moved successfully.
+    x-swagger-router-controller: "Datasets"
+  /datasets/{id}/path:
+    options:
+      operationId: getPathOp
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      tags:
+      - "Datasets"
+      summary: "Get the hierarchical path of a document"
+      description: "Retrieve an array of ID of all parents leading to the given dataset ID."
+      operationId: "getPath"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the dataset."
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Array of IDs.
+      x-swagger-router-controller: "Datasets"
+  /datasets/{id}/export/{format}:
+    options:
+      operationId: getExportOp
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+      - name: format
+        in: path
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      tags:
+      - "Datasets"
+      summary: "Export a dataset to a specific format"
+      description: "..."
+      operationId: "exportDataset"
+#      security: [{"jwt": []}]
+      parameters:
+      - name: id
+        in: path
+        description: IDs of the copied datasets
+        required: true
+        type: string
+      - name: format
+        in: path
+        description: "e.g. ISO"
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Dataset has been exported successfully.
+    x-swagger-router-controller: "Datasets"
+  /datasets/{id}:
+    options:
+      operationId: getDatasetOp
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      tags:
+      - "Datasets"
+      summary: "A complete dataset"
+      description: "Retrieve a dataset by a given ID."
+      operationId: "getByID"
+#      security: [{"jwt": []}]
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the dataset."
+        required: true
+        type: "string"
+      - name: "publish"
+        in: "query"
+        description: "If we want to get the published version then this parameter\
+          \ has to be set to true."
+        required: false
+        type: "boolean"
+      responses:
+        200:
+          description: "The dataset with the given ID."
+          schema:
+            $ref: "#/definitions/Dataset"
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "Datasets"
+    put:
+      tags:
+      - "Datasets"
+      summary: "Set a complete dataset"
+      description: "xxx"
+      operationId: "updateDataset"
+#      security: [{"jwt": []}]
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the dataset."
+        required: true
+        type: "string"
+      - name: "data"
+        in: "body"
+        description: "The dataset to be stored."
+        required: true
+        schema:
+          $ref: "#/definitions/DatasetClient"
+      - name: "publish"
+        in: "query"
+        description: "If we want to store the published version then this parameter\
+          \ has to be set to true."
+        required: false
+        type: "boolean"
+      - name: "revert"
+        in: "query"
+        description: "Delete the draft version and make the published version the current one."
+        required: false
+        type: "boolean"
+      responses:
+        200:
+          description: "The stored dataset, which might contain additional storage\
+            \ information."
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "Datasets"
+    delete:
+      tags:
+      - "Datasets"
+      summary: "Deletes a dataset"
+      description: "..."
+      operationId: "deleteById"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the dataset."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: ""
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "Datasets"
+  /statistic:
+    options:
+      operationId: getStatisticOp
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      tags:
+      - "Statistic"
+      summary: ""
+      description: ""
+      operationId: "getStatistic"
+      responses:
+        200:
+          description: ""
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+    x-swagger-router-controller: "Statistic"
+  /codelist/{id}:
+    options:
+      operationId: getCodelistOp
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    get:
+      tags:
+      - "Codelist"
+      summary: ""
+      description: ""
+      operationId: "getCodelistById"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the codelist."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: ""
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+    x-swagger-router-controller: Codelist
+  /import:
+    options:
+      operationId: getImportOp
+      responses:
+        '200':
+          description: Options for this operation are returned.
+      x-swagger-router-controller: "Options"
+    post:
+      tags:
+      -  Import
+      summary: ...
+      description: ...
+      operationId: importDataset
+#      security: [{"jwt": []}]
+      parameters:
+      - name: "data"
+        in: "body"
+        description: "The dataset to be imported."
+        required: true
+        schema:
+          $ref: "#/definitions/DatasetClient"
+      responses:
+        200:
+          description: "The stored dataset, which might contain additional storage\
+            \ information."
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+    x-swagger-router-controller: Import
+  /export:
+    post:
+      tags:
+      -  Export
+      summary: ...
+      description: ...
+      operationId: exportDataset2
+#      security: [{"jwt": []}]
+      parameters:
+      - name: "data"
+        in: "body"
+        description: "The dataset to be exported."
+        required: true
+        schema:
+          $ref: "#/definitions/DatasetClient"
+      responses:
+        200:
+          description: "The stored dataset, which might contain additional storage\
+            \ information."
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+    x-swagger-router-controller: Export
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  User:
+    type: "object"
+    required:
+    - login
+    properties:
+      login:
+        type: "string"
+        description: ""
+      firstName:
+        type: "string"
+        description: ""
+      lastName:
+        type: "string"
+        description: ""
+  Role:
+    type: "object"
+    required:
+    - name
+    properties:
+      name:
+        type: "string"
+        description: ""
+  Dataset:
+    type: "object"
+    required:
+    - _created
+    properties:
+      _id:
+        type: "string"
+        description: "Unique identifier"
+      _profile:
+        type: "string"
+        description: "Description of the dataset."
+      _created:
+        type: "string"
+        description: "The date the dataset was created."
+      _modified:
+        type: "string"
+        description: "The date the dataset was last modified."
+      _published:
+        type: "string"
+        description: "The date the dataset was last published."
+  DatasetClient:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        description: "Unique identifier"
+      _profile:
+        type: "string"
+        description: "Description of the dataset."
+  Behaviour:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        description: "Unique identifier"
+  CopyCutBody:
+    type: "object"
+    properties:
+      destId:
+        type: "string"
+  Error:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+      fields:
+        type: "string"

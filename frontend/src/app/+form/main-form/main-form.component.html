@@ -1,0 +1,83 @@
+<!-- RENDER ALL FIELDS -->
+<div *ngFor="let field of fields"
+     class="fieldContainer {{field.domClass}}"
+     [ngClass]="{hasChildren: field.children, padding: !field.children || field.isRepeatable}">
+
+    <!-- SIMPLE FIELD -->
+    <dyn-field *ngIf="!field.children"
+               [field]="field"
+               [form]="form"
+               (onAddSection)="addSection($event)"></dyn-field>
+
+    <!-- COMPLEX FIELD -->
+    <fieldset *ngIf="field.children" [formGroup]="form">
+
+        <!-- CONTAINER FOR NESTED FIELDS -->
+        <ng-container *ngIf="!field.isRepeatable">
+
+            <!-- nest fields also within json -->
+            <div *ngIf="field.key" [formGroupName]="field.key">
+                <ige-main-form [form]="form.controls[field.key]"
+                               [fields]="field.children"></ige-main-form>
+            </div>
+
+
+            <!-- only nest fields visually but not in json -->
+            <ng-container *ngIf="!field.key">
+
+                <!-- render nested rubric -->
+                <ng-container *ngIf="field.controlType === 'rubric'">
+                    <div class="well">{{field.label}}
+                        <ige-main-form [form]="form"
+                                       [fields]="field.children"></ige-main-form>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="field.controlType !== 'rubric'">
+                    <ige-main-form [form]="form"
+                                   [fields]="field.children"></ige-main-form>
+                </ng-container>
+            </ng-container>
+
+        </ng-container>
+
+        <!-- REPEATABLE FIELDS -->
+        <div *ngIf="field.isRepeatable">
+            <div [formArrayName]="field.key">
+                <!-- render data -->
+                <div *ngFor="let child of field.children; let i=index" class="panel panel-default">
+
+                    <!-- Header of partial -->
+                    <div *ngIf="child.children" class="panel-heading"
+                         (click)="expandedField[child.key + i] = !expandedField[child.key + i]">
+                                        <span class="fa"
+                                              [class.fa-caret-down]="expandedField[child.key + i]"
+                                              [class.fa-caret-right]="!expandedField[child.key + i]"></span>
+                        <span class="title">{{i+1}}. {{child.label}}</span>
+                        <button type="button"
+                                class="close"
+                                aria-label="Close"
+                                (click)="removeArrayGroup(field.key, i)">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <!-- render all partial fields -->
+                    <div [formGroupName]="i"
+                         class="panel-body"
+                         [class.d-none]="!expandedField[child.key + i]">
+
+                        <ige-main-form [form]="form.controls[field.key].controls[i].controls[child.key]"
+                                       [fields]="child.children"></ige-main-form>
+
+                    </div>
+                </div>
+
+                 <!-- render generator field to add new partial -->
+                <partial-generator [field]="field"
+                                   [form]="form"
+                                   (onAddSection)="addSection($event)"></partial-generator>
+
+            </div>
+        </div>
+    </fieldset>
+</div>

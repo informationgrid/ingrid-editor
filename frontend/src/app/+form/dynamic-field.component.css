@@ -1,0 +1,23 @@
+:host {
+  width: 100%;
+}
+
+:host > div {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+}
+/*
+
+.show {
+  display: block;
+}
+
+.ng-invalid:not(.ng-untouched):not(div):not(form) {
+  !*border-left: 2px solid red;*!
+}
+
+/deep/ .ui-inputtext {
+  width: 100%;
+}
+*/

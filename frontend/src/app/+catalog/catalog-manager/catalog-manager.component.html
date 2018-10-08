@@ -1,0 +1,23 @@
+<div>
+    <button mat-raised-button (click)="showCreateCatalogDialog()">Neuen Katalog erstellen ...</button>
+    <button mat-raised-button (click)="showUploadProfileDialog()">Profil hochladen ...</button>
+</div>
+
+<div fxLayout="row wrap">
+    <div *ngFor="let cat of catalogs | async" fxFlex="25">
+        <div style="padding: 10px;">
+            <mat-card (click)="showCatalogDetail(cat.id)">
+                    <mat-card-header>
+                        <mat-card-title>{{cat.label}}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <!--<h4 class="card-title">Light card title</h4>-->
+                        <p class="card-text">...</p>
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <button mat-button (click)="chooseCatalog(cat.id)">Auswählen</button>
+                    </mat-card-actions>
+            </mat-card>
+        </div>
+    </div>
+</div>

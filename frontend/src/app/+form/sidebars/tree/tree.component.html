@@ -1,0 +1,60 @@
+<div style="position: relative;">
+  <button mat-icon-button title="Aktualisieren"
+          class="pull-right"
+          (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
+  </button>
+    <!--<p-tree [value]="nodes" selectionMode="multiple"
+            [style.width]="'100%'"
+            (onNodeSelect)="open($event)"
+            [(selection)]="selectedNodes"
+            (onNodeExpand)="loadNode($event)">
+    </p-tree>-->
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        <mat-tree-node *matTreeNodeDef="let node" (click)="open(node)" matTreeNodePadding [class.selected]="selectedNodes?.indexOf(node) !== -1">
+            <!--<button mat-icon-button>-->
+                <mat-icon [class]="'docType ' + node.icon"></mat-icon>
+            <!--</button>-->
+            {{node.label}}
+        </mat-tree-node>
+        <mat-tree-node *matTreeNodeDef="let node; when: hasChild" (click)="open(node)" matTreeNodePadding>
+            <button mat-icon-button
+                    [attr.aria-label]="'toggle ' + node.state" matTreeNodeToggle>
+                <mat-icon>
+                    {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                </mat-icon>
+            </button>
+            <mat-icon [class]="'docType expandable ' + node.icon"></mat-icon>
+            {{node.label}}
+            <mat-progress-bar *ngIf="node.isLoading"
+                              mode="indeterminate"
+                              class="example-tree-progress-bar"></mat-progress-bar>
+        </mat-tree-node>
+    </mat-tree>
+
+  <!--<tree-root #tree [nodes]="nodes" [options]="options" (activate)="open($event)" (deactivate)="deselected($event)">
+    <ng-template #treeNodeTemplate let-node>
+      <div class="myTreeNode">
+        <div [class.active]="selectedId === node.data.id">
+          <span *ngIf="!node.data._iconClass" class="badge"
+                [class.badge-primary]="node.data._state === 'P'"
+                [class.badge-warning]="node.data._state === 'W'"
+                [class.pubished-working-label]="node.data._state === 'PW'"
+          >{{node.data._profile}}</span>
+          <span *ngIf="node.data._iconClass"
+                [class]="'badge ' + node.data._iconClass ? node.data._iconClass : ''"
+                [class.badge-primary]="node.data._profile !== 'FOLDER' && node.data._state === 'P'"
+                [class.badge-warning]="node.data._profile !== 'FOLDER' && node.data._state === 'W'"
+                [class.pubished-working-label]="node.data._profile !== 'FOLDER' && node.data._state === 'PW'"
+                ></span>
+          <span>{{ node.data.name }}</span>
+        </div>
+        &lt;!&ndash; TODO: refactor into css &ndash;&gt;
+        <span *ngIf="showFolderEditButton && node.data._profile === 'FOLDER'" class="folder fa fa-edit"
+              (click)="editFolder(node.data)"
+        ></span>
+      </div>
+    </ng-template>
+  </tree-root>-->
+</div>

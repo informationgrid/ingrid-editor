@@ -1,0 +1,38 @@
+<!--<nav *ngIf="isLoggedIn" class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">IGE</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li *ngFor="let route of routes" class="nav-item" routerLinkActive="active">
+                <a [routerLink]="route.path" class="nav-link">{{route.name}}</a>
+            </li>
+        </ul>
+
+        <div>
+            <span>{{sessionCounter | number:'1.0-0'}}s</span>
+            <select #catalogSelect class="custom-select" (change)="changeCatalog(catalogSelect.value)">
+                <option value="catNiedersachsen">Niedersachsen</option>
+                <option value="catBrandenburg">Brandenburg</option>
+                <option value="catHamburg">Hamburg</option>
+            </select>
+            <a href="#" class="navbar-link" (click)="logout()">
+                Logout
+                &lt;!&ndash;André Wallat&ndash;&gt;
+                &lt;!&ndash;<span title="Logout" class="fa fa-sign-out"></span>&ndash;&gt;
+            </a>
+        </div>
+    </div>
+</nav>-->
+
+<mat-toolbar *ngIf="isLoggedIn" >
+    <mat-toolbar-row>
+        <ng-container *ngFor="let route of routes">
+            <a [routerLink]="route.path" mat-button>{{route.name}}</a>
+        </ng-container>
+        <span class="example-spacer"></span>
+        <mat-icon class="example-icon">verified_user</mat-icon>
+    </mat-toolbar-row>
+</mat-toolbar>
