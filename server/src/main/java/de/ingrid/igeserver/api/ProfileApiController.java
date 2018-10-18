@@ -61,9 +61,6 @@ public class ProfileApiController implements ProfileApi {
                 log.warn( "No profiles available in database!" );
                 return ResponseEntity.status( HttpStatus.NOT_FOUND ).build();
             }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
         return ResponseEntity.ok( profile );

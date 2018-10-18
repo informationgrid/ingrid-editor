@@ -1,6 +1,8 @@
 package de.ingrid.igeserver.configuration;
 
 import org.keycloak.adapters.KeycloakConfigResolver;
+import org.keycloak.adapters.KeycloakDeployment;
+import org.keycloak.adapters.spi.HttpFacade;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -23,7 +25,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@ComponentScan(basePackageClasses = KeycloakSecurityComponents.class)
+@ComponentScan(basePackageClasses = KeycloakSecurityComponents.class, basePackages = "de.ingrid")
 class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.

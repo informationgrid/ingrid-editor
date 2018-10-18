@@ -5,23 +5,16 @@
  */
 package de.ingrid.igeserver.api;
 
-import java.security.Principal;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
-import org.codehaus.jettison.json.JSONObject;
+import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
@@ -34,12 +27,12 @@ public interface BehavioursApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Behaviours are returned.", response = Void.class) })
     @RequestMapping(value = "/behaviours", produces = { "application/json" }, method = RequestMethod.GET)
-    ResponseEntity<List<JSONObject>> getBehaviours(Principal principal) throws ApiException;
+    ResponseEntity<List<Map>> getBehaviours(Principal principal) throws ApiException;
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Behaviour", })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Behaviours have been set.", response = Void.class) })
     @RequestMapping(value = "/behaviours", produces = { "application/json" }, method = RequestMethod.POST)
-    ResponseEntity<Map> setBehaviours(Principal principal, @ApiParam(value = "", required = true) @Valid @RequestBody String behaviour) throws ApiException;
+    ResponseEntity<String> setBehaviours(Principal principal, @ApiParam(value = "", required = true) @Valid @RequestBody String behaviour) throws Exception;
 
 }

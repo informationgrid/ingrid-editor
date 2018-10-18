@@ -15,7 +15,7 @@ public class AuthUtils {
     @Value( "${dev.keycloak.enabled:true}" )
     boolean isKeycloakEnabled;
 
-    @Value( "${dev.user.login}" )
+    @Value( "${dev.user.login:}" )
     String mockedLogin;
 
     @SuppressWarnings("unchecked")

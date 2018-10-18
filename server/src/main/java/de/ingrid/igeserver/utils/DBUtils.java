@@ -58,7 +58,7 @@ public class DBUtils {
         }
     }
 
-    public Set<String> getCatalogsForUser(String userId) throws ApiException {
+    public Set<String> getCatalogsForUser(String userId) {
         Map<String, String> query = new HashMap<>();
         query.put("userId", userId);
 
@@ -77,7 +77,7 @@ public class DBUtils {
         }
     }
 
-    public Catalog getCatalogById(String id) throws ApiException {
+    public Catalog getCatalogById(String id) {
         try (ODatabaseSession ignored = this.dbService.acquire(id)) {
             List<Map> catalogInfo = this.dbService.findAll(DBApi.DBClass.Info);
 
@@ -142,7 +142,7 @@ public class DBUtils {
         return mapper.writeValueAsString(map);
     }
 
-    public void setCatalogIdsForUser(String userId, Set<String> assignedCatalogs) throws ApiException {
+    public void setCatalogIdsForUser(String userId, Set<String> assignedCatalogs) {
         Map<String, String> query = new HashMap<>();
         query.put("userId", userId);
 

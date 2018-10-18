@@ -20,14 +20,11 @@ public class DBAccessTest {
     @Test
     public void getDBConnectionsFromPool() {
 
-        OrientDBConfigBuilder orientDBConfigBuilder = new OrientDBConfigBuilder();
         ODatabasePool pool = new ODatabasePool(db, "test", "admin", "admin");
-
-        ODatabaseDocumentInternal internal = ODatabaseRecordThreadLocal.instance().get();
 
         ODatabaseSession session1 = pool.acquire();
 
-        internal = ODatabaseRecordThreadLocal.instance().get();
+        ODatabaseDocumentInternal internal = ODatabaseRecordThreadLocal.instance().get();
 
         assertEquals(session1.hashCode(), internal.hashCode());
 

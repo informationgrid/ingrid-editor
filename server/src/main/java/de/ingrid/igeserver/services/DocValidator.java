@@ -95,11 +95,11 @@ public class DocValidator extends MapperService {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        test();
+        /*test();
 
         // EXAMPLE
         String json = "{ \"_id\": 4, \"name\": \"Andre\", \"age\": 38, \"_profile\": \"UVP\", \"author\": \"12345\" }";
-        run( json );
+        run( json );*/
 
     }
 

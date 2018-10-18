@@ -133,7 +133,7 @@
 </mat-table>-->
 
 <!-- Show this content if table is empty -->
-<div *ngIf="value.length === 0" class="text-center" title="Fügen Sie neue Zeilen hinzu mit '+' über der Tabelle.">Tabelle ist leer</div>
+<div *ngIf="value.data.length === 0" class="text-center" title="Fügen Sie neue Zeilen hinzu mit '+' über der Tabelle.">Tabelle ist leer</div>
 
 <ng-template #addRowModal>
     <div class="modal-header">

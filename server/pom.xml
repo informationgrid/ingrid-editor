@@ -7,17 +7,17 @@
   <version>1.0.0-SNAPSHOT</version>
   <properties>
     <java.version>1.8</java.version>
-    <orient-db>3.0.7</orient-db>
-    <keycloak.version>4.2.1.Final</keycloak.version>
+    <orient-db>3.0.8</orient-db>
+    <keycloak.version>4.6.0.Tmp</keycloak.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <springfox-version>2.7.0</springfox-version>
+    <springfox-version>2.9.2</springfox-version>
     <argLine>-XX:MaxDirectMemorySize=512g</argLine>
   </properties>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.0.4.RELEASE</version>
+    <version>2.0.5.RELEASE</version>
   </parent>
 
   <dependencyManagement>
@@ -45,6 +45,64 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <testFailureIgnore>true</testFailureIgnore>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+        <executions>
+          <execution>
+            <id>exec-copy-noindex-noassets</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes/static/static</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>../frontend/dist</directory>
+                  <filtering>false</filtering>
+                  <excludes>
+                    <exclude>index.html</exclude>
+                    <exclude>static/**/*.*</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>exec-copy-index-assets</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes/static</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>../frontend/dist</directory>
+                  <filtering>false</filtering>
+                  <includes>
+                    <include>index.html</include>
+                    <include>static/**/*.*</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
   <dependencies>
@@ -126,6 +184,17 @@
       <version>${orient-db}</version>
     </dependency>
 
+    <!-- Profile Dependencies -->
+    <dependency>
+      <groupId>de.ingrid</groupId>
+      <artifactId>ige-ng-api</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>de.ingrid</groupId>
+      <artifactId>ige-ng-profile-default</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.github.fge/json-schema-validator -->
     <dependency>
@@ -175,7 +244,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-maven-plugin</artifactId>
-      <version>2.0.2.RELEASE</version>
+      <version>2.0.4.RELEASE</version>
     </dependency>
 
   </dependencies>

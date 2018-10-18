@@ -6,6 +6,8 @@ import { Component, Inject } from '@angular/core';
 } )
 export class PrintViewDialogComponent {
 
+  profile: any;
+
   constructor(public dialogRef: MatDialogRef<PrintViewDialogComponent>,
               @Inject( MAT_DIALOG_DATA ) public data: any) {
   }

@@ -126,7 +126,8 @@ public class OrientDBDatabaseTest {
 
             Map<String, Object> data = new HashMap<>();
             data.put("name", "Johann");
-            Map save = dbService.save(DBApi.DBClass.User, id.toString(), data);
+            data.put("@rid", id);
+            Map save = dbService.save(DBApi.DBClass.User, null, data);
             assertNotNull(save);
         }
 

@@ -17,16 +17,16 @@ public class KeycloakMockService implements UserManagementService {
 
     private Logger log = LogManager.getLogger(KeycloakMockService.class);
 
-    @Value("${dev.user.roles}")
+    @Value("${dev.user.roles:}")
     String[] mockedUserRoles;
 
-    @Value("${dev.user.login}")
+    @Value("${dev.user.login:}")
     String mockedLogin;
 
-    @Value("${dev.user.firstName}")
+    @Value("${dev.user.firstName:}")
     String mockedFirstName;
 
-    @Value("${dev.user.lastName}")
+    @Value("${dev.user.lastName:}")
     String mockedLastName;
 
 

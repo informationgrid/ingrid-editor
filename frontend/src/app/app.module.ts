@@ -52,6 +52,7 @@ import {UploadProfileDialogComponent} from './dialogs/upload-profile/upload-prof
 import {FileUploadModule} from 'primeng/fileupload';
 import {IgeError} from './models/ige-error';
 import {NoCatalogAssignedGuard} from "./security/no-catalog-assigned.guard";
+import {DiscardConfirmDialogComponent} from "./dialogs/discard-confirm/discard-confirm-dialog.component";
 
 export function ConfigLoader(configService: ConfigService, modal: ModalService) {
   return () => {
@@ -83,7 +84,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent,
-    ErrorDialogComponent, NewDocumentComponent, NewCatalogDialogComponent, UploadProfileDialogComponent
+    ErrorDialogComponent, NewDocumentComponent, NewCatalogDialogComponent, DiscardConfirmDialogComponent, UploadProfileDialogComponent
   ],
   imports: [
     // angular

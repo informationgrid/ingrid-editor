@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.imports;
+package de.ingrid.ige.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

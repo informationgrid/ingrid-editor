@@ -50,8 +50,12 @@ public class OrientDBDatabase implements DBApi {
         // make sure the database for storing users and catalog information is there
         boolean hasBeenCreated = orientDB.createIfNotExists("IgeUsers", ODatabaseType.PLOCAL);
         if (hasBeenCreated) {
-            // after creation the database is already connected to and can be used
-            getDBFromThread().getMetadata().getSchema().createClass("Info");
+
+            try (ODatabaseSession session = acquire("IgeUsers")) {
+                // after creation the database is already connected to and can be used
+                session.getMetadata().getSchema().createClass("Info");
+                session.commit();
+            }
 
             // after database creation we have to close orientDB to release resources correctly (login from studio)
             orientDB.close();
@@ -251,6 +255,7 @@ public class OrientDBDatabase implements DBApi {
                 // TODO: CREATE INDEX items.ID ON items (ID) UNIQUE
             }
 
+            session.getMetadata().getSchema().createClass("Behaviours");
             session.getMetadata().getSchema().createClass("Info");
 
             Map<String, Object> catInfo = new HashMap<>();
