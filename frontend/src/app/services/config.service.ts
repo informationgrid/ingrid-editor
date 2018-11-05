@@ -14,7 +14,9 @@ class UserInfo {
   roles: string[];
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ConfigService {
 
   private config: Configuration;

@@ -23,7 +23,9 @@ export interface AuthInfo {
   logoutUrl?: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class KeycloakService {
   static auth: AuthInfo = {};
 

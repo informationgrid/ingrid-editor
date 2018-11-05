@@ -8,7 +8,9 @@ interface DialogContent {
   message: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ModalService {
 
   containerRef: ViewContainerRef = null;

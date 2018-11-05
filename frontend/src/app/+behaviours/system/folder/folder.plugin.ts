@@ -6,7 +6,9 @@ import { Plugin } from '../../plugin';
 import { CreateFolderComponent } from './create-folder.component';
 import { MatDialog } from '@angular/material';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class FolderPlugin extends Plugin {
   id = 'plugin.folder';
   _name = 'Folder Plugin';

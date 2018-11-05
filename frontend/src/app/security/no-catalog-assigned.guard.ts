@@ -4,7 +4,9 @@ import {ModalService} from '../services/modal/modal.service';
 import {ConfigService} from "../services/config.service";
 import {IgeError} from "../models/ige-error";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class NoCatalogAssignedGuard implements CanActivate {
 
   constructor(private configService: ConfigService, private modalService: ModalService) {

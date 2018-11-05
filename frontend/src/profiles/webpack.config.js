@@ -5,8 +5,8 @@ const rxPaths = require('rxjs/_esm5/path-mapping');
 const nodeExternals = require('webpack-node-externals');
 
 const { NoEmitOnErrorsPlugin, NamedModulesPlugin } = require('webpack');
-const { NamedLazyChunksWebpackPlugin } = require('@angular/cli/plugins/webpack');
-const { CommonsChunkPlugin } = require('webpack').optimize;
+//const { NamedLazyChunksWebpackPlugin } = require('@angular/cli/plugins/webpack');
+//const { CommonsChunkPlugin } = require('webpack').optimize;
 const { AngularCompilerPlugin } = require('@ngtools/webpack');
 
 module.exports = {
@@ -65,7 +65,7 @@ module.exports = {
       "onDetected": false,
       "cwd": "C:\\Users\\Andre\\WebstormProjects\\ige-ng-cli"
     }),
-    new NamedLazyChunksWebpackPlugin(),
+    //new NamedLazyChunksWebpackPlugin(),
 
     // use this to move the webpack stuff out of the bundles
     /*new CommonsChunkPlugin({

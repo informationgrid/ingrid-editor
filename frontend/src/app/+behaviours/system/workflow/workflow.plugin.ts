@@ -3,7 +3,9 @@ import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {Plugin} from '../../plugin';
 import { Subscription } from 'rxjs/index';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class WorkflowPlugin extends Plugin {
   id = 'plugin.workflow';
   name = 'Workflow';

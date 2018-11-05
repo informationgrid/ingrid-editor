@@ -4,7 +4,9 @@ import {MenuService} from '../../../menu/menu.service';
 import {Plugin} from '../../plugin';
 import { ConfigService } from '../../../services/config.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class StatisticPlugin extends Plugin {
   id = 'plugin.statistic';
   _name = 'Statistic Plugin';

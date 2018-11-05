@@ -1,9 +1,12 @@
-import {Inject} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {FormularService} from '../../../services/formular/formular.service';
 import {StorageService} from '../../../services/storage/storage.service';
 import {Plugin} from '../../plugin';
 import { Subscription } from 'rxjs/index';
 
+@Injectable({
+  providedIn: 'root'
+})
 export class CreateDocRulesPlugin extends Plugin {
   id = 'plugin.create.doc';
   _name = 'Regeln für neues Dokument';

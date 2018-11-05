@@ -8,7 +8,9 @@ import { Observable } from 'rxjs/index';
 import { catchError, map } from 'rxjs/internal/operators';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ApiService {
 
   private configuration: Configuration;

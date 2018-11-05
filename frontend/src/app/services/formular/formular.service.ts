@@ -7,7 +7,9 @@ import { ConfigService, Configuration } from '../config.service';
 import { ProfileService } from '../profile.service';
 import { Observable, Subject } from 'rxjs/index';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class FormularService {
 
   untitledLabel = '- untitled -';

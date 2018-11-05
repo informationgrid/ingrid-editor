@@ -1,9 +1,8 @@
-import { Component, ElementRef, forwardRef, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { DropdownField } from '../../+form/controls';
-import { IColumn } from '../../+form/controls/field-opentable';
-import { MatDialog, MatTableDataSource } from '@angular/material';
-import { SelectionModel } from '@angular/cdk/collections';
+import {Component, ElementRef, forwardRef, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {IColumn} from '../../+form/controls/field-opentable';
+import {MatDialog} from '@angular/material';
+import {SelectionModel} from '@angular/cdk/collections';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -34,22 +33,12 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   @ViewChild( 'addRowModal' ) addModal: TemplateRef<any> = null;
 
-  source: any; // LocalDataSource;
-
-  showAddButton = true;
-
-  // the model to store data from a dialog
-  addModel = {};
-
-  settings: any = {
-    columns: [],
-    availableColumns: []
-  };
-
-  rowSelection: any[] = [];
+  editCache = {};
 
   // The internal data model
-  private _value = new MatTableDataSource([]);
+  private _value = [];
+
+  private internalIndex = 1;
 
   // Placeholders for the callbacks
   private _onTouchedCallback: () => void;
@@ -61,38 +50,59 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
   constructor(private eRef: ElementRef, private dialog: MatDialog) {
   }
 
-  ngOnInit() {
-    this.settings.columns = this.mapColumns();
-    this.settings.availableColumns = this.settings.columns.map( c => c.field );
-    this.settings.availableColumns.unshift( 'select' );
-    this.settings.hideHeader = this.hideTableHeader;
-
-    const initialSelection = [];
-    const allowMultiSelect = true;
-    this.selection = new SelectionModel<any>(allowMultiSelect, initialSelection);
+  addRow(): void {
+    this._value = [ ...this._value, { __id: this.internalIndex++} ];
+    this.updateEditCache();
+    this.handleChange();
   }
+
+  deleteRow(i: string): void {
+    this._value = this._value.filter(d => d.__id !== i);
+    this.handleChange();
+  }
+
+  startEdit(id: string): void {
+    this.editCache[ id ].edit = true;
+  }
+
+  cancelEdit(key: string): void {
+    this.editCache[ key ].edit = false;
+  }
+
+  saveEdit(id: string): void {
+    const index = this._value.findIndex(item => item.__id === id);
+    this.editCache[ id ].data.__id = this.internalIndex++;
+    Object.assign(this._value[ index ], this.editCache[ id ].data);
+    // this.dataSet[ index ] = this.editCache[ __id ].data;
+    this.editCache[ id ].edit = false;
+    this.handleChange();
+  }
+
+  updateEditCache(): void {
+    this._value.forEach(item => {
+      if (!this.editCache[ item.__id ]) {
+        this.editCache[ item.__id ] = {
+          edit: false,
+          data: { ...item }
+        };
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    this.updateEditCache();
+  }
+
 
   get value() {
     return this._value;
   }
 
-  /*@HostListener('mouseenter')
-  onShowAddButton() {
-    this.showAddButton = true;
-  }
-
-  @HostListener('mouseleave', ['$event', 'target'])
-  onHideAddButton($event, target) {
-    const e = $event.toElement || $event.relatedTarget;
-    if (e.parentNode === this || e === this) {
-      return;
-    }
-    this.showAddButton = false;
-  }*/
-
   handleChange() {
     console.log( 'table changed' );
-    this._onChangeCallback( this._value.data );
+    let updateValue = this._value.map( val => Object.assign({}, val));
+    updateValue.forEach( val => delete val.__id);
+    this._onChangeCallback( updateValue );
   }
 
   // Set touched on blur
@@ -103,13 +113,19 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
+
     if (value instanceof Array) {
-      this._value = new MatTableDataSource(value);
+      this._value = this.addSimpleId(value);
+      this.updateEditCache();
     } else {
-      this._value = new MatTableDataSource([]);
+      this._value = [];
     }
   }
 
+  addSimpleId(value: Array<any>) {
+    value.forEach( val => val.__id = this.internalIndex++);
+    return value;
+  }
   // From ControlValueAccessor interface
   registerOnChange(fn: any) {
     this._onChangeCallback = fn;
@@ -120,78 +136,4 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
     this._onTouchedCallback = fn;
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this._value.data.length;
-    return numSelected === numRows;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this._value.data.forEach(row => this.selection.select(row));
-  }
-
-  addRow($event) {
-    // TODO: choice between inline editing and dialog
-    if (this.addWithDialog) {
-      // TODO: this.addModalRef = this.modalService.show( this.addModal );
-    } else {
-      // this._value = [ ...this.value, {} ];
-      this._value.data.push( {} );
-      this._value.data = this._value.data.slice();
-      this.handleChange();
-    }
-  }
-
-  addRowFromDialog() {
-    // this._value.push( this.addModel );
-    this.handleChange();
-  }
-
-  deleteRows() {
-    console.log(this.rowSelection);
-    // this._value = this._value.filter( item => !this.rowSelection.includes(item));
-    this.handleChange();
-  }
-
-
-  editField(field: string, editValue: string, el: any) {
-    const idx = this._value.data.findIndex(ele => el.name === ele.name);
-    this._value.data[idx][field] = editValue;
-  }
-
-  addFromTree(event, fieldId) {
-    this.addModel[fieldId] = event;
-  }
-
-  getDisplayValue(colIndex: number, key: string) {
-    let value = key;
-    (<DropdownField>this.columns[colIndex].editor).options.forEach(opt => {
-      if (opt.id === key) {
-        value = opt.value;
-      }
-    });
-    return value;
-  }
-
-  onBlur() {
-    console.log('Grid blur');
-    // TODO: how to close column editor?
-  }
-
-  private mapColumns(): any[] {
-    const mappedColumns = [];
-    this.columns.forEach( (col: any) => {
-      mappedColumns.push( {
-        field: col.editor.key,
-        header: col.editor.label,
-        controlType: col.editor.controlType,
-        options: col.editor.options
-      } );
-    } );
-    return mappedColumns;
-  }
 }

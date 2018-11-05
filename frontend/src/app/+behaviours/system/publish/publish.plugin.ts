@@ -6,7 +6,9 @@ import {StorageService} from '../../../services/storage/storage.service';
 import {Plugin} from '../../plugin';
 import { IgeError } from '../../../models/ige-error';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class PublishPlugin extends Plugin {
   id = 'plugin.publish';
   _name = 'Publish Plugin';

@@ -5,7 +5,9 @@ import { FormularService } from '../../../services/formular/formular.service';
 import { PrintViewDialogComponent } from '../../../dialogs/print-view/print-view-dialog.component';
 import { MatDialog } from '@angular/material';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class PrintViewPlugin extends Plugin {
   id = 'plugin.printView';
   _name = 'Print View Plugin';

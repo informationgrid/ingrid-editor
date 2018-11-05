@@ -8,7 +8,9 @@ import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs/index';
 import { debounceTime } from 'rxjs/operators';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UndoPlugin extends Plugin {
   id = 'plugin.undo';
   _name = 'Undo Plugin';

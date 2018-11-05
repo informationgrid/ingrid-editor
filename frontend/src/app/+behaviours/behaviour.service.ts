@@ -14,7 +14,9 @@ import { tap } from 'rxjs/internal/operators';
 declare const additionalBehaviours: any;
 declare const webpackJsonp: any;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class BehaviourService {
 
   behaviours: Behaviour[] = [];

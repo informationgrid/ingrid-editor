@@ -8,7 +8,9 @@ interface MenuItem {
   onlyAdmin?: boolean;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class MenuService {
 
   menu: Subject<void> = new Subject<void>();

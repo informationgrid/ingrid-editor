@@ -3,7 +3,9 @@ import { ModalService } from './modal/modal.service';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs/index';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ErrorService {
 
     constructor(private modalService: ModalService, private router: Router) { }

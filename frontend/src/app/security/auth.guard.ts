@@ -2,7 +2,9 @@ import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '
 import {Injectable} from '@angular/core';
 import {ModalService} from '../services/modal/modal.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthGuard implements CanActivate {
 
   constructor(private router: Router, private modalService: ModalService) {

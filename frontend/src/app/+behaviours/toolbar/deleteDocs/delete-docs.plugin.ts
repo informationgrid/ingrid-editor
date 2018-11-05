@@ -8,7 +8,9 @@ import {DeleteDialogComponent} from './delete-dialog.component';
 import { Subscription } from 'rxjs/index';
 import { MatDialog } from '@angular/material';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DeleteDocsPlugin extends Plugin {
   id = 'plugin.deleteDocs';
   _name = 'Delete Docs Plugin';

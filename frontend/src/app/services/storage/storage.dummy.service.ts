@@ -12,7 +12,9 @@ interface FormFields {
   _profile: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class StorageDummyService {
 
   beforeSave: Subject<any> = new Subject<any>();

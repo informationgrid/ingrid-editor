@@ -34,7 +34,9 @@ export interface Behaviour {
   _state?: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class BehavioursDefault {
 
   /**

@@ -5,7 +5,9 @@ import { IsoViewComponent } from './iso-view.component';
 import { FormularService } from '../../../services/formular/formular.service';
 import { MatDialog } from '@angular/material';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class IsoViewPlugin extends Plugin {
   id = 'plugin.isoView';
   _name = 'Iso View Plugin';

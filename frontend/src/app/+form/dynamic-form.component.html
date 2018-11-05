@@ -137,8 +137,8 @@
                              (mouseout)="markFavoriteHovered = false"
                              (click)="markFavorite($event)">
                             <span class="fa"
-                                  [class.fa-star]="false || markFavoriteHovered"
-                                  [class.fa-star-o]="true && !markFavoriteHovered"
+                                  [class.fa-star]="markFavoriteHovered"
+                                  [class.fa-star-o]="!markFavoriteHovered"
                             ></span>
                             {{getTitle()}}
                         </div>

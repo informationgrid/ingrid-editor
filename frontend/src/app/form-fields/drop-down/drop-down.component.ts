@@ -23,22 +23,27 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
   isDisabled = false;
 
   // The internal data model
-  private _value: any = {};
-  selected: any;
+  private _value: string;
+  selected: string;
+
+  simpleOptions: string[];
 
   // Placeholders for the callbacks
   private _onTouchedCallback: () => void;
 
   private _onChangeCallback: (x: any) => void;
+  filteredOptions: any[];
 
   constructor() {
   }
 
   ngOnInit() {
+    this.simpleOptions = this.options.map(option => option.value);
+    this.filteredOptions = this.simpleOptions;
   }
 
   get value() {
-    return this._value.value;
+    return this._value;
   }
 
   handleChange(value: string|any) {
@@ -56,7 +61,7 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
     if (optionValue && optionValue.id !== '-1') {
       const value = this.options.find( option => option.id === optionValue.id );
       if (value) {
-        this._value = value;
+        this._value = value.value;
       } else {
         console.error( 'Could not find option value for: ', optionValue );
       }
@@ -80,5 +85,8 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
     this.isDisabled = isDisabled;
   }
 
-
+  onInput(value: string): void {
+    this.filteredOptions = this.simpleOptions
+      .filter(option => option.toLowerCase().indexOf(value.toLowerCase()) === 0);
+  }
 }

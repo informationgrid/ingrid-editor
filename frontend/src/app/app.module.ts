@@ -1,8 +1,5 @@
 import {AppComponent} from './app.component';
-import {HashLocationStrategy, LocationStrategy} from '@angular/common';
-import {StorageDummyService} from './services/storage/storage.dummy.service';
-import {StorageService} from './services/storage/storage.service';
-import {FormToolbarService} from './+form/toolbar/form-toolbar.service';
+import {HashLocationStrategy, LocationStrategy, registerLocaleData} from '@angular/common';
 import {appRoutingProviders, routing} from './app.router';
 import {PluginsModule} from './+behaviours/behaviours.module';
 import {FieldsModule} from './+fields/fields.module';
@@ -11,18 +8,11 @@ import {IgeFormModule} from './+form/ige-form.module';
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, ErrorHandler, NgModule} from '@angular/core';
 import {MenuComponent} from './menu/menu.component';
-import {BehavioursDefault} from './+behaviours/behaviours';
-import {FormularService} from './services/formular/formular.service';
 import {ModalService} from './services/modal/modal.service';
 import {UserModule} from './+user/user.module';
-import {AuthGuard} from './security/auth.guard';
-import {FormChangeDeactivateGuard} from './security/form-change.guard';
-import {ErrorService} from './services/error.service';
 import {HelpComponent} from './help/help.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ImportExportModule} from './+importExport/import-export.module';
-import {ApiService} from './services/ApiService';
-import {KeycloakService} from './security/keycloak/keycloak.service';
 import {environment} from '../environments/environment';
 import {ConfigService} from './services/config.service';
 import {CatalogModule} from './+catalog/catalog.module';
@@ -30,7 +20,6 @@ import {LoginComponent} from './security/login.component';
 import {GlobalErrorHandler} from './error-handler';
 import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {FormFieldsModule} from './form-fields/form-fields.module';
-import {ProfileService} from './services/profile.service';
 import {
   MAT_DATE_LOCALE,
   MatButtonModule,
@@ -51,8 +40,13 @@ import {NewCatalogDialogComponent} from './dialogs/new-catalog/new-catalog-dialo
 import {UploadProfileDialogComponent} from './dialogs/upload-profile/upload-profile-dialog.component';
 import {FileUploadModule} from 'primeng/fileupload';
 import {IgeError} from './models/ige-error';
-import {NoCatalogAssignedGuard} from "./security/no-catalog-assigned.guard";
 import {DiscardConfirmDialogComponent} from "./dialogs/discard-confirm/discard-confirm-dialog.component";
+import {FormsModule} from '@angular/forms';
+import {de_DE, NgZorroAntdModule, NZ_I18N} from 'ng-zorro-antd';
+import de from '@angular/common/locales/de';
+import {ApiModule} from 'api';
+
+registerLocaleData(de);
 
 export function ConfigLoader(configService: ConfigService, modal: ModalService) {
   return () => {
@@ -98,15 +92,13 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     MatInputModule, MatFormFieldModule, MatSelectModule,
     // IGE-Modules
     IgeFormModule, DashboardModule, FieldsModule, CatalogModule, FormFieldsModule,
-    UserModule, ImportExportModule, PluginsModule, routing],
+    UserModule, ImportExportModule, PluginsModule, routing, FormsModule, NgZorroAntdModule,
+    ApiModule],
   exports: [
     MatRadioModule
   ],
   providers: [
-    appRoutingProviders, AuthGuard, NoCatalogAssignedGuard, FormChangeDeactivateGuard,
-    KeycloakService,
-    ErrorService, ConfigService, FormToolbarService, FormularService, StorageService,
-    StorageDummyService, BehavioursDefault, ModalService, ApiService, FormularService, ProfileService,
+    appRoutingProviders,
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy
@@ -133,7 +125,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    }
+    },
+    { provide: NZ_I18N, useValue: de_DE }
     // TODO: only for development!
     // mockKeycloakProvider
 

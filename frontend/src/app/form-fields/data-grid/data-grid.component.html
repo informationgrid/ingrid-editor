@@ -1,163 +1,44 @@
 <label>{{label}}</label>
 
-<button *ngIf="showAddButton" mat-button title="Add a new row" (click)="addRow($event)" class="pull-right">
-    <mat-icon>add</mat-icon>
-</button>
-<!--
-<button class="btn btn-outline-secondary btn-xs addButton" type="button" (click)="deleteRows()">
-    <span class="fa fa-minus"></span>
-</button>-->
-
-<!--<p-table [columns]="settings.columns" [value]="value" [(selection)]="rowSelection" [scrollable]="height !== null && true" [scrollHeight]="height + 'px'">
-    <ng-template pTemplate="caption">
-        &lt;!&ndash;Table name&ndash;&gt;
-        <button *ngIf="showAddButton" pButton class="ui-button-secondary addButton"
-                type="button"
-                title="Zeile hinzufügen"
-                (click)="addRow($event)">
-            <span class="fa fa-plus"></span>
-        </button>
-        <button *ngIf="rowSelection.length > 0" pButton class="ui-button-danger addButton"
-                type="button"
-                title="Ausgewählte Zeilen löschen"
-                (click)="deleteRows()">
-            <span class="fa fa-minus"></span>
-        </button>
-        <div class="clearfix"></div>
-    </ng-template>
-    <ng-template pTemplate="header" let-columns>
-        <tr>
-            <th style="width: 2.25em">
-                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-            </th>
-            <th *ngFor="let col of settings.columns">{{col.header}}</th>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-rowData let-columns="settings.columns">
-        <tr [pSelectableRow]="rowData">
-            <td style="width: 2.25em">
-                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-            </td>
-            <td *ngFor="let col of settings.columns; let colIndex=index" pEditableColumn>
-                <p-cellEditor>
-                    <ng-template pTemplate="input">
-                        <input *ngIf="col.controlType === 'textbox'" type="text" [(ngModel)]="rowData[col.field]" (blur)="onBlur()">
-
-                        <p-calendar *ngIf="col.controlType === 'datepicker'" [(ngModel)]="rowData[col.field]" appendTo="body" selectionMode="single"
-                                    [dateFormat]="'dd.mm.yy'"
-                                    dataType="string"
-                        ></p-calendar>
-                        &lt;!&ndash;<p-inputMask *ngIf="col.controlType === 'textbox'" [(ngModel)]="rowData[col.field]" mask="*?@*?.*?"></p-inputMask>&ndash;&gt;
-                        &lt;!&ndash; <select *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]">
-                            <option *ngFor="let option of col.options" [value]="option.id">{{option.value}}</option>
-                        </select>&ndash;&gt;
-
-                        <ige-drop-down *ngIf="col.controlType === 'dropdown'" [(ngModel)]="rowData[col.field]" appendTo="body"
-                                   [id]="col.field"
-                                   [isCombo]="true"
-                                   [options]="col.options">
-                        </ige-drop-down>
-                    </ng-template>
-                    <ng-template *ngIf="col.controlType === 'textbox'" pTemplate="output">
-                        {{rowData[col.field]}}
-                    </ng-template>
-                    <ng-template *ngIf="col.controlType === 'datepicker'" pTemplate="output">
-                        &lt;!&ndash;{{rowData[col.field] | date:'dd.MM.yyyy' || 'n/a'}}&ndash;&gt;
-                        {{rowData[col.field]}}
-                    </ng-template>
-                    <ng-template *ngIf="col.controlType === 'dropdown'" pTemplate="output">
-                        {{rowData[col.field]?.value}}
-                    </ng-template>
-                </p-cellEditor>
-            </td>
-        </tr>
-    </ng-template>
-</p-table>-->
-
-<!-- TODO: check out
-    https://github.com/krishna-agarwal/momentum-table
-    https://porter.io/github.com/iamisti/mdDataTable
--->
-
-<mat-table #table [dataSource]="value" style="overflow: auto; max-height: 300px; clear: both;">
-    <!-- Checkbox for selection -->
-    <ng-container matColumnDef="select">
-        <mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)="$event ? masterToggle() : null"
-                          [checked]="selection.hasValue() && isAllSelected()"
-                          [indeterminate]="selection.hasValue() && !isAllSelected()">
-            </mat-checkbox>
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <mat-checkbox (click)="$event.stopPropagation()"
-                          (change)="$event ? selection.toggle(row) : null"
-                          [checked]="selection.isSelected(row)">
-            </mat-checkbox>
-        </mat-cell>
-    </ng-container>
-
-    <!-- All other columns of the table -->
-    <ng-container *ngFor="let col of settings.columns" [matColumnDef]="col.field">
-        <mat-header-cell *matHeaderCellDef> {{col.header}} </mat-header-cell>
-        <ng-container *ngIf="col.controlType === 'textbox'">
-            <!--<mat-cell *matCellDef="let element"> {{element[col.field]}} </mat-cell>-->
-            <mat-cell *matCellDef="let element">
-                <mat-form-field floatLabel="never">
-                    <input matInput placeholder="???" [value]="element[col.field]" (input)="editField(col.field, $event.target.value, element)">
-                </mat-form-field>
-            </mat-cell>
-        </ng-container>
-        <ng-container *ngIf="col.controlType === 'dropdown'">
-            <mat-cell *matCellDef="let element"> {{element[col.field]?.value}} </mat-cell>
-        </ng-container>
-        <ng-container *ngIf="col.controlType === 'datepicker'">
-            <mat-cell *matCellDef="let element"> {{element[col.field]}} </mat-cell>
-        </ng-container>
-<!--        <ng-template *ngIf="col.controlType === 'datepicker'">
-            <mat-cell *matCellDef="let element"> {{element[col.field]}} </mat-cell>
-        </ng-template>-->
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="settings.availableColumns" style="position: sticky;top: 0;background-color: inherit;"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: settings.availableColumns;"></mat-row>
-</mat-table>
-
-<!--<mat-table #table [dataSource]="dataSource" style="overflow: auto; max-height: 300px;">
-    <ng-container matColumnDef="position">
-        <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="displayedColumns" style="position: sticky;top: 0;background-color: inherit;"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-</mat-table>-->
-
-<!-- Show this content if table is empty -->
-<div *ngIf="value.data.length === 0" class="text-center" title="Fügen Sie neue Zeilen hinzu mit '+' über der Tabelle.">Tabelle ist leer</div>
-
-<ng-template #addRowModal>
-    <div class="modal-header">
-        <h4 class="modal-title">Hinzufügen</h4>
-    </div>
-    <div class="modal-body">
-        <form #addForm="ngForm">
-            <div class="form-group">
-                <div *ngFor="let col of columns; let i=index" class="padding">
-                    <label class="control-label">{{col.editor.label}}</label>
-                    <input *ngIf="col.editor.controlType === 'textbox'" [focus]="i === focusNumber"
-                           [type]="col.editor.type" class="form-control" [(ngModel)]="addModel[col.editor.key]"
-                           [name]="col.editor.key">
-                    <select class="form-control" *ngIf="col.editor.controlType === 'dropdown'"
-                            [(ngModel)]="addModel[col.editor.key]" [name]="col.editor.key">
-                        <option *ngFor="let option of col.editor.options" [value]="option.id">{{option.value}}</option>
-                    </select>
-                    <!--<tree *ngIf="col.editor.controlType === 'tree'" (selected)="addFromTree($event, col.editor.key)"></tree>-->
-                </div>
+<button mat-button class="btnAdd" (click)="addRow()">+</button>
+<nz-table #basicTable [nzData]="value" [nzSize]="'small'" [nzShowPagination]="false"
+          [nzWidthConfig]="[null,null,'55px']">
+    <thead>
+    <tr>
+        <th *ngFor="let column of columns">{{column.editor.label}}</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of basicTable.data">
+        <td *ngFor="let column of columns">
+            <ng-container *ngIf="!editCache[data.__id]?.edit">
+                {{data[column.editor.key]}}
+            </ng-container>
+            <ng-container *ngIf="editCache[data.__id]?.edit">
+                <input type="text" nz-input [(ngModel)]="editCache[data.__id].data[column.editor.key]">
+            </ng-container>
+        </td>
+        <td class="-align-right">
+            <div class="editable-row-operations">
+                <ng-container *ngIf="!editCache[data.__id]?.edit">
+                    <a (click)="startEdit(data.__id)" title="Bearbeiten">
+                        <i nz-icon type="edit" theme="outline"></i>
+                    </a>
+                    <a (click)="deleteRow(data.__id)" title="Löschen">
+                        <i nz-icon type="delete"></i>
+                    </a>
+                </ng-container>
+                <ng-container *ngIf="editCache[data.__id]?.edit" title="Übernehmen">
+                    <a (click)="saveEdit(data.__id)">
+                        <i nz-icon type="check" theme="outline"></i>
+                    </a>
+                    <!--<nz-popconfirm [nzTitle]="'Sure to cancel?'" (nzOnConfirm)="cancelEdit(data.__id)">
+                        <a nz-popconfirm>Cancel</a>
+                    </nz-popconfirm>-->
+                </ng-container>
             </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-link" (click)="addRowFromDialog()">Hinzufügen</button>
-        <button class="btn btn-link" (click)="isoViewModalRef.hide()">Schließen</button>
-    </div>
-</ng-template>
+        </td>
+    </tr>
+    </tbody>
+</nz-table>

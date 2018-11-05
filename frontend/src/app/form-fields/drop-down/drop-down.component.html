@@ -1,31 +1,15 @@
-<!--<select #mySelect class="form-control" (change)="handleChange(mySelect.value)">
-    <option *ngFor="let opt of options" [value]="opt.id" [selected]="opt === _value" >{{opt.value}}</option>
-</select>-->
-
 <!-- TODO: show input error for non-combo boxes; when no filter then jump at least to the language -->
 
 <!-- TODO: check out Combo replacement: https://stackblitz.com/edit/angular-material2-issue-v5gpri -->
 
-<p-dropdown [options]="options"
-            placeholder="Bitte auswählen"
-            optionLabel="value"
-            dataKey="id"
-            [editable]="isCombo"
-            [style]="{'width':'100%'}"
-            [(ngModel)]="selected"
-            appendTo="body"
-            (onChange)="handleChange($event.value)"></p-dropdown>
 <!--
-<combo-box #box [listData]="options"
-           [forceSelection]="!isCombo"
-           [displayField]="'value'"
-           [valueField]="'id'"
-           [localFilter]="useFilter"
-           [localFilterCaseSensitive]="false"
-           [typeAheadDelay]="50"
-           [inputPlaceholder]="'Keine Auswahl'"
-           (onSelect)="handleChange($event.value)"
-           (onCreate)="handleChange($event)"
-           (onBlur)="handleChange(box._currVal)"
-           [currVal]="_value.value"> </combo-box>
+<nz-select nzMode="default" style="width: 100%;" nzPlaceHolder="Tag Mode" [(ngModel)]="selected">
+    <nz-option *ngFor="let option of options" [nzLabel]="option.value" [nzValue]="option.id">
+    </nz-option>
+</nz-select>
 -->
+
+<input placeholder="Auswählen" nz-input [(ngModel)]="selected" (input)="onInput($event.target?.value)" [nzAutocomplete]="auto">
+<nz-autocomplete [nzDataSource]="filteredOptions" #auto>
+    <!--<nz-auto-option *ngFor="let option of simpleOptions" [nzValue]="option.value">{{option.value}}</nz-auto-option>-->
+</nz-autocomplete>

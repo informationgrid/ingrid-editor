@@ -10,7 +10,9 @@ import { CopyMoveEnum } from './enums';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CopyCutPastePlugin extends Plugin {
   id = 'plugin.copy.cut.paste';
   _name = 'Copy Cut Paste';
