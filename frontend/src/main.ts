@@ -3,10 +3,12 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {AppModule} from './app/app.module';
 import {environment} from './environments/environment';
-import { hmrBootstrap } from './hmr';
+import {hmrBootstrap} from './hmr';
+import {enableAkitaProdMode} from '@datorama/akita';
 
 if (environment.production) {
   enableProdMode();
+  enableAkitaProdMode()
 }
 
 const bootstrap = () => platformBrowserDynamic().bootstrapModule(AppModule);

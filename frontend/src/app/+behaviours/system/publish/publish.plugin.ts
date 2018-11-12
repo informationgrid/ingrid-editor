@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {FormularService} from '../../../services/formular/formular.service';
 import {ModalService} from '../../../services/modal/modal.service';
-import {StorageService} from '../../../services/storage/storage.service';
+import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
 import { IgeError } from '../../../models/ige-error';
 
@@ -23,7 +23,7 @@ export class PublishPlugin extends Plugin {
   constructor(private formToolbarService: FormToolbarService,
               private formService: FormularService,
               private modalService: ModalService,
-              private storageService: StorageService) {
+              private storageService: DocumentService) {
     super();
     this.isActive = true;
   }

@@ -1,24 +1,24 @@
-import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
-import { FormControlService } from '../services/form-control.service';
-import { Container, IFieldBase } from './controls';
-import { BehaviourService } from '../+behaviours/behaviour.service';
-import { FormularService } from '../services/formular/formular.service';
-import { Behaviour } from '../+behaviours/behaviours';
-import { FormToolbarService } from './toolbar/form-toolbar.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { StorageService } from '../services/storage/storage.service';
-import { ModalService } from '../services/modal/modal.service';
-import { PartialGeneratorField } from './controls/field-partial-generator';
-import { UpdateType } from '../models/update-type.enum';
-import { ErrorService } from '../services/error.service';
-import { Role } from '../models/user-role';
-import { SelectedDocument } from './sidebars/selected-document.model';
-import { RoleService } from '../+user/role.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Subscription } from 'rxjs/index';
-import { MatDialog } from '@angular/material';
-import { NewDocumentComponent } from '../dialogs/new-document/new-document.component';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {FormArray, FormGroup} from '@angular/forms';
+import {FormControlService} from '../services/form-control.service';
+import {Container, IFieldBase} from './controls';
+import {BehaviourService} from '../services/behavior/behaviour.service';
+import {FormularService} from '../services/formular/formular.service';
+import {Behaviour} from '../+behaviours/behaviours';
+import {FormToolbarService} from './toolbar/form-toolbar.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {DocumentService} from '../services/document/document.service';
+import {ModalService} from '../services/modal/modal.service';
+import {PartialGeneratorField} from './controls/field-partial-generator';
+import {UpdateType} from '../models/update-type.enum';
+import {ErrorService} from '../services/error.service';
+import {Role} from '../models/user-role';
+import {SelectedDocument} from './sidebars/selected-document.model';
+import {RoleService} from '../services/role/role.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Subscription} from 'rxjs/index';
+import {MatDialog} from '@angular/material';
+import {NewDocumentComponent} from '../dialogs/new-document/new-document.component';
 
 interface FormData extends Object {
   _id?: string;
@@ -82,7 +82,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
-              private storageService: StorageService, private modalService: ModalService,
+              private storageService: DocumentService, private modalService: ModalService,
               private dialog: MatDialog,
               private roleService: RoleService,
               // private wizardService: WizardService,
@@ -260,7 +260,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // notify browser/tree of new dataset
       const newDoc = {_profile: type, _parent: this.data._parent};
-      this.storageService.saveData( newDoc, true );
+      this.storageService.save( newDoc, true );
 
     } catch (ex) {
       console.error( 'Error adding new document: ', ex );
@@ -333,7 +333,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.storageService.loadData( id ).subscribe( data => {
+    this.storageService.load( id ).subscribe(data => {
       console.log( 'loaded data:', data );
 
       this.storageService.beforeLoad.next();
@@ -385,7 +385,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.form.reset(this.form.value);
     this.form.markAsPristine();
 
-    this.storageService.saveData( data, false ).then( res => {
+    this.storageService.save( data, false ).then(res => {
       this.data._id = res._id;
       // this.messageService.show( 'Dokument wurde gespeichert' );
       // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});

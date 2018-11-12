@@ -2,7 +2,7 @@ import {Behaviour} from '../../behaviours';
 import {BaseBehaviour} from '../../base.behaviour';
 import {EventManager} from '@angular/platform-browser';
 import {FormGroup} from '@angular/forms';
-import {StorageService} from '../../../services/storage/storage.service';
+import {DocumentService} from '../../../services/document/document.service';
 import {Inject} from '@angular/core';
 /**
  * OpenDataBehaviour
@@ -16,7 +16,7 @@ export class OpenDataBehaviour extends BaseBehaviour implements Behaviour {
 
   conformEl: HTMLElement = null;
 
-  constructor(@Inject(StorageService) private storageService: StorageService) {
+  constructor(@Inject(DocumentService) private storageService: DocumentService) {
     super();
   }
 

@@ -1,5 +1,5 @@
 import { Component, Inject, Injector, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import {StorageService} from '../../../services/storage/storage.service';
+import {DocumentService} from '../../../services/document/document.service';
 import {Router} from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 
@@ -20,7 +20,7 @@ import { MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 })
 export class DeleteDialogComponent implements OnInit {
 
-  constructor(private storageService: StorageService,
+  constructor(private storageService: DocumentService,
               private router: Router, @Inject(MAT_DIALOG_DATA) public docsToDelete: any[]) {
   }
 

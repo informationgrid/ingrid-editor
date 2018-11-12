@@ -1,5 +1,5 @@
 import { ProfileService } from '../../../services/profile.service';
-import { StorageService } from '../../../services/storage/storage.service';
+import { DocumentService } from '../../../services/document/document.service';
 import { FormularService } from '../../../services/formular/formular.service';
 import { Injectable } from '@angular/core';
 import { DynamicFlatNode } from './DynamicFlatNode';
@@ -14,7 +14,7 @@ export class DynamicDatabase {
 
   rootLevelNodes = null;
 
-  constructor(private storageService: StorageService, private profileService: ProfileService,
+  constructor(private storageService: DocumentService, private profileService: ProfileService,
               private formularService: FormularService) {
   }
 
@@ -30,7 +30,7 @@ export class DynamicDatabase {
 
   query(id: string): Promise<any> {
     return new Promise( (resolve, reject) => {
-      this.storageService.getChildDocuments( id ).subscribe( response => {
+      this.storageService.getChildren( id ).subscribe(response => {
         console.log( 'got children', response );
         const nodes = this.prepareNodes( response );
         resolve( nodes );

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ConfigService, Configuration } from '../services/config.service';
+import { ConfigService, Configuration } from '../services/config/config.service';
 import { ErrorService } from '../services/error.service';
 import { FormularService } from '../services/formular/formular.service';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/internal/operators';
 import { ProfileService } from '../services/profile.service';
+import {DocumentService} from "../services/document/document.service";
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -30,6 +31,7 @@ export class DashboardComponent implements OnInit {
 
 
   constructor(private http: HttpClient, configService: ConfigService, private errorService: ErrorService,
+              private docService: DocumentService,
               private formularService: FormularService, private profileService: ProfileService) {
     this.configuration = configService.getConfiguration();
   }
@@ -43,10 +45,10 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchStatistic() {
-    this.http.get<any>(this.configuration.backendUrl + 'statistic').subscribe(
+    /*this.http.get<any>(this.configuration.backendUrl + 'statistic').subscribe(
       data => this.prepareData(data)
       // (err) => this.errorService.handle(err)
-    );
+    );*/
   }
 
   fetchData(query?: string) {
@@ -54,8 +56,7 @@ export class DashboardComponent implements OnInit {
       query = '';
     }
 
-    this.http.get<any[]>(this.configuration.backendUrl + 'datasets?query=' + query +
-      '&sort=_modified&fields=_id,_profile,_modified,' + this.titleFields)
+    this.docService.find('')
       .pipe(
         map(json => {
           return json.filter(item => item && item._profile !== 'FOLDER');

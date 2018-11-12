@@ -1,4 +1,5 @@
 import {UpdateType} from './update-type.enum';
+import {IgeDocument} from "./ige-document";
 
 export interface DocMainInfo {
   _id: string;

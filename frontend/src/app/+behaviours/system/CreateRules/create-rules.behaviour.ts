@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {FormularService} from '../../../services/formular/formular.service';
-import {StorageService} from '../../../services/storage/storage.service';
+import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
 import { Subscription } from 'rxjs/index';
 
@@ -23,7 +23,7 @@ export class CreateDocRulesPlugin extends Plugin {
   }
 
   constructor(@Inject( FormularService ) private formService: FormularService,
-              @Inject( StorageService ) private storageService: StorageService) {
+              @Inject( DocumentService ) private storageService: DocumentService) {
     super();
   }
 
@@ -49,8 +49,8 @@ export class CreateDocRulesPlugin extends Plugin {
         data.rootOption = false;
       } else {
         // TODO: check for parent folder title
-        this.storageService.getPathToDataset( data.selectedDataset.id ).toPromise()
-          .then( path => this.storageService.loadData( path[0] ).toPromise() )
+        this.storageService.getPath( data.selectedDataset.id ).toPromise()
+          .then( path => this.storageService.load( path[0] ).toPromise() )
           .then( rootNode => console.debug( 'Path: ', rootNode ) );
 
         data.docTypes = data.docTypes.filter( (type: any) => type.id !== 'FOLDER' );

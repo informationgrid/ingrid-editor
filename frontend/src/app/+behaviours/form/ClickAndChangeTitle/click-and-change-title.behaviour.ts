@@ -2,7 +2,7 @@ import {Behaviour} from '../../behaviours';
 import {EventManager} from '@angular/platform-browser';
 import {FormGroup} from '@angular/forms';
 import {BaseBehaviour} from '../../base.behaviour';
-import {StorageService} from '../../../services/storage/storage.service';
+import {DocumentService} from '../../../services/document/document.service';
 import {Inject} from '@angular/core';
 /**
  * OpenDataBehaviour
@@ -14,7 +14,7 @@ export class ClickAndChangeTitleBehaviour extends BaseBehaviour implements Behav
   defaultActive = true;
   forProfile = 'UVP';
 
-  constructor(@Inject(StorageService) private storageService: StorageService) {
+  constructor(@Inject(DocumentService) private storageService: DocumentService) {
     super();
     console.log('behaviour constructor storageService:', storageService);
   }

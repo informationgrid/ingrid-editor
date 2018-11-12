@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Plugin} from './plugin';
 import {Behaviour} from './behaviours';
-import {BehaviourService} from './behaviour.service';
+import {BehaviourService} from '../services/behavior/behaviour.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FormBuilder, FormGroup } from '@angular/forms';
 

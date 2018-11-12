@@ -4,7 +4,7 @@ import { MetadataTreeComponent } from './tree.component';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { FormularService } from '../../../services/formular/formular.service';
-import { StorageService } from '../../../services/storage/storage.service';
+import { DocumentService } from '../../../services/document/document.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UpdateDatasetInfo } from '../../../models/update-dataset-info.model';
 import { UpdateType } from '../../../models/update-type.enum';
@@ -34,7 +34,7 @@ const childrenNoProfile = [{_id: '1'}, {_id: '2'}, {_id: '3'}];
 let childrenTree = childrenThree;
 
 describe( 'TreeComponent', () => {
-  let storageService: StorageService = null;
+  let storageService: DocumentService = null;
   beforeEach( () => {
     const subject = new Subject<UpdateDatasetInfo>();
     const storageServiceStub = {
@@ -66,7 +66,7 @@ describe( 'TreeComponent', () => {
       providers: [
         {provide: Router, useClass: RouterMock},
         {provide: ActivatedRoute, useValue: ActivatedRouteMock},
-        {provide: StorageService, useValue: storageServiceStub},
+        {provide: DocumentService, useValue: storageServiceStub},
         {provide: FormularService, useValue: formularServiceStub},
         {provide: FormToolbarService, useValue: formToolbarServiceStub},
         ErrorService, ModalService],
@@ -112,7 +112,7 @@ describe( 'TreeComponent', () => {
     tick( 10 );
 
     // add a new document via the storage service
-    storageService = TestBed.get( StorageService );
+    storageService = TestBed.get( DocumentService );
     storageService.datasetsChanged.next( {type: UpdateType.New, data: [{_id: '-1', _profile: 'A'}]} );
 
     fixture.detectChanges();
@@ -133,7 +133,7 @@ describe( 'TreeComponent', () => {
     tick( 10 );
 
     // add a new document via the storage service
-    storageService = TestBed.get( StorageService );
+    storageService = TestBed.get( DocumentService );
     storageService.datasetsChanged.next( {type: UpdateType.New, data: [{_id: '-1', _profile: 'A'}]} );
 
     tick( 10 );
@@ -159,7 +159,7 @@ describe( 'TreeComponent', () => {
     fixture.detectChanges();
 
     // remove document via the storage service
-    storageService = TestBed.get( StorageService );
+    storageService = TestBed.get( DocumentService );
     storageService.datasetsChanged.next( {type: UpdateType.Delete, data: [{_id: '2'}]} );
 
     fixture.detectChanges();
@@ -180,7 +180,7 @@ describe( 'TreeComponent', () => {
     tick( 10 );
 
     // add a new document via the storage service
-    storageService = TestBed.get( StorageService );
+    storageService = TestBed.get( DocumentService );
     storageService.datasetsChanged.next( {type: UpdateType.New, data: [{_id: '-1', _profile: 'A', _parent: '3'}]} );
 
     // find the title element in the DOM using a CSS selector
@@ -216,7 +216,7 @@ describe( 'TreeComponent', () => {
     tick( 10 );
 
     // add a new document and update it via the storage service
-    storageService = TestBed.get( StorageService );
+    storageService = TestBed.get( DocumentService );
     storageService.datasetsChanged.next( {type: UpdateType.New, data: [{_id: '-1', _profile: 'A', _parent: '3'}]} );
 
     // find the title element in the DOM using a CSS selector
@@ -251,7 +251,7 @@ describe( 'TreeComponent', () => {
     tick( 10 );
 
     // add a new document via the storage service
-    storageService = TestBed.get( StorageService );
+    storageService = TestBed.get( DocumentService );
     storageService.datasetsChanged.next( {type: UpdateType.New, data: [{_id: '-1', _profile: 'A', _parent: '3'}]} );
 
     // find the title element in the DOM using a CSS selector

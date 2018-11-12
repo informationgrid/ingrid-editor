@@ -3,9 +3,9 @@ import { EventManager } from '@angular/platform-browser';
 import { Profile } from '../../app/services/formular/profile';
 import { Container, DropdownField, TextareaField, TextboxField } from '../../app/+form/controls';
 import { Behaviour } from '../../app/+behaviours/behaviours';
-import { StorageService } from '../../app/services/storage/storage.service';
+import { DocumentService } from '../../app/services/document/document.service';
 import { OpenTableField } from '../../app/+form/controls/field-opentable';
-import { CodelistService } from '../../app/+form/services/codelist.service';
+import { CodelistService } from '../../app/services/codelist/codelist.service';
 
 export class ProfileAddress implements Profile {
   id = 'ADDRESS';
@@ -179,7 +179,7 @@ export class ProfileAddress implements Profile {
     }
   ];
 
-  constructor(storageService: StorageService, codelistService: CodelistService) {
+  constructor(storageService: DocumentService, codelistService: CodelistService) {
     codelistService.byIds(['6200', '6400']).then(codelists => {
       this.countrySelect.options = codelists[0];
       this.adminAreaSelect.options = codelists[1];

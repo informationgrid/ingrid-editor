@@ -1,7 +1,7 @@
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ModalService } from './services/modal/modal.service';
-import { BehaviourService } from './+behaviours/behaviour.service';
-import { RoleService } from './+user/role.service';
+import { BehaviourService } from './services/behavior/behaviour.service';
+import { RoleService } from './services/role/role.service';
 import { MatDialog } from '@angular/material';
 
 @Component( {

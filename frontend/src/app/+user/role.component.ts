@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import {ModalService} from '../services/modal/modal.service';
 import {ErrorService} from '../services/error.service';
-import {RoleService} from './role.service';
+import {RoleService} from '../services/role/role.service';
 import {MenuService} from '../menu/menu.service';
 import {Role, RoleAttribute} from '../models/user-role';
 import {MetadataTreeComponent} from '../+form/sidebars/tree/tree.component';

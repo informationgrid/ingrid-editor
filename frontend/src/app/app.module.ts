@@ -14,7 +14,7 @@ import {HelpComponent} from './help/help.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ImportExportModule} from './+importExport/import-export.module';
 import {environment} from '../environments/environment';
-import {ConfigService} from './services/config.service';
+import {ConfigService} from './services/config/config.service';
 import {CatalogModule} from './+catalog/catalog.module';
 import {LoginComponent} from './security/login.component';
 import {GlobalErrorHandler} from './error-handler';
@@ -45,6 +45,20 @@ import {FormsModule} from '@angular/forms';
 import {de_DE, NgZorroAntdModule, NZ_I18N} from 'ng-zorro-antd';
 import de from '@angular/common/locales/de';
 import {ApiModule} from 'api';
+import {DocumentDataService} from "./services/document/document-data.service";
+import {DocumentMockService} from "./services/document/document-mock.service";
+import {ConfigDataService} from "./services/config/config-data.service";
+import {ConfigMockService} from "./services/config/config-mock.service";
+import {CodelistDataService} from "./services/codelist/codelist-data.service";
+import {CodelistMockService} from "./services/codelist/codelist-mock.service";
+import {RoleDataService} from "./services/role/role-data.service";
+import {RoleMockService} from "./services/role/role-mock.service";
+import {BehaviorDataService} from "./services/behavior/behavior-data.service";
+import {BehaviorMockService} from "./services/behavior/behavior-mock.service";
+import {CatalogDataService} from "./+catalog/services/catalog-data.service";
+import {CatalogMockService} from "./+catalog/services/catalog-mock.service";
+import {UserDataService} from "./services/user/user-data.service";
+import {UserMockService} from "./services/user/user-mock.service";
 
 registerLocaleData(de);
 
@@ -60,7 +74,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
         if (!isAdmin) {
 
           // check if user has any assigned catalog
-          if (userInfo.assignedCatalogs.length === 0) {
+          if (!userInfo.assignedCatalogs || userInfo.assignedCatalogs.length === 0) {
             const error = new IgeError();
             error.setMessage( 'The user has no assigned catalog. An administrator has to assign a catalog to this user.' );
             throw error;
@@ -126,9 +140,35 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
     },
+    {
+      provide: DocumentDataService,
+      useClass: environment.production ? DocumentDataService : DocumentMockService
+    },
+    {
+      provide: ConfigDataService,
+      useClass: environment.production ? ConfigDataService : ConfigMockService
+    },
+    {
+      provide: CodelistDataService,
+      useClass: environment.production ? CodelistDataService : CodelistMockService
+    },
+    {
+      provide: RoleDataService,
+      useClass: environment.production ? RoleDataService : RoleMockService
+    },
+    {
+      provide: BehaviorDataService,
+      useClass: environment.production ? BehaviorDataService : BehaviorMockService
+    },
+    {
+      provide: CatalogDataService,
+      useClass: environment.production ? CatalogDataService : CatalogMockService
+    },
+    {
+      provide: UserDataService,
+      useClass: environment.production ? UserDataService : UserMockService
+    },
     { provide: NZ_I18N, useValue: de_DE }
-    // TODO: only for development!
-    // mockKeycloakProvider
 
   ], // additional providers
 

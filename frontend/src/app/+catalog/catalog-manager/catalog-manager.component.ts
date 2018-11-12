@@ -1,6 +1,6 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Catalog, CatalogService } from '../catalog.service';
-import { ConfigService, Configuration } from '../../services/config.service';
+import { Catalog, CatalogService } from '../services/catalog.service';
+import { ConfigService, Configuration } from '../../services/config/config.service';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/index';
 import { MatDialog } from '@angular/material';

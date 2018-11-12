@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormularService } from '../../../services/formular/formular.service';
-import { StorageService } from '../../../services/storage/storage.service';
+import { DocumentService } from '../../../services/document/document.service';
 import { Plugin } from '../../plugin';
 import { FormToolbarService, Separator, ToolbarItem } from '../../../+form/toolbar/form-toolbar.service';
 import { UpdateType } from '../../../models/update-type.enum';
@@ -33,7 +33,7 @@ export class CopyCutPastePlugin extends Plugin {
   constructor(private formService: FormularService,
               // private messageService: MessageService,
               private toolbarService: FormToolbarService,
-              private storageService: StorageService,
+              private storageService: DocumentService,
               private modalService: ModalService,
               private dialog: MatDialog) {
     super();
@@ -121,9 +121,9 @@ export class CopyCutPastePlugin extends Plugin {
 
     let result = null;
     if (mode === CopyMoveEnum.COPY) {
-      result = this.storageService.copyDocuments(this.copiedDatasets, dest, includeTree);
+      result = this.storageService.copy(this.copiedDatasets, dest, includeTree);
     } else {
-      result = this.storageService.moveDocuments(this.cutDatasets, dest, includeTree);
+      result = this.storageService.move(this.cutDatasets, dest, includeTree);
 
     }
 

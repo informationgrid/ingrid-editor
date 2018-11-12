@@ -1,7 +1,7 @@
 import {BaseBehaviour} from '../../base.behaviour';
 import {Behaviour} from '../../behaviours';
 import {Inject} from '@angular/core';
-import {StorageService} from '../../../services/storage/storage.service';
+import {DocumentService} from '../../../services/document/document.service';
 import {FormGroup} from '@angular/forms';
 import {EventManager} from '@angular/platform-browser';
 
@@ -15,7 +15,7 @@ export class ShowDateInSectionBehaviour extends BaseBehaviour implements Behavio
   defaultActive = true;
   forProfile = 'UVP';
 
-  constructor(@Inject(StorageService) private storageService: StorageService) {
+  constructor(@Inject(DocumentService) private storageService: DocumentService) {
     super();
   }
 

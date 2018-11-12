@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormularService } from '../../../services/formular/formular.service';
-import { StorageService } from '../../../services/storage/storage.service';
+import { DocumentService } from '../../../services/document/document.service';
 import { MAT_DIALOG_DATA } from '@angular/material';
 
 @Component( {
@@ -23,7 +23,7 @@ export class CreateFolderComponent implements OnInit {
   }
 
   constructor(private formService: FormularService,
-              private storageService: StorageService,
+              private storageService: DocumentService,
               @Inject(MAT_DIALOG_DATA) public data: any) {
     this.parent = data.parent;
   }
@@ -43,7 +43,7 @@ export class CreateFolderComponent implements OnInit {
       const folder = CreateFolderComponent.createNewFolderDoc(value, parent);
 
       // by saving the folder an update event is sent automatically to notify tree
-      this.storageService.saveData(folder, true);
+      this.storageService.save(folder, true);
 
     } else {
       // notify user to enter a title for the folder

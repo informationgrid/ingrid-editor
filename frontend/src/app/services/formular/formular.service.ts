@@ -3,7 +3,7 @@ import { IFieldBase } from '../../+form/controls';
 import { Profile } from './profile';
 import { SelectedDocument } from '../../+form/sidebars/selected-document.model';
 import { HttpClient } from '@angular/common/http';
-import { ConfigService, Configuration } from '../config.service';
+import { ConfigService, Configuration } from '../config/config.service';
 import { ProfileService } from '../profile.service';
 import { Observable, Subject } from 'rxjs/index';
 

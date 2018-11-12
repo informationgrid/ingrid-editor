@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthInfo, KeycloakAuthData, KeycloakService } from './keycloak.service';
-import { Configuration } from '../../services/config.service';
+import { Configuration } from '../../services/config/config.service';
 
 // access token with a very long expiry date
 const mockToken = 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ1N2tJODdXNDhydjJ3WlFBOUNxVWY2d1p6bnh3R1pHUldmYjE4' +

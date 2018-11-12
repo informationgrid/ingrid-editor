@@ -1,12 +1,12 @@
 import {Component, OnInit, Inject} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
-import {StorageService} from '../../../services/storage/storage.service';
+import {DocumentService} from '../../../services/document/document.service';
 
 @Component( {
   templateUrl: './demo.component.html'
 } )
 export class DemoComponent implements OnInit {
-  constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService, private storageService: StorageService) {
+  constructor(@Inject( FormToolbarService ) private formToolbarService: FormToolbarService, private storageService: DocumentService) {
   }
 
   ngOnInit() {

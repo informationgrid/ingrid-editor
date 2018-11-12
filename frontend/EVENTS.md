@@ -1,7 +1,7 @@
 FormToolbarService
     toolbarEvent$
 
-StorageService
+DocumentService
     afterLoadAndSet$
     afterProfileSwitch$
     datasetsChanged$

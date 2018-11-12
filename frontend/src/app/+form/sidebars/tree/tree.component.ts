@@ -1,17 +1,16 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {StorageService} from '../../../services/storage/storage.service';
+import {DocumentService} from '../../../services/document/document.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
 import {SelectedDocument} from '../selected-document.model';
 import {DocMainInfo} from '../../../models/update-dataset-info.model';
-import {Subscription} from 'rxjs/index';
+import {Subscription} from 'rxjs';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {UpdateType} from '../../../models/update-type.enum';
 import {DynamicDatabase} from './DynamicDatabase';
 import {DynamicFlatNode} from './DynamicFlatNode';
 import {DynamicDataSource} from './DynamicDataSource';
-import {ConfigService} from "../../../services/config.service";
-import {IgeError} from "../../../models/ige-error";
+import {ConfigService} from "../../../services/config/config.service";
 
 
 @Component({
@@ -51,7 +50,7 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
     return _nodeData.expandable;
   };
 
-  constructor(private database: DynamicDatabase, private storageService: StorageService, private router: Router,
+  constructor(private database: DynamicDatabase, private storageService: DocumentService, private router: Router,
               private route: ActivatedRoute, private formularService: FormularService, private configService: ConfigService) {
 
     this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
@@ -79,7 +78,7 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
 
             if (selectedId) {
               // get path to node
-              this.subscriptions.push(this.storageService.getPathToDataset(selectedId).subscribe(path => {
+              this.subscriptions.push(this.storageService.getPath(selectedId).subscribe(path => {
                 console.log('path: ' + path);
                 this.expandToPath(path.reverse())
                   .then(() => {

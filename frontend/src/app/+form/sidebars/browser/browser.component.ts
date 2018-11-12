@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from "@angular/core";
-import {StorageService} from "../../../services/storage/storage.service";
+import {DocumentService} from "../../../services/document/document.service";
 // import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
 import {ActivatedRoute} from '@angular/router';
 import {FormularService} from '../../../services/formular/formular.service';
@@ -26,8 +26,8 @@ export class BrowserComponent implements OnInit, OnDestroy {
 
   subscription: Subscription;
 
-  constructor(private storageService: StorageService, private route: ActivatedRoute,
-    private formularService: FormularService, private profileService: ProfileService) {
+  constructor(private storageService: DocumentService, private route: ActivatedRoute,
+              private formularService: FormularService, private profileService: ProfileService) {
   }
 
   ngOnInit() {
@@ -57,7 +57,7 @@ export class BrowserComponent implements OnInit, OnDestroy {
 
   query() {
     // initially show all documents
-    this.storageService.findDocuments( this.searchString ).subscribe( (docs: any[]) => {
+    this.storageService.find( this.searchString ).subscribe( (docs: any[]) => {
       this.entries = docs
         .filter(doc => doc._profile !== undefined)
         .filter(doc => !this.filter || this.matchFilter(doc) )

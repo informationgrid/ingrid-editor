@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { ConfigService, Configuration } from '../../services/config.service';
-import { ErrorService } from '../../services/error.service';
-import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/internal/operators';
+import {Injectable} from '@angular/core';
+import {ConfigService, Configuration} from '../config/config.service';
+import {ErrorService} from '../error.service';
+import {HttpClient} from '@angular/common/http';
+import {CodelistDataService} from "./codelist-data.service";
 
 export interface Codelist {
   id: string;
@@ -15,20 +15,21 @@ export interface CodelistEntry {
   data?: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CodelistService {
 
   codelists: { [id: string]: Codelist } = {};
   pendingCodelists: { [id: string]: Promise<CodelistEntry[]> } = {};
-  private configuration: Configuration;
 
   static getLocalisedValue(locals: any[]) {
     const result = locals.filter( local => local[0] === 'de' );
     return result[0][1];
   }
 
-  constructor(private http: HttpClient, private configService: ConfigService, private errorService: ErrorService) {
-    this.configuration = configService.getConfiguration();
+  constructor(private errorService: ErrorService,
+              private dataService: CodelistDataService) {
   }
 
   byId(id: string): Promise<CodelistEntry[]> {
@@ -44,13 +45,7 @@ export class CodelistService {
 
     const myPromise = new Promise<CodelistEntry[]>( (resolve, reject) => {
 
-      this.http.get( this.configuration.backendUrl + 'codelist/' + id )
-        .pipe(
-          /*catchError( (err) => {
-            this.codelists[id] = null;
-            return this.errorService.handleOwn( 'Could not load codelist: ' + id, err.message );
-          } )*/
-        )
+      this.dataService.byId(id)
         .subscribe( (data: any) => {
           if (data === null) {
             reject( 'Codelist could not be read: ' + id );

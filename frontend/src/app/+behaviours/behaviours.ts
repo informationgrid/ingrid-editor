@@ -3,7 +3,7 @@ import {EventManager} from '@angular/platform-browser';
 import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {AddControlBehaviour} from './system/demo/behaviours/AddControl/addControl.behaviour';
-import {StorageService} from '../services/storage/storage.service';
+import {DocumentService} from '../services/document/document.service';
 import {ShowDateInSectionBehaviour} from './form/ShowDateInSection/show-date-in-section.behaviour';
 import {TitleValidatorBehaviour} from './form/TitleValidator/title-validator.behaviour';
 import {Plugin} from './plugin';
@@ -65,7 +65,7 @@ export class BehavioursDefault {
   ];
 
   constructor(private formService: FormularService,
-              private storageService: StorageService,
+              private storageService: DocumentService,
               private statisticPlugin: StatisticPlugin,
               private workflowPlugin: WorkflowPlugin,
               private printviewPlugin: PrintViewPlugin,

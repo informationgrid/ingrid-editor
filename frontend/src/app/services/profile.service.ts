@@ -2,10 +2,10 @@
 import * as AngularCore from '@angular/core';
 import {Compiler, Injectable, Injector, NgModuleFactory} from '@angular/core';
 import {environment} from '../../environments/environment';
-import {ConfigService, Configuration} from './config.service';
+import {ConfigService, Configuration} from './config/config.service';
 import {Profile} from './formular/profile';
-import {StorageService} from './storage/storage.service';
-import {CodelistService} from '../+form/services/codelist.service';
+import {DocumentService} from './document/document.service';
+import {CodelistService} from './codelist/codelist.service';
 import * as AngularCommon from '@angular/common';
 import * as IgeApi from 'api';
 import {HttpClient} from "@angular/common/http";
@@ -25,7 +25,7 @@ export class ProfileService {
 
   constructor(public injector: Injector,
               private http: HttpClient, configService: ConfigService,
-              storageService: StorageService, codelistService: CodelistService, private compiler: Compiler) {
+              storageService: DocumentService, codelistService: CodelistService, private compiler: Compiler) {
     this.configuration = configService.getConfiguration();
 
     this.initialized = new Promise((resolve, reject) => {

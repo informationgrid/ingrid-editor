@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import {Profile} from "./formular/profile";
+import {Injectable} from '@angular/core';
+import {Profile} from "../formular/profile";
+import {ConfigDataService} from "./config-data.service";
 
 export class Configuration {
   constructor(public keykloakBaseUrl: string, public backendUrl: string) {
@@ -25,11 +26,13 @@ export class ConfigService {
   private titleFields: string[];
   promiseProfilePackageLoaded: Promise<Profile[]>;
 
+  constructor(private dataService: ConfigDataService) {}
+
   load(url: string): Promise<Configuration> {
     console.log( '=== ConfigService ===' );
 
-    return this.sendRequest( 'GET', url )
-      .then( response => this.config = JSON.parse( response ) )
+    return this.dataService.load(url)
+      .then( json => this.config = json )
       .then( () => this.config );
 
   }
@@ -39,31 +42,13 @@ export class ConfigService {
   }
 
   getCurrentUserInfo(): Promise<any> {
-    return this.sendRequest('GET', this.config.backendUrl + 'info/currentUser' )
-      .then( response => {
-        this.userInfo = JSON.parse(response);
-
-        return this.userInfo;
+    return this.dataService.getCurrentUserInfo()
+      .then( userInfo => {
+        this.userInfo = userInfo;
+        return userInfo;
       });
   }
 
-  private sendRequest(method = 'GET', url = null): Promise<string> {
-    return new Promise( (resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.overrideMimeType( 'application/json' );
-      xhr.open( method, url, true );
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            resolve( xhr.responseText );
-          } else {
-            reject( JSON.parse(xhr.responseText) );
-          }
-        }
-      };
-      xhr.send( null );
-    } );
-  }
 
   getConfiguration(): Configuration {
     return this.config;

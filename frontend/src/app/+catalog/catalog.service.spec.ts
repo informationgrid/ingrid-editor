@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { CatalogService } from './catalog.service';
+import { CatalogService } from './services/catalog.service';
 
 describe('CatalogService', () => {
   beforeEach(() => {

@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormularService} from '../../services/formular/formular.service';
-import {StorageService} from '../../services/storage/storage.service';
-import {DocumentInterface} from '../../services/storage/storage.dummy.service';
+import {DocumentService} from '../../services/document/document.service';
 
 @Component( {
   selector: 'ige-list-form-wizards',
@@ -10,14 +9,11 @@ import {DocumentInterface} from '../../services/storage/storage.dummy.service';
 } )
 export class ListFormWizardsComponent implements OnInit {
 
-  data: DocumentInterface = null;
-
-  constructor(private formularService: FormularService, private storageService: StorageService) {
+  constructor(private formularService: FormularService, private storageService: DocumentService) {
   }
 
   ngOnInit() {
     this.storageService.afterLoadAndSet$.subscribe( data => {
-      this.data = data;
     } );
   }
 

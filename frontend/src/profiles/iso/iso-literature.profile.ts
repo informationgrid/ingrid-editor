@@ -1,10 +1,10 @@
 import { TextboxField } from '../../app/+form/controls/index';
 import { Rubric } from '../../app/+form/controls/rubric';
-import { CodelistService } from '../../app/+form/services/codelist.service';
+import { CodelistService } from '../../app/services/codelist/codelist.service';
 import { Injectable } from '@angular/core';
 import { IsoBaseProfile } from './iso-base.profile';
 import { Container } from '../../app/+form/controls/container';
-import { StorageService } from '../../app/services/storage/storage.service';
+import { DocumentService } from '../../app/services/document/document.service';
 
 export class IsoLiteratureProfile extends IsoBaseProfile {
 
@@ -12,7 +12,7 @@ export class IsoLiteratureProfile extends IsoBaseProfile {
 
   label = 'ISO-Literatur';
 
-  constructor(storageService: StorageService, codelistService: CodelistService) {
+  constructor(storageService: DocumentService, codelistService: CodelistService) {
     super(storageService, codelistService);
 
     this.fields.push(...[

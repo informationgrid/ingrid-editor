@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Configuration } from '../../services/config.service';
+import { Configuration } from '../../services/config/config.service';
 import { Subject } from 'rxjs/index';
 
 declare let Keycloak: any;

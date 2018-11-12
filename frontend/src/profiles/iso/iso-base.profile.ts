@@ -4,12 +4,12 @@ import { Profile } from '../../app/services/formular/profile';
 import { Rubric } from '../../app/+form/controls/rubric';
 import { DropdownField } from '../../app/+form/controls/field-dropdown';
 import { FieldBase } from '../../app/+form/controls/field-base';
-import { CodelistService } from '../../app/+form/services/codelist.service';
+import { CodelistService } from '../../app/services/codelist/codelist.service';
 import { Container } from '../../app/+form/controls/container';
 import { DatepickerField } from '../../app/+form/controls/field-datepicker';
 import { Injectable } from '@angular/core';
 import { TreeField } from '../../app/+form/controls/field-tree';
-import { StorageService } from '../../app/services/storage/storage.service';
+import { DocumentService } from '../../app/services/document/document.service';
 
 export class IsoBaseProfile implements Profile {
 
@@ -19,7 +19,7 @@ export class IsoBaseProfile implements Profile {
 
   fields: Array<FieldBase<any>> = null;
 
-  constructor(storageService: StorageService, public codelistService: CodelistService) {
+  constructor(storageService: DocumentService, public codelistService: CodelistService) {
     const [addressTypes, advProductGroup, metadataLanguage, publicationInfo] = this.prepareSelects();
 
     this.fields = [

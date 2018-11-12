@@ -4,9 +4,9 @@ import { PartialGeneratorField } from '../../app/+form/controls/field-partial-ge
 import { OpenTableField } from '../../app/+form/controls/field-opentable';
 import { Profile } from '../../app/services/formular/profile';
 import { LinkDatasetField } from '../../app/+form/controls/field-link-dataset';
-import { CodelistService } from '../../app/+form/services/codelist.service';
+import { CodelistService } from '../../app/services/codelist/codelist.service';
 import { DatepickerField } from '../../app/+form/controls/field-datepicker';
-import { StorageService } from '../../app/services/storage/storage.service';
+import { DocumentService } from '../../app/services/document/document.service';
 
 export class UVPProfile implements Profile {
 
@@ -20,7 +20,7 @@ export class UVPProfile implements Profile {
 
   treeIconClass = 'fa fa-file-o'; // TODO: make icons same size for better presentation in tree/browser
 
-  constructor(storageService: StorageService, codelistService: CodelistService) {
+  constructor(storageService: DocumentService, codelistService: CodelistService) {
     this.codelistService = codelistService;
     const uvpNumberSelect = new DropdownField( {
       key: 'uvpNumber',

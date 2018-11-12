@@ -2,7 +2,7 @@ import {TestBed} from '@angular/core/testing';
 import {DynamicFormComponent} from './dynamic-form.component';
 import {FormularService} from '../services/formular/formular.service';
 import {FormControl, FormGroup} from '@angular/forms';
-import {StorageService} from '../services/storage/storage.service';
+import {DocumentService} from '../services/document/document.service';
 import {HttpModule} from '@angular/http';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {IgeFormModule} from './ige-form.module';
@@ -15,7 +15,7 @@ describe('Dynamic Form', () => {
     // refine the test module by declaring the test component
     TestBed.configureTestingModule({
       imports: [IgeFormModule, HttpModule],
-      providers: [FormularService, StorageService, FormToolbarService]
+      providers: [FormularService, DocumentService, FormToolbarService]
     });
 
     // create component and test fixture

@@ -1,14 +1,13 @@
-import { Injectable } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { Behaviour, BehavioursDefault } from './behaviours';
-import { EventManager } from '@angular/platform-browser';
-import { ModalService } from '../services/modal/modal.service';
-import { ConfigService, Configuration } from '../services/config.service';
-import { Plugin } from './plugin';
-import { HttpClient } from '@angular/common/http';
-import { ProfileService } from '../services/profile.service';
-import { throwError } from 'rxjs/index';
-import { tap } from 'rxjs/internal/operators';
+import {Injectable} from '@angular/core';
+import {FormGroup} from '@angular/forms';
+import {Behaviour, BehavioursDefault} from '../../+behaviours/behaviours';
+import {EventManager} from '@angular/platform-browser';
+import {ModalService} from '../modal/modal.service';
+import {Plugin} from '../../+behaviours/plugin';
+import {ProfileService} from '../profile.service';
+import {throwError} from 'rxjs/index';
+import {tap} from 'rxjs/internal/operators';
+import {BehaviorDataService} from "./behavior-data.service";
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -23,16 +22,15 @@ export class BehaviourService {
   systemBehaviours: Plugin[] = [];
 
   initialized: Promise<any>;
-  private configuration: Configuration;
 
   constructor(private defaultBehaves: BehavioursDefault,
               private eventManager: EventManager,
               private profileService: ProfileService,
-              private http: HttpClient, private modalService: ModalService, private configService: ConfigService) {
+              private dataService: BehaviorDataService,
+              private modalService: ModalService) {
 
     this.behaviours = defaultBehaves.behaviours;
     this.systemBehaviours = defaultBehaves.systemBehaviours;
-    this.configuration = configService.getConfiguration();
 
     // this.initialized = new Promise((resolve, reject) => {
     // $script( './+behaviours/additionalBehaviours.js', () => {
@@ -78,7 +76,7 @@ export class BehaviourService {
 
   loadStoredBehaviours(): Promise<any> {
     return new Promise<any>(resolve => {
-      this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' )
+      this.dataService.loadStoredBehaviours()
         .pipe(
           tap(b => console.log(`fetched behaviours`, b))
           // catchError(this.handleError('loadStoredBehaviours', []))
@@ -160,7 +158,8 @@ export class BehaviourService {
       _id: behaviour.id,
       active: behaviour.isActive
     };
-    this.http.post( this.configuration.backendUrl + 'behaviours', stripped ).toPromise().catch( err => {
+
+    this.dataService.saveBehavior(stripped).toPromise().catch( err => {
       // this.modalService.showError( err );
       // TODO: remove since it's already handled
       return throwError( err );

@@ -1,7 +1,7 @@
 import { Profile } from '../app/services/formular/profile';
 import { TextboxField } from '../app/+form/controls';
-import { StorageService } from '../app/services/storage/storage.service';
-import { CodelistService } from '../app/+form/services/codelist.service';
+import { DocumentService } from '../app/services/document/document.service';
+import { CodelistService } from '../app/services/codelist/codelist.service';
 
 export class ProfileFolder implements Profile {
   id = 'FOLDER';
@@ -18,7 +18,7 @@ export class ProfileFolder implements Profile {
     })
   ];
 
-  constructor(storageService: StorageService, codelistService: CodelistService) {
+  constructor(storageService: DocumentService, codelistService: CodelistService) {
 
   }
 
