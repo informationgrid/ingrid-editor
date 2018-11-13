@@ -1,12 +1,10 @@
-import {Observable} from "rxjs";
-import {ConfigService, Configuration} from "../config/config.service";
-import {HttpClient} from "@angular/common/http";
+import {Observable, of} from "rxjs";
 import {Role} from "../../models/user-role";
 
 export class RoleMockService {
 
   getRoleMapping(id: string): Observable<any> {
-    return Observable.of({
+    return of({
 
     });
   }
@@ -25,6 +23,6 @@ export class RoleMockService {
   }
 
   getGroups(): Observable<any> {
-    return Observable.of();
+    return of();
   }
 }

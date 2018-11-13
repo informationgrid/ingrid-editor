@@ -1,8 +1,5 @@
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import {Observable, of} from "rxjs";
 import {Catalog} from "./catalog.service";
-import {ConfigService, Configuration} from "../../services/config/config.service";
-import {HttpClient} from "@angular/common/http";
 
 export class CatalogMockService {
 
@@ -13,7 +10,7 @@ export class CatalogMockService {
   ];
 
   getCatalogs(): Observable<string[]> {
-    return Observable.of(['berlin']);
+    return of(['berlin']);
   }
 
   createCatalog(name: string) {

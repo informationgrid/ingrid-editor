@@ -1,6 +1,5 @@
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {User} from "../../+user/user";
-import {map} from "rxjs/operators";
 
 export class UserMockService {
 
@@ -15,28 +14,28 @@ export class UserMockService {
   ];
 
   getUsers(): Observable<User[]> {
-    return Observable.of(this.mockUsers);
+    return of(this.mockUsers);
 
   }
 
   saveUser(user: User): Observable<User> {
-    return Observable.of();
+    return of();
 
   }
 
   createUser(user: User): Observable<User> {
-    return Observable.of();
+    return of();
 
   }
 
   deleteUser(login: string): Observable<any> {
-    return Observable.of();
+    return of();
 
   }
 
 
 
   getUser(id: string): Observable<User> {
-    return Observable.of();
+    return of();
   }
 }

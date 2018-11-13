@@ -11,6 +11,7 @@ import {DynamicDatabase} from './DynamicDatabase';
 import {DynamicFlatNode} from './DynamicFlatNode';
 import {DynamicDataSource} from './DynamicDataSource';
 import {ConfigService} from "../../../services/config/config.service";
+import {ProfileQuery} from "../../../store/profile/profile.query";
 
 
 @Component({
@@ -51,6 +52,7 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   };
 
   constructor(private database: DynamicDatabase, private storageService: DocumentService, private router: Router,
+              private profileQuery: ProfileQuery,
               private route: ActivatedRoute, private formularService: FormularService, private configService: ConfigService) {
 
     this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
@@ -59,13 +61,8 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    /*this.profileService.initialized.then( () => {
 
-      this.query( null, null ).then( () => {
-      }, (err) => console.error( 'Error:', err ) );
-*/
-    this.configService.promiseProfilePackageLoaded.then(() => {
-
+    this.profileQuery.isInitialized$.subscribe( () => {
       this.database.initialData()
         .then(rootNodes => this.dataSource.data = rootNodes)
         .then(() => {
@@ -89,6 +86,7 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
           });
         });
     });
+
 
     this.subscriptions.push(
       this.storageService.datasetsChanged$.subscribe((info) => {

@@ -3,6 +3,8 @@ import { DocumentService } from '../../../services/document/document.service';
 import { FormularService } from '../../../services/formular/formular.service';
 import { Injectable } from '@angular/core';
 import { DynamicFlatNode } from './DynamicFlatNode';
+import {DocumentQuery} from "../../../store/document/document.query";
+import {ProfileQuery} from "../../../store/profile/profile.query";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -15,11 +17,15 @@ export class DynamicDatabase {
   rootLevelNodes = null;
 
   constructor(private storageService: DocumentService, private profileService: ProfileService,
+              private docQuery: DocumentQuery, private profileQuery: ProfileQuery,
               private formularService: FormularService) {
   }
 
   /** Initial data from database */
   initialData(): Promise<DynamicFlatNode[]> {
+    this.profileQuery.isInitialized$.subscribe(() => {
+
+    })
     return this.profileService.initialized.then( () => {
 
       return this.query( null ).then( (data) => {
@@ -48,9 +54,13 @@ export class DynamicDatabase {
       .sort( (doc1, doc2) => { // TODO: sort after conversion, then we don't need to call getTitle function
         return this.formularService.getTitle( doc1._profile, doc1 ).localeCompare( this.formularService.getTitle( doc2._profile, doc2 ) );
       } );
-    modDocs.forEach( doc => {
-      doc.title = this.formularService.getTitle( doc._profile, doc );
-      doc.icon = this.getTreeIcon( doc );
+
+    let newDocs = modDocs.map( doc => {
+      // let newDoc = this.docQuery.getEntity(doc._id);
+      let newDoc = Object.assign({}, doc);
+      newDoc.title = this.formularService.getTitle( doc._profile, doc );
+      newDoc.icon = this.getTreeIcon( doc );
+      return newDoc;
       //   const newNode = this.prepareNode( doc );
       //   if (parentNode) {
       //     updatedNodes.children.push( newNode );
@@ -59,7 +69,7 @@ export class DynamicDatabase {
       //   }
       //   this.flatNodes.push( newNode );
     } );
-    return modDocs;
+    return newDocs;
     // this.tree.treeModel.update();
   }
 

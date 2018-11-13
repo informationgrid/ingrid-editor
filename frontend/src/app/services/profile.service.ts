@@ -9,6 +9,8 @@ import {CodelistService} from './codelist/codelist.service';
 import * as AngularCommon from '@angular/common';
 import * as IgeApi from 'api';
 import {HttpClient} from "@angular/common/http";
+import {map} from "rxjs/operators";
+import {ProfileStore} from "../store/profile/profile.store";
 
 declare const $script: any;
 declare const webpackJsonp: any;
@@ -24,6 +26,7 @@ export class ProfileService {
   initialized: Promise<Profile[]>;
 
   constructor(public injector: Injector,
+              private profileStore: ProfileStore,
               private http: HttpClient, configService: ConfigService,
               storageService: DocumentService, codelistService: CodelistService, private compiler: Compiler) {
     this.configuration = configService.getConfiguration();
@@ -33,28 +36,30 @@ export class ProfileService {
       console.log('loading dynamic bundle');
       //$script('assets/uvp-profile.umd.js', () => {
       http.get('http://localhost:4300/assets/uvp-profile.umd.js', {responseType: 'text'})
-        .map(source => {
-          console.log('Loaded UMD project bundle dynamically');
-          const exports = {}; // this will hold module exports
-          const modules = {   // this is the list of modules accessible by plugins
-            '@angular/core': AngularCore,
-            '@angular/common': AngularCommon,
-            'api': IgeApi
-          };
+        .pipe(
+          map(source => {
+            console.log('Loaded UMD project bundle dynamically');
+            const exports = {}; // this will hold module exports
+            const modules = {   // this is the list of modules accessible by plugins
+              '@angular/core': AngularCore,
+              '@angular/common': AngularCommon,
+              'api': IgeApi
+            };
 
-          const require: any = (module) => modules[module];
-          eval(source);
+            const require: any = (module) => modules[module];
+            eval(source);
 
-          compiler.compileModuleAndAllComponentsAsync(exports['UvpProfileModule']).then(compiled => {
+            compiler.compileModuleAndAllComponentsAsync(exports['UvpProfileModule']).then(compiled => {
 
-            const moduleFactory: NgModuleFactory<any> = compiled.ngModuleFactory;
-            const modRef = moduleFactory.create(this.injector);
-            const componentFactory = modRef.componentFactoryResolver.resolveComponentFactory(this.getEntryComponent(moduleFactory));
-            const component = componentFactory.create(modRef.injector);
-            //const cmpRef = this.viewContainer.createComponent<any>(componentFactory);
-            return exports;
-          });
-        }).subscribe();
+              const moduleFactory: NgModuleFactory<any> = compiled.ngModuleFactory;
+              const modRef = moduleFactory.create(this.injector);
+              const componentFactory = modRef.componentFactoryResolver.resolveComponentFactory(this.getEntryComponent(moduleFactory));
+              const component = componentFactory.create(modRef.injector);
+              //const cmpRef = this.viewContainer.createComponent<any>(componentFactory);
+              return exports;
+            });
+          })
+        ).subscribe();
 
 
       if (environment.profileFromServer) {
@@ -70,6 +75,7 @@ export class ProfileService {
           } catch (ex) {
             console.error('Could not load profiles from backend', ex);
           }
+          this.profileStore.update({isInitialized: true});
           resolve(this.profiles);
         });
       } else {
@@ -81,6 +87,7 @@ export class ProfileService {
 
           this.setTitleFields(configService);
 
+          this.profileStore.update({isInitialized: true});
           resolve(this.profiles);
         });
       }

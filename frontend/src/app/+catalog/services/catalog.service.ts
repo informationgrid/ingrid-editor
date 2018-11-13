@@ -33,7 +33,7 @@ export class CatalogService {
         } )
         // catchError( err => this.errorService.handle( err ) )
       );
-    // return Observable.of( this.demoCatalogs );
+    // return of( this.demoCatalogs );
   }
 
   forceCatalog(id: string) {

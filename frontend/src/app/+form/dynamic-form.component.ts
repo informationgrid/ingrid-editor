@@ -16,9 +16,11 @@ import {Role} from '../models/user-role';
 import {SelectedDocument} from './sidebars/selected-document.model';
 import {RoleService} from '../services/role/role.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {Subscription} from 'rxjs/index';
+import {Observable, Subscription} from 'rxjs/index';
 import {MatDialog} from '@angular/material';
 import {NewDocumentComponent} from '../dialogs/new-document/new-document.component';
+import {DocumentQuery} from "../store/document/document.query";
+import {IgeDocument} from "../models/ige-document";
 
 interface FormData extends Object {
   _id?: string;
@@ -79,6 +81,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // the id to remember when dirty check was true
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
   pendingId: string;
+  private selectDocuments$: Observable<IgeDocument[]>;
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
@@ -86,6 +89,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private dialog: MatDialog,
               private roleService: RoleService,
               // private wizardService: WizardService,
+              private documentQuery: DocumentQuery,
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     // TODO: get roles definiton
@@ -133,6 +137,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
+
+    this.selectDocuments$ = this.documentQuery.selectDocuments$;
+
     this.formularService.currentProfile = null;
 
     // this.wizardService.focusElements$.subscribe( fields => this.wizardFocusElement = fields );

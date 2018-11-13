@@ -1,18 +1,18 @@
 import {Configuration} from "./config.service";
-import {Observable} from "rxjs";
+import {of} from "rxjs";
 
 export class ConfigMockService {
 
   config: Configuration;
 
   load(url: string): Promise<any> {
-    return Observable.of({
+    return of({
 
     }).toPromise();
   }
 
   getCurrentUserInfo(): Promise<any> {
-    return Observable.of({
+    return of({
       assignedCatalogs: ['test-catalog']
     }).toPromise();
   }

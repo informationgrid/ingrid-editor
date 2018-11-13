@@ -8,6 +8,8 @@ import {Observable, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/internal/operators';
 import {IgeDocument} from "../../models/ige-document";
 import {DocumentDataService} from "./document-data.service";
+import {DocumentStore} from "../../store/document/document.store";
+import {DocumentQuery} from "../../store/document/document.query";
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +31,8 @@ export class DocumentService {
 
   constructor(private modalService: ModalService,
               private dataService: DocumentDataService,
+              private documentStore: DocumentStore,
+              private documentQuery: DocumentQuery,
               private errorService: ErrorService) {
     if (KeycloakService.auth.loggedIn) {
       // TODO: this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
@@ -47,7 +51,19 @@ export class DocumentService {
   }
 
   getChildren(parentId: string): Observable<any> {
-    return this.dataService.getChildren(parentId);
+    return this.dataService.getChildren(parentId)
+      .pipe(
+        //tap( docs => this.documentStore.set(docs))
+        tap( docs => {
+          if (parentId === null) {
+            this.documentStore.set(docs);
+          } else {
+            let entity = Object.assign({}, this.documentQuery.getEntity(parentId));
+            entity._children = docs;
+            this.documentStore.update(parentId, entity);
+          }
+        })
+      );
   }
 
   load(id: string): Observable<DocMainInfo> {

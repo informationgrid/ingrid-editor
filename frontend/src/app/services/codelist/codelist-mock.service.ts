@@ -1,9 +1,9 @@
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 
 export class CodelistMockService {
 
   byId(id: string): Observable<any> {
-    return Observable.of({
+    return of({
       entries: [
         {
           id: 1,

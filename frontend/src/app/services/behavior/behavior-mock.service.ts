@@ -1,17 +1,14 @@
-import {Observable} from "rxjs";
-import {ConfigService, Configuration} from "../config/config.service";
-import {HttpClient} from "@angular/common/http";
+import {Observable, of} from "rxjs";
 import {Behaviour} from "../../+behaviours/behaviours";
-import {Plugin} from "../../+behaviours";
 
 export class BehaviorMockService {
 
   loadStoredBehaviours(): Observable<any> {
-    return Observable.of([]);
+    return of([]);
   }
 
   saveBehavior(behavior: Behaviour|any): Observable<any> {
-    return Observable.of({
+    return of({
 
     });
   }

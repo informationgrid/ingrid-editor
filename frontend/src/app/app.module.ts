@@ -59,6 +59,8 @@ import {CatalogDataService} from "./+catalog/services/catalog-data.service";
 import {CatalogMockService} from "./+catalog/services/catalog-mock.service";
 import {UserDataService} from "./services/user/user-data.service";
 import {UserMockService} from "./services/user/user-mock.service";
+import {AkitaNgDevtools} from "@datorama/akita-ngdevtools";
+import {AngularSplitModule} from "angular-split";
 
 registerLocaleData(de);
 
@@ -95,6 +97,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     ErrorDialogComponent, NewDocumentComponent, NewCatalogDialogComponent, DiscardConfirmDialogComponent, UploadProfileDialogComponent
   ],
   imports: [
+    environment.production ? [] : AkitaNgDevtools.forRoot(),
+    AngularSplitModule.forRoot(),
     // angular
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
     // PrimeNG
