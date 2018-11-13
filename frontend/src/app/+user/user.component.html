@@ -1,8 +1,8 @@
 <mat-tab-group>
 
     <mat-tab label="Benutzer">
-        <split>
-            <split-area [visible]="show" [size]="25" id="sidebarUser" class="split-pane-content-primary container">
+        <as-split>
+            <as-split-area [visible]="show" [size]="25" id="sidebarUser" class="split-pane-content-primary container">
                 <mat-list>
                     <mat-list-item *ngFor="let user of users" [class.disabled]="user === selectedUser"
                                    (click)="loadUser(user)">
@@ -14,8 +14,8 @@
                         <mat-icon>add</mat-icon>
                     </button>
                 </div>
-            </split-area>
-            <split-area [visible]="show" [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
+            </as-split-area>
+            <as-split-area [visible]="show" [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
                 <form (ngSubmit)="onSubmit()" #userForm="ngForm" fxLayout="column">
                     <mat-form-field>
                         <input matInput placeholder="Login" #loginRef type="text" [disabled]="!isNewUser" required autocomplete="off"
@@ -52,8 +52,8 @@
                             (click)="deleteUser(selectedUser.login)">Löschen
                     </button>
                 </form>
-            </split-area>
-        </split>
+            </as-split-area>
+        </as-split>
     </mat-tab>
 
     <mat-tab label="Rollen">
