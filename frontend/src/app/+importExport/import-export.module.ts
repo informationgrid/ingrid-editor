@@ -8,15 +8,23 @@ import { ExportComponent } from './export/export.component';
 import { SharedModule } from '../shared.module';
 import { MatButtonModule, MatExpansionModule, MatRadioModule, MatTabsModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import {RouterModule, Routes} from "@angular/router";
+
+const routes: Routes = [
+  {
+    path: '',
+    component: ImportExportComponent
+  }
+];
 
 @NgModule({
-  imports: [CommonModule, routing, SharedModule, IgeFormModule,
+  imports: [RouterModule.forChild(routes), CommonModule, routing, SharedModule, IgeFormModule,
             MatExpansionModule, MatTabsModule, MatRadioModule, MatButtonModule,
             FlexLayoutModule
   ],
   declarations: [ImportExportComponent, ExportComponent],
   providers: [ImportExportService],
-  exports: []
+  exports: [RouterModule]
 })
 export class ImportExportModule {
 

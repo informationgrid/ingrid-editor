@@ -7,9 +7,20 @@ import { CatalogDetailComponent } from './catalog-detail/catalog-detail.componen
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule, MatCardModule, MatListModule, MatSelectModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import {RouterModule, Routes} from "@angular/router";
+import {ImportExportComponent} from "../+importExport/import/import.component";
+
+
+const routes: Routes = [
+  {
+    path: '',
+    component: CatalogManagerComponent
+  }
+];
 
 @NgModule( {
   imports: [
+    RouterModule.forChild(routes),
     CommonModule,
     FormsModule,
     FlexLayoutModule,
@@ -19,7 +30,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
   providers: [
     CatalogService
   ],
-  declarations: [CatalogManagerComponent, CatalogDetailComponent]
+  declarations: [CatalogManagerComponent, CatalogDetailComponent],
+  exports: [RouterModule]
 } )
 export class CatalogModule {
 }

@@ -1,21 +1,15 @@
 import {AppComponent} from './app.component';
 import {HashLocationStrategy, LocationStrategy, registerLocaleData} from '@angular/common';
 import {appRoutingProviders, routing} from './app.router';
-import {PluginsModule} from './+behaviours/behaviours.module';
-import {FieldsModule} from './+fields/fields.module';
-import {DashboardModule} from './+dashboard/dashboard.module';
 import {IgeFormModule} from './+form/ige-form.module';
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, ErrorHandler, NgModule} from '@angular/core';
 import {MenuComponent} from './menu/menu.component';
 import {ModalService} from './services/modal/modal.service';
-import {UserModule} from './+user/user.module';
 import {HelpComponent} from './help/help.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ImportExportModule} from './+importExport/import-export.module';
 import {environment} from '../environments/environment';
 import {ConfigService} from './services/config/config.service';
-import {CatalogModule} from './+catalog/catalog.module';
 import {LoginComponent} from './security/login.component';
 import {GlobalErrorHandler} from './error-handler';
 import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
@@ -106,8 +100,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatExpansionModule, MatRadioModule, MatCheckboxModule,
     MatInputModule, MatFormFieldModule, MatSelectModule,
     // IGE-Modules
-    IgeFormModule, DashboardModule, FieldsModule, CatalogModule, FormFieldsModule,
-    UserModule, ImportExportModule, PluginsModule, routing, FormsModule, NgZorroAntdModule,
+    IgeFormModule, FormFieldsModule,
+    routing, FormsModule, NgZorroAntdModule,
     ApiModule],
   exports: [
     MatRadioModule

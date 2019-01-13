@@ -9,15 +9,23 @@ import {RoleComponent} from './role.component';
 import {SharedModule} from '../shared.module';
 import {MatButtonModule, MatIconModule, MatInputModule, MatTabsModule} from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {RouterModule, Routes} from "@angular/router";
+
+const routes: Routes = [
+  {
+    path: '',
+    component: UserComponent
+  }
+];
 
 @NgModule({
-  imports: [FormsModule, CommonModule, routing, SharedModule,
+  imports: [RouterModule.forChild(routes), FormsModule, CommonModule, routing, SharedModule,
             MatTabsModule, MatIconModule, MatButtonModule, MatInputModule,
             FlexLayoutModule
   ],
   declarations: [UserComponent, RoleComponent],
   providers: [UserService, RoleService],
-  exports: []
+  exports: [RouterModule]
 })
 export class UserModule {
 

@@ -20,16 +20,25 @@ import {
   MatTabsModule
 } from '@angular/material';
 import {PrintViewDialogComponent} from '../dialogs/print-view/print-view-dialog.component';
+import {RouterModule, Routes} from "@angular/router";
+
+const routes: Routes = [
+  {
+    path: '',
+    component: PluginsComponent
+  }
+];
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedModule, routing, MatCardModule, MatTabsModule,
+  imports: [RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule, SharedModule, routing, MatCardModule, MatTabsModule,
   MatDialogModule, MatButtonModule, MatInputModule, MatCheckboxModule],
   declarations: [
     PluginsComponent, DemoComponent, Collapse, PasteDialogComponent, PrintViewDialogComponent, IsoViewComponent,
     CreateFolderComponent, DeleteDialogComponent, StatisticComponent],
   entryComponents: [
     PrintViewDialogComponent, IsoViewComponent, PasteDialogComponent, CreateFolderComponent, DeleteDialogComponent,
-    StatisticComponent]
+    StatisticComponent],
+  exports: [RouterModule]
 })
 export class PluginsModule {
 }
