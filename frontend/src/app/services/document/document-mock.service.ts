@@ -22,7 +22,7 @@ export class DocumentMockService {
     return of([doc1, doc2]);
   }
 
-  getChildren(parentId: string): Observable<any> {
+  getChildren(parentId: string): Observable<any[]> {
 
     let doc1: IgeDocument = {
       _id: '1',
@@ -59,8 +59,8 @@ export class DocumentMockService {
     }
   }
 
-  load(id: string): Observable<DocMainInfo> {
-    let doc1: DocMainInfo = {
+  load(id: string): Observable<IgeDocument> {
+    let doc1: IgeDocument = {
       _id: '1',
       _parent: null,
       _profile: 'UVP',

@@ -10,13 +10,13 @@ const { NoEmitOnErrorsPlugin, NamedModulesPlugin } = require('webpack');
 const { AngularCompilerPlugin } = require('@ngtools/webpack');
 
 module.exports = {
+  "mode": "development",
   "resolve": {
     "extensions": [
       ".ts",
       ".js"
     ],
     "modules": [
-      "./node_modules",
       "./node_modules"
     ],
     "symlinks": true,
@@ -29,7 +29,6 @@ module.exports = {
   },
   "resolveLoader": {
     "modules": [
-      "./node_modules",
       "./node_modules"
     ],
     "alias": rxPaths()

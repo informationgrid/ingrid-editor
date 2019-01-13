@@ -38,7 +38,6 @@ import {ErrorDialogComponent} from './dialogs/error/error-dialog.component';
 import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
 import {NewCatalogDialogComponent} from './dialogs/new-catalog/new-catalog-dialog.component';
 import {UploadProfileDialogComponent} from './dialogs/upload-profile/upload-profile-dialog.component';
-import {FileUploadModule} from 'primeng/fileupload';
 import {IgeError} from './models/ige-error';
 import {DiscardConfirmDialogComponent} from "./dialogs/discard-confirm/discard-confirm-dialog.component";
 import {FormsModule} from '@angular/forms';
@@ -101,8 +100,6 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     AngularSplitModule.forRoot(),
     // angular
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
-    // PrimeNG
-    FileUploadModule,
     // Flex layout
     FlexLayoutModule,
     // Material

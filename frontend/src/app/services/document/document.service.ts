@@ -9,7 +9,10 @@ import {map, tap} from 'rxjs/internal/operators';
 import {IgeDocument} from "../../models/ige-document";
 import {DocumentDataService} from "./document-data.service";
 import {DocumentStore} from "../../store/document/document.store";
-import {DocumentQuery} from "../../store/document/document.query";
+import {DocumentAbstract} from "../../store/document/document.model";
+import {TreeStore} from "../../store/tree/tree.store";
+import {TreeQuery} from "../../store/tree/tree.query";
+import {createTreeNode} from "../../store/tree/tree-node.model";
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +35,8 @@ export class DocumentService {
   constructor(private modalService: ModalService,
               private dataService: DocumentDataService,
               private documentStore: DocumentStore,
-              private documentQuery: DocumentQuery,
+              private treeStore: TreeStore,
+              private treeQuery: TreeQuery,
               private errorService: ErrorService) {
     if (KeycloakService.auth.loggedIn) {
       // TODO: this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
@@ -45,29 +49,60 @@ export class DocumentService {
       .pipe(
         map( json => {
           return json.filter( item => item && item._profile !== 'FOLDER' );
-        } )
+        } ),
+        tap( docs => this.documentStore.set(this.mapToDocuments(docs)))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       );
+  }
+
+  private mapToDocuments(docs: any[]): DocumentAbstract[] {
+    return docs.map( doc => this.mapToDocument(doc));
+  }
+
+  private mapToDocument(doc: any): DocumentAbstract {
+    return {
+      id: doc._id,
+      title: doc.title,
+      icon: "",
+      _id: doc._id,
+      _profile: doc._profile,
+      _children: doc._children,
+      _hasChildren: doc._hasChildren
+    };
   }
 
   getChildren(parentId: string): Observable<any> {
     return this.dataService.getChildren(parentId)
       .pipe(
         //tap( docs => this.documentStore.set(docs))
+        map( docs => {
+          return docs.map( doc => {
+            let childTreeNode = createTreeNode(null);
+            childTreeNode.id = doc._id;
+            childTreeNode.title = doc.title;
+            childTreeNode.state = doc._state;
+            childTreeNode.hasChildren = doc._hasChildren;
+            childTreeNode.parent = parentId;
+            return childTreeNode;
+          })
+        }),
         tap( docs => {
           if (parentId === null) {
-            this.documentStore.set(docs);
+            this.treeStore.set(docs);
           } else {
-            let entity = Object.assign({}, this.documentQuery.getEntity(parentId));
-            entity._children = docs;
-            this.documentStore.update(parentId, entity);
+            //let entity = Object.assign({}, this.treeQuery.getEntity(parentId));
+            //entity.children = docs;
+            //this.treeStore.update(parentId, entity);
+            this.treeStore.add(docs);
           }
         })
       );
   }
 
-  load(id: string): Observable<DocMainInfo> {
-    return this.dataService.load(id);
+  load(id: string): Observable<IgeDocument> {
+    return this.dataService.load(id).pipe(
+      tap( doc => this.documentStore.setOpenedDocument(doc))
+    );
   }
 
   save(data: IgeDocument, isNewDoc?: boolean): Promise<IgeDocument> {

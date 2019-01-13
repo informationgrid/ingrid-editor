@@ -15,8 +15,8 @@
         </ul>
         <div class="tab-content">
             <ul class="tab-pane" [class.active]="sideTab === 'myData'">
-                <li *ngFor="let item of datasets">
-                    <a [routerLink]="['/form', { id: item.id }]">{{item.title}}</a>
+                <li *ngFor="let doc of allDocuments$ | async">
+                    <a [routerLink]="['/form', { id: doc.id }]">{{doc.title}}</a>
                 </li>
             </ul>
         </div>

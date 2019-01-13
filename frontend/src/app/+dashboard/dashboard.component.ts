@@ -1,11 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { ConfigService, Configuration } from '../services/config/config.service';
-import { ErrorService } from '../services/error.service';
-import { FormularService } from '../services/formular/formular.service';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/internal/operators';
-import { ProfileService } from '../services/profile.service';
+import {Component, OnInit} from '@angular/core';
+import {ConfigService, Configuration} from '../services/config/config.service';
+import {ErrorService} from '../services/error.service';
+import {FormularService} from '../services/formular/formular.service';
+import {HttpClient} from '@angular/common/http';
+import {map} from 'rxjs/internal/operators';
+import {ProfileService} from '../services/profile.service';
 import {DocumentService} from "../services/document/document.service";
+import {ProfileQuery} from "../store/profile/profile.query";
+import {DocumentQuery} from "../store/document/document.query";
+import {DocumentAbstract} from "../store/document/document.model";
+import {Observable} from "rxjs";
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -28,18 +32,24 @@ export class DashboardComponent implements OnInit {
 
   sideTab = 'myData';
   private configuration: Configuration;
-
+  private allDocuments$: Observable<DocumentAbstract[]>;
 
   constructor(private http: HttpClient, configService: ConfigService, private errorService: ErrorService,
               private docService: DocumentService,
+              private profileQuery: ProfileQuery,
+              private docQuery: DocumentQuery,
               private formularService: FormularService, private profileService: ProfileService) {
     this.configuration = configService.getConfiguration();
   }
 
   ngOnInit() {
-    this.profileService.initialized.then( () => {
-      this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
+    this.profileQuery.isInitialized$.subscribe( (isInitialized) => {
+      if (isInitialized) {
+        this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
+      }
     } );
+
+    this.allDocuments$ = this.docQuery.selectAll();
     this.fetchStatistic();
     this.fetchData();
   }
@@ -59,15 +69,11 @@ export class DashboardComponent implements OnInit {
     this.docService.find('')
       .pipe(
         map(json => {
-          return json.filter(item => item && item._profile !== 'FOLDER');
+          let noFolderDocs = json.filter(item => item && item._profile !== 'FOLDER');
+          return this.prepareTableData(noFolderDocs);
         })
       )
-      .subscribe(data => {
-          console.log('Data received: ', data);
-          this.datasets = this.prepareTableData(data);
-        }
-        // (err) => this.errorService.handle(err)
-      );
+      .subscribe();
   }
 
   prepareData(data: any) {

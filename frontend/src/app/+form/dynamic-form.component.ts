@@ -16,11 +16,13 @@ import {Role} from '../models/user-role';
 import {SelectedDocument} from './sidebars/selected-document.model';
 import {RoleService} from '../services/role/role.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {Observable, Subscription} from 'rxjs/index';
+import {Observable, Subject, Subscription} from 'rxjs/index';
 import {MatDialog} from '@angular/material';
 import {NewDocumentComponent} from '../dialogs/new-document/new-document.component';
 import {DocumentQuery} from "../store/document/document.query";
 import {IgeDocument} from "../models/ige-document";
+import {takeUntil} from "rxjs/operators";
+import {DocumentStore} from "../store/document/document.store";
 
 interface FormData extends Object {
   _id?: string;
@@ -81,15 +83,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // the id to remember when dirty check was true
   // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
   pendingId: string;
-  private selectDocuments$: Observable<IgeDocument[]>;
+  private currentDocument$: Observable<IgeDocument>;
+  private componentDestroyed: Subject<void> = new Subject();
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
-              private storageService: DocumentService, private modalService: ModalService,
+              private documentService: DocumentService, private modalService: ModalService,
               private dialog: MatDialog,
               private roleService: RoleService,
               // private wizardService: WizardService,
               private documentQuery: DocumentQuery,
+              private documentStore: DocumentStore,
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     // TODO: get roles definiton
@@ -126,6 +130,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     console.log( 'destroy' );
+    this.componentDestroyed.next();
+    this.componentDestroyed.unsubscribe();
     this.observers.forEach( observer => observer.unsubscribe() );
     this.behaviourService.behaviours
       .filter( behave => behave.isActive && behave.unregister )
@@ -138,7 +144,45 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
 
-    this.selectDocuments$ = this.documentQuery.selectDocuments$;
+    this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
+        console.log( 'loaded data:', data );
+
+        if (data === null) {
+          return;
+        }
+
+        this.documentService.beforeLoad.next();
+
+        // if (data._profile === 'FOLDER' && !this.editMode) return;
+
+        const profile = data._profile;
+        const needsProfileSwitch = this.formularService.currentProfile !== profile;
+        this.data = data;
+
+        try {
+
+          // switch to the right profile depending on the data
+          if (needsProfileSwitch) {
+            this.switchProfile( profile );
+          }
+
+          this.updateRepeatableFields( data );
+
+          this.createFormWithData( data );
+
+          this.behaviourService.apply( this.form, profile );
+          this.documentService.afterProfileSwitch.next( data );
+
+          this.documentService.afterLoadAndSet.next( data );
+
+        } catch (ex) {
+          console.error( ex );
+          this.modalService.showJavascriptError( ex );
+          // this.data._id = id;
+        }
+      }
+      // , (err) => this.errorService.handle( err )
+    );
 
     this.formularService.currentProfile = null;
 
@@ -163,7 +207,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       } ),
 
       // load dataset when one was updated
-      this.storageService.datasetsChanged$.subscribe( (msg) => {
+      this.documentService.datasetsChanged$.subscribe( (msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
           this.load( msg.data[0]._id );
         }
@@ -175,7 +219,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): any {
     // add form errors check when saving/publishing
     this.observers.push(
-      this.storageService.beforeSave$.subscribe( (message: any) => {
+      this.documentService.beforeSave$.subscribe( (message: any) => {
         message.errors.push( {invalid: this.form.invalid} );
         console.log( 'in observer' );
       } )
@@ -199,6 +243,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener( 'window: keydown', ['$event'] )
   hotkeys(event: KeyboardEvent) {
+    // TODO: externalize
     if (event.ctrlKey && event.keyCode === 83) { // CTRL + S (Save)
       console.log( 'SAVE' );
       event.stopImmediatePropagation();
@@ -215,7 +260,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     //   availableTypes: this.formularService.docTypes,
     //   rootOption: true
     // };
-    const selectedDocs = this.formularService.getSelectedDocuments();
+    const selectedDocs = this.documentQuery.selectedDocuments;
     this.newDocOptions.docTypes = this.formularService.getDocTypes()
       .filter( type => type.id !== 'FOLDER' )
       .sort( (a, b) => a.label.localeCompare( b.label ) );
@@ -263,11 +308,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.behaviourService.apply( this.form, type );
       // after type switch inform the subscribers about it to recognize initial data set
-      this.storageService.afterProfileSwitch.next( this.form.value );
+      this.documentService.afterProfileSwitch.next( this.form.value );
 
       // notify browser/tree of new dataset
       const newDoc = {_profile: type, _parent: this.data._parent};
-      this.storageService.save( newDoc, true );
+      this.documentService.save( newDoc, true );
 
     } catch (ex) {
       console.error( 'Error adding new document: ', ex );
@@ -279,36 +324,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.load( this.pendingId );
 
     // this.discardConfirmModal.close();
-  }
-
-  handleSelection(selectedDocs: SelectedDocument[]) {
-    this.formularService.setSelectedDocuments( selectedDocs );
-
-    // when multiple nodes were selected then do not show any form
-    if (this.form) {
-      if (selectedDocs.length !== 1 && this.form.enabled) {
-        this.form.disable();
-      } else if (this.form.disabled) {
-        this.form.enable();
-      }
-    }
-  }
-
-  handleLoad(selectedDocs: SelectedDocument[]) { // id: string, profile?: string, forceLoad?: boolean) {
-    // when multiple nodes were selected then do not show any form
-    if (selectedDocs.length !== 1) {
-      return;
-    }
-
-    const doc = selectedDocs[0];
-
-    // if a folder was selected then normally do not show the form
-    // show folder form only if the edit button was clicked which adds the forceLoad option
-    if (doc.profile === 'FOLDER' && !doc.editable) {
-      return;
-    }
-
-    this.router.navigate( ['/form', {id: doc.id}] );
   }
 
   /**
@@ -340,41 +355,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.storageService.load( id ).subscribe(data => {
-      console.log( 'loaded data:', data );
-
-      this.storageService.beforeLoad.next();
-
-      // if (data._profile === 'FOLDER' && !this.editMode) return;
-
-      const profile = data._profile;
-      const needsProfileSwitch = this.formularService.currentProfile !== profile;
-      this.data = data;
-
-      try {
-
-        // switch to the right profile depending on the data
-        if (needsProfileSwitch) {
-          this.switchProfile( profile );
-        }
-
-        this.updateRepeatableFields( data );
-
-        this.createFormWithData( data );
-
-        this.behaviourService.apply( this.form, profile );
-        this.storageService.afterProfileSwitch.next( data );
-
-        this.storageService.afterLoadAndSet.next( data );
-
-      } catch (ex) {
-        console.error( ex );
-        this.modalService.showJavascriptError( ex );
-        this.data._id = id;
-      }
-    }
-    // , (err) => this.errorService.handle( err )
-    );
+    this.documentService.load( id ).subscribe();
   }
 
   save() {
@@ -392,7 +373,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.form.reset(this.form.value);
     this.form.markAsPristine();
 
-    this.storageService.save( data, false ).then(res => {
+    this.documentService.save( data, false ).then(res => {
       this.data._id = res._id;
       // this.messageService.show( 'Dokument wurde gespeichert' );
       // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});

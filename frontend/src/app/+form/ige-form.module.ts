@@ -30,6 +30,8 @@ import {
 } from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {AddPartialDialogComponent} from './partialGenerator/dialog/add-partial-dialog.component';
+import { SidebarComponent } from './sidebars/sidebar.component';
+import { FormInfoComponent } from './form-info/form-info.component';
 
 @NgModule({
   imports: [
@@ -42,7 +44,7 @@ import {AddPartialDialogComponent} from './partialGenerator/dialog/add-partial-d
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent, AddPartialDialogComponent,
-    ScrollToDirective, MainFormComponent, MainFormTabsComponent],
+    ScrollToDirective, MainFormComponent, MainFormTabsComponent, SidebarComponent, FormInfoComponent],
   providers: [NominatimService],
   exports: [FormsModule, ScrollToDirective, MainFormTabsComponent],
   entryComponents: [AddPartialDialogComponent]

@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
-import { IFieldBase } from '../../+form/controls';
-import { Profile } from './profile';
-import { SelectedDocument } from '../../+form/sidebars/selected-document.model';
-import { HttpClient } from '@angular/common/http';
-import { ConfigService, Configuration } from '../config/config.service';
-import { ProfileService } from '../profile.service';
-import { Observable, Subject } from 'rxjs/index';
+import {Injectable} from '@angular/core';
+import {IFieldBase} from '../../+form/controls';
+import {Profile} from './profile';
+import {SelectedDocument} from '../../+form/sidebars/selected-document.model';
+import {HttpClient} from '@angular/common/http';
+import {ConfigService, Configuration} from '../config/config.service';
+import {ProfileService} from '../profile.service';
+import {Observable, Subject} from 'rxjs/index';
+import {ProfileQuery} from "../../store/profile/profile.query";
 
 @Injectable({
   providedIn: 'root'
@@ -36,13 +37,18 @@ export class FormularService {
 
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService, private profiles: ProfileService) {
+  constructor(private http: HttpClient, configService: ConfigService, private profiles: ProfileService, profileQuery: ProfileQuery) {
     this.configuration = configService.getConfiguration();
 
     // create profiles after we have logged in
 
     console.log('init profiles');
-    profiles.getProfiles().then(_ => this.profileDefinitions = _);
+
+    profileQuery.isInitialized$.subscribe((isInitialized) => {
+      if (isInitialized) {
+        this.profileDefinitions = profiles.getProfiles();
+      }
+    });
   }
 
   getFields(profile: string) {

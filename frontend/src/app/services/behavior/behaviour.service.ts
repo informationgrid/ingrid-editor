@@ -3,11 +3,12 @@ import {FormGroup} from '@angular/forms';
 import {Behaviour, BehavioursDefault} from '../../+behaviours/behaviours';
 import {EventManager} from '@angular/platform-browser';
 import {ModalService} from '../modal/modal.service';
-import {Plugin} from '../../+behaviours/plugin';
+import {Plugin} from '../../+behaviours';
 import {ProfileService} from '../profile.service';
-import {throwError} from 'rxjs/index';
+import {throwError} from 'rxjs';
 import {tap} from 'rxjs/internal/operators';
 import {BehaviorDataService} from "./behavior-data.service";
+import {ProfileQuery} from "../../store/profile/profile.query";
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -26,6 +27,7 @@ export class BehaviourService {
   constructor(private defaultBehaves: BehavioursDefault,
               private eventManager: EventManager,
               private profileService: ProfileService,
+              private profileQuery: ProfileQuery,
               private dataService: BehaviorDataService,
               private modalService: ModalService) {
 
@@ -39,16 +41,20 @@ export class BehaviourService {
     // add all additional behaviours to the default ones
     // this.behaviours.push(...additionalBehaviours);
 
-    this.initialized = profileService.getProfiles()
-      .then( (profiles) => {
-        profiles.forEach( p => {
-          if (p.behaviours) {
-            p.behaviours.forEach( behaviour => behaviour.forProfile = p.id );
-            this.behaviours.push( ...p.behaviours );
-          }
-        } );
-      } )
-      .then( () => this.loadStoredBehaviours() );
+    this.initialized = new Promise(resolve => {
+      this.profileQuery.isInitialized$.subscribe((isInitialized) => {
+        if (isInitialized) {
+          this.profileService.getProfiles().forEach(p => {
+            if (p.behaviours) {
+              p.behaviours.forEach(behaviour => behaviour.forProfile = p.id);
+              this.behaviours.push(...p.behaviours);
+            }
+          });
+          this.loadStoredBehaviours();
+          resolve();
+        }
+      });
+    });
 
     // keycloak.getGroupsOfUser('');
     /*
@@ -75,6 +81,7 @@ export class BehaviourService {
   }
 
   loadStoredBehaviours(): Promise<any> {
+    // const request =
     return new Promise<any>(resolve => {
       this.dataService.loadStoredBehaviours()
         .pipe(
@@ -96,6 +103,8 @@ export class BehaviourService {
           resolve();
         } );
     });
+
+    // return this.behaviorQuery.isPristine ? request : noop(); // request
   }
 
   /**
@@ -134,23 +143,21 @@ export class BehaviourService {
         }
       } );
 
-    this.profileService.getProfiles().then( profiles => {
-      profiles.some( profileClass => {
-        if (profileClass.id === profile) {
-          if (profileClass.applyValidations) {
-            profileClass.applyValidations( form );
-          }
-          if (profileClass.behaviours) {
-            profileClass.behaviours
-              .filter( _ => _.isActive )
-              .forEach( behaviour => {
-                behaviour.register( form, this.eventManager );
-              } );
-          }
-          return true;
+    this.profileService.getProfiles().some( profileClass => {
+      if (profileClass.id === profile) {
+        if (profileClass.applyValidations) {
+          profileClass.applyValidations( form );
         }
-      } );
-    } );
+        if (profileClass.behaviours) {
+          profileClass.behaviours
+            .filter( _ => _.isActive )
+            .forEach( behaviour => {
+              behaviour.register( form, this.eventManager );
+            } );
+        }
+        return true;
+      }
+    });
   }
 
   saveBehaviour(behaviour: Behaviour | Plugin) {

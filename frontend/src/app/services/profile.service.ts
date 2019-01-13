@@ -75,8 +75,8 @@ export class ProfileService {
           } catch (ex) {
             console.error('Could not load profiles from backend', ex);
           }
-          this.profileStore.update({isInitialized: true});
           resolve(this.profiles);
+          this.profileStore.update({isInitialized: true});
         });
       } else {
         // import( '../../profiles/pack-bkg' );
@@ -110,8 +110,8 @@ export class ProfileService {
     configService.setTitleFields(titleFields);
   }
 
-  getProfiles(): Promise<Profile[]> {
-    return this.initialized;
+  getProfiles(): Profile[] {
+    return this.profiles;
   }
 
 }
