@@ -15,21 +15,13 @@ import {
   MatNativeDateModule,
   MatRadioModule, MatTableModule
 } from '@angular/material';
-import {
-  NzAutocompleteModule,
-  NzDividerModule,
-  NzIconModule,
-  NzInputModule,
-  NzSelectModule,
-  NzTableModule
-} from "ng-zorro-antd";
+import {NgZorroAntdModule} from "ng-zorro-antd";
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     MatInputModule, MatDatepickerModule, MatNativeDateModule, MatCheckboxModule, MatRadioModule, MatTableModule, MatButtonModule,
-    MatIconModule,
-    NzTableModule, NzDividerModule, NzIconModule, NzSelectModule, NzAutocompleteModule, NzInputModule
+    MatIconModule, NgZorroAntdModule
   ],
   declarations: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent],
   exports: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent]

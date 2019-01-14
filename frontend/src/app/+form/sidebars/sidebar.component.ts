@@ -12,6 +12,9 @@ import {DocumentStore} from "../../store/document/document.store";
 })
 export class SidebarComponent implements OnInit {
 
+  sideTab;
+  load;
+
   constructor(private formularService: FormularService, private router: Router, private documentStore: DocumentStore) { }
 
   ngOnInit() {

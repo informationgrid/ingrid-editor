@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit {
 
   sideTab = 'myData';
   private configuration: Configuration;
-  private allDocuments$: Observable<DocumentAbstract[]>;
+  allDocuments$: Observable<DocumentAbstract[]>;
 
   constructor(private http: HttpClient, configService: ConfigService, private errorService: ErrorService,
               private docService: DocumentService,

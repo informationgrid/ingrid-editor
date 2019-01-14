@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {KeycloakService} from '../security/keycloak/keycloak.service';
 import { ApiService } from '../services/ApiService';
-import {MenuService} from "api";
+import {MenuService} from "./menu.service";
 
 @Component({
   selector: 'main-menu',

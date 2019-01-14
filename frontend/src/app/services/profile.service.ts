@@ -1,15 +1,11 @@
 // Needed for the new modules
-import * as AngularCore from '@angular/core';
 import {Compiler, Injectable, Injector, NgModuleFactory} from '@angular/core';
 import {environment} from '../../environments/environment';
 import {ConfigService, Configuration} from './config/config.service';
 import {Profile} from './formular/profile';
 import {DocumentService} from './document/document.service';
 import {CodelistService} from './codelist/codelist.service';
-import * as AngularCommon from '@angular/common';
-import * as IgeApi from 'api';
 import {HttpClient} from "@angular/common/http";
-import {map} from "rxjs/operators";
 import {ProfileStore} from "../store/profile/profile.store";
 
 declare const $script: any;
@@ -35,7 +31,7 @@ export class ProfileService {
 
       console.log('loading dynamic bundle');
       //$script('assets/uvp-profile.umd.js', () => {
-      http.get('http://localhost:4300/assets/uvp-profile.umd.js', {responseType: 'text'})
+      /*http.get('http://localhost:4300/assets/uvp-profile.umd.js', {responseType: 'text'})
         .pipe(
           map(source => {
             console.log('Loaded UMD project bundle dynamically');
@@ -60,7 +56,7 @@ export class ProfileService {
             });
           })
         ).subscribe();
-
+      */
 
       if (environment.profileFromServer) {
         // window['theProfile'].forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));

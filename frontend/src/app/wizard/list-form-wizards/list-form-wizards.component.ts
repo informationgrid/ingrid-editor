@@ -9,6 +9,8 @@ import {DocumentService} from '../../services/document/document.service';
 } )
 export class ListFormWizardsComponent implements OnInit {
 
+  data = {};
+
   constructor(private formularService: FormularService, private storageService: DocumentService) {
   }
 

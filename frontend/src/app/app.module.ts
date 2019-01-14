@@ -37,7 +37,6 @@ import {DiscardConfirmDialogComponent} from "./dialogs/discard-confirm/discard-c
 import {FormsModule} from '@angular/forms';
 import {de_DE, NgZorroAntdModule, NZ_I18N} from 'ng-zorro-antd';
 import de from '@angular/common/locales/de';
-import {ApiModule} from 'api';
 import {DocumentDataService} from "./services/document/document-data.service";
 import {DocumentMockService} from "./services/document/document-mock.service";
 import {ConfigDataService} from "./services/config/config-data.service";
@@ -101,8 +100,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     MatInputModule, MatFormFieldModule, MatSelectModule,
     // IGE-Modules
     IgeFormModule, FormFieldsModule,
-    routing, FormsModule, NgZorroAntdModule,
-    ApiModule],
+    routing, FormsModule, NgZorroAntdModule
+  ],
   exports: [
     MatRadioModule
   ],

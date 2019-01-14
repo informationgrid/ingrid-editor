@@ -8,6 +8,9 @@ import {Component, Input, OnInit} from '@angular/core';
 export class FormInfoComponent implements OnInit {
 
   @Input() doc;
+  showDateBar;
+  markFavoriteHovered;
+  markFavorite;
 
   constructor() { }
 
