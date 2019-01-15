@@ -45,17 +45,17 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
     this.treeControl = new NestedTreeControl<TreeNode>(this._getChildren);
     this.dataSource = new MatTreeNestedDataSource<TreeNode>();
 
-    database.dataChange.subscribe(data => {
+    this.treeQuery.selectAll().subscribe( nodes => {
+      console.log('Received updated nodes');
       this.treeControl.expansionModel.select(...this.treeQuery.openedTreeNodes);
       // only root nodes since children will be resolved later
-      this.dataSource.data = data.filter(d => !d.parent);
-      //this.treeControl.expansionModel.select(data[1]);
+      this.dataSource.data = nodes.filter(d => !d.parent);
     });
+
   }
 
   private _getChildren = (node: TreeNode) => {
     let children = this.treeQuery.getAll({filterBy: entity => entity.parent === node.id});
-    debugger;
     return children;
   };
 

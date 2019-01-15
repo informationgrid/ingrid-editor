@@ -104,16 +104,12 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [
-              "node_modules/scriptjs/dist/script.js",
-              "node_modules/chart.js/dist/Chart.js"
+              "node_modules/scriptjs/dist/script.js"
             ],
             "styles": [
               "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
               "src/assets/tree.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
-              "node_modules/leaflet/dist/leaflet.css",
-              "node_modules/primeng/resources/themes/omega/theme.css",
-              "node_modules/primeng/resources/primeng.min.css",
               "src/styles.css"
             ],
             "assets": [

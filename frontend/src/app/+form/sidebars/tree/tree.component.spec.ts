@@ -9,7 +9,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UpdateDatasetInfo } from '../../../models/update-dataset-info.model';
 import { UpdateType } from '../../../models/update-type.enum';
 import { FormToolbarService } from '../../toolbar/form-toolbar.service';
-import { Observable, Subject } from 'rxjs/index';
+import { Observable, Subject } from 'rxjs';
+import {MatIconModule, MatTreeModule} from "@angular/material";
+import {ConfigDataService} from "../../../services/config/config-data.service";
 
 let fixture: any, comp: any, el: any;
 
@@ -27,6 +29,9 @@ const formToolbarServiceStub = {
     subscribe: () => Observable.create( 'invalid_event_id' )
   }
 };
+const configDataServiceStub = {
+
+};
 
 
 const childrenThree = [{_id: '1', _profile: 'A'}, {_id: '2', _profile: 'A'}, {_id: '3', _profile: 'A'}];
@@ -40,7 +45,10 @@ describe( 'TreeComponent', () => {
     const storageServiceStub = {
       datasetsChanged: subject,
       datasetsChanged$: subject.asObservable(),
-      getChildDocuments: (id: string) => {
+
+
+      //getChildDocuments: (id: string) => {
+      getChildren: (id: string) => {
         if (!id) {
           return Observable.create( childrenTree );
         } else if (id === '3') {
@@ -69,8 +77,9 @@ describe( 'TreeComponent', () => {
         {provide: DocumentService, useValue: storageServiceStub},
         {provide: FormularService, useValue: formularServiceStub},
         {provide: FormToolbarService, useValue: formToolbarServiceStub},
+        {provide: ConfigDataService, useValue: configDataServiceStub},
         ErrorService, ModalService],
-      imports: []
+      imports: [MatIconModule, MatTreeModule]
     } );
 
     // create component and test fixture
