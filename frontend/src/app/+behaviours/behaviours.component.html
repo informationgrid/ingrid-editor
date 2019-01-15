@@ -1,5 +1,5 @@
 <!-- System behaviours -->
-<mat-tab-group>
+<mat-tab-group [animationDuration]="'0ms'">
     <mat-tab label="System" [formGroup]="pluginForm">
         <mat-card *ngFor="let plugin of plugins">
             <mat-card-header (click)="toggleField(plugin)">

@@ -97,7 +97,7 @@
                 <!--<div class="main-form-flex">-->
                 <!--<div class="main-form">-->
                 <!--<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>-->
-                <mat-tab-group *ngIf="fields[0].controlType === 'rubric'" class="md-no-animation">
+                <mat-tab-group *ngIf="fields[0].controlType === 'rubric'" [animationDuration]="'0ms'">
                     <ng-container *ngFor="let field of fields">
                         <mat-tab [label]="field.label" *ngIf="field.controlType === 'rubric'">
                             <ige-main-form-tabs [fields]="field.children" [form]="form"
