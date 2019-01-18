@@ -4,13 +4,17 @@
         <!--<p-chart type="pie"
                  [data]="data"
                  (onDataSelect)="chartClicked($event)"></p-chart>-->
-        <x-chartist type="Bar" [data]="data" ></x-chartist>
+        <x-chartist type="Bar" [data]="data"></x-chartist>
     </div>
 
     <div class="content">
         <ul class="nav nav-tabs">
-            <li role="presentation" class="nav-item" [class.active]="sideTab === 'myData'"><a class="nav-link" (click)="sideTab = 'myData'">Mein Daten</a></li>
-            <li role="presentation" class="nav-item" [class.active]="sideTab === 'allData'"><a class="nav-link" (click)="sideTab = 'allData'">Alle Daten</a>
+            <li role="presentation" class="nav-item" [class.active]="sideTab === 'myData'"><a class="nav-link"
+                                                                                              (click)="sideTab = 'myData'">Mein
+                Daten</a></li>
+            <li role="presentation" class="nav-item" [class.active]="sideTab === 'allData'"><a class="nav-link"
+                                                                                               (click)="sideTab = 'allData'">Alle
+                Daten</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -31,6 +35,8 @@
     </div>
 
     <div class="recentDocs">
-        Letzte Dokumente
+        <ul>
+            <li *ngFor="let doc of recentDocs$ | async">{{doc.title}}</li>
+        </ul>
     </div>
 </div>

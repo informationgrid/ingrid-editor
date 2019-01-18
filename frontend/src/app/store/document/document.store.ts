@@ -30,5 +30,9 @@ export class DocumentStore extends EntityStore<DocumentState, DocumentAbstract> 
   setSelected(docs: DocumentAbstract[]) {
     this.updateRoot({selected: docs});
   }
+
+  setRecent(docs: DocumentAbstract[]) {
+    this.updateRoot({recent: docs});
+  }
 }
 

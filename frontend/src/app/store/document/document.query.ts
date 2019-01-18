@@ -14,6 +14,8 @@ export class DocumentQuery extends QueryEntity<DocumentState, DocumentAbstract> 
 
   selectedDocuments$: Observable<DocumentAbstract[]> = this.select(state => state.selected);
 
+  recentDocuments$: Observable<DocumentAbstract[]> = this.select(state => state.recent);
+
   constructor(protected store: DocumentStore) {
     super(store);
   }
@@ -21,6 +23,5 @@ export class DocumentQuery extends QueryEntity<DocumentState, DocumentAbstract> 
   get selectedDocuments(): DocumentAbstract[] {
     return this.getSnapshot().selected;
   }
-
 
 }

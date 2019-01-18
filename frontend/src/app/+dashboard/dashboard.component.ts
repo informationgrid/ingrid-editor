@@ -1,10 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ConfigService, Configuration} from '../services/config/config.service';
-import {ErrorService} from '../services/error.service';
 import {FormularService} from '../services/formular/formular.service';
-import {HttpClient} from '@angular/common/http';
-import {map} from 'rxjs/internal/operators';
-import {ProfileService} from '../services/profile.service';
 import {DocumentService} from "../services/document/document.service";
 import {ProfileQuery} from "../store/profile/profile.query";
 import {DocumentQuery} from "../store/document/document.query";
@@ -33,12 +29,13 @@ export class DashboardComponent implements OnInit {
   sideTab = 'myData';
   private configuration: Configuration;
   allDocuments$: Observable<DocumentAbstract[]>;
+  private recentDocs$: Observable<DocumentAbstract[]>;
 
-  constructor(private http: HttpClient, configService: ConfigService, private errorService: ErrorService,
+  constructor(configService: ConfigService,
               private docService: DocumentService,
               private profileQuery: ProfileQuery,
               private docQuery: DocumentQuery,
-              private formularService: FormularService, private profileService: ProfileService) {
+              private formularService: FormularService) {
     this.configuration = configService.getConfiguration();
   }
 
@@ -50,6 +47,7 @@ export class DashboardComponent implements OnInit {
     } );
 
     this.allDocuments$ = this.docQuery.selectAll();
+    this.recentDocs$ = this.docQuery.recentDocuments$;
     this.fetchStatistic();
     this.fetchData();
   }
@@ -66,14 +64,14 @@ export class DashboardComponent implements OnInit {
       query = '';
     }
 
-    this.docService.find('')
-      .pipe(
+    this.docService.findRecent();
+      /*.pipe(
         map(json => {
           let noFolderDocs = json.filter(item => item && item._profile !== 'FOLDER');
-          return this.prepareTableData(noFolderDocs);
+          // return this.prepareTableData(noFolderDocs);
+          return noFolderDocs;
         })
-      )
-      .subscribe();
+      );*/
   }
 
   prepareData(data: any) {
@@ -98,25 +96,16 @@ export class DashboardComponent implements OnInit {
     this.data = newData;
   }
 
-  // events
-  public chartClicked(e: any): void {
-    console.log( 'Chart clicked:', e );
-    // const index = e.active[0] !== undefined ? e.active[0]._index : undefined;
-    // if (index !== undefined) {
-      // this.fetchData('_profile:' + this.pieChartLabels[index]);
-    // }
-  }
-
-  public chartHovered(e: any): void {
-    // console.log(e);
-  }
-
-  private prepareTableData(data: any[]) {
+  /*private prepareTableData(data: any[]): DocumentAbstract[] {
     return data.map(item => {
       return {
-        id: item._id,
+        _id: item._id,
+        _profile: "",
+        icon: "",
+        _children: null,
+        _hasChildren: false,
         title: this.formularService.getTitle(item._profile, item)
       };
     });
-  }
+  }*/
 }

@@ -57,7 +57,8 @@ export class BrowserComponent implements OnInit, OnDestroy {
 
   query() {
     // initially show all documents
-    this.storageService.find( this.searchString ).subscribe( (docs: any[]) => {
+    this.storageService.find( this.searchString );
+    /*TODO: .subscribe( (docs: any[]) => {
       this.entries = docs
         .filter(doc => doc._profile !== undefined)
         .filter(doc => !this.filter || this.matchFilter(doc) )
@@ -65,7 +66,7 @@ export class BrowserComponent implements OnInit, OnDestroy {
           doc.title = this.formularService.getTitle(doc._profile, doc);
           return doc;
         } );
-    });
+    });*/
   }
 
   open(id: string, title: string) {

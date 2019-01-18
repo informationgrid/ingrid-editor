@@ -35,24 +35,38 @@ export class DocumentService {
   constructor(private modalService: ModalService,
               private dataService: DocumentDataService,
               private documentStore: DocumentStore,
-              private treeStore: TreeStore,
-              private treeQuery: TreeQuery,
-              private errorService: ErrorService) {
+              private treeStore: TreeStore) {
     if (KeycloakService.auth.loggedIn) {
       // TODO: this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
     }
   }
 
-  find(query: string): Observable<IgeDocument[]> {
+  find(query: string): void {
     // TODO: use general sort filter
-    return this.dataService.find(query)
+    this.dataService.find(query)
       .pipe(
         map( json => {
           return json.filter( item => item && item._profile !== 'FOLDER' );
         } ),
-        tap( docs => this.documentStore.set(this.mapToDocuments(docs)))
+        tap( docs => {
+          this.documentStore.set(this.mapToDocuments(docs));
+        })
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
-      );
+      ).subscribe();
+  }
+
+  findRecent(): void {
+    // TODO: use general sort filter
+    this.dataService.find(null)
+      .pipe(
+        map( json => {
+          return json.filter( item => item && item._profile !== 'FOLDER' );
+        } ),
+        tap( docs => {
+          this.documentStore.setRecent(this.mapToDocuments(docs));
+        })
+        // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
+      ).subscribe();
   }
 
   private mapToDocuments(docs: any[]): DocumentAbstract[] {
