@@ -6,17 +6,17 @@ import {Subscription} from 'rxjs';
 import {NestedTreeControl} from '@angular/cdk/tree';
 import {ConfigService} from "../../../services/config/config.service";
 import {MatTreeNestedDataSource} from "@angular/material";
-import {DocumentDatabase} from "./document-database";
 import {TreeNode} from "../../../store/tree/tree-node.model";
 import {TreeQuery} from "../../../store/tree/tree.query";
 import {DocumentAbstract} from "../../../store/document/document.model";
 import {DocumentQuery} from "../../../store/document/document.query";
+import {DynamicDatabase} from "./DynamicDatabase";
 
 @Component({
   selector: 'ige-tree',
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.css'],
-  providers: [DocumentDatabase]
+  providers: [DynamicDatabase]
 })
 export class MetadataTreeComponent implements OnInit, OnDestroy {
 
@@ -35,7 +35,7 @@ export class MetadataTreeComponent implements OnInit, OnDestroy {
   treeControl: NestedTreeControl<TreeNode>;
 
   dataSource: MatTreeNestedDataSource<TreeNode>;
-  constructor(private database: DocumentDatabase, private storageService: DocumentService, private router: Router,
+  constructor(private database: DynamicDatabase, private storageService: DocumentService, private router: Router,
               private treeQuery: TreeQuery,
               private documentQuery: DocumentQuery,
 
