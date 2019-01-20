@@ -16,11 +16,11 @@ import {MainFormTabsComponent} from './main-form-tabs/main-form-tabs.component';
 import {IgeWizardModule} from '../wizard/wizard.module';
 import {ScrollToDirective} from '../directives/scrollTo.directive';
 import {
-  MatButtonModule,
+  MatCheckboxModule,
   MatDialogModule,
   MatDividerModule,
+  MatExpansionModule,
   MatFormFieldModule,
-  MatIconModule,
   MatInputModule,
   MatListModule,
   MatRadioModule,
@@ -30,17 +30,23 @@ import {
 } from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {AddPartialDialogComponent} from './partialGenerator/dialog/add-partial-dialog.component';
-import { SidebarComponent } from './sidebars/sidebar.component';
-import { FormInfoComponent } from './form-info/form-info.component';
+import {SidebarComponent} from './sidebars/sidebar.component';
+import {FormInfoComponent} from './form-info/form-info.component';
+import {FormDialogsModule} from "../dialogs/form/form-dialogs.module";
+import {FormFieldsModule} from "../form-fields/form-fields.module";
+import {AngularSplitModule} from "angular-split";
+import {RouterModule} from "@angular/router";
 
 @NgModule({
   imports: [
+    RouterModule.forChild(routing),
     CommonModule, FormsModule, ReactiveFormsModule,
-    IgeWizardModule, SharedModule,
-    MatFormFieldModule, MatToolbarModule, MatIconModule, MatInputModule, MatTableModule, MatDividerModule, MatButtonModule,
-    MatTabsModule, MatDividerModule, MatListModule, MatDialogModule, MatRadioModule,
+    AngularSplitModule,
+    IgeWizardModule, FormDialogsModule, SharedModule,
+    MatFormFieldModule, MatToolbarModule, MatInputModule, MatTableModule,
+    MatTabsModule, MatDividerModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule,
     FlexLayoutModule,
-    SharedModule, routing],
+    FormDialogsModule, FormFieldsModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent, AddPartialDialogComponent,

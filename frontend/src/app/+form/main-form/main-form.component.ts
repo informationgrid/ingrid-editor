@@ -1,7 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
-import { Container, FieldBase } from '../controls';
-import { PartialGeneratorField } from '../controls/field-partial-generator';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FormArray, FormGroup} from '@angular/forms';
+import {Container, FieldBase} from '../controls';
 
 @Component({
   selector: 'ige-main-form',

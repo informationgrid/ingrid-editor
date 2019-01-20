@@ -7,9 +7,10 @@ import {FormsModule} from '@angular/forms';
 import {RoleService} from '../services/role/role.service';
 import {RoleComponent} from './role.component';
 import {SharedModule} from '../shared.module';
-import {MatButtonModule, MatIconModule, MatInputModule, MatTabsModule} from '@angular/material';
+import {MatButtonModule, MatIconModule, MatInputModule, MatListModule, MatTabsModule} from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RouterModule, Routes} from "@angular/router";
+import {AngularSplitModule} from "angular-split";
 
 const routes: Routes = [
   {
@@ -19,8 +20,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes), FormsModule, CommonModule, routing, SharedModule,
-            MatTabsModule, MatIconModule, MatButtonModule, MatInputModule,
+  imports: [RouterModule.forChild(routes), AngularSplitModule.forChild(), FormsModule, CommonModule, routing, SharedModule,
+            MatTabsModule, MatIconModule, MatButtonModule, MatInputModule, MatListModule,
             FlexLayoutModule
   ],
   declarations: [UserComponent, RoleComponent],

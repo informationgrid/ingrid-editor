@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Plugin } from '../../plugin';
-import { FormToolbarService } from '../../../+form/toolbar/form-toolbar.service';
-import { FormularService } from '../../../services/formular/formular.service';
-import { PrintViewDialogComponent } from '../../../dialogs/print-view/print-view-dialog.component';
-import { MatDialog } from '@angular/material';
+import {Injectable} from '@angular/core';
+import {Plugin} from '../../plugin';
+import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
+import {FormularService} from '../../../services/formular/formular.service';
+import {PrintViewDialogComponent} from '../../../dialogs/form/print-view/print-view-dialog.component';
+import {MatDialog} from '@angular/material';
 
 @Injectable({
   providedIn: 'root'

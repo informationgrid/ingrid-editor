@@ -1,14 +1,14 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CatalogManagerComponent } from './catalog-manager/catalog-manager.component';
-import { routing } from './catalog.routing';
-import { CatalogService } from './services/catalog.service';
-import { CatalogDetailComponent } from './catalog-detail/catalog-detail.component';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule, MatCardModule, MatListModule, MatSelectModule } from '@angular/material';
-import { FlexLayoutModule } from '@angular/flex-layout';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {CatalogManagerComponent} from './catalog-manager/catalog-manager.component';
+import {routing} from './catalog.routing';
+import {CatalogService} from './services/catalog.service';
+import {CatalogDetailComponent} from './catalog-detail/catalog-detail.component';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule, MatCardModule, MatListModule} from '@angular/material';
+import {FlexLayoutModule} from '@angular/flex-layout';
 import {RouterModule, Routes} from "@angular/router";
-import {ImportExportComponent} from "../+importExport/import/import.component";
+import {CatalogDialogsModule} from "../dialogs/catalog/catalog-dialogs.module";
 
 
 const routes: Routes = [
@@ -25,6 +25,7 @@ const routes: Routes = [
     FormsModule,
     FlexLayoutModule,
     MatCardModule, MatButtonModule, MatListModule,
+    CatalogDialogsModule,
     routing
   ],
   providers: [

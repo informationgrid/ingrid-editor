@@ -1,13 +1,22 @@
 <div fxFill style="overflow: auto;">
 
+    <ige-search-bar></ige-search-bar>
+
+    <div class="shortcut">
+        <ige-action-button label="Neues Dokument" (click)="createNewDocument()"></ige-action-button>
+        <ige-action-button label="Neue Adresse" (click)="createNewAddress()"></ige-action-button>
+        <ige-action-button label="Neuen Benuter anlegen" (click)="createNewUser()"></ige-action-button>
+    </div>
+
     <div class="chart pull-left">
         <!--<p-chart type="pie"
                  [data]="data"
                  (onDataSelect)="chartClicked($event)"></p-chart>-->
-        <x-chartist type="Bar" [data]="data"></x-chartist>
+        <!--<x-chartist type="Bar" [data]="data"></x-chartist>-->
+        <x-chartist type="Pie" [data]="dataPie"></x-chartist>
     </div>
 
-    <div class="content">
+    <!--<div class="content">
         <ul class="nav nav-tabs">
             <li role="presentation" class="nav-item" [class.active]="sideTab === 'myData'"><a class="nav-link"
                                                                                               (click)="sideTab = 'myData'">Mein
@@ -27,16 +36,13 @@
         <div class="tab-content" [class.active]="sideTab === 'allData'">
             <p class="tab-pane text-primary" [class.active]="sideTab === 'allData'">Noch nicht umgesetzt.</p>
         </div>
-    </div>
+    </div>-->
 
-    <div class="shortcut">
-        <h2 class="item">Neues Dokument erstellen</h2>
-        <h2 class="item">Adresse erstellen</h2>
-    </div>
-
+    <h2>Letzte Dokumente</h2>
     <div class="recentDocs">
-        <ul>
+        <ige-document-tile *ngFor="let doc of recentDocs$ | async" [document]="doc"></ige-document-tile>
+        <!--<ul>
             <li *ngFor="let doc of recentDocs$ | async">{{doc.title}}</li>
-        </ul>
+        </ul>-->
     </div>
 </div>

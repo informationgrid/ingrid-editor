@@ -1,11 +1,11 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Catalog, CatalogService } from '../services/catalog.service';
-import { ConfigService, Configuration } from '../../services/config/config.service';
-import { Router } from '@angular/router';
-import { Observable } from 'rxjs/index';
-import { MatDialog } from '@angular/material';
-import { NewCatalogDialogComponent } from '../../dialogs/new-catalog/new-catalog-dialog.component';
-import { UploadProfileDialogComponent } from '../../dialogs/upload-profile/upload-profile-dialog.component';
+import {Component, OnInit} from '@angular/core';
+import {Catalog, CatalogService} from '../services/catalog.service';
+import {ConfigService, Configuration} from '../../services/config/config.service';
+import {Router} from '@angular/router';
+import {Observable} from 'rxjs/index';
+import {MatDialog} from '@angular/material';
+import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
+import {UploadProfileDialogComponent} from '../../dialogs/catalog/upload-profile/upload-profile-dialog.component';
 
 @Component({
   selector: 'ige-catalog-manager',

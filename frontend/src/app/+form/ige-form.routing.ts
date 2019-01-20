@@ -1,4 +1,4 @@
-import {RouterModule} from '@angular/router';
+import {Routes} from '@angular/router';
 import {DynamicFormComponent} from './dynamic-form.component';
 import {AuthGuard} from '../security/auth.guard';
 import {FormChangeDeactivateGuard} from '../security/form-change.guard';
@@ -6,9 +6,9 @@ import {ListFormWizardsComponent} from '../wizard/list-form-wizards/list-form-wi
 import {OpenDataWizardComponent} from '../wizard/open-data-wizard/open-data-wizard.component';
 import {NoCatalogAssignedGuard} from "../security/no-catalog-assigned.guard";
 
-export const routing = RouterModule.forChild([
+export const routing: Routes = [
   {
-    path: 'form',
+    path: '',
     component: DynamicFormComponent,
     canActivate: [AuthGuard, NoCatalogAssignedGuard],
     data: { roles: ['author', 'admin'] },
@@ -18,4 +18,4 @@ export const routing = RouterModule.forChild([
       {path: 'opendata', component: OpenDataWizardComponent, outlet: 'wizard'}
     ]
   }
-]);
+];

@@ -22,6 +22,9 @@ import {Observable} from "rxjs";
 export class DashboardComponent implements OnInit {
 
   data: any = {};
+  dataPie = {
+    series: [10, 90]
+  };
   datasets;
 
   titleFields: string;
@@ -108,4 +111,15 @@ export class DashboardComponent implements OnInit {
       };
     });
   }*/
+  createNewDocument() {
+    console.log("Create new document");
+  }
+
+  createNewAddress() {
+
+  }
+
+  createNewUser() {
+
+  }
 }

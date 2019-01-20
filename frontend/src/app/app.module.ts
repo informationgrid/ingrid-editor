@@ -1,7 +1,6 @@
 import {AppComponent} from './app.component';
 import {HashLocationStrategy, LocationStrategy, registerLocaleData} from '@angular/common';
 import {appRoutingProviders, routing} from './app.router';
-import {IgeFormModule} from './+form/ige-form.module';
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, ErrorHandler, NgModule} from '@angular/core';
 import {MenuComponent} from './menu/menu.component';
@@ -13,29 +12,12 @@ import {ConfigService} from './services/config/config.service';
 import {LoginComponent} from './security/login.component';
 import {GlobalErrorHandler} from './error-handler';
 import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
-import {FormFieldsModule} from './form-fields/form-fields.module';
-import {
-  MAT_DATE_LOCALE,
-  MatButtonModule,
-  MatCheckboxModule,
-  MatDialogModule,
-  MatExpansionModule,
-  MatFormFieldModule,
-  MatIconModule,
-  MatInputModule,
-  MatRadioModule,
-  MatSelectModule,
-  MatToolbarModule
-} from '@angular/material';
+import {MAT_DATE_LOCALE, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule} from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ErrorDialogComponent} from './dialogs/error/error-dialog.component';
-import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
-import {NewCatalogDialogComponent} from './dialogs/new-catalog/new-catalog-dialog.component';
-import {UploadProfileDialogComponent} from './dialogs/upload-profile/upload-profile-dialog.component';
 import {IgeError} from './models/ige-error';
-import {DiscardConfirmDialogComponent} from "./dialogs/discard-confirm/discard-confirm-dialog.component";
 import {FormsModule} from '@angular/forms';
-import {de_DE, NgZorroAntdModule, NZ_I18N} from 'ng-zorro-antd';
+import {de_DE, NZ_I18N} from 'ng-zorro-antd';
 import de from '@angular/common/locales/de';
 import {DocumentDataService} from "./services/document/document-data.service";
 import {DocumentMockService} from "./services/document/document-mock.service";
@@ -85,9 +67,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent,
-    ErrorDialogComponent, NewDocumentComponent, NewCatalogDialogComponent, DiscardConfirmDialogComponent, UploadProfileDialogComponent
-  ],
+  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
@@ -96,14 +76,10 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     // Flex layout
     FlexLayoutModule,
     // Material
-    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatExpansionModule, MatRadioModule, MatCheckboxModule,
-    MatInputModule, MatFormFieldModule, MatSelectModule,
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule,
     // IGE-Modules
-    IgeFormModule, FormFieldsModule,
-    routing, FormsModule, NgZorroAntdModule
-  ],
-  exports: [
-    MatRadioModule
+    // IgeFormModule, FormFieldsModule,
+    routing, FormsModule
   ],
   providers: [
     appRoutingProviders,
@@ -167,7 +143,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent, NewDocumentComponent, NewCatalogDialogComponent, UploadProfileDialogComponent]
+  entryComponents: [ErrorDialogComponent]
 } )
 
 export class AppModule {
