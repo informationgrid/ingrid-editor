@@ -1,8 +1,7 @@
 import { PartialGeneratorField } from '../+form/controls/field-partial-generator';
 import { Injectable } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Container } from '../+form/controls/container';
-import { IFieldBase } from '../+form/controls';
+import { IFieldBase, Container } from '../+form/controls';
 
 @Injectable()
 export class FormControlService {

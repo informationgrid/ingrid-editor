@@ -5,7 +5,7 @@ import {SelectedDocument} from '../../+form/sidebars/selected-document.model';
 import {HttpClient} from '@angular/common/http';
 import {ConfigService, Configuration} from '../config/config.service';
 import {ProfileService} from '../profile.service';
-import {Observable, Subject} from 'rxjs/index';
+import {Observable, Subject} from 'rxjs';
 import {ProfileQuery} from "../../store/profile/profile.query";
 
 @Injectable({

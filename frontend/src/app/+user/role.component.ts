@@ -5,7 +5,7 @@ import {RoleService} from '../services/role/role.service';
 import {MenuService} from '../menu/menu.service';
 import {Role, RoleAttribute} from '../models/user-role';
 import {MetadataTreeComponent} from '../+form/sidebars/tree/tree.component';
-import { Observable } from 'rxjs/index';
+import { Observable } from 'rxjs';
 
 @Component( {
   selector: 'role-gui',

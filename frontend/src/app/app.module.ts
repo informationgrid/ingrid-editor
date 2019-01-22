@@ -12,12 +12,18 @@ import {ConfigService} from './services/config/config.service';
 import {LoginComponent} from './security/login.component';
 import {GlobalErrorHandler} from './error-handler';
 import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
-import {MAT_DATE_LOCALE, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule} from '@angular/material';
+import {
+  MAT_DATE_LOCALE,
+  MatButtonModule,
+  MatDialogModule, MatFormFieldModule,
+  MatIconModule, MatInputModule, MatListModule,
+  MatSidenavModule,
+  MatToolbarModule
+} from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ErrorDialogComponent} from './dialogs/error/error-dialog.component';
 import {IgeError} from './models/ige-error';
 import {FormsModule} from '@angular/forms';
-import {de_DE, NZ_I18N} from 'ng-zorro-antd';
 import de from '@angular/common/locales/de';
 import {DocumentDataService} from "./services/document/document-data.service";
 import {DocumentMockService} from "./services/document/document-mock.service";
@@ -35,6 +41,7 @@ import {UserDataService} from "./services/user/user-data.service";
 import {UserMockService} from "./services/user/user-mock.service";
 import {AkitaNgDevtools} from "@datorama/akita-ngdevtools";
 import {AngularSplitModule} from "angular-split";
+import {SearchBarComponent} from "./+dashboard/search-bar/search-bar.component";
 
 registerLocaleData(de);
 
@@ -67,7 +74,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent],
+  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent, SearchBarComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
@@ -76,7 +83,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     // Flex layout
     FlexLayoutModule,
     // Material
-    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule,
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatListModule, MatFormFieldModule, MatInputModule,
     // IGE-Modules
     // IgeFormModule, FormFieldsModule,
     routing, FormsModule
@@ -137,8 +144,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     {
       provide: UserDataService,
       useClass: environment.production ? UserDataService : UserMockService
-    },
-    { provide: NZ_I18N, useValue: de_DE }
+    }
 
   ], // additional providers
 

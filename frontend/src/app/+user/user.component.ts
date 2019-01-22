@@ -4,7 +4,7 @@ import { UserService } from '../services/user/user.service';
 import { ErrorService } from '../services/error.service';
 import { User } from './user';
 import { Role } from '../models/user-role';
-import { Observable } from 'rxjs/index';
+import { Observable } from 'rxjs';
 
 @Component( {
   templateUrl: './user.component.html',

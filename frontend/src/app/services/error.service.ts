@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ModalService } from './modal/modal.service';
 import { Router } from '@angular/router';
-import { throwError } from 'rxjs/index';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

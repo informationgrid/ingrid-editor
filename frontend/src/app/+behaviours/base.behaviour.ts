@@ -1,4 +1,4 @@
-import { Subscription } from 'rxjs/index';
+import { Subscription } from 'rxjs';
 
 export abstract class BaseBehaviour {
   private listeners: Function[] = [];

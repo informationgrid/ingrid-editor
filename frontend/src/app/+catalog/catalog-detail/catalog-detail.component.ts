@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
 import {User} from '../../+user/user';
-import {Observable} from 'rxjs/index';
+import {Observable} from 'rxjs';
 import {CatalogService} from '../services/catalog.service';
 import {ActivatedRoute} from '@angular/router';
 

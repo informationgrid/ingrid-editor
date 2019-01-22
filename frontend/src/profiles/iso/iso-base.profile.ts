@@ -1,15 +1,18 @@
-import { CheckboxField, RadioField, TextareaField, TextboxField } from '../../app/+form/controls/index';
-import { OpenTableField } from '../../app/+form/controls/field-opentable';
-import { Profile } from '../../app/services/formular/profile';
-import { Rubric } from '../../app/+form/controls/rubric';
-import { DropdownField } from '../../app/+form/controls/field-dropdown';
-import { FieldBase } from '../../app/+form/controls/field-base';
-import { CodelistService } from '../../app/services/codelist/codelist.service';
-import { Container } from '../../app/+form/controls/container';
-import { DatepickerField } from '../../app/+form/controls/field-datepicker';
-import { Injectable } from '@angular/core';
-import { TreeField } from '../../app/+form/controls/field-tree';
-import { DocumentService } from '../../app/services/document/document.service';
+import {
+  CheckboxField,
+  Container,
+  DropdownField,
+  FieldBase,
+  RadioField,
+  TextareaField,
+  TextboxField
+} from '../../app/+form/controls';
+import {OpenTableField} from '../../app/+form/controls/field-opentable';
+import {Profile} from '../../app/services/formular/profile';
+import {Rubric} from '../../app/+form/controls/rubric';
+import {CodelistService} from '../../app/services/codelist/codelist.service';
+import {TreeField} from '../../app/+form/controls/field-tree';
+import {DocumentService} from '../../app/services/document/document.service';
 
 export class IsoBaseProfile implements Profile {
 
@@ -103,164 +106,164 @@ export class IsoBaseProfile implements Profile {
           })
         ]
       }),
-/*
+      /*
 
-      new Rubric({
-        label: 'Verschlagwortung',
-        order: 30,
-        children: [
-          new OpenTableField({
-            key: 'advProductGroup',
-            label: 'AdV-Produktgruppe',
-            hideHeader: true,
-            order: 30,
-            columns: [
-              {
-                editor: advProductGroup,
-                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
-              }
-            ]
-          }),
-          new OpenTableField({
-            key: 'optionalKeywords',
-            label: 'Optionale Schlagwörter',
-            hideHeader: true,
-            order: 30,
-            columns: [
-              {
-                editor: advProductGroup,
-                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
-              }
-            ]
-          }),
+            new Rubric({
+              label: 'Verschlagwortung',
+              order: 30,
+              children: [
+                new OpenTableField({
+                  key: 'advProductGroup',
+                  label: 'AdV-Produktgruppe',
+                  hideHeader: true,
+                  order: 30,
+                  columns: [
+                    {
+                      editor: advProductGroup,
+                      formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+                    }
+                  ]
+                }),
+                new OpenTableField({
+                  key: 'optionalKeywords',
+                  label: 'Optionale Schlagwörter',
+                  hideHeader: true,
+                  order: 30,
+                  columns: [
+                    {
+                      editor: advProductGroup,
+                      formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+                    }
+                  ]
+                }),
 
-          new CheckboxField({
-            key: 'showAsTopic',
-            label: 'Als InGrid-Portal-Themenseite anzeigen',
-            order: 30
-          }),
+                new CheckboxField({
+                  key: 'showAsTopic',
+                  label: 'Als InGrid-Portal-Themenseite anzeigen',
+                  order: 30
+                }),
 
-          new OpenTableField({
-            key: 'environmentTopics',
-            label: 'Themen',
-            hideHeader: true,
-            order: 30,
-            columns: [
-              {
-                editor: advProductGroup,
-                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
-              }
-            ]
-          })
+                new OpenTableField({
+                  key: 'environmentTopics',
+                  label: 'Themen',
+                  hideHeader: true,
+                  order: 30,
+                  columns: [
+                    {
+                      editor: advProductGroup,
+                      formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+                    }
+                  ]
+                })
 
-        ]
-      }),
+              ]
+            }),
 
 
-      new Rubric({
-        label: 'Raumbezugssystem',
-        order: 30,
-        children: [
-          new OpenTableField({
-            key: 'geoThesaurus',
-            label: 'Geothesaurus-Raumbezug',
-            hideHeader: true,
-            order: 30,
-            columns: [
-              {
-                editor: advProductGroup,
-                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
-              }
-            ]
-          }),
+            new Rubric({
+              label: 'Raumbezugssystem',
+              order: 30,
+              children: [
+                new OpenTableField({
+                  key: 'geoThesaurus',
+                  label: 'Geothesaurus-Raumbezug',
+                  hideHeader: true,
+                  order: 30,
+                  columns: [
+                    {
+                      editor: advProductGroup,
+                      formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+                    }
+                  ]
+                }),
 
-          new OpenTableField({
-            key: 'crs',
-            label: 'Raumbezugssystem',
-            hideHeader: true,
-            order: 30,
-            columns: [
-              {
-                editor: advProductGroup,
-                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
-              }
-            ]
-          }),
+                new OpenTableField({
+                  key: 'crs',
+                  label: 'Raumbezugssystem',
+                  hideHeader: true,
+                  order: 30,
+                  columns: [
+                    {
+                      editor: advProductGroup,
+                      formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+                    }
+                  ]
+                }),
 
-          new Container({
-            domClass: 'half',
-            label: 'Höhe',
-            hideLabel: false,
-            key: 'spatialHeight',
-            children: [
-              new TextboxField({
-                key: 'min',
-                label: 'Minimum',
-                domClass: 'third'
-              }),
+                new Container({
+                  domClass: 'half',
+                  label: 'Höhe',
+                  hideLabel: false,
+                  key: 'spatialHeight',
+                  children: [
+                    new TextboxField({
+                      key: 'min',
+                      label: 'Minimum',
+                      domClass: 'third'
+                    }),
 
-              new TextboxField({
-                key: 'max',
-                label: 'Maximum',
-                domClass: 'third'
-              }),
+                    new TextboxField({
+                      key: 'max',
+                      label: 'Maximum',
+                      domClass: 'third'
+                    }),
 
-              new DropdownField({
-                key: 'unit',
-                label: 'Maßeinheit',
-                domClass: 'third'
-              }),
+                    new DropdownField({
+                      key: 'unit',
+                      label: 'Maßeinheit',
+                      domClass: 'third'
+                    }),
 
-              new DropdownField({
-                key: 'verticalDate',
-                label: 'Vertikaldatum'
-              })
-            ]
-          }),
+                    new DropdownField({
+                      key: 'verticalDate',
+                      label: 'Vertikaldatum'
+                    })
+                  ]
+                }),
 
-          new TextareaField({
-            key: 'spatialDescription',
-            label: 'Erläuterungen',
-            rows: 5,
-            domClass: 'half'
-          })
-        ]
-      }),
+                new TextareaField({
+                  key: 'spatialDescription',
+                  label: 'Erläuterungen',
+                  rows: 5,
+                  domClass: 'half'
+                })
+              ]
+            }),
 
-      new Rubric({
-        label: 'Zeitbezug',
-        order: 30,
-        children: [
-          new DatepickerField({
-            key: 'startDate',
-            label: 'Start'
-          }),
-          new OpenTableField({
-            key: 'timeReference',
-            label: 'Zeitbezug der Ressource',
-            order: 30,
-            domClass: 'half',
-            columns: [
-              {
-                editor: advProductGroup,
-                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
-              },
-              {
-                editor: advProductGroup,
-                formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
-              }
-            ]
-          }),
+            new Rubric({
+              label: 'Zeitbezug',
+              order: 30,
+              children: [
+                new DatepickerField({
+                  key: 'startDate',
+                  label: 'Start'
+                }),
+                new OpenTableField({
+                  key: 'timeReference',
+                  label: 'Zeitbezug der Ressource',
+                  order: 30,
+                  domClass: 'half',
+                  columns: [
+                    {
+                      editor: advProductGroup,
+                      formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+                    },
+                    {
+                      editor: advProductGroup,
+                      formatter: (key) => advProductGroup.options.find(nr => nr.id === key).value
+                    }
+                  ]
+                }),
 
-          new TextareaField({
-            key: 'timeDescription',
-            label: 'Erläuterungen',
-            rows: 5,
-            domClass: 'half'
-          })
-        ]
-      }),
-*/
+                new TextareaField({
+                  key: 'timeDescription',
+                  label: 'Erläuterungen',
+                  rows: 5,
+                  domClass: 'half'
+                })
+              ]
+            }),
+      */
 
       new Rubric({
         label: 'Zusatzinformation',
@@ -349,12 +352,12 @@ export class IsoBaseProfile implements Profile {
       options: []
     });
 
-    this.codelistService.byIds( ['505', '8010', '99999999', '3571'] ).then( codelists => {
+    this.codelistService.byIds(['505', '8010', '99999999', '3571']).then(codelists => {
       addressTypes.options = codelists[0];
       advProductGroupSelect.options = codelists[1];
       metadataLanguage.options = codelists[2];
       publicationInfo.options = codelists[3];
-    } );
+    });
 
     return [addressTypes, advProductGroupSelect, metadataLanguage, publicationInfo];
   }

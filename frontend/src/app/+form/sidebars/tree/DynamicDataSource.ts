@@ -1,9 +1,9 @@
 import { DocMainInfo } from '../../../models/update-dataset-info.model';
-import { BehaviorSubject, Observable } from '../../../../../node_modules/rxjs/Rx';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { CollectionViewer, SelectionChange } from '@angular/cdk/collections';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/internal/operators';
-import { merge } from 'rxjs/index';
+import { merge } from 'rxjs';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { DynamicFlatNode } from './DynamicFlatNode';
 import { DynamicDatabase } from './DynamicDatabase';

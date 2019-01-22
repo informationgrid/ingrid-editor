@@ -30,9 +30,9 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule,
-    MatButtonModule, MatIconModule, MatChipsModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule
+    MatButtonModule, MatIconModule
   ],
-  declarations: [DashboardComponent, ChartistComponent, SearchBarComponent, ActionButtonComponent, DocumentTileComponent],
+  declarations: [DashboardComponent, ChartistComponent, ActionButtonComponent, DocumentTileComponent],
   exports: [RouterModule]
 })
 export class DashboardModule {

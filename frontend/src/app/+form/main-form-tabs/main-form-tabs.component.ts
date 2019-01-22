@@ -1,7 +1,6 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FieldBase } from '../controls/field-base';
-import { FormArray, FormGroup } from '@angular/forms';
-import { Container } from '../controls/container';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Container, FieldBase} from '../controls';
+import {FormArray, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'ige-main-form-tabs',

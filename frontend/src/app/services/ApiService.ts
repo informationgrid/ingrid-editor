@@ -4,7 +4,7 @@ import { ErrorService } from './error.service';
 import { User } from '../+user/user';
 import { Role } from '../models/user-role';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/index';
+import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/internal/operators';
 
 

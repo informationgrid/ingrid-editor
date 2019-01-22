@@ -15,13 +15,14 @@ import {ErrorService} from '../services/error.service';
 import {Role} from '../models/user-role';
 import {RoleService} from '../services/role/role.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {MatDialog} from '@angular/material';
 import {NewDocumentComponent} from '../dialogs/form/new-document/new-document.component';
 import {DocumentQuery} from "../store/document/document.query";
 import {IgeDocument} from "../models/ige-document";
 import {takeUntil} from "rxjs/operators";
 import {DocumentStore} from "../store/document/document.store";
+import {FormUtils} from "./form.utils";
 
 interface FormData extends Object {
   _id?: string;
@@ -57,16 +58,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   form: FormGroup = null;
   data: FormData = {};
   behaviours: Behaviour[];
-  observers: Subscription[] = [];
   error = false;
-  choiceNewDoc = 'UVP';
-  sideTab = 'tree';
-  showDateBar = false;
 
-  hideSidebar = false;
-  sidebarWidth = 25;
-
-  markFavoriteHovered = false;
   wizardFocusElement = null;
 
   userRoles: Role[];
@@ -84,38 +77,42 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   pendingId: string;
   private currentDocument$: Observable<IgeDocument>;
   private componentDestroyed: Subject<void> = new Subject();
+  private formUtils: FormUtils;
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private documentService: DocumentService, private modalService: ModalService,
               private dialog: MatDialog,
               private roleService: RoleService,
-              // private wizardService: WizardService,
               private documentQuery: DocumentQuery,
               private documentStore: DocumentStore,
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     // TODO: get roles definiton
     this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
-
+    this.formUtils = new FormUtils();
     // KeycloakService.auth.authz.
 
-    const loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe( eventId => {
-      console.log( 'generic toolbar handler', eventId );
-      if (eventId === 'SAVE') {
-        this.save();
-      } else if (eventId === 'NEW_DOC') {
-        this.newDoc();
-      }
-    } );
+    // handle toolbar events
+    const loadSaveSubscriber = this.formToolbarService.getEventObserver()
+      .pipe(takeUntil(this.componentDestroyed))
+      .subscribe( eventId => {
+        console.log( 'generic toolbar handler', eventId );
+        if (eventId === 'SAVE') {
+          this.save();
+        } else if (eventId === 'NEW_DOC') {
+          this.newDoc();
+        }
+      } );
 
-    this.formularService.selectedDocuments$.subscribe( data => {
-      this.formToolbarService.setButtonState(
-        'toolBtnSave',
-        data.length === 1 );
-    } );
-
-    this.observers.push( loadSaveSubscriber );
+    // react on document selection
+    this.documentQuery.selectedDocuments$
+      .pipe(takeUntil(this.componentDestroyed))
+      .subscribe( data => {
+        this.formToolbarService.setButtonState(
+          'toolBtnSave',
+          data.length === 1 );
+      } );
 
     this.behaviourService.initialized.then( () => {
       this.route.queryParams.subscribe( params => {
@@ -131,7 +128,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log( 'destroy' );
     this.componentDestroyed.next();
     this.componentDestroyed.unsubscribe();
-    this.observers.forEach( observer => observer.unsubscribe() );
     this.behaviourService.behaviours
       .filter( behave => behave.isActive && behave.unregister )
       .forEach( behave => behave.unregister() );
@@ -189,9 +185,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // register to an publisher in the form/storage service and send the value of this form
     // this can be used for publish, revert, detail, compare, ...
-    this.observers.push(
-      // return current form data on request
-      this.formularService.formDataSubject$.subscribe( (container: FormDataContainer) => {
+    // return current form data on request
+    this.formularService.formDataSubject$
+      .pipe(takeUntil(this.componentDestroyed))
+      .subscribe( (container: FormDataContainer) => {
         container.form = this.form;
         container.fields = this.fields;
         container.value = {
@@ -203,26 +200,27 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.form) {
           Object.assign( container.value, this.form.value );
         }
-      } ),
+      } );
 
-      // load dataset when one was updated
-      this.documentService.datasetsChanged$.subscribe( (msg) => {
+    // load dataset when one was updated
+    this.documentService.datasetsChanged$
+      .pipe(takeUntil(this.componentDestroyed))
+      .subscribe( (msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
           this.load( msg.data[0]._id );
         }
-      } )
-    );
+      } );
   }
 
   // noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
     // add form errors check when saving/publishing
-    this.observers.push(
-      this.documentService.beforeSave$.subscribe( (message: any) => {
+    this.documentService.beforeSave$
+      .pipe(takeUntil(this.componentDestroyed))
+      .subscribe( (message: any) => {
         message.errors.push( {invalid: this.form.invalid} );
         console.log( 'in observer' );
-      } )
-    );
+      } );
   }
 
   /*canDeactivate(component: DynamicFormComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot)
@@ -242,16 +240,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener( 'window: keydown', ['$event'] )
   hotkeys(event: KeyboardEvent) {
-    // TODO: externalize
-    if (event.ctrlKey && event.keyCode === 83) { // CTRL + S (Save)
-      console.log( 'SAVE' );
-      event.stopImmediatePropagation();
-      event.stopPropagation();
-      event.preventDefault();
-      if (this.form) {
-        this.save();
-      }
-    }
+    this.formUtils.addHotkeys(event, this);
   }
 
   newDoc() {

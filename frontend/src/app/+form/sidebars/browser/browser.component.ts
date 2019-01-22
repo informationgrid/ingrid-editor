@@ -6,7 +6,7 @@ import {FormularService} from '../../../services/formular/formular.service';
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {UpdateType} from '../../../models/update-type.enum';
 import { ProfileService } from '../../../services/profile.service';
-import { Subscription } from 'rxjs/index';
+import { Subscription } from 'rxjs';
 
 @Component( {
   selector: 'browser',

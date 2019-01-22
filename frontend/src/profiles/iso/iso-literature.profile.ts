@@ -1,10 +1,8 @@
-import { TextboxField } from '../../app/+form/controls/index';
-import { Rubric } from '../../app/+form/controls/rubric';
-import { CodelistService } from '../../app/services/codelist/codelist.service';
-import { Injectable } from '@angular/core';
-import { IsoBaseProfile } from './iso-base.profile';
-import { Container } from '../../app/+form/controls/container';
-import { DocumentService } from '../../app/services/document/document.service';
+import {Container, TextboxField} from '../../app/+form/controls';
+import {Rubric} from '../../app/+form/controls/rubric';
+import {CodelistService} from '../../app/services/codelist/codelist.service';
+import {IsoBaseProfile} from './iso-base.profile';
+import {DocumentService} from '../../app/services/document/document.service';
 
 export class IsoLiteratureProfile extends IsoBaseProfile {
 

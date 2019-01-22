@@ -3,6 +3,7 @@ import { ModalService } from './services/modal/modal.service';
 import { BehaviourService } from './services/behavior/behaviour.service';
 import { RoleService } from './services/role/role.service';
 import { MatDialog } from '@angular/material';
+import {MenuItem, MenuService} from "./menu/menu.service";
 
 @Component( {
   selector: 'ige-root',
@@ -16,6 +17,9 @@ import { MatDialog } from '@angular/material';
       /*padding-top: 56px;*/
       /*font-size: 85%;*/
     }
+    ige-search-bar {
+      float: right;
+    }
     /*.igeContainer { height: 100%; overflow-x: hidden; }*/
     /*.modal-body { overflow: auto; }*/
   `]
@@ -27,11 +31,12 @@ export class AppComponent implements OnInit {
 
   errorModalIsActive = false;
   dynDialogMessages: any = [];
+  private routes: MenuItem[];
 
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
   constructor(private bsdialog: MatDialog, private behaviourService: BehaviourService, private modalService: ModalService,
-              private roleService: RoleService) {
+              private roleService: RoleService, private menuService: MenuService) {
 
     // TODO: make more error info collapsible
     // this.modalService.errorDialog$.subscribe( (content: any) => {
@@ -65,6 +70,12 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.menuService.menu$.subscribe(() => {
+      console.log('menu has changed');
+      this.routes = this.menuService.menuItems;
+    });
+
     this.behaviourService.initialized.then( () => {
       const systemBehaviours = this.behaviourService.systemBehaviours;
       console.log( 'got system behaviours:', systemBehaviours );

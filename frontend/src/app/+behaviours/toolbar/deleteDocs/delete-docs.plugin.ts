@@ -5,7 +5,7 @@ import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
 import {DeleteDialogComponent} from './delete-dialog.component';
-import { Subscription } from 'rxjs/index';
+import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material';
 
 @Injectable({

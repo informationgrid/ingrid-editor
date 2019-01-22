@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
-import { Subject } from 'rxjs/index';
+import {Subject} from 'rxjs';
 
-interface MenuItem {
+export interface MenuItem {
   name: string;
   path: string;
   onlyAdmin?: boolean;

@@ -1,5 +1,4 @@
 import { Injectable, NgZone, ViewContainerRef } from '@angular/core';
-import { Subject } from 'rxjs/index';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { ErrorDialogComponent } from '../../dialogs/error/error-dialog.component';
 import { IgeError } from '../../models/ige-error';
