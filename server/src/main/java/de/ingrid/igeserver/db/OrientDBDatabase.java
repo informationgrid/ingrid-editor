@@ -32,10 +32,10 @@ public class OrientDBDatabase implements DBApi {
     private OServer server = null;
 
     void setOrientDB(OrientDB orientDB) {
-        this.orientDB = orientDB;
+        //this.orientDB = orientDB;
     }
 
-    private OrientDB orientDB;
+    // private OrientDB orientDB;
 
     private static Map<String, ODatabasePool> poolMap = new HashMap<>();
 
@@ -48,8 +48,8 @@ public class OrientDBDatabase implements DBApi {
         Orient.instance().startup();
 
         // make sure the database for storing users and catalog information is there
-        boolean hasBeenCreated = orientDB.createIfNotExists("IgeUsers", ODatabaseType.PLOCAL);
-        if (hasBeenCreated) {
+        boolean alreadyExists = server.existsDatabase("IgeUsers"); // orientDB.createIfNotExists("IgeUsers", ODatabaseType.PLOCAL);
+        if (!alreadyExists) {
 
             try (ODatabaseSession session = acquire("IgeUsers")) {
                 // after creation the database is already connected to and can be used
@@ -58,8 +58,8 @@ public class OrientDBDatabase implements DBApi {
             }
 
             // after database creation we have to close orientDB to release resources correctly (login from studio)
-            orientDB.close();
-            openOrientDB();
+            // orientDB.close();
+            // openOrientDB();
         }
     }
 
@@ -67,7 +67,8 @@ public class OrientDBDatabase implements DBApi {
     void destroy() {
         log.info("Closing database before exit");
         OrientDBDatabase.poolMap.values().forEach(ODatabasePool::close);
-        orientDB.close();
+        // orientDB.close();
+        server.shutdown();
     }
 
     @PostConstruct
@@ -91,7 +92,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     private void openOrientDB() {
-        this.orientDB = new OrientDB("embedded:./databases/", OrientDBConfig.defaultConfig());
+//        this.orientDB = new OrientDB("embedded:./databases/", OrientDBConfig.defaultConfig());
     }
 
     public void stop() {
@@ -232,14 +233,14 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public String[] getDatabases() {
-        return orientDB.list().stream()
+        return server.listDatabases().stream()
                 .filter(item -> !(item.equals("IgeUsers") || item.equals("OSystem") || item.equals("management")))
                 .toArray(String[]::new);
     }
 
     @Override
     public boolean createDatabase(String name) throws ApiException {
-        orientDB.create(name, ODatabaseType.PLOCAL);
+        server.createDatabase(name, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
         try (ODatabaseSession session = acquire(name)) {
             // TODO: set more constraints and information for a new catalog (name, email?, ...)
             OClass docClass = session.getMetadata().getSchema().createClass("Documents");
@@ -268,19 +269,20 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public boolean removeDatabase(String name) {
-        orientDB.drop(name);
+        server.dropDatabase(name);
         return true;
     }
 
     @Override
     public ODatabaseSession acquire(String dbName) {
-        if (poolMap.containsKey(dbName)) {
+        return server.openDatabase(dbName);
+        /*if (poolMap.containsKey(dbName)) {
             return poolMap.get(dbName).acquire();
         } else {
             ODatabasePool pool = new ODatabasePool(orientDB, dbName, "admin", "admin");
             poolMap.put(dbName, pool);
             return pool.acquire();
-        }
+        }*/
     }
 
     /**
