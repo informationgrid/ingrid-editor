@@ -1,7 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ConfigService, Configuration} from '../config/config.service';
 import {ErrorService} from '../error.service';
-import {HttpClient} from '@angular/common/http';
 import {CodelistDataService} from "./codelist-data.service";
 
 export interface Codelist {
@@ -35,7 +33,7 @@ export class CodelistService {
   byId(id: string): Promise<CodelistEntry[]> {
 
     if (this.codelists[id]) {
-      return Promise.resolve( this.codelists[id].entries );
+      return Promise.resolve( this.mapCodelist(this.codelists[id].entries) );
     }
 
     // if codelist is being loaded then return the promise
@@ -91,4 +89,12 @@ export class CodelistService {
     return result;
   }
 
+  private mapCodelist(entries: any[]) {
+    return entries.map( e => {
+      return {
+        id: e.id,
+        value: e.localisations[0][1]
+      };
+    });
+  }
 }

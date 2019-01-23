@@ -15,6 +15,7 @@ import {
   MatInputModule,
   MatNativeDateModule,
   MatRadioModule,
+  MatSelectModule,
   MatTableModule
 } from '@angular/material';
 
@@ -22,7 +23,7 @@ import {
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     MatInputModule, MatDatepickerModule, MatNativeDateModule, MatCheckboxModule, MatRadioModule, MatTableModule, MatButtonModule,
-    MatIconModule
+    MatIconModule, MatSelectModule
   ],
   declarations: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent],
   exports: [FocusDirective, DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent]

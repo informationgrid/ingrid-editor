@@ -75,7 +75,7 @@ export class ProfileService {
           this.profileStore.update({isInitialized: true});
         });
       } else {
-        // import( '../../profiles/pack-bkg' );
+        // import( '../../profiles/pack-bkg' ).then(module => {
         import( '../../profiles/pack-lgv' ).then(module => {
           console.log('Loaded module: ', module);
           // TODO: use map instead of multiple parameters in case we want to add another dependency

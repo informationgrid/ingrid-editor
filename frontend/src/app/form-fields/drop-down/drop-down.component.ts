@@ -1,5 +1,6 @@
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {Component, forwardRef, Input, OnInit} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {CodelistEntry} from "../../services/codelist/codelist.service";
 
 
 export const DROPDOWN_CONTROL_VALUE_ACCESSOR = {
@@ -15,7 +16,7 @@ export const DROPDOWN_CONTROL_VALUE_ACCESSOR = {
   providers: [DROPDOWN_CONTROL_VALUE_ACCESSOR]
 } )
 export class DropDownComponent implements ControlValueAccessor, OnInit {
-  @Input() options: any[];
+  @Input() options: CodelistEntry[];
   @Input() isCombo = false;
   @Input() useFilter = true;
   @Input() appendTo: string;
@@ -26,7 +27,7 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
   private _value: string;
   selected: string;
 
-  simpleOptions: string[];
+  simpleOptions: CodelistEntry[] = [];
 
   // Placeholders for the callbacks
   private _onTouchedCallback: () => void;
@@ -38,7 +39,8 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
   }
 
   ngOnInit() {
-    this.simpleOptions = this.options.map(option => option.value);
+    debugger;
+    this.simpleOptions = this.options; // this.options.map(option => option.value);
     this.filteredOptions = this.simpleOptions;
   }
 
@@ -87,6 +89,6 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
 
   onInput(value: string): void {
     this.filteredOptions = this.simpleOptions
-      .filter(option => option.toLowerCase().indexOf(value.toLowerCase()) === 0);
+      .filter(option => option.value.toLowerCase().indexOf(value.toLowerCase()) === 0);
   }
 }
