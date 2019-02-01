@@ -1,79 +1,63 @@
-import {ProfileService} from '../../../services/profile.service';
-import {DocumentService} from '../../../services/document/document.service';
-import {FormularService} from '../../../services/formular/formular.service';
 import {Injectable} from '@angular/core';
-import {DynamicFlatNode} from './DynamicFlatNode';
-import {DocumentQuery} from "../../../store/document/document.query";
+import {FormularService} from "../../../services/formular/formular.service";
 import {ProfileQuery} from "../../../store/profile/profile.query";
+import {DocumentQuery} from "../../../store/document/document.query";
+import {ProfileService} from "../../../services/profile.service";
+import {DocumentService} from "../../../services/document/document.service";
 import {TreeNode} from "../../../store/tree/tree-node.model";
+import {DocumentAbstract} from "../../../store/document/document.model";
+import {of} from "rxjs";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
  * the descendants data from the database.
  */
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class DynamicDatabase {
-  dataMap = null;
-
-  rootLevelNodes = null;
+  dataMap = {};
 
   constructor(private storageService: DocumentService, private profileService: ProfileService,
               private docQuery: DocumentQuery, private profileQuery: ProfileQuery,
               private formularService: FormularService) {
   }
 
-  /** Initial data from database */
-  initialData(): Promise<DynamicFlatNode[]> {
+  initialData(): Promise<TreeNode[]> {
     this.profileQuery.isInitialized$.subscribe(() => {
 
     });
     return this.profileService.initialized.then( () => {
 
-      return this.query( null ).then( (data) => {
-        return data.map( item => new DynamicFlatNode( item.id + '', item.title, item.profile, item.state, 0, item._hasChildren, item.icon ) );
-      } );
+      return this.query( null, 0 ); /*.then( (data) => {
+        const d = data.map( item => this.mapToTreeNode(item, 0) );
+        console.log("initial data nodes:", d);
+        console.log("original data:", data);
+        return d;
+      } );*/
     } );
   }
 
-  query(id: string): Promise<any> {
+  mapToTreeNode(doc: DocumentAbstract, level: number): TreeNode {
+    return <TreeNode>{
+      _id: doc._id,
+      title: doc.title ? doc.title : 'Kein Titel',
+      state: doc._state,
+      hasChildren: doc._hasChildren,
+      level: level
+    };
+  }
+
+  query(id: string, level: number): Promise<TreeNode[]> {
     return new Promise( (resolve, reject) => {
       this.storageService.getChildren( id ).subscribe(response => {
         console.log( 'got children', response );
-        const nodes = this.prepareNodes( response );
+        const nodes = [];
+        response.forEach( child => nodes.push(this.mapToTreeNode( child, level )));
+
         resolve( nodes );
       }, error => {
         reject(error);
       } );
     } );
-  }
-
-  prepareNodes(docs: TreeNode[]): any[] {
-    // const updatedNodes: any = parentNode ? parentNode : this.nodes;
-
-    const modDocs = docs
-      .filter( doc => doc !== null && doc.profile !== undefined )
-      .sort( (doc1, doc2) => { // TODO: sort after conversion, then we don't need to call getTitle function
-        return this.formularService.getTitle( doc1.profile, doc1 ).localeCompare( this.formularService.getTitle( doc2.profile, doc2 ) );
-      } );
-
-    let newDocs = modDocs.map( doc => {
-      // let newDoc = this.docQuery.getEntity(doc._id);
-      let newDoc = Object.assign({}, doc);
-      newDoc.title = this.formularService.getTitle( doc.profile, doc );
-      newDoc.iconClass = this.getTreeIcon( doc );
-      return newDoc;
-      //   const newNode = this.prepareNode( doc );
-      //   if (parentNode) {
-      //     updatedNodes.children.push( newNode );
-      //   } else {
-      //     updatedNodes.push( newNode );
-      //   }
-      //   this.flatNodes.push( newNode );
-    } );
-    return newDocs;
-    // this.tree.treeModel.update();
   }
 
   private getTreeIcon(doc: TreeNode): string {
@@ -88,11 +72,16 @@ export class DynamicDatabase {
   }
 
 
-  getChildren(nodeId: string): Promise<any[]> | undefined {
-    return this.query( nodeId );
+  getChildren(nodeId: string, level: number): Promise<TreeNode[]> {
+    if (this.dataMap[nodeId]) {
+      return of(this.dataMap[nodeId]).toPromise();
+    }
+
+    return this.query( nodeId, level )
+      .then( data => this.dataMap[nodeId] = data);
   }
 
-  isExpandable(node: any): boolean {
-    return node._hasChildren;
+  isExpandable(node: TreeNode): boolean {
+    return node.hasChildren;
   }
 }

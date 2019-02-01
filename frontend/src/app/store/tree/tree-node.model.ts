@@ -3,14 +3,17 @@ import {ID} from '@datorama/akita';
 export interface TreeNode {
   parent: string;
   _id: string;
-  id: ID;
+  // id: ID;
   title: string;
   iconClass: string;
   hasChildren: boolean;
   state: string;
   profile: string;
-  children: TreeNode[],
-  _childrenLoaded: boolean
+  isSelected: boolean;
+  // children: TreeNode[],
+  // _childrenLoaded: boolean;
+  level: number;
+  isLoading: boolean;
 }
 
 /**

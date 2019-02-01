@@ -22,18 +22,12 @@
                 "output": "/assets"
               },
               {
-                "glob": "**/*",
-                "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
-                "output": "/assets/"
-              },
-              {
                 "glob": "favicon.ico",
                 "input": "src",
                 "output": "/"
               }
             ],
             "styles": [
-              "src/assets/tree.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/chartist/dist/chartist.css",
@@ -107,8 +101,8 @@
               "node_modules/scriptjs/dist/script.js"
             ],
             "styles": [
-              "src/assets/tree.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
+              "src/material.css",
               "src/styles.css"
             ],
             "assets": [
@@ -131,9 +125,6 @@
             "tsConfig": [
               "src/tsconfig.app.json",
               "src/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/*tree.component.ts"
             ]
           }
         }
@@ -157,9 +148,6 @@
           "options": {
             "tsConfig": [
               "e2e/tsconfig.e2e.json"
-            ],
-            "exclude": [
-              "**/*tree.component.ts"
             ]
           }
         }

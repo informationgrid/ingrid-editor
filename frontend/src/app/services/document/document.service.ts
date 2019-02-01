@@ -43,10 +43,10 @@ export class DocumentService {
     // TODO: use general sort filter
     this.dataService.find(query)
       .pipe(
-        map( json => {
-          return json.filter( item => item && item._profile !== 'FOLDER' );
-        } ),
-        tap( docs => {
+        map(json => {
+          return json.filter(item => item && item._profile !== 'FOLDER');
+        }),
+        tap(docs => {
           this.documentStore.set(this.mapToDocuments(docs));
         })
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
@@ -57,10 +57,10 @@ export class DocumentService {
     // TODO: use general sort filter
     this.dataService.find(null)
       .pipe(
-        map( json => {
-          return json.filter( item => item && item._profile !== 'FOLDER' );
-        } ),
-        tap( docs => {
+        map(json => {
+          return json.filter(item => item && item._profile !== 'FOLDER');
+        }),
+        tap(docs => {
           this.documentStore.setRecent(this.mapToDocuments(docs));
         })
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
@@ -68,7 +68,7 @@ export class DocumentService {
   }
 
   private mapToDocuments(docs: any[]): DocumentAbstract[] {
-    return docs.map( doc => this.mapToDocument(doc));
+    return docs.map(doc => this.mapToDocument(doc));
   }
 
   private mapToDocument(doc: any): DocumentAbstract {
@@ -78,29 +78,33 @@ export class DocumentService {
       icon: "",
       _id: doc._id,
       _profile: doc._profile,
-      _children: doc._children,
+      _state: doc._state,
+      // _children: doc._children,
       _hasChildren: doc._hasChildren
     };
   }
 
-  getChildren(parentId: string): Observable<any> {
+  getChildren(parentId: string): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId)
       .pipe(
         //tap( docs => this.documentStore.set(docs))
-        map( docs => {
-          return docs.map( doc => {
-            let childTreeNode = createTreeNode(null);
-            childTreeNode.id = doc._id;
-            // TODO: get title from document, but circular dependency with formularservice
-            childTreeNode.title = doc.title; // this.formularService.getTitle( doc._profile, doc ); // doc.title;
-            childTreeNode.state = doc._state;
-            childTreeNode.hasChildren = doc._hasChildren;
-            childTreeNode.parent = parentId;
-            childTreeNode.profile = doc._profile;
+        map(docs => {
+          return docs.map(doc => {
+            let childTreeNode: DocumentAbstract = {
+              _id: doc._id,
+              icon: null,
+              id: doc._id,
+              // TODO: get title from document, but circular dependency with formularservice
+              title: doc.title, // this.formularService.getTitle( doc._profile, doc ); // doc.title,
+              _state: doc._state,
+              _hasChildren: doc._hasChildren,
+              // parent: parentId,
+              _profile: doc._profile,
+            };
             return childTreeNode;
           })
         }),
-        tap( docs => {
+        tap(docs => {
           if (parentId === null) {
             this.treeStore.set(docs);
           } else {
@@ -115,40 +119,40 @@ export class DocumentService {
 
   load(id: string): Observable<IgeDocument> {
     return this.dataService.load(id).pipe(
-      tap( doc => this.documentStore.setOpenedDocument(doc))
+      tap(doc => this.documentStore.setOpenedDocument(doc))
     );
   }
 
   save(data: IgeDocument, isNewDoc?: boolean): Promise<IgeDocument> {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       this.dataService.save(data)
-        .subscribe( json => {
+        .subscribe(json => {
           let info: DocMainInfo = {
             _id: json._id,
             _state: json._state
           };
 
-          this.afterSave.next( data );
-          this.datasetsChanged.next( {
+          this.afterSave.next(data);
+          this.datasetsChanged.next({
             type: isNewDoc ? UpdateType.New : UpdateType.Update,
             data: [info]
-          } );
-          resolve( data );
+          });
+          resolve(data);
         }, err => {
-          reject( err );
-        } );
-    } );
+          reject(err);
+        });
+    });
   }
 
   // FIXME: this should be added with a plugin
   publish(data: IgeDocument) {
-    console.log( 'PUBLISHING' );
+    console.log('PUBLISHING');
     const errors: any = {errors: []};
-    this.beforeSave.next( errors );
-    console.log( 'After validation:', data );
-    const formInvalid = errors.errors.filter( (err: any) => err.invalid )[0];
+    this.beforeSave.next(errors);
+    console.log('After validation:', data);
+    const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
     if (formInvalid && formInvalid.invalid) {
-      this.modalService.showJavascriptError( 'Der Datensatz kann nicht veröffentlicht werden.' );
+      this.modalService.showJavascriptError('Der Datensatz kann nicht veröffentlicht werden.');
       return;
     }
 
@@ -161,27 +165,27 @@ export class DocumentService {
           this.afterSave.next(data);
           this.datasetsChanged.next({type: UpdateType.Update, data: [info]});
         }
-      // , err => this.errorService.handle( err )
+        // , err => this.errorService.handle( err )
       );
   }
 
   delete(ids: string[]): any {
     const response = this.dataService.delete(ids);
-      // .pipe( catchError( err => this.errorService.handle( err ) ) );
+    // .pipe( catchError( err => this.errorService.handle( err ) ) );
 
-    response.subscribe( res => {
-      console.log( 'ok', res );
-      const data = ids.map( id => {
+    response.subscribe(res => {
+      console.log('ok', res);
+      const data = ids.map(id => {
         return {_id: id};
-      } );
-      this.datasetsChanged.next( {type: UpdateType.Delete, data: data} );
-    } );
+      });
+      this.datasetsChanged.next({type: UpdateType.Delete, data: data});
+    });
   }
 
   revert(id: string): Observable<any> {
     return this.dataService.revert(id)
       .pipe(
-        tap( (json: any) => this.datasetsChanged.next( {type: UpdateType.Update, data: [json]} ) )
+        tap((json: any) => this.datasetsChanged.next({type: UpdateType.Update, data: [json]}))
         // catchError( err => this.errorService.handle( err ) )
       );
   }

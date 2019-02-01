@@ -5,8 +5,9 @@ export interface DocumentAbstract {
   title: string;
   icon: string;
   _id: string;
+  _state: string;
   _profile: string;
-  _children: DocumentAbstract[];
+  // _children: DocumentAbstract[];
   _hasChildren: boolean;
 
 }

@@ -20,7 +20,7 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
   }
 
-  handleLoad(selectedDocs: SelectedDocument[]) { // id: string, profile?: string, forceLoad?: boolean) {
+  handleLoad(selectedDocs: DocumentAbstract[]) { // id: string, profile?: string, forceLoad?: boolean) {
     // when multiple nodes were selected then do not show any form
     if (selectedDocs.length !== 1) {
       return;
@@ -30,7 +30,7 @@ export class SidebarComponent implements OnInit {
 
     // if a folder was selected then normally do not show the form
     // show folder form only if the edit button was clicked which adds the forceLoad option
-    if (doc.profile === 'FOLDER' && !doc.editable) {
+    if (doc._profile === 'FOLDER') { // && !doc.editable) {
       return;
     }
 

@@ -258,4 +258,20 @@
       <url>https://nexus.informationgrid.eu/repository/maven-public</url>
     </repository>
   </repositories>
+
+  <profiles>
+    <profile>
+      <id>develop</id>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/develop/resources</directory>
+          </resource>
+          <resource>
+            <directory>src/main/resources</directory>
+          </resource>
+        </resources>
+      </build>
+    </profile>
+  </profiles>
 </project>

@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
 import {IFieldBase} from '../../+form/controls';
 import {Profile} from './profile';
-import {SelectedDocument} from '../../+form/sidebars/selected-document.model';
 import {HttpClient} from '@angular/common/http';
 import {ConfigService, Configuration} from '../config/config.service';
 import {ProfileService} from '../profile.service';
 import {Observable, Subject} from 'rxjs';
 import {ProfileQuery} from "../../store/profile/profile.query";
+import {DocumentAbstract} from "../../store/document/document.model";
+import {TreeQuery} from "../../store/tree/tree.query";
 
 @Injectable({
   providedIn: 'root'
@@ -27,17 +28,18 @@ export class FormularService {
   newDocumentSubject$ = this.newDocumentSubject.asObservable();
 
   // the currently selected documents from the tree or browser
-  selectedDocs: SelectedDocument[] = [];
+  selectedDocs: DocumentAbstract[] = [];
 
   // an observer to subscribe to, when reacting on newly selected documents
-  selectedDocuments = new Subject<SelectedDocument[]>();
-  selectedDocuments$: Observable<SelectedDocument[]> = this.selectedDocuments.asObservable();
+  selectedDocuments = new Subject<DocumentAbstract[]>();
+  selectedDocuments$: Observable<DocumentAbstract[]> = this.selectedDocuments.asObservable();
 
   profileDefinitions: Profile[];
 
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService, private profiles: ProfileService, profileQuery: ProfileQuery) {
+  constructor(private http: HttpClient, configService: ConfigService, private profiles: ProfileService, profileQuery: ProfileQuery,
+              private treeQuery: TreeQuery) {
     this.configuration = configService.getConfiguration();
 
     // create profiles after we have logged in
@@ -104,13 +106,14 @@ export class FormularService {
     return formData;
   }
 
-  setSelectedDocuments(docs: SelectedDocument[]) {
+  setSelectedDocuments(docs: DocumentAbstract[]) {
     this.selectedDocs = docs;
     this.selectedDocuments.next(docs);
   }
 
-  getSelectedDocuments(): SelectedDocument[] {
-    return this.selectedDocs;
+  getSelectedDocuments(): DocumentAbstract[] {
+    return this.treeQuery.selectedDocuments;
+    // return this.selectedDocs;
   }
 
   getDocTypes(): { id: string, label: string }[] {

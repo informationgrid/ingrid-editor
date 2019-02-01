@@ -23,6 +23,7 @@ import {IgeDocument} from "../models/ige-document";
 import {takeUntil} from "rxjs/operators";
 import {DocumentStore} from "../store/document/document.store";
 import {FormUtils} from "./form.utils";
+import {TreeQuery} from "../store/tree/tree.query";
 
 interface FormData extends Object {
   _id?: string;
@@ -85,6 +86,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private dialog: MatDialog,
               private roleService: RoleService,
               private documentQuery: DocumentQuery,
+              private treeQuery: TreeQuery,
               private documentStore: DocumentStore,
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
@@ -140,7 +142,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
 
-    this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
+    this.treeQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
         console.log( 'loaded data:', data );
 
         if (data === null) {

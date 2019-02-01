@@ -82,7 +82,7 @@ export class FolderPlugin extends Plugin {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    /*const handleButtonState = (data: SelectedDocument) => {
+    /*const handleButtonState = (data: DocumentAbstract) => {
       if (!data || data.profile === 'FOLDER') {
         this.formToolbarService.setButtonState( 'toolBtnFolder', true );
       } else {
