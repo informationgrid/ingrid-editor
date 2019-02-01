@@ -190,11 +190,11 @@
       <artifactId>ige-ng-api</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ige-ng-profile-default</artifactId>
       <version>1.0-SNAPSHOT</version>
-    </dependency>
+    </dependency>-->
 
     <!-- https://mvnrepository.com/artifact/com.github.fge/json-schema-validator -->
     <dependency>
@@ -206,7 +206,7 @@
 	<dependency>
 	  <groupId>de.ingrid</groupId>
 	  <artifactId>ingrid-codelist-service</artifactId>
-	  <version>4.4.0</version>
+	  <version>4.5.2</version>
 	  <exclusions>
 	    <exclusion>
 	      <groupId>log4j</groupId>

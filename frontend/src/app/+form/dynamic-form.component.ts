@@ -126,6 +126,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     console.log( 'destroy' );
+    this.formularService.currentProfile = null;
     this.componentDestroyed.next();
     this.componentDestroyed.unsubscribe();
     this.behaviourService.behaviours
@@ -362,7 +363,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.form.markAsPristine();
 
     this.documentService.save( data, false ).then(res => {
-      this.data._id = res._id;
+      this.documentStore.setOpenedDocument(res);
+      // this.data._id = res._id;
       // this.messageService.show( 'Dokument wurde gespeichert' );
       // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});
     }, (err: HttpErrorResponse) => {

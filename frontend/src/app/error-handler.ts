@@ -1,9 +1,11 @@
-import { ErrorHandler, Injectable } from '@angular/core';
-import { ModalService } from './services/modal/modal.service';
-import { IgeError } from './models/ige-error';
-import { HttpErrorResponse } from '@angular/common/http';
+import {ErrorHandler, Injectable} from '@angular/core';
+import {ModalService} from './services/modal/modal.service';
+import {IgeError} from './models/ige-error';
+import {HttpErrorResponse} from '@angular/common/http';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class GlobalErrorHandler implements ErrorHandler {
   constructor(private modalService: ModalService) {
   }

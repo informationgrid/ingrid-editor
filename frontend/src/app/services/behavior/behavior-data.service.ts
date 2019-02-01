@@ -2,8 +2,11 @@ import {Observable} from "rxjs";
 import {ConfigService, Configuration} from "../config/config.service";
 import {HttpClient} from "@angular/common/http";
 import {Behaviour} from "../../+behaviours/behaviours";
-import {Plugin} from "../../+behaviours";
+import {Injectable} from "@angular/core";
 
+@Injectable({
+  providedIn: 'root'
+})
 export class BehaviorDataService {
 
   private configuration: Configuration;

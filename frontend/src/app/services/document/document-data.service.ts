@@ -2,8 +2,11 @@ import {HttpClient} from "@angular/common/http";
 import {ConfigService, Configuration} from "../config/config.service";
 import {IgeDocument} from "../../models/ige-document";
 import {Observable} from "rxjs";
-import {DocMainInfo} from "../../models/update-dataset-info.model";
+import {Injectable} from "@angular/core";
 
+@Injectable({
+  providedIn: 'root'
+})
 export class DocumentDataService {
   private configuration: Configuration;
   private titleFields: string;

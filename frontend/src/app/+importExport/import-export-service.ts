@@ -1,11 +1,12 @@
-import { ErrorService } from '../services/error.service';
-import { ConfigService, Configuration } from '../services/config/config.service';
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/internal/operators';
+import {ErrorService} from '../services/error.service';
+import {ConfigService, Configuration} from '../services/config/config.service';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ImportExportService {
 
   private configuration: Configuration;

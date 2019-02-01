@@ -6,7 +6,9 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {UserDataService} from "./user-data.service";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UserService {
   private configuration: Configuration;
 

@@ -12,7 +12,9 @@ export interface Catalog {
   adminUser;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CatalogService {
 
   private _forcedCatalog: string = null;

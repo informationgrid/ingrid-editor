@@ -1,8 +1,8 @@
-import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import { ModalService } from './services/modal/modal.service';
-import { BehaviourService } from './services/behavior/behaviour.service';
-import { RoleService } from './services/role/role.service';
-import { MatDialog } from '@angular/material';
+import {Component, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {ModalService} from './services/modal/modal.service';
+import {BehaviourService} from './services/behavior/behaviour.service';
+import {RoleService} from './services/role/role.service';
+import {MatDialog} from '@angular/material';
 import {MenuItem, MenuService} from "./menu/menu.service";
 
 @Component( {
@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
 
   errorModalIsActive = false;
   dynDialogMessages: any = [];
-  private routes: MenuItem[];
+  routes: MenuItem[];
 
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 

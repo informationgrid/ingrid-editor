@@ -34,6 +34,7 @@
     <user resources="connect,server.listDatabases,server.listDatabases.system" password="guest" name="guest" />
   </users>
   <storage name="igedb" path="embedded:${ORIENTDB_HOME}/databases/igedb" userName="admin" userPassword="admin" loaded-at-startup="true" />
+  <storage name="IgeUsers" path="embedded:${ORIENTDB_HOME}/databases/igedb" loaded-at-startup="true"></storage>
   <properties>
         <!-- <entry name="server.database.path" value="C:/temp/databases" /> -->
     <!-- <entry name="orientdb.www.path" value="./src/main/resources/www" /> -->

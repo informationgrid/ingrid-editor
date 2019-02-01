@@ -1,7 +1,10 @@
 package de.ingrid.igeserver.db;
 
 import com.orientechnologies.orient.core.Orient;
-import com.orientechnologies.orient.core.db.*;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.db.ODatabaseType;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -31,14 +34,6 @@ public class OrientDBDatabase implements DBApi {
 
     private OServer server = null;
 
-    void setOrientDB(OrientDB orientDB) {
-        //this.orientDB = orientDB;
-    }
-
-    // private OrientDB orientDB;
-
-    private static Map<String, ODatabasePool> poolMap = new HashMap<>();
-
     /**
      * DB init
      */
@@ -50,6 +45,8 @@ public class OrientDBDatabase implements DBApi {
         // make sure the database for storing users and catalog information is there
         boolean alreadyExists = server.existsDatabase("IgeUsers"); // orientDB.createIfNotExists("IgeUsers", ODatabaseType.PLOCAL);
         if (!alreadyExists) {
+
+            server.createDatabase("IgeUsers", ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
 
             try (ODatabaseSession session = acquire("IgeUsers")) {
                 // after creation the database is already connected to and can be used
@@ -66,8 +63,6 @@ public class OrientDBDatabase implements DBApi {
     @PreDestroy
     void destroy() {
         log.info("Closing database before exit");
-        OrientDBDatabase.poolMap.values().forEach(ODatabasePool::close);
-        // orientDB.close();
         server.shutdown();
     }
 
@@ -76,7 +71,7 @@ public class OrientDBDatabase implements DBApi {
         String orientdbHome = new File("").getAbsolutePath();
         System.setProperty("ORIENTDB_HOME", orientdbHome);
         if (server == null) {
-            server = OServerMain.create();
+            server = OServerMain.create(true);
         }
 
         log.info("Starting OrientDB Server");
@@ -87,12 +82,7 @@ public class OrientDBDatabase implements DBApi {
 
         manager.startup();
 
-        openOrientDB();
         setup();
-    }
-
-    private void openOrientDB() {
-//        this.orientDB = new OrientDB("embedded:./databases/", OrientDBConfig.defaultConfig());
     }
 
     public void stop() {

@@ -16,7 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class OrientDBDatabaseTest {
 
@@ -31,8 +32,6 @@ public class OrientDBDatabaseTest {
 
         db.create("test", ODatabaseType.MEMORY);
         ODatabasePool pool = new ODatabasePool(db, "test", "admin", "admin");
-
-        dbService.setOrientDB(db);
 
         try (ODatabaseSession session = pool.acquire()) {
             session.newInstance(DBApi.DBClass.User.name());

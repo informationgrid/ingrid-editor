@@ -1,9 +1,11 @@
 import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
-import {Catalog} from "./catalog.service";
 import {ConfigService, Configuration} from "../../services/config/config.service";
 import {HttpClient} from "@angular/common/http";
+import {Injectable} from "@angular/core";
 
+@Injectable({
+  providedIn: 'root'
+})
 export class CatalogDataService {
 
   private configuration: Configuration;

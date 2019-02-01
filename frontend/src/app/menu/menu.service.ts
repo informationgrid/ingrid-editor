@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
-import {Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
 export interface MenuItem {
   name: string;
@@ -13,8 +13,6 @@ export interface MenuItem {
 })
 export class MenuService {
 
-  menu: Subject<void> = new Subject<void>();
-  menu$ = this.menu.asObservable();
 
   _menuItems: MenuItem[] = [
     {name: 'Dashboard', path: '/dashboard'},
@@ -26,8 +24,10 @@ export class MenuService {
     {name: 'Katalogverwaltung', path: '/catalogs', onlyAdmin: true}
   ];
 
-  constructor(private router: Router) {
-  }
+  menu: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this._menuItems);
+  menu$ = this.menu.asObservable();
+
+  constructor(private router: Router) {}
 
   get menuItems(): MenuItem[] {
     const validPages = []; // this.authService.getAccessiblePages();

@@ -82,6 +82,7 @@
           },
           "configurations": {
             "hmr": {
+              "hmr": true,
               "browserTarget": "ige-remastered-cli:build:hmr"
             },
             "production": {

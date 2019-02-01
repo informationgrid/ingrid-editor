@@ -1,16 +1,19 @@
-import { ProfileService } from '../../../services/profile.service';
-import { DocumentService } from '../../../services/document/document.service';
-import { FormularService } from '../../../services/formular/formular.service';
-import { Injectable } from '@angular/core';
-import { DynamicFlatNode } from './DynamicFlatNode';
+import {ProfileService} from '../../../services/profile.service';
+import {DocumentService} from '../../../services/document/document.service';
+import {FormularService} from '../../../services/formular/formular.service';
+import {Injectable} from '@angular/core';
+import {DynamicFlatNode} from './DynamicFlatNode';
 import {DocumentQuery} from "../../../store/document/document.query";
 import {ProfileQuery} from "../../../store/profile/profile.query";
+import {TreeNode} from "../../../store/tree/tree-node.model";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
  * the descendants data from the database.
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DynamicDatabase {
   dataMap = null;
 
@@ -25,11 +28,11 @@ export class DynamicDatabase {
   initialData(): Promise<DynamicFlatNode[]> {
     this.profileQuery.isInitialized$.subscribe(() => {
 
-    })
+    });
     return this.profileService.initialized.then( () => {
 
       return this.query( null ).then( (data) => {
-        return data.map( item => new DynamicFlatNode( item._id + '', item.title, item._profile, item._state, 0, item._hasChildren, item.icon ) );
+        return data.map( item => new DynamicFlatNode( item.id + '', item.title, item.profile, item.state, 0, item._hasChildren, item.icon ) );
       } );
     } );
   }
@@ -46,20 +49,20 @@ export class DynamicDatabase {
     } );
   }
 
-  prepareNodes(docs: any[]): any[] {
+  prepareNodes(docs: TreeNode[]): any[] {
     // const updatedNodes: any = parentNode ? parentNode : this.nodes;
 
     const modDocs = docs
-      .filter( doc => doc !== null && doc._profile !== undefined )
+      .filter( doc => doc !== null && doc.profile !== undefined )
       .sort( (doc1, doc2) => { // TODO: sort after conversion, then we don't need to call getTitle function
-        return this.formularService.getTitle( doc1._profile, doc1 ).localeCompare( this.formularService.getTitle( doc2._profile, doc2 ) );
+        return this.formularService.getTitle( doc1.profile, doc1 ).localeCompare( this.formularService.getTitle( doc2.profile, doc2 ) );
       } );
 
     let newDocs = modDocs.map( doc => {
       // let newDoc = this.docQuery.getEntity(doc._id);
       let newDoc = Object.assign({}, doc);
-      newDoc.title = this.formularService.getTitle( doc._profile, doc );
-      newDoc.icon = this.getTreeIcon( doc );
+      newDoc.title = this.formularService.getTitle( doc.profile, doc );
+      newDoc.iconClass = this.getTreeIcon( doc );
       return newDoc;
       //   const newNode = this.prepareNode( doc );
       //   if (parentNode) {
@@ -73,11 +76,11 @@ export class DynamicDatabase {
     // this.tree.treeModel.update();
   }
 
-  private getTreeIcon(doc): string {
-    const classType = this.formularService.getIconClass( doc._profile );
-    const classState = doc._state === 'P'
+  private getTreeIcon(doc: TreeNode): string {
+    const classType = this.formularService.getIconClass( doc.profile );
+    const classState = doc.state === 'P'
       ? 'published-label'
-      : doc._state === 'W'
+      : doc.state === 'W'
         ? 'working-label'
         : 'published-working-label';
 

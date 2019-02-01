@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {ModalService} from '../modal/modal.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {DocMainInfo, UpdateDatasetInfo} from '../../models/update-dataset-info.model';
-import {ErrorService} from '../error.service';
 import {KeycloakService} from '../../security/keycloak/keycloak.service';
 import {Observable, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/internal/operators';
@@ -11,7 +10,6 @@ import {DocumentDataService} from "./document-data.service";
 import {DocumentStore} from "../../store/document/document.store";
 import {DocumentAbstract} from "../../store/document/document.model";
 import {TreeStore} from "../../store/tree/tree.store";
-import {TreeQuery} from "../../store/tree/tree.query";
 import {createTreeNode} from "../../store/tree/tree-node.model";
 
 @Injectable({
@@ -93,10 +91,12 @@ export class DocumentService {
           return docs.map( doc => {
             let childTreeNode = createTreeNode(null);
             childTreeNode.id = doc._id;
-            childTreeNode.title = doc.title;
+            // TODO: get title from document, but circular dependency with formularservice
+            childTreeNode.title = doc.title; // this.formularService.getTitle( doc._profile, doc ); // doc.title;
             childTreeNode.state = doc._state;
             childTreeNode.hasChildren = doc._hasChildren;
             childTreeNode.parent = parentId;
+            childTreeNode.profile = doc._profile;
             return childTreeNode;
           })
         }),

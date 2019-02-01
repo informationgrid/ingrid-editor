@@ -16,6 +16,8 @@ export class NewDocumentComponent implements OnInit {
   }
 
   ngOnInit() {
+    // select first/default document type
+    this.result.choice = this.data.docTypes[0].id;
   }
 
   cancel() {

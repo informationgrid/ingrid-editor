@@ -32,8 +32,11 @@ export class ConfigService {
     console.log( '=== ConfigService ===' );
 
     return this.dataService.load(url)
-      .then( json => this.config = json );
-      //.then( () => this.config );
+      .then( json => {
+        this.config = json;
+        this.dataService.config = this.config;
+        return this.config;
+      } );
 
   }
 

@@ -1,5 +1,9 @@
 import {Configuration} from "./config.service";
+import {Injectable} from "@angular/core";
 
+@Injectable({
+  providedIn: 'root'
+})
 export class ConfigDataService {
 
   config: Configuration;
@@ -11,7 +15,10 @@ export class ConfigDataService {
 
   getCurrentUserInfo(): Promise<any> {
     return this.sendRequest('GET', this.config.backendUrl + 'info/currentUser' )
-      .then( response => JSON.parse(response));
+    // TODO: if database is not initialized then response is not JSON
+    //       change backend response or catch parse error
+      .then( response => JSON.parse(response))
+      .catch( e => console.error('Could not get current user info', e));
   }
 
   private sendRequest(method = 'GET', url = null): Promise<string> {

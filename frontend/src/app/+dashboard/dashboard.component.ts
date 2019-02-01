@@ -23,7 +23,7 @@ export class DashboardComponent implements OnInit {
 
   data: any = {};
   dataPie = {
-    series: [10, 90]
+    series: [30, 70]
   };
   datasets;
 
@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit {
   sideTab = 'myData';
   private configuration: Configuration;
   allDocuments$: Observable<DocumentAbstract[]>;
-  private recentDocs$: Observable<DocumentAbstract[]>;
+  recentDocs$: Observable<DocumentAbstract[]>;
 
   constructor(configService: ConfigService,
               private docService: DocumentService,

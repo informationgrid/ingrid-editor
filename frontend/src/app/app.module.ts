@@ -15,8 +15,11 @@ import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {
   MAT_DATE_LOCALE,
   MatButtonModule,
-  MatDialogModule, MatFormFieldModule,
-  MatIconModule, MatInputModule, MatListModule,
+  MatDialogModule,
+  MatFormFieldModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
   MatSidenavModule,
   MatToolbarModule
 } from '@angular/material';
@@ -25,20 +28,6 @@ import {ErrorDialogComponent} from './dialogs/error/error-dialog.component';
 import {IgeError} from './models/ige-error';
 import {FormsModule} from '@angular/forms';
 import de from '@angular/common/locales/de';
-import {DocumentDataService} from "./services/document/document-data.service";
-import {DocumentMockService} from "./services/document/document-mock.service";
-import {ConfigDataService} from "./services/config/config-data.service";
-import {ConfigMockService} from "./services/config/config-mock.service";
-import {CodelistDataService} from "./services/codelist/codelist-data.service";
-import {CodelistMockService} from "./services/codelist/codelist-mock.service";
-import {RoleDataService} from "./services/role/role-data.service";
-import {RoleMockService} from "./services/role/role-mock.service";
-import {BehaviorDataService} from "./services/behavior/behavior-data.service";
-import {BehaviorMockService} from "./services/behavior/behavior-mock.service";
-import {CatalogDataService} from "./+catalog/services/catalog-data.service";
-import {CatalogMockService} from "./+catalog/services/catalog-mock.service";
-import {UserDataService} from "./services/user/user-data.service";
-import {UserMockService} from "./services/user/user-mock.service";
 import {AkitaNgDevtools} from "@datorama/akita-ngdevtools";
 import {AngularSplitModule} from "angular-split";
 import {SearchBarComponent} from "./+dashboard/search-bar/search-bar.component";
@@ -116,7 +105,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    },
+    },/*
     {
       provide: DocumentDataService,
       useClass: environment.production ? DocumentDataService : DocumentMockService
@@ -144,7 +133,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     {
       provide: UserDataService,
       useClass: environment.production ? UserDataService : UserMockService
-    }
+    }*/
 
   ], // additional providers
 

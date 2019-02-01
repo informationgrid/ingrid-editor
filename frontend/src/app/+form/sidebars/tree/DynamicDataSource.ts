@@ -1,14 +1,12 @@
-import { DocMainInfo } from '../../../models/update-dataset-info.model';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { CollectionViewer, SelectionChange } from '@angular/cdk/collections';
-import { Injectable } from '@angular/core';
-import { map } from 'rxjs/internal/operators';
-import { merge } from 'rxjs';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { DynamicFlatNode } from './DynamicFlatNode';
-import { DynamicDatabase } from './DynamicDatabase';
-import { ProfileService } from '../../../services/profile.service';
-import { FormularService } from '../../../services/formular/formular.service';
+import {DocMainInfo} from '../../../models/update-dataset-info.model';
+import {BehaviorSubject, merge, Observable} from 'rxjs';
+import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
+import {Injectable} from '@angular/core';
+import {map} from 'rxjs/internal/operators';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {DynamicFlatNode} from './DynamicFlatNode';
+import {DynamicDatabase} from './DynamicDatabase';
+import {FormularService} from '../../../services/formular/formular.service';
 
 /**
  * File database, it can build a tree structured Json object from string.
@@ -17,7 +15,9 @@ import { FormularService } from '../../../services/formular/formular.service';
  * The input will be a json object string, and the output is a list of `FileNode` with nested
  * structure.
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DynamicDataSource {
 
   dataChange: BehaviorSubject<DynamicFlatNode[]> = new BehaviorSubject<DynamicFlatNode[]>( [] );
