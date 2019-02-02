@@ -79,6 +79,7 @@ export class DocumentService {
       _id: doc._id,
       _profile: doc._profile,
       _state: doc._state,
+      _parent: doc._parent,
       // _children: doc._children,
       _hasChildren: doc._hasChildren
     };
@@ -98,7 +99,7 @@ export class DocumentService {
               title: doc.title, // this.formularService.getTitle( doc._profile, doc ); // doc.title,
               _state: doc._state,
               _hasChildren: doc._hasChildren,
-              // parent: parentId,
+              _parent: parentId,
               _profile: doc._profile,
             };
             return childTreeNode;

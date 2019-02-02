@@ -39,7 +39,6 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
   }
 
   ngOnInit() {
-    debugger;
     this.simpleOptions = this.options; // this.options.map(option => option.value);
     this.filteredOptions = this.simpleOptions;
   }

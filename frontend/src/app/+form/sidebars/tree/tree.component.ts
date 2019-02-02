@@ -81,7 +81,7 @@ export class MetadataTreeComponent {
 
     const selectedData: DocumentAbstract = this.treeQuery.getSnapshot().entities[node._id];
     this.treeStore.setOpenedDocument(selectedData);
-    // this.treeStore.setSelected(selectedData);
-    // this.selected.next(selectedData);
+    this.treeStore.setSelected([selectedData]);
+    this.selected.next([selectedData]);
   }
 }

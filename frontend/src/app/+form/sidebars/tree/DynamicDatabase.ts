@@ -6,7 +6,8 @@ import {ProfileService} from "../../../services/profile.service";
 import {DocumentService} from "../../../services/document/document.service";
 import {TreeNode} from "../../../store/tree/tree-node.model";
 import {DocumentAbstract} from "../../../store/document/document.model";
-import {of} from "rxjs";
+import {Observable, of} from "rxjs";
+import {TreeQuery} from "../../../store/tree/tree.query";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -17,8 +18,13 @@ export class DynamicDatabase {
   dataMap = {};
 
   constructor(private storageService: DocumentService, private profileService: ProfileService,
-              private docQuery: DocumentQuery, private profileQuery: ProfileQuery,
+              private treeQuery: TreeQuery, private profileQuery: ProfileQuery,
               private formularService: FormularService) {
+
+    treeQuery.selectAll().subscribe( docs => {
+      docs.map( doc => this.mapToTreeNode(doc));
+    });
+
   }
 
   initialData(): Promise<TreeNode[]> {
@@ -27,12 +33,7 @@ export class DynamicDatabase {
     });
     return this.profileService.initialized.then( () => {
 
-      return this.query( null, 0 ); /*.then( (data) => {
-        const d = data.map( item => this.mapToTreeNode(item, 0) );
-        console.log("initial data nodes:", d);
-        console.log("original data:", data);
-        return d;
-      } );*/
+      return this.query( null, 0 );
     } );
   }
 
