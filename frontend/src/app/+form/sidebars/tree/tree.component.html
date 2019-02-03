@@ -6,7 +6,7 @@
         {{node.title}}
     </mat-tree-node>
     <!-- This is the tree node template for expandable nodes -->
-    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding (click)="selectNode(node)">
         <button mat-icon-button matTreeNodeToggle
                 [attr.aria-label]="'toggle ' + node.name">
             <mat-icon class="mat-icon-rtl-mirror">

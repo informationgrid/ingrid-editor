@@ -4,6 +4,8 @@ import {FormularService} from "../../services/formular/formular.service";
 import {Router} from "@angular/router";
 import {DocumentAbstract} from "../../store/document/document.model";
 import {DocumentStore} from "../../store/document/document.store";
+import {TreeQuery} from "../../store/tree/tree.query";
+import {TreeStore} from "../../store/tree/tree.store";
 
 @Component({
   selector: 'ige-sidebar',
@@ -15,7 +17,8 @@ export class SidebarComponent implements OnInit {
   sideTab;
   load;
 
-  constructor(private formularService: FormularService, private router: Router, private documentStore: DocumentStore) { }
+  constructor(private formularService: FormularService, private router: Router,
+              private treeQuery: TreeQuery, private treeStore: TreeStore) { }
 
   ngOnInit() {
   }
@@ -38,8 +41,16 @@ export class SidebarComponent implements OnInit {
     this.router.navigate( ['/form', {id: doc.id}] );
   }
 
-  handleSelection(selectedDocs: DocumentAbstract[]) {
-    this.documentStore.setSelected(selectedDocs);
+  handleSelection(selectedDocsId: string[]) {
+    // TODO: Refactor this to the parent component so that the parent can decide
+    //       which store to update
+    if (selectedDocsId.length === 1) {
+      let selectedDocuments = selectedDocsId.map( id => this.treeQuery.getEntity(id));
+      this.treeStore.setOpenedDocument(selectedDocuments[0]);
+    }
+    this.treeStore.setActive(selectedDocsId);
+
+    // this.documentStore.setSelected(selectedDocs);
 
     // when multiple nodes were selected then do not show any form
     // TODO: update ui store for form

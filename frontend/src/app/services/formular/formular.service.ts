@@ -8,6 +8,7 @@ import {Observable, Subject} from 'rxjs';
 import {ProfileQuery} from "../../store/profile/profile.query";
 import {DocumentAbstract} from "../../store/document/document.model";
 import {TreeQuery} from "../../store/tree/tree.query";
+import {TreeStore} from "../../store/tree/tree.store";
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +40,7 @@ export class FormularService {
   private configuration: Configuration;
 
   constructor(private http: HttpClient, configService: ConfigService, private profiles: ProfileService, profileQuery: ProfileQuery,
-              private treeQuery: TreeQuery) {
+              private treeQuery: TreeQuery, private treeStore: TreeStore) {
     this.configuration = configService.getConfiguration();
 
     // create profiles after we have logged in
@@ -107,8 +108,7 @@ export class FormularService {
   }
 
   setSelectedDocuments(docs: DocumentAbstract[]) {
-    this.selectedDocs = docs;
-    this.selectedDocuments.next(docs);
+    this.treeStore.setActive(docs.map( d => d._id));
   }
 
   getSelectedDocuments(): DocumentAbstract[] {

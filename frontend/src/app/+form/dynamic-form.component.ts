@@ -24,6 +24,7 @@ import {takeUntil} from "rxjs/operators";
 import {DocumentStore} from "../store/document/document.store";
 import {FormUtils} from "./form.utils";
 import {TreeQuery} from "../store/tree/tree.query";
+import {DocumentAbstract} from "../store/document/document.model";
 
 interface FormData extends Object {
   _id?: string;
@@ -108,13 +109,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       } );
 
     // react on document selection
-    this.documentQuery.selectedDocuments$
-      .pipe(takeUntil(this.componentDestroyed))
-      .subscribe( data => {
-        this.formToolbarService.setButtonState(
-          'toolBtnSave',
-          data.length === 1 );
-      } );
+    this.treeQuery.selectActiveId().pipe(takeUntil(this.componentDestroyed)).subscribe((activeDocs) => {
+      this.formToolbarService.setButtonState(
+        'toolBtnSave',
+        activeDocs && activeDocs.length === 1 );
+    } );
 
     this.behaviourService.initialized.then( () => {
       this.route.queryParams.subscribe( params => {
@@ -251,7 +250,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     //   availableTypes: this.formularService.docTypes,
     //   rootOption: true
     // };
-    const selectedDocs = this.documentQuery.selectedDocuments;
+    const selectedDocs = this.treeQuery.getActive();
     this.newDocOptions.docTypes = this.formularService.getDocTypes()
       .filter( type => type.id !== 'FOLDER' )
       .sort( (a, b) => a.label.localeCompare( b.label ) );
@@ -273,9 +272,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   prepareNewDoc(type: string, addBelowDoc: boolean) {
     let previousId = null;
-    const selectedDocs = this.formularService.getSelectedDocuments();
+    const selectedDocs = this.treeQuery.getActive();
     if (selectedDocs.length === 1) {
-      previousId = this.formularService.getSelectedDocuments()[0].id;
+      previousId = selectedDocs[0]._id;
     }
     const needsProfileSwitch = this.formularService.currentProfile !== type;
 
@@ -366,6 +365,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.documentService.save( data, false ).then(res => {
       this.documentStore.setOpenedDocument(res);
+      // TODO: this.treeStore.upsert
       // this.data._id = res._id;
       // this.messageService.show( 'Dokument wurde gespeichert' );
       // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});

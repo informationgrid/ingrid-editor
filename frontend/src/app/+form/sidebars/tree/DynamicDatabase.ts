@@ -18,21 +18,17 @@ export class DynamicDatabase {
   dataMap = {};
 
   constructor(private storageService: DocumentService, private profileService: ProfileService,
-              private treeQuery: TreeQuery, private profileQuery: ProfileQuery,
+              private profileQuery: ProfileQuery,
               private formularService: FormularService) {
 
-    treeQuery.selectAll().subscribe( docs => {
+    /*treeQuery.selectAll().subscribe( docs => {
       docs.map( doc => this.mapToTreeNode(doc));
-    });
+    });*/
 
   }
 
   initialData(): Promise<TreeNode[]> {
-    this.profileQuery.isInitialized$.subscribe(() => {
-
-    });
     return this.profileService.initialized.then( () => {
-
       return this.query( null, 0 );
     } );
   }
@@ -48,6 +44,7 @@ export class DynamicDatabase {
   }
 
   query(id: string, level: number): Promise<TreeNode[]> {
+    // TODO: remove promise with something better
     return new Promise( (resolve, reject) => {
       this.storageService.getChildren( id ).subscribe(response => {
         console.log( 'got children', response );
