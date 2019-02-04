@@ -9,11 +9,11 @@ export interface TreeNode {
   hasChildren: boolean;
   state: string;
   profile: string;
-  isSelected: boolean;
+  isSelected?: boolean;
   // children: TreeNode[],
   // _childrenLoaded: boolean;
   level: number;
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 /**

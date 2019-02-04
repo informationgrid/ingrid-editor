@@ -2,8 +2,6 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from "../../../store/tree/tree-node.model";
 import {DocumentAbstract} from "../../../store/document/document.model";
-import {DocumentService} from "../../../services/document/document.service";
-import {Observable} from "rxjs";
 import {DynamicDataSource} from "./DynamicDataSource";
 import {DynamicDatabase} from "./DynamicDatabase";
 
@@ -25,7 +23,7 @@ export class MetadataTreeComponent {
 
   dataSource: DynamicDataSource;
 
-  constructor(database: DynamicDatabase, private documentService: DocumentService) {
+  constructor(database: DynamicDatabase) {
 
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database);
@@ -40,10 +38,6 @@ export class MetadataTreeComponent {
   hasChild = (_: number, node: TreeNode) => {
     return node.hasChildren;
   };
-
-  private getChildren(node: DocumentAbstract): Observable<DocumentAbstract[]> {
-    return this.documentService.getChildren(node._id);
-  }
 
   selectNode(node: TreeNode) {
     // deselect all nodes first

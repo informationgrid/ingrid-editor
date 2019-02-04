@@ -32,7 +32,7 @@ export class DynamicDataSource {
   }
 
   connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
-    this.treeControl.expansionModel.onChange.subscribe(change => {
+    this.treeControl.expansionModel.changed.subscribe(change => {
       if ((change as SelectionChange<TreeNode>).added ||
         (change as SelectionChange<TreeNode>).removed) {
         this.handleTreeControl(change as SelectionChange<TreeNode>);
@@ -69,9 +69,10 @@ export class DynamicDataSource {
         this.data.splice(index + 1, 0, ...children);
       } else {
         let count = 0;
-        for (let i = index + 1; i < this.data.length
-        && this.data[i].level > node.level; i++, count++) {
-        }
+
+        // count children that has to be removed from flat list
+        for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {}
+
         this.data.splice(index + 1, count);
       }
 

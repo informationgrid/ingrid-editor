@@ -87,6 +87,8 @@ export class UndoPlugin extends Plugin {
         // add behaviour to set active states for toolbar buttons
         // need to add behaviour after each load since form-object changes!
 
+        // FIXME: form is not available when opening a document, going to dashboard and back to form again
+        //        seems to be, because when clicking on form, the last opened document is being reloaded!?
         this.addBehaviour();
       }
     });
