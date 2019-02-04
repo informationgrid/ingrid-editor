@@ -1,3 +1,4 @@
+<!-- TODO: trackBy does not update isExpanded Flag [trackBy]="trackByNodeId"-->
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
     <!-- This is the tree node template for leaf nodes -->
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding (click)="selectNode(node)" [class.selected]="node.isSelected">
@@ -8,11 +9,13 @@
     <!-- This is the tree node template for expandable nodes -->
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding (click)="selectNode(node)">
         <button mat-icon-button matTreeNodeToggle
+                (click)="toggleNode(node)"
                 [attr.aria-label]="'toggle ' + node.name">
             <mat-icon class="mat-icon-rtl-mirror">
-                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                {{isLoading === node ? 'autorenew' : treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
             </mat-icon>
         </button>
         {{node.title}}
     </mat-tree-node>
 </mat-tree>
+<button (click)="add()">Add</button>

@@ -6,13 +6,15 @@ import {DocumentAbstract} from "../document/document.model";
 export interface TreeState extends EntityState<DocumentAbstract>, MultiActiveState {
   openedNodes: DocumentAbstract[],
   selected: DocumentAbstract[],
-  openedDocument: DocumentAbstract
+  openedDocument: string,
+  expandedNodes: string[]
 }
 
 export function createStore() {
   return {
     selected: [],
-    openedDocument: null
+    openedDocument: null,
+    expandedNodes: []
   };
 }
 
@@ -36,9 +38,15 @@ export class TreeStore extends EntityStore<TreeState, DocumentAbstract> {
     });
   }
 
-  setOpenedDocument(selected: DocumentAbstract) {
+  setOpenedDocument(selected: string) {
     this.updateRoot({
       openedDocument: selected
+    });
+  }
+
+  setExpandedNodes(ids: string[]) {
+    this.updateRoot({
+      expandedNodes: ids
     });
   }
 }

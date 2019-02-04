@@ -13,6 +13,7 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
   // selectTreeNodes$: Observable<TreeNode[]> = this.select(state => state.entities);
   selectedDocuments$: Observable<DocumentAbstract[]> = this.select(state => state.selected);
   openedDocument$: Observable<DocumentAbstract> = this.select(state => state.openedDocument);
+  expandedNodes$: Observable<string[]> = this.select(state => state.expandedNodes);
 
   constructor(protected store: TreeStore) {
     super(store);

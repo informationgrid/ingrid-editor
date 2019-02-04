@@ -141,7 +141,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
 
-    this.treeQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
+    this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
         console.log( 'loaded data:', data );
 
         if (data === null) {

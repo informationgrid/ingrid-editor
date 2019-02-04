@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import {SelectedDocument} from "./selected-document.model";
+import {Component, OnInit} from '@angular/core';
 import {FormularService} from "../../services/formular/formular.service";
 import {Router} from "@angular/router";
 import {DocumentAbstract} from "../../store/document/document.model";
-import {DocumentStore} from "../../store/document/document.store";
 import {TreeQuery} from "../../store/tree/tree.query";
 import {TreeStore} from "../../store/tree/tree.store";
+import {DocumentService} from "../../services/document/document.service";
+import {tap} from "rxjs/operators";
 
 @Component({
   selector: 'ige-sidebar',
@@ -17,10 +17,21 @@ export class SidebarComponent implements OnInit {
   sideTab;
   load;
 
+  treeData = this.treeQuery.selectAll();
+  expandedNodes = this.treeQuery.expandedNodes$;
+
   constructor(private formularService: FormularService, private router: Router,
-              private treeQuery: TreeQuery, private treeStore: TreeStore) { }
+              private treeQuery: TreeQuery, private treeStore: TreeStore, private docService: DocumentService) { }
 
   ngOnInit() {
+    this.docService.getChildren(null)
+      .pipe(
+        tap( docs => {
+            this.treeStore.set(docs);
+            // this.treeStore.upsert(parentId, { _children: docs });
+        })
+      ).subscribe();
+
   }
 
   handleLoad(selectedDocs: DocumentAbstract[]) { // id: string, profile?: string, forceLoad?: boolean) {
@@ -28,6 +39,7 @@ export class SidebarComponent implements OnInit {
     if (selectedDocs.length !== 1) {
       return;
     }
+
 
     const doc = selectedDocs[0];
 
@@ -45,8 +57,9 @@ export class SidebarComponent implements OnInit {
     // TODO: Refactor this to the parent component so that the parent can decide
     //       which store to update
     if (selectedDocsId.length === 1) {
-      let selectedDocuments = selectedDocsId.map( id => this.treeQuery.getEntity(id));
-      this.treeStore.setOpenedDocument(selectedDocuments[0]);
+      // FIXME: OK? ID cannot be found if it's a children!
+      // let selectedDocuments = selectedDocsId.map( id => this.treeQuery.getEntity(id));
+      this.treeStore.setOpenedDocument(selectedDocsId[0]);
     }
     this.treeStore.setActive(selectedDocsId);
 
@@ -63,4 +76,35 @@ export class SidebarComponent implements OnInit {
     }*/
   }
 
+  handleToggle(data: {parentId: string, expand: boolean}) {
+    if (data.expand) {
+      // check if nodes have been loaded already
+      let parentNode = this.treeQuery.getEntity(data.parentId);
+      if (parentNode._children) {
+        this.updateTreeStore(data.parentId, parentNode._children);
+
+      } else {
+
+        // TODO: CHECK IF SUBSCRIPTIONS CREATE MEMORY LEAK!
+        // get nodes from server
+        this.docService.getChildren(data.parentId).pipe(
+          tap(docs => {
+            this.updateTreeStore(data.parentId, docs);
+          })
+        ).subscribe();
+
+      }
+    } else {
+
+      let previouseExpandState = this.treeQuery.getValue().expandedNodes
+        .filter( nodeId => nodeId !== data.parentId);
+      this.treeStore.setExpandedNodes([...previouseExpandState]);
+    }
+  }
+
+  private updateTreeStore(parentId, children) {
+    this.treeStore.upsert(parentId, { _children: children });
+    let previouseExpandState = this.treeQuery.getValue().expandedNodes;
+    this.treeStore.setExpandedNodes([...previouseExpandState, parentId]);
+  }
 }

@@ -104,7 +104,7 @@ export class DocumentService {
             };
             return childTreeNode;
           })
-        }),
+        })/*,
         tap(docs => {
           if (parentId === null) {
             this.treeStore.set(docs);
@@ -112,9 +112,10 @@ export class DocumentService {
             //let entity = Object.assign({}, this.treeQuery.getEntity(parentId));
             //entity.children = docs;
             //this.treeStore.update(parentId, entity);
-            this.treeStore.add(docs);
+            this.treeStore.upsert(parentId, { _children: docs });
+            // this.treeStore.add(docs);
           }
-        })
+        })*/
       );
   }
 
