@@ -8,7 +8,6 @@ export interface DocumentAbstract {
   _state: string;
   _profile: string;
   _parent: string;
-  _children?: DocumentAbstract[];
   _hasChildren: boolean;
 
 }

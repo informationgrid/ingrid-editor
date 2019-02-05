@@ -37,13 +37,15 @@ export class MetadataTreeComponent implements OnInit {
     node => node.level, node => node.hasChildren);
 
   treeFlattener = new MatTreeFlattener(
-    this.transformer, node => node.level, node => node.hasChildren, node => node._children);
+    this.transformer, node => node.level, node => node.hasChildren,
+      node => {
+        return this.treeQuery.getAll({ filterBy: entity => entity._parent === node._id});
+      });
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
   private isLoading: TreeNode;
-  private dataMap: any = {};
 
-  constructor() {}
+  constructor(private treeQuery: TreeQuery) {}
 
   ngOnInit(): void {
     this.data.subscribe( docs => {
@@ -80,9 +82,6 @@ export class MetadataTreeComponent implements OnInit {
     const isExpanded = this.treeControl.isExpanded(node);
 
     if (isExpanded) {
-      if (this.dataMap[node._id]) {
-        // return of(this.dataMap[node._id]).toPromise();
-      }
       this.isLoading = node;
     }
 

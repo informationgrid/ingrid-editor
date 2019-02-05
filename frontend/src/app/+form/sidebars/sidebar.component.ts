@@ -31,7 +31,6 @@ export class SidebarComponent implements OnInit {
             // this.treeStore.upsert(parentId, { _children: docs });
         })
       ).subscribe();
-
   }
 
   handleLoad(selectedDocs: DocumentAbstract[]) { // id: string, profile?: string, forceLoad?: boolean) {
@@ -58,8 +57,8 @@ export class SidebarComponent implements OnInit {
     //       which store to update
     if (selectedDocsId.length === 1) {
       // FIXME: OK? ID cannot be found if it's a children!
-      // let selectedDocuments = selectedDocsId.map( id => this.treeQuery.getEntity(id));
-      this.treeStore.setOpenedDocument(selectedDocsId[0]);
+      let selectedDocuments = this.treeQuery.getEntity(selectedDocsId[0]);
+      this.treeStore.setOpenedDocument(selectedDocuments[0]);
     }
     this.treeStore.setActive(selectedDocsId);
 
@@ -79,9 +78,9 @@ export class SidebarComponent implements OnInit {
   handleToggle(data: {parentId: string, expand: boolean}) {
     if (data.expand) {
       // check if nodes have been loaded already
-      let parentNode = this.treeQuery.getEntity(data.parentId);
-      if (parentNode._children) {
-        this.updateTreeStore(data.parentId, parentNode._children);
+      let children = this.treeQuery.getAll({filterBy: entity => entity._parent === data.parentId});
+      if (children.length > 0) {
+        this.updateTreeStore(data.parentId, children);
 
       } else {
 
@@ -103,7 +102,8 @@ export class SidebarComponent implements OnInit {
   }
 
   private updateTreeStore(parentId, children) {
-    this.treeStore.upsert(parentId, { _children: children });
+    this.treeStore.add(children);
+    this.treeStore.update(parentId, {expanded: true});
     let previouseExpandState = this.treeQuery.getValue().expandedNodes;
     this.treeStore.setExpandedNodes([...previouseExpandState, parentId]);
   }

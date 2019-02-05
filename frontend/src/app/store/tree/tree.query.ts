@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {QueryEntity} from '@datorama/akita';
 import {TreeState, TreeStore} from './tree.store';
-import {TreeNode} from './tree-node.model';
 import {DocumentAbstract} from "../document/document.model";
 import {Observable} from "rxjs";
 
@@ -20,14 +19,14 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
   }
 
   get openedTreeNodes(): DocumentAbstract[] {
-    return this.getSnapshot().openedNodes;
+    return this.getValue().openedNodes;
   }
 
   get openedDocument(): DocumentAbstract {
-    return this.getSnapshot().openedDocument;
+    return this.getValue().openedDocument;
   }
 
   get selectedDocuments(): DocumentAbstract[] {
-    return this.getSnapshot().selected;
+    return this.getValue().selected;
   }
 }

@@ -1,12 +1,11 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {EntityState, EntityStore, MultiActiveState, StoreConfig} from '@datorama/akita';
-import { TreeNode } from './tree-node.model';
 import {DocumentAbstract} from "../document/document.model";
 
 export interface TreeState extends EntityState<DocumentAbstract>, MultiActiveState {
   openedNodes: DocumentAbstract[],
   selected: DocumentAbstract[],
-  openedDocument: string,
+  openedDocument: DocumentAbstract,
   expandedNodes: string[]
 }
 
@@ -38,7 +37,7 @@ export class TreeStore extends EntityStore<TreeState, DocumentAbstract> {
     });
   }
 
-  setOpenedDocument(selected: string) {
+  setOpenedDocument(selected: DocumentAbstract) {
     this.updateRoot({
       openedDocument: selected
     });
