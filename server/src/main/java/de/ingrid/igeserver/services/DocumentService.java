@@ -64,7 +64,7 @@ public class DocumentService extends MapperService {
         // apply specific fields to document (id, profile, state, ...)
         // make sure the IDs are of type String, which is more universal
         currentDoc.put(FIELD_ID, String.valueOf(map.get(FIELD_ID)));
-        currentDoc.put(PARENT_ID, String.valueOf(map.get(PARENT_ID)));
+        currentDoc.put(PARENT_ID, map.get(PARENT_ID));
         currentDoc.put(FIELD_PROFILE, map.get(FIELD_PROFILE));
         currentDoc.put(FIELD_STATE, determineState(map));
         currentDoc.put(FIELD_HAS_CHILDREN, map.get(FIELD_HAS_CHILDREN));

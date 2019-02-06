@@ -19,6 +19,7 @@ export class SidebarComponent implements OnInit {
 
   treeData = this.treeQuery.selectAll();
   expandedNodes = this.treeQuery.expandedNodes$;
+  selectedIds = this.treeQuery.selectActiveId();
 
   constructor(private formularService: FormularService, private router: Router,
               private treeQuery: TreeQuery, private treeStore: TreeStore, private docService: DocumentService) { }
@@ -33,14 +34,14 @@ export class SidebarComponent implements OnInit {
       ).subscribe();
   }
 
-  handleLoad(selectedDocs: DocumentAbstract[]) { // id: string, profile?: string, forceLoad?: boolean) {
+  handleLoad(selectedDocIds: string[]) { // id: string, profile?: string, forceLoad?: boolean) {
     // when multiple nodes were selected then do not show any form
-    if (selectedDocs.length !== 1) {
+    if (selectedDocIds.length !== 1) {
       return;
     }
 
 
-    const doc = selectedDocs[0];
+    const doc = this.treeQuery.getEntity(selectedDocIds[0]);
 
     // if a folder was selected then normally do not show the form
     // show folder form only if the edit button was clicked which adds the forceLoad option
@@ -80,7 +81,7 @@ export class SidebarComponent implements OnInit {
       // check if nodes have been loaded already
       let children = this.treeQuery.getAll({filterBy: entity => entity._parent === data.parentId});
       if (children.length > 0) {
-        this.updateTreeStore(data.parentId, children);
+        this.updateTreeStore(data.parentId);
 
       } else {
 
@@ -88,7 +89,8 @@ export class SidebarComponent implements OnInit {
         // get nodes from server
         this.docService.getChildren(data.parentId).pipe(
           tap(docs => {
-            this.updateTreeStore(data.parentId, docs);
+            this.treeStore.add(docs);
+            this.updateTreeStore(data.parentId);
           })
         ).subscribe();
 
@@ -101,10 +103,15 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  private updateTreeStore(parentId, children) {
-    this.treeStore.add(children);
-    this.treeStore.update(parentId, {expanded: true});
-    let previouseExpandState = this.treeQuery.getValue().expandedNodes;
-    this.treeStore.setExpandedNodes([...previouseExpandState, parentId]);
+  private updateTreeStore(parentId) {
+    // let parentDoc = this.treeQuery.getEntity(parentId);
+    // @ts-ignore
+    // this.treeStore.createOrReplace(parentId, {...parentDoc, updated: true});
+
+    // setTimeout( () => {
+      let previouseExpandState = this.treeQuery.getValue().expandedNodes;
+      this.treeStore.setExpandedNodes([...previouseExpandState, parentId]);
+
+    // }, 100);
   }
 }

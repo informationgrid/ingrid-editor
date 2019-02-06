@@ -11,13 +11,17 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.sequence.OSequence;
 import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibrary;
+import com.orientechnologies.orient.core.record.ORecord;
+import com.orientechnologies.orient.core.record.ORecordAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 import com.orientechnologies.orient.server.plugin.OServerPluginManager;
 import de.ingrid.igeserver.api.ApiException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,10 @@ public class OrientDBDatabase implements DBApi {
     private static Logger log = LogManager.getLogger(OrientDBDatabase.class);
 
     private OServer server = null;
+
+    private OSQLSynchQuery<ODocument> docIdQuery = new OSQLSynchQuery<>(
+            "SELECT FROM Documents WHERE _id = ?"
+    );
 
     /**
      * DB init
@@ -198,7 +206,15 @@ public class OrientDBDatabase implements DBApi {
         return docToSave.toMap();
     }
 
+    /**
+     * Is this still used? data is not used in function!
+     * @param type
+     * @param id
+     * @param data
+     * @return
+     */
     @Override
+    @Deprecated
     public Map save(DBClass type, String id, Object data) {
         Optional<OResult> doc = getById(type, id);
         ODocument docToSave;
@@ -211,14 +227,19 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public boolean remove(DBClass type, String name) {
-        return false;
+    public boolean remove(DBClass type, String id) {
+        List<ODocument> result = getDBFromThread().command(docIdQuery).execute(id);
+
+        assert result.size() == 1;
+
+        ORecordAbstract deleteResponse = result.get(0).delete();
+        return true;
     }
 
     @Override
     public List<String> remove(DBClass type, Map<String, String> query) {
         // TODO: implement
-        return null;
+        throw new NotImplementedException("Remove function is not implemented yet");
     }
 
     @Override
@@ -229,7 +250,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public boolean createDatabase(String name) throws ApiException {
+    public boolean createDatabase(String name) {
         server.createDatabase(name, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
         try (ODatabaseSession session = acquire(name)) {
             // TODO: set more constraints and information for a new catalog (name, email?, ...)
@@ -266,13 +287,6 @@ public class OrientDBDatabase implements DBApi {
     @Override
     public ODatabaseSession acquire(String dbName) {
         return server.openDatabase(dbName);
-        /*if (poolMap.containsKey(dbName)) {
-            return poolMap.get(dbName).acquire();
-        } else {
-            ODatabasePool pool = new ODatabasePool(orientDB, dbName, "admin", "admin");
-            poolMap.put(dbName, pool);
-            return pool.acquire();
-        }*/
     }
 
     /**

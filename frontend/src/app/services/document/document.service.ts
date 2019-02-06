@@ -121,7 +121,8 @@ export class DocumentService {
 
   load(id: string): Observable<IgeDocument> {
     return this.dataService.load(id).pipe(
-      tap(doc => this.documentStore.setOpenedDocument(doc))
+      tap(doc => this.documentStore.setOpenedDocument(doc)),
+      tap(doc => setTimeout(() => this.treeStore.setActive([doc._id]), 0))
     );
   }
 
@@ -129,7 +130,13 @@ export class DocumentService {
     return new Promise((resolve, reject) => {
       this.dataService.save(data)
         .subscribe(json => {
-          let info: DocMainInfo = {
+          let info: DocumentAbstract = {
+            _hasChildren: false,
+            _parent: data._parent,
+            _profile: data._profile,
+            icon: "",
+            id: json._id,
+            title: json.title,
             _id: json._id,
             _state: json._state
           };
@@ -139,6 +146,7 @@ export class DocumentService {
             type: isNewDoc ? UpdateType.New : UpdateType.Update,
             data: [info]
           });
+          this.treeStore.upsert(data._id, info);
           resolve(data);
         }, err => {
           reject(err);
@@ -172,16 +180,15 @@ export class DocumentService {
   }
 
   delete(ids: string[]): any {
-    const response = this.dataService.delete(ids);
-    // .pipe( catchError( err => this.errorService.handle( err ) ) );
-
-    response.subscribe(res => {
-      console.log('ok', res);
-      const data = ids.map(id => {
-        return {_id: id};
+    const response = this.dataService.delete(ids)
+      .subscribe(res => {
+        console.log('ok', res);
+        const data = ids.map(id => {
+          return {_id: id};
+        });
+        this.datasetsChanged.next({type: UpdateType.Delete, data: data});
+        this.treeStore.remove(ids);
       });
-      this.datasetsChanged.next({type: UpdateType.Delete, data: data});
-    });
   }
 
   revert(id: string): Observable<any> {

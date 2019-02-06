@@ -31,6 +31,7 @@ import de from '@angular/common/locales/de';
 import {AkitaNgDevtools} from "@datorama/akita-ngdevtools";
 import {AngularSplitModule} from "angular-split";
 import {SearchBarComponent} from "./+dashboard/search-bar/search-bar.component";
+import {DeleteDialogComponent} from "./+behaviours/toolbar/deleteDocs/delete-dialog.component";
 
 registerLocaleData(de);
 
@@ -63,7 +64,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 
 @NgModule( {
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent, SearchBarComponent],
+  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent, SearchBarComponent, DeleteDialogComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
@@ -138,7 +139,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent]
+  entryComponents: [ErrorDialogComponent, DeleteDialogComponent]
 } )
 
 export class AppModule {

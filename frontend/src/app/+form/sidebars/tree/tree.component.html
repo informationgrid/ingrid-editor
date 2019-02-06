@@ -7,7 +7,7 @@
         {{node.title}}
     </mat-tree-node>
     <!-- This is the tree node template for expandable nodes -->
-    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding (click)="selectNode(node)">
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding (click)="selectNode(node)" [class.selected]="node.isSelected">
         <button mat-icon-button matTreeNodeToggle
                 (click)="toggleNode(node)"
                 [attr.aria-label]="'toggle ' + node.name">
@@ -18,4 +18,3 @@
         {{node.title}}
     </mat-tree-node>
 </mat-tree>
-<button (click)="add()">Add</button>

@@ -5,8 +5,7 @@ import {DocumentAbstract} from "../../../store/document/document.model";
 import {DynamicDatabase} from "./DynamicDatabase";
 import {TreeQuery} from "../../../store/tree/tree.query";
 import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material";
-import {DocumentService} from "../../../services/document/document.service";
-import {Observable, of, Subject} from "rxjs";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'ige-tree',
@@ -19,9 +18,11 @@ export class MetadataTreeComponent implements OnInit {
   @Input() showFolderEditButton = true;
   @Input() data: Observable<DocumentAbstract[]>;
   @Input() expandedNodeIds: Observable<string[]>;
+  @Input() selectedIds: Observable<string[]>;
+
   @Output() toggle = new EventEmitter<{parentId: string, expand: boolean}>();
   @Output() selected = new EventEmitter<string[]>();
-  @Output() activate = new EventEmitter<DocumentAbstract[]>();
+  @Output() activate = new EventEmitter<string[]>();
 
   private transformer = (doc: DocumentAbstract, level: number) => {
     return <TreeNode>{
@@ -49,16 +50,25 @@ export class MetadataTreeComponent implements OnInit {
 
   ngOnInit(): void {
     this.data.subscribe( docs => {
-      this.dataSource.data = docs;
+      // only get root nodes, the children will be received through the getChildren function
+      // calling treeQuery
+      this.dataSource.data = docs.filter( doc => doc._parent === null);
       this.isLoading = null;
     });
 
     this.expandedNodeIds.subscribe(ids => {
       this.treeControl.expansionModel.clear();
+      this.isLoading = null;
 
       let nodesToExpand: TreeNode[] = this.treeControl.dataNodes.filter( node => ids.indexOf(node._id) !== -1);
       this.treeControl.expansionModel.select(...nodesToExpand);
     });
+
+    this.selectedIds.subscribe( ids => this.treeControl.dataNodes.forEach((node) => {
+      if (ids.indexOf(node._id) !== -1) {
+        node.isSelected = true;
+      }
+    }))
   }
 
   hasChild = (_: number, node: TreeNode) => {
@@ -74,8 +84,9 @@ export class MetadataTreeComponent implements OnInit {
 
     this.selected.next([node._id]);
 
-    let docs = this.dataSource.data.filter( n => n._id === node._id);
-    this.activate.next(docs);
+    // the data in dataSource only contains root nodes!!!
+    // let docs = this.dataSource.data.filter( n => n._id === node._id);
+    this.activate.next([node._id]);
   }
 
   toggleNode(node: TreeNode) {
@@ -84,6 +95,9 @@ export class MetadataTreeComponent implements OnInit {
     if (isExpanded) {
       this.isLoading = node;
     }
+
+    // clear selection state again since it's set again through store
+    // this.treeControl.collapse(node);
 
     this.toggle.next({
       parentId: node._id,
@@ -100,8 +114,10 @@ export class MetadataTreeComponent implements OnInit {
     return item._id;
   }
 
-  add() {
-    // this.dataSource.data.push({title: 'New node', _id: '999', hasChildren: false, level: 0, state: 'W', profile: 'ADDRESS', parent: '', iconClass: null});
-    // this.dataSource.dataChange.next(this.dataSource.data);
-  }
+  /*isExpanded(node: TreeNode): Promise<boolean> {
+    this.treeControl.
+    setTimeout( () => {
+      return this.treeControl.isExpanded(node);
+    }, 1000);
+  }*/
 }

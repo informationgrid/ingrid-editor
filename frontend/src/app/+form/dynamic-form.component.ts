@@ -273,7 +273,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   prepareNewDoc(type: string, addBelowDoc: boolean) {
     let previousId = null;
     const selectedDocs = this.treeQuery.getActive();
-    if (selectedDocs.length === 1) {
+    if (selectedDocs && selectedDocs.length === 1) {
       previousId = selectedDocs[0]._id;
     }
     const needsProfileSwitch = this.formularService.currentProfile !== type;
@@ -301,7 +301,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.documentService.afterProfileSwitch.next( this.form.value );
 
       // notify browser/tree of new dataset
-      const newDoc = {_profile: type, _parent: this.data._parent};
+      // TODO: use constructor for creating new document
+      const newDoc = {_profile: type, _parent: this.data._parent ? this.data._parent : null};
       this.documentService.save( newDoc, true );
 
     } catch (ex) {
@@ -356,7 +357,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     const data = this.form.value;
     // attach profile type to data, which is not reflected in form directly by value
     data._id = this.data._id;
-    data._parent = this.data._parent;
+    data._parent = this.data._parent ? this.data._parent : null;
     data._profile = this.formularService.currentProfile;
 
     // during save the listeners for dataset changes are already called

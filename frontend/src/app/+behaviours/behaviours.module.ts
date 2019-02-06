@@ -35,7 +35,7 @@ const routes: Routes = [
   MatButtonModule, MatInputModule, MatCheckboxModule, FormFieldsModule],
   declarations: [
     PluginsComponent, Collapse,
-    PasteDialogComponent, PrintViewDialogComponent, CreateFolderComponent, DeleteDialogComponent,
+    PasteDialogComponent, PrintViewDialogComponent, CreateFolderComponent,
     IsoViewComponent, DemoComponent, StatisticComponent
   ],
   entryComponents: [],

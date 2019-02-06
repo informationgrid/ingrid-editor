@@ -3,6 +3,7 @@
         <div class="tab-pane" [class.active]="sideTab === 'tree'">
             <ige-tree [data]="treeData"
                       [expandedNodeIds]="expandedNodes"
+                      [selectedIds]="selectedIds"
                       (toggle)="handleToggle($event)"
                       (activate)="handleLoad($event)"
                       (selected)="handleSelection($event)"></ige-tree>

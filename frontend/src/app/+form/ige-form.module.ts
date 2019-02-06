@@ -36,6 +36,7 @@ import {FormDialogsModule} from "../dialogs/form/form-dialogs.module";
 import {FormFieldsModule} from "../form-fields/form-fields.module";
 import {AngularSplitModule} from "angular-split";
 import {RouterModule} from "@angular/router";
+import {DeleteDialogComponent} from "../+behaviours/toolbar/deleteDocs/delete-dialog.component";
 
 @NgModule({
   imports: [
@@ -49,7 +50,8 @@ import {RouterModule} from "@angular/router";
     FormDialogsModule, FormFieldsModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,
-    BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent, AddPartialDialogComponent,
+    BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
+    AddPartialDialogComponent,
     ScrollToDirective, MainFormComponent, MainFormTabsComponent, SidebarComponent, FormInfoComponent],
   providers: [NominatimService],
   exports: [FormsModule, ScrollToDirective, MainFormTabsComponent],
