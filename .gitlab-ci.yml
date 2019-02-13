@@ -1,0 +1,51 @@
+stages:
+  - build
+  - package
+  - prepare
+  - deploy
+  - stop
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  DOCKER_IMAGE_TAGGED: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA 
+  DOCKER_IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest  
+
+cache:
+  paths:
+    - .m2/repository
+
+build_jar:
+  stage: build
+  image: maven:3-jdk-8
+  script:
+    - mvn install
+  artifacts:
+    paths:
+      - target/*.jar
+  tags:
+    - docker
+
+docker_push:
+  stage: package
+  image: docker:latest
+  script:
+   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+   - docker build -t $DOCKER_IMAGE_TAGGED .
+   - docker push $DOCKER_IMAGE_TAGGED
+  dependencies:
+    - build_jar
+  tags:
+    - docker
+
+docker_tag:
+  stage: prepare
+  image: docker:latest
+  script: 
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker pull $DOCKER_IMAGE_TAGGED
+    - docker tag $DOCKER_IMAGE_TAGGED $DOCKER_IMAGE_LATEST
+    - docker push $DOCKER_IMAGE_LATEST
+  tags:
+    - docker
+  only:
+    - master
