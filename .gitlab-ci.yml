@@ -22,8 +22,6 @@ build_jar:
   artifacts:
     paths:
       - target/*.jar
-  tags:
-    - docker
 
 docker_push:
   stage: package
@@ -34,8 +32,6 @@ docker_push:
    - docker push $DOCKER_IMAGE_TAGGED
   dependencies:
     - build_jar
-  tags:
-    - docker
 
 docker_tag:
   stage: prepare
@@ -45,7 +41,5 @@ docker_tag:
     - docker pull $DOCKER_IMAGE_TAGGED
     - docker tag $DOCKER_IMAGE_TAGGED $DOCKER_IMAGE_LATEST
     - docker push $DOCKER_IMAGE_LATEST
-  tags:
-    - docker
   only:
     - master
