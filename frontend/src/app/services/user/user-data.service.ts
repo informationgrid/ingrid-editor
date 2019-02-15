@@ -23,7 +23,7 @@ export class UserDataService {
           const result: User[] = [];
           json.forEach( item => {
             result.push( {
-              // id: item.id,
+              id: item.id,
               login: item.login,
               firstName: item.firstName,
               lastName: item.lastName,
@@ -64,7 +64,7 @@ export class UserDataService {
       .pipe(
         map( (json: any) => {
           return {
-            // id: json.id,
+            id: json.id,
             login: json.login,
             firstName: json.firstName,
             lastName: json.lastName,

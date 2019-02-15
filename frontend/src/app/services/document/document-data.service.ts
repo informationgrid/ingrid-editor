@@ -12,6 +12,11 @@ export class DocumentDataService {
   private titleFields: string;
 
   constructor(private http: HttpClient, configService: ConfigService) {
+
+    if (configService.getUserInfo().assignedCatalogs.length === 0) {
+      return;
+    }
+
     setTimeout(() => {
       configService.promiseProfilePackageLoaded.then(() => {
         this.titleFields = configService.getTitleFields().join(',');

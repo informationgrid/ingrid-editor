@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   hmr: false,
-  profileFromServer: true,
+  profileFromServer: false,
   // mockKeycloak: false,
   configFile: 'assets/config.json'
 };

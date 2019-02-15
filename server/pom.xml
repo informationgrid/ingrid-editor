@@ -12,6 +12,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <springfox-version>2.9.2</springfox-version>
+    <dockerfile-maven-version>1.4.10</dockerfile-maven-version>
     <argLine>-XX:MaxDirectMemorySize=512g</argLine>
   </properties>
   <parent>
@@ -67,40 +68,38 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${basedir}/target/classes/static/static</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>../frontend/dist</directory>
-                  <filtering>false</filtering>
-                  <excludes>
-                    <exclude>index.html</exclude>
-                    <exclude>static/**/*.*</exclude>
-                  </excludes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>exec-copy-index-assets</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
               <outputDirectory>${basedir}/target/classes/static</outputDirectory>
               <resources>
                 <resource>
                   <directory>../frontend/dist</directory>
                   <filtering>false</filtering>
-                  <includes>
-                    <include>index.html</include>
-                    <include>static/**/*.*</include>
-                  </includes>
                 </resource>
               </resources>
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <version>${dockerfile-maven-version}</version>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>build</goal>
+              <goal>push</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <repository>docker-registry.wemove.com/ige-ng</repository>
+          <tag>${project.version}</tag>
+          <buildArgs>
+            <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+          </buildArgs>
+        </configuration>
       </plugin>
 
     </plugins>

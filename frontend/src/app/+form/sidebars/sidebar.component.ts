@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormularService} from "../../services/formular/formular.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {DocumentAbstract} from "../../store/document/document.model";
 import {TreeQuery} from "../../store/tree/tree.query";
 import {TreeStore} from "../../store/tree/tree.store";
@@ -22,16 +22,45 @@ export class SidebarComponent implements OnInit {
   selectedIds = this.treeQuery.selectActiveId();
 
   constructor(private formularService: FormularService, private router: Router,
+              private route: ActivatedRoute,
               private treeQuery: TreeQuery, private treeStore: TreeStore, private docService: DocumentService) { }
 
   ngOnInit() {
-    this.docService.getChildren(null)
-      .pipe(
-        tap( docs => {
+    this.route.params.subscribe( params => {
+      this.docService.getChildren(null)
+        .pipe(
+          tap(docs => {
             this.treeStore.set(docs);
-            // this.treeStore.upsert(parentId, { _children: docs });
+
+            const id = params['id'];
+            if (id !== undefined) {
+              this.docService.getPath(params['id']).subscribe(path => {
+                let lastDocId = path.pop();
+                let promises = [];
+                for (let id of path) {
+                  promises.push(this.getChildrenDocs(id));
+                }
+
+                Promise.all(promises).then(() => {
+                  this.treeStore.setActive([lastDocId]);
+                  this.treeStore.setExpandedNodes(path);
+                });
+              });
+            }
+          })
+        ).subscribe();
+    }).unsubscribe();
+  }
+
+  private getChildrenDocs(id: string): Promise<void> {
+    return new Promise(resolve => {
+      this.docService.getChildren(id).pipe(
+        tap(docs => {
+          this.treeStore.add(docs);
+          resolve();
         })
       ).subscribe();
+    });
   }
 
   handleLoad(selectedDocIds: string[]) { // id: string, profile?: string, forceLoad?: boolean) {
@@ -81,7 +110,7 @@ export class SidebarComponent implements OnInit {
       // check if nodes have been loaded already
       let children = this.treeQuery.getAll({filterBy: entity => entity._parent === data.parentId});
       if (children.length > 0) {
-        this.updateTreeStore(data.parentId);
+        this.addExpandedNode(data.parentId);
 
       } else {
 
@@ -90,7 +119,7 @@ export class SidebarComponent implements OnInit {
         this.docService.getChildren(data.parentId).pipe(
           tap(docs => {
             this.treeStore.add(docs);
-            this.updateTreeStore(data.parentId);
+            this.addExpandedNode(data.parentId);
           })
         ).subscribe();
 
@@ -103,15 +132,8 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  private updateTreeStore(parentId) {
-    // let parentDoc = this.treeQuery.getEntity(parentId);
-    // @ts-ignore
-    // this.treeStore.createOrReplace(parentId, {...parentDoc, updated: true});
-
-    // setTimeout( () => {
-      let previouseExpandState = this.treeQuery.getValue().expandedNodes;
-      this.treeStore.setExpandedNodes([...previouseExpandState, parentId]);
-
-    // }, 100);
+  private addExpandedNode(nodeId) {
+    let previouseExpandState = this.treeQuery.getValue().expandedNodes;
+    this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
   }
 }

@@ -9,6 +9,9 @@ import {throwError} from 'rxjs';
 import {tap} from 'rxjs/internal/operators';
 import {BehaviorDataService} from "./behavior-data.service";
 import {ProfileQuery} from "../../store/profile/profile.query";
+import {ProfileStore} from "../../store/profile/profile.store";
+import {ConfigService} from "../config/config.service";
+import {toPromise} from "rxjs-compat/operator/toPromise";
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -28,8 +31,9 @@ export class BehaviourService {
               private eventManager: EventManager,
               private profileService: ProfileService,
               private profileQuery: ProfileQuery,
+              private profileStore: ProfileStore,
               private dataService: BehaviorDataService,
-              private modalService: ModalService) {
+              private configService: ConfigService) {
 
     this.behaviours = defaultBehaves.behaviours;
     this.systemBehaviours = defaultBehaves.systemBehaviours;
@@ -42,6 +46,12 @@ export class BehaviourService {
     // this.behaviours.push(...additionalBehaviours);
 
     this.initialized = new Promise(resolve => {
+      // do nothing if user has no assigned catalogs
+      if (configService.getUserInfo().assignedCatalogs.length === 0) {
+        resolve();
+        return;
+      }
+
       this.profileQuery.isInitialized$.subscribe((isInitialized) => {
         if (isInitialized) {
           this.profileService.getProfiles().forEach(p => {
@@ -89,11 +99,16 @@ export class BehaviourService {
           // catchError(this.handleError('loadStoredBehaviours', []))
         )
         .subscribe( (storedBehaviours: any[]) => {
-          // set correct active state to each behaviour
-          this.behaviours.forEach( (behaviour) => {
+          // TODO: set correct active state to each behaviour
+          /*this.behaviours.forEach( (behaviour) => {
             const stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
-            behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-          } );
+            let state = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+            if (behaviour.isProfileBehaviour) {
+              this.profileStore.update(behaviour.id, {isActive: state});
+            } else {
+              behaviour.isActive = state;
+            }
+          } );*/
 
           // set correct active state to each system behaviour
           this.systemBehaviours.forEach( (behaviour) => {

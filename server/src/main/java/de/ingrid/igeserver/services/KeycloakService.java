@@ -12,19 +12,17 @@ import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.util.JsonSerialization;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Service
-@Profile("!dev")
+//@Profile("!dev")
 public class KeycloakService implements UserManagementService {
 
     private Logger log = LogManager.getLogger(KeycloakService.class);
@@ -71,20 +69,50 @@ public class KeycloakService implements UserManagementService {
     }
 
     @Override
-    public User getUser(String login) {
-        return null;
+    public User getUser(Principal principal, String login) throws IOException {
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+            HttpGet get = new HttpGet(keycloakUrl + "/admin/realms/" + keycloakRealm + "/users/" + login);
+            KeycloakAuthenticationToken keycloakPrincipal = (KeycloakAuthenticationToken) principal;
+            get.addHeader("Authorization", "Bearer " + keycloakPrincipal.getAccount().getKeycloakSecurityContext().getTokenString());
+
+            HttpResponse response = client.execute(get);
+
+            if (response.getStatusLine().getStatusCode() != 200) {
+                log.error("Response was not ok! => " + response.getStatusLine().getStatusCode());
+                throw new RuntimeException("Keycloak User Request for login: " + login + " => " + response.getStatusLine().getReasonPhrase());
+                // return null;
+            }
+
+            HttpEntity entity = response.getEntity();
+
+            try (InputStream is = entity.getContent()) {
+                UserRepresentation user = JsonSerialization.readValue(is, UserRepresentation.class);
+                return mapUser(user);
+
+            } catch (Exception ex) {
+                log.error("Could not get users from keycloak endpoint", ex);
+                throw ex;
+            }
+
+        } catch (Exception e) {
+            log.error("Problem getting users from keycloak", e);
+            throw e;
+        }
+    }
+
+    private User mapUser(UserRepresentation user) {
+        User mappedUser = new User();
+        mappedUser.setLogin(user.getUsername());
+        mappedUser.setFirstName(user.getFirstName());
+        mappedUser.setLastName(user.getLastName());
+        mappedUser.setId(user.getId());
+        return mappedUser;
     }
 
     private List<User> mapUsers(KeycloakService.UserList users) {
         ArrayList<User> list = new ArrayList<>();
 
-        users.forEach(user -> {
-            User u = new User();
-            u.setLogin(user.getUsername());
-            u.setFirstName(user.getFirstName());
-            u.setLastName(user.getLastName());
-            list.add(u);
-        });
+        users.forEach(user -> list.add(mapUser(user)) );
         return list;
     }
 

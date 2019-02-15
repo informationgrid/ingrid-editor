@@ -11,7 +11,7 @@ import java.util.Set;
 public interface UserManagementService {
     List<User> getUsers(Principal principal) throws IOException;
 
-    User getUser(String login);
+    User getUser(Principal principal, String login) throws IOException;
 
     Set<String> getRoles(KeycloakAuthenticationToken principal);
 }

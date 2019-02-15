@@ -58,7 +58,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   fields: IFieldBase<any>[] = [];
   form: FormGroup = null;
-  data: FormData = {};
+  data: IgeDocument|any = {};
   behaviours: Behaviour[];
   error = false;
 
@@ -116,12 +116,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     } );
 
     this.behaviourService.initialized.then( () => {
-      this.route.queryParams.subscribe( params => {
+      /*this.route.queryParams.subscribe( params => {
         this.debugEnabled = params['debug'] !== undefined;
         // this.editMode = params['editMode'] === "true";
         // this.load(thisid);
+      } );*/
+      this.route.params.subscribe( params => {
+        this.load( params['id'] );
       } );
-      this.route.params.subscribe( params => this.load( params['id'] ) );
     } );
   }
 
@@ -490,7 +492,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getTitle() {
-    // console.log( '.' );
     return this.formularService.getTitle( null, this.data );
   }
 

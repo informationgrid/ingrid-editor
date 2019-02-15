@@ -1,9 +1,5 @@
-import {Configuration} from "./config.service";
-import {Injectable} from "@angular/core";
+import {Configuration, UserInfo} from "./config.service";
 
-@Injectable({
-  providedIn: 'root'
-})
 export class ConfigDataService {
 
   config: Configuration;
@@ -13,12 +9,28 @@ export class ConfigDataService {
       .then( response => JSON.parse(response));
   }
 
-  getCurrentUserInfo(): Promise<any> {
+  getCurrentUserInfo(): Promise<UserInfo> {
     return this.sendRequest('GET', this.config.backendUrl + 'info/currentUser' )
     // TODO: if database is not initialized then response is not JSON
     //       change backend response or catch parse error
-      .then( response => JSON.parse(response))
-      .catch( e => console.error('Could not get current user info', e));
+      .then( response => {
+        const json = JSON.parse(response);
+        return {
+          assignedCatalogs: json.assignedCatalogs,
+          name: json.name,
+          roles: json.roles,
+          userId: json.userId
+        };
+      })
+      .catch( (e: string) => {
+        if (e.indexOf('Cannot GET /sso/login') !== -1) {
+          console.error('Not logged in to keycloak. Please login first from IgeServer (localhost:8550)');
+          return null;
+        } else {
+          console.error('Could not get current user info', e);
+        }
+        return {assignedCatalogs: [], name: undefined, roles: [], userId: undefined};
+      });
   }
 
   private sendRequest(method = 'GET', url = null): Promise<string> {
@@ -31,7 +43,13 @@ export class ConfigDataService {
           if (xhr.status === 200) {
             resolve( xhr.responseText );
           } else {
-            reject( JSON.parse(xhr.responseText) );
+            let error;
+            try {
+              error = JSON.parse(xhr.responseText);
+            } catch(e) {
+              error = xhr.responseText
+            }
+            reject( error );
           }
         }
       };

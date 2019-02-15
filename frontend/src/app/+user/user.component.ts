@@ -64,7 +64,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   loadUser(userToLoad: User) {
     console.log( 'user', userToLoad );
     this.isNewUser = false;
-    this.userService.getUser( userToLoad.login )
+    this.userService.getUser( userToLoad.id )
       .subscribe( user => {
         this.selectedUser = user;
         console.log( 'selectedUser:', this.selectedUser );

@@ -31,6 +31,7 @@ export interface Behaviour {
   unregister: () => void;
   controls?: any[];
   outer?: any;
+  isProfileBehaviour?: boolean;
   _state?: string;
 }
 

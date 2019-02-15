@@ -8,6 +8,9 @@ export class IgeDocument {
   // the ID of the document, which can be undefined for new documents
   _id?: string;
 
+  // the title of the document, which also can be dynamically added by other fields
+  title?: string;
+
   // the profile which defines the formular fields
   _profile: string;
 

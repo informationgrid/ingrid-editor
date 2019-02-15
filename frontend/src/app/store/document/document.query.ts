@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { QueryEntity } from '@datorama/akita';
-import { DocumentStore, DocumentState } from './document.store';
-import { DocumentAbstract } from './document.model';
+import {Injectable} from '@angular/core';
+import {QueryEntity} from '@datorama/akita';
+import {DocumentState, DocumentStore} from './document.store';
+import {DocumentAbstract} from './document.model';
 import {Observable} from "rxjs";
 import {IgeDocument} from "../../models/ige-document";
 
@@ -21,7 +21,7 @@ export class DocumentQuery extends QueryEntity<DocumentState, DocumentAbstract> 
   }
 
   get selectedDocuments(): DocumentAbstract[] {
-    return this.getSnapshot().selected;
+    return this.getValue().selected;
   }
 
 }

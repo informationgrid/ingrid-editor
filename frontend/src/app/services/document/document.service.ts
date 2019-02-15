@@ -10,7 +10,7 @@ import {DocumentDataService} from "./document-data.service";
 import {DocumentStore} from "../../store/document/document.store";
 import {DocumentAbstract} from "../../store/document/document.model";
 import {TreeStore} from "../../store/tree/tree.store";
-import {createTreeNode} from "../../store/tree/tree-node.model";
+import {ProfileQuery} from "../../store/profile/profile.query";
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +33,7 @@ export class DocumentService {
   constructor(private modalService: ModalService,
               private dataService: DocumentDataService,
               private documentStore: DocumentStore,
+              private profileQuery: ProfileQuery,
               private treeStore: TreeStore) {
     if (KeycloakService.auth.loggedIn) {
       // TODO: this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
@@ -128,6 +129,9 @@ export class DocumentService {
 
   save(data: IgeDocument, isNewDoc?: boolean): Promise<IgeDocument> {
     return new Promise((resolve, reject) => {
+
+      this.handleTitle(data);
+
       this.dataService.save(data)
         .subscribe(json => {
           let info: DocumentAbstract = {
@@ -200,7 +204,9 @@ export class DocumentService {
   }
 
   getPath(id: string): Observable<string[]> {
-    return this.dataService.getPath(id);
+    return this.dataService.getPath(id).pipe(
+      //tap( path => this.treeStore.setExpandedNodes(path))
+    );
   }
 
   /**
@@ -226,4 +232,10 @@ export class DocumentService {
   }
 
 
+  private handleTitle(data: IgeDocument) {
+    if (!data.title) {
+      data.title = this.profileQuery.getEntity(data._profile).getTitle(data);;
+      //data.title = this.formularService.getTitle(data._profile, data);
+    }
+  }
 }

@@ -5,6 +5,7 @@ export class UserMockService {
 
   private mockUsers: User[] = [
     {
+      id: '1',
       firstName: 'Herbert',
       lastName: 'Meier',
       login: 'hm',

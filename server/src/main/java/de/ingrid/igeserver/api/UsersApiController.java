@@ -67,8 +67,8 @@ public class UsersApiController implements UsersApi {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    public ResponseEntity<User> getUser(@ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id) {
-        User user = keycloakService.getUser(id);
+    public ResponseEntity<User> getUser(Principal principal, @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id) throws IOException {
+        User user = keycloakService.getUser(principal, id);
 
         return ResponseEntity.ok(user);
     }

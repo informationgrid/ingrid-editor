@@ -72,10 +72,4 @@ export class MenuComponent implements OnInit {
     console.log('Change catalog to: ' + catalogId);
   }
 
-  logout() {
-    // this.authService.logout();
-    this.apiService.logout().subscribe( () => {
-      window.location.reload( true );
-    })
-  }
 }

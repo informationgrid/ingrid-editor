@@ -4,6 +4,7 @@ import {BehaviourService} from './services/behavior/behaviour.service';
 import {RoleService} from './services/role/role.service';
 import {MatDialog} from '@angular/material';
 import {MenuItem, MenuService} from "./menu/menu.service";
+import {ApiService} from "./services/ApiService";
 
 @Component( {
   selector: 'ige-root',
@@ -36,6 +37,7 @@ export class AppComponent implements OnInit {
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
   constructor(private bsdialog: MatDialog, private behaviourService: BehaviourService, private modalService: ModalService,
+              private apiService: ApiService,
               private roleService: RoleService, private menuService: MenuService) {
 
     // TODO: make more error info collapsible
@@ -87,6 +89,13 @@ export class AppComponent implements OnInit {
         } );
     } );
     this.modalService.containerRef = this.dialogContainerRef;
+  }
+
+  logout() {
+    this.apiService.logout().subscribe( () => {
+      debugger;
+      window.location.reload( true );
+    })
   }
 
 }

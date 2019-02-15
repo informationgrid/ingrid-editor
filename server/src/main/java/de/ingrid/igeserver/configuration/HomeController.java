@@ -3,6 +3,7 @@ package de.ingrid.igeserver.configuration;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.view.RedirectView;
@@ -18,10 +19,10 @@ public class HomeController {
         return new RedirectView( "index.html" );
     }
 
-    @GetMapping(path = "/logout")
-    public String logout(HttpServletRequest request) throws ServletException {
+    @GetMapping(path = "/api/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) throws ServletException {
         request.logout();
-        return "/";
+        return ResponseEntity.ok("{ \"message\": \"Logged out\" }");
     }
 
     @GetMapping(value = "/swagger")

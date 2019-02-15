@@ -7,15 +7,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
-    <!--<script src="http://localhost:8080/auth/js/keycloak.js"></script>-->
-    <!--<script src="http://ige-ng.informationgrid.eu/keycloak/auth/js/keycloak.js"></script>-->
-    <!--<script src="assets/additionalBehaviours.js"></script>-->
-    <style type="text/css">
-        body, html {
-            height: 100%;
-        }
 
+    <style type="text/css">
         .app-loading {
             position: relative;
             display: flex;
@@ -25,49 +18,28 @@
             height: 100%;
         }
 
-        .app-loading h1 {
-            color: #999;
+        .lds-dual-ring {
+            display: inline-block;
+            width: 64px;
+            height: 64px;
         }
-
-        .app-loading .spinner {
-            height: 200px;
-            width: 200px;
-            animation: rotate 2s linear infinite;
-            transform-origin: center center;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            margin: auto;
+        .lds-dual-ring:after {
+            content: " ";
+            display: block;
+            width: 46px;
+            height: 46px;
+            margin: 1px;
+            border-radius: 50%;
+            border: 5px solid #444;
+            border-color: #444 transparent #444 transparent;
+            animation: lds-dual-ring 1.2s linear infinite;
         }
-
-        .app-loading .spinner .path {
-            stroke-dasharray: 1, 200;
-            stroke-dashoffset: 0;
-            animation: dash 1.5s ease-in-out infinite;
-            stroke-linecap: round;
-            stroke: #ddd;
-        }
-
-        @keyframes rotate {
+        @keyframes lds-dual-ring {
+            0% {
+                transform: rotate(0deg);
+            }
             100% {
                 transform: rotate(360deg);
-            }
-        }
-
-        @keyframes dash {
-            0% {
-                stroke-dasharray: 1, 200;
-                stroke-dashoffset: 0;
-            }
-            50% {
-                stroke-dasharray: 89, 200;
-                stroke-dashoffset: -35px;
-            }
-            100% {
-                stroke-dasharray: 89, 200;
-                stroke-dashoffset: -124px;
             }
         }
     </style>
@@ -75,10 +47,8 @@
 <body>
 <ige-root>
     <div class="app-loading">
-        <h1>IGE</h1>
-        <svg class="spinner" viewBox="25 25 50 50">
-            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
-        </svg>
+        <h1>Lade IGE-NG</h1>
+        <div class="lds-dual-ring"></div>
     </div>
 </ige-root>
 </body>

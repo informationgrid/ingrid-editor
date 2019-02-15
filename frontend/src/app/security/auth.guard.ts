@@ -1,16 +1,27 @@
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {Injectable} from '@angular/core';
 import {ModalService} from '../services/modal/modal.service';
+import {ConfigService} from "../services/config/config.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private router: Router, private modalService: ModalService) {
+  constructor(private router: Router, private modalService: ModalService, private configService: ConfigService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    const user = this.configService.getUserInfo();
+    const path = state.url;
+
+
+    if (user.assignedCatalogs.length === 0 && state.url.indexOf('/catalogs') === -1) {
+      return false;
+    }
+
+    return true;
+
     /*let url: string = state.url;
 
     // If user is not logged in we'll send them to the homepage

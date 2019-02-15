@@ -41,10 +41,9 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     return configService.load( environment.configFile )
       .then( () => configService.getCurrentUserInfo() )
       .then( userInfo => {
-        const isAdmin = userInfo.roles && userInfo.roles.includes( 'admin');
 
         // an admin role has no constraints
-        if (!isAdmin) {
+        if (!configService.isAdmin()) {
 
           // check if user has any assigned catalog
           if (!userInfo.assignedCatalogs || userInfo.assignedCatalogs.length === 0) {

@@ -14,7 +14,7 @@ declare const webpackJsonp: any;
 @Injectable({
   providedIn: 'root'
 })
-export class ProfileService {
+export class DynamicProfileService {
   private configuration: Configuration;
 
   private profiles: Profile[] = [];
@@ -28,11 +28,6 @@ export class ProfileService {
     this.configuration = configService.getConfiguration();
 
     this.initialized = new Promise((resolve, reject) => {
-
-      if (configService.getUserInfo().assignedCatalogs.length === 0) {
-        resolve();
-        return;
-      }
 
       console.log('loading dynamic bundle');
       //$script('assets/uvp-profile.umd.js', () => {
@@ -88,19 +83,7 @@ export class ProfileService {
 
           this.setTitleFields(configService);
 
-          this.profileStore.updateRoot({isInitialized: true});
-          let profilesAbstract = this.profiles.map( p => {
-            return {
-              id: p.id,
-              fields: p.fields,
-              getTitle: p.getTitle
-            }
-          });
-
-          setTimeout( () => {
-            // @ts-ignore
-            this.profileStore.add(profilesAbstract);
-          }, 1000);
+          this.profileStore.update({isInitialized: true});
           resolve(this.profiles);
         });
       }

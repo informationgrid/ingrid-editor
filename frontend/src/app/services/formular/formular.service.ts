@@ -9,6 +9,7 @@ import {ProfileQuery} from "../../store/profile/profile.query";
 import {DocumentAbstract} from "../../store/document/document.model";
 import {TreeQuery} from "../../store/tree/tree.query";
 import {TreeStore} from "../../store/tree/tree.store";
+import {IgeDocument} from "../../models/ige-document";
 
 @Injectable({
   providedIn: 'root'
@@ -79,7 +80,7 @@ export class FormularService {
     }
   }
 
-  getTitle(profile: string, doc: any) {
+  getTitle(profile: string, doc: IgeDocument) {
     if (!profile) {
       profile = this.currentProfile;
     }

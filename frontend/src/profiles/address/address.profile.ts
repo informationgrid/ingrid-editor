@@ -137,13 +137,12 @@ export class ProfileAddress implements Profile {
     })
   ];
 
-  formIsNotLoaded = true;
-
   behaviours: Behaviour[] = [
     {
       id: 'addressTaskWithWork',
       title: 'Die Aufgaben müssen das Wort "work" enthalten',
       description: '',
+      isProfileBehaviour: true,
       defaultActive: true,
       register: function (form: FormGroup, eventManager: EventManager) {
         // this behaviour should be a validator for a field!
@@ -160,15 +159,19 @@ export class ProfileAddress implements Profile {
       id: 'addressAdminArea',
       title: 'Wenn "Gesundheit", dann Text in Servicezeiten',
       description: '',
+      isProfileBehaviour: true,
       defaultActive: true,
       register: (form: FormGroup, eventManager: EventManager) => {
         // when using valueChanges, then we only must react after a document has been loaded
         // we only want to react, when the user did any action (click or chose a new item from select box or added a new value
         const self = this;
         form.get('address.adminArea').valueChanges.subscribe(value => {
-          if (self.formIsNotLoaded) {
+
+          // TODO: validations should be attached directly to the field to
+          //       avoid initialization problems
+          /*if (self.formIsNotLoaded) {
             return null;
-          }
+          }*/
           if (value && value.id === '5') {
             form.get('serviceTimes').setValue('Wir leben gesund!');
           }
@@ -184,9 +187,6 @@ export class ProfileAddress implements Profile {
       this.countrySelect.options = codelists[0];
       this.adminAreaSelect.options = codelists[1];
     }).catch(err => console.error(err)/*modalService.showError(err)*/);
-
-    storageService.beforeLoad.asObservable().subscribe(() => this.formIsNotLoaded = true);
-    storageService.afterLoadAndSet$.subscribe(() => setTimeout(() => this.formIsNotLoaded = false, 1000));
   }
 
   applyValidations(form: FormGroup) {

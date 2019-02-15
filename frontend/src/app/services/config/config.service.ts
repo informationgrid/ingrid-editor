@@ -7,7 +7,7 @@ export class Configuration {
   }
 }
 
-class UserInfo {
+export type UserInfo = {
   userId: string;
   name: string;
 
@@ -25,8 +25,11 @@ export class ConfigService {
   private userInfo: UserInfo;
   private titleFields: string[];
   promiseProfilePackageLoaded: Promise<Profile[]>;
+  private dataService: ConfigDataService;
 
-  constructor(private dataService: ConfigDataService) {}
+  constructor() {
+    this.dataService = new ConfigDataService();
+  }
 
   load(url: string): Promise<Configuration> {
     console.log( '=== ConfigService ===' );
@@ -44,11 +47,19 @@ export class ConfigService {
     return this.userInfo;
   }
 
-  getCurrentUserInfo(): Promise<any> {
+  // TODO: refactor to fetchCurrentUserInfo()
+  getCurrentUserInfo(): Promise<UserInfo> {
     return this.dataService.getCurrentUserInfo()
       .then( userInfo => {
         this.userInfo = userInfo;
         return userInfo;
+      })
+      .catch(e => {
+        debugger;
+        console.error(e);
+        return <UserInfo>{
+
+        };
       });
   }
 
@@ -67,5 +78,9 @@ export class ConfigService {
 
   setProfilePackagePromise(initialized: Promise<Profile[]>) {
     this.promiseProfilePackageLoaded = initialized;
+  }
+
+  isAdmin() {
+    return this.userInfo.roles && this.userInfo.roles.includes( 'superadmin');
   }
 }

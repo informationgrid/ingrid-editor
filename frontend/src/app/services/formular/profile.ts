@@ -1,5 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { IFieldBase } from '../../+form/controls';
+import {IgeDocument} from "../../models/ige-document";
 
 /**
  * A profile defines the formular fields for a document and its' validation rules, as well as the behaviours on user
@@ -28,10 +29,11 @@ export interface Profile {
    * @param doc
    * @returns {string}
    */
-  getTitle: (doc: any) => string;
+  getTitle: (doc: IgeDocument) => string;
 
   /**
    * The fields needed to build a title. These will be used to request the backend for the necessary fields.
+   * @deprecated
    * @returns {string[]}
    */
   getTitleFields: () => string[];

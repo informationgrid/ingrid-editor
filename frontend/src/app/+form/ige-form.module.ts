@@ -36,7 +36,6 @@ import {FormDialogsModule} from "../dialogs/form/form-dialogs.module";
 import {FormFieldsModule} from "../form-fields/form-fields.module";
 import {AngularSplitModule} from "angular-split";
 import {RouterModule} from "@angular/router";
-import {DeleteDialogComponent} from "../+behaviours/toolbar/deleteDocs/delete-dialog.component";
 
 @NgModule({
   imports: [

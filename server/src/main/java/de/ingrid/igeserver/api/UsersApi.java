@@ -64,7 +64,8 @@ public interface UsersApi {
 
     @RequestMapping(value = "/users/{id}", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<User> getUser(
-            @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id);
+            Principal principal,
+            @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id) throws IOException;
 
     @ApiOperation(value = "", notes = "", response = Void.class, tags = {"User",})
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Returns the list of users", response = Void.class)})
