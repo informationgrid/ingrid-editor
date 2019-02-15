@@ -1,7 +1,7 @@
 stages:
+  - prepare
   - build
   - package
-  - prepare
   - deploy
   - stop
 
@@ -13,6 +13,13 @@ variables:
 cache:
   paths:
     - .m2/repository
+
+prepare:
+  stage: prepare
+  image: node
+  script:
+    - npm install -g yarn
+    
 
 build_jar:
   stage: build
