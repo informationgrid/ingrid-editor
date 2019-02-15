@@ -24,7 +24,7 @@
             <id>exec-yarn-install</id>
             <phase>prepare-package</phase>
             <configuration>
-              <executable>yarn.cmd</executable>
+              <executable>yarn</executable>
               <arguments>
                 <argument>--network-timeout 120000</argument>
                 <argument>--pure-lockfile</argument>
