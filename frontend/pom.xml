@@ -39,7 +39,7 @@
             <id>exec-ngcli-build</id>
             <phase>prepare-package</phase>
             <configuration>
-              <executable>yarn.cmd</executable>
+              <executable>yarn</executable>
               <arguments>
                 <argument>prod</argument>
               </arguments>
