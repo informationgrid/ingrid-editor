@@ -1,16 +1,23 @@
 package de.ingrid.igeserver.db;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jackson.JsonLoader;
 import com.orientechnologies.orient.core.db.*;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.record.impl.ODocumentEntry;
 import de.ingrid.igeserver.api.ApiException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.keycloak.util.JsonSerialization;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,12 +48,12 @@ public class OrientDBDatabaseTest {
 
     @Before
     public void cleanup() throws ApiException {
-        try (ODatabaseSession session = dbService.acquire("test")) {
+        /*try (ODatabaseSession session = dbService.acquire("test")) {
             for (ODocument person: session.browseClass(DBApi.DBClass.User.name())) {
                 session.delete(person);
             }
 //            session.
-        }
+        }*/
     }
 
     @Test
@@ -170,6 +177,126 @@ public class OrientDBDatabaseTest {
             assertEquals("my document", ((ODocument)((List)docs.get(1).get("addresses")).get(0)).field("title"));
         }
         throw new Exception("Not complete testcase. Links are not maps");
+    }
+
+
+    @Test
+    public void linktest() throws IOException {
+        ODatabaseSession session = db.open("test", "admin", "admin");
+        OClass addressClass = session.createClass("Address");
+        OClass documentClass = session.createClass("Document");
+        documentClass.createProperty("address", OType.LINK, addressClass);
+
+
+        ODocument address = new ODocument("Address");
+        address.field("city", "Frankfurt");
+        address.field("country", "Germany");
+        ODocument dbAddress1 = address.save();
+        ODocument address2 = new ODocument("Address");
+        address2.field("city", "Paris");
+        address2.field("country", "France");
+        ODocument dbAddress2 = address2.save();
+
+        ODocument doc = new ODocument("Document");
+        doc.field("title", "Name des Dokuments");
+        doc.field("description", "Beschreibung");
+        doc.field("address", dbAddress1.getIdentity());
+        doc.save();
+
+        session.commit();
+
+        ODocument dbDoc = session.browseClass("Document").next();
+
+        assertEquals("{\"@rid\":\"#41:0\",\"address\":{\"@rid\":\"#33:0\",\"country\":\"Germany\",\"city\":\"Frankfurt\"},\"description\":\"Beschreibung\",\"title\":\"Name des Dokuments\"}", dbDoc.toJSON("rid,fetchPlan:*:-1"));
+
+//        dbDoc.field("address", dbAddress2.getIdentity());
+        dbDoc.field("address", "34:0");
+//        HashMap<Object, Object> map = new HashMap<>();
+//        map.put("@rid", "#34:0");
+//        dbDoc.field("address", map);
+
+        assertEquals("{\"@rid\":\"#41:0\",\"address\":{\"@rid\":\"#34:0\",\"country\":\"France\",\"city\":\"Paris\"},\"description\":\"Beschreibung\",\"title\":\"Name des Dokuments\"}", dbDoc.toJSON("rid,fetchPlan:*:-1"));
+
+
+        String inputJson = "{\"@rid\":\"41:0\",\"address\":{\"@rid\":\"#34:0\"},\"description\":\"Beschreibung\",\"title\":\"Neuer Name des Dokuments\"}";
+
+        ODocument docFromJson = new ODocument("Document");
+        docFromJson.fromJSON(inputJson);
+        assertEquals("{\"@rid\":\"#41:0\",\"address\":{\"@rid\":\"#34:0\",\"country\":\"France\",\"city\":\"Paris\"},\"description\":\"Beschreibung\",\"title\":\"Neuer Name des Dokuments\"}", docFromJson.toJSON("rid,fetchPlan:*:-1"));
+
+
+    }
+
+    @Test
+    public void linkTestReal() throws IOException {
+
+        // definition created from document type profile
+        HashMap<String, Object> typeMapper = new HashMap<>();
+        HashMap<String, Object> geoServiceTypeInfo = new HashMap<>();
+        geoServiceTypeInfo.put("dbClass", "DOC_GEOSERVICE");
+        geoServiceTypeInfo.put("links", new String[] {"address"});
+        typeMapper.put("geoservice", geoServiceTypeInfo);
+        HashMap<String, Object> addressTypeInfo = new HashMap<>();
+        addressTypeInfo.put("dbClass", "Address");
+        typeMapper.put("address", addressTypeInfo);
+
+        // creation of neccessary db classes with properties (links)
+        ODatabaseSession session = db.open("test", "admin", "admin");
+
+        for (String docType : typeMapper.keySet()) {
+            HashMap profile = ((HashMap)typeMapper.get(docType));
+            OClass documentClass = session.createClass((String) profile.get("dbClass"));
+            String[] links = (String[]) profile.get("links");
+            if (links != null) {
+                for (String link : links) {
+                    documentClass.createProperty(link, OType.LINK);
+                }
+            }
+        }
+
+        // set initial db data
+        ODocument address = new ODocument("Address");
+        address.field("city", "Frankfurt");
+        address.field("country", "Germany");
+        ODocument dbAddress1 = address.save();
+
+        ODocument address2 = new ODocument("Address");
+        address2.field("city", "Paris");
+        address2.field("country", "France");
+        ODocument dbAddress2 = address2.save();
+
+        ODocument doc = new ODocument("DOC_GEOSERVICE");
+        doc.field("title", "Name des Dokuments");
+        doc.field("description", "Beschreibung");
+        doc.field("address", dbAddress1.getIdentity());
+        doc.save();
+
+        // incoming test json from frontend
+        //language=JSON
+        String inputJson = "{\"@rid\":\"41:0\",\"_type\":\"geoservice\",\"address\":{\"@rid\":\"#34:0\", \"city\":\"Paris\",\"country\":\"New France\"},\"description\":\"Beschreibung\",\"title\":\"Neuer Name des Dokuments\"}";
+
+        ObjectNode node = (ObjectNode) new ObjectMapper().readTree(inputJson);
+
+        String profile = node.get("_type").asText();
+        HashMap<String, Object> profileInfo = (HashMap<String, Object>) typeMapper.get(profile);
+
+
+
+        // transform incoming document to replace nested documents with reference ID
+        String[] links = (String[]) profileInfo.get("links");
+        for (String link : links) {
+            // set link reference into field directly
+            node.put(link, node.get(link).get("@rid").textValue());
+        }
+
+        ODocument docFromJson = new ODocument((String) profileInfo.get("dbClass"));
+        docFromJson.fromJSON(node.toString());
+
+        assertEquals("{\"@rid\":\"#41:0\",\"address\":{\"@rid\":\"#34:0\",\"country\":\"France\",\"city\":\"Paris\"},\"_type\":\"geoservice\",\"description\":\"Beschreibung\",\"title\":\"Neuer Name des Dokuments\"}", docFromJson.toJSON("rid,fetchPlan:*:-1"));
+
+        assertEquals(2, session.countClass("Address"));
+        assertEquals(1, session.countClass("DOC_GEOSERVICE"));
+
     }
 
     private void addTestData() throws ApiException {
