@@ -14,6 +14,7 @@ import org.keycloak.util.JsonSerialization;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.naming.NoPermissionException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
@@ -37,7 +38,7 @@ public class KeycloakService implements UserManagementService {
         private static final long serialVersionUID = -5810388584187302144L;
     }
 
-    public List<User> getUsers(Principal principal) throws IOException {
+    public List<User> getUsers(Principal principal) throws IOException, NoPermissionException {
 
         try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
             HttpGet get = new HttpGet(keycloakUrl + "/admin/realms/" + keycloakRealm + "/users");
@@ -46,9 +47,14 @@ public class KeycloakService implements UserManagementService {
 
             HttpResponse response = client.execute(get);
 
-            if (response.getStatusLine().getStatusCode() != 200) {
-                log.error("Response was not ok! => " + response.getStatusLine().getStatusCode());
-                return null;
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 200) {
+                log.error("Response was not ok! => " + statusCode);
+                if (statusCode == 403) {
+                    throw new NoPermissionException("You have no permission to get users from keycloak: " + response.getStatusLine().getReasonPhrase());
+                } else {
+                    throw new RuntimeException("Error getting users from keycloak: " + response.getStatusLine().getReasonPhrase());
+                }
             }
 
             HttpEntity entity = response.getEntity();

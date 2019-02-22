@@ -286,6 +286,9 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public ODatabaseSession acquire(String dbName) {
+        if (!server.existsDatabase(dbName)) {
+            throw new RuntimeException("Database does not exist: " + dbName);
+        }
         return server.openDatabase(dbName);
     }
 

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.naming.NoPermissionException;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
@@ -73,7 +74,7 @@ public class UsersApiController implements UsersApi {
         return ResponseEntity.ok(user);
     }
 
-    public ResponseEntity<List<User>> list(Principal principal, AccessTokenResponse res) throws IOException {
+    public ResponseEntity<List<User>> list(Principal principal, AccessTokenResponse res) throws IOException, NoPermissionException {
 
         if (principal == null && !developmentMode) {
             log.warn("No principal found in request!");
