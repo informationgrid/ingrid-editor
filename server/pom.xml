@@ -96,6 +96,7 @@
         <configuration>
           <repository>docker-registry.wemove.com/ige-ng</repository>
           <tag>${project.version}</tag>
+          <contextDirectory>.</contextDirectory>
           <buildArgs>
             <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
           </buildArgs>

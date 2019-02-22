@@ -56,7 +56,13 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
-        http.authorizeRequests()
+
+        http
+                // unfortunately we have to disable CSRF, otherwise each POST-request will result in a 403-error
+                // because of "Invalid CSRF token found for http://ige-ng.informationgrid.eu/api/..."
+                // FIXME: Find out why CSRF is not working
+                .csrf().disable()
+                .authorizeRequests()
                 //.antMatchers("/persons*").hasRole("user") // only user with role user are allowed to access
                 .anyRequest().authenticated();
     }

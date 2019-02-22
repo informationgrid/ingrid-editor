@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.configuration;
 
+import io.swagger.models.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -32,13 +33,21 @@ public class SwaggerDocumentationConfig extends WebMvcConfigurerAdapter {
             .licenseUrl("http://unlicense.org")
             .termsOfServiceUrl("")
             .version("1.0.0")
-            .contact(new Contact("","", ""))
+            .contact(new Contact("André Wallat","https://www.wemove.com", "andre.wallat@wemove.com"))
             .build();
     }
     
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**");
+        /*registry.addMapping("/api/**")
+                .allowedMethods(
+                        HttpMethod.GET.toString(),
+                        HttpMethod.POST.toString(),
+                        HttpMethod.PUT.toString(),
+                        HttpMethod.DELETE.toString(),
+                        HttpMethod.OPTIONS.toString())
+                .allowedOrigins("*");*/
     }
 
     @Bean
