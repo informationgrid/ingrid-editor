@@ -8,9 +8,9 @@
                       (activate)="handleLoad($event)"
                       (selected)="handleSelection($event)"></ige-tree>
         </div>
-        <div class="tab-pane hide" [class.active]="sideTab === 'search'">
+        <!--<div class="tab-pane hide" [class.active]="sideTab === 'search'">
             <browser (onSelected)="load($event.id)"></browser>
-        </div>
+        </div>-->
         <div class="tab-pane hide" [class.active]="sideTab === 'wizards'">
             <!--<a [routerLink]="['/form/10']">Zurück</a>-->
             <router-outlet name="wizard"></router-outlet>

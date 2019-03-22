@@ -32,7 +32,7 @@ export class DocumentDataService {
   }
 
   getChildren(parentId: string): Observable<any[]> {
-    const fields = 'fields=_id,_profile,_state,_hasChildren,' + this.titleFields;
+    const fields = 'fields=_id,_profile,_state,_hasChildren,title'; // + this.titleFields;
     const idQuery = parentId === null ? '' : '&parentId=' + parentId;
     // headers.append('Content-Type', 'text/plain');
 

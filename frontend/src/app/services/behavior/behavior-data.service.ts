@@ -1,4 +1,4 @@
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {ConfigService, Configuration} from "../config/config.service";
 import {HttpClient} from "@angular/common/http";
 import {Behaviour} from "../../+behaviours/behaviours";
@@ -15,8 +15,8 @@ export class BehaviorDataService {
     this.configuration = configService.getConfiguration();
   }
 
-  loadStoredBehaviours(): Observable<any> {
-    return this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' );
+  loadStoredBehaviours(): Observable<any[]> {
+    return of([]);//this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' );
   }
 
   saveBehavior(behavior: Behaviour|any): Observable<any> {

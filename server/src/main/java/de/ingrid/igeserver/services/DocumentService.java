@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
+
 @Service
 public class DocumentService extends MapperService {
 
@@ -24,8 +26,8 @@ public class DocumentService extends MapperService {
     @Autowired
     private DBUtils dbUtils;
 
-    public Map mapDocumentFromDatabase(Map dbDoc) {
-        return mapDocumentFromDatabase(dbDoc, null);
+    public Map prepareDocumentFromDB(Map result, Object wrapper) {
+        return prepareDocumentFromDB(result, wrapper, null);
     }
 
     public JsonNode updateParent(String dbDoc, String parent) throws Exception {
@@ -42,19 +44,10 @@ public class DocumentService extends MapperService {
      * @param fields contains those fields that we want to request, if null then all fields are returned
      * @return a HashMap transformed for frontend usage
      */
-    public Map mapDocumentFromDatabase(Map map, String[] fields) {
+    public Map prepareDocumentFromDB(Map map, Object wrapperMap, String[] fields) {
         // JsonNode map = getJsonMap( dbDoc );
 
-        Map<String, Object> currentDocRead = (Map) map.get("draft");
-        if (currentDocRead == null) {
-            currentDocRead = (Map) map.get("published");
-
-            if (currentDocRead == null) {
-                log.warn("A document does not have draft or published version: ", map);
-                return null;
-            }
-        }
-        Map<String, Object> currentDoc = currentDocRead;
+        Map<String, Object> currentDoc = map;
 
         // if fields are defined, then filter only those from the document
         if (fields != null) {
@@ -63,13 +56,16 @@ public class DocumentService extends MapperService {
 
         // apply specific fields to document (id, profile, state, ...)
         // make sure the IDs are of type String, which is more universal
-        currentDoc.put(FIELD_ID, String.valueOf(map.get(FIELD_ID)));
-        currentDoc.put(PARENT_ID, map.get(PARENT_ID));
-        currentDoc.put(FIELD_PROFILE, map.get(FIELD_PROFILE));
-        currentDoc.put(FIELD_STATE, determineState(map));
-        currentDoc.put(FIELD_HAS_CHILDREN, map.get(FIELD_HAS_CHILDREN));
-        currentDoc.put(FIELD_CREATED, map.get(FIELD_CREATED));
-        currentDoc.put(FIELD_MODIFIED, map.get(FIELD_MODIFIED));
+        //currentDoc.put(FIELD_ID, String.valueOf(map.get(FIELD_ID)));
+//        currentDoc.put(PARENT_ID, map.get(PARENT_ID));
+//        currentDoc.put(FIELD_PROFILE, map.get("@class"));
+        currentDoc.put(FIELD_STATE, determineState(wrapperMap));
+//        currentDoc.put(FIELD_HAS_CHILDREN, map.get(FIELD_HAS_CHILDREN));
+        //currentDoc.put(FIELD_CREATED, map.get(FIELD_CREATED));
+        //currentDoc.put(FIELD_MODIFIED, map.get(FIELD_MODIFIED));
+
+        currentDoc.remove("@class");
+        currentDoc.remove("@rid");
 
         return currentDoc;
     }
@@ -121,7 +117,7 @@ public class DocumentService extends MapperService {
         // get database id from doc id  or just query for correct document then we also get the rid!
         Map<String, String> query = new HashMap<>();
         query.put("_id", id);
-        List<Map> docInDatabase = dbService.findAll( DBApi.DBClass.Documents, query, true);
+        List<String> docInDatabase = dbService.findAll( DOCUMENT_WRAPPER, query, true);
 
         Map<String, Object> currentDoc;
 
@@ -132,7 +128,12 @@ public class DocumentService extends MapperService {
             currentDoc.put( FIELD_CREATED, format.format( new Date() ) );
 
         } else if (docInDatabase.size() == 1){
-            currentDoc = docInDatabase.get(0);
+            try {
+                currentDoc = getMapFromObject(docInDatabase.get(0));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         } else {
             throw new ApiException("Document to be updated exists multiple times: " + id);
         }
@@ -157,9 +158,16 @@ public class DocumentService extends MapperService {
         }
     }
 
-    private String determineState(Map map) {
-        Map draft = (Map) map.get("draft");
-        Map published = (Map) map.get("published");
+    private String determineState(Object map) {
+        Object draft = null;
+        Object published = null;
+        if (map instanceof Map) {
+            draft = ((Map) map).get(FIELD_DRAFT);
+            published = ((Map) map).get(FIELD_PUBLISHED);
+        } else if (map instanceof JsonNode) {
+            draft = ((JsonNode) map).get(FIELD_DRAFT);
+            published = ((JsonNode) map).get(FIELD_PUBLISHED);
+        }
         if (published != null && draft != null) {
             return "PW";
         } else if (published == null) {
@@ -172,7 +180,7 @@ public class DocumentService extends MapperService {
     public void addReferencedDocsTo(String[] refDocs, Map mapDoc) {
         for (String ref: refDocs) {
             try {
-                // TODO: mapDoc.set("publisher", mapDocumentFromDatabase(ref));
+                // TODO: mapDoc.set("publisher", prepareDocumentFromDB(ref));
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -184,8 +192,22 @@ public class DocumentService extends MapperService {
     public Map getByDocId(String id) {
 
         Map<String, String> query = new HashMap<>();
-        query.put("_id", id);
-        List<Map> docs = this.dbService.findAll(DBApi.DBClass.Documents, query, true);
-        return docs.size() > 0 ? docs.get(0) : null;
+        query.put(FIELD_ID, id);
+        List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, true);
+        try {
+            return docs.size() > 0 ? getMapFromObject(docs.get(0)) : null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Map getDocumentWrapper() {
+        Map<String, Object> docWrapper = new HashMap<>();
+        //docWrapper.put(FIELD_ID, UUID.randomUUID());
+        docWrapper.put(FIELD_DRAFT, null);
+        docWrapper.put(FIELD_PUBLISHED, null);
+        docWrapper.put(FIELD_ARCHIVE, new ArrayList<>());
+        return docWrapper;
     }
 }

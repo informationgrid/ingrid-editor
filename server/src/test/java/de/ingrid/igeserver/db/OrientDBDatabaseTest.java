@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static de.ingrid.igeserver.services.MapperService.getJsonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -41,7 +42,7 @@ public class OrientDBDatabaseTest {
         ODatabasePool pool = new ODatabasePool(db, "test", "admin", "admin");
 
         try (ODatabaseSession session = pool.acquire()) {
-            session.newInstance(DBApi.DBClass.User.name());
+            session.newInstance("User");
         }
         pool.close();
     }
@@ -49,7 +50,7 @@ public class OrientDBDatabaseTest {
     @Before
     public void cleanup() throws ApiException {
         /*try (ODatabaseSession session = dbService.acquire("test")) {
-            for (ODocument person: session.browseClass(DBApi.DBClass.User.name())) {
+            for (ODocument person: session.browseClass("User.name())) {
                 session.delete(person);
             }
 //            session.
@@ -62,14 +63,14 @@ public class OrientDBDatabaseTest {
         try (ODatabaseSession session = dbService.acquire("test")) {
             session.begin();
 
-            OElement person1 = session.newElement(DBApi.DBClass.User.name());
+            OElement person1 = session.newElement("User");
             person1.setProperty("name", "John");
             person1.setProperty("age", "35");
             session.save(person1);
 
             // new person is not yet visible outside of session
             ODatabaseSession session2 = dbService.acquire("test");
-            assertEquals(0, session2.countClass(DBApi.DBClass.User.name()));
+            assertEquals(0, session2.countClass("User"));
 
             List<Map> persons = dbService.findAll(DBApi.DBClass.User);
             assertEquals(0, persons.size());
@@ -111,7 +112,7 @@ public class OrientDBDatabaseTest {
 
             Map<String, String> query = new HashMap<>();
             query.put("age", "48");
-            List<Map> persons = dbService.findAll(DBApi.DBClass.User, query, false);
+            List<String> persons = dbService.findAll("User", query, false);
 
             assertEquals(1, persons.size());
 
@@ -119,7 +120,7 @@ public class OrientDBDatabaseTest {
     }
 
     @Test
-    public void updateDocument() throws ApiException {
+    public void updateDocument() throws Exception {
         addTestData();
 
         ORecordId id;
@@ -127,18 +128,19 @@ public class OrientDBDatabaseTest {
         query.put("age", "48");
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            List<Map> docToUpdate = dbService.findAll(DBApi.DBClass.User, query, false);
-            id = (ORecordId)docToUpdate.get(0).get("@rid");
+            List<String> docToUpdate = dbService.findAll("User", query, false);
+            id = (ORecordId)((Map)getJsonMap(docToUpdate.get(0))).get("@rid");
 
             Map<String, Object> data = new HashMap<>();
             data.put("name", "Johann");
             data.put("@rid", id);
-            Map save = dbService.save(DBApi.DBClass.User, null, data);
+            Map save = dbService.save("User", null, data);
             assertNotNull(save);
         }
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            Map updatedDoc = dbService.findAll(DBApi.DBClass.User, query, false).get(0);
+            String updatedDocJson = dbService.findAll("User", query, false).get(0);
+            Map updatedDoc = (Map) getJsonMap(updatedDocJson);
 
             assertEquals("Johann", updatedDoc.get("name") );
             assertEquals("48", updatedDoc.get("age") );
@@ -159,7 +161,7 @@ public class OrientDBDatabaseTest {
             // add first document
             Map<String, Object> doc1 = new HashMap<>();
             doc1.put("title", "my document");
-            Map doc1Result = dbService.save(DBApi.DBClass.Documents, null, doc1);
+            Map doc1Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc1);
 
             // add second document with reference to doc1
             Map<String, Object> doc2 = new HashMap<>();
@@ -167,7 +169,7 @@ public class OrientDBDatabaseTest {
             List<ORecordId> addressReferences = new ArrayList<>();
             addressReferences.add((ORecordId) doc1Result.get("@rid"));
             doc2.put("addresses", addressReferences);
-            Map doc2Result = dbService.save(DBApi.DBClass.Documents, null, doc2);
+            Map doc2Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc2);
 
         }
 
@@ -179,18 +181,27 @@ public class OrientDBDatabaseTest {
         throw new Exception("Not complete testcase. Links are not maps");
     }
 
+    @Test
+    public void updateDocument1() throws Exception {
+//        addTestData();
+
+        try (ODatabaseSession session = dbService.acquire("test")) {
+
+        }
+    }
+
     private void addTestData() throws ApiException {
         try (ODatabaseSession session = dbService.acquire("test")) {
 
             Map<String, Object> person1Map = new HashMap<>();
             person1Map.put("name", "John");
             person1Map.put("age", "35");
-            dbService.save(DBApi.DBClass.User, null, person1Map);
+            dbService.save("User", null, person1Map);
 
             Map<String, Object> person2Map = new HashMap<>();
             person2Map.put("name", "Mike");
             person2Map.put("age", "48");
-            dbService.save(DBApi.DBClass.User, null, person2Map);
+            dbService.save("User", null, person2Map);
 
         }
     }

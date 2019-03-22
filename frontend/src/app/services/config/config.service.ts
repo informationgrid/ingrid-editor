@@ -81,6 +81,6 @@ export class ConfigService {
   }
 
   isAdmin() {
-    return this.userInfo.roles && this.userInfo.roles.includes( 'superadmin');
+    return this.userInfo.roles && this.userInfo.roles.includes( 'admin');
   }
 }

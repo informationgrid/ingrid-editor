@@ -155,6 +155,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // if (data._profile === 'FOLDER' && !this.editMode) return;
 
         const profile = data._profile;
+
+        if (profile === null) {
+          console.error("This document does not have any profile");
+          return;
+        }
+
         const needsProfileSwitch = this.formularService.currentProfile !== profile;
         this.data = data;
 
@@ -268,7 +274,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     } );
     dlg.afterClosed().subscribe( result => {
-      this.prepareNewDoc(result.choice, result.addBelowDoc);
+      if (result) {
+        this.prepareNewDoc(result.choice, result.addBelowDoc);
+      }
     })
   }
 

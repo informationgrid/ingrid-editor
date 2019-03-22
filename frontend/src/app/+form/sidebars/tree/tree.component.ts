@@ -87,6 +87,11 @@ export class MetadataTreeComponent implements OnInit {
     // the data in dataSource only contains root nodes!!!
     // let docs = this.dataSource.data.filter( n => n._id === node._id);
     this.activate.next([node._id]);
+
+    if (node.hasChildren) {
+      this.toggleNode(node);
+      this.treeControl.expand(node);
+    }
   }
 
   toggleNode(node: TreeNode) {
