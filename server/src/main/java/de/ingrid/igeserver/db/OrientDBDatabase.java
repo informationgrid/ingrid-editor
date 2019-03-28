@@ -5,7 +5,6 @@ import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.ODatabaseType;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
-import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
 import com.orientechnologies.orient.core.record.ORecordAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -137,7 +136,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public List<String> findAll(String type, Map<String, String> query, boolean exactQuery) {
+    public List<String> findAll(String type, Map<String, String> query, boolean exactQuery, boolean resolveReferences) {
         String queryString;
         if (query == null || query.isEmpty()) {
             queryString = "SELECT * FROM " + type;
@@ -160,12 +159,12 @@ public class OrientDBDatabase implements DBApi {
 
 
         OResultSet docs = getDBFromThread().query(queryString);
-        return mapODocumentsToJSON(docs);
+        return mapODocumentsToJSON(docs, resolveReferences);
     }
 
     @Override
     public Object getRecordId(String dbClass, Map<String, String> query) throws ApiException {
-        List<String> behaviorFromDB = this.findAll(dbClass, query, true);
+        List<String> behaviorFromDB = this.findAll(dbClass, query, true, false);
 
         if (behaviorFromDB.size() == 1) {
             return null; //behaviorFromDB.get(0).get("@rid");
@@ -198,6 +197,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
+    @Deprecated
     public Map save(String type, String dbDocId, Map<String, Object> data) {
         ODocument docToSave;
 //        ORecordId recId = ((ORecordId) data.get("@rid"));
@@ -244,8 +244,7 @@ public class OrientDBDatabase implements DBApi {
      * @return
      */
     @Override
-    @Deprecated
-    public Map save(String type, String id, Object data) {
+    public Map save(String type, String id, String data) {
         Optional<OResult> doc = getById(type, id);
         ODocument docToSave;
 
@@ -254,6 +253,8 @@ public class OrientDBDatabase implements DBApi {
         docToSave = doc
                 .map(oResult -> (ODocument) oResult.getRecord().get())
                 .orElseGet(() -> new ODocument(type));
+
+        docToSave.fromJSON(data);
 
         docToSave.save();
         return docToSave.toMap();
@@ -341,11 +342,15 @@ public class OrientDBDatabase implements DBApi {
         return list;
     }
 
-    private List<String> mapODocumentsToJSON(OResultSet docs) {
+    private List<String> mapODocumentsToJSON(OResultSet docs, boolean resolveReferences) {
         List<String> list = new ArrayList<>();
         while (docs.hasNext()) {
             ODocument oDoc = (ODocument) docs.next().getElement().get();
-            list.add(oDoc.toJSON("rid,class,fetchPlan:*:-1"));
+            if (resolveReferences) {
+                list.add(oDoc.toJSON("rid,class,fetchPlan:*:-1"));
+            } else {
+                list.add(oDoc.toJSON("rid,class"));
+            }
         }
 
         return list;

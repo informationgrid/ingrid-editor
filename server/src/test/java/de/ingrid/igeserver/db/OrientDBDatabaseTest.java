@@ -1,23 +1,16 @@
 package de.ingrid.igeserver.db;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.JsonLoader;
 import com.orientechnologies.orient.core.db.*;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.record.impl.ODocumentEntry;
 import de.ingrid.igeserver.api.ApiException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.keycloak.util.JsonSerialization;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -112,7 +105,7 @@ public class OrientDBDatabaseTest {
 
             Map<String, String> query = new HashMap<>();
             query.put("age", "48");
-            List<String> persons = dbService.findAll("User", query, false);
+            List<String> persons = dbService.findAll("User", query, false, false);
 
             assertEquals(1, persons.size());
 
@@ -128,7 +121,7 @@ public class OrientDBDatabaseTest {
         query.put("age", "48");
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            List<String> docToUpdate = dbService.findAll("User", query, false);
+            List<String> docToUpdate = dbService.findAll("User", query, false, false);
             id = (ORecordId)((Map)getJsonMap(docToUpdate.get(0))).get("@rid");
 
             Map<String, Object> data = new HashMap<>();
@@ -139,7 +132,7 @@ public class OrientDBDatabaseTest {
         }
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            String updatedDocJson = dbService.findAll("User", query, false).get(0);
+            String updatedDocJson = dbService.findAll("User", query, false, false).get(0);
             Map updatedDoc = (Map) getJsonMap(updatedDocJson);
 
             assertEquals("Johann", updatedDoc.get("name") );

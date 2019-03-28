@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.db.DBApi;
@@ -117,7 +118,7 @@ public class DocumentService extends MapperService {
         // get database id from doc id  or just query for correct document then we also get the rid!
         Map<String, String> query = new HashMap<>();
         query.put("_id", id);
-        List<String> docInDatabase = dbService.findAll( DOCUMENT_WRAPPER, query, true);
+        List<String> docInDatabase = dbService.findAll( DOCUMENT_WRAPPER, query, true, false);
 
         Map<String, Object> currentDoc;
 
@@ -158,22 +159,22 @@ public class DocumentService extends MapperService {
         }
     }
 
-    private String determineState(Object map) {
-        Object draft = null;
-        Object published = null;
+    public String determineState(Object map) {
+        boolean draft = false;
+        boolean published = false;
         if (map instanceof Map) {
-            draft = ((Map) map).get(FIELD_DRAFT);
-            published = ((Map) map).get(FIELD_PUBLISHED);
+            draft = ((Map) map).get(FIELD_DRAFT) != null;
+            published = ((Map) map).get(FIELD_PUBLISHED) != null;
         } else if (map instanceof JsonNode) {
-            draft = ((JsonNode) map).get(FIELD_DRAFT);
-            published = ((JsonNode) map).get(FIELD_PUBLISHED);
+            draft = !((JsonNode) map).get(FIELD_DRAFT).isNull();
+            published = !((JsonNode) map).get(FIELD_PUBLISHED).isNull();
         }
-        if (published != null && draft != null) {
+        if (published && draft) {
             return "PW";
-        } else if (published == null) {
-            return "W";
-        } else {
+        } else if (published) {
             return "P";
+        } else {
+            return "W";
         }
     }
 
@@ -189,25 +190,25 @@ public class DocumentService extends MapperService {
 
     }
 
-    public Map getByDocId(String id) {
+    public JsonNode getByDocId(String id) {
 
         Map<String, String> query = new HashMap<>();
         query.put(FIELD_ID, id);
-        List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, true);
+        List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, true, false);
         try {
-            return docs.size() > 0 ? getMapFromObject(docs.get(0)) : null;
+            return docs.size() > 0 ? getJsonMap(docs.get(0)) : null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public Map getDocumentWrapper() {
-        Map<String, Object> docWrapper = new HashMap<>();
+    public ObjectNode getDocumentWrapper() {
+        ObjectNode docWrapper = new ObjectMapper().createObjectNode();
         //docWrapper.put(FIELD_ID, UUID.randomUUID());
-        docWrapper.put(FIELD_DRAFT, null);
-        docWrapper.put(FIELD_PUBLISHED, null);
-        docWrapper.put(FIELD_ARCHIVE, new ArrayList<>());
+        docWrapper.put(FIELD_DRAFT, (String)null);
+        docWrapper.put(FIELD_PUBLISHED, (String)null);
+        docWrapper.putArray(FIELD_ARCHIVE);
         return docWrapper;
     }
 }

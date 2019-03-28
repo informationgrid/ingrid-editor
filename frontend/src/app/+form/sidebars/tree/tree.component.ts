@@ -52,7 +52,7 @@ export class MetadataTreeComponent implements OnInit {
     this.data.subscribe( docs => {
       // only get root nodes, the children will be received through the getChildren function
       // calling treeQuery
-      this.dataSource.data = docs.filter( doc => doc._parent === null);
+      this.dataSource.data = docs.filter( doc => !doc._parent);
       this.isLoading = null;
     });
 

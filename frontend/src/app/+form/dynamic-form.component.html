@@ -91,6 +91,11 @@
 
             <form *ngIf="form" [formGroup]="form" style="height: 100%;flex-direction: column;display: flex;">
 
+                <!-- TODO: put default form inputs into another component -->
+                <input id="_parent" formControlName="_parent" type="hidden">
+                <input id="_id" formControlName="_id" type="hidden">
+                <input id="_profile" formControlName="_profile" type="hidden">
+
                 <!-- form info bar -->
                 <ige-form-info [doc]="currentDocument$ | async"></ige-form-info>
 

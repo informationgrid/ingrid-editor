@@ -37,6 +37,7 @@ public class MapperService {
         return mapper.convertValue(json, Map.class);
     }
 
+    @Deprecated
     public static Map<String, Object> getMapFromObject(Object object) {
         ObjectMapper mapper = new ObjectMapper();
         // return mapper.valueToTree(object);

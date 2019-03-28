@@ -99,7 +99,7 @@ public class DatasetsApiController implements DatasetsApi {
 
 
             //Map mapDocument = new HashMap(); //this.documentService.mapDocumentToDatabase(data, publish, userId);
-            Map dataJson = getMapFromObject(data);
+            ObjectNode dataJson = (ObjectNode) getJsonMap(data);
 
             // add generated id to document (_id)
             // this one is different from the internal database id (@rid)
@@ -111,33 +111,37 @@ public class DatasetsApiController implements DatasetsApi {
             dataJson.put(FIELD_HAS_CHILDREN, false);
 
             // get document type from document
-            String documentType = (String) dataJson.get(FIELD_PROFILE);
+            String documentType = dataJson.get(FIELD_PROFILE).asText();
 
             // get
 
             // db action
             // String jsonMapped = DBUtils.toJsonString(mapDocument);
 //            Map result = this.dbService.save(documentType, null, mapDocument);
-            Map result = this.dbService.save(documentType, null, dataJson);
+            Map result = this.dbService.save(documentType, null, dataJson.toString());
 
 
-            String parentId = (String) dataJson.get(PARENT_ID);
+            String parentId = dataJson.get(PARENT_ID).textValue();
 
             // create DocumentWrapper
-            Map documentWrapper = this.documentService.getDocumentWrapper();
-            documentWrapper.put(FIELD_ID, uuid);
-            documentWrapper.put(FIELD_DRAFT, result.get(DB_ID));
+            ObjectNode documentWrapper = this.documentService.getDocumentWrapper();
+            documentWrapper.put(FIELD_ID, uuid.toString());
+            documentWrapper.put(FIELD_DRAFT, result.get(DB_ID).toString());
             documentWrapper.put(FIELD_PARENT, parentId);
 
-            Map resultWrapper = this.dbService.save(DOCUMENT_WRAPPER, null, documentWrapper);
+            Map resultWrapper = this.dbService.save(DOCUMENT_WRAPPER, null, documentWrapper.toString());
 
             // update parent that it has children if needed
             if (parentId != null) {
-                Map parentDoc = this.documentService.getByDocId(parentId);
-                Map parentDocVersion = (Map) this.getLatestDocument(parentDoc);
-                if (!(boolean)parentDocVersion.get(FIELD_HAS_CHILDREN)) {
+                JsonNode parentDoc = this.documentService.getByDocId(parentId);
+                ObjectNode parentDocVersion = (ObjectNode) this.getLatestDocument(parentDoc);
+                if (!parentDocVersion.get(FIELD_HAS_CHILDREN).asBoolean()) {
                     parentDocVersion.put(FIELD_HAS_CHILDREN, true);
-                    this.dbService.save((String) parentDocVersion.get(FIELD_PROFILE), (String) parentDocVersion.get(DB_ID), parentDocVersion);
+                    this.dbService.save(
+                            parentDocVersion.get(FIELD_PROFILE).asText(),
+                            parentDocVersion.get(DB_ID).asText(),
+                            parentDocVersion.toString()
+                    );
                 }
             }
 
@@ -165,10 +169,10 @@ public class DatasetsApiController implements DatasetsApi {
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
-            Map mapDocument = getMapFromObject(data);
-            mapDocument.put(FIELD_MODIFIED, new Date());
+            ObjectNode mapDocument = (ObjectNode) getJsonMap(data);
+            mapDocument.put(FIELD_MODIFIED, new Date().toString());
 
-            String docType = (String) mapDocument.get(FIELD_PROFILE);
+            String docType = mapDocument.get(FIELD_PROFILE).asText();
 
             if (dbId == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The user does not seem to be assigned to any database.");
@@ -186,35 +190,54 @@ public class DatasetsApiController implements DatasetsApi {
 
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
-            List<String> docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, true);
+            List<String> docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, true, false);
             if (docWrappers.size() != 1) {
                 log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docWrappers.size() + ")");
                 throw new RuntimeException("No unique document wrapper found");
             }
             ObjectNode docWrapper = (ObjectNode) getJsonMap(docWrappers.get(0));
+            Map result;
 
-            if (publish) {
-                throw new NotImplementedException();
-            } else {
-                // just update document by using new data and adding database ID
-                if (docWrapper.get(FIELD_DRAFT) == null) {
-                    // create copy of published document with a new db-id
+
+            // just update document by using new data and adding database ID
+            if (docWrapper.get(FIELD_DRAFT).isNull()) {
+                // create copy of published document with a new db-id
 //                    ObjectNode published = (ObjectNode) docWrapper.get(FIELD_PUBLISHED);
 //                    published.remove(DB_ID);
 //                    Map newDraft = this.dbService.save(docType, null, published);
-                    recordId = null; // (String) newDraft.get(DB_ID);
-                } else {
-                    recordId = docWrapper.get(FIELD_DRAFT).get(DB_ID).asText();
+                recordId = null; // (String) newDraft.get(DB_ID);
+            } else {
+                recordId = docWrapper.get(FIELD_DRAFT).asText();
+            }
+
+            // save document with same ID or new one, if no draft version exists
+            result = this.dbService.save(docType, recordId, mapDocument.toString());
+
+            if (publish) {
+                // add ID from published field to archive
+                if (!docWrapper.get(FIELD_PUBLISHED).isNull()) {
+                    docWrapper.withArray(FIELD_ARCHIVE).add(docWrapper.get(FIELD_PUBLISHED));
+                }
+
+                // add doc to published reference
+                docWrapper.put(FIELD_PUBLISHED, result.get(DB_ID).toString());
+
+                // remove draft version
+                docWrapper.put(FIELD_DRAFT, (String) null);
+
+                this.dbService.save(DOCUMENT_WRAPPER, docWrapper.get(DB_ID).asText(), docWrapper.toString());
+
+                //throw new NotImplementedException();
+            } else {
+
+                // update document wrapper with new draft version
+                if (docWrapper.get(FIELD_DRAFT).isNull()) {
+                    // TODO: db_id is ORecord!
+                    docWrapper.put(FIELD_DRAFT, result.get(DB_ID).toString());
+                    this.dbService.save(DOCUMENT_WRAPPER, docWrapper.get(DB_ID).asText(), docWrapper.toString());
                 }
             }
 
-            Map result = this.dbService.save(docType, recordId, mapDocument);
-
-            // update document wrapper with new draft version
-            if (docWrapper.get(FIELD_DRAFT) == null) {
-                docWrapper.put(FIELD_DRAFT, (String) result.get(DB_ID));
-                this.dbService.save(DOCUMENT_WRAPPER, docWrapper.get(DB_ID).asText(), docWrapper);
-            }
 
             Map docResult = this.documentService.prepareDocumentFromDB(result, docWrapper);
 
@@ -287,7 +310,7 @@ public class DatasetsApiController implements DatasetsApi {
             // TODO: which ID?
             // null should be fine since a new document is created when copied
             // when moved however it should have the same ID!
-            this.dbService.save("Documents", null, dbUtils.getMapFromObject(updatedDoc));
+            this.dbService.save("Documents", null, updatedDoc.toString());
 
         }
     }
@@ -333,22 +356,33 @@ public class DatasetsApiController implements DatasetsApi {
             if (children) {
                 Map<String, String> queryMap = new HashMap<>();
                 queryMap.put("_parent", parentId);
-                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, false);
+                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, false, true);
             } else {
                 Map<String, String> queryMap = new HashMap<>();
                 for (String field : fields) {
                     queryMap.put(field, query);
                 }
-                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, false); // fields );
+                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, false, true); // fields );
             }
 
             String childDocs = docs.stream()
-                    .map(doc -> getMapFromObject(doc))
-                    .map(doc -> (Map)getLatestDocument(doc))
                     .map(doc -> {
                         try {
-                            doc.keySet().retainAll( Arrays.asList( fields ) );
-                            return dbUtils.toJsonString(doc);
+                            return getJsonMap(doc);
+                        } catch (Exception e) {
+                            log.error(e);
+                            return null;
+                        }
+                    })
+                    .map(doc -> {
+                        ObjectNode node = (ObjectNode)getLatestDocument(doc);
+                        node.put(FIELD_STATE, this.documentService.determineState(doc));
+                        return node;
+                    })
+                    .map(doc -> {
+                        try {
+                            doc.retain(fields);
+                            return doc.toString();
                         } catch (Exception e) {
                             log.error(e);
                             return null;
@@ -365,9 +399,9 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
-    private Object getLatestDocument(Map<String, Object> doc) {
-        Object draft = doc.get(FIELD_DRAFT);
-        if (draft == null) {
+    private JsonNode getLatestDocument(JsonNode doc) {
+        JsonNode draft = doc.get(FIELD_DRAFT);
+        if (draft.isNull()) {
             return doc.get(FIELD_PUBLISHED);
         } else {
             return draft;
@@ -386,7 +420,7 @@ public class DatasetsApiController implements DatasetsApi {
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
-            List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, true);
+            List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, true, true);
 
             if (docs.size() > 0) {
                 Map doc = getMapFromObject(docs.get(0));
@@ -432,15 +466,15 @@ public class DatasetsApiController implements DatasetsApi {
 
         //List<String> result = this.dbService.getPathToDataset( id );
         //return ResponseEntity.ok( result );
-        Object destId = id;
+        String destId = id;
         List<String> path = new ArrayList<>();
         path.add(id);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             while (destId != null) {
-                Map doc = this.documentService.getByDocId(String.valueOf(destId));
-                destId = doc.get("_parent");
-                path.add(String.valueOf(destId));
+                JsonNode doc = this.documentService.getByDocId(destId);
+                destId = doc.get("_parent").textValue();
+                path.add(destId);
             }
         }
         // remove last element which is null

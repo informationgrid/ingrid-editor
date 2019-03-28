@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {FormArray, FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
 import {Container, IFieldBase} from './controls';
 import {BehaviourService} from '../services/behavior/behaviour.service';
@@ -217,7 +217,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.componentDestroyed))
       .subscribe( (msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
-          this.load( msg.data[0]._id );
+          this.load( msg.data[0].id );
         }
       } );
   }
@@ -365,10 +365,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
     const data = this.form.value;
-    // attach profile type to data, which is not reflected in form directly by value
-    data._id = this.data._id;
-    data._parent = this.data._parent ? this.data._parent : null;
-    data._profile = this.formularService.currentProfile;
 
     // during save the listeners for dataset changes are already called
     // this.form.reset(this.form.value);
@@ -399,8 +395,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.toastyService.info(toastOptions);
       }*/
 
-  createFormWithData(data: any) {
+  createFormWithData(data: IgeDocument) {
     this.form = this.qcs.toFormGroup( this.fields, data );
+    this.form.addControl('_parent', new FormControl(data._parent) );
+    this.form.addControl('_id', new FormControl(data._id) );
+    this.form.addControl('_profile', new FormControl(data._profile) );
 
     // disable form if we don't have the permission
     // delay a bit for form to be created

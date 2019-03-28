@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 
-import static de.ingrid.igeserver.services.MapperService.getJsonMap;
 import static de.ingrid.igeserver.services.MapperService.getMapFromJson;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
@@ -148,7 +147,7 @@ public class UsersApiController implements UsersApi {
             // get catalog Info
             Map<String, String> query = new HashMap<>();
             query.put("userId", userId);
-            List<String> list = this.dbService.findAll("Info", query, true);
+            List<String> list = this.dbService.findAll("Info", query, true, false);
             boolean isNewEntry = list.size() == 0;
 
             Set<String> catalogIds;

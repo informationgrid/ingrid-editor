@@ -3,7 +3,7 @@
     <!-- This is the tree node template for leaf nodes -->
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="20" (click)="selectNode(node)" [class.selected]="node.isSelected">
         <!-- use a disabled button to provide padding for tree leaf -->
-        <div class="label">{{node.title}}</div>
+        <div class="label">{{node.title}} ({{node.state}})</div>
     </mat-tree-node>
     <!-- This is the tree node template for expandable nodes -->
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding (click)="selectNode(node)"

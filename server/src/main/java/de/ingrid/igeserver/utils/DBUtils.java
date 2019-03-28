@@ -1,28 +1,22 @@
 package de.ingrid.igeserver.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.db.record.OTrackedSet;
 import com.orientechnologies.orient.core.exception.OStorageException;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
 import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.services.MapperService;
-import jdk.nashorn.internal.ir.ObjectNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.jettison.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
-
-import static de.ingrid.igeserver.services.MapperService.getJsonMap;
-import static de.ingrid.igeserver.services.MapperService.getMapFromJson;
 
 @Service
 public class DBUtils {
@@ -42,7 +36,7 @@ public class DBUtils {
 
         // TODO: use cache!
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, true);
+            List<String> list = this.dbService.findAll("Info", query, true, false);
 
             if (list.size() == 0) {
                 String msg = "The user does not seem to be assigned to any database: " + userId;
@@ -75,7 +69,7 @@ public class DBUtils {
 
         // TODO: use cache!
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, true);
+            List<String> list = this.dbService.findAll("Info", query, true, false);
 
             if (list.size() == 0) {
                 String msg = "The user does not seem to be assigned to any database: " + userId;
@@ -169,13 +163,13 @@ public class DBUtils {
         query.put("userId", userId);
 
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, true);
+            List<String> list = this.dbService.findAll("Info", query, true, false);
 
 
-            Map<String, Object> catUserRef = getMapFromObject(list.get(0));
-            catUserRef.put("catalogIds", assignedCatalogs);
+            ObjectNode catUserRef = (ObjectNode) MapperService.getJsonMap(list.get(0));
+            catUserRef.putPOJO("catalogIds", assignedCatalogs);
 
-            this.dbService.save("Info", "IGNORE", catUserRef);
+            this.dbService.save("Info", "IGNORE", catUserRef.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }

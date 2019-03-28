@@ -26,7 +26,7 @@ public interface DBApi {
      * Get all documents of a certain type that matches a given query.
      * @return
      */
-    public List<String> findAll(String type, Map<String, String> query, boolean exactQuery);
+    public List<String> findAll(String type, Map<String, String> query, boolean exactQuery, boolean resolveReferences);
 
     /**
      * Save a document with a given ID.
@@ -35,14 +35,14 @@ public interface DBApi {
      * @param dbDocId  is the ID of the document given by the database system
      * @param data contains the data to be stored
      */
+    @Deprecated
     Map save(String type, String dbDocId, Map<String, Object> data);
 
 
     /**
      * Save a raw object with a given ID (like file uploads).
      */
-    @Deprecated
-    Map save(String type, String dbDocId, Object data);
+    Map save(String type, String dbDocId, String data);
 
     /**
      * Delete a document with a given ID.

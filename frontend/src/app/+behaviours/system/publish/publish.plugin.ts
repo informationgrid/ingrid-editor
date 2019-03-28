@@ -4,7 +4,8 @@ import {FormularService} from '../../../services/formular/formular.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
-import { IgeError } from '../../../models/ige-error';
+import {DocumentQuery} from "../../../store/document/document.query";
+import {DocumentState} from "../../../models/ige-document";
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ import { IgeError } from '../../../models/ige-error';
 export class PublishPlugin extends Plugin {
   id = 'plugin.publish';
   _name = 'Publish Plugin';
+  defaultActive = true;
 
   eventPublishId = 'PUBLISH';
   eventRevertId = 'REVERT';
@@ -23,6 +25,7 @@ export class PublishPlugin extends Plugin {
   constructor(private formToolbarService: FormToolbarService,
               private formService: FormularService,
               private modalService: ModalService,
+              private documentQuery: DocumentQuery,
               private storageService: DocumentService) {
     super();
     this.isActive = true;
@@ -123,9 +126,11 @@ export class PublishPlugin extends Plugin {
       }
     });
 
-    this.formService.selectedDocuments$.subscribe( data => {
-      this.formToolbarService.setButtonState( 'toolBtnPublish', data.length === 1 );
-      this.formToolbarService.setButtonState( 'toolBtnRevert', data.length === 1 && data[0]._state === 'PW' );
-    } );
+    this.documentQuery.openedDocument$
+    //TODO: .pipe(takeUntil(this.componentDestroyed))
+      .subscribe(data => {
+        this.formToolbarService.setButtonState( 'toolBtnPublish', data !== null );
+        this.formToolbarService.setButtonState( 'toolBtnRevert', data !== null && data._state === DocumentState.PW );
+      } );
   }
 }

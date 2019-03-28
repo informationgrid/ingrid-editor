@@ -4,7 +4,7 @@ export interface DocumentAbstract {
   id: ID;
   title: string;
   icon: string;
-  _id: string;
+  //_id: string;
   _state: string;
   _profile: string;
   _parent: string;

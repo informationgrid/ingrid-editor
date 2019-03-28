@@ -11,6 +11,7 @@ import {DocumentStore} from "../../store/document/document.store";
 import {DocumentAbstract} from "../../store/document/document.model";
 import {TreeStore} from "../../store/tree/tree.store";
 import {ProfileQuery} from "../../store/profile/profile.query";
+import {DocumentUtils} from "./document.utils";
 
 @Injectable({
   providedIn: 'root'
@@ -134,16 +135,7 @@ export class DocumentService {
 
       this.dataService.save(data)
         .subscribe(json => {
-          let info: DocumentAbstract = {
-            _hasChildren: false,
-            _parent: data._parent,
-            _profile: data._profile,
-            icon: "",
-            id: json._id,
-            title: json.title,
-            _id: json._id,
-            _state: json._state
-          };
+          let info = DocumentUtils.createDocumentAbstract(data, json._state);
 
           this.afterSave.next(data);
           this.datasetsChanged.next({
@@ -162,6 +154,9 @@ export class DocumentService {
   publish(data: IgeDocument) {
     console.log('PUBLISHING');
     const errors: any = {errors: []};
+
+    this.handleTitle(data);
+
     this.beforeSave.next(errors);
     console.log('After validation:', data);
     const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
@@ -172,12 +167,14 @@ export class DocumentService {
 
     this.dataService.publish(data)
       .subscribe(json => {
-          let info: DocMainInfo = {
-            _id: json._id,
-            _state: json._state
-          };
+          let info = DocumentUtils.createDocumentAbstract(data, json._state);
+
           this.afterSave.next(data);
-          this.datasetsChanged.next({type: UpdateType.Update, data: [info]});
+          this.datasetsChanged.next({
+            type: UpdateType.Update,
+            data: [info]
+          });
+          this.treeStore.upsert(data._id, info);
         }
         // , err => this.errorService.handle( err )
       );
