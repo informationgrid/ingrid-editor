@@ -1,0 +1,18 @@
+<h1 mat-dialog-title
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    cdkDragHandle>Beschreibung</h1>
+<div mat-dialog-content>
+    <p>
+        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
+    </p>
+    <ul>
+        <li>Ort</li>
+        <li>Zeit</li>
+        <li>Zweckhaftigkeit</li>
+    </ul>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="showMore()">Mehr</button>
+    <button mat-button [mat-dialog-close]="'cool'" cdkFocusInitial>Ok</button>
+</div>

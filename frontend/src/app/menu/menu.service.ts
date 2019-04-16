@@ -21,7 +21,8 @@ export class MenuService {
     // {name: 'Fields', path: '/fields'}
     {name: 'Benutzer', path: '/user', onlyAdmin: true},
     {name: 'Im-/Export', path: '/importExport', onlyAdmin: true},
-    {name: 'Katalogverwaltung', path: '/catalogs', onlyAdmin: true}
+    {name: 'Katalogverwaltung', path: '/catalogs', onlyAdmin: true},
+    {name: 'Demo', path: '/demo'}
   ];
 
   menu: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this._menuItems);

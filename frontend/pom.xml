@@ -24,7 +24,7 @@
             <id>exec-yarn-install</id>
             <phase>prepare-package</phase>
             <configuration>
-              <executable>yarn</executable>
+              <executable>yarn.cmd</executable>
               <arguments>
                 <argument>--network-timeout 120000</argument>
                 <argument>--pure-lockfile</argument>
@@ -39,7 +39,7 @@
             <id>exec-ngcli-build</id>
             <phase>prepare-package</phase>
             <configuration>
-              <executable>yarn</executable>
+              <executable>yarn.cmd</executable>
               <arguments>
                 <argument>prod</argument>
               </arguments>

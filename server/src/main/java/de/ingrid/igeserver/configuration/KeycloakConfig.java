@@ -1,11 +1,14 @@
 package de.ingrid.igeserver.configuration;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +19,11 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 
 @KeycloakConfiguration
 class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
+
+    private static Logger log = LogManager.getLogger(KeycloakConfig.class);
+
+    @Value("${development:true}")
+    private boolean developmentMode;
 
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
@@ -57,7 +65,16 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
 
-        http
+        if (developmentMode) {
+            log.info("======================================================");
+            log.info("================== DEVELOPMENT MODE ==================");
+            log.info("======================================================");
+            // @formatter:off
+            http
+                .authorizeRequests().anyRequest().permitAll();
+            // @formatter:on
+        } else {
+            http
                 // unfortunately we have to disable CSRF, otherwise each POST-request will result in a 403-error
                 // because of "Invalid CSRF token found for http://ige-ng.informationgrid.eu/api/..."
                 // FIXME: Find out why CSRF is not working
@@ -65,6 +82,7 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //.antMatchers("/persons*").hasRole("user") // only user with role user are allowed to access
                 .anyRequest().authenticated();
+        }
     }
 
 

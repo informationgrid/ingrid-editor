@@ -12,6 +12,7 @@ export const routes: Routes = [
   {path: 'user', loadChildren: './+user/user.module#UserModule'}, // TODO: check canActivateChild: [AuthGuard],
   {path: 'importExport', loadChildren: './+importExport/import-export.module#ImportExportModule', canActivate: [AuthGuard]},
   {path: 'catalogs', loadChildren: './+catalog/catalog.module#CatalogModule'},
+  {path: 'demo', loadChildren: './+demo-layout/demo-layout.module#DemoLayoutModule'},
   // {path: 'login', component: LoginComponent},
   {path: '', redirectTo: '/form', pathMatch: 'full'}
 ];

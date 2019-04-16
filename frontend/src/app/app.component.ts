@@ -14,15 +14,13 @@ import {ApiService} from "./services/ApiService";
       display: block;
       width: 100%;
       height: 100%;
-      /*display: block;*/
-      /*padding-top: 56px;*/
-      /*font-size: 85%;*/
     }
     ige-search-bar {
       float: right;
     }
-    /*.igeContainer { height: 100%; overflow-x: hidden; }*/
-    /*.modal-body { overflow: auto; }*/
+    mat-drawer {
+      min-width: 500px;
+    }
   `]
 } )
 export class AppComponent implements OnInit {

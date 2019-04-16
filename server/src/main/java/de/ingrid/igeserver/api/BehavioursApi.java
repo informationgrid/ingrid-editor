@@ -18,7 +18,6 @@ import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
-// @CrossOrigin(origins = "http://localhost:4300", maxAge = 3600)
 @Api(value = "behaviours", description = "the behaviours API")
 @RequestMapping(path="/api")
 public interface BehavioursApi {
