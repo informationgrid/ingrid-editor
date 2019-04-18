@@ -61,7 +61,7 @@ export class DynamicDataSource {
 
     node.isLoading = true;
 
-    return childrenPromise.then((children) => {
+    return childrenPromise.subscribe((children) => {
       if (!children || index < 0) { // If no children, or cannot find the node, no op
         return;
       }

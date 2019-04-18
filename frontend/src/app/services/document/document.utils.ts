@@ -12,7 +12,7 @@ export class DocumentUtils {
       icon: "",
       id: doc._id,
       title: doc.title,
-      _id: doc._id,
+      //_id: doc._id,
       _state: state
     };
 

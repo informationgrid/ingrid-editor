@@ -78,7 +78,7 @@ export class DocumentService {
       id: doc._id,
       title: doc.title,
       icon: "",
-      _id: doc._id,
+      //_id: doc._id,
       _profile: doc._profile,
       _state: doc._state,
       _parent: doc._parent,
@@ -94,7 +94,7 @@ export class DocumentService {
         map(docs => {
           return docs.map(doc => {
             let childTreeNode: DocumentAbstract = {
-              _id: doc._id,
+              //_id: doc._id,
               icon: null,
               id: doc._id,
               // TODO: get title from document, but circular dependency with formularservice
@@ -185,8 +185,9 @@ export class DocumentService {
       .subscribe(res => {
         console.log('ok', res);
         const data = ids.map(id => {
-          return {_id: id};
+          return {id: id};
         });
+        // @ts-ignore
         this.datasetsChanged.next({type: UpdateType.Delete, data: data});
         this.treeStore.remove(ids);
       });

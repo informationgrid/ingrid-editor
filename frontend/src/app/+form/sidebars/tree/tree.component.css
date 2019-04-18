@@ -9,6 +9,7 @@ mat-tree-node .label {
   padding-left: 10px;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
+  user-select: none;
 }
 
 .mat-icon-button {
@@ -34,9 +35,13 @@ mat-tree-node.selected:hover {
 }
 .docType.expandable {
   padding-right: 10px;
-  padding-left: 0px;
+  padding-left: 0;
 }
 
+.rootNode {
+  background-color: #f3f3f3;
+  padding: 10px 0;
+}
 
 .clickable {
   cursor: pointer;

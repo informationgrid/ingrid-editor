@@ -217,7 +217,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.componentDestroyed))
       .subscribe( (msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
-          this.load( msg.data[0].id );
+          this.load( <string>msg.data[0].id );
         }
       } );
   }
@@ -284,7 +284,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     let previousId = null;
     const selectedDocs = this.treeQuery.getActive();
     if (selectedDocs && selectedDocs.length === 1) {
-      previousId = selectedDocs[0]._id;
+      previousId = selectedDocs[0].id;
     }
     const needsProfileSwitch = this.formularService.currentProfile !== type;
 

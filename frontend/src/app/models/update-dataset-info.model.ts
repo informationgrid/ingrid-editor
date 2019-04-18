@@ -1,5 +1,6 @@
 import {UpdateType} from './update-type.enum';
 import {IgeDocument} from "./ige-document";
+import {DocumentAbstract} from "../store/document/document.model";
 
 export interface DocMainInfo {
   _id: string;
@@ -10,5 +11,5 @@ export interface DocMainInfo {
 
 export interface UpdateDatasetInfo {
   type: UpdateType;
-  data: DocMainInfo[];
+  data: DocumentAbstract[];
 }

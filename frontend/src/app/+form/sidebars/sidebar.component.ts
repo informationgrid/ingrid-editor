@@ -136,4 +136,12 @@ export class SidebarComponent implements OnInit {
     let previouseExpandState = this.treeQuery.getValue().expandedNodes;
     this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
   }
+
+  reloadTree() {
+    this.docService.getChildren(null)
+      .pipe(
+        tap(docs => this.treeStore.set(docs))
+      ).subscribe();
+  }
+
 }

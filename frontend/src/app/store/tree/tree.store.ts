@@ -26,25 +26,25 @@ export class TreeStore extends EntityStore<TreeState, DocumentAbstract> {
   }
 
   addOpenedNode(entity: DocumentAbstract) {
-    this.updateRoot({
+    this.update({
       openedNodes: [entity]
     });
   }
 
   setSelected(selection: DocumentAbstract[]) {
-    this.updateRoot({
+    this.update({
       selected: selection
     });
   }
 
   setOpenedDocument(selected: DocumentAbstract) {
-    this.updateRoot({
+    this.update({
       openedDocument: selected
     });
   }
 
   setExpandedNodes(ids: string[]) {
-    this.updateRoot({
+    this.update({
       expandedNodes: ids
     });
   }

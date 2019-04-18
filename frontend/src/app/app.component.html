@@ -1,4 +1,4 @@
-<mat-drawer-container class="example-container" autosize fxLayout="column" fxFill>
+<mat-drawer-container autosize fxLayout="column" fxFill>
     <mat-drawer #drawer mode="side" [opened]="true">
         <mat-nav-list>
             <a mat-list-item *ngFor="let route of routes" [routerLink]="route.path">{{route.name}}</a>
