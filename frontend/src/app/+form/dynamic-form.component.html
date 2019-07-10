@@ -89,19 +89,26 @@
                 Kein Dokument ausgewählt. Laden Sie ein vorhandenes oder erstellen Sie ein neues Dokument über die Toolbar.
             </div>
 
-            <form *ngIf="form" [formGroup]="form" style="height: 100%;flex-direction: column;display: flex;">
 
-                <!-- TODO: put default form inputs into another component -->
+            <form [formGroup]="form">
+                <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
+                <button type="submit" class="btn btn-default">Submit</button>
+                {{model | json}}
+            </form>
+
+            <!--<form *ngIf="form" [formGroup]="form" style="height: 100%;flex-direction: column;display: flex;">
+
+                &lt;!&ndash; TODO: put default form inputs into another component &ndash;&gt;
                 <input id="_parent" formControlName="_parent" type="hidden">
                 <input id="_id" formControlName="_id" type="hidden">
                 <input id="_profile" formControlName="_profile" type="hidden">
 
-                <!-- form info bar -->
+                &lt;!&ndash; form info bar &ndash;&gt;
                 <ige-form-info [doc]="currentDocument$ | async"></ige-form-info>
 
-                <!--<div class="main-form-flex">-->
-                <!--<div class="main-form">-->
-                <!--<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>-->
+                &lt;!&ndash;<div class="main-form-flex">&ndash;&gt;
+                &lt;!&ndash;<div class="main-form">&ndash;&gt;
+                &lt;!&ndash;<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>&ndash;&gt;
                 <mat-tab-group *ngIf="fields[0].controlType === 'rubric'" [animationDuration]="'0ms'">
                     <ng-container *ngFor="let field of fields">
                         <mat-tab [label]="field.label" *ngIf="field.controlType === 'rubric'">
@@ -121,13 +128,13 @@
                                         [blurAllBut]="wizardFocusElement"
                                         (onAddSection)="addSection($event)"></ige-main-form-tabs>
                 </ng-container>
-                <!--</div>-->
+                &lt;!&ndash;</div>&ndash;&gt;
                 <div *ngIf="debugEnabled" class="card-body text-muted" [style.flex]="0">
                     <strong>Form contains the following values</strong><br>{{form.value | json}}
-                    <!--<p>Form is valid: {{form.valid}}</p>-->
+                    &lt;!&ndash;<p>Form is valid: {{form.valid}}</p>&ndash;&gt;
                 </div>
 
-            </form>
+            </form>-->
         </as-split-area>
 
     </as-split>
