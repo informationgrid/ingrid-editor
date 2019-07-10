@@ -104,7 +104,7 @@ public class ProfileApiController implements ProfileApi {
                 }
             }
 
-            dbService.save(DBApi.DBClass.Info, "profile", fileContent);
+            dbService.save(DBApi.DBClass.Info.name(), "profile", fileContent);
             return ResponseEntity.ok().build();
         }
     }

@@ -22,8 +22,8 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     private static Logger log = LogManager.getLogger(KeycloakConfig.class);
 
-    @Value("${development:true}")
-    private boolean developmentMode;
+    @Value("${development:false}")
+    boolean isDevelopment;
 
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
@@ -70,7 +70,7 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
             log.info("================== DEVELOPMENT MODE ==================");
             log.info("======================================================");
             // @formatter:off
-            http
+            http.csrf().disable()
                 .authorizeRequests().anyRequest().permitAll();
             // @formatter:on
         } else {

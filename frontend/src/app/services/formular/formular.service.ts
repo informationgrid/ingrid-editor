@@ -109,7 +109,7 @@ export class FormularService {
   }
 
   setSelectedDocuments(docs: DocumentAbstract[]) {
-    this.treeStore.setActive(docs.map( d => d._id));
+    this.treeStore.setActive(docs.map( d => d.id));
   }
 
   getSelectedDocuments(): DocumentAbstract[] {

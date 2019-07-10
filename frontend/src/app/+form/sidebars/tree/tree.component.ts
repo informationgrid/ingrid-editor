@@ -3,7 +3,6 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from "../../../store/tree/tree-node.model";
 import {DocumentAbstract} from "../../../store/document/document.model";
 import {DynamicDatabase} from "./DynamicDatabase";
-import {TreeQuery} from "../../../store/tree/tree.query";
 import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material";
 import {Observable} from "rxjs";
 
@@ -20,62 +19,90 @@ export class MetadataTreeComponent implements OnInit {
   @Input() expandedNodeIds: Observable<string[]>;
   @Input() selectedIds: Observable<string[]>;
 
-  @Output() toggle = new EventEmitter<{parentId: string, expand: boolean}>();
+  @Output() toggle = new EventEmitter<{ parentId: string, expand: boolean }>();
   @Output() selected = new EventEmitter<string[]>();
   @Output() activate = new EventEmitter<string[]>();
 
-  private transformer = (doc: DocumentAbstract, level: number) => {
-    return <TreeNode>{
-      _id: doc._id,
-      title: doc.title ? doc.title : 'Kein Titel',
-      state: doc._state,
-      hasChildren: doc._hasChildren,
-      level: level
-    };
-  };
-
+  /**
+   * The controller of the tree to identify if a node is expandable
+   * and which hierarchy level it is.
+   */
   treeControl = new FlatTreeControl<TreeNode>(
-    node => node.level, node => node.hasChildren);
+    node => node.level,
+    node => node.hasChildren);
 
+  /**
+   * A flattener function that creates from a nested structure a
+   * flat one in the correct order. So nested elements are directly
+   * after the parent element.
+   */
   treeFlattener = new MatTreeFlattener(
-    this.transformer, node => node.level, node => node.hasChildren,
-      node => {
-        return this.treeQuery.getAll({ filterBy: entity => entity._parent === node._id});
-      });
+    DynamicDatabase.mapToTreeNode,
+    node => node.level,
+    node => node.hasChildren,
+    node => {
+      return this.allData.filter(entity => entity._parent === node.id);
+    });
 
+  /**
+   * The datasource is used by the mat-tree component to build the tree
+   */
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+
+  // signal to show that a tree node is loading
   private isLoading: TreeNode;
 
-  constructor(private treeQuery: TreeQuery) {}
+  // store all nodes where we can find the nested items
+  private allData: DocumentAbstract[];
+
+  constructor() {}
 
   ngOnInit(): void {
-    this.data.subscribe( docs => {
+
+    // listen to external node changes and update connected datasource
+    this.data.subscribe(docs => {
       // only get root nodes, the children will be received through the getChildren function
-      // calling treeQuery
-      this.dataSource.data = docs.filter( doc => doc._parent === null);
+      // of the MatTreeFlattener
+      this.allData = docs;
+      this.dataSource.data = docs.filter(doc => !doc._parent);
       this.isLoading = null;
     });
 
+    // react on external ui changes (expand/collapse)
     this.expandedNodeIds.subscribe(ids => {
       this.treeControl.expansionModel.clear();
       this.isLoading = null;
 
-      let nodesToExpand: TreeNode[] = this.treeControl.dataNodes.filter( node => ids.indexOf(node._id) !== -1);
+      let nodesToExpand: TreeNode[] = this.treeControl.dataNodes.filter(node => ids.indexOf(node._id) !== -1);
       this.treeControl.expansionModel.select(...nodesToExpand);
     });
 
-    this.selectedIds.subscribe( ids => this.treeControl.dataNodes.forEach((node) => {
+    // react on external selection changes
+    this.selectedIds.subscribe(ids => this.treeControl.dataNodes.forEach((node) => {
       if (ids.indexOf(node._id) !== -1) {
         node.isSelected = true;
       }
-    }))
+    }));
+
   }
 
+  /**
+   * Check if a tree node as children. This is used by the HTML-template when building the tree.
+   * @param _
+   * @param node is the current tree node
+   */
   hasChild = (_: number, node: TreeNode) => {
+
     return node.hasChildren;
+
   };
 
+  /**
+   *
+   * @param node
+   */
   selectNode(node: TreeNode) {
+
     // deselect all nodes first
     this.treeControl.dataNodes.forEach(node => node.isSelected = false);
 
@@ -87,9 +114,21 @@ export class MetadataTreeComponent implements OnInit {
     // the data in dataSource only contains root nodes!!!
     // let docs = this.dataSource.data.filter( n => n._id === node._id);
     this.activate.next([node._id]);
+
+    if (node.hasChildren) {
+      debugger;
+      this.treeControl.toggle(node);
+      this.toggleNode(node);
+    }
+
   }
 
+  /**
+   *
+   * @param node
+   */
   toggleNode(node: TreeNode) {
+
     const isExpanded = this.treeControl.isExpanded(node);
 
     if (isExpanded) {
@@ -103,6 +142,7 @@ export class MetadataTreeComponent implements OnInit {
       parentId: node._id,
       expand: isExpanded
     });
+
   }
 
   /**
@@ -111,13 +151,9 @@ export class MetadataTreeComponent implements OnInit {
    * @param item
    */
   trackByNodeId(index, item: TreeNode) {
+
     return item._id;
+
   }
 
-  /*isExpanded(node: TreeNode): Promise<boolean> {
-    this.treeControl.
-    setTimeout( () => {
-      return this.treeControl.isExpanded(node);
-    }, 1000);
-  }*/
 }

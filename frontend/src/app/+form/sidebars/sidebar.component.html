@@ -1,5 +1,6 @@
 <div class="tabs-left">
     <div class="tab-content">
+        <button class="mat-icon-button" (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
         <div class="tab-pane" [class.active]="sideTab === 'tree'">
             <ige-tree [data]="treeData"
                       [expandedNodeIds]="expandedNodes"
@@ -8,9 +9,9 @@
                       (activate)="handleLoad($event)"
                       (selected)="handleSelection($event)"></ige-tree>
         </div>
-        <div class="tab-pane hide" [class.active]="sideTab === 'search'">
+        <!--<div class="tab-pane hide" [class.active]="sideTab === 'search'">
             <browser (onSelected)="load($event.id)"></browser>
-        </div>
+        </div>-->
         <div class="tab-pane hide" [class.active]="sideTab === 'wizards'">
             <!--<a [routerLink]="['/form/10']">Zurück</a>-->
             <router-outlet name="wizard"></router-outlet>

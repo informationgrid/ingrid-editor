@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {FormArray, FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
-import {Container, IFieldBase} from './controls';
+import {Container} from './controls';
 import {BehaviourService} from '../services/behavior/behaviour.service';
 import {FormularService} from '../services/formular/formular.service';
 import {Behaviour} from '../+behaviours/behaviours';
@@ -18,13 +18,12 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {MatDialog} from '@angular/material';
 import {NewDocumentComponent} from '../dialogs/form/new-document/new-document.component';
-import {DocumentQuery} from "../store/document/document.query";
-import {IgeDocument} from "../models/ige-document";
-import {takeUntil} from "rxjs/operators";
-import {DocumentStore} from "../store/document/document.store";
-import {FormUtils} from "./form.utils";
-import {TreeQuery} from "../store/tree/tree.query";
-import {DocumentAbstract} from "../store/document/document.model";
+import {DocumentQuery} from '../store/document/document.query';
+import {IgeDocument} from '../models/ige-document';
+import {takeUntil} from 'rxjs/operators';
+import {DocumentStore} from '../store/document/document.store';
+import {FormUtils} from './form.utils';
+import {TreeQuery} from '../store/tree/tree.query';
 
 interface FormData extends Object {
   _id?: string;
@@ -56,11 +55,23 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // when editing a folder this flag must be set
   // editMode: boolean = false;
 
-  fields: IFieldBase<any>[] = [];
-  form: FormGroup = null;
+  // fields: IFieldBase<any>[] = [];
+  fields = [{
+    key: 'email',
+    type: 'input',
+    wrappers: ['panel', 'form-field'],
+    templateOptions: {
+      label: 'Email address',
+      placeholder: 'Enter email',
+      required: true,
+    }
+  }];
+
+  form: FormGroup = new FormGroup({});
   data: IgeDocument|any = {};
   behaviours: Behaviour[];
   error = false;
+  model: any = {};
 
   wizardFocusElement = null;
 
@@ -92,7 +103,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     // TODO: get roles definiton
-    this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
+    /*this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
     this.formUtils = new FormUtils();
     // KeycloakService.auth.authz.
 
@@ -116,15 +127,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     } );
 
     this.behaviourService.initialized.then( () => {
-      /*this.route.queryParams.subscribe( params => {
+      /!*this.route.queryParams.subscribe( params => {
         this.debugEnabled = params['debug'] !== undefined;
-        // this.editMode = params['editMode'] === "true";
+        // this.editMode = params['editMode'] === 'true';
         // this.load(thisid);
-      } );*/
+      } );*!/
       this.route.params.subscribe( params => {
         this.load( params['id'] );
       } );
-    } );
+    } );*/
   }
 
   ngOnDestroy() {
@@ -143,7 +154,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
 
-    this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
+    /*this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
         console.log( 'loaded data:', data );
 
         if (data === null) {
@@ -155,6 +166,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // if (data._profile === 'FOLDER' && !this.editMode) return;
 
         const profile = data._profile;
+
+        if (profile === null) {
+          console.error('This document does not have any profile');
+          return;
+        }
+
         const needsProfileSwitch = this.formularService.currentProfile !== profile;
         this.data = data;
 
@@ -211,9 +228,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.componentDestroyed))
       .subscribe( (msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
-          this.load( msg.data[0]._id );
+          this.load( <string>msg.data[0].id );
         }
-      } );
+      } );*/
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -268,7 +285,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     } );
     dlg.afterClosed().subscribe( result => {
-      this.prepareNewDoc(result.choice, result.addBelowDoc);
+      if (result) {
+        this.prepareNewDoc(result.choice, result.addBelowDoc);
+      }
     })
   }
 
@@ -276,7 +295,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     let previousId = null;
     const selectedDocs = this.treeQuery.getActive();
     if (selectedDocs && selectedDocs.length === 1) {
-      previousId = selectedDocs[0]._id;
+      previousId = selectedDocs[0].id;
     }
     const needsProfileSwitch = this.formularService.currentProfile !== type;
 
@@ -357,10 +376,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
     const data = this.form.value;
-    // attach profile type to data, which is not reflected in form directly by value
-    data._id = this.data._id;
-    data._parent = this.data._parent ? this.data._parent : null;
-    data._profile = this.formularService.currentProfile;
 
     // during save the listeners for dataset changes are already called
     // this.form.reset(this.form.value);
@@ -391,8 +406,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.toastyService.info(toastOptions);
       }*/
 
-  createFormWithData(data: any) {
+  createFormWithData(data: IgeDocument) {
     this.form = this.qcs.toFormGroup( this.fields, data );
+    this.form.addControl('_parent', new FormControl(data._parent) );
+    this.form.addControl('_id', new FormControl(data._id) );
+    this.form.addControl('_profile', new FormControl(data._profile) );
 
     // disable form if we don't have the permission
     // delay a bit for form to be created
@@ -418,6 +436,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   switchProfile(profile: string) {
     this.behaviourService.unregisterAll();
+    // @ts-ignore
     this.fields = this.formularService.getFields( profile );
 
     // add controls from active behaviours
@@ -436,6 +455,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // TODO: introduce order by field IDs as an array to make it easier to squeeze in a new field
     //       => [ 'title', 'description', ... ]
     // sort fields by its order field
+    // @ts-ignore
     this.fields.sort( (a, b) => a.order - b.order ).slice( 0 );
 
     this.formularService.currentProfile = profile;
@@ -443,8 +463,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   updateRepeatableFields(data: any) {
     // set repeatable fields according to loaded data
+    // @ts-ignore
     const repeatFields = this.fields.filter( pField => (<Container>pField).isRepeatable );
 
+    // @ts-ignore
     repeatFields.forEach( (repeatField: Container) => {
       this.resetArrayGroup( repeatField.key );
       if (data[repeatField.key]) {
@@ -458,6 +480,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   resetArrayGroup(name: string) {
+    // @ts-ignore
     const group = <Container>this.fields.filter( f => (<Container>f).key === name )[0];
 
     // remove from definition fields
@@ -485,6 +508,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   addSection(data: any) {
     // use target-key or similar to have no conflicts with other fields with same name
+    // @ts-ignore
     const field = <PartialGeneratorField>this.fields.filter( f => (<Container>f).key === data.key )[0];
     const partial = this.addPartialToField( field, data.section );
     const formArray = <FormArray>this.form.controls[data.key];

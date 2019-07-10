@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.util.NestedServletException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.naming.NoPermissionException;
 
@@ -58,7 +59,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
-    @ExceptionHandler(value = {Exception.class, ApiException.class})
+    @ExceptionHandler(value = {Exception.class, ApiException.class, NotImplementedException.class})
     protected ResponseEntity<Object> handleOtherErrors(RuntimeException ex, WebRequest request) {
             log.error("Exception happened:", ex);
         String bodyOfResponse = ex.getMessage();

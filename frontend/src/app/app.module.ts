@@ -14,7 +14,7 @@ import {GlobalErrorHandler} from './error-handler';
 import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {
   MAT_DATE_LOCALE,
-  MatButtonModule,
+  MatButtonModule, MatCardModule,
   MatDialogModule,
   MatFormFieldModule,
   MatIconModule,
@@ -32,15 +32,18 @@ import {AkitaNgDevtools} from "@datorama/akita-ngdevtools";
 import {AngularSplitModule} from "angular-split";
 import {SearchBarComponent} from "./+dashboard/search-bar/search-bar.component";
 import {DeleteDialogComponent} from "./+behaviours/toolbar/deleteDocs/delete-dialog.component";
+import {FormlyModule} from '@ngx-formly/core';
+import {FormlyMaterialModule} from '@ngx-formly/material';
+import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.component';
 
 registerLocaleData(de);
 
 export function ConfigLoader(configService: ConfigService, modal: ModalService) {
   return () => {
 
-    return configService.load( environment.configFile )
-      .then( () => configService.getCurrentUserInfo() )
-      .then( userInfo => {
+    return configService.load(environment.configFile)
+      .then(() => configService.getCurrentUserInfo())
+      .then(userInfo => {
 
         // an admin role has no constraints
         if (!configService.isAdmin()) {
@@ -48,22 +51,23 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
           // check if user has any assigned catalog
           if (!userInfo.assignedCatalogs || userInfo.assignedCatalogs.length === 0) {
             const error = new IgeError();
-            error.setMessage( 'The user has no assigned catalog. An administrator has to assign a catalog to this user.' );
+            error.setMessage('The user has no assigned catalog. An administrator has to assign a catalog to this user.');
             throw error;
           }
         }
       })
-      .catch( err => {
+      .catch(err => {
         // remove loading spinner and rethrow error
-        document.getElementsByClassName( 'app-loading' ).item( 0 ).remove();
+        document.getElementsByClassName('app-loading').item(0).remove();
         throw new IgeError(err);
-      } );
+      });
   }
 }
 
-@NgModule( {
+@NgModule({
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent, SearchBarComponent, DeleteDialogComponent],
+  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent, SearchBarComponent, DeleteDialogComponent,
+  OneColumnWrapperComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
@@ -71,8 +75,14 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
     // Flex layout
     FlexLayoutModule,
+    FormlyModule.forRoot({
+      wrappers: [
+        { name: 'panel', component: OneColumnWrapperComponent },
+      ],
+    }),
+    FormlyMaterialModule,
     // Material
-    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatListModule, MatFormFieldModule, MatInputModule,
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatListModule, MatFormFieldModule, MatInputModule, MatCardModule,
     // IGE-Modules
     // IgeFormModule, FormFieldsModule,
     routing, FormsModule
@@ -96,16 +106,16 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       useValue: 'de'
     },
     // add authorization header to all requests
-      /*{
-        provide: HTTP_INTERCEPTORS,
-        useClass: AuthInterceptor,
-        multi: true,
-      },*/
+    /*{
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },*/
     // overwrite global error handler
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    },/*
+    }/*
     {
       provide: DocumentDataService,
       useClass: environment.production ? DocumentDataService : DocumentMockService
@@ -139,7 +149,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 
   bootstrap: [AppComponent],
   entryComponents: [ErrorDialogComponent, DeleteDialogComponent]
-} )
+})
 
 export class AppModule {
 }

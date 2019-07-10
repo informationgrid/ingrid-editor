@@ -31,7 +31,7 @@ export class DeleteDialogComponent implements OnInit {
 
   doDelete() {
     try {
-      this.storageService.delete(this.docsToDelete.map(doc => doc._id));
+      this.storageService.delete(this.docsToDelete.map(doc => <string>doc.id));
 
       // clear form if we removed the currently opened doc
       // and change route in case we try to reload page which would load the deleted document

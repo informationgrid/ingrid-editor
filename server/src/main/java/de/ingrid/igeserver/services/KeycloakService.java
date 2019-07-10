@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Service
+//@Service
 //@Profile("!dev")
 public class KeycloakService implements UserManagementService {
 

@@ -91,7 +91,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   copy() {
     // remove last remembered copied documents
-    this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => doc._id);
+    this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
       data: { mode: CopyMoveEnum.COPY }
@@ -103,7 +103,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   cut() {
     // remove last remembered copied documents
-    this.cutDatasets = this.formService.getSelectedDocuments().map(doc => doc._id);
+    this.cutDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
       data: { mode: CopyMoveEnum.MOVE }

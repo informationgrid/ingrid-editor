@@ -16,6 +16,7 @@ import {MainFormTabsComponent} from './main-form-tabs/main-form-tabs.component';
 import {IgeWizardModule} from '../wizard/wizard.module';
 import {ScrollToDirective} from '../directives/scrollTo.directive';
 import {
+  MatCardModule,
   MatCheckboxModule,
   MatDialogModule,
   MatDividerModule,
@@ -32,10 +33,12 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {AddPartialDialogComponent} from './partialGenerator/dialog/add-partial-dialog.component';
 import {SidebarComponent} from './sidebars/sidebar.component';
 import {FormInfoComponent} from './form-info/form-info.component';
-import {FormDialogsModule} from "../dialogs/form/form-dialogs.module";
-import {FormFieldsModule} from "../form-fields/form-fields.module";
-import {AngularSplitModule} from "angular-split";
-import {RouterModule} from "@angular/router";
+import {FormDialogsModule} from '../dialogs/form/form-dialogs.module';
+import {FormFieldsModule} from '../form-fields/form-fields.module';
+import {AngularSplitModule} from 'angular-split';
+import {RouterModule} from '@angular/router';
+import {FormlyModule} from '@ngx-formly/core';
+import {OneColumnWrapperComponent} from '../formly/wrapper/one-column-wrapper.component';
 
 @NgModule({
   imports: [
@@ -44,13 +47,15 @@ import {RouterModule} from "@angular/router";
     AngularSplitModule,
     IgeWizardModule, FormDialogsModule, SharedModule,
     MatFormFieldModule, MatToolbarModule, MatInputModule, MatTableModule,
-    MatTabsModule, MatDividerModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule,
+    MatTabsModule, MatDividerModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule, MatCardModule,
     FlexLayoutModule,
+    FormlyModule,
     FormDialogsModule, FormFieldsModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
     AddPartialDialogComponent,
+    // OneColumnWrapperComponent,
     ScrollToDirective, MainFormComponent, MainFormTabsComponent, SidebarComponent, FormInfoComponent],
   providers: [NominatimService],
   exports: [FormsModule, ScrollToDirective, MainFormTabsComponent],

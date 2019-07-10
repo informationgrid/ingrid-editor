@@ -2,8 +2,30 @@
   min-height: 20px;
 }
 
+mat-tree-node {
+  cursor: pointer;
+}
+mat-tree-node .label {
+  padding-left: 10px;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  user-select: none;
+}
+
+.mat-icon-button {
+  height: 30px;
+  line-height: 30px;
+}
+
+mat-tree-node:hover {
+  background-color: #ededed;
+}
+
 mat-tree-node.selected {
-  background-color: #03a9f4;
+  background-color: #e5e5e5;
+}
+mat-tree-node.selected:hover {
+  background-color: #e5e5e5;
 }
 
 .docType {
@@ -13,9 +35,13 @@ mat-tree-node.selected {
 }
 .docType.expandable {
   padding-right: 10px;
-  padding-left: 0px;
+  padding-left: 0;
 }
 
+.rootNode {
+  background-color: #f3f3f3;
+  padding: 10px 0;
+}
 
 .clickable {
   cursor: pointer;

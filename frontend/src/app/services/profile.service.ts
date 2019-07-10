@@ -88,7 +88,7 @@ export class ProfileService {
 
           this.setTitleFields(configService);
 
-          this.profileStore.updateRoot({isInitialized: true});
+          this.profileStore.update({isInitialized: true});
           let profilesAbstract = this.profiles.map( p => {
             return {
               id: p.id,

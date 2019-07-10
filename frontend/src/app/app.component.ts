@@ -15,6 +15,13 @@ import {ApiService} from "./services/ApiService";
       width: 100%;
       height: 100%;
     }
+    
+    /deep/ mat-drawer-content.mat-drawer-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
     ige-search-bar {
       float: right;
     }
@@ -28,8 +35,6 @@ export class AppComponent implements OnInit {
   @ViewChild( 'errorModal' ) errorModal: TemplateRef<any>;
   @ViewChild('dialogContainer', {read: ViewContainerRef}) dialogContainerRef: ViewContainerRef;
 
-  errorModalIsActive = false;
-  dynDialogMessages: any = [];
   routes: MenuItem[];
 
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
@@ -37,27 +42,6 @@ export class AppComponent implements OnInit {
   constructor(private bsdialog: MatDialog, private behaviourService: BehaviourService, private modalService: ModalService,
               private apiService: ApiService,
               private roleService: RoleService, private menuService: MenuService) {
-
-    // TODO: make more error info collapsible
-    // this.modalService.errorDialog$.subscribe( (content: any) => {
-      // if (this.errorModalRef) {
-      //   this.dynDialogMessages.push( { msg: content.message, detail: content.moreInfo } );
-      // } else {
-      //   this.dynDialogMessages = [ { msg: content.message, detail: content.moreInfo } ];
-        // TODO: this.errorModalRef = this.bsModalService.show(this.errorModal, {class: 'modal-alert modal-lg'});
-
-        // conflict with onHide, which waits for backdrop animation until event is called
-        // setTimeout( _ => this.errorModalIsActive = true, 500 );
-      // }
-    // } );
-
-    // reset reference of dialog when dialog is closed
-    /*this.bsModalService.onHide.subscribe( _ => {
-      if (this.errorModalIsActive) {
-        this.errorModalRef = null;
-        this.errorModalIsActive = false;
-      }*/
-    // } );
 
     // const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly

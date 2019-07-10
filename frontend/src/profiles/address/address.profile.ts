@@ -8,7 +8,8 @@ import { OpenTableField } from '../../app/+form/controls/field-opentable';
 import { CodelistService } from '../../app/services/codelist/codelist.service';
 
 export class ProfileAddress implements Profile {
-  id = 'ADDRESS';
+  // must be same as DBClass!
+  id = 'AddressDoc';
 
   label = 'Adresse';
 

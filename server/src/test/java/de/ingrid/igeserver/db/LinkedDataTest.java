@@ -99,7 +99,7 @@ public class LinkedDataTest {
 
         map.put("address.city", "Berlin");
 
-        dbService.save(DBApi.DBClass.Documents, null, map);
+        dbService.save(DBApi.DBClass.Documents.name(), null, map);
 
         //docFromDb.field("address.city", "Berlin");
         //docFromDb.save();

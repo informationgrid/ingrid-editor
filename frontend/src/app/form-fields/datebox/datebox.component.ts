@@ -36,10 +36,12 @@ export class DateboxComponent implements ControlValueAccessor, OnInit {
   }
 
   set value(val) {
+    debugger
     this._value = val;
   }
 
   writeValue(val: any): void {
+    debugger
     this.value = val === '' ? null : new Date(val);
   }
 

@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 
+import static de.ingrid.igeserver.services.MapperService.getMapFromJson;
+
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
 
@@ -145,7 +147,7 @@ public class UsersApiController implements UsersApi {
             // get catalog Info
             Map<String, String> query = new HashMap<>();
             query.put("userId", userId);
-            List<Map> list = this.dbService.findAll(DBApi.DBClass.Info, query, true);
+            List<String> list = this.dbService.findAll("Info", query, true, false);
             boolean isNewEntry = list.size() == 0;
 
             Set<String> catalogIds;
@@ -155,7 +157,8 @@ public class UsersApiController implements UsersApi {
                 catInfo.put("userId", userId);
                 catInfo.put("catalogIds", new HashSet<String>());
             } else {
-                catInfo = list.get(0);
+
+                catInfo = getMapFromJson(list.get(0));
             }
             catalogIds = (Set<String>) catInfo.get("catalogIds");
 
@@ -168,7 +171,10 @@ public class UsersApiController implements UsersApi {
             if (!isNewEntry) {
                 recordId = ((ORecordId) catInfo.get("@rid")).toString();
             }
-            dbService.save(DBApi.DBClass.Info, recordId, catInfo);
+            dbService.save(DBApi.DBClass.Info.name(), recordId, catInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
 
         return null;
