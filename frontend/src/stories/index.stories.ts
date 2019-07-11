@@ -4,7 +4,7 @@ import {linkTo} from '@storybook/addon-links';
 
 import {Welcome, Button} from '@storybook/angular/demo';
 import {DateboxComponent} from '../app/form-fields/datebox/datebox.component';
-import {MatCardModule, MatDatepickerModule, MatInputModule} from '@angular/material';
+import {MatButtonModule, MatCardModule, MatDatepickerModule, MatDialogModule, MatInputModule} from '@angular/material';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FormFieldsModule} from '../app/form-fields/form-fields.module';
 import {CommonModule} from '@angular/common';
@@ -14,6 +14,9 @@ import {FormlyFieldConfig} from '@ngx-formly/core/lib/components/formly.field.co
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {OneColumnWrapperComponent} from '../app/formly/wrapper/one-column-wrapper.component';
 import {IgeFormModule} from '../app/+form/ige-form.module';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {ContextHelpComponent} from '../app/+demo-layout/form/context-help/context-help.component';
+import {IgeFormlyModule} from '../app/formly/ige-formly.module';
 
 storiesOf('Welcome', module).add('to Storybook', () => ({
   component: Welcome,
@@ -82,24 +85,13 @@ storiesOf('Formly', module).add('input', () => ({
   // component: ,
   moduleMetadata: {
     imports: [
-      ReactiveFormsModule,
-      IgeFormModule,
-      BrowserAnimationsModule,
-      MatCardModule,
-      FormlyMaterialModule,
-      FormlyModule.forRoot({
-        wrappers: [
-          { name: 'panel', component: OneColumnWrapperComponent },
-        ],
-      })
-    ],
-    declarations: [OneColumnWrapperComponent]
+      IgeFormlyModule
+    ]
   },
 
   template: `<form [formGroup]="form">
                 <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
-            </form>
-            {{model | json}} {{form.valid}}`,
+            </form>`,
   props: {
     model: {},
     form: new FormGroup({}),

@@ -316,3 +316,9 @@ sidebar .list-group-item:hover {
 tree-node:hover .folder {
   display: block;
 }
+
+
+
+
+
+.flex-1 { flex: 1; }

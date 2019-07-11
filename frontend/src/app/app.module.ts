@@ -78,7 +78,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     FormlyModule.forRoot({
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
-      ],
+      ]
     }),
     FormlyMaterialModule,
     // Material
