@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<orient-server>
+  <network>
+    <protocols>
+        <protocol implementation="com.orientechnologies.orient.server.network.protocol.binary.ONetworkProtocolBinary" name="binary"/>
+        <protocol name="http" implementation="com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpDb"/>
+    </protocols>
+    <listeners>
+        <listener protocol="binary" port-range="2424-2430" ip-address="0.0.0.0"/>
+        <listener protocol="http" ip-address="0.0.0.0" port-range="2480-2490">
+            <parameters>
+                <!-- Connection's custom parameters. If not specified the global configuration
+                    will be taken -->
+                <parameter name="network.http.charset" value="utf-8"/>
+                <parameter value="true" name="network.http.jsonResponseError"/>
+                <!-- Define additional HTTP headers to always send as response -->
+                <!-- Allow cross-site scripting -->
+                <!-- parameter name="network.http.additionalResponseHeaders" value="Access-Control-Allow-Origin:
+                    *;Access-Control-Allow-Credentials: true" / -->
+            </parameters>
+            <commands>
+              <command implementation="com.orientechnologies.orient.server.network.protocol.http.command.get.OServerCommandGetStaticContent" pattern="GET|www GET|studio/ GET| GET|*.htm GET|*.html GET|*.xml GET|*.jpeg GET|*.jpg GET|*.png GET|*.gif GET|*.js GET|*.css GET|*.swf GET|*.ico GET|*.txt GET|*.otf GET|*.pjs GET|*.svg">
+                <parameters>
+                  <entry value="Cache-Control: no-cache, no-store, max-age=0, must-revalidate\r\nPragma: no-cache" name="http.cache:*.htm *.html"/>
+                  <entry value="Cache-Control: max-age=120" name="http.cache:default"/>
+                </parameters>
+              </command>
+            </commands>
+        </listener>
+    </listeners>
+  </network>
+  <users>
+    <user name="root" password="root" resources="*" />
+    <user resources="connect,server.listDatabases,server.listDatabases.system" password="guest" name="guest" />
+  </users>
+  <properties>
+        <!-- <entry name="server.database.path" value="C:/temp/databases" /> -->
+    <!-- <entry name="orientdb.www.path" value="./src/main/resources/www" /> -->
+    <entry name="server.security.file" value="./src/main/resources/security.json" />
+    <entry name="log.console.level" value="fine" />
+    <entry name="log.file.level" value="fine" />
+  </properties>
+</orient-server>
