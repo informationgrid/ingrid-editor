@@ -61,9 +61,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     type: 'input',
     wrappers: ['panel', 'form-field'],
     templateOptions: {
-      label: 'Email address',
+      externalLabel: 'Email address',
       placeholder: 'Enter email',
       required: true,
+      appearance: 'outline'
     }
   }];
 
@@ -103,10 +104,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     // TODO: get roles definiton
-    /*this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
+    this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
     this.formUtils = new FormUtils();
     // KeycloakService.auth.authz.
-
     // handle toolbar events
     const loadSaveSubscriber = this.formToolbarService.getEventObserver()
       .pipe(takeUntil(this.componentDestroyed))
@@ -119,6 +119,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       } );
 
+/*
     // react on document selection
     this.treeQuery.selectActiveId().pipe(takeUntil(this.componentDestroyed)).subscribe((activeDocs) => {
       this.formToolbarService.setButtonState(

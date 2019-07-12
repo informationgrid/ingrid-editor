@@ -58,12 +58,12 @@ export class FormularService {
   getFields(profile: string) {
     let fields: IFieldBase<any>[];
 
-    fields = this.getProfile(profile).fields;
+    fields = this.getProfile(profile).fields.slice(0);
 
     this.currentProfile = profile;
 
     // return a copy of our fields (immutable data!)
-    return fields.sort((a, b) => a.order - b.order).slice(0);
+    return fields.sort((a, b) => a.order - b.order);
   }
 
   getProfile(id: string): Profile {

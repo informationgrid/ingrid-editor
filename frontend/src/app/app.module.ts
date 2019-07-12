@@ -13,8 +13,9 @@ import {LoginComponent} from './security/login.component';
 import {GlobalErrorHandler} from './error-handler';
 import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {
-  MAT_DATE_LOCALE,
-  MatButtonModule, MatCardModule,
+  MAT_DATE_LOCALE, MatAutocompleteModule,
+  MatButtonModule,
+  MatCardModule,
   MatDialogModule,
   MatFormFieldModule,
   MatIconModule,
@@ -33,8 +34,9 @@ import {AngularSplitModule} from "angular-split";
 import {SearchBarComponent} from "./+dashboard/search-bar/search-bar.component";
 import {DeleteDialogComponent} from "./+behaviours/toolbar/deleteDocs/delete-dialog.component";
 import {FormlyModule} from '@ngx-formly/core';
-import {FormlyMaterialModule} from '@ngx-formly/material';
 import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.component';
+import {FormlyMaterialModule} from '@ngx-formly/material';
+import {AutocompleteTypeComponent} from './formly/types/autocomplete-type.component';
 
 registerLocaleData(de);
 
@@ -67,7 +69,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent, SearchBarComponent, DeleteDialogComponent,
-  OneColumnWrapperComponent],
+    OneColumnWrapperComponent, AutocompleteTypeComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
@@ -75,14 +77,20 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
     // Flex layout
     FlexLayoutModule,
+    //FormlyModule.forRoot(),
     FormlyModule.forRoot({
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
-      ]
+      ],
+      types: [{
+        name: 'autocomplete',
+        component: AutocompleteTypeComponent,
+        wrappers: ['form-field'],
+      }],
     }),
     FormlyMaterialModule,
     // Material
-    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatListModule, MatFormFieldModule, MatInputModule, MatCardModule,
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
     // IGE-Modules
     // IgeFormModule, FormFieldsModule,
     routing, FormsModule
