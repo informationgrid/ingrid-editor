@@ -1,10 +1,8 @@
 import {storiesOf} from '@storybook/angular';
-import {action} from '@storybook/addon-actions';
-import {linkTo} from '@storybook/addon-links';
 
-import {Button, Welcome} from '@storybook/angular/demo';
+import {Welcome} from '@storybook/angular/demo';
 import {DateboxComponent} from '../app/form-fields/datebox/datebox.component';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors} from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FormFieldsModule} from '../app/form-fields/form-fields.module';
 import {CommonModule} from '@angular/common';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -12,45 +10,26 @@ import {FormlyFieldConfig} from '@ngx-formly/core/lib/components/formly.field.co
 import {IgeFormlyModule} from '../app/formly/ige-formly.module';
 import {FormlyModule} from '@ngx-formly/core';
 import {OneColumnWrapperComponent} from '../app/formly/wrapper/one-column-wrapper.component';
-import {FormlyMaterialModule} from '@ngx-formly/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {AutocompleteTypeComponent} from '../app/formly/types/autocomplete-type.component';
-import {MatAutocompleteModule, MatInputModule} from '@angular/material';
 import {of} from 'rxjs';
+import {HttpClientModule} from '@angular/common/http';
 
-let formlyTemplate = `<form [formGroup]="form" class="form-content">
-                        <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
+const formlyTemplate = `<form [formGroup]='form' class='form-content'>
+                        <formly-form [form]='form' [fields]='fields' [model]='model'></formly-form>
                       </form>`;
 
-function IpValidator(control: FormControl): ValidationErrors {
-  return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
-}
-
-let formlyModuleMetadata = {
+const formlyModuleMetadata = {
   imports: [
+    HttpClientModule,
     IgeFormlyModule,
-    MatInputModule,
-    MatAutocompleteModule,
     FlexLayoutModule,
-    FormlyMaterialModule,
     FormlyModule.forRoot({
       wrappers: [
         {name: 'panel', component: OneColumnWrapperComponent}
-      ],
-      types: [{
-        name: 'autocomplete',
-        component: AutocompleteTypeComponent,
-        wrappers: ['form-field']
-      }],
-      validators: [
-        { name: 'ip', validation: IpValidator },
-      ],
-      validationMessages: [
-        { name: 'ip', message: 'This is not a valid IP Address' }
       ]
     })
   ],
-  declarations: [OneColumnWrapperComponent, AutocompleteTypeComponent]
+  declarations: [OneColumnWrapperComponent]
 };
 
 const states = ['Alabama', 'Alaska', 'American Samoa', 'Arizona', 'Arkansas', 'California', 'Colorado',
@@ -107,7 +86,6 @@ storiesOf('Formly', module).add('input with validation', () => ({
       type: 'input',
       wrappers: ['panel', 'form-field'],
       templateOptions: {
-        //label: 'IP address',
         externalLabel: 'IP address',
         placeholder: 'Enter IP',
         required: true,
@@ -116,7 +94,7 @@ storiesOf('Formly', module).add('input with validation', () => ({
       validators: {
         ip: {
           expression: (c) => /(\d{1,3}\.){3}\d{1,3}/.test(c.value),
-          message: (error, field: FormlyFieldConfig) => `"${field.formControl.value}" is not a valid IP Address`
+          message: (error, field: FormlyFieldConfig) => `'${field.formControl.value}' is not a valid IP Address`
         }
       }
     }]
@@ -130,11 +108,11 @@ storiesOf('Formly', module).add('input with validation', () => ({
       form: new FormGroup({}),
       fields: <FormlyFieldConfig[]>[
         {
-          key: "email",
-          type: "input",
+          key: 'email',
+          type: 'input',
           wrappers: ['panel', 'form-field'],
           templateOptions: {
-            externalLabel: "Email"
+            externalLabel: 'Email'
           },
           asyncValidators: {
             uniqueEmail: {
@@ -152,6 +130,71 @@ storiesOf('Formly', module).add('input with validation', () => ({
       ]
     }
   }))
+  .add('two inputs in one row', () => ({
+    moduleMetadata: formlyModuleMetadata,
+    template: formlyTemplate,
+    props: {
+      model: {},
+      form: new FormGroup({}),
+      fields: <FormlyFieldConfig[]>[
+        {
+          // fieldGroupClassName: 'display-flex',
+          key: 'address',
+          wrappers: ['panel'],
+          templateOptions: {externalLabel: 'Address'},
+          fieldGroup: [{
+            key: 'address',
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'firstName',
+              className: 'flex-1',
+              type: 'input',
+              templateOptions: {
+                label: 'First Name',
+                appearance: 'outline'
+              }
+            }, {
+              key: 'secondName',
+              className: 'flex-1',
+              type: 'input',
+              templateOptions: {
+                label: 'Last name',
+                appearance: 'outline'
+              }
+            }]
+          }, {
+            key: 'address',
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'PO',
+              className: 'flex-1',
+              type: 'input',
+              templateOptions: {
+                label: 'PO',
+                appearance: 'outline'
+              }
+            }, {
+              key: 'city',
+              className: 'flex-3',
+              type: 'input',
+              templateOptions: {
+                label: 'City',
+                appearance: 'outline'
+              }
+            }, {
+              key: 'country',
+              className: 'flex-3',
+              type: 'input',
+              templateOptions: {
+                label: 'Country',
+                appearance: 'outline'
+              }
+            }]
+          }]
+        }
+      ]
+    }
+  }))
   .add('input with validation pre-defined', () => ({
     moduleMetadata: formlyModuleMetadata,
     template: formlyTemplate,
@@ -160,11 +203,11 @@ storiesOf('Formly', module).add('input with validation', () => ({
       form: new FormGroup({}),
       fields: <FormlyFieldConfig[]>[
         {
-          key: "ip",
-          type: "input",
+          key: 'ip',
+          type: 'input',
           wrappers: ['panel', 'form-field'],
           templateOptions: {
-            externalLabel: "IP"
+            externalLabel: 'IP'
           },
           validators: {
             validation: ['ip']
@@ -181,11 +224,11 @@ storiesOf('Formly', module).add('input with validation', () => ({
       form: new FormGroup({}),
       fields: <FormlyFieldConfig[]>[
         {
-          key: "gender",
-          type: "select",
+          key: 'gender',
+          type: 'select',
           wrappers: ['panel', 'form-field'],
           templateOptions: {
-            externalLabel: "Gender",
+            externalLabel: 'Gender',
             placeholder: 'Please choose',
             appearance: 'outline',
             options: [
@@ -205,11 +248,11 @@ storiesOf('Formly', module).add('input with validation', () => ({
       form: new FormGroup({}),
       fields: <FormlyFieldConfig[]>[
         {
-          key: "gender",
-          type: "autocomplete",
+          key: 'state',
+          type: 'autocomplete',
           wrappers: ['panel', 'form-field'],
           templateOptions: {
-            externalLabel: "Gender",
+            externalLabel: 'State',
             placeholder: 'Please choose',
             appearance: 'outline',
             filter: (term) => of(term ? filterStates(term) : states.slice())
@@ -226,11 +269,11 @@ storiesOf('Formly', module).add('input with validation', () => ({
       form: new FormGroup({}),
       fields: <FormlyFieldConfig[]>[
         {
-          key: "active",
-          type: "checkbox",
+          key: 'active',
+          type: 'checkbox',
           wrappers: ['panel', 'form-field'],
           templateOptions: {
-            externalLabel: "Is Active"
+            externalLabel: 'Is Active'
           }
         },
         {
@@ -254,12 +297,12 @@ storiesOf('Formly', module).add('input with validation', () => ({
       form: new FormGroup({}),
       fields: <FormlyFieldConfig[]>[
         {
-          key: "checked",
-          type: "checkbox",
+          key: 'checked',
+          type: 'checkbox',
           defaultValue: false,
           wrappers: ['panel', 'form-field'],
           templateOptions: {
-            externalLabel: "Make required"
+            externalLabel: 'Make required'
           }
         },
         {
@@ -272,6 +315,26 @@ storiesOf('Formly', module).add('input with validation', () => ({
           },
           expressionProperties: {
             'templateOptions.required': 'model.checked'
+          }
+        }
+      ]
+    }
+  }))
+  .add('leaflet', () => ({
+    moduleMetadata: formlyModuleMetadata,
+    template: formlyTemplate,
+    props: {
+      model: {},
+      form: new FormGroup({}),
+      fields: <FormlyFieldConfig[]>[
+        {
+          key: 'location',
+          type: 'leaflet',
+          wrappers: ['panel'],
+          templateOptions: {
+            externalLabel: 'Location',
+            mapOptions: {},
+            height: 300
           }
         }
       ]

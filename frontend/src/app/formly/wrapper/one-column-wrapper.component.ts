@@ -14,6 +14,7 @@ import {Overlay} from '@angular/cdk/overlay';
         <ng-container #fieldComponent></ng-container>
       </div>
     </div>
+    {{model | json}}
   `,
   styles: [`
 
@@ -46,6 +47,15 @@ import {Overlay} from '@angular/cdk/overlay';
 
       /deep/ .form-content .mat-form-field-subscript-wrapper {
           padding-top: 3px;
+      }
+
+      /deep/ .form-content .mat-form-field-label-wrapper {
+          top: -0.64375em;
+      }
+
+      /deep/ .form-content .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+          -webkit-transform: translateY(-1.09375em) scale(.75);
+          transform: translateY(-1.09375em) scale(.75);
       }
 
       /deep/ .form-content .mat-select-arrow-wrapper {

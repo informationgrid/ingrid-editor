@@ -13,7 +13,8 @@ import {LoginComponent} from './security/login.component';
 import {GlobalErrorHandler} from './error-handler';
 import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {
-  MAT_DATE_LOCALE, MatAutocompleteModule,
+  MAT_DATE_LOCALE,
+  MatAutocompleteModule,
   MatButtonModule,
   MatCardModule,
   MatDialogModule,
@@ -29,14 +30,13 @@ import {ErrorDialogComponent} from './dialogs/error/error-dialog.component';
 import {IgeError} from './models/ige-error';
 import {FormsModule} from '@angular/forms';
 import de from '@angular/common/locales/de';
-import {AkitaNgDevtools} from "@datorama/akita-ngdevtools";
-import {AngularSplitModule} from "angular-split";
-import {SearchBarComponent} from "./+dashboard/search-bar/search-bar.component";
-import {DeleteDialogComponent} from "./+behaviours/toolbar/deleteDocs/delete-dialog.component";
+import {AkitaNgDevtools} from '@datorama/akita-ngdevtools';
+import {AngularSplitModule} from 'angular-split';
+import {SearchBarComponent} from './+dashboard/search-bar/search-bar.component';
+import {DeleteDialogComponent} from './+behaviours/toolbar/deleteDocs/delete-dialog.component';
 import {FormlyModule} from '@ngx-formly/core';
 import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.component';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import {AutocompleteTypeComponent} from './formly/types/autocomplete-type.component';
 
 registerLocaleData(de);
 
@@ -69,7 +69,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent, SearchBarComponent, DeleteDialogComponent,
-    OneColumnWrapperComponent, AutocompleteTypeComponent],
+    OneColumnWrapperComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
@@ -77,16 +77,10 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
     // Flex layout
     FlexLayoutModule,
-    //FormlyModule.forRoot(),
     FormlyModule.forRoot({
       wrappers: [
-        { name: 'panel', component: OneColumnWrapperComponent },
-      ],
-      types: [{
-        name: 'autocomplete',
-        component: AutocompleteTypeComponent,
-        wrappers: ['form-field'],
-      }],
+        {name: 'panel', component: OneColumnWrapperComponent}
+      ]
     }),
     FormlyMaterialModule,
     // Material

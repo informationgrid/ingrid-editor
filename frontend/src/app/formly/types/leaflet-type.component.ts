@@ -1,40 +1,23 @@
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  forwardRef,
-  Input,
-  OnDestroy,
-  ViewChild
-} from '@angular/core';
-import { Map, LatLngBounds, MapOptions, Rectangle, TileLayer } from 'leaflet';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {FieldType} from '@ngx-formly/material';
+import {LatLngBounds, Map, MapOptions, Rectangle, TileLayer} from 'leaflet';
 import {ModalService} from '../../services/modal/modal.service';
-import {NominatimService} from './nominatim.service';
-import { LeafletAreaSelect } from './leaflet-area-select';
-import { MatSelectionList } from '@angular/material';
+import {NominatimService} from '../../+form/leaflet/nominatim.service';
+import {LeafletAreaSelect} from '../../+form/leaflet/leaflet-area-select';
 
 class MyMap extends Map {
   _onResize: () => {};
 }
 
-export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef( () => LeafletComponent ),
-  multi: true
-};
-
-
-@Component( {
-  selector: 'ige-leaflet',
+@Component({
+  selector: 'ige-formly--type',
   template: `
-    <!--<div #leaflet title="Zum Verändern des Ausschnitts, müssen Sie den Bearbeiten-Knopf drücken."></div>
-    &lt;!&ndash;<div class="fieldContainer half">
+    <div #leaflet title="Zum Verändern des Ausschnitts, müssen Sie den Bearbeiten-Knopf drücken."></div>
+    <!--<div class="fieldContainer half">
         Latitude: <input type="text" class="form-control" [(ngModel)]="_bbox.lat" (change)="handleChange()">
     </div><div class="fieldContainer half"> &lt;!&ndash; white space between divs would create an unwanted gap!!! &ndash;&gt;
         Longitude: <input type="text" class="form-control" [(ngModel)]="_bbox.lon" (change)="handleChange()">
-    </div>&ndash;&gt;
+    </div>-->
     <div class="full">
       <button *ngIf="!showSearch" mat-icon-button title="Bearbeiten"
               class="pull-left"
@@ -64,79 +47,78 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
             <mat-divider></mat-divider>
           </ng-container>
         </mat-selection-list>
-        &lt;!&ndash;<select #locationResult name="nominatimResult" multiple (change)="showBoundingBox(locationResult.value)">&ndash;&gt;
-          &lt;!&ndash;<option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>&ndash;&gt;
-        &lt;!&ndash;</select>&ndash;&gt;
+        <!--<select #locationResult name="nominatimResult" multiple (change)="showBoundingBox(locationResult.value)">-->
+        <!--<option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>-->
+        <!--</select>-->
         <div class="bottom">
           <button mat-button class="pull-left" (click)="cancelEdit()">Abbrechen</button>
           <button mat-button class="pull-right" (click)="applyEdit()">Übernehmen</button>
         </div>
       </div>
-    </div>-->
+    </div>
   `,
   styles: [`
-    :host {
-      position: relative;
-      display: block;
-    }
+      :host {
+          position: relative;
+          display: block;
+      }
 
-    .bottom {
-      display: block;
-    }
+      .bottom {
+          display: block;
+      }
 
-    mat-selection-list {
-      flex-grow: 1;
-      margin: 10px 0;
-      overflow: auto;
-    }
+      mat-selection-list {
+          flex-grow: 1;
+          margin: 10px 0;
+          overflow: auto;
+      }
 
-    /*.mat-list .mat-list-item {*/
+      /*.mat-list .mat-list-item {*/
       /*font-size: 14px;*/
-    /*}*/
+      /*}*/
 
-    .nominatimContainer {
-      position: absolute;
-      width: 350px;
-      top: 0;
-      bottom: 0;
-      right: calc(100% + 10px);
-      background-color: #fff;
-      padding: 10px;
-      box-shadow: 0px 0px 20px -5px #000;
-      display: flex;
-      flex-direction: column;
-    }
+      .nominatimContainer {
+          position: absolute;
+          width: 350px;
+          top: 0;
+          bottom: 0;
+          right: calc(100% + 10px);
+          background-color: #fff;
+          padding: 10px;
+          box-shadow: 0px 0px 20px -5px #000;
+          display: flex;
+          flex-direction: column;
+      }
 
-    /deep/
-    .leaflet-areaselect-shade {
-      position: absolute;
-      background: rgba(0, 0, 0, 0.4);
-    }
+      /deep/
+      .leaflet-areaselect-shade {
+          position: absolute;
+          background: rgba(0, 0, 0, 0.4);
+      }
 
-    /deep/
-    .leaflet-areaselect-handle {
-      position: absolute;
-      background: #fff;
-      border: 1px solid #666;
-      -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-      -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-      box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-      width: 14px;
-      height: 14px;
-      cursor: move;
-    }
-  `],
-  providers: [LEAFLET_CONTROL_VALUE_ACCESSOR, MatSelectionList]
-} )
-export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
+      /deep/
+      .leaflet-areaselect-handle {
+          position: absolute;
+          background: #fff;
+          border: 1px solid #666;
+          -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+          -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+          box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+          width: 14px;
+          height: 14px;
+          cursor: move;
+      }
+  `]
+})
+export class LeafletTypeComponent extends FieldType implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild( 'leaflet' ) leaflet: ElementRef;
+  @ViewChild('leaflet') leaflet: ElementRef;
   private leafletReference: L.Map;
   private areaSelect: any;
   drawnBBox: any;
 
-  @Input() options: MapOptions;
-  @Input() height: number;
+  // @Input() mapOptions: MapOptions;
+  // @Input() height: number;
 
   private _onChangeCallback: (x: any) => void;
 
@@ -148,30 +130,31 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   nominatimResult: any = [];
 
   private static getLatLngBoundsFromBox(bbox: any): LatLngBounds {
-    return new LatLngBounds( [bbox.lat1, bbox.lon1], [bbox.lat2, bbox.lon2] );
+    return new LatLngBounds([bbox.lat1, bbox.lon1], [bbox.lat2, bbox.lon2]);
   }
 
   constructor(private modalService: ModalService, private nominatimService: NominatimService,
               private _changeDetectionRef: ChangeDetectorRef) {
+    super();
   }
 
   ngAfterViewInit() {
-    this.leaflet.nativeElement.style.height = this.height + 'px';
+    this.leaflet.nativeElement.style.height = this.to.height + 'px';
     this.leaflet.nativeElement.style.width = '100%';
 
     try {
-      this.options.layers = [new TileLayer(
+      this.to.mapOptions.layers = [new TileLayer(
         '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
-           attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-        } )];
-      this.leafletReference = new Map( this.leaflet.nativeElement, this.options );
+          attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+        })];
+      this.leafletReference = new Map(this.leaflet.nativeElement, this.to.mapOptions);
     } catch (e) {
       console.error('Problem initializing the map component.', e);
       this.modalService.showJavascriptError('Problem initializing the map component.', e);
       return;
     }
-    this.toggleSearch( false );
+    this.toggleSearch(false);
     (<MyMap>this.leafletReference)._onResize();
 
     /*this.leafletReference.on('moveend', () => {
@@ -222,17 +205,17 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
       lat2: 56.3653,
       lon2: 15.9961
     };
-    const box = LeafletComponent.getLatLngBoundsFromBox( initialBox );
-    return this.leafletReference.fitBounds( box, {maxZoom: 13} );
+    const box = LeafletTypeComponent.getLatLngBoundsFromBox(initialBox);
+    return this.leafletReference.fitBounds(box, {maxZoom: 13});
   }
 
   private drawBoxAndZoomToBounds(): Map {
     try {
-      const box = LeafletComponent.getLatLngBoundsFromBox( this._bbox );
-      this.drawBoundingBox( box );
-      return this.leafletReference.fitBounds( box, {maxZoom: 13} );
+      const box = LeafletTypeComponent.getLatLngBoundsFromBox(this._bbox);
+      this.drawBoundingBox(box);
+      return this.leafletReference.fitBounds(box, {maxZoom: 13});
     } catch (ex) {
-      console.error( 'Problem drawing bounding box', ex );
+      console.error('Problem drawing bounding box', ex);
       this._bbox = null;
       return this.zoomToInitialBox();
     }
@@ -249,17 +232,17 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     if (setView) {
       // this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
       this.leafletReference.fitBounds(
-        new LatLngBounds( [this._bbox.lat1, this._bbox.lon1], [this._bbox.lat2, this._bbox.lon2] ),
-        {maxZoom: 13} );
+        new LatLngBounds([this._bbox.lat1, this._bbox.lon1], [this._bbox.lat2, this._bbox.lon2]),
+        {maxZoom: 13});
     }
-    this._onChangeCallback( this._bbox );
+    this._onChangeCallback(this._bbox);
   }
 
   searchLocation(query: string) {
-    this.nominatimService.search( query ).subscribe( (response: any) => {
+    this.nominatimService.search(query).subscribe((response: any) => {
       this.nominatimResult = response;
-      console.log( 'Nominatim:', response );
-    } );
+      console.log('Nominatim:', response);
+    });
   }
 
   showBoundingBox(coords: string[]) {
@@ -318,51 +301,51 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
   private setupAreaSelect() {
     const box = this.drawnBBox ? this.drawnBBox._path.getBBox() : null;
     if (box) {
-      this.areaSelect = new LeafletAreaSelect( box );
+      this.areaSelect = new LeafletAreaSelect(box);
     } else {
-      this.areaSelect = new LeafletAreaSelect( {width: 50, height: 50} );
+      this.areaSelect = new LeafletAreaSelect({width: 50, height: 50});
     }
-    this.areaSelect.addTo( this.leafletReference );
+    this.areaSelect.addTo(this.leafletReference);
   }
 
   private setAreaSelect() {
     const updateAreaSelect = () => {
       if (this.drawnBBox) {
         const box = this.drawnBBox._path.getBBox();
-        this.areaSelect.setDimensions( box );
+        this.areaSelect.setDimensions(box);
       }
     };
-    this.drawBoxAndZoomToBounds().once( 'zoomend', () => {
-      setTimeout( () => updateAreaSelect(), 10 );
-    } );
-    setTimeout( () => {
+    this.drawBoxAndZoomToBounds().once('zoomend', () => {
+      setTimeout(() => updateAreaSelect(), 10);
+    });
+    setTimeout(() => {
       updateAreaSelect();
-    }, 270 );
+    }, 270);
   }
 
   applyAreaSelect() {
     if (this.areaSelect) {
       const bounds = this.areaSelect.getBounds();
       this.areaSelect.remove();
-      this.drawBoundingBox( bounds );
+      this.drawBoundingBox(bounds);
       this._bbox = {
         lat1: bounds.getSouthWest().lat,
         lon1: bounds.getSouthWest().lng,
         lat2: bounds.getNorthEast().lat,
         lon2: bounds.getNorthEast().lng
       };
-      this.handleChange( false );
+      this.handleChange(false);
     }
   }
 
   private drawBoundingBox(latLonBounds: LatLngBounds) {
     this.removeDrawnBoundingBox();
-    this.drawnBBox = new Rectangle( latLonBounds, {color: '#ff7800', weight: 1} ).addTo( this.leafletReference );
+    this.drawnBBox = new Rectangle(latLonBounds, {color: '#ff7800', weight: 1}).addTo(this.leafletReference);
   }
 
   private removeDrawnBoundingBox() {
     if (this.drawnBBox) {
-      this.leafletReference.removeLayer( this.drawnBBox );
+      this.leafletReference.removeLayer(this.drawnBBox);
     }
   }
 
@@ -371,12 +354,12 @@ export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueA
     this._bbox = this._bboxPrevious;
     this.areaSelect.remove();
     this.drawBoxAndZoomToBounds();
-    this.toggleSearch( false );
+    this.toggleSearch(false);
   }
 
   applyEdit() {
     this.showSearch = false;
     this.applyAreaSelect();
-    this.toggleSearch( false );
+    this.toggleSearch(false);
   }
 }
