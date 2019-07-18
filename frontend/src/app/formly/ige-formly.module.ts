@@ -4,19 +4,23 @@ import {IgeFormModule} from '../+form/ige-form.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {
+  MAT_DATE_LOCALE,
   MatAutocompleteModule,
   MatButtonModule,
   MatDialogModule, MatDividerModule,
   MatIconModule,
   MatInputModule, MatListModule,
-  MatSelectModule
+  MatSelectModule, MatTableModule
 } from '@angular/material';
+import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {FormlyModule} from '@ngx-formly/core';
 import {ContextHelpComponent} from '../+demo-layout/form/context-help/context-help.component';
 import {AutocompleteTypeComponent} from './types/autocomplete-type.component';
 import {LeafletTypeComponent} from './types/leaflet-type.component';
 import {FocusDirective} from '../directives/focus.directive';
+import {FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';
+import {TableTypeComponent} from './types/table-type.component';
 
 function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -30,7 +34,8 @@ function IpValidator(control: FormControl): ValidationErrors {
     BrowserAnimationsModule,
     FlexLayoutModule,
     MatDialogModule, MatButtonModule, MatAutocompleteModule, MatIconModule, MatSelectModule, MatDividerModule, MatListModule,
-    FormlyMaterialModule,
+    MatTableModule, MatPopoverEditModule,
+    FormlyMaterialModule, FormlyMatDatepickerModule,
     FormlyModule.forChild({
       types: [{
         name: 'autocomplete',
@@ -39,6 +44,10 @@ function IpValidator(control: FormControl): ValidationErrors {
       }, {
         name: 'leaflet',
         component: LeafletTypeComponent/*,
+        wrappers: ['form-field']*/
+      }, {
+        name: 'table',
+        component: TableTypeComponent/*,
         wrappers: ['form-field']*/
       }],
       validators: [
@@ -52,7 +61,13 @@ function IpValidator(control: FormControl): ValidationErrors {
       ]*/
     })
   ],
-  declarations: [ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, FocusDirective],
+  providers: [
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: 'de-DE'
+    }
+  ],
+  declarations: [ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, TableTypeComponent, FocusDirective],
   entryComponents: [ContextHelpComponent],
   exports: [
     ReactiveFormsModule,

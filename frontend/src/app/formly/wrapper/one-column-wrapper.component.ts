@@ -14,14 +14,8 @@ import {Overlay} from '@angular/cdk/overlay';
         <ng-container #fieldComponent></ng-container>
       </div>
     </div>
-    {{model | json}}
   `,
   styles: [`
-
-      /*:host {
-    padding: 20px;
-    display: block;
-  }*/
 
       /deep/ .form-content .mat-form-field-infix {
           /*border-top: 0.2em solid transparent;*/

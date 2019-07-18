@@ -346,3 +346,7 @@ tree-node:hover .folder {
 [class*="flex-"]:nth-last-child(1) {
   padding-right: 0;
 }
+
+.smallField {
+  width: 100px;
+}

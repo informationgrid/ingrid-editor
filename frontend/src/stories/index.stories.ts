@@ -14,11 +14,11 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {of} from 'rxjs';
 import {HttpClientModule} from '@angular/common/http';
 
-const formlyTemplate = `<form [formGroup]='form' class='form-content'>
+export const formlyTemplate = `<form [formGroup]='form' class='form-content'>
                         <formly-form [form]='form' [fields]='fields' [model]='model'></formly-form>
                       </form>`;
 
-const formlyModuleMetadata = {
+export const formlyModuleMetadata = {
   imports: [
     HttpClientModule,
     IgeFormlyModule,

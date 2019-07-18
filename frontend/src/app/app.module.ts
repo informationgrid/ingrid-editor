@@ -13,7 +13,6 @@ import {LoginComponent} from './security/login.component';
 import {GlobalErrorHandler} from './error-handler';
 import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {
-  MAT_DATE_LOCALE,
   MatAutocompleteModule,
   MatButtonModule,
   MatCardModule,
@@ -68,7 +67,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent, SearchBarComponent, DeleteDialogComponent,
+  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent,
+    SearchBarComponent, DeleteDialogComponent,
     OneColumnWrapperComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
@@ -84,7 +84,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     }),
     FormlyMaterialModule,
     // Material
-    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule,
+    MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
     // IGE-Modules
     // IgeFormModule, FormFieldsModule,
     routing, FormsModule
@@ -101,11 +102,6 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       useFactory: ConfigLoader,
       deps: [ConfigService, ModalService],
       multi: true
-    },
-    // date locale
-    {
-      provide: MAT_DATE_LOCALE,
-      useValue: 'de'
     },
     // add authorization header to all requests
     /*{
