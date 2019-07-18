@@ -2047,10 +2047,10 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-angular-split@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/angular-split/-/angular-split-2.0.1.tgz#11dcf8951933109dc307813ada1dfe9c173ea4b4"
-  integrity sha512-5VWm6LWcjmL178XapWlyGsXMtc7UVNnQoz1rGo3VZrjQwyAJ4RFUKpmqkzUqnU7v/+Gsa/PD369bgRTJnhx1OA==
+angular-split@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/angular-split/-/angular-split-3.0.2.tgz#df7c52653b15a7307f143e127d7552039f526b13"
+  integrity sha512-km59k1kEgVlplo2t4t5Ob43Vx16qVXWXsl5gbsdQtqrOW7341So4CFUmCjcZgfk1swu9RBaCdSQEqzNWOe/89w==
   dependencies:
     tslib "^1.9.0"
 
@@ -3337,10 +3337,10 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
-chartist@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/chartist/-/chartist-0.11.0.tgz#84ba5e05490d096d93dcfa9343ebc31ef6a3bd28"
-  integrity sha1-hLpeBUkNCW2T3PqTQ+vDHvajvSg=
+chartist@^0.11.3:
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/chartist/-/chartist-0.11.3.tgz#939d525669d9bffdb0dbcd0f38e7416d2bf0a93a"
+  integrity sha512-ENqCECh7iu0Mm36NNKqeECdGQ9dIcHXmf8fqSWmcmt/XDtl0mqpVNNC9aChoyrJYrlFBOlLGOeAb7fIHFDMNvg==
 
 chokidar@2.0.4, chokidar@^2.0.2, chokidar@^2.0.3:
   version "2.0.4"
@@ -7101,10 +7101,10 @@ lcid@^2.0.0:
   dependencies:
     invert-kv "^2.0.0"
 
-leaflet@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.4.0.tgz#d5f56eeb2aa32787c24011e8be4c77e362ae171b"
-  integrity sha512-x9j9tGY1+PDLN9pcWTx9/y6C5nezoTMB8BLK5jTakx+H7bPlnbCHfi9Hjg+Qt36sgDz/cb9lrSpNQXmk45Tvhw==
+leaflet@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.5.1.tgz#9afb9d963d66c870066b1342e7a06f92840f46bf"
+  integrity sha512-ekM9KAeG99tYisNBg0IzEywAlp0hYI5XRipsqRXyRTeuU8jcuntilpp+eFf5gaE0xubc9RuSNIVtByEKwqFV0w==
 
 less-loader@5.0.0:
   version "5.0.0"
