@@ -3,16 +3,16 @@ import {AuthGuard} from "./security/auth.guard";
 // import {LoginComponent} from './security/login.component';
 
 export const routes: Routes = [
-  {path: 'dashboard', loadChildren: './+dashboard/dashboard.module#DashboardModule', canActivate: [AuthGuard]},
+  {path: 'dashboard', loadChildren: () => import('./+dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [AuthGuard]},
   // {path: 'form', loadChildren: '+form/ige-form.module', canActivate: [AuthGuard]},
-  {path: 'form', loadChildren: './+form/ige-form.module#IgeFormModule', canActivate: [AuthGuard]},
+  {path: 'form', loadChildren: () => import('./+form/ige-form.module').then(m => m.IgeFormModule), canActivate: [AuthGuard]},
   // {path: 'form/:id', loadChildren: './+form/ige-form.module#IgeFormModule'},
-  {path: 'plugins', loadChildren: './+behaviours/behaviours.module#PluginsModule', canActivate: [AuthGuard]},
-  {path: 'fields', loadChildren: './+fields/fields.module#FieldsModule', canActivate: [AuthGuard]},
-  {path: 'user', loadChildren: './+user/user.module#UserModule'}, // TODO: check canActivateChild: [AuthGuard],
-  {path: 'importExport', loadChildren: './+importExport/import-export.module#ImportExportModule', canActivate: [AuthGuard]},
-  {path: 'catalogs', loadChildren: './+catalog/catalog.module#CatalogModule'},
-  {path: 'demo', loadChildren: './+demo-layout/demo-layout.module#DemoLayoutModule'},
+  {path: 'plugins', loadChildren: () => import('./+behaviours/behaviours.module').then(m => m.PluginsModule), canActivate: [AuthGuard]},
+  {path: 'fields', loadChildren: () => import('./+fields/fields.module').then(m => m.FieldsModule), canActivate: [AuthGuard]},
+  {path: 'user', loadChildren: () => import('./+user/user.module').then(m => m.UserModule)}, // TODO: check canActivateChild: [AuthGuard],
+  {path: 'importExport', loadChildren: () => import('./+importExport/import-export.module').then(m => m.ImportExportModule), canActivate: [AuthGuard]},
+  {path: 'catalogs', loadChildren: () => import('./+catalog/catalog.module').then(m => m.CatalogModule)},
+  {path: 'demo', loadChildren: () => import('./+demo-layout/demo-layout.module').then(m => m.DemoLayoutModule)},
   // {path: 'login', component: LoginComponent},
   {path: '', redirectTo: '/form', pathMatch: 'full'}
 ];

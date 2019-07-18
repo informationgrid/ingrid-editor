@@ -2,7 +2,10 @@ import {createHostComponentFactory, Spectator} from "@netbasal/spectator";
 import {DocumentDataService} from "../../../services/document/document-data.service";
 import {MetadataTreeComponent} from "./tree.component";
 import {DocumentAbstract} from "../../../store/document/document.model";
-import {MatButtonModule, MatDialogModule, MatIconModule, MatTreeModule} from "@angular/material";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatIconModule } from "@angular/material/icon";
+import { MatTreeModule } from "@angular/material/tree";
 import {createHost} from "@angular/compiler/src/core";
 
 const childrenThree = [{_id: '1', _profile: 'A'}, {_id: '2', _profile: 'A'}, {_id: '3', _profile: 'A'}];
@@ -44,8 +47,7 @@ describe('TreeComponent', () => {
         icon: '',
         _state: '',
         _profile: '',
-        _hasChildren: false,
-        _id: ''
+        _hasChildren: false
       },
       {
         id: '',

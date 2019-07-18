@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormularService } from '../../../services/formular/formular.service';
 import { DocumentService } from '../../../services/document/document.service';
-import { MAT_DIALOG_DATA } from '@angular/material';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component( {
   templateUrl: './create-folder.component.html'

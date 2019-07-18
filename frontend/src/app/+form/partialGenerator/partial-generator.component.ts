@@ -11,7 +11,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FormControlService } from '../../services/form-control.service';
 import { PartialGeneratorField } from '../controls/field-partial-generator';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { AddPartialDialogComponent } from './dialog/add-partial-dialog.component';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
@@ -34,7 +34,7 @@ export class PartialGenerator implements ControlValueAccessor, AfterViewInit {
 
   @Output() onAddSection = new EventEmitter<any>();
 
-  @ViewChild('addPartial') addPartialModal: TemplateRef<any>;
+  @ViewChild('addPartial', {static: true}) addPartialModal: TemplateRef<any>;
 
   types: any[] = [];
   choiceType: string;

@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {DocumentService} from '../../../services/document/document.service';
 import {Router} from '@angular/router';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {DocumentAbstract} from "../../../store/document/document.model";
 
 @Component({

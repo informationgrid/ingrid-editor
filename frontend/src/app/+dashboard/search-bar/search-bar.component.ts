@@ -15,7 +15,7 @@ export class SearchBarComponent implements OnInit {
   autoCompleteList: any[];
   searchOption = [];
 
-  @ViewChild('autocompleteInput') autocompleteInput: ElementRef;
+  @ViewChild('autocompleteInput', {static: true}) autocompleteInput: ElementRef;
   @Output() onSelectedOption = new EventEmitter();
 
   constructor() { }

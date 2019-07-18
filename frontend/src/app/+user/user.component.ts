@@ -22,7 +22,7 @@ import { Observable } from 'rxjs';
 } )
 export class UserComponent implements OnInit, AfterViewInit {
 
-  @ViewChild( 'loginRef' ) loginRef: ElementRef;
+  @ViewChild( 'loginRef', {static: true} ) loginRef: ElementRef;
 
   users: User[];
   roles: Role[];

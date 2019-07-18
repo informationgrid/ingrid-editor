@@ -2,7 +2,7 @@
 import {Component, ElementRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {FieldWrapper} from '@ngx-formly/core';
 import {ContextHelpComponent} from '../../+demo-layout/form/context-help/context-help.component';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {Overlay} from '@angular/cdk/overlay';
 
 @Component({
@@ -137,7 +137,7 @@ import {Overlay} from '@angular/cdk/overlay';
   `]
 })
 export class OneColumnWrapperComponent extends FieldWrapper {
-  @ViewChild('fieldComponent', {read: ViewContainerRef}) fieldComponent: ViewContainerRef;
+  @ViewChild('fieldComponent', {read: ViewContainerRef, static: true}) fieldComponent: ViewContainerRef;
 
   constructor(public dialog: MatDialog, private overlay: Overlay) {
     super();

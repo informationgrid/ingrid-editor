@@ -3,7 +3,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from "../../../store/tree/tree-node.model";
 import {DocumentAbstract} from "../../../store/document/document.model";
 import {DynamicDatabase} from "./DynamicDatabase";
-import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material";
+import { MatTreeFlatDataSource, MatTreeFlattener } from "@angular/material/tree";
 import {Observable} from "rxjs";
 
 @Component({

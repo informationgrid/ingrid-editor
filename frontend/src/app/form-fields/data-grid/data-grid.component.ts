@@ -1,7 +1,7 @@
 import {Component, ElementRef, forwardRef, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {IColumn} from '../../+form/controls/field-opentable';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {SelectionModel} from '@angular/cdk/collections';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
@@ -31,7 +31,7 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   // @ViewChild(Ng2SmartTableComponent) public smartTable: Ng2SmartTableComponent;
 
-  @ViewChild( 'addRowModal' ) addModal: TemplateRef<any> = null;
+  @ViewChild( 'addRowModal', {static: true} ) addModal: TemplateRef<any> = null;
 
   editCache = {};
 

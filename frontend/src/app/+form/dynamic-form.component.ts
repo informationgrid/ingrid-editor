@@ -16,7 +16,7 @@ import {Role} from '../models/user-role';
 import {RoleService} from '../services/role/role.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {NewDocumentComponent} from '../dialogs/form/new-document/new-document.component';
 import {DocumentQuery} from '../store/document/document.query';
 import {IgeDocument} from '../models/ige-document';
@@ -46,9 +46,9 @@ export interface FormDataContainer {
 } )
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild( 'newDocModal' ) newDocModal: TemplateRef<any>;
-  @ViewChild( 'deleteConfirmModal' ) deleteConfirmModal: TemplateRef<any>;
-  @ViewChild( 'discardConfirmModal' ) discardConfirmModal: TemplateRef<any>;
+  @ViewChild( 'newDocModal', {static: true} ) newDocModal: TemplateRef<any>;
+  @ViewChild( 'deleteConfirmModal', {static: true} ) deleteConfirmModal: TemplateRef<any>;
+  @ViewChild( 'discardConfirmModal', {static: true} ) discardConfirmModal: TemplateRef<any>;
 
   debugEnabled = false;
 

@@ -1,6 +1,6 @@
 import { Component, forwardRef, Input, OnInit, TemplateRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 export const LINK_DATASET_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,

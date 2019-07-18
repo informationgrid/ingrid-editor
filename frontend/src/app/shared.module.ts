@@ -1,7 +1,10 @@
 import {NgModule} from '@angular/core';
 import {MetadataTreeComponent} from './+form/sidebars/tree/tree.component';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule, MatIconModule, MatProgressBarModule, MatTreeModule} from "@angular/material";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatTreeModule } from "@angular/material/tree";
 import {AngularSplitModule} from "angular-split";
 
 @NgModule({

@@ -13,7 +13,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ModalService} from '../../services/modal/modal.service';
 import {NominatimService} from './nominatim.service';
 import { LeafletAreaSelect } from './leaflet-area-select';
-import { MatSelectionList } from '@angular/material';
+import { MatSelectionList } from '@angular/material/list';
 
 class MyMap extends Map {
   _onResize: () => {};
@@ -130,7 +130,7 @@ export const LEAFLET_CONTROL_VALUE_ACCESSOR = {
 } )
 export class LeafletComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
 
-  @ViewChild( 'leaflet' ) leaflet: ElementRef;
+  @ViewChild( 'leaflet', {static: true} ) leaflet: ElementRef;
   private leafletReference: L.Map;
   private areaSelect: any;
   drawnBBox: any;

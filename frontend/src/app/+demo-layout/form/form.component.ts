@@ -1,7 +1,7 @@
 import {Component, ElementRef, OnInit} from '@angular/core';
 import {FormControl, Validators} from "@angular/forms";
 import {ContextHelpComponent} from "./context-help/context-help.component";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {Overlay, RepositionScrollStrategy} from "@angular/cdk/overlay";
 
 @Component({

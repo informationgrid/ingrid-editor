@@ -8,7 +8,7 @@ import { ModalService } from '../../../services/modal/modal.service';
 import { PasteDialogComponent } from './paste-dialog.component';
 import { CopyMoveEnum } from './enums';
 import { Subscription } from 'rxjs';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 @Injectable({
   providedIn: 'root'

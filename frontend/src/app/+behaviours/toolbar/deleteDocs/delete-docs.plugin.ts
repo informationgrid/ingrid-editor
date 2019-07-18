@@ -4,7 +4,7 @@ import {FormularService} from '../../../services/formular/formular.service';
 import {Plugin} from '../../plugin';
 import {DeleteDialogComponent} from './delete-dialog.component';
 import {Subscription} from 'rxjs';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {TreeQuery} from "../../../store/tree/tree.query";
 
 @Injectable({

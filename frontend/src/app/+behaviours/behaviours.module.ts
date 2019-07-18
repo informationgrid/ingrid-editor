@@ -5,14 +5,12 @@ import {routing} from './behaviours.routing';
 import {Collapse} from '../directives/collapse.directive';
 import {SharedModule} from '../shared.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {
-  MatButtonModule,
-  MatCardModule,
-  MatCheckboxModule,
-  MatDialogModule,
-  MatInputModule,
-  MatTabsModule
-} from '@angular/material';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatTabsModule } from '@angular/material/tabs';
 import {RouterModule, Routes} from "@angular/router";
 import {FormFieldsModule} from "../form-fields/form-fields.module";
 import {PasteDialogComponent} from "./system/CopyCutPaste/paste-dialog.component";

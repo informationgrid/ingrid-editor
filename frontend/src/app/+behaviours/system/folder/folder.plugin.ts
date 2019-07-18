@@ -4,7 +4,7 @@ import { FormularService } from '../../../services/formular/formular.service';
 import { ModalService } from '../../../services/modal/modal.service';
 import { Plugin } from '../../plugin';
 import { CreateFolderComponent } from './create-folder.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 @Injectable({
   providedIn: 'root'

@@ -15,20 +15,18 @@ import {MainFormComponent} from './main-form/main-form.component';
 import {MainFormTabsComponent} from './main-form-tabs/main-form-tabs.component';
 import {IgeWizardModule} from '../wizard/wizard.module';
 import {ScrollToDirective} from '../directives/scrollTo.directive';
-import {
-  MatCardModule,
-  MatCheckboxModule,
-  MatDialogModule,
-  MatDividerModule,
-  MatExpansionModule,
-  MatFormFieldModule,
-  MatInputModule,
-  MatListModule,
-  MatRadioModule,
-  MatTableModule,
-  MatTabsModule,
-  MatToolbarModule
-} from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {AddPartialDialogComponent} from './partialGenerator/dialog/add-partial-dialog.component';
 import {SidebarComponent} from './sidebars/sidebar.component';

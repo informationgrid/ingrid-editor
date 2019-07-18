@@ -3,7 +3,7 @@ import {Catalog, CatalogService} from '../services/catalog.service';
 import {ConfigService, Configuration} from '../../services/config/config.service';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
 import {UploadProfileDialogComponent} from '../../dialogs/catalog/upload-profile/upload-profile-dialog.component';
 

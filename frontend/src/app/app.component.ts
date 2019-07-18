@@ -2,7 +2,7 @@ import {Component, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angu
 import {ModalService} from './services/modal/modal.service';
 import {BehaviourService} from './services/behavior/behaviour.service';
 import {RoleService} from './services/role/role.service';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {MenuItem, MenuService} from "./menu/menu.service";
 import {ApiService} from "./services/ApiService";
 
@@ -32,8 +32,8 @@ import {ApiService} from "./services/ApiService";
 } )
 export class AppComponent implements OnInit {
 
-  @ViewChild( 'errorModal' ) errorModal: TemplateRef<any>;
-  @ViewChild('dialogContainer', {read: ViewContainerRef}) dialogContainerRef: ViewContainerRef;
+  @ViewChild( 'errorModal', {static: true} ) errorModal: TemplateRef<any>;
+  @ViewChild('dialogContainer', {read: ViewContainerRef, static: true}) dialogContainerRef: ViewContainerRef;
 
   routes: MenuItem[];
 

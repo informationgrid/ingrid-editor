@@ -6,7 +6,8 @@ import {RouterModule, Routes} from "@angular/router";
 import {AuthGuard} from "../security/auth.guard";
 import {NoCatalogAssignedGuard} from "../security/no-catalog-assigned.guard";
 import {ActionButtonComponent} from './action-button/action-button.component';
-import {MatButtonModule, MatIconModule} from "@angular/material";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {DocumentTileComponent} from './document-tile/document-tile.component';
 

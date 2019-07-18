@@ -112,7 +112,7 @@ class MyMap extends Map {
 })
 export class LeafletTypeComponent extends FieldType implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('leaflet') leaflet: ElementRef;
+  @ViewChild('leaflet', {static: true}) leaflet: ElementRef;
   private leafletReference: L.Map;
   private areaSelect: any;
   drawnBBox: any;

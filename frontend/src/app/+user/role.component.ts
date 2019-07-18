@@ -13,8 +13,8 @@ import { Observable } from 'rxjs';
 } )
 export class RoleComponent implements OnInit {
 
-  @ViewChild( 'loginRef' ) loginRef: ElementRef;
-  @ViewChild( 'datasetTree' ) datasetTree: MetadataTreeComponent;
+  @ViewChild( 'loginRef', {static: true} ) loginRef: ElementRef;
+  @ViewChild( 'datasetTree', {static: true} ) datasetTree: MetadataTreeComponent;
 
   @Output() onRoleChange = new EventEmitter<Role[]>();
 
