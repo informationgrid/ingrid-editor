@@ -9,7 +9,9 @@ import {Overlay} from '@angular/cdk/overlay';
   selector: 'ige-one-column-wrapper',
   template: `
     <div fxLayout="row">
-      <label (click)="showContextHelp($event)">{{ to.externalLabel }} <span *ngIf="to.required">*</span></label>
+      <div class="label-wrapper">
+        <label (click)="showContextHelp($event)">{{ to.externalLabel }} <span *ngIf="to.required">*</span></label>
+      </div>
       <div class="flex-1">
         <ng-container #fieldComponent></ng-container>
       </div>
@@ -121,7 +123,7 @@ import {Overlay} from '@angular/cdk/overlay';
           text-align: center;
       }
 
-      div label {
+      .label-wrapper {
           min-width: 350px;
           padding-top: 17px;
       }

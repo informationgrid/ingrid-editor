@@ -13,51 +13,45 @@ interface PeriodicElement {
   selector: 'ige-table-type',
   template: `
     <table mat-table editable [dataSource]="dataSource">
-      <ng-container matColumnDef="before">
-        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut
-                  matEditOpen>
-          just a cell
+
+      <ng-container *ngFor="let column of displayedColumns; let i = index" [matColumnDef]="column">
+        <mat-header-cell *matHeaderCellDef> {{to.columns[i].label}} </mat-header-cell>
+        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>
+          {{element[column]}}
           <!-- This edit is defined in the cell and can implicitly access element -->
           <ng-template #nameEdit>
-            <div>
-              <form #f="ngForm"
-                    matEditLens
-                    matEditLensClickOutBehavior="submit"
-                    (ngSubmit)="onSubmitName(element, f)"
-                    [matEditLensPreservedFormValue]="preservedNameValues.get(element)"
-                    (matEditLensPreservedFormValueChange)="preservedNameValues.set(element, $event)">
-                <div mat-edit-content>
-                  <mat-form-field>
-                    <input matInput [ngModel]="element.name" name="name" required>
-                  </mat-form-field>
-                </div>
-              </form>
-            </div>
+            <form #f="ngForm"
+                  matEditLens
+                  matEditLensClickOutBehavior="submit"
+                  (ngSubmit)="onSubmitName(element, f)"
+                  [matEditLensPreservedFormValue]="preservedValues[column].get(element)"
+                  (matEditLensPreservedFormValueChange)="preservedValues[column].set(element, $event)">
+              <div mat-edit-content>
+                <mat-form-field class="full-width">
+                  <input matInput [ngModel]="element[column]" name="name" required>
+                </mat-form-field>
+              </div>
+            </form>
           </ng-template>
         </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="name">
-        <mat-cell *matCellDef="let element">
-          <ng-template #nameEdit>
-          </ng-template>
-          <span *matIfRowHovered>
-            <button matEditOpen>Edit</button>
-          </span>
-        </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="weight">
-        <mat-cell *matCellDef="let element">
-          {{element.weight}}
-          <ng-template #weightEdit>
-          </ng-template>
-        </mat-cell>
-      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
     </table>
   `,
   styles: [`
-      table {
+      table, .full-width {
           width: 100%;
+      }
+
+      ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix {
+          padding: 0;
+      }
+
+      ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-wrapper {
+          padding-bottom: 0;
       }
   `]
 })
@@ -76,20 +70,23 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
     {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'}
   ];
 
-  readonly preservedNameValues = new WeakMap<PeriodicElement, any>();
-  readonly preservedWeightValues = new WeakMap<PeriodicElement, any>();
+  readonly preservedValues = {};
 
   dataSource = this.ELEMENT_DATA;
-  displayedColumns = ['before', 'name', 'weight'];
+  displayedColumns: string[];
 
   ngOnInit() {
+    this.displayedColumns = this.to.columns.map(column => column.key);
+    this.displayedColumns.forEach(column => this.preservedValues[column] = new WeakMap<PeriodicElement, any>());
   }
 
   ngAfterViewInit() {
   }
 
   onSubmitName(element: PeriodicElement, f: NgForm) {
-    if (!f.valid) { return; }
+    if (!f.valid) {
+      return;
+    }
 
     element.name = f.value.name;
   }

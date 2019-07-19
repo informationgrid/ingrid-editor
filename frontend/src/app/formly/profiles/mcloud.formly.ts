@@ -17,7 +17,10 @@ export class McloudFormly {
       wrappers: ['panel'],
       templateOptions: {
         externalLabel: 'Adressen',
-        appearance: 'outline'
+        columns: [
+          { key: 'name', editable: true, label: 'Name' },
+          { key: 'weight', editable: false, label: 'Gewicht' }
+        ]
       }
     }, {
       key: 'usage',
