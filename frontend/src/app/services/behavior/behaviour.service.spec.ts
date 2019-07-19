@@ -2,11 +2,7 @@ import {BehaviourService} from './behaviour.service';
 import {inject, TestBed} from '@angular/core/testing';
 import {Behaviour, BehavioursDefault} from '../../+behaviours/behaviours';
 import {OpenDataBehaviour} from '../../+behaviours/form/OpenData/open-data.behaviour';
-
-import objectContaining = jasmine.objectContaining;
 import {AuthService} from '../security/auth.service';
-import {Http, HttpModule} from '@angular/http';
-import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {routes} from '../../app.router';
 

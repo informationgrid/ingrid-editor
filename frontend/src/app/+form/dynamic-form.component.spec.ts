@@ -3,9 +3,9 @@ import {DynamicFormComponent} from './dynamic-form.component';
 import {FormularService} from '../services/formular/formular.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {DocumentService} from '../services/document/document.service';
-import {HttpModule} from '@angular/http';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {IgeFormModule} from './ige-form.module';
+import {HttpClientModule} from '@angular/common/http';
 
 let fixture: any, comp: DynamicFormComponent, el: any, fService: FormularService;
 
@@ -14,7 +14,7 @@ describe('Dynamic Form', () => {
 
     // refine the test module by declaring the test component
     TestBed.configureTestingModule({
-      imports: [IgeFormModule, HttpModule],
+      imports: [IgeFormModule, HttpClientModule],
       providers: [FormularService, DocumentService, FormToolbarService]
     });
 
