@@ -1,0 +1,3 @@
+include 'frontend', 'api', 'server'
+
+rootProject.name='IGE-NG'

@@ -16,6 +16,7 @@ import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @KeycloakConfiguration
 class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
@@ -74,14 +75,29 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .authorizeRequests().anyRequest().permitAll();
             // @formatter:on
         } else {
-            http
+            /*http
                 // unfortunately we have to disable CSRF, otherwise each POST-request will result in a 403-error
                 // because of "Invalid CSRF token found for http://ige-ng.informationgrid.eu/api/..."
                 // FIXME: Find out why CSRF is not working
                 .csrf().disable()
                 .authorizeRequests()
+                    .antMatchers("/sso/login*").permitAll()
+                    .antMatchers("/*").hasRole("ADMIN")
+                    .anyRequest().permitAll();
                 //.antMatchers("/persons*").hasRole("user") // only user with role user are allowed to access
-                .anyRequest().authenticated();
+                    //.anyRequest().authenticated();
+            // @formatter:off*/
+		http
+			.csrf()
+			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // make cookies readable within
+																				// JS
+				.and().authorizeRequests().anyRequest().authenticated().and()
+				// .formLogin()
+				// .loginPage( "/login" )
+				// .permitAll()
+				// .and()
+				.logout().permitAll();
+		// @formatter:on
         }
     }
 

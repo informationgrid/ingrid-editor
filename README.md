@@ -56,3 +56,17 @@ You can view the api documentation in swagger-ui by pointing to
 http://localhost:8080/  
 
 Change default port value in application.properties
+
+# FAQ
+
+## Error after login: ERR_TOO_MANY_REDIRECTS
+
+Check if the keycloak.credentials.secret is correct. The logs should tell if the secret is not correct and show a message "Failed to turn code into token"
+
+## Still having the error: ERR_TOO_MANY_REDIRECTS
+
+Another problem occurs when running Keycloak and Application in a docker container on your local machine. Then it's important that the access to the keycloak instance is the same for the backend as in the frontend in the browser, which happens actually on the local machine (not inside docker). Therefore you need to configure "/etc/hosts" file or under windows "c:\Windows\System32\Drivers\etc\hosts" and add the following entry:
+
+> 127.0.0.1 keycloak
+
+In your docker-compose file you would then use for your app the environment variable "KEYCLOAK_URL=http://keycloak:8080/auth" to access keycloak in the container. Moreover make sure the port mapping is the same "8080:8080" otherwise keycloak won't be able to map correctly. 

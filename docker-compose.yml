@@ -1,0 +1,39 @@
+version: '3'
+services:
+
+  keycloak:
+    image: jboss/keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - PROXY_ADDRESS_FORWARDING=true
+      - TZ=Europe/Berlin
+      - KEYCLOAK_LOGLEVEL=DEBUG
+      #- KEYCLOAK_HTTPS_PORT=8443
+      #- KEYCLOAK_IMPORT=/tmp/realm-export.json
+    ports:
+      #- 127.0.0.1:18100:8443
+      - 8080:8080
+    volumes:
+      #- ./realm-export.json:/tmp/realm-export.json
+      - ./keycloak-db:/opt/jboss/keycloak/standalone/data
+    networks:
+      - ige-ng-network
+
+  ige:
+    image: docker-registry.wemove.com/ingrid-ige-ng:gradle
+    environment:
+      - KEYCLOAK_URL=http://keycloak:8080/auth
+      - KEYCLOAK_CLIENT_SECRET=600be265-6f32-4cc9-808e-c8a0a1b2ceaf
+    ports:
+      - 80:80
+      #- 8000:8000
+    networks:
+      - ige-ng-network
+    #volumes:
+    #  - ./conf/application-default.properties:/app/application-default.properties
+    #command: ["java","-Dlog4j.debug=true","-Dlog4j.configurationFile=/app/log4j2.xml","-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n","-jar","ige-ng-server-1.0.0-SNAPSHOT.jar"]
+
+networks:
+  ige-ng-network:
+    driver: "bridge"
