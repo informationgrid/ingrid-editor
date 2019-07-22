@@ -19,7 +19,9 @@ pipeline {
                 }
             }*/
             steps {
-                sh './gradlew clean build'
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    sh './gradlew clean build'
+                }
             }
         }
         // release build if it's the master or the support branch and is not a SNAPSHOT version
