@@ -16,6 +16,11 @@ repositories {
 group = 'de.ingrid'
 description = 'IGE-NG Frontend'
 
+node {
+  version = '10.16.0'
+  download = true
+}
+
 task bundle(type: YarnTask) {
   //inputs.files(fileTree('node_modules'))
   inputs.files(fileTree('src'))
