@@ -20,7 +20,7 @@ export class CatalogManagerComponent implements OnInit {
   uploadUrl: string;
   private config: ConfigService;
   noAssignedCatalogs = false;
-  private showSpinner = false;
+  showSpinner = false;
 
   constructor(private router: Router, private catalogService: CatalogService, configService: ConfigService,
               private dialog: MatDialog) {
