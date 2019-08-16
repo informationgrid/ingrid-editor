@@ -19,17 +19,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping(path = "/api")
 public interface CatalogApi {
 
-	@ApiOperation(value = "", notes = "", response = Void.class, tags = { "Catalog", })
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
-			@ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
+    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Catalog"})
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "", response = Void.class),
+            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)})
 
-	@RequestMapping(value = "/catalogs", produces = { "application/json" }, method = RequestMethod.GET)
+    @RequestMapping(value = "/catalogs", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String[]> getCatalogs();
 
-	// @PreAuthorize("hasRole('admin')")
-	@ApiOperation(value = "", notes = "", response = Void.class, tags = { "Catalog", })
-	@RequestMapping(value = "/catalogs/{name}", produces = { "application/json" }, method = RequestMethod.POST)
-	public ResponseEntity<String> createCatalog(
-			@ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name) throws ApiException;
+    // @PreAuthorize("hasRole('admin')")
+    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Catalog"})
+    @RequestMapping(value = "/catalogs/{name}", produces = {"application/json"}, method = RequestMethod.POST)
+    public ResponseEntity<String> createCatalog(
+            @ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name) throws ApiException;
+
+    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Catalog"})
+    @RequestMapping(value = "/catalogs/{name}", produces = {"application/json"}, method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteCatalog(
+            @ApiParam(value = "The name of the catalog to delete.", required = true) @PathVariable("name") String name) throws ApiException;
 
 }

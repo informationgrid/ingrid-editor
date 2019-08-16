@@ -12,11 +12,12 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    const user = this.configService.getUserInfo();
+    const user = this.configService.$userInfo.getValue();
     const path = state.url;
 
 
     if (user.assignedCatalogs.length === 0 && state.url.indexOf('/catalogs') === -1) {
+      this.router.navigate(['/catalogs']);
       return false;
     }
 

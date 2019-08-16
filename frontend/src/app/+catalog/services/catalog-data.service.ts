@@ -31,4 +31,8 @@ export class CatalogDataService {
       userId: userId
     } )
   }
+
+  deleteCatalog(name: string) {
+    return this.http.delete( this.configuration.backendUrl + 'catalogs/' + name);
+  }
 }

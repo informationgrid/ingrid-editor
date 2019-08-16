@@ -29,81 +29,81 @@ export class ProfileService {
 
     this.initialized = new Promise((resolve, reject) => {
 
-      if (configService.getUserInfo().assignedCatalogs.length === 0) {
-        resolve();
-        return;
-      }
+      configService.$userInfo.subscribe(info => {
+        if (info.assignedCatalogs.length > 0) {
 
-      console.log('loading dynamic bundle');
-      //$script('assets/uvp-profile.umd.js', () => {
-      /*http.get('http://localhost:4300/assets/uvp-profile.umd.js', {responseType: 'text'})
-        .pipe(
-          map(source => {
-            console.log('Loaded UMD project bundle dynamically');
-            const exports = {}; // this will hold module exports
-            const modules = {   // this is the list of modules accessible by plugins
-              '@angular/core': AngularCore,
-              '@angular/common': AngularCommon,
-              'api': IgeApi
-            };
+          console.log('loading dynamic bundle');
+          //$script('assets/uvp-profile.umd.js', () => {
+          /*http.get('http://localhost:4300/assets/uvp-profile.umd.js', {responseType: 'text'})
+            .pipe(
+              map(source => {
+                console.log('Loaded UMD project bundle dynamically');
+                const exports = {}; // this will hold module exports
+                const modules = {   // this is the list of modules accessible by plugins
+                  '@angular/core': AngularCore,
+                  '@angular/common': AngularCommon,
+                  'api': IgeApi
+                };
 
-            const require: any = (module) => modules[module];
-            eval(source);
+                const require: any = (module) => modules[module];
+                eval(source);
 
-            compiler.compileModuleAndAllComponentsAsync(exports['UvpProfileModule']).then(compiled => {
+                compiler.compileModuleAndAllComponentsAsync(exports['UvpProfileModule']).then(compiled => {
 
-              const moduleFactory: NgModuleFactory<any> = compiled.ngModuleFactory;
-              const modRef = moduleFactory.create(this.injector);
-              const componentFactory = modRef.componentFactoryResolver.resolveComponentFactory(this.getEntryComponent(moduleFactory));
-              const component = componentFactory.create(modRef.injector);
-              //const cmpRef = this.viewContainer.createComponent<any>(componentFactory);
-              return exports;
+                  const moduleFactory: NgModuleFactory<any> = compiled.ngModuleFactory;
+                  const modRef = moduleFactory.create(this.injector);
+                  const componentFactory = modRef.componentFactoryResolver.resolveComponentFactory(this.getEntryComponent(moduleFactory));
+                  const component = componentFactory.create(modRef.injector);
+                  //const cmpRef = this.viewContainer.createComponent<any>(componentFactory);
+                  return exports;
+                });
+              })
+            ).subscribe();
+          */
+
+          if (environment.profileFromServer) {
+            // window['theProfile'].forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
+            // resolve(this.profiles);
+            // /*console.log('Requesting URL: ' + this.configuration.backendUrl + 'profiles');
+            //$script(this.configuration.backendUrl + 'profiles', () => {
+            $script('assets/pack-bkg.bundle.js', () => {
+              try {
+                // const dynModule: any[] = webpackJsonp([], null, ['_profile_']);
+                window['theProfile'].forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
+                this.setTitleFields(configService);
+              } catch (ex) {
+                console.error('Could not load profiles from backend', ex);
+              }
+              resolve(this.profiles);
+              this.profileStore.update({isInitialized: true});
             });
-          })
-        ).subscribe();
-      */
+          } else {
+            // import( '../../profiles/pack-bkg' ).then(module => {
+            import( '../../profiles/pack-lgv' ).then(module => {
+              console.log('Loaded module: ', module);
+              // TODO: use map instead of multiple parameters in case we want to add another dependency
+              module.profiles.forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
 
-      if (environment.profileFromServer) {
-        // window['theProfile'].forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
-        // resolve(this.profiles);
-        // /*console.log('Requesting URL: ' + this.configuration.backendUrl + 'profiles');
-        //$script(this.configuration.backendUrl + 'profiles', () => {
-        $script('assets/pack-bkg.bundle.js', () => {
-          try {
-            // const dynModule: any[] = webpackJsonp([], null, ['_profile_']);
-            window['theProfile'].forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
-            this.setTitleFields(configService);
-          } catch (ex) {
-            console.error('Could not load profiles from backend', ex);
+              this.setTitleFields(configService);
+
+              this.profileStore.update({isInitialized: true});
+              let profilesAbstract = this.profiles.map(p => {
+                return {
+                  id: p.id,
+                  fields: p.fields,
+                  getTitle: p.getTitle
+                }
+              });
+
+              setTimeout(() => {
+                // @ts-ignore
+                this.profileStore.add(profilesAbstract);
+              }, 1000);
+              resolve(this.profiles);
+            });
           }
-          resolve(this.profiles);
-          this.profileStore.update({isInitialized: true});
-        });
-      } else {
-        // import( '../../profiles/pack-bkg' ).then(module => {
-        import( '../../profiles/pack-lgv' ).then(module => {
-          console.log('Loaded module: ', module);
-          // TODO: use map instead of multiple parameters in case we want to add another dependency
-          module.profiles.forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
-
-          this.setTitleFields(configService);
-
-          this.profileStore.update({isInitialized: true});
-          let profilesAbstract = this.profiles.map( p => {
-            return {
-              id: p.id,
-              fields: p.fields,
-              getTitle: p.getTitle
-            }
-          });
-
-          setTimeout( () => {
-            // @ts-ignore
-            this.profileStore.add(profilesAbstract);
-          }, 1000);
-          resolve(this.profiles);
-        });
-      }
+        }
+      });
     });
     configService.setProfilePackagePromise(this.initialized);
   }

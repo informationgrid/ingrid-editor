@@ -45,10 +45,16 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       .then(userInfo => {
 
         // an admin role has no constraints
-        if (!configService.isAdmin()) {
+        if (configService.isAdmin()) {
+
+          if (userInfo.assignedCatalogs.length === 0) {
+
+          }
+
+        } else {
 
           // check if user has any assigned catalog
-          if (!userInfo.assignedCatalogs || userInfo.assignedCatalogs.length === 0) {
+          if (userInfo.assignedCatalogs.length === 0) {
             const error = new IgeError();
             error.setMessage('The user has no assigned catalog. An administrator has to assign a catalog to this user.');
             throw error;

@@ -1,14 +1,25 @@
-<button mat-button (click)="showCatAdmins()">Katalog-Administrator zuweisen</button>
+<h2 mat-dialog-title>Katalog bearbeiten</h2>
+<mat-dialog-content>
+    <h4>Allgemeine Angaben</h4>
+    <!--    <mat-divider></mat-divider>-->
 
-<a routerLink="/catalogs">Zurück</a>
+    <mat-form-field class="full-width">
+        <input matInput placeholder="Titel">
+    </mat-form-field>
 
-<mat-selection-list #userList dense>
-    <ng-container *ngFor="let user of users | async">
-        <mat-list-option [value]="user" >
-            <p matLine>{{user.firstName}} {{user.lastName}} ({{user.login}})</p>
-        </mat-list-option>
-        <mat-divider></mat-divider>
-    </ng-container>
-</mat-selection-list>
-
-<button mat-button (click)="addUserAsCatAdmin(userList.selectedOptions.selected[0])">Auswählen</button>
+    <h4>Administrator wählen</h4>
+    <!--    <mat-divider></mat-divider>-->
+    <mat-selection-list #userList dense>
+        <ng-container *ngFor="let user of users | async">
+            <mat-list-option [value]="user">
+                <p matLine>{{user.firstName}} {{user.lastName}} ({{user.login}})</p>
+            </mat-list-option>
+            <mat-divider></mat-divider>
+        </ng-container>
+    </mat-selection-list>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button color="warn" (click)="deleteCatalog()">Löschen</button>
+    <div fxFlex></div>
+    <button mat-button (click)="addUserAsCatAdmin(userList.selectedOptions.selected[0])">Auswählen</button>
+</mat-dialog-actions>

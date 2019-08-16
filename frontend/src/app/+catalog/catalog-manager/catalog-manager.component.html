@@ -1,9 +1,14 @@
+<p *ngIf="noAssignedCatalogs">
+    Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog angehören, können Sie zusätzliche Operationen ausführen.
+</p>
+
 <div>
     <button mat-raised-button (click)="showCreateCatalogDialog()">Neuen Katalog erstellen ...</button>
-    <button mat-raised-button (click)="showUploadProfileDialog()">Profil hochladen ...</button>
+<!--    <button mat-raised-button (click)="showUploadProfileDialog()">Profil hochladen ...</button>-->
 </div>
 
 <div fxLayout="row wrap">
+    <mat-spinner *ngIf="showSpinner" diameter="50"></mat-spinner>
     <div *ngFor="let cat of catalogs | async" fxFlex="25">
         <div style="padding: 10px;">
             <mat-card (click)="showCatalogDetail(cat.id)">
@@ -15,7 +20,8 @@
                         <p class="card-text">...</p>
                     </mat-card-content>
                     <mat-card-actions>
-                        <button mat-button (click)="chooseCatalog(cat.id)">Auswählen</button>
+                        <div fxFlex></div>
+                        <button mat-button (click)="chooseCatalog(cat.id)">Verwenden</button>
                     </mat-card-actions>
             </mat-card>
         </div>

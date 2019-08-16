@@ -1,12 +1,12 @@
 <mat-drawer-container autosize fxLayout="column" fxFill>
-    <mat-drawer #drawer mode="side" [opened]="true">
+    <mat-drawer #drawer mode="side" [opened]="false">
         <mat-nav-list>
             <a mat-list-item *ngFor="let route of routes" [routerLink]="route.path">{{route.name}}</a>
         </mat-nav-list>
     </mat-drawer>
 
     <div>
-        <button type="button" mat-button (click)="drawer.toggle()">
+        <button type="button" mat-button (click)="drawer.toggle()" *ngIf="showDrawer | async">
             <mat-icon>menu</mat-icon>
             Menü
         </button>
@@ -14,7 +14,7 @@
             <mat-icon title="Logout">exit_to_app</mat-icon>
         </button>
 
-<!--        <ige-search-bar></ige-search-bar>-->
+        <!--        <ige-search-bar></ige-search-bar>-->
     </div>
 
     <!--<div fxLayout="column" fxFill>-->
@@ -26,7 +26,4 @@
     <!-- PAGES -->
     <router-outlet></router-outlet>
 
-    <!-- TEST -->
-    <!--<button (click)="addMenuItem('dynamic Item')">Add menu item</button>-->
-    <!--</div>-->
 </mat-drawer-container>

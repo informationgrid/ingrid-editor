@@ -10,7 +10,7 @@ export const routing: Routes = [
   {
     path: '',
     component: DynamicFormComponent,
-    canActivate: [AuthGuard, NoCatalogAssignedGuard],
+    canActivate: [AuthGuard/*, NoCatalogAssignedGuard*/],
     data: { roles: ['author', 'admin'] },
     canDeactivate: [FormChangeDeactivateGuard],
     children: [

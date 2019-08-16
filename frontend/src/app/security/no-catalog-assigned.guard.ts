@@ -4,9 +4,9 @@ import {ModalService} from '../services/modal/modal.service';
 import {ConfigService} from "../services/config/config.service";
 import {IgeError} from "../models/ige-error";
 
-@Injectable({
+/*@Injectable({
   providedIn: 'root'
-})
+})*/
 export class NoCatalogAssignedGuard implements CanActivate {
 
   constructor(private configService: ConfigService, private modalService: ModalService) {
@@ -14,11 +14,11 @@ export class NoCatalogAssignedGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
 
-    let userInfo = this.configService.getUserInfo();
+    /*let userInfo = this.configService.getUserInfo();
     if (userInfo.assignedCatalogs.length === 0) {
       this.modalService.showIgeError(new IgeError({message: 'The user has no catalog assigned'}));
       return false;
-    }
+    }*/
 
     return true;
   }

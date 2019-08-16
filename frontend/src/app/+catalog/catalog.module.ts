@@ -11,6 +11,9 @@ import { MatListModule } from '@angular/material/list';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RouterModule, Routes} from "@angular/router";
 import {CatalogDialogsModule} from "../dialogs/catalog/catalog-dialogs.module";
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatInputModule} from '@angular/material/input';
 
 
 const routes: Routes = [
@@ -26,7 +29,7 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     FlexLayoutModule,
-    MatCardModule, MatButtonModule, MatListModule,
+    MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
     CatalogDialogsModule,
     routing
   ],

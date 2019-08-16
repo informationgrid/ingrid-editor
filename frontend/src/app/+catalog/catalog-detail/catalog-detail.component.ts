@@ -1,9 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
 import {User} from '../../+user/user';
 import {Observable} from 'rxjs';
 import {CatalogService} from '../services/catalog.service';
-import {ActivatedRoute} from '@angular/router';
+import {ConfigService} from '../../services/config/config.service';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
 
 @Component({
   selector: 'ige-catalog-detail',
@@ -16,12 +18,13 @@ export class CatalogDetailComponent implements OnInit {
   currentUserSelection: string;
 
   users: Observable<User[]>;
-  private catalogName: string;
+  private catalogId: string;
 
-  constructor(private userService: UserService, private catalogService: CatalogService, private route: ActivatedRoute) {
-    this.route.params.subscribe(params => {
-      this.catalogName = params['id'];
-    });
+  constructor(public dialogRef: MatDialogRef<NewCatalogDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: any,
+              private userService: UserService, private catalogService: CatalogService,
+              private configService: ConfigService) {
+    this.catalogId = data;
   }
 
   ngOnInit() {
@@ -34,8 +37,16 @@ export class CatalogDetailComponent implements OnInit {
 
   addUserAsCatAdmin(selectedUser) {
     console.log('TODO', selectedUser);
-    this.catalogService.setCatalogAdmin(this.catalogName, selectedUser.value.login)
-      .subscribe();
+
+    // get this user again to update internal user info to update webapp
+    this.catalogService.setCatalogAdmin(this.catalogId, selectedUser.value.login)
+      .subscribe(() => this.configService.getCurrentUserInfo());
+    this.dialogRef.close();
+  }
+
+  deleteCatalog() {
+    this.catalogService.deleteCatalog(this.catalogId).subscribe();
+    this.dialogRef.close();
   }
 
 }

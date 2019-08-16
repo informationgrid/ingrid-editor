@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Profile} from "../formular/profile";
 import {ConfigDataService} from "./config-data.service";
+import {BehaviorSubject} from 'rxjs';
 
 export class Configuration {
   constructor(public keykloakBaseUrl: string, public backendUrl: string) {
@@ -22,10 +23,12 @@ export class ConfigService {
 
   private config: Configuration;
 
-  private userInfo: UserInfo;
+  $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
+
   private titleFields: string[];
   promiseProfilePackageLoaded: Promise<Profile[]>;
   private dataService: ConfigDataService;
+  private isAdministrator: boolean = false;
 
   constructor() {
     this.dataService = new ConfigDataService();
@@ -43,15 +46,12 @@ export class ConfigService {
 
   }
 
-  getUserInfo(): UserInfo {
-    return this.userInfo;
-  }
-
   // TODO: refactor to fetchCurrentUserInfo()
   getCurrentUserInfo(): Promise<UserInfo> {
     return this.dataService.getCurrentUserInfo()
       .then( userInfo => {
-        this.userInfo = userInfo;
+        this.$userInfo.next(userInfo);
+        this.isAdministrator = userInfo.roles && userInfo.roles.includes( 'admin');
         return userInfo;
       })
       .catch(e => {
@@ -80,7 +80,7 @@ export class ConfigService {
     this.promiseProfilePackageLoaded = initialized;
   }
 
-  isAdmin() {
-    return this.userInfo.roles && this.userInfo.roles.includes( 'admin');
+  isAdmin(): boolean {
+    return this.isAdministrator;
   }
 }

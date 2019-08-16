@@ -1,7 +1,11 @@
-/deep/ .ui-orderlist-controls, /deep/ .ui-orderlist-caption {
+/*/deep/ .ui-orderlist-controls, /deep/ .ui-orderlist-caption {
   display: none !important;
 }
 
 /deep/ .ui-orderlist-list-container {
   width: 100% !important;
+}*/
+
+.full-width {
+  width: 100%;
 }

@@ -27,4 +27,10 @@ public class CatalogApiController implements CatalogApi {
         return null;
     }
 
+    @Override
+    public ResponseEntity<String> deleteCatalog(String name) throws ApiException {
+        this.dbService.removeDatabase(name);
+        return null;
+    }
+
 }

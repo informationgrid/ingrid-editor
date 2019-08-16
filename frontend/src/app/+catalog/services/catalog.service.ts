@@ -57,4 +57,8 @@ export class CatalogService {
   setCatalogAdmin(catalogName: string, userId: string) {
     return this.dataService.setCatalogAdmin(catalogName, userId);
   }
+
+  deleteCatalog(catalogId: string) {
+    return this.dataService.deleteCatalog(catalogId);
+  }
 }

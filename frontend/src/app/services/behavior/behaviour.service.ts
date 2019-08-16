@@ -47,23 +47,24 @@ export class BehaviourService {
 
     this.initialized = new Promise(resolve => {
       // do nothing if user has no assigned catalogs
-      if (configService.getUserInfo().assignedCatalogs.length === 0) {
-        resolve();
-        return;
-      }
+      configService.$userInfo.subscribe(info => {
+        if (info.assignedCatalogs.length > 0) {
 
-      this.profileQuery.isInitialized$.subscribe((isInitialized) => {
-        if (isInitialized) {
-          this.profileService.getProfiles().forEach(p => {
-            if (p.behaviours) {
-              p.behaviours.forEach(behaviour => behaviour.forProfile = p.id);
-              this.behaviours.push(...p.behaviours);
+          this.profileQuery.isInitialized$.subscribe((isInitialized) => {
+            if (isInitialized) {
+              this.profileService.getProfiles().forEach(p => {
+                if (p.behaviours) {
+                  p.behaviours.forEach(behaviour => behaviour.forProfile = p.id);
+                  this.behaviours.push(...p.behaviours);
+                }
+              });
+              this.loadStoredBehaviours();
+              resolve();
             }
           });
-          this.loadStoredBehaviours();
-          resolve();
         }
       });
+
     });
 
     // keycloak.getGroupsOfUser('');

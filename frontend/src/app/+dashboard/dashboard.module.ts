@@ -15,7 +15,7 @@ const routes: Routes = [
   {
     path: '',
     component: DashboardComponent,
-    canActivate: [AuthGuard, NoCatalogAssignedGuard],
+    canActivate: [AuthGuard/*, NoCatalogAssignedGuard*/],
     data: {roles: ['admin', 'author']}
   }
 ];

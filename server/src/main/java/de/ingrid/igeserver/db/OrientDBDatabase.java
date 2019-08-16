@@ -295,8 +295,9 @@ public class OrientDBDatabase implements DBApi {
             catInfo.put("name", "New Catalog");
             this.save(DBClass.Info.name(), null, catInfo);
 
-            initDocumentTypes(name);
         }
+
+        initDocumentTypes(name);
 
         return true;
     }
@@ -304,6 +305,9 @@ public class OrientDBDatabase implements DBApi {
     @Override
     public boolean removeDatabase(String name) {
         server.dropDatabase(name);
+
+        // TODO: remove database from all assigned users
+
         return true;
     }
 
