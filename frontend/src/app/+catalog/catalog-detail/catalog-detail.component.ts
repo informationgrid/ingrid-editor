@@ -6,6 +6,7 @@ import {CatalogService} from '../services/catalog.service';
 import {ConfigService} from '../../services/config/config.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'ige-catalog-detail',
@@ -15,10 +16,13 @@ import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-c
 export class CatalogDetailComponent implements OnInit {
 
   display = false;
-  currentUserSelection: string;
 
   users: Observable<User[]>;
+  catAdmins: Observable<User[]>;
+  otherUsers: Observable<User[]>;
+
   private catalogId: string;
+  selectedUsers: string[] = [];
 
   constructor(public dialogRef: MatDialogRef<NewCatalogDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
@@ -29,6 +33,14 @@ export class CatalogDetailComponent implements OnInit {
 
   ngOnInit() {
     this.users = this.userService.getUsers();
+    this.userService.getAssignedUsers(this.data).subscribe( result => {
+      this.catAdmins = this.users.pipe(
+        map(users => users.filter(user => result.indexOf(user.login) !== -1))
+      );
+      this.otherUsers = this.users.pipe(
+        map(users => users.filter(user => result.indexOf(user.login) === -1))
+      );
+    });
   }
 
   showCatAdmins() {
@@ -39,9 +51,9 @@ export class CatalogDetailComponent implements OnInit {
     console.log('TODO', selectedUser);
 
     // get this user again to update internal user info to update webapp
-    this.catalogService.setCatalogAdmin(this.catalogId, selectedUser.value.login)
+    this.catalogService.setCatalogAdmin(this.catalogId, this.selectedUsers)
       .subscribe(() => this.configService.getCurrentUserInfo());
-    this.dialogRef.close();
+    this.dialogRef.close('COMMIT');
   }
 
   deleteCatalog() {

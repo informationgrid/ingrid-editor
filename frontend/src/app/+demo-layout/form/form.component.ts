@@ -31,9 +31,9 @@ export class FormComponent implements OnInit {
       //data: { dialogRef: dialogRef }
       position: {
         // @ts-ignore
-        left: `${target.nativeElement.getBoundingClientRect().left}px`,
+        left: `${target.nativeElement.getBoundingClientRect().left-20}px`,
         // @ts-ignore
-        top: `${target.nativeElement.getBoundingClientRect().top}px`
+        top: `${target.nativeElement.getBoundingClientRect().top-10}px`
       },
       /*scrollStrategy: this.overlay.scrollStrategies.reposition({
         autoClose: true

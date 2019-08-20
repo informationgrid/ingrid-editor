@@ -24,7 +24,7 @@ const routes: Routes = [
 
 
 @NgModule({
-  declarations: [FormComponent],
+  declarations: [FormComponent, ContextHelpComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),

@@ -149,7 +149,7 @@ public class OrientDBDatabase implements DBApi {
                 if (value == null) {
                     where.add(key + ".toLowerCase() IS NULL");
                 } else if (exactQuery) {
-                    where.add(key + ".toLowerCase() like '" + value.toLowerCase() + "'");
+                    where.add(key + " == '" + value + "'");
                 } else {
                     where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
                 }

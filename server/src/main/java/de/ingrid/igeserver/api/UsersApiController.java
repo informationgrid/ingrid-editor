@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.id.ORecordId;
 import de.ingrid.igeserver.db.DBApi;
@@ -7,6 +8,7 @@ import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.model.User;
 import de.ingrid.igeserver.model.User1;
 import de.ingrid.igeserver.model.UserInfo;
+import de.ingrid.igeserver.services.MapperService;
 import de.ingrid.igeserver.services.UserManagementService;
 import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
@@ -51,23 +53,23 @@ public class UsersApiController implements UsersApi {
     @Autowired
     private AuthUtils authUtils;
 
-    @Value("${development}")
+    @Value("#{'${spring.profiles.active:}'.indexOf('dev') != -1}")
     private boolean developmentMode;
 
     public ResponseEntity<Void> createUser(@ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id,
                                            @ApiParam(value = "Save the user data into the database.", required = true) @Valid @RequestBody User1 user) {
         // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     public ResponseEntity<Void> deleteUser(@ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id) {
         // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     public ResponseEntity<Void> get() {
         // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     public ResponseEntity<User> getUser(Principal principal, @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id) throws IOException {
@@ -95,7 +97,7 @@ public class UsersApiController implements UsersApi {
     public ResponseEntity<Void> updateUser(@ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id,
                                            @ApiParam(value = "Save the user data into the database.", required = true) @Valid @RequestBody User user) {
         // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Override
@@ -138,13 +140,14 @@ public class UsersApiController implements UsersApi {
         try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
 
             log.info("Parameter:", info);
-            String userId = (String) info.get("userId");
+            String[] userIds = (String[]) info.get("userIds");
             String catalogName = (String) info.get("catalogName");
 
-            if (userId == null || userId.isEmpty()) {
-                throw new ApiException(500, "The user id is not set to set as a catalog administrator");
+            if (userIds == null || userIds.length == 0) {
+                throw new ApiException(500, "No user ids set to use as a catalog administrator");
             }
             // get catalog Info
+            String userId = userIds[0];
             Map<String, String> query = new HashMap<>();
             query.put("userId", userId);
             List<String> list = this.dbService.findAll("Info", query, true, false);
@@ -178,6 +181,26 @@ public class UsersApiController implements UsersApi {
         }
 
         return null;
+    }
+
+    @Override
+    public ResponseEntity<List<String>> assignedUsers(Principal principal, String id) throws ApiException {
+        List<String> result = new ArrayList<>();
+
+        try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
+            Map<String, String> query = new HashMap<>();
+            query.put("catalogIds", id);
+            List<String> infos = this.dbService.findAll("Info", query, true, false);
+            for (String entry : infos) {
+                JsonNode map = MapperService.getJsonMap(entry);
+                result.add(map.get("userId").asText());
+            }
+
+        } catch (Exception e) {
+            log.error("Could not get assigned Users", e);
+        }
+
+        return ResponseEntity.ok(result);
     }
 
 }

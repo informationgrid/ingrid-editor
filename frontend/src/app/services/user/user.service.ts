@@ -37,4 +37,7 @@ export class UserService {
     return this.dataService.deleteUser(login);
   }
 
+  getAssignedUsers(dbId: string) {
+    return this.dataService.getAssignedUsers(dbId);
+  }
 }

@@ -93,4 +93,8 @@ public interface UsersApi {
     ResponseEntity<UserInfo> setCatalogAdmin(Principal principal,
                                              @ApiParam(value = "Save the user data into the database.", required = true) @Valid @RequestBody Map info) throws ApiException;
 
+    @RequestMapping(value = "/info/assignedUsers/{id}", produces = {"application/json"}, method = RequestMethod.GET)
+    ResponseEntity<List<String>> assignedUsers(Principal principal,
+                                           @ApiParam(value = "The database id to query the assigned users from.", required = true) @PathVariable("id") String id) throws ApiException;
+
 }

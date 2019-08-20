@@ -25,10 +25,10 @@ export class CatalogDataService {
       );
   }
 
-  setCatalogAdmin(catalogName: string, userId: string) {
+  setCatalogAdmin(catalogName: string, userIds: string[]) {
     return this.http.post( this.configuration.backendUrl + 'info/setCatalogAdmin', {
       catalogName: catalogName,
-      userId: userId
+      userIds: userIds
     } )
   }
 

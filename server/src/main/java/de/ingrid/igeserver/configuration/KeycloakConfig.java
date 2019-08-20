@@ -23,7 +23,7 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     private static Logger log = LogManager.getLogger(KeycloakConfig.class);
 
-    @Value("${development:false}")
+    @Value("#{'${spring.profiles.active:}'.indexOf('dev') != -1}")
     boolean developmentMode;
 
     /**
@@ -87,63 +87,18 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
                 //.antMatchers("/persons*").hasRole("user") // only user with role user are allowed to access
                     //.anyRequest().authenticated();
             // @formatter:off*/
-		http
-			.csrf()
-			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // make cookies readable within
-																				// JS
-				.and().authorizeRequests().anyRequest().authenticated().and()
-				// .formLogin()
-				// .loginPage( "/login" )
-				// .permitAll()
-				// .and()
-				.logout().permitAll();
-		// @formatter:on
+            http
+                .csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // make cookies readable within
+                                                                                    // JS
+                    .and().authorizeRequests().anyRequest().authenticated().and()
+                    // .formLogin()
+                    // .loginPage( "/login" )
+                    // .permitAll()
+                    // .and()
+                    .logout().permitAll();
+            // @formatter:on
         }
     }
 
-
-    /**
-     * Registers the KeycloakAuthenticationProvider with the authentication manager.
-     */
-   /*
-    
-    @Bean
-    public FilterRegistrationBean keycloakAuthenticationProcessingFilterRegistrationBean(
-            KeycloakAuthenticationProcessingFilter filter) {
-        FilterRegistrationBean registrationBean = new FilterRegistrationBean(filter);
-        registrationBean.setEnabled(false);
-        return registrationBean;
-    }
-     
-    @Bean
-    public FilterRegistrationBean keycloakPreAuthActionsFilterRegistrationBean(
-            KeycloakPreAuthActionsFilter filter) {
-        FilterRegistrationBean registrationBean = new FilterRegistrationBean(filter);
-        registrationBean.setEnabled(false);
-        return registrationBean;
-    }
-
-//    @Bean
-//    @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-//    public AccessToken getAccessToken() {
-//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-//        return ((KeycloakPrincipal<?>) request.getUserPrincipal()).getKeycloakSecurityContext().getToken();
-//    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        super.configure( http );
-        http
-                .csrf().disable()
-                // http://lists.jboss.org/pipermail/keycloak-user/2015-April/001939.html
-                //.sessionManagement().sessionFixation().none()
-                //.and()
-                //    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                //    .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
-                //.and()
-                .authorizeRequests()
-                .anyRequest().authenticated();
-                // .antMatchers( "/**" ).hasRole( "user" )
-                // .anyRequest().permitAll();
-    }*/
 }

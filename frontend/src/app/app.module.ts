@@ -96,10 +96,6 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   ],
   providers: [
     appRoutingProviders,
-    {
-      provide: LocationStrategy,
-      useClass: HashLocationStrategy
-    },
     // make sure we are authenticated by keycloak before bootstrap
     {
       provide: APP_INITIALIZER,

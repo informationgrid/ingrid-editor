@@ -55,14 +55,15 @@ export class CatalogManagerComponent implements OnInit {
   }
 
   showCatalogDetail(id: string) {
-    const newCatalogModalRef = this.dialog.open(CatalogDetailComponent, {
+    const editCatalogModalRef = this.dialog.open(CatalogDetailComponent, {
       data: id,
       minWidth: 350
     });
-    newCatalogModalRef.afterClosed().subscribe( name => {
-      this.catalogs = this.catalogService.getCatalogs();
+    editCatalogModalRef.afterClosed().subscribe( name => {
+      if (name) {
+        this.catalogs = this.catalogService.getCatalogs();
+      }
     });
-    // this.router.navigate(['/catalogs', id]);
   }
 
   onUpload(event) {

@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.db;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.OrientDB;
@@ -9,20 +8,17 @@ import de.ingrid.igeserver.api.DatasetsApiController;
 import de.ingrid.igeserver.services.DocumentService;
 import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.*;
-import org.mockito.internal.matchers.Equals;
-import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Objects;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 
 public class DatasetApiTest {

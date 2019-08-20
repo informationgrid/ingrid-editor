@@ -7,17 +7,25 @@
         <input matInput placeholder="Titel">
     </mat-form-field>
 
-    <h4>Administrator wählen</h4>
-    <!--    <mat-divider></mat-divider>-->
-    <mat-selection-list #userList dense>
-        <ng-container *ngFor="let user of users | async">
-            <mat-list-option [value]="user">
-                <p matLine>{{user.firstName}} {{user.lastName}} ({{user.login}})</p>
-            </mat-list-option>
-            <mat-divider></mat-divider>
-        </ng-container>
+    <h4>Administratoren</h4>
+    <mat-selection-list #adminList dense>
+        <mat-list-option *ngFor="let admin of catAdmins | async" [value]="admin.login">
+            {{admin.firstName}} {{admin.lastName}} ({{admin.login}})
+        </mat-list-option>
+        <mat-divider></mat-divider>
     </mat-selection-list>
+
+    <h4>Benutzer</h4>
+    <!--    <mat-divider></mat-divider>-->
+    <mat-selection-list #userList [(ngModel)]="selectedUsers" dense>
+        <mat-list-option *ngFor="let user of otherUsers | async" [value]="user.login">
+            {{user.firstName}} {{user.lastName}} ({{user.login}})
+        </mat-list-option>
+        <mat-divider></mat-divider>
+    </mat-selection-list>
+
 </mat-dialog-content>
+
 <mat-dialog-actions>
     <button mat-button color="warn" (click)="deleteCatalog()">Löschen</button>
     <div fxFlex></div>

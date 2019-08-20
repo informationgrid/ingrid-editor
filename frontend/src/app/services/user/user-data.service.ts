@@ -75,4 +75,7 @@ export class UserDataService {
       );
   }
 
+  getAssignedUsers(dbId: string): Observable<string[]> {
+    return this.http.get<string[]>( this.configuration.backendUrl + 'info/assignedUsers/' + dbId );
+  }
 }

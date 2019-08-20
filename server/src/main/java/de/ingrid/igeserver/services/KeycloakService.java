@@ -12,6 +12,7 @@ import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.util.JsonSerialization;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.naming.NoPermissionException;
@@ -22,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-//@Service
-//@Profile("!dev")
+@Service
+@Profile("!dev")
 public class KeycloakService implements UserManagementService {
 
     private Logger log = LogManager.getLogger(KeycloakService.class);
@@ -118,7 +119,7 @@ public class KeycloakService implements UserManagementService {
     private List<User> mapUsers(KeycloakService.UserList users) {
         ArrayList<User> list = new ArrayList<>();
 
-        users.forEach(user -> list.add(mapUser(user)) );
+        users.forEach(user -> list.add(mapUser(user)));
         return list;
     }
 

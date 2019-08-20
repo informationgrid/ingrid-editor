@@ -1,12 +1,11 @@
 package de.ingrid.igeserver.api;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.services.JsonToDBService;
+import de.ingrid.igeserver.utils.AuthUtils;
+import de.ingrid.igeserver.utils.DBUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import de.ingrid.igeserver.services.JsonToDBService;
-import de.ingrid.igeserver.utils.AuthUtils;
-import de.ingrid.igeserver.utils.DBUtils;
-
 import javax.annotation.Generated;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
 
 @Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
