@@ -3,3 +3,12 @@
   flex-direction: column;
   flex: 1;
 }
+
+.form-content {
+  height: auto !important;
+  min-width: 400px;
+  max-width: 1200px;
+}
+.form-content > form {
+  padding: 0 40px;
+}

@@ -46,6 +46,9 @@ interface PeriodicElement {
           width: 100%;
       }
 
+      ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix:first-of-type {
+          padding: 0 0 0 24px;
+      }
       ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix {
           padding: 0;
       }

@@ -2,9 +2,10 @@ import {FormlyFieldConfig} from '@ngx-formly/core';
 import {Profile} from '../../services/formular/profile';
 import {DocumentService} from '../../services/document/document.service';
 import {CodelistService} from '../../services/codelist/codelist.service';
+import {from} from 'rxjs';
 
 export class McloudFormly implements Profile {
-  // must be same as DBClass!
+  // must be same as DBClass!?
   id = 'AddressDoc';
 
   label = 'Adresse';
@@ -56,10 +57,11 @@ export class McloudFormly implements Profile {
           label: 'mCLOUD Kategorie',
           placeholder: 'Bitte wählen',
           appearance: 'outline',
-          options: [
+          options: this.getCodelistForSelect(8000)
+          /*options: [
             {label: 'male', value: 'm'},
             {label: 'female', value: 'f'}
-          ]
+          ]*/
         }
       }, {
         key: 'openDataCategories',
@@ -70,10 +72,7 @@ export class McloudFormly implements Profile {
           label: 'OpenData Kategorie',
           placeholder: 'Bitte wählen',
           appearance: 'outline',
-          options: [
-            {label: 'male', value: 'm'},
-            {label: 'female', value: 'f'}
-          ]
+          options: this.getCodelistForSelect(100)
         }
       }]
     }, {
@@ -92,10 +91,7 @@ export class McloudFormly implements Profile {
         externalLabel: 'Lizenz',
         placeholder: 'Bitte wählen',
         appearance: 'outline',
-        options: [
-          {label: 'male', value: 'm'},
-          {label: 'female', value: 'f'}
-        ]
+        options: this.getCodelistForSelect(6500)
       }
     }, {
       key: 'origin',
@@ -190,8 +186,20 @@ export class McloudFormly implements Profile {
     }
   ];
 
-  constructor(storageService?: DocumentService, codelistService?: CodelistService) {
+  constructor(storageService?: DocumentService, private codelistService?: CodelistService) {
 
   }
 
+  private getCodelistForSelect(codelistId: number) {
+
+    let codelist = this.codelistService.byId(codelistId+'')
+      .then(codelist => {
+        debugger;
+        console.log("codelist:", codelist);
+        return codelist.map( cl => {
+          return { label: cl.value, value: cl.id }
+        });
+      });
+    return from(codelist);
+  }
 }

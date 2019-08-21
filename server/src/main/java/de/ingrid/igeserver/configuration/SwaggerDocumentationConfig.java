@@ -1,12 +1,13 @@
 package de.ingrid.igeserver.configuration;
 
-import io.swagger.models.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.resource.PathResourceResolver;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
@@ -15,20 +16,18 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.ServletContext;
+import java.io.IOException;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
 @Configuration
 @EnableSwagger2
 public class SwaggerDocumentationConfig extends WebMvcConfigurerAdapter {
-    
-    //@Autowired
-    //private SwaggerProperties swaggerProperties;
 
     ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("IGE remastered API")
-            .description("Necessary API to support requests from IGE remastered")
+            .title("IGE-NG API")
+            .description("Necessary API to support requests from IGE-NG")
             .license("")
             .licenseUrl("http://unlicense.org")
             .termsOfServiceUrl("")
@@ -66,28 +65,6 @@ public class SwaggerDocumentationConfig extends WebMvcConfigurerAdapter {
                 .pathMapping("");//swaggerProperties.getInvokingBasePath());
     }
     
-//    @Bean
-//    public HandlerMapping swagger2ControllerProxyMapping(
-//        Environment environment,
-//        DocumentationCache documentationCache,
-//        ServiceModelToSwagger2Mapper mapper,
-//        JsonSerializer jsonSerializer) {
-//
-//        return new Swagger2ControllerRequestMappingHandlerMapping(
-//            environment,
-//            new Swagger2Controller(environment, documentationCache, mapper, jsonSerializer),
-//            swaggerProperties.getBrowsingBasePath());
-//    }
-//
-//    @Bean
-//    public HandlerMapping apiResourceControllerProxyMapping(
-//        ApiResourceController apiResourceController) {
-//
-//        return new ProxiedControllerRequestMappingHandlerMapping(
-//            apiResourceController,
-//            swaggerProperties.getBrowsingBasePath());
-//    }
-    
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
@@ -99,6 +76,18 @@ public class SwaggerDocumentationConfig extends WebMvcConfigurerAdapter {
         registry.
             addResourceHandler(basePath + "/webjars/**")
             .addResourceLocations("classpath:/META-INF/resources/webjars/");
+
+        registry.addResourceHandler("/**/*")
+            .addResourceLocations("classpath:/static/")
+            .resourceChain(true)
+            .addResolver(new PathResourceResolver() {
+                @Override
+                protected Resource getResource(String resourcePath, Resource location) throws IOException {
+                    Resource requestedResource = location.createRelative(resourcePath);
+                    return requestedResource.exists() && requestedResource.isReadable() ? requestedResource
+                            : new ClassPathResource("/static/index.html");
+                }
+            });
     }
 
 }

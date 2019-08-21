@@ -25,6 +25,7 @@ import {FormUtils} from './form.utils';
 import {TreeQuery} from '../store/tree/tree.query';
 import {McloudFormly} from '../formly/profiles/mcloud.formly';
 import {FormlyFieldConfig} from '@ngx-formly/core';
+import {CodelistService} from '../services/codelist/codelist.service';
 
 interface FormData extends Object {
   _id?: string;
@@ -103,6 +104,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private documentQuery: DocumentQuery,
               private treeQuery: TreeQuery,
               private documentStore: DocumentStore,
+              private codelistService: CodelistService,
               private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
 
     // TODO: get roles definiton
@@ -308,7 +310,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.form = new FormGroup({});
     this.model = {};
 
-    this.fields = new McloudFormly().fields;
+    this.fields = new McloudFormly(null, this.codelistService).fields;
 
 
     return;
