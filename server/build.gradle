@@ -97,8 +97,8 @@ jib {
     }
 }
 
-tasks.assemble.dependsOn tasks.jibDockerBuild
-//tasks.assemble.dependsOn tasks.jib
+//tasks.assemble.dependsOn tasks.jibDockerBuild
+tasks.assemble.dependsOn tasks.jib
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
