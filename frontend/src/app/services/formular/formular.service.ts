@@ -80,13 +80,12 @@ export class FormularService {
     }
   }
 
+  /**
+   *
+   * @Deprecated
+   */
   getTitle(profile: string, doc: IgeDocument) {
-    if (!profile) {
-      profile = this.currentProfile;
-    }
-    const profileVal = this.getProfile(profile);
-    const title = profileVal ? profileVal.getTitle(doc) : '- unknown profile -';
-    return title ? title : this.untitledLabel;
+    return doc.title;
   }
 
   getIconClass(profile: string): string {
@@ -94,12 +93,12 @@ export class FormularService {
     return profileVal ? profileVal.treeIconClass : 'xxx';
   }
 
+  /**
+   *
+   * @Deprecated
+   */
   getFieldsNeededForTitle(): string[] {
-    const fields: string[] = [];
-    this.profileDefinitions.forEach(profile => fields.push(...profile.getTitleFields()));
-
-    // return unique items in array
-    return fields.filter((x, i, a) => x && a.indexOf(x) === i);
+    return [];
   }
 
   requestFormValues(): any {

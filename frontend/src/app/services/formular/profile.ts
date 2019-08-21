@@ -1,6 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import { IFieldBase } from '../../+form/controls';
 import {IgeDocument} from "../../models/ige-document";
+import {FormlyFieldConfig} from '@ngx-formly/core';
 
 /**
  * A profile defines the formular fields for a document and its' validation rules, as well as the behaviours on user
@@ -20,23 +21,8 @@ export interface Profile {
   /**
    * The field definitions for the formular, which also contains the layout classes and the validation.
    */
-  fields: IFieldBase<any>[];
+  fields: FormlyFieldConfig[];
 
-  /**
-   * This function creates a title from the data of a document of a certatin profile. Since every profile can have
-   * different fields, some components need to display a title for easier recognition of a document (tree, browser,
-   * formular header, ...)
-   * @param doc
-   * @returns {string}
-   */
-  getTitle: (doc: IgeDocument) => string;
-
-  /**
-   * The fields needed to build a title. These will be used to request the backend for the necessary fields.
-   * @deprecated
-   * @returns {string[]}
-   */
-  getTitleFields: () => string[];
 
   /**
    * The css-image-class for the profile document. This will be shown in a tree and other places where necessary.

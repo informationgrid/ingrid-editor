@@ -1,18 +1,16 @@
 import {NgModule} from '@angular/core';
-import {FormControl, ReactiveFormsModule, ValidationErrors} from '@angular/forms';
-import {IgeFormModule} from '../+form/ige-form.module';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {FormControl, FormsModule, ReactiveFormsModule, ValidationErrors} from '@angular/forms';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatButtonModule } from '@angular/material/button';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatButtonModule} from '@angular/material/button';
+import {MAT_DATE_LOCALE} from '@angular/material/core';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
+import {MatTableModule} from '@angular/material/table';
 import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {FormlyModule} from '@ngx-formly/core';
@@ -22,6 +20,7 @@ import {LeafletTypeComponent} from './types/leaflet-type.component';
 import {FocusDirective} from '../directives/focus.directive';
 import {FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';
 import {TableTypeComponent} from './types/table-type.component';
+import {CommonModule} from '@angular/common';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -29,10 +28,8 @@ export function IpValidator(control: FormControl): ValidationErrors {
 
 @NgModule({
   imports: [
-    ReactiveFormsModule,
-    MatInputModule,
-    IgeFormModule,
-    BrowserAnimationsModule,
+    CommonModule,
+    MatInputModule, ReactiveFormsModule, FormsModule,
     FlexLayoutModule,
     MatDialogModule, MatButtonModule, MatAutocompleteModule, MatIconModule, MatSelectModule, MatDividerModule, MatListModule,
     MatTableModule, MatPopoverEditModule,
@@ -71,8 +68,9 @@ export function IpValidator(control: FormControl): ValidationErrors {
   declarations: [ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, TableTypeComponent, FocusDirective],
   entryComponents: [ContextHelpComponent],
   exports: [
-    ReactiveFormsModule,
-    FormlyModule
+    ReactiveFormsModule, FormsModule,
+    FormlyModule,
+    ContextHelpComponent
   ]
 })
 export class IgeFormlyModule {

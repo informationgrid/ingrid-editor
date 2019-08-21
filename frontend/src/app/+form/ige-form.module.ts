@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DynamicFieldComponent} from './dynamic-field.component';
 import {FormToolbarComponent} from './toolbar/form-toolbar.component';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormsModule} from '@angular/forms';
 import {DynamicFormComponent} from './dynamic-form.component';
 import {LeafletComponent} from './leaflet/leaflet.component';
 import {routing} from './ige-form.routing';
@@ -15,18 +15,18 @@ import {MainFormComponent} from './main-form/main-form.component';
 import {MainFormTabsComponent} from './main-form-tabs/main-form-tabs.component';
 import {IgeWizardModule} from '../wizard/wizard.module';
 import {ScrollToDirective} from '../directives/scrollTo.directive';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatTableModule} from '@angular/material/table';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatToolbarModule} from '@angular/material/toolbar';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {AddPartialDialogComponent} from './partialGenerator/dialog/add-partial-dialog.component';
 import {SidebarComponent} from './sidebars/sidebar.component';
@@ -36,18 +36,19 @@ import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {AngularSplitModule} from 'angular-split';
 import {RouterModule} from '@angular/router';
 import {FormlyModule} from '@ngx-formly/core';
-import {OneColumnWrapperComponent} from '../formly/wrapper/one-column-wrapper.component';
+import {IgeFormlyModule} from '../formly/ige-formly.module';
 
 @NgModule({
   imports: [
     RouterModule.forChild(routing),
-    CommonModule, FormsModule, ReactiveFormsModule,
+    CommonModule,
     AngularSplitModule,
     IgeWizardModule, FormDialogsModule, SharedModule,
     MatFormFieldModule, MatToolbarModule, MatInputModule, MatTableModule,
     MatTabsModule, MatDividerModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule, MatCardModule,
     FlexLayoutModule,
     FormlyModule,
+    IgeFormlyModule,
     FormDialogsModule, FormFieldsModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,

@@ -70,7 +70,6 @@ export class ProfileService {
               try {
                 // const dynModule: any[] = webpackJsonp([], null, ['_profile_']);
                 window['theProfile'].forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
-                this.setTitleFields(configService);
               } catch (ex) {
                 console.error('Could not load profiles from backend', ex);
               }
@@ -79,19 +78,16 @@ export class ProfileService {
             });
           } else {
             // import( '../../profiles/pack-bkg' ).then(module => {
-            import( '../../profiles/pack-lgv' ).then(module => {
+            import( '../../profiles/pack-mcloud' ).then(module => {
               console.log('Loaded module: ', module);
               // TODO: use map instead of multiple parameters in case we want to add another dependency
               module.profiles.forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
-
-              this.setTitleFields(configService);
 
               this.profileStore.update({isInitialized: true});
               let profilesAbstract = this.profiles.map(p => {
                 return {
                   id: p.id,
-                  fields: p.fields,
-                  getTitle: p.getTitle
+                  fields: p.fields
                 }
               });
 
@@ -111,16 +107,6 @@ export class ProfileService {
   private getEntryComponent(moduleFactory: NgModuleFactory<any>) {
     // search (<any>moduleFactory.moduleType).decorators[0].type.prototype.ngMetadataName === NgModule
     return (<any>moduleFactory.moduleType).decorators[0].args[0].entryComponents[0];
-  }
-
-  private setTitleFields(configService: ConfigService) {
-    const fields: string[] = [];
-    this.profiles.forEach(profile => fields.push(...profile.getTitleFields()));
-
-    // return unique items in array
-    const titleFields = fields.filter((x, i, a) => x && a.indexOf(x) === i);
-
-    configService.setTitleFields(titleFields);
   }
 
   getProfiles(): Profile[] {

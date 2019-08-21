@@ -10,13 +10,12 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../services/document/document.service';
 import {ModalService} from '../services/modal/modal.service';
 import {PartialGeneratorField} from './controls/field-partial-generator';
-import {UpdateType} from '../models/update-type.enum';
 import {ErrorService} from '../services/error.service';
 import {Role} from '../models/user-role';
 import {RoleService} from '../services/role/role.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {NewDocumentComponent} from '../dialogs/form/new-document/new-document.component';
 import {DocumentQuery} from '../store/document/document.query';
 import {IgeDocument} from '../models/ige-document';
@@ -24,6 +23,8 @@ import {takeUntil} from 'rxjs/operators';
 import {DocumentStore} from '../store/document/document.store';
 import {FormUtils} from './form.utils';
 import {TreeQuery} from '../store/tree/tree.query';
+import {McloudFormly} from '../formly/profiles/mcloud.formly';
+import {FormlyFieldConfig} from '@ngx-formly/core';
 
 interface FormData extends Object {
   _id?: string;
@@ -56,7 +57,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // editMode: boolean = false;
 
   // fields: IFieldBase<any>[] = [];
-  fields = [{
+  /*fields: FormlyFieldConfig[] = [{
     key: 'email',
     type: 'input',
     wrappers: ['panel', 'form-field'],
@@ -66,7 +67,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       required: true,
       appearance: 'outline'
     }
-  }];
+  }];*/
+  fields: FormlyFieldConfig[] = []; // new McloudFormly().fields;
 
   form: FormGroup = new FormGroup({});
   data: IgeDocument|any = {};
@@ -271,7 +273,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     //   rootOption: true
     // };
     const selectedDocs = this.treeQuery.getActive();
-    this.newDocOptions.docTypes = this.formularService.getDocTypes()
+    this.newDocOptions.docTypes = [{id: 'mcloud', 'label': 'mCLOUD'}] //this.formularService.getDocTypes()
       .filter( type => type.id !== 'FOLDER' )
       .sort( (a, b) => a.label.localeCompare( b.label ) );
     this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
@@ -293,7 +295,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   prepareNewDoc(type: string, addBelowDoc: boolean) {
-    let previousId = null;
+    /*let previousId = null;
     const selectedDocs = this.treeQuery.getActive();
     if (selectedDocs && selectedDocs.length === 1) {
       previousId = selectedDocs[0].id;
@@ -302,9 +304,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.form) {
       this.form.reset();
-    }
+    }*/
+    this.form = new FormGroup({});
+    this.model = {};
 
-    try {
+    this.fields = new McloudFormly().fields;
+
+
+    return;
+
+    /*try {
       if (needsProfileSwitch) {
         this.switchProfile( type );
       }
@@ -329,7 +338,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     } catch (ex) {
       console.error( 'Error adding new document: ', ex );
-    }
+    }*/
   }
 
   discardChanges() {

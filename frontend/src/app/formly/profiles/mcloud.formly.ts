@@ -1,6 +1,16 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
+import {Profile} from '../../services/formular/profile';
+import {DocumentService} from '../../services/document/document.service';
+import {CodelistService} from '../../services/codelist/codelist.service';
 
-export class McloudFormly {
+export class McloudFormly implements Profile {
+  // must be same as DBClass!
+  id = 'AddressDoc';
+
+  label = 'Adresse';
+
+  treeIconClass = 'fa fa-address-card-o';
+
   fields = <FormlyFieldConfig[]>[
     {
       key: 'description',
@@ -178,5 +188,10 @@ export class McloudFormly {
         }
       }]
     }
-  ]
+  ];
+
+  constructor(storageService?: DocumentService, codelistService?: CodelistService) {
+
+  }
+
 }

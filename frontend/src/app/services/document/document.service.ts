@@ -131,7 +131,8 @@ export class DocumentService {
   save(data: IgeDocument, isNewDoc?: boolean): Promise<IgeDocument> {
     return new Promise((resolve, reject) => {
 
-      this.handleTitle(data);
+      // title will be added by the backend, since imports also have to generate correct titles
+      // this.handleTitle(data);
 
       this.dataService.save(data)
         .subscribe(json => {
@@ -155,7 +156,7 @@ export class DocumentService {
     console.log('PUBLISHING');
     const errors: any = {errors: []};
 
-    this.handleTitle(data);
+    // this.handleTitle(data);
 
     this.beforeSave.next(errors);
     console.log('After validation:', data);
@@ -229,11 +230,4 @@ export class DocumentService {
     return this.dataService.move(srcIDs, dest, includeTree);
   }
 
-
-  private handleTitle(data: IgeDocument) {
-    if (!data.title) {
-      data.title = this.profileQuery.getEntity(data._profile).getTitle(data);;
-      //data.title = this.formularService.getTitle(data._profile, data);
-    }
-  }
 }
