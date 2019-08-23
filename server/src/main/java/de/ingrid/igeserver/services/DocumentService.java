@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.utils.DBUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
@@ -118,7 +120,7 @@ public class DocumentService extends MapperService {
         // get database id from doc id  or just query for correct document then we also get the rid!
         Map<String, String> query = new HashMap<>();
         query.put("_id", id);
-        List<String> docInDatabase = dbService.findAll( DOCUMENT_WRAPPER, query, true, false);
+        List<String> docInDatabase = dbService.findAll( DOCUMENT_WRAPPER, query, QueryType.exact, false);
 
         Map<String, Object> currentDoc;
 
@@ -126,7 +128,7 @@ public class DocumentService extends MapperService {
             currentDoc = new HashMap<>();
             currentDoc.put( FIELD_PROFILE, newDocument.get( FIELD_PROFILE ));
             currentDoc.put( FIELD_PARENT, newDocument.get( FIELD_PARENT ));
-            currentDoc.put( FIELD_CREATED, format.format( new Date() ) );
+            currentDoc.put( FIELD_CREATED, format.format( OffsetDateTime.now() ) );
 
         } else if (docInDatabase.size() == 1){
             try {
@@ -140,7 +142,7 @@ public class DocumentService extends MapperService {
         }
 
         // TODO: should we store modified/create date in wrapper or actual data document?
-        currentDoc.put( FIELD_MODIFIED, format.format( new Date() ) );
+        currentDoc.put( FIELD_MODIFIED, format.format( OffsetDateTime.now() ) );
         return currentDoc;
     }
 
@@ -194,7 +196,7 @@ public class DocumentService extends MapperService {
 
         Map<String, String> query = new HashMap<>();
         query.put(FIELD_ID, id);
-        List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, true, false);
+        List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, false);
         try {
             return docs.size() > 0 ? getJsonMap(docs.get(0)) : null;
         } catch (Exception e) {

@@ -13,7 +13,6 @@ import {MatInputModule} from "@angular/material/input";
 import {MatSelectModule} from "@angular/material/select";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {DragDropModule} from "@angular/cdk/drag-drop";
-import {IgeFormlyModule} from '../formly/ige-formly.module';
 
 const routes: Routes = [
   {

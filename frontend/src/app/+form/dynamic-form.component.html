@@ -79,61 +79,26 @@
         </split-area>-->
 
         <!-- exchangable sidebar -->
-        <as-split-area [size]="15" id="sidebar">
+        <as-split-area [size]="sidebarWidth" id="sidebar">
             <ige-sidebar></ige-sidebar>
         </as-split-area>
 
         <!-- The form -->
-        <as-split-area [size]="85" id="form" class="formWrapper form-content">
+        <as-split-area [size]="100-sidebarWidth" id="form" class="formWrapper form-content">
             <div *ngIf="!form" class="info-no-selection card-body text-center">
                 Kein Dokument ausgewählt. Laden Sie ein vorhandenes oder erstellen Sie ein neues Dokument über die Toolbar.
             </div>
 
+            <ige-form-info [doc]="model"></ige-form-info>
 
             <form [formGroup]="form">
                 <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
-                {{model | json}}
+                <pre>
+JSON:
+{{model | json}}
+                </pre>
             </form>
 
-            <!--<form *ngIf="form" [formGroup]="form" style="height: 100%;flex-direction: column;display: flex;">
-
-                &lt;!&ndash; TODO: put default form inputs into another component &ndash;&gt;
-                <input id="_parent" formControlName="_parent" type="hidden">
-                <input id="_id" formControlName="_id" type="hidden">
-                <input id="_profile" formControlName="_profile" type="hidden">
-
-                &lt;!&ndash; form info bar &ndash;&gt;
-                <ige-form-info [doc]="currentDocument$ | async"></ige-form-info>
-
-                &lt;!&ndash;<div class="main-form-flex">&ndash;&gt;
-                &lt;!&ndash;<div class="main-form">&ndash;&gt;
-                &lt;!&ndash;<ige-main-form [fields]="fields" [form]="form" (onAddSection)="addSection($event)"></ige-main-form>&ndash;&gt;
-                <mat-tab-group *ngIf="fields[0].controlType === 'rubric'" [animationDuration]="'0ms'">
-                    <ng-container *ngFor="let field of fields">
-                        <mat-tab [label]="field.label" *ngIf="field.controlType === 'rubric'">
-                            <ige-main-form-tabs [fields]="field.children" [form]="form"
-                                                [isRootLevel]="false"
-                                                [blurAllBut]="wizardFocusElement"
-                                                (onAddSection)="addSection($event)"></ige-main-form-tabs>
-                            <div style="clear: both;"></div>
-                        </mat-tab>
-                    </ng-container>
-
-                </mat-tab-group>
-
-                <ng-container *ngIf="fields[0].controlType !== 'rubric'">
-                    <ige-main-form-tabs [fields]="fields" [form]="form"
-                                        [isRootLevel]="true"
-                                        [blurAllBut]="wizardFocusElement"
-                                        (onAddSection)="addSection($event)"></ige-main-form-tabs>
-                </ng-container>
-                &lt;!&ndash;</div>&ndash;&gt;
-                <div *ngIf="debugEnabled" class="card-body text-muted" [style.flex]="0">
-                    <strong>Form contains the following values</strong><br>{{form.value | json}}
-                    &lt;!&ndash;<p>Form is valid: {{form.valid}}</p>&ndash;&gt;
-                </div>
-
-            </form>-->
         </as-split-area>
 
     </as-split>

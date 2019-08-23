@@ -105,7 +105,7 @@ public class OrientDBDatabaseTest {
 
             Map<String, String> query = new HashMap<>();
             query.put("age", "48");
-            List<String> persons = dbService.findAll("User", query, false, false);
+            List<String> persons = dbService.findAll("User", query, QueryType.like,false);
 
             assertEquals(1, persons.size());
 
@@ -121,7 +121,7 @@ public class OrientDBDatabaseTest {
         query.put("age", "48");
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            List<String> docToUpdate = dbService.findAll("User", query, false, false);
+            List<String> docToUpdate = dbService.findAll("User", query, QueryType.like, false);
             id = (ORecordId)((Map)getJsonMap(docToUpdate.get(0))).get("@rid");
 
             Map<String, Object> data = new HashMap<>();
@@ -132,7 +132,7 @@ public class OrientDBDatabaseTest {
         }
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            String updatedDocJson = dbService.findAll("User", query, false, false).get(0);
+            String updatedDocJson = dbService.findAll("User", query, QueryType.like, false).get(0);
             Map updatedDoc = (Map) getJsonMap(updatedDocJson);
 
             assertEquals("Johann", updatedDoc.get("name") );

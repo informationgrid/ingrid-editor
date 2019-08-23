@@ -136,7 +136,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public List<String> findAll(String type, Map<String, String> query, boolean exactQuery, boolean resolveReferences) {
+    public List<String> findAll(String type, Map<String, String> query, QueryType queryType, boolean resolveReferences) {
         String queryString;
         if (query == null || query.isEmpty()) {
             queryString = "SELECT * FROM " + type;
@@ -148,10 +148,18 @@ public class OrientDBDatabase implements DBApi {
                 String value = query.get(key);
                 if (value == null) {
                     where.add(key + ".toLowerCase() IS NULL");
-                } else if (exactQuery) {
-                    where.add(key + " == '" + value + "'");
                 } else {
-                    where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
+                    switch (queryType) {
+                        case like:
+                            where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
+                            break;
+                        case exact:
+                            where.add(key + " == '" + value + "'");
+                            break;
+                        case contains:
+                            where.add(key + " contains '" + value + "'");
+                            break;
+                    }
                 }
             }
             queryString = "SELECT * FROM " + type + " WHERE (" + String.join(" or ", where) + ")";
@@ -164,7 +172,7 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public Object getRecordId(String dbClass, Map<String, String> query) throws ApiException {
-        List<String> behaviorFromDB = this.findAll(dbClass, query, true, false);
+        List<String> behaviorFromDB = this.findAll(dbClass, query, QueryType.exact, false);
 
         if (behaviorFromDB.size() == 1) {
             return null; //behaviorFromDB.get(0).get("@rid");
@@ -360,6 +368,13 @@ public class OrientDBDatabase implements DBApi {
         return list;
     }
 
+    /**
+     * DEPRECATED OR NOT: Type not needed since all documents are stored in 'documents' class!?
+     * @param type
+     * @param id
+     * @return
+     */
+    @Deprecated()
     private Optional<OResult> getById(String type, String id) {
         String query = "SELECT * FROM " + type + " WHERE @rid = " + id;
 

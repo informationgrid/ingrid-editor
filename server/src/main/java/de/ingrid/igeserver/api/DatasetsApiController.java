@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.services.DocumentService;
 import de.ingrid.igeserver.services.ExportService;
@@ -25,6 +26,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.security.Principal;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -96,8 +98,6 @@ public class DatasetsApiController implements DatasetsApi {
             // which makes logic simpler
 
 
-
-
             //Map mapDocument = new HashMap(); //this.documentService.mapDocumentToDatabase(data, publish, userId);
             ObjectNode dataJson = (ObjectNode) getJsonMap(data);
 
@@ -109,6 +109,9 @@ public class DatasetsApiController implements DatasetsApi {
             UUID uuid = UUID.randomUUID();
             dataJson.put(FIELD_ID, uuid.toString());
             dataJson.put(FIELD_HAS_CHILDREN, false);
+            String now = OffsetDateTime.now().toString();
+            dataJson.put(FIELD_CREATED, now);
+            dataJson.put(FIELD_MODIFIED, now);
 
             // get document type from document
             String documentType = dataJson.get(FIELD_PROFILE).asText();
@@ -170,7 +173,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             ObjectNode mapDocument = (ObjectNode) getJsonMap(data);
-            mapDocument.put(FIELD_MODIFIED, new Date().toString());
+            mapDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString());
 
             String docType = mapDocument.get(FIELD_PROFILE).asText();
 
@@ -190,7 +193,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
-            List<String> docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, true, false);
+            List<String> docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, false);
             if (docWrappers.size() != 1) {
                 log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docWrappers.size() + ")");
                 throw new RuntimeException("No unique document wrapper found");
@@ -356,13 +359,13 @@ public class DatasetsApiController implements DatasetsApi {
             if (children) {
                 Map<String, String> queryMap = new HashMap<>();
                 queryMap.put("_parent", parentId);
-                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, false, true);
+                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.like, true);
             } else {
                 Map<String, String> queryMap = new HashMap<>();
                 for (String field : fields) {
                     queryMap.put(field, query);
                 }
-                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, false, true); // fields );
+                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.like, true); // fields );
             }
 
             String childDocs = docs.stream()
@@ -375,7 +378,7 @@ public class DatasetsApiController implements DatasetsApi {
                         }
                     })
                     .map(doc -> {
-                        ObjectNode node = (ObjectNode)getLatestDocument(doc);
+                        ObjectNode node = (ObjectNode) getLatestDocument(doc);
                         node.put(FIELD_STATE, this.documentService.determineState(doc));
                         return node;
                     })
@@ -420,7 +423,7 @@ public class DatasetsApiController implements DatasetsApi {
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
-            List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, true, true);
+            List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, true);
 
             if (docs.size() > 0) {
                 Map doc = getMapFromObject(docs.get(0));
@@ -442,7 +445,7 @@ public class DatasetsApiController implements DatasetsApi {
                 //doc.remove("@class");
 
 
-                mapDoc = this.documentService.prepareDocumentFromDB((Map)theDocument, doc);
+                mapDoc = this.documentService.prepareDocumentFromDB((Map) theDocument, doc);
 
                 //String[] refDocs = dbUtils.getReferencedDocs(mapDoc);
                 //documentService.addReferencedDocsTo(refDocs, mapDoc);

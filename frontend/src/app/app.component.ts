@@ -18,6 +18,11 @@ import {map} from 'rxjs/operators';
           width: 100%;
           height: 100%;
       }
+      
+      .header-row {
+          line-height: 48px;
+          font-size: 23px;
+      }
 
       /deep/ mat-drawer-content.mat-drawer-content {
           display: flex;
@@ -42,6 +47,7 @@ export class AppComponent implements OnInit {
   routes: MenuItem[];
 
   showDrawer: Observable<boolean>;
+  username: Observable<string>;
 
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
@@ -60,6 +66,9 @@ export class AppComponent implements OnInit {
     // display the drawer if the user has at least one catalog assigned
     this.showDrawer = this.configService.$userInfo.pipe(
       map(info => info.assignedCatalogs.length > 0)
+    );
+    this.username = this.configService.$userInfo.pipe(
+      map(info => info.name)
     );
 
   }

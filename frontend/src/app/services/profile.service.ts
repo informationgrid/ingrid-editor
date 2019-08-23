@@ -91,10 +91,10 @@ export class ProfileService {
                 }
               });
 
-              setTimeout(() => {
+  /*            setTimeout(() => {
                 // @ts-ignore
                 this.profileStore.add(profilesAbstract);
-              }, 1000);
+              }, 1000);*/
               resolve(this.profiles);
             });
           }

@@ -1,0 +1,21 @@
+<div class="title">
+    <div class="document-type">
+        <mat-icon>brightness_5</mat-icon>
+    </div>
+
+    <span *ngIf="!showTitleInput" (click)="editTitle()">{{doc?.title || 'Kein Titel'}}</span>
+
+    <mat-form-field [class.hide]="!showTitleInput">
+        <input #titleInput matInput [(ngModel)]="doc.title"
+               (blur)="showTitleInput = false">
+    </mat-form-field>
+
+    <div fxFlex></div>
+
+    <button mat-icon-button mat-stroked-button>
+        <mat-icon>keyboard_arrow_down</mat-icon>
+    </button>
+    <button mat-icon-button>
+        <mat-icon>more_vert</mat-icon>
+    </button>
+</div>

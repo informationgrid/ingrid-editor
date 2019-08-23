@@ -1,0 +1,52 @@
+.mat-toolbar {
+  min-height: 55px;
+  background-color: #e2e2e2;
+  border-top: 1px solid #999;
+}
+
+.mat-toolbar-row, .mat-toolbar-single-row {
+  height: 55px;
+}
+
+.btn {
+  background-color: transparent;
+}
+
+.btn.fa {
+  font-size: 16px;
+}
+
+.btn:hover {
+  border: #d8d8d8 1px solid;
+  border-radius: 4px;
+}
+
+.btn:focus {
+  outline-color: transparent;
+}
+
+.btn:disabled:hover {
+  border: transparent 1px solid;
+  color: #777;
+}
+
+.btn-toolbar {
+  margin-left: 0;
+}
+
+.separator {
+  border-left: 1px solid #bbbbbb;
+  padding-right: 5px;
+  margin-left: 3px;
+  height: 14px;
+  display: inline-block;
+}
+
+.save-buttons button {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &:not(:last-child) {
+    margin-right: 15px;
+  }
+}

@@ -1,0 +1,23 @@
+.title {
+
+  padding-bottom: 30px;
+
+.document-type {
+  display: inline-block;
+  background-color: white;
+  border-radius: 50%;
+  height: 32px;
+  width: 32px;
+  margin-right: 10px;
+
+  mat-icon {
+    line-height: 32px;
+    margin-left: 4px;
+    color: #f27100;
+  }
+}
+
+span {
+  font-size: 30px;
+}
+}

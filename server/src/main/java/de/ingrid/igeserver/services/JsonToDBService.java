@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services;
 
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class JsonToDBService extends MapperService {
             oldMap = new ObjectMapper().createObjectNode();
             oldMap.put( FIELD_PROFILE, map.path( FIELD_PROFILE ).asText() );
             oldMap.put( FIELD_PARENT, map.path( FIELD_PARENT ).asText(null) );
-            oldMap.put( FIELD_CREATED, format.format( new Date() ) );
+            oldMap.put( FIELD_CREATED, format.format( OffsetDateTime.now() ) );
             
         } else {
             oldMap = (ObjectNode) getJsonMap( oldDoc );
@@ -45,7 +46,7 @@ public class JsonToDBService extends MapperService {
         map.put( FIELD_MODIFIED_BY, userId );
         
         // TODO: should we store modified/create date in wrapper or actual data document?
-        oldMap.put( FIELD_MODIFIED, format.format( new Date() ) );
+        oldMap.put( FIELD_MODIFIED, format.format( OffsetDateTime.now() ) );
 
         // remove all referenced data except the ID
         // this data is fetched on each load (TODO: should be cached!)

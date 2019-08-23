@@ -7,6 +7,7 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.exception.OStorageException;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
 import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.services.MapperService;
@@ -36,7 +37,7 @@ public class DBUtils {
 
         // TODO: use cache!
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, true, false);
+            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, false);
 
             if (list.size() == 0) {
                 String msg = "The user does not seem to be assigned to any database: " + userId;
@@ -69,7 +70,7 @@ public class DBUtils {
 
         // TODO: use cache!
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, true, false);
+            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, false);
 
             if (list.size() == 0) {
                 String msg = "The user does not seem to be assigned to any database: " + userId;
@@ -163,7 +164,7 @@ public class DBUtils {
         query.put("userId", userId);
 
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, true, false);
+            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, false);
 
 
             ObjectNode catUserRef = (ObjectNode) MapperService.getJsonMap(list.get(0));

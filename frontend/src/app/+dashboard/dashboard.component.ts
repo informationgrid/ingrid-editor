@@ -6,6 +6,7 @@ import {ProfileQuery} from "../store/profile/profile.query";
 import {DocumentQuery} from "../store/document/document.query";
 import {DocumentAbstract} from "../store/document/document.model";
 import {Observable} from "rxjs";
+import {ProfileService} from '../services/profile.service';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -36,17 +37,15 @@ export class DashboardComponent implements OnInit {
 
   constructor(configService: ConfigService,
               private docService: DocumentService,
-              private profileQuery: ProfileQuery,
+              private profileService: ProfileService,
               private docQuery: DocumentQuery,
               private formularService: FormularService) {
     this.configuration = configService.getConfiguration();
   }
 
   ngOnInit() {
-    this.profileQuery.isInitialized$.subscribe( (isInitialized) => {
-      if (isInitialized) {
-        this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
-      }
+    this.profileService.initialized.then( () => {
+      this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
     } );
 
     this.allDocuments$ = this.docQuery.selectAll();

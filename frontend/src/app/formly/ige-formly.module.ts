@@ -11,7 +11,6 @@ import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
-import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {FormlyModule} from '@ngx-formly/core';
 import {ContextHelpComponent} from '../+demo-layout/form/context-help/context-help.component';
@@ -21,6 +20,7 @@ import {FocusDirective} from '../directives/focus.directive';
 import {FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';
 import {TableTypeComponent} from './types/table-type.component';
 import {CommonModule} from '@angular/common';
+import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};

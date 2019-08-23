@@ -10,7 +10,7 @@ body {
 }
 
 .hide {
-  display: none;
+  display: none !important;
 }
 
 .mat-header-row {

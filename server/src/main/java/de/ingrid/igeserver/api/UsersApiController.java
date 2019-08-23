@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.id.ORecordId;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.model.User;
 import de.ingrid.igeserver.model.User1;
@@ -126,7 +127,7 @@ public class UsersApiController implements UsersApi {
         UserInfo userInfo = new UserInfo();
         userInfo.userId = userId;
         userInfo.assignedCatalogs = assignedCatalogs;
-
+        userInfo.name = "Michael Mustermann";
         userInfo.roles = keycloakService.getRoles((KeycloakAuthenticationToken) principal);
 
         return ResponseEntity.ok(userInfo);
@@ -140,17 +141,17 @@ public class UsersApiController implements UsersApi {
         try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
 
             log.info("Parameter:", info);
-            String[] userIds = (String[]) info.get("userIds");
+            List<String> userIds = (List<String>) info.get("userIds");
             String catalogName = (String) info.get("catalogName");
 
-            if (userIds == null || userIds.length == 0) {
+            if (userIds == null || userIds.size() == 0) {
                 throw new ApiException(500, "No user ids set to use as a catalog administrator");
             }
             // get catalog Info
-            String userId = userIds[0];
+            String userId = userIds.get(0);
             Map<String, String> query = new HashMap<>();
             query.put("userId", userId);
-            List<String> list = this.dbService.findAll("Info", query, true, false);
+            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, false);
             boolean isNewEntry = list.size() == 0;
 
             Set<String> catalogIds;
@@ -163,7 +164,7 @@ public class UsersApiController implements UsersApi {
 
                 catInfo = getMapFromJson(list.get(0));
             }
-            catalogIds = (Set<String>) catInfo.get("catalogIds");
+            catalogIds = (HashSet)catInfo.get("catalogIds");
 
             // update catadmin in catalog Info
             if (catalogName != null) catalogIds.add(catalogName);
@@ -172,7 +173,7 @@ public class UsersApiController implements UsersApi {
 
             String recordId = null;
             if (!isNewEntry) {
-                recordId = ((ORecordId) catInfo.get("@rid")).toString();
+                recordId = (String) catInfo.get("@rid");
             }
             dbService.save(DBApi.DBClass.Info.name(), recordId, catInfo);
         } catch (Exception e) {
@@ -190,7 +191,7 @@ public class UsersApiController implements UsersApi {
         try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
             Map<String, String> query = new HashMap<>();
             query.put("catalogIds", id);
-            List<String> infos = this.dbService.findAll("Info", query, true, false);
+            List<String> infos = this.dbService.findAll("Info", query, QueryType.contains, false);
             for (String entry : infos) {
                 JsonNode map = MapperService.getJsonMap(entry);
                 result.add(map.get("userId").asText());

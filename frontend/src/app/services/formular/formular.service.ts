@@ -47,12 +47,14 @@ export class FormularService {
     // create profiles after we have logged in
 
     console.log('init profiles');
+    this.profiles.initialized
+      .then(registeredProfiles => this.profileDefinitions = registeredProfiles);
 
-    profileQuery.isInitialized$.subscribe((isInitialized) => {
+    /*profileQuery.isInitialized$.subscribe((isInitialized) => {
       if (isInitialized) {
         this.profileDefinitions = profiles.getProfiles();
       }
-    });
+    });*/
   }
 
   getFields(profile: string) {

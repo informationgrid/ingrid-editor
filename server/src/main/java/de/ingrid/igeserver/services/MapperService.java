@@ -34,7 +34,7 @@ public class MapperService {
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-        return mapper.convertValue(json, Map.class);
+        return mapper.readValue(json, Map.class);
     }
 
     @Deprecated

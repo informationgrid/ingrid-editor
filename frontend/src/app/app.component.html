@@ -5,12 +5,15 @@
         </mat-nav-list>
     </mat-drawer>
 
-    <div>
+    <div class="header-row">
         <button type="button" mat-button (click)="drawer.toggle()" *ngIf="showDrawer | async">
             <mat-icon>menu</mat-icon>
-            Menü
         </button>
+
+        <strong>INGRID</strong> EDITOR Daten
+
         <button type="button" mat-button class="pull-right" (click)="logout()">
+            {{username | async}}
             <mat-icon title="Logout">exit_to_app</mat-icon>
         </button>
 

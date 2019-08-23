@@ -1,11 +1,11 @@
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { EventManager } from '@angular/platform-browser';
-import { Profile } from '../../app/services/formular/profile';
-import { Container, DropdownField, TextareaField, TextboxField } from '../../app/+form/controls';
-import { Behaviour } from '../../app/+behaviours/behaviours';
-import { DocumentService } from '../../app/services/document/document.service';
-import { OpenTableField } from '../../app/+form/controls/field-opentable';
-import { CodelistService } from '../../app/services/codelist/codelist.service';
+import {FormGroup} from '@angular/forms';
+import {EventManager} from '@angular/platform-browser';
+import {Profile} from '../../app/services/formular/profile';
+import {Behaviour} from '../../app/+behaviours/behaviours';
+import {DocumentService} from '../../app/services/document/document.service';
+import {CodelistService} from '../../app/services/codelist/codelist.service';
+import {FormlyFieldConfig} from '@ngx-formly/core';
+import {from} from 'rxjs';
 
 export class ProfileAddress implements Profile {
   // must be same as DBClass!
@@ -15,128 +15,226 @@ export class ProfileAddress implements Profile {
 
   treeIconClass = 'fa fa-address-card-o';
 
-  countrySelect = new DropdownField({
-    key: 'country',
-    label: 'Land',
-    domClass: 'half',
-    options: []
-  });
-  adminAreaSelect = new DropdownField({
-    key: 'adminArea',
-    label: 'Verwaltungsgebiet',
-    domClass: 'half',
-    options: []
-  });
-
-  fields = [
-    new TextboxField({
-      key: 'firstName',
-      label: 'Vorname',
-      domClass: 'half',
-      order: 10,
-      validator: [
-        // Validators.required,
-        // Validators.minLength(4),
-        function (fc: FormControl) {
-          const firstNameIsLong = fc.value && fc.value.length >= 5;
-          const lastNameHasValue = fc.root.get('lastName') && fc.root.get('lastName').value
-            ? fc.root.get('lastName').value.length > 0
-            : false;
-          return firstNameIsLong || lastNameHasValue
-            ? null
-            : {
-              other: {
-                valid: false,
-                error: 'Der Titel muss aus mindestens 5 Zeichen bestehen oder es muss ein Nachname gesetzt sein.',
-                special: 'abc'
-              }
-            };
+  fields = <FormlyFieldConfig[]>[
+    {
+      fieldGroupClassName: 'display-flex',
+      wrappers: ['panel'],
+      templateOptions: {
+        externalLabel: 'Name'
+      },
+      fieldGroup: [{
+        key: 'firstName',
+        className: 'flex-1',
+        type: 'input',
+        wrappers: ['form-field'],
+        templateOptions: {
+          label: 'Vorname',
+          appearance: 'outline'
         }
-      ]
-    }),
-
-    new TextboxField({
-      key: 'lastName',
-      label: 'Nachname',
-      domClass: 'half',
-      order: 20,
-      validator: function (fc: FormControl) {
-        const firstName = fc.root.get('firstName');
-        if (firstName) {
-          firstName.updateValueAndValidity();
+      }, {
+        key: 'lastName',
+        className: 'flex-1',
+        type: 'input',
+        wrappers: ['form-field'],
+        templateOptions: {
+          label: 'Nachname',
+          appearance: 'outline'
         }
-      }
-    }),
-
-    new OpenTableField({
+      }]
+    }, {
       key: 'contact',
-      label: 'Kommunikation',
-      order: 30,
-      domClass: 'half',
-      height: 145,
-      columns: [
-        {
-          editor: new DropdownField({
-            key: 'type',
-            label: 'Typ',
-            options: [{id: 'email', value: 'Email'}, {id: 'phone', value: 'Telefon'}]
-          }),
-          width: '100px'
-        },
-        {
-          editor: new TextboxField({
-            key: 'value',
-            label: 'Wert'
-          })
-        }
-      ]
-    }),
-
-    new Container({
+      type: 'table',
+      wrappers: ['panel'],
+      templateOptions: {
+        externalLabel: 'Kommunikation',
+        columns: [
+          {key: 'name', editable: true, label: 'Name'},
+          {key: 'weight', editable: false, label: 'Gewicht'}
+        ]
+      }
+    }, {
       key: 'address',
-      domClass: 'half',
-      order: 40,
-      children: [
-        new TextboxField({
+      wrappers: ['panel'],
+      templateOptions: {
+        externalLabel: 'Adresse'
+      },
+      fieldGroup: [{
+        fieldGroupClassName: 'display-flex',
+        fieldGroup: [{
           key: 'street',
-          label: 'Strasse',
-          domClass: 'three-quarter'
-        }),
-        new TextboxField({
-          key: 'houseNumber',
-          label: 'Hausnr',
-          domClass: 'quarter'
-        }),
-        new TextboxField({
-          key: 'postbox',
-          label: 'PLZ',
-          domClass: 'quarter'
-        }),
-        new TextboxField({
+          className: 'flex-1',
+          type: 'input',
+          templateOptions: {
+            label: 'Strasse',
+            appearance: 'outline'
+          }
+        }, {
+          key: 'number',
+          className: 'flex-1',
+          type: 'input',
+          templateOptions: {
+            label: 'Hausnummer',
+            appearance: 'outline'
+          }
+        }]
+      }, {
+        fieldGroupClassName: 'display-flex',
+        fieldGroup: [{
+          key: 'PO',
+          className: 'flex-1',
+          type: 'input',
+          templateOptions: {
+            label: 'PLZ',
+            appearance: 'outline'
+          }
+        }, {
           key: 'city',
-          label: 'Stadt',
-          domClass: 'three-quarter'
-        }),
-
-        this.adminAreaSelect,
-
-        this.countrySelect
-      ]
-    }),
-
-    new TextareaField({
+          className: 'flex-3',
+          type: 'input',
+          templateOptions: {
+            label: 'Stadt',
+            appearance: 'outline'
+          }
+        }, {
+          key: 'country',
+          className: 'flex-3',
+          type: 'select',
+          templateOptions: {
+            label: 'Land',
+            appearance: 'outline',
+            placeholder: 'Bitte wählen',
+            options: this.getCodelistForSelect(6200)
+          }
+        }]
+      }]
+    }, {
       key: 'tasks',
-      label: 'Aufgaben',
-      rows: 2,
-      order: 40
-    }),
-
-    new TextboxField({
+      type: 'textarea',
+      wrappers: ['panel', 'form-field'],
+      templateOptions: {
+        externalLabel: 'Aufgaben',
+        rows: 2,
+        appearance: 'outline'
+      }
+    }, {
       key: 'serviceTimes',
-      label: 'Servicezeiten',
-      order: 40
-    })
+      type: 'input',
+      wrappers: ['panel', 'form-field'],
+      templateOptions: {
+        externalLabel: 'Servicezeiten',
+        appearance: 'outline'
+      }
+    }
   ];
+
+  /*new TextboxField({
+    key: 'firstName',
+    label: 'Vorname',
+    domClass: 'half',
+    order: 10,
+    validator: [
+      // Validators.required,
+      // Validators.minLength(4),
+      function (fc: FormControl) {
+        const firstNameIsLong = fc.value && fc.value.length >= 5;
+        const lastNameHasValue = fc.root.get('lastName') && fc.root.get('lastName').value
+          ? fc.root.get('lastName').value.length > 0
+          : false;
+        return firstNameIsLong || lastNameHasValue
+          ? null
+          : {
+            other: {
+              valid: false,
+              error: 'Der Titel muss aus mindestens 5 Zeichen bestehen oder es muss ein Nachname gesetzt sein.',
+              special: 'abc'
+            }
+          };
+      }
+    ]
+  }),
+
+  new TextboxField({
+    key: 'lastName',
+    label: 'Nachname',
+    domClass: 'half',
+    order: 20,
+    validator: function (fc: FormControl) {
+      const firstName = fc.root.get('firstName');
+      if (firstName) {
+        firstName.updateValueAndValidity();
+      }
+    }
+  }),
+
+  new OpenTableField({
+    key: 'contact',
+    label: 'Kommunikation',
+    order: 30,
+    domClass: 'half',
+    height: 145,
+    columns: [
+      {
+        editor: new DropdownField({
+          key: 'type',
+          label: 'Typ',
+          options: [{id: 'email', value: 'Email'}, {id: 'phone', value: 'Telefon'}]
+        }),
+        width: '100px'
+      },
+      {
+        editor: new TextboxField({
+          key: 'value',
+          label: 'Wert'
+        })
+      }
+    ]
+  }),
+
+  new Container({
+    key: 'address',
+    domClass: 'half',
+    order: 40,
+    children: [
+      new TextboxField({
+        key: 'street',
+        label: 'Strasse',
+        domClass: 'three-quarter'
+      }),
+      new TextboxField({
+        key: 'houseNumber',
+        label: 'Hausnr',
+        domClass: 'quarter'
+      }),
+      new TextboxField({
+        key: 'postbox',
+        label: 'PLZ',
+        domClass: 'quarter'
+      }),
+      new TextboxField({
+        key: 'city',
+        label: 'Stadt',
+        domClass: 'three-quarter'
+      }),
+
+      this.adminAreaSelect,
+
+      this.countrySelect
+    ]
+  }),
+
+  new TextareaField({
+    key: 'tasks',
+    label: 'Aufgaben',
+    rows: 2,
+    order: 40
+  }),
+
+  new TextboxField({
+    key: 'serviceTimes',
+    label: 'Servicezeiten',
+    order: 40
+  })
+];*/
 
   behaviours: Behaviour[] = [
     {
@@ -183,11 +281,12 @@ export class ProfileAddress implements Profile {
     }
   ];
 
-  constructor(storageService: DocumentService, codelistService: CodelistService) {
-    codelistService.byIds(['6200', '6400']).then(codelists => {
+  constructor(storageService: DocumentService, private codelistService: CodelistService) {
+    debugger;
+    /*codelistService.byIds(['6200', '6400']).then(codelists => {
       this.countrySelect.options = codelists[0];
       this.adminAreaSelect.options = codelists[1];
-    }).catch(err => console.error(err)/*modalService.showError(err)*/);
+    }).catch(err => console.error(err)/!*modalService.showError(err)*!/);*/
   }
 
   applyValidations(form: FormGroup) {
@@ -202,15 +301,18 @@ export class ProfileAddress implements Profile {
 
   };
 
-  getTitle(doc: any) {
-    if (!doc.firstName && !doc.lastName) {
-      return null;
-    } else {
-      return doc.firstName + ' ' + doc.lastName;
-    }
+  private getCodelistForSelect(codelistId: number) {
+
+    let codelist = this.codelistService.byId(codelistId + '')
+      .then(codelist => {
+        console.log("codelist:", codelist);
+        return codelist
+          .map(cl => {
+            return {label: cl.value, value: cl.id}
+          })
+          .sort( (a,b) => a.label.localeCompare(b.label));
+      });
+    return from(codelist);
   }
 
-  getTitleFields() {
-    return ['firstName', 'lastName'];
-  }
 }

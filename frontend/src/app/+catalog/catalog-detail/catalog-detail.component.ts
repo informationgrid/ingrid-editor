@@ -6,7 +6,7 @@ import {CatalogService} from '../services/catalog.service';
 import {ConfigService} from '../../services/config/config.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
-import {map} from 'rxjs/operators';
+import {map, share} from 'rxjs/operators';
 
 @Component({
   selector: 'ige-catalog-detail',
@@ -32,7 +32,7 @@ export class CatalogDetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.users = this.userService.getUsers();
+    this.users = this.userService.getUsers().pipe(share());
     this.userService.getAssignedUsers(this.data).subscribe( result => {
       this.catAdmins = this.users.pipe(
         map(users => users.filter(user => result.indexOf(user.login) !== -1))

@@ -4,11 +4,12 @@ import {DocumentService} from '../../services/document/document.service';
 import {CodelistService} from '../../services/codelist/codelist.service';
 import {from} from 'rxjs';
 
+// TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 export class McloudFormly implements Profile {
   // must be same as DBClass!?
-  id = 'AddressDoc';
+  id = 'mCloudDoc';
 
-  label = 'Adresse';
+  label = 'mCLOUD';
 
   treeIconClass = 'fa fa-address-card-o';
 
@@ -194,7 +195,6 @@ export class McloudFormly implements Profile {
 
     let codelist = this.codelistService.byId(codelistId+'')
       .then(codelist => {
-        debugger;
         console.log("codelist:", codelist);
         return codelist.map( cl => {
           return { label: cl.value, value: cl.id }

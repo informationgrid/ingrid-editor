@@ -42,7 +42,7 @@ export interface FormDataContainer {
 
 @Component( {
   templateUrl: './dynamic-form.component.html',
-  styleUrls: ['./dynamic-form.component.css'],
+  styleUrls: ['./dynamic-form.component.scss'],
   providers: [FormControlService]
   // changeDetection: ChangeDetectionStrategy.OnPush
 } )
@@ -51,6 +51,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild( 'newDocModal', {static: true} ) newDocModal: TemplateRef<any>;
   @ViewChild( 'deleteConfirmModal', {static: true} ) deleteConfirmModal: TemplateRef<any>;
   @ViewChild( 'discardConfirmModal', {static: true} ) discardConfirmModal: TemplateRef<any>;
+
+  // TODO: the width of the sidebar can be stored in a cookie/localstorage
+  sidebarWidth = 15;
 
   debugEnabled = false;
 
@@ -123,7 +126,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       } );
 
-/*
     // react on document selection
     this.treeQuery.selectActiveId().pipe(takeUntil(this.componentDestroyed)).subscribe((activeDocs) => {
       this.formToolbarService.setButtonState(
@@ -132,15 +134,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     } );
 
     this.behaviourService.initialized.then( () => {
-      /!*this.route.queryParams.subscribe( params => {
+      /*this.route.queryParams.subscribe( params => {
         this.debugEnabled = params['debug'] !== undefined;
         // this.editMode = params['editMode'] === 'true';
         // this.load(thisid);
-      } );*!/
+      } );*/
       this.route.params.subscribe( params => {
         this.load( params['id'] );
       } );
-    } );*/
+    } );
   }
 
   ngOnDestroy() {
@@ -159,14 +161,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
 
-    /*this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
+    this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
         console.log( 'loaded data:', data );
 
         if (data === null) {
           return;
         }
 
-        this.documentService.beforeLoad.next();
+        // this.documentService.beforeLoad.next();
 
         // if (data._profile === 'FOLDER' && !this.editMode) return;
 
@@ -179,7 +181,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
         const needsProfileSwitch = this.formularService.currentProfile !== profile;
         this.data = data;
-
         try {
 
           // switch to the right profile depending on the data
@@ -187,14 +188,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
             this.switchProfile( profile );
           }
 
-          this.updateRepeatableFields( data );
+          this.model = {...data};
+          /*this.updateRepeatableFields( data );
 
           this.createFormWithData( data );
 
-          this.behaviourService.apply( this.form, profile );
-          this.documentService.afterProfileSwitch.next( data );
+          this.behaviourService.apply( this.form, profile );*/
+          // this.documentService.afterProfileSwitch.next( data );
 
-          this.documentService.afterLoadAndSet.next( data );
+          // this.documentService.afterLoadAndSet.next( data );
 
         } catch (ex) {
           console.error( ex );
@@ -212,7 +214,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // register to an publisher in the form/storage service and send the value of this form
     // this can be used for publish, revert, detail, compare, ...
     // return current form data on request
-    this.formularService.formDataSubject$
+    /*this.formularService.formDataSubject$
       .pipe(takeUntil(this.componentDestroyed))
       .subscribe( (container: FormDataContainer) => {
         container.form = this.form;
@@ -226,10 +228,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.form) {
           Object.assign( container.value, this.form.value );
         }
-      } );
+      } );*/
 
     // load dataset when one was updated
-    this.documentService.datasetsChanged$
+    /*this.documentService.datasetsChanged$
       .pipe(takeUntil(this.componentDestroyed))
       .subscribe( (msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
@@ -275,9 +277,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     //   rootOption: true
     // };
     const selectedDocs = this.treeQuery.getActive();
-    this.newDocOptions.docTypes = [{id: 'mcloud', 'label': 'mCLOUD'}] //this.formularService.getDocTypes()
+    this.newDocOptions.docTypes = this.formularService.getDocTypes()
       .filter( type => type.id !== 'FOLDER' )
       .sort( (a, b) => a.label.localeCompare( b.label ) );
+
     this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
     this.formularService.newDocumentSubject.next( this.newDocOptions );
 
@@ -312,6 +315,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.fields = new McloudFormly(null, this.codelistService).fields;
 
+    // TODO: use constructor for creating new document
+    const newDoc = {_profile: type, _parent: this.data._parent ? this.data._parent : null};
+    this.documentService.save( newDoc, true );
 
     return;
 
@@ -387,7 +393,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
-    const data = this.form.value;
+    const data = this.model; // this.form.value;
 
     // during save the listeners for dataset changes are already called
     // this.form.reset(this.form.value);
@@ -447,13 +453,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   switchProfile(profile: string) {
-    this.behaviourService.unregisterAll();
+    // this.behaviourService.unregisterAll();
+
     // @ts-ignore
     this.fields = this.formularService.getFields( profile );
 
+
+
     // add controls from active behaviours
     // TODO: refactor to a function
-    this.behaviours = this.behaviourService.behaviours;
+    /*this.behaviours = this.behaviourService.behaviours;
     this.behaviours
       .filter( behave => behave.isActive && behave.forProfile === profile )
       .forEach( (behave) => {
@@ -468,7 +477,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     //       => [ 'title', 'description', ... ]
     // sort fields by its order field
     // @ts-ignore
-    this.fields.sort( (a, b) => a.order - b.order ).slice( 0 );
+    this.fields.sort( (a, b) => a.order - b.order ).slice( 0 );*/
 
     this.formularService.currentProfile = profile;
   }
