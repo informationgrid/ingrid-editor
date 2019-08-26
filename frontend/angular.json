@@ -28,11 +28,11 @@
               }
             ],
             "styles": [
-              "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/chartist/dist/chartist.css",
               "src/material.css",
-              "src/styles.css"
+              "src/styles.css",
+              "src/theme.scss"
             ],
             "scripts": [
               "node_modules/scriptjs/dist/script.js",

@@ -1,32 +1,45 @@
-<mat-drawer-container autosize fxLayout="column" fxFill>
-    <mat-drawer #drawer mode="side" [opened]="false">
-        <mat-nav-list>
-            <a mat-list-item *ngFor="let route of routes" [routerLink]="route.path">{{route.name}}</a>
-        </mat-nav-list>
-    </mat-drawer>
+<div class="wrapper">
 
-    <div class="header-row">
-        <button type="button" mat-button (click)="drawer.toggle()" *ngIf="showDrawer | async">
-            <mat-icon>menu</mat-icon>
-        </button>
+    <mat-toolbar>
+        <mat-toolbar-row>
+            <span><strong>INGRID</strong> EDITOR Daten</span>
+            <div fxFlex></div>
+            <button type="button" mat-button class="pull-right" (click)="logout()">
+                {{username | async}}
+                <mat-icon title="Logout">exit_to_app</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
 
-        <strong>INGRID</strong> EDITOR Daten
+    <mat-drawer-container autosize fxFlex>
+        <mat-drawer #drawer mode="side" [opened]="true">
+            <mat-nav-list fxFlex fxLayout="column">
+                <a mat-list-item *ngFor="let route of routes" [routerLink]="route.path"
+                   [title]="route.name"
+                   [class.active]="route.name === 'Dashboard'">
+                    <mat-icon mat-list-icon>exit_to_app</mat-icon>
+                    <p mat-line *ngIf="menuIsExpanded">{{route.name}}</p>
+                </a>
 
-        <button type="button" mat-button class="pull-right" (click)="logout()">
-            {{username | async}}
-            <mat-icon title="Logout">exit_to_app</mat-icon>
-        </button>
+                <div class="fillVertical"></div>
 
-        <!--        <ige-search-bar></ige-search-bar>-->
-    </div>
+                <a mat-list-item (click)="menuIsExpanded = !menuIsExpanded" *ngIf="showDrawer | async">
+                    <mat-icon *ngIf="!menuIsExpanded" mat-list-icon>keyboard_arrow_right</mat-icon>
+                    <mat-icon *ngIf="menuIsExpanded" mat-list-icon>keyboard_arrow_left</mat-icon>
+                    <p mat-line *ngIf="menuIsExpanded">Verkleinern</p>
+                </a>
+            </mat-nav-list>
+        </mat-drawer>
 
-    <!--<div fxLayout="column" fxFill>-->
-    <!-- MENU -->
-    <!--<main-menu></main-menu>-->
 
-    <!--<help-panel></help-panel>-->
+        <!--<div fxLayout="column" fxFill>-->
+        <!-- MENU -->
+        <!--<main-menu></main-menu>-->
 
-    <!-- PAGES -->
-    <router-outlet></router-outlet>
+        <!--<help-panel></help-panel>-->
 
-</mat-drawer-container>
+        <!-- PAGES -->
+        <router-outlet></router-outlet>
+
+    </mat-drawer-container>
+</div>

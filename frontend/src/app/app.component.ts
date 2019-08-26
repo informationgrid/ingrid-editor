@@ -18,10 +18,19 @@ import {map} from 'rxjs/operators';
           width: 100%;
           height: 100%;
       }
-      
-      .header-row {
-          line-height: 48px;
-          font-size: 23px;
+
+      .fillVertical {
+          flex: 1;
+      }
+
+      .wrapper {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
       }
 
       /deep/ mat-drawer-content.mat-drawer-content {
@@ -30,12 +39,32 @@ import {map} from 'rxjs/operators';
           flex: 1;
       }
 
+      /*.header-row {
+          line-height: 48px;
+          font-size: 23px;
+      }
+
+
       ige-search-bar {
           float: right;
+      }*/
+
+      .mat-list-base {
+          padding-top: 0;
       }
 
       mat-drawer {
-          min-width: 400px;
+          /*min-width: 400px;*/
+          background-color: #28225b;
+      }
+
+      .mat-list-base .mat-list-item {
+          color: #ffffff;
+      }
+
+      .mat-list-item.active {
+          background-color: #196ea2;
+          /*background-color: #f48829;*/
       }
   `]
 })
@@ -48,6 +77,7 @@ export class AppComponent implements OnInit {
 
   showDrawer: Observable<boolean>;
   username: Observable<string>;
+  menuIsExpanded = true;
 
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 

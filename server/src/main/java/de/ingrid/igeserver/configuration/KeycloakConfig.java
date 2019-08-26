@@ -17,6 +17,19 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @KeycloakConfiguration
 class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
@@ -25,6 +38,9 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     @Value("#{'${spring.profiles.active:}'.indexOf('dev') != -1}")
     boolean developmentMode;
+
+    @Value("${app.enable-csrf:false}")
+    boolean csrfEnabled;
 
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
@@ -87,18 +103,59 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
                 //.antMatchers("/persons*").hasRole("user") // only user with role user are allowed to access
                     //.anyRequest().authenticated();
             // @formatter:off*/
+            if (csrfEnabled) {
+                http = http.csrf()
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .and();// make cookies readable within JS
+
+            } else {
+                http = http.csrf().disable();
+            }
             http
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // make cookies readable within
-                                                                                    // JS
-                    .and().authorizeRequests().anyRequest().authenticated().and()
+                    .authorizeRequests()
+                        .anyRequest().authenticated()
+                    .and()
                     // .formLogin()
                     // .loginPage( "/login" )
                     // .permitAll()
                     // .and()
-                    .logout().permitAll();
+                    .logout()
+                        .permitAll();
             // @formatter:on
         }
+    }
+
+    private Filter csrfHeaderFilter() {
+        return new OncePerRequestFilter() {
+
+            @Override
+            protected void doFilterInternal(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain filterChain) throws ServletException, IOException {
+
+                CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+                if (csrf != null) {
+                    Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
+                    String token = csrf.getToken();
+                    if (cookie == null || token != null
+                            && !token.equals(cookie.getValue())) {
+
+                        // Token is being added to the XSRF-TOKEN cookie.
+                        cookie = new Cookie("XSRF-TOKEN", token);
+                        cookie.setPath("/");
+                        response.addCookie(cookie);
+                    }
+                }
+                filterChain.doFilter(request, response);
+            }
+        };
+    }
+
+
+    private CsrfTokenRepository csrfTokenRepository() {
+        HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
+        repository.setHeaderName("X-XSRF-TOKEN");
+        return repository;
     }
 
 }
