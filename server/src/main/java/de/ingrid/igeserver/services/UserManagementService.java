@@ -15,4 +15,6 @@ public interface UserManagementService {
     User getUser(Principal principal, String login) throws IOException;
 
     Set<String> getRoles(KeycloakAuthenticationToken principal);
+
+    String getName(KeycloakAuthenticationToken principal);
 }

@@ -127,7 +127,7 @@ public class UsersApiController implements UsersApi {
         UserInfo userInfo = new UserInfo();
         userInfo.userId = userId;
         userInfo.assignedCatalogs = assignedCatalogs;
-        userInfo.name = "Michael Mustermann";
+        userInfo.name = keycloakService.getName((KeycloakAuthenticationToken) principal);
         userInfo.roles = keycloakService.getRoles((KeycloakAuthenticationToken) principal);
 
         return ResponseEntity.ok(userInfo);

@@ -126,4 +126,8 @@ public class KeycloakService implements UserManagementService {
     public Set<String> getRoles(KeycloakAuthenticationToken principal) {
         return principal == null ? null : principal.getAccount().getRoles();
     }
+
+    public String getName(KeycloakAuthenticationToken principal) {
+        return principal == null ? null : principal.getAccount().getKeycloakSecurityContext().getIdToken().getName();
+    }
 }

@@ -46,6 +46,11 @@ public class KeycloakMockService implements UserManagementService {
         return new HashSet<>(Arrays.asList(mockedUserRoles));
     }
 
+    @Override
+    public String getName(KeycloakAuthenticationToken principal) {
+        return "Michael Mustermann";
+    }
+
 
     @Override
     public User getUser(Principal principal, String login) {
