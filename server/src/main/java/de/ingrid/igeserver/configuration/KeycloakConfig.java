@@ -42,6 +42,9 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Value("${app.enable-csrf:false}")
     boolean csrfEnabled;
 
+    @Value("${app.enable-cors:false}")
+    private boolean corsEnabled;
+
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
      */
@@ -111,10 +114,16 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
             } else {
                 http = http.csrf().disable();
             }
+
+            if (!corsEnabled) {
+                http = http.cors().disable();
+            }
+
             http
                     .authorizeRequests()
                         .anyRequest().authenticated()
                     .and()
+
                     // .formLogin()
                     // .loginPage( "/login" )
                     // .permitAll()
