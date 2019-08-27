@@ -24,7 +24,7 @@ main-menu .mat-toolbar-row {
   height: 50px;
 }
 main-menu .mat-toolbar-multiple-rows {
-  min-height: 50px;
+  min-height: 44px;
 }
 
 .mat-expansion-panel {

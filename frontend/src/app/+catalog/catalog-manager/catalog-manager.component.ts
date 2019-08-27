@@ -38,11 +38,13 @@ export class CatalogManagerComponent implements OnInit {
   showCreateCatalogDialog() {
     const newCatalogModalRef = this.dialog.open(NewCatalogDialogComponent);
     newCatalogModalRef.afterClosed().subscribe( name => {
-      this.showSpinner = true;
-      this.catalogService.createCatalog(name).subscribe( () => {
-        this.catalogs = this.catalogService.getCatalogs();
-        this.showSpinner = false;
-      });
+      if (name) {
+        this.showSpinner = true;
+        this.catalogService.createCatalog(name).subscribe(() => {
+          this.catalogs = this.catalogService.getCatalogs();
+          this.showSpinner = false;
+        });
+      }
     })
   }
 

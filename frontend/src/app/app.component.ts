@@ -60,11 +60,17 @@ import {map} from 'rxjs/operators';
 
       .mat-list-base .mat-list-item {
           color: #ffffff;
+          height: 55px;
       }
 
       .mat-list-item.active {
           background-color: #196ea2;
           /*background-color: #f48829;*/
+      }
+
+      .mat-toolbar-row, .mat-toolbar-single-row, .mat-toolbar-multiple-rows {
+          height: 44px;
+          min-height: 44px;
       }
   `]
 })
