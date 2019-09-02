@@ -1,4 +1,4 @@
-import {DashboardPage} from "./dashboard.po";
+import {DashboardPage} from './dashboard.po';
 
 describe('Dashboard', () => {
   let page: DashboardPage;
@@ -9,11 +9,13 @@ describe('Dashboard', () => {
 
   xit('should show recent docs', () => {
     page.navigateTo();
-    //expect(page.getRecentDocsTitle()).toEqual('Letzte Dokumente');
+    // expect(page.getRecentDocsTitle()).toEqual('Letzte Dokumente');
   });
 
-  it('should show shortcuts to actions', () => {
+  it('should show shortcuts to actions', async() => {
     page.navigateTo();
-    //expect(page.getActions().getText()).toEqual(['Neues Dokument erstellen', 'Adresse erstellen']);
+
+    const actions = await page.getActions().getText();
+    expect(actions).toEqual(['Neues Dokument', 'Neue Adresse', 'Neuen Benutzer anlegen']);
   });
 });

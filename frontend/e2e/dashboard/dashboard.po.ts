@@ -2,7 +2,7 @@ import { browser, element, by,  } from 'protractor';
 
 export class DashboardPage {
   navigateTo() {
-    return browser.get('#/dashboard');
+    return browser.get('/dashboard');
   }
 
   getRecentDocsTitle() {
@@ -10,6 +10,6 @@ export class DashboardPage {
   }
 
   getActions() {
-    return element.all(by.css('ige-root .shortcut')).all(by.css('.item'));
+    return element.all(by.css('ige-action-button button'));
   }
 }
