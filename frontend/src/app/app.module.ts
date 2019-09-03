@@ -34,6 +34,7 @@ import {DeleteDialogComponent} from './+behaviours/toolbar/deleteDocs/delete-dia
 import {FormlyModule} from '@ngx-formly/core';
 import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.component';
 import {FormlyMaterialModule} from '@ngx-formly/material';
+import { SideMenuComponent } from './side-menu/side-menu.component';
 
 registerLocaleData(de);
 
@@ -73,7 +74,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent,
     SearchBarComponent, DeleteDialogComponent,
-    OneColumnWrapperComponent],
+    OneColumnWrapperComponent,
+    SideMenuComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),

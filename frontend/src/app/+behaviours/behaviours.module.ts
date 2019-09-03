@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {PluginsComponent} from './behaviours.component';
 import {routing} from './behaviours.routing';
 import {Collapse} from '../directives/collapse.directive';
-import {SharedModule} from '../shared.module';
+import {SharedModule} from '../shared/shared.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';

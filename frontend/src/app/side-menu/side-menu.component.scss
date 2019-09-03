@@ -1,0 +1,24 @@
+.mat-list-base {
+  padding-top: 0;
+}
+
+:host {
+  display: block;
+  background-color: #28225b;
+  width: 100%;
+  height: 100%;
+}
+
+.mat-list-base .mat-list-item {
+  color: #ffffff;
+  height: 55px;
+}
+
+.mat-list-item.active {
+  background-color: #196ea2;
+  /*background-color: #f48829;*/
+}
+
+.fillVertical {
+  flex: 1;
+}

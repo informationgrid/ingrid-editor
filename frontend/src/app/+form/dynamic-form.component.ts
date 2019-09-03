@@ -180,6 +180,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           }
 
           this.model = {...data};
+          this.form.markAsPristine();
           /*this.updateRepeatableFields( data );
 
           this.createFormWithData( data );

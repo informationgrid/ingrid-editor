@@ -12,31 +12,9 @@
     </mat-toolbar>
 
     <mat-drawer-container autosize fxFlex>
-        <mat-drawer #drawer mode="side" [opened]="true">
-            <mat-nav-list fxFlex fxLayout="column">
-                <a mat-list-item *ngFor="let route of routes" [routerLink]="route.path"
-                   [title]="route.name"
-                   [class.active]="route.name === 'Dashboard'">
-                    <mat-icon mat-list-icon>exit_to_app</mat-icon>
-                    <p mat-line *ngIf="menuIsExpanded">{{route.name}}</p>
-                </a>
-
-                <div class="fillVertical"></div>
-
-                <a mat-list-item (click)="menuIsExpanded = !menuIsExpanded" *ngIf="showDrawer | async">
-                    <mat-icon *ngIf="!menuIsExpanded" mat-list-icon>keyboard_arrow_right</mat-icon>
-                    <mat-icon *ngIf="menuIsExpanded" mat-list-icon>keyboard_arrow_left</mat-icon>
-                    <p mat-line *ngIf="menuIsExpanded">Verkleinern</p>
-                </a>
-            </mat-nav-list>
+        <mat-drawer mode="side" [opened]="true">
+            <ige-side-menu></ige-side-menu>
         </mat-drawer>
-
-
-        <!--<div fxLayout="column" fxFill>-->
-        <!-- MENU -->
-        <!--<main-menu></main-menu>-->
-
-        <!--<help-panel></help-panel>-->
 
         <!-- PAGES -->
         <router-outlet></router-outlet>

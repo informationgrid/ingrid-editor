@@ -9,7 +9,7 @@ import {routing} from './ige-form.routing';
 import {BrowserComponent} from './sidebars/browser/browser.component';
 import {PartialGenerator} from './partialGenerator/partial-generator.component';
 import {LinkDatasetComponent} from './linkDataset/link-dataset.component';
-import {SharedModule} from '../shared.module';
+import {SharedModule} from '../shared/shared.module';
 import {NominatimService} from './leaflet/nominatim.service';
 import {MainFormComponent} from './main-form/main-form.component';
 import {MainFormTabsComponent} from './main-form-tabs/main-form-tabs.component';

@@ -15,6 +15,11 @@ export class McloudFormly implements Profile {
 
   fields = <FormlyFieldConfig[]>[
     {
+      key: 'title',
+      type: 'input',
+      hide: true
+    },
+    {
       key: 'description',
       type: 'textarea',
       wrappers: ['panel', 'form-field'],

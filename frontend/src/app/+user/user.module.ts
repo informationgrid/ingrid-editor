@@ -6,7 +6,7 @@ import {UserService} from '../services/user/user.service';
 import {FormsModule} from '@angular/forms';
 import {RoleService} from '../services/role/role.service';
 import {RoleComponent} from './role.component';
-import {SharedModule} from '../shared.module';
+import {SharedModule} from '../shared/shared.module';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
