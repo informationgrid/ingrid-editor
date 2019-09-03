@@ -48,7 +48,6 @@ Thumbs.db
 /server/build/
 /frontend/out-tsc/
 databases/
-/gradle/wrapper
 */gradle/wrapper
 /plugins
 server/logs

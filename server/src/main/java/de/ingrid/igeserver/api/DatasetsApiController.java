@@ -260,7 +260,10 @@ public class DatasetsApiController implements DatasetsApi {
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             for (String id : ids) {
-                this.dbService.remove(DBApi.DBClass.Documents, id);
+                String recordId = this.dbService.getRecordId(DOCUMENT_WRAPPER, id);
+                Map dbDoc = this.dbService.find(DOCUMENT_WRAPPER, recordId);
+                // TODO: remove references to document!?
+                this.dbService.remove(DOCUMENT_WRAPPER, id);
             }
             return ResponseEntity.ok().build();
         }
@@ -297,7 +300,7 @@ public class DatasetsApiController implements DatasetsApi {
 
     private void copyOrMove(CopyMoveOperation operation, List<String> ids, String destId) throws Exception {
         for (String id : ids) {
-            Map doc = this.dbService.find(DBApi.DBClass.Documents, id);
+            Map doc = this.dbService.find(DOCUMENT_WRAPPER, id);
 
             // add new parent to document
             ObjectNode updatedDoc = (ObjectNode) documentService.updateParent(dbUtils.toJsonString(doc), destId);
@@ -328,7 +331,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         // TODO: refactor
         try (ODatabaseSession session = dbService.acquire(dbId)) {
-            Map doc = this.dbService.find(DBApi.DBClass.Documents, id);
+            Map doc = this.dbService.find(DOCUMENT_WRAPPER, id);
 
             JsonNode data = null;
             //data = this.documentService.prepareDocumentFromDB( doc );

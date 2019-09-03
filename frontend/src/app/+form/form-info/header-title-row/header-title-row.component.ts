@@ -1,4 +1,5 @@
 import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'ige-header-title-row',
@@ -7,13 +8,14 @@ import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from
 })
 export class HeaderTitleRowComponent implements OnInit {
 
-  @Input() doc;
+  @Input() form: FormGroup;
 
   @ViewChild('titleInput', {static: true}) titleInput: ElementRef;
 
   showTitleInput = false;
 
-  constructor(private cdRef: ChangeDetectorRef) { }
+  constructor(private cdRef: ChangeDetectorRef) {
+  }
 
   ngOnInit() {
   }

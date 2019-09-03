@@ -16,7 +16,7 @@ export class BehaviorDataService {
   }
 
   loadStoredBehaviours(): Observable<any[]> {
-    return of([]);//this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' );
+    return this.http.get<any[]>( this.configuration.backendUrl + 'behaviours' );
   }
 
   saveBehavior(behavior: Behaviour|any): Observable<any> {

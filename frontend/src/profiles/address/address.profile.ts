@@ -17,6 +17,11 @@ export class ProfileAddress implements Profile {
 
   fields = <FormlyFieldConfig[]>[
     {
+      key: 'title',
+      type: 'input',
+      hide: true
+    },
+    {
       fieldGroupClassName: 'display-flex',
       wrappers: ['panel'],
       templateOptions: {
@@ -282,7 +287,6 @@ export class ProfileAddress implements Profile {
   ];
 
   constructor(storageService: DocumentService, private codelistService: CodelistService) {
-    debugger;
     /*codelistService.byIds(['6200', '6400']).then(codelists => {
       this.countrySelect.options = codelists[0];
       this.adminAreaSelect.options = codelists[1];

@@ -8,6 +8,7 @@ import com.orientechnologies.orient.core.exception.OStorageException;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.QueryType;
+import de.ingrid.igeserver.documenttypes.DocumentWrapperType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
 import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.services.MapperService;
@@ -128,7 +129,7 @@ public class DBUtils {
                 String refId = (String) publisher.get(MapperService.FIELD_ID);
 
                 // TODO: get referenced document in a loop
-                Map refJson = this.dbService.find(DBApi.DBClass.Documents, refId);
+                Map refJson = this.dbService.find(DocumentWrapperType.DOCUMENT_WRAPPER, refId);
 
                 // TODO: map to json string
                 refNodes.add(refJson.toString());

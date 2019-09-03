@@ -1,4 +1,5 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'ige-form-info',
@@ -7,7 +8,7 @@ import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 })
 export class FormInfoComponent implements OnInit {
 
-  @Input() doc;
+  @Input() form: FormGroup;
 
   showDateBar;
   markFavorite;

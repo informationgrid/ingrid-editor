@@ -1,9 +1,9 @@
-import {IgeDocument} from "../../models/ige-document";
+import {DocumentState, IgeDocument} from "../../models/ige-document";
 import {DocumentAbstract} from "../../store/document/document.model";
 
 export class DocumentUtils {
 
-  static createDocumentAbstract(doc: IgeDocument, state: string): DocumentAbstract {
+  static createDocumentAbstract(doc: IgeDocument): DocumentAbstract {
 
     return {
       _hasChildren: false,
@@ -13,7 +13,7 @@ export class DocumentUtils {
       id: doc._id,
       title: doc.title,
       //_id: doc._id,
-      _state: state
+      _state: doc._state+''
     };
 
   }

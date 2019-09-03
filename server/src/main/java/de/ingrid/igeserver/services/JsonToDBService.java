@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
+
 @Service
 public class JsonToDBService extends MapperService {
 
@@ -28,7 +30,7 @@ public class JsonToDBService extends MapperService {
 
         String id = map.path( FIELD_ID ).asText(null);
 
-        Map oldDoc = dbService.find( DBApi.DBClass.Documents, id );
+        Map oldDoc = dbService.find( DOCUMENT_WRAPPER, id );
 
         ObjectNode oldMap = null;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -102,7 +104,7 @@ public class JsonToDBService extends MapperService {
     }
 
     public String revertDocument(String id) throws Exception {
-        Map doc = dbService.find( DBApi.DBClass.Documents, id );
+        Map doc = dbService.find( DOCUMENT_WRAPPER, id );
 
         doc.remove( FIELD_DRAFT );
 

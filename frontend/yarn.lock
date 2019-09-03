@@ -1054,6 +1054,13 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@datorama/akita-ng-forms-manager@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@datorama/akita-ng-forms-manager/-/akita-ng-forms-manager-3.1.0.tgz#81fd0708c3eab62efe07e783d3c2c834b5a2d251"
+  integrity sha512-gmiGUvEzVlrIXR2rjKRFPzo2Y4oA0+ZwZOPxsYf5j+UoDB7xhcShB87OEWbJ6Pf2NQ67pOHFSqzgRl5vlgE2Kg==
+  dependencies:
+    tslib "^1.9.0"
+
 "@datorama/akita-ngdevtools@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@datorama/akita-ngdevtools/-/akita-ngdevtools-3.0.2.tgz#399e0706b33f56a8efea5501d633f11086dc9618"

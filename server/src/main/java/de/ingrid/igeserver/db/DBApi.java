@@ -8,14 +8,14 @@ import java.util.Map;
 
 public interface DBApi {
 
-    Object getRecordId(String dbClass, Map<String, String> query) throws ApiException;
+    String getRecordId(String dbClass, String docUuid) throws ApiException;
 
     public static enum DBClass {Documents, User, Role, Info, Behaviours};
 
     /**
      * Find a document of a certain type with a given ID.
      */
-    public Map find(DBClass type, String id);
+    public Map find(String type, String id);
 
     /**
      * Get all documents of a certain type.
@@ -47,7 +47,7 @@ public interface DBApi {
     /**
      * Delete a document with a given ID.
      */
-    public boolean remove(DBClass type, String id);
+    public boolean remove(String type, String id);
 
     /**
      * Delete documents that match a given query.

@@ -39,7 +39,8 @@ export class PublishPlugin extends Plugin {
     this.formToolbarService.addButton( {id: 'toolBtnPublishSeparator',  isSeparator: true, pos: 100 } );
 
     this.formToolbarService.addButton( {
-      id: 'toolBtnPublish', tooltip: 'Publish', cssClasses: 'publish', eventId: this.eventPublishId, pos: 25, active: false
+      id: 'toolBtnPublish', tooltip: 'Publish', label: 'Veröffentlichen', cssClasses: 'publish',
+      eventId: this.eventPublishId, pos: 25, align: 'right', active: false, isPrimary: true
     } );
 
     // add button to toolbar for revert action

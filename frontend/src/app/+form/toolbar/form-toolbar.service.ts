@@ -4,12 +4,15 @@ import { Subject } from 'rxjs';
 export interface DefaultToolbarItem {
   id: string;
   pos: number;
+  align?: 'right' | 'left';
 }
 export interface ToolbarItem extends DefaultToolbarItem {
   tooltip: string;
   cssClasses: string;
   eventId: string;
   active?: boolean;
+  label?: string;
+  isPrimary?: boolean;
 }
 export interface Separator extends DefaultToolbarItem {
   isSeparator: boolean;
@@ -28,7 +31,7 @@ export class FormToolbarService {
 
   _buttons: Array<ToolbarItem|Separator> = [
     {id: 'toolBtnNew', tooltip: 'New', cssClasses: 'add', eventId: 'NEW_DOC', pos: 10, active: true},
-    {id: 'toolBtnSave', tooltip: 'Save', cssClasses: 'save', eventId: 'SAVE', pos: 20, active: false}
+    {id: 'toolBtnSave', tooltip: 'Save', label: 'Speichern', cssClasses: 'save', eventId: 'SAVE', pos: 20, active: false, align: 'right'}
   ];
 
   constructor() {

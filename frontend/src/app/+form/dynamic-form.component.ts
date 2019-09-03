@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
-import {Container} from './controls';
 import {BehaviourService} from '../services/behavior/behaviour.service';
 import {FormularService} from '../services/formular/formular.service';
 import {Behaviour} from '../+behaviours/behaviours';
@@ -9,7 +8,6 @@ import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../services/document/document.service';
 import {ModalService} from '../services/modal/modal.service';
-import {PartialGeneratorField} from './controls/field-partial-generator';
 import {ErrorService} from '../services/error.service';
 import {Role} from '../models/user-role';
 import {RoleService} from '../services/role/role.service';
@@ -26,6 +24,7 @@ import {TreeQuery} from '../store/tree/tree.query';
 import {McloudFormly} from '../formly/profiles/mcloud.formly';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {CodelistService} from '../services/codelist/codelist.service';
+import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 
 interface FormData extends Object {
   _id?: string;
@@ -60,27 +59,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // when editing a folder this flag must be set
   // editMode: boolean = false;
 
-  // fields: IFieldBase<any>[] = [];
-  /*fields: FormlyFieldConfig[] = [{
-    key: 'email',
-    type: 'input',
-    wrappers: ['panel', 'form-field'],
-    templateOptions: {
-      externalLabel: 'Email address',
-      placeholder: 'Enter email',
-      required: true,
-      appearance: 'outline'
-    }
-  }];*/
-  fields: FormlyFieldConfig[] = []; // new McloudFormly().fields;
+  fields: FormlyFieldConfig[] = [];
 
-  form: FormGroup = new FormGroup({});
+  form: FormGroup = new FormGroup({
+    title: new FormControl('Kein Titel')
+  });
   data: IgeDocument|any = {};
   behaviours: Behaviour[];
   error = false;
   model: any = {};
-
-  wizardFocusElement = null;
 
   userRoles: Role[];
 
@@ -103,6 +90,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private documentService: DocumentService, private modalService: ModalService,
               private dialog: MatDialog,
+              private formsManager: AkitaNgFormsManager<any>,
               private roleService: RoleService,
               private documentQuery: DocumentQuery,
               private treeQuery: TreeQuery,
@@ -156,10 +144,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // reset selected documents if we revisit the page
     this.formularService.setSelectedDocuments( [] );
+    this.formsManager.unsubscribe();
   }
 
   // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
+
+    this.formsManager.upsert('document', this.form);
 
     this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
         console.log( 'loaded data:', data );
@@ -311,6 +302,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.form.reset();
     }*/
     this.form = new FormGroup({});
+    this.formsManager.upsert('document', this.form);
     this.model = {};
 
     this.fields = new McloudFormly(null, this.codelistService).fields;
@@ -412,30 +404,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     } );
   }
 
-  /*  showToast() {
-          // Or create the instance of ToastOptions
-      const toastOptions: ToastOptions = {
-              title: 'Dokument wurde gespeichert',
-              // msg: 'Dokument wurde gespeichert',
-              showClose: false,
-              timeout: 2000,
-          };
-          // Add see all possible types in one shot
-          this.toastyService.info(toastOptions);
-      }*/
-
-  createFormWithData(data: IgeDocument) {
-    this.form = this.qcs.toFormGroup( this.fields, data );
-    this.form.addControl('_parent', new FormControl(data._parent) );
-    this.form.addControl('_id', new FormControl(data._id) );
-    this.form.addControl('_profile', new FormControl(data._profile) );
-
-    // disable form if we don't have the permission
-    // delay a bit for form to be created
-    // TODO: try to get permission beforehand and create form with this information
-    setTimeout( () => this.hasPermission( data ) ? this.form && this.form.enable() : this.form.disable(), 0 );
-  }
-
   // TODO: extract to permission service class
   hasPermission(data: any): boolean {
     // TODO: check all roles
@@ -480,64 +448,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.fields.sort( (a, b) => a.order - b.order ).slice( 0 );*/
 
     this.formularService.currentProfile = profile;
-  }
-
-  updateRepeatableFields(data: any) {
-    // set repeatable fields according to loaded data
-    // @ts-ignore
-    const repeatFields = this.fields.filter( pField => (<Container>pField).isRepeatable );
-
-    // @ts-ignore
-    repeatFields.forEach( (repeatField: Container) => {
-      this.resetArrayGroup( repeatField.key );
-      if (data[repeatField.key]) {
-        const repeatData = data[repeatField.key];
-        for (let i = 0; i < repeatData.length; i++) {
-          const partialKey = Object.keys( repeatData[i] )[0];
-          this.addArrayGroup( repeatField, partialKey );
-        }
-      }
-    } );
-  }
-
-  resetArrayGroup(name: string) {
-    // @ts-ignore
-    const group = <Container>this.fields.filter( f => (<Container>f).key === name )[0];
-
-    // remove from definition fields
-    while (group.children.length > 0) {
-      group.children.pop();
-    }
-  }
-
-  addArrayGroup(repeatField: any, key: string) {
-    this.addPartialToField( repeatField, key );
-  }
-
-  addPartialToField(field: any, partialKey: string): any {
-    const partial = field.partials.filter( (part: any) => part.key === partialKey )[0];
-    const clonedPartial = Object.assign( {}, partial );
-    field.children.push( clonedPartial );
-    return partial;
-  }
-
-  addPartialToForm(partial: any, formArray: FormArray, data: any) {
-    const additionalFormGroup = this.qcs.toFormGroup( [partial], data );
-    additionalFormGroup.setParent( formArray );
-    formArray.controls.push( additionalFormGroup );
-  }
-
-  addSection(data: any) {
-    // use target-key or similar to have no conflicts with other fields with same name
-    // @ts-ignore
-    const field = <PartialGeneratorField>this.fields.filter( f => (<Container>f).key === data.key )[0];
-    const partial = this.addPartialToField( field, data.section );
-    const formArray = <FormArray>this.form.controls[data.key];
-    this.addPartialToForm( partial, formArray, {} );
-  }
-
-  getTitle() {
-    return this.formularService.getTitle( null, this.data );
   }
 
   markFavorite($event: Event) {

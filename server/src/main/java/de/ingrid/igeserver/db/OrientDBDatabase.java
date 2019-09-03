@@ -1,13 +1,14 @@
 package de.ingrid.igeserver.db;
 
 import com.orientechnologies.orient.core.Orient;
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.db.ODatabaseType;
-import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.*;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
+import com.orientechnologies.orient.core.record.OElement;
+import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.ORecordAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
@@ -76,7 +77,7 @@ public class OrientDBDatabase implements DBApi {
      * Initialize all document types on all databases/catalogs.
      * This has to be done only once during startup, but might be optimized
      * by versioning.
-     *
+     * <p>
      * Each document type handles creating a class and its special fields.
      */
     private void initDocumentTypes(String... databases) {
@@ -171,20 +172,24 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public Object getRecordId(String dbClass, Map<String, String> query) throws ApiException {
-        List<String> behaviorFromDB = this.findAll(dbClass, query, QueryType.exact, false);
+    public String getRecordId(String dbClass, String docUuid) throws ApiException {
+        String queryString = "SELECT * FROM " + dbClass + " WHERE _id == '" + docUuid + "'";
+        OResultSet docs = getDBFromThread().query(queryString);
 
-        if (behaviorFromDB.size() == 1) {
-            return null; //behaviorFromDB.get(0).get("@rid");
-        } else if (behaviorFromDB.size() > 1) {
-            throw new ApiException("There is more than one result for dbClass: " + dbClass + " query: " + query.toString());
+        if (docs.hasNext()) {
+            OResult doc = docs.next();
+            if (!docs.hasNext()) {
+                return doc.getIdentity().get().toString();
+            } else {
+                throw new ApiException("There is more than one result for dbClass: " + dbClass + " docUuid: " + docUuid);
+            }
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     @Override
-    public Map find(DBClass type, String id) {
+    public Map find(String type, String id) {
         String query = "SELECT * FROM " + type + " WHERE @rid = " + id;
 //        String query = "SELECT * FROM " + type + " WHERE _id = " + id;
 
@@ -246,6 +251,7 @@ public class OrientDBDatabase implements DBApi {
 
     /**
      * Is this still used? data is not used in function!
+     *
      * @param type
      * @param id
      * @param data
@@ -269,12 +275,16 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public boolean remove(DBClass type, String id) {
-        List<ODocument> result = getDBFromThread().command(docIdQuery).execute(id);
+    public boolean remove(String type, String id) {
+        OResultSet result = getDBFromThread().command("select * from " + type + " where _id = '" + id + "'");
 
-        assert result.size() == 1;
+        OElement record = result.elementStream()
+                .reduce((a, b) -> {
+                    throw new IllegalStateException("Multiple elements: " + a + ", " + b);
+                })
+                .get();
 
-        ORecordAbstract deleteResponse = result.get(0).delete();
+        ORecordAbstract deleteResponse = record.delete();
         return true;
     }
 
@@ -370,6 +380,7 @@ public class OrientDBDatabase implements DBApi {
 
     /**
      * DEPRECATED OR NOT: Type not needed since all documents are stored in 'documents' class!?
+     *
      * @param type
      * @param id
      * @return

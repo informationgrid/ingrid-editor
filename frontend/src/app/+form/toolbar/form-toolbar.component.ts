@@ -1,5 +1,5 @@
-import {Component, OnInit, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {FormToolbarService, ToolbarItem, Separator} from './form-toolbar.service';
+import {Component, OnInit} from '@angular/core';
+import {FormToolbarService, Separator, ToolbarItem} from './form-toolbar.service';
 
 @Component({
   selector: 'form-toolbar',
@@ -8,16 +8,20 @@ import {FormToolbarService, ToolbarItem, Separator} from './form-toolbar.service
 })
 export class FormToolbarComponent implements OnInit {
 
-  buttons: Array<ToolbarItem | Separator> = [];
+  buttons_left: Array<ToolbarItem | Separator> = [];
+  buttons_right: Array<ToolbarItem | Separator> = [];
 
   constructor(private formToolbarService: FormToolbarService) {
-    formToolbarService.toolbar$.subscribe(() => {
-      this.buttons = this.formToolbarService.buttons;
+    formToolbarService.toolbar$.subscribe((button) => {
+      this.buttons_left = this.formToolbarService.buttons.filter(b => b.align !== 'right');
+      this.buttons_right = this.formToolbarService.buttons.filter(b => b.align === 'right');
     });
   }
 
   ngOnInit() {
-    this.buttons = this.formToolbarService.buttons;
+    // this.buttons = this.formToolbarService.buttons;
+    this.buttons_left = this.formToolbarService.buttons.filter(b => b.align !== 'right');
+    this.buttons_right = this.formToolbarService.buttons.filter(b => b.align === 'right');
   }
 
   sendEvent(id: string) {

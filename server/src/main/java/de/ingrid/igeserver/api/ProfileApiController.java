@@ -95,7 +95,7 @@ public class ProfileApiController implements ProfileApi {
                 String rid;
                 try {
                     rid = jsonService.getJsonMap(infos.get(0)).get("@rid").textValue();
-                    dbService.remove(DBApi.DBClass.Info, rid);
+                    dbService.remove(DBApi.DBClass.Info.name(), rid);
                 } catch (Exception e) {
                     log.error("Error removing profile document", e);
                 }

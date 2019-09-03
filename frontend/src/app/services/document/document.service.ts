@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ModalService} from '../modal/modal.service';
 import {UpdateType} from '../../models/update-type.enum';
-import {DocMainInfo, UpdateDatasetInfo} from '../../models/update-dataset-info.model';
+import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 import {KeycloakService} from '../../security/keycloak/keycloak.service';
 import {Observable, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/internal/operators';
@@ -136,14 +136,14 @@ export class DocumentService {
 
       this.dataService.save(data)
         .subscribe(json => {
-          let info = DocumentUtils.createDocumentAbstract(data, json._state);
+          let info = DocumentUtils.createDocumentAbstract(json);
 
           this.afterSave.next(data);
           this.datasetsChanged.next({
             type: isNewDoc ? UpdateType.New : UpdateType.Update,
             data: [info]
           });
-          this.treeStore.upsert(data._id, info);
+          this.treeStore.upsert(info.id, info);
           resolve(data);
         }, err => {
           reject(err);
@@ -168,14 +168,14 @@ export class DocumentService {
 
     this.dataService.publish(data)
       .subscribe(json => {
-          let info = DocumentUtils.createDocumentAbstract(data, json._state);
+          let info = DocumentUtils.createDocumentAbstract(json);
 
           this.afterSave.next(data);
           this.datasetsChanged.next({
             type: UpdateType.Update,
             data: [info]
           });
-          this.treeStore.upsert(data._id, info);
+          this.treeStore.upsert(info.id, info);
         }
         // , err => this.errorService.handle( err )
       );

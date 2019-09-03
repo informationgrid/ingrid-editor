@@ -16,12 +16,12 @@
 </p-toolbar>-->
 <mat-toolbar>
     <mat-toolbar-row>
-        <ng-container *ngFor="let button of buttons">
+        <ng-container *ngFor="let button of buttons_left">
             <button *ngIf="!button.isSeparator" mat-icon-button
                     [title]="button.tooltip"
                     (click)="sendEvent(button.eventId)"
                     [disabled]="!button.active">
-                    <!--aria-label="{{button.tooltip}}"-->
+                <!--aria-label="{{button.tooltip}}"-->
                 <mat-icon>{{button.cssClasses}}</mat-icon>
             </button>
             <mat-divider *ngIf="button.isSeparator" [vertical]="true" style="height: 20px"></mat-divider>
@@ -29,8 +29,17 @@
         <div fxFlex></div>
 
         <span class="save-buttons">
-            <button mat-stroked-button>Speichern</button>
-            <button mat-flat-button color="primary">Veröffentlichen</button>
+            <ng-container *ngFor="let button of buttons_right">
+                <button *ngIf="!button.isSeparator && !button.label" mat-icon-button
+                        [title]="button.tooltip"
+                        (click)="sendEvent(button.eventId)"
+                        [disabled]="!button.active">
+                    <!--aria-label="{{button.tooltip}}"-->
+                    <mat-icon>{{button.cssClasses}}</mat-icon>
+                </button>
+                <button *ngIf="button.label && !button.isPrimary" mat-stroked-button>{{button.label}}</button>
+                <button *ngIf="button.label && button.isPrimary" mat-flat-button color="primary">Veröffentlichen</button>
+            </ng-container>
         </span>
     </mat-toolbar-row>
 </mat-toolbar>

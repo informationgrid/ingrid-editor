@@ -85,13 +85,13 @@ public class BehavioursApiController implements BehavioursApi {
             String id = "???";
 
             Map<String, Object> mappedBehavior = dbUtils.getMapFromObject(behavior);
-            Map<String, String> query = new HashMap<>();
-            query.put("_id", (String) mappedBehavior.get("_id"));
 
-            Object rid = this.dbService.getRecordId("Behaviours", query);
-            mappedBehavior.put("@rid", rid);
+            String rid = this.dbService.getRecordId("Behaviours", (String) mappedBehavior.get("_id"));
+            if (rid != null) {
+                mappedBehavior.put("@rid", rid);
+            }
 
-            Map doc = this.dbService.save(DBApi.DBClass.Behaviours.name(), id, mappedBehavior);
+            Map doc = this.dbService.save("Behaviours", rid, mappedBehavior);
             Map docResult = this.documentService.prepareDocumentFromDB(doc, null);
 
             return ResponseEntity.ok(dbUtils.toJsonString(docResult));
