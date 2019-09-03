@@ -224,11 +224,13 @@
       }
     }
   },
-  "cli": {},
+  "cli": {
+    "packageManager": "yarn"
+  },
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "ige",
-      "styleext": "css"
+      "styleext": "scss"
     },
     "@schematics/angular:directive": {
       "prefix": "ige"
