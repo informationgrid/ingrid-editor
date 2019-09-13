@@ -21,6 +21,8 @@ import {FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';
 import {TableTypeComponent} from './types/table-type.component';
 import {CommonModule} from '@angular/common';
 import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
+import {NgxDatatableTypeComponent} from './types/ngx-datatable-type.component';
+import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -45,8 +47,10 @@ export function IpValidator(control: FormControl): ValidationErrors {
         wrappers: ['form-field']*/
       }, {
         name: 'table',
-        component: TableTypeComponent/*,
-        wrappers: ['form-field']*/
+        component: TableTypeComponent
+      }, {
+        name: 'ngx-table',
+        component: NgxDatatableTypeComponent
       }],
       validators: [
         {name: 'ip', validation: IpValidator}
@@ -57,7 +61,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
       ]*/
-    })
+    }), NgxDatatableModule
   ],
   providers: [
     {
@@ -65,7 +69,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
       useValue: 'de-DE'
     }
   ],
-  declarations: [ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, TableTypeComponent, FocusDirective],
+  declarations: [ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, NgxDatatableTypeComponent, TableTypeComponent, FocusDirective],
   entryComponents: [ContextHelpComponent],
   exports: [
     ReactiveFormsModule, FormsModule,

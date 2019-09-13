@@ -30,14 +30,43 @@ export class McloudFormly implements Profile {
       }
     }, {
       key: 'addresses',
-      type: 'table',
+      type: 'ngx-table',
       wrappers: ['panel'],
       templateOptions: {
         externalLabel: 'Adressen',
         columns: [
-          { key: 'name', editable: true, label: 'Name' },
-          { key: 'weight', editable: false, label: 'Gewicht' }
+          { name: 'Name of Investment', prop: 'investmentName' },
+          { name: 'Date of Investment', prop: 'investmentDate' },
+          { name: 'Stock Identifier', prop: 'stockIdentifier' }
         ]
+      },
+      fieldArray: {
+        fieldGroup: [
+          {
+            type: 'input',
+            key: 'investmentName',
+            templateOptions: {
+              required: true,
+            },
+          },
+          {
+            type: 'input',
+            key: 'investmentDate',
+            templateOptions: {
+              type: 'date',
+            },
+          },
+          {
+            type: 'input',
+            key: 'stockIdentifier',
+            templateOptions: {
+              addonRight: {
+                class: 'fa fa-code',
+                onClick: (to, fieldType, $event) => console.log(to, fieldType, $event),
+              },
+            },
+          },
+        ],
       }
     }, {
       key: 'usage',
@@ -198,13 +227,13 @@ export class McloudFormly implements Profile {
 
   private getCodelistForSelect(codelistId: number) {
 
-    let codelist = this.codelistService.byId(codelistId+'')
+    const codelistPromise = this.codelistService.byId(codelistId + '')
       .then(codelist => {
-        console.log("codelist:", codelist);
+        console.log('codelist:', codelist);
         return codelist.map( cl => {
           return { label: cl.value, value: cl.id }
         });
       });
-    return from(codelist);
+    return from(codelistPromise);
   }
 }
