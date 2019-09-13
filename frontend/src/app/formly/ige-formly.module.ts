@@ -23,6 +23,7 @@ import {CommonModule} from '@angular/common';
 import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
 import {NgxDatatableTypeComponent} from './types/ngx-datatable-type.component';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
+import {FormFieldsModule} from '../form-fields/form-fields.module';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -61,7 +62,13 @@ export function IpValidator(control: FormControl): ValidationErrors {
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
       ]*/
-    }), NgxDatatableModule
+    }), NgxDatatableModule.forRoot({
+      messages: {
+        emptyMessage: 'No data to display', // Message to show when array is presented, but contains no values
+        totalMessage: 'total', // Footer total message
+        selectedMessage: 'selected' // Footer selected message
+      }
+    }), FormFieldsModule
   ],
   providers: [
     {

@@ -15,15 +15,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { NgxDatagridComponent } from './ngx-datagrid/ngx-datagrid.component';
+import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     MatInputModule, MatDatepickerModule, MatNativeDateModule, MatCheckboxModule, MatRadioModule, MatTableModule, MatButtonModule,
-    MatIconModule, MatSelectModule
+    MatIconModule, MatSelectModule,
+    NgxDatatableModule
   ],
-  declarations: [DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent],
-  exports: [DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent]
+  declarations: [DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent, NgxDatagridComponent],
+  exports: [DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent, NgxDatagridComponent]
 })
 export class FormFieldsModule {
 }

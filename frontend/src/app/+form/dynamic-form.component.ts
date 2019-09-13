@@ -102,9 +102,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
     this.formUtils = new FormUtils();
     // KeycloakService.auth.authz.
+
     // handle toolbar events
-    const loadSaveSubscriber = this.formToolbarService.getEventObserver()
-      .pipe(takeUntil(this.componentDestroyed))
+    this.formToolbarService.getEventObserver()
+      // .pipe(takeUntil(this.componentDestroyed))
       .subscribe( eventId => {
         console.log( 'generic toolbar handler', eventId );
         if (eventId === 'SAVE') {

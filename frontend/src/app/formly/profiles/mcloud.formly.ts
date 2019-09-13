@@ -35,12 +35,12 @@ export class McloudFormly implements Profile {
       templateOptions: {
         externalLabel: 'Adressen',
         columns: [
-          { name: 'Name of Investment', prop: 'investmentName' },
-          { name: 'Date of Investment', prop: 'investmentDate' },
-          { name: 'Stock Identifier', prop: 'stockIdentifier' }
+          {label: 'Name', key: 'name'},
+          {label: 'Geschlecht', key: 'gender'},
+          {label: 'Firma', key: 'company'}
         ]
-      },
-      fieldArray: {
+      }
+      /*fieldArray: {
         fieldGroup: [
           {
             type: 'input',
@@ -67,7 +67,7 @@ export class McloudFormly implements Profile {
             },
           },
         ],
-      }
+      }*/
     }, {
       key: 'usage',
       type: 'textarea',

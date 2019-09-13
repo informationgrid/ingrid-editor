@@ -1,3 +1,7 @@
+@import '~@swimlane/ngx-datatable/index.css';
+@import '~@swimlane/ngx-datatable/themes/material.scss';
+@import '~@swimlane/ngx-datatable/assets/icons.css';
+
 html, body {
   height: 100%;
   margin: 0;
@@ -347,4 +351,18 @@ tree-node:hover .folder {
 
 .smallField {
   width: 100px;
+}
+
+/* ngx-datatable */
+.ngx-datatable.material {
+  /*box-shadow: initial;
+  border: 1px solid #dfdede;
+  border-radius: 5px;*/
+
+  .datatable-body-cell {
+    padding: 0.4rem 1rem !important;
+  }
+  .datatable-checkbox {
+    margin-top: -3px !important;
+  }
 }

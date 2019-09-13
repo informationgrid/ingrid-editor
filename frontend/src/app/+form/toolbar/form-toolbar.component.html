@@ -37,8 +37,10 @@
                     <!--aria-label="{{button.tooltip}}"-->
                     <mat-icon>{{button.cssClasses}}</mat-icon>
                 </button>
-                <button *ngIf="button.label && !button.isPrimary" mat-stroked-button>{{button.label}}</button>
-                <button *ngIf="button.label && button.isPrimary" mat-flat-button color="primary">Veröffentlichen</button>
+                <button *ngIf="button.label && !button.isPrimary" mat-stroked-button
+                        (click)="sendEvent(button.eventId)">{{button.label}}</button>
+                <button *ngIf="button.label && button.isPrimary" mat-flat-button color="primary"
+                        (click)="sendEvent(button.eventId)">Veröffentlichen</button>
             </ng-container>
         </span>
     </mat-toolbar-row>

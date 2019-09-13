@@ -31,7 +31,7 @@
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/chartist/dist/chartist.css",
               "src/material.css",
-              "src/styles.css",
+              "src/styles.scss",
               "src/theme.scss"
             ],
             "scripts": [

@@ -1,0 +1,67 @@
+<button mat-flat-button (click)="addRow()">Add</button>
+<ngx-datatable
+    #table
+    class="material"
+    [rows]="rows"
+    [columns]="columns"
+    [columnMode]="ColumnMode.force"
+    [headerHeight]="50"
+    rowHeight="35"
+    [limit]="5"
+    [selected]="selected"
+    [selectionType]="SelectionType.checkbox"
+    [selectAllRowsOnPage]="false">
+
+    <ngx-datatable-column
+        [width]="30"
+        [sortable]="false"
+        [canAutoResize]="false"
+        [draggable]="false"
+        [resizeable]="false"
+        [headerCheckboxable]="true"
+        [checkboxable]="true"
+    >
+    </ngx-datatable-column>
+    <ngx-datatable-column *ngFor="let col of columns" [prop]="col.key" [name]="col.label">
+        <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
+            <div
+                title="Double click to edit"
+                (click)="editing[rowIndex + '-' + col.key] = true"
+                *ngIf="!editing[rowIndex + '-' + col.key]"
+            >
+                {{ value }} &nbsp;
+            </div>
+            <input
+                autofocus
+                (blur)="updateValue($event, col.key, rowIndex)"
+                *ngIf="editing[rowIndex + '-' + col.key]"
+                type="text"
+                [value]="value"
+            />
+        </ng-template>
+    </ngx-datatable-column>
+
+    <!--<ngx-datatable-column name="Name">
+      <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
+          <span
+              title="Double click to edit"
+              (dblclick)="editing[rowIndex + '-name'] = true"
+              *ngIf="!editing[rowIndex + '-name']"
+          >
+            {{ value }}
+          </span>
+        <input
+            autofocus
+            (blur)="updateValue($event, 'name', rowIndex)"
+            *ngIf="editing[rowIndex + '-name']"
+            type="text"
+            [value]="value"
+        />
+      </ng-template>
+    </ngx-datatable-column>-->
+
+    <!--<ng-template #defaultColumn ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row"
+                 let-column="column">
+      <formly-field [field]="getField(field, column, rowIndex)"></formly-field>
+    </ng-template>-->
+</ngx-datatable>

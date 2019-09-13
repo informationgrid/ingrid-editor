@@ -48,13 +48,13 @@ export class ProfileAddress implements Profile {
       }]
     }, {
       key: 'contact',
-      type: 'table',
+      type: 'ngx-table',
       wrappers: ['panel'],
       templateOptions: {
         externalLabel: 'Kommunikation',
         columns: [
           {key: 'name', editable: true, label: 'Name'},
-          {key: 'weight', editable: false, label: 'Gewicht'}
+          {key: 'type', editable: false, label: 'Art'}
         ]
       }
     }, {
