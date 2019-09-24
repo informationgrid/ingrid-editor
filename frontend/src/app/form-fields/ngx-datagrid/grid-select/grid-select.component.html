@@ -1,8 +1,8 @@
 <mat-form-field>
     <mat-select #select
-                (openedChange)="updateValue($event, select.value)"
-                (blur)="updateValue(false, select.value)"
-                (keyup.enter)="updateValue(false, select.value)"
+                (openedChange)="updateValue(select.value)"
+                (blur)="updateValue(select.value)"
+                (keyup.enter)="updateValue(select.value)"
                 (keydown.tab)="sendTab($event, select.value)"
                 [value]="value.value">
 

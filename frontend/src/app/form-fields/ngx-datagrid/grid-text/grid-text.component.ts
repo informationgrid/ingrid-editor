@@ -1,32 +1,24 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {GridBaseComponent} from '../grid-base/grid-base.component';
 
 @Component({
   selector: 'ige-grid-text',
   templateUrl: './grid-text.component.html',
   styleUrls: ['./grid-text.component.scss']
 })
-export class GridTextComponent implements OnInit {
+export class GridTextComponent extends GridBaseComponent implements OnInit {
 
-  @Input() value: string;
-  @Output() update = new EventEmitter();
-  @Output() tabkey = new EventEmitter();
-
-  constructor() { }
+  constructor() {
+    super();
+  }
 
   ngOnInit() {
   }
 
-  updateValue(event: Event) {
-    const newValue = (<HTMLInputElement>event.target).value;
-
+  updateValue(newValue: string) {
     if (this.value !== newValue) {
       this.update.next(newValue);
     }
   }
 
-  sendTab($event: Event) {
-    $event.preventDefault();
-    this.updateValue($event);
-    this.tabkey.next();
-  }
 }

@@ -1,23 +1,21 @@
-import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ColumnOptions} from '../ngx-datagrid.component';
 import {MatSelect} from '@angular/material/select';
+import {GridBaseComponent} from '../grid-base/grid-base.component';
 
 @Component({
   selector: 'ige-grid-select',
   templateUrl: './grid-select.component.html',
   styleUrls: ['./grid-select.component.scss']
 })
-export class GridSelectComponent implements OnInit, AfterViewInit {
-
-  @Input() value: { value: string | number, label: string };
-  @Output() update = new EventEmitter();
-  @Output() tabkey = new EventEmitter();
+export class GridSelectComponent extends GridBaseComponent implements OnInit, AfterViewInit {
 
   @Input() options: ColumnOptions[];
 
   @ViewChild('select', {static: true}) select: MatSelect;
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor() {
+    super();
   }
 
   ngOnInit() {
@@ -30,22 +28,16 @@ export class GridSelectComponent implements OnInit, AfterViewInit {
     });
   }
 
-  updateValue(open: boolean, newValue: string) {
+  updateValue(newValue: string) {
     console.log('update value select');
-    if (!open) {
+    // if (!open) {
       const optionItem = this.options.find(o => o.value === newValue);
       if (optionItem) {
         this.update.next({
           value: newValue,
           label: optionItem.label
         });
-      }
+      // }
     }
-  }
-
-  sendTab($event: Event, value) {
-    $event.preventDefault();
-    this.updateValue(false, value);
-    this.tabkey.next();
   }
 }
