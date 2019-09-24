@@ -16,7 +16,6 @@ import {FormlyModule} from '@ngx-formly/core';
 import {ContextHelpComponent} from '../+demo-layout/form/context-help/context-help.component';
 import {AutocompleteTypeComponent} from './types/autocomplete-type.component';
 import {LeafletTypeComponent} from './types/leaflet-type.component';
-import {FocusDirective} from '../directives/focus.directive';
 import {FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';
 import {TableTypeComponent} from './types/table-type.component';
 import {CommonModule} from '@angular/common';
@@ -76,7 +75,10 @@ export function IpValidator(control: FormControl): ValidationErrors {
       useValue: 'de-DE'
     }
   ],
-  declarations: [ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, NgxDatatableTypeComponent, TableTypeComponent, FocusDirective],
+  declarations: [
+    ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, NgxDatatableTypeComponent,
+    TableTypeComponent
+  ],
   entryComponents: [ContextHelpComponent],
   exports: [
     ReactiveFormsModule, FormsModule,

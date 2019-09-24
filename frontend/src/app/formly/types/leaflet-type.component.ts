@@ -37,7 +37,7 @@ class MyMap extends Map {
       <div *ngIf="showSearch" class="nominatimContainer">
         <mat-form-field>
           <input matInput #locationQuery type="text" class="form-control" (keyup)="searchLocation(locationQuery.value)"
-                 [focus]="showSearch">
+                 [igeFocus]="showSearch">
         </mat-form-field>
         <mat-selection-list dense (selectionChange)="handleSelection($event)">
           <ng-container *ngFor="let entry of nominatimResult">

@@ -36,7 +36,12 @@ export class McloudFormly implements Profile {
         externalLabel: 'Adressen',
         columns: [
           {label: 'Name', key: 'name'},
-          {label: 'Geschlecht', key: 'gender'},
+          {
+            label: 'Geschlecht', key: 'gender', type: 'select', options: [
+              {label: 'Male', value: 'm'},
+              {label: 'Female', value: 'f'}
+            ]
+          },
           {label: 'Firma', key: 'company'}
         ]
       }
@@ -230,8 +235,8 @@ export class McloudFormly implements Profile {
     const codelistPromise = this.codelistService.byId(codelistId + '')
       .then(codelist => {
         console.log('codelist:', codelist);
-        return codelist.map( cl => {
-          return { label: cl.value, value: cl.id }
+        return codelist.map(cl => {
+          return {label: cl.value, value: cl.id}
         });
       });
     return from(codelistPromise);

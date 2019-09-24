@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {ConfigService, Configuration} from '../services/config/config.service';
 import {FormularService} from '../services/formular/formular.service';
-import {DocumentService} from "../services/document/document.service";
-import {ProfileQuery} from "../store/profile/profile.query";
-import {DocumentQuery} from "../store/document/document.query";
-import {DocumentAbstract} from "../store/document/document.model";
-import {Observable} from "rxjs";
+import {DocumentService} from '../services/document/document.service';
+import {DocumentQuery} from '../store/document/document.query';
+import {DocumentAbstract} from '../store/document/document.model';
+import {Observable} from 'rxjs';
 import {ProfileService} from '../services/profile.service';
 
 @Component({
@@ -111,7 +110,7 @@ export class DashboardComponent implements OnInit {
     });
   }*/
   createNewDocument() {
-    console.log("Create new document");
+    console.log('Create new document');
   }
 
   createNewAddress() {

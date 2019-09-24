@@ -34,7 +34,7 @@ import {DeleteDialogComponent} from './+behaviours/toolbar/deleteDocs/delete-dia
 import {FormlyModule} from '@ngx-formly/core';
 import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.component';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import { SideMenuComponent } from './side-menu/side-menu.component';
+import {SideMenuComponent} from './side-menu/side-menu.component';
 
 registerLocaleData(de);
 
@@ -148,7 +148,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent, DeleteDialogComponent]
+  entryComponents: [ErrorDialogComponent, DeleteDialogComponent],
+  exports: []
 })
 
 export class AppModule {

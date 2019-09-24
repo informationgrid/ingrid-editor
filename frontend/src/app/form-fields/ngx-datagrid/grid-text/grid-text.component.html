@@ -1,0 +1,10 @@
+<input
+    matInput
+    [igeFocus]="true"
+    (blur)="updateValue($event)"
+    (keyup.enter)="updateValue($event)"
+    (keydown.tab)="sendTab($event)"
+
+    type="text"
+    [value]="value"
+/>

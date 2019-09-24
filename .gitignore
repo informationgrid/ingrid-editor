@@ -52,3 +52,5 @@ databases/
 /plugins
 server/logs
 /keycloak-db/
+/server/out/
+/api/build/
