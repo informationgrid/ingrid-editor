@@ -1,23 +1,27 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
-  selector: 'ige-grid-base',
-  templateUrl: './grid-base.component.html',
-  styleUrls: ['./grid-base.component.scss']
+  template: ''
 })
-export abstract class GridBaseComponent implements OnInit {
+export class GridBaseComponent implements OnInit {
 
   @Input() value: string | { value: string | number, label: string };
   @Output() update = new EventEmitter();
   @Output() tabkey = new EventEmitter();
 
-  abstract updateValue($event);
 
   constructor() {
   }
 
   ngOnInit() {
   }
+
+  updateValue(newValue: any) {
+    // console.error('Function updateValue(value) must be implemented');
+    if (this.value !== newValue) {
+      this.update.next(newValue);
+    }
+  };
 
   sendTab($event: Event, value: string) {
     $event.preventDefault();

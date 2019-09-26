@@ -13,7 +13,6 @@ import {OneColumnWrapperComponent} from '../app/formly/wrapper/one-column-wrappe
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {of} from 'rxjs';
 import {HttpClientModule} from '@angular/common/http';
-import {McloudFormly} from '../app/formly/profiles/mcloud.formly';
 
 export const formlyTemplate = `<form [formGroup]='form' class='form-content'>
                         <formly-form [form]='form' [fields]='fields' [model]='model'></formly-form>

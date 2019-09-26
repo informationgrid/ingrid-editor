@@ -13,10 +13,14 @@
         #table
         class="material"
         [rows]="rows"
+        [columnMode]="ColumnMode.force"
         [columns]="columns"
+        [draggable]="false"
         [headerHeight]="50"
         [rowHeight]="35"
+        [reorderable]="false"
         [scrollbarV]="false"
+        [scrollbarH]="false"
         [selected]="selected"
         [selectionType]="SelectionType.checkbox"
         [selectAllRowsOnPage]="false">
@@ -31,7 +35,12 @@
             [checkboxable]="true"
         >
         </ngx-datatable-column>
-        <ngx-datatable-column *ngFor="let col of columns; let colIndex=index" [prop]="col.key" [name]="col.label">
+        <ngx-datatable-column
+            *ngFor="let col of columns; let colIndex=index"
+            [prop]="col.key"
+            [canAutoResize]="colIndex === columns.length-1"
+            [name]="col.label">
+
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
                 <div
                     title="Click to edit"
@@ -41,7 +50,7 @@
                     {{ col.type === 'select' ? value.label : value }} &nbsp;
                 </div>
 
-                <ige-grid-text *ngIf="editing[rowIndex + '-' + col.key] && col.type !== 'select'"
+                <ige-grid-text *ngIf="editing[rowIndex + '-' + col.key] && (!col.type || col.type === 'text')"
                                [value]="value"
                                (tabkey)="focusNextCell(rowIndex, col.key, colIndex)"
                                (update)="updateValue($event, rowIndex, col.key)"></ige-grid-text>
@@ -51,6 +60,11 @@
                                  [options]="col.options"
                                  (tabkey)="focusNextCell(rowIndex, col.key, colIndex)"
                                  (update)="updateValue($event, rowIndex, col.key)"></ige-grid-select>
+
+                <ige-grid-date *ngIf="editing[rowIndex + '-' + col.key] && col.type === 'date'"
+                                 [value]="value"
+                                 (tabkey)="focusNextCell(rowIndex, col.key, colIndex)"
+                                 (update)="updateValue($event, rowIndex, col.key)"></ige-grid-date>
 
             </ng-template>
         </ngx-datatable-column>

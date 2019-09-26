@@ -15,10 +15,4 @@ export class GridTextComponent extends GridBaseComponent implements OnInit {
   ngOnInit() {
   }
 
-  updateValue(newValue: string) {
-    if (this.value !== newValue) {
-      this.update.next(newValue);
-    }
-  }
-
 }

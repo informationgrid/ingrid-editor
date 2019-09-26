@@ -20,6 +20,7 @@ import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {GridTextComponent} from './ngx-datagrid/grid-text/grid-text.component';
 import {GridSelectComponent} from './ngx-datagrid/grid-select/grid-select.component';
 import {FocusDirective} from '../directives/focus.directive';
+import { GridDateComponent } from './ngx-datagrid/grid-date/grid-date.component';
 
 @NgModule({
   imports: [
@@ -31,11 +32,11 @@ import {FocusDirective} from '../directives/focus.directive';
   ],
   declarations: [
     DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent,
-    NgxDatagridComponent, GridTextComponent, GridSelectComponent, FocusDirective
+    NgxDatagridComponent, GridTextComponent, GridSelectComponent, FocusDirective, GridDateComponent
   ],
   exports: [
     DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent, NgxDatagridComponent,
-    FocusDirective
+    FocusDirective, MatInputModule
   ]
 })
 export class FormFieldsModule {

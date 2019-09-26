@@ -11,17 +11,17 @@
 
 .grid-container {
   position: relative;
-  //height: 200px;
+  height: 200px;
 
   .ngx-datatable {
-    /*position: absolute !important;
+    position: absolute !important;
     height: auto !important;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100%;*/
-    max-height: 300px;
+    width: 100%;
+    max-height: 200px;
 
     ::ng-deep .datatable-body {
       overflow-y: auto;

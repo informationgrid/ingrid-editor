@@ -42,7 +42,7 @@ export class McloudFormly implements Profile {
               {label: 'Female', value: 'f'}
             ]
           },
-          {label: 'Firma', key: 'company'}
+          {label: 'Start', key: 'start', type: 'date'}
         ]
       }
       /*fieldArray: {

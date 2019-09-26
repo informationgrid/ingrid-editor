@@ -1,0 +1,9 @@
+<mat-form-field>
+    <input #input matInput [matDatepicker]="picker" placeholder="Choose a date" [value]="value"
+           (blur)="updateValue(input.value)"
+           (keyup.enter)="updateValue(input.value)"
+           (keydown.tab)="sendTab($event, input.value)">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker
+                    (closed)="updateValue(picker._selected)"></mat-datepicker>
+</mat-form-field>

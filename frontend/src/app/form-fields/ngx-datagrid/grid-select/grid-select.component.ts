@@ -3,6 +3,11 @@ import {ColumnOptions} from '../ngx-datagrid.component';
 import {MatSelect} from '@angular/material/select';
 import {GridBaseComponent} from '../grid-base/grid-base.component';
 
+interface SelectUpdate {
+  isOpen: boolean;
+  newValue: string;
+}
+
 @Component({
   selector: 'ige-grid-select',
   templateUrl: './grid-select.component.html',
@@ -28,16 +33,16 @@ export class GridSelectComponent extends GridBaseComponent implements OnInit, Af
     });
   }
 
-  updateValue(newValue: string) {
+  updateValue(selectUpdate: SelectUpdate) {
     console.log('update value select');
-    // if (!open) {
-      const optionItem = this.options.find(o => o.value === newValue);
+    if (!selectUpdate.isOpen) {
+      const optionItem = this.options.find(o => o.value === selectUpdate.newValue);
       if (optionItem) {
         this.update.next({
-          value: newValue,
+          value: selectUpdate.newValue,
           label: optionItem.label
         });
-      // }
+      }
     }
   }
 }
