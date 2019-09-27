@@ -5,7 +5,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 })
 export class GridBaseComponent implements OnInit {
 
-  @Input() value: string | { value: string | number, label: string };
+  @Input() value: string|Date | { value: string | number, label: string };
   @Output() update = new EventEmitter();
   @Output() tabkey = new EventEmitter();
 
@@ -17,13 +17,12 @@ export class GridBaseComponent implements OnInit {
   }
 
   updateValue(newValue: any) {
-    // console.error('Function updateValue(value) must be implemented');
-    if (this.value !== newValue) {
-      this.update.next(newValue);
-    }
+    // if (this.value !== newValue) {
+        this.update.next(newValue);
+    // }
   };
 
-  sendTab($event: Event, value: string) {
+  sendTab($event: Event, value: any) {
     $event.preventDefault();
     this.updateValue(value);
     this.tabkey.next();

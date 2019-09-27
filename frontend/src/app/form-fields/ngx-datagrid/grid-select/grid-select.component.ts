@@ -34,14 +34,19 @@ export class GridSelectComponent extends GridBaseComponent implements OnInit, Af
   }
 
   updateValue(selectUpdate: SelectUpdate) {
-    console.log('update value select');
-    if (!selectUpdate.isOpen) {
-      const optionItem = this.options.find(o => o.value === selectUpdate.newValue);
-      if (optionItem) {
-        this.update.next({
-          value: selectUpdate.newValue,
-          label: optionItem.label
-        });
+    console.log('update value select', selectUpdate);
+    if (selectUpdate && !selectUpdate.isOpen) {
+      console.log('Options', selectUpdate);
+      if (selectUpdate.newValue === undefined) {
+        this.update.next(undefined);
+      } else {
+        const optionItem = this.options.find(o => o.value === selectUpdate.newValue);
+        if (optionItem) {
+          this.update.next({
+            value: selectUpdate.newValue,
+            label: optionItem.label
+          });
+        }
       }
     }
   }

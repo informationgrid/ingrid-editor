@@ -1,11 +1,13 @@
-<input
-    #input
-    matInput
-    [igeFocus]="true"
-    (blur)="updateValue(input.value)"
-    (keyup.enter)="updateValue(input.value)"
-    (keydown.tab)="sendTab($event, input.value)"
+<mat-form-field>
+    <input
+        #input
+        matInput
+        [igeFocus]="true"
+        (blur)="updateValue(input.value)"
+        (keyup.enter)="updateValue(input.value)"
+        (keydown.tab)="sendTab($event, input.value)"
 
-    type="text"
-    [value]="value"
-/>
+        type="text"
+        [value]="value"
+    />
+</mat-form-field>

@@ -5,28 +5,33 @@
   margin-bottom: 10px;
 }
 
-/*.material .datatable-body-cell {
-    padding: 0.5rem 1rem !important;
-}*/
+.ngx-datatable.material {
+  ::ng-deep .datatable-footer .page-count {
+    height: 35px;
+    line-height: 35px;
+  }
 
-.grid-container {
-  position: relative;
-  height: 200px;
+  ::ng-deep .empty-row {
+    padding: 1rem 1.2rem;
+  }
+}
 
-  .ngx-datatable {
-    position: absolute !important;
-    height: auto !important;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    max-height: 200px;
+.ngx-datatable.material ::ng-deep {
 
-    ::ng-deep .datatable-body {
-      overflow-y: auto;
-      //height: 50vh !important;
-      max-height: 50vh !important;
-    }
+  .mat-form-field-infix {
+    padding: 0;
+  }
+
+  .mat-form-field-subscript-wrapper {
+    padding: 0;
+    margin-top: 0;
+  }
+
+  .mat-form-field-wrapper {
+    padding-bottom: 0;
+  }
+
+  .mat-select-arrow-wrapper {
+    padding-top: 0;
   }
 }

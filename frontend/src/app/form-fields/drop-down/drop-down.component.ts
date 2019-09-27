@@ -1,6 +1,6 @@
 import {Component, forwardRef, Input, OnInit} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {CodelistEntry} from "../../services/codelist/codelist.service";
+import {CodelistEntry} from '../../services/codelist/codelist.service';
 
 
 export const DROPDOWN_CONTROL_VALUE_ACCESSOR = {

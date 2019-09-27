@@ -13,11 +13,13 @@
         #table
         class="material"
         [rows]="rows"
-        [columnMode]="ColumnMode.force"
+        [columnMode]="ColumnMode.flex"
         [columns]="columns"
         [draggable]="false"
-        [headerHeight]="50"
-        [rowHeight]="35"
+        [footerHeight]="rows.length > 0 ? 35 : 0"
+        [limit]="5"
+        [headerHeight]="rows.length > 0 ? 50 : 0"
+        rowHeight="auto"
         [reorderable]="false"
         [scrollbarV]="false"
         [scrollbarH]="false"
@@ -35,36 +37,42 @@
             [checkboxable]="true"
         >
         </ngx-datatable-column>
-        <ngx-datatable-column
-            *ngFor="let col of columns; let colIndex=index"
-            [prop]="col.key"
-            [canAutoResize]="colIndex === columns.length-1"
-            [name]="col.label">
+        <ngx-datatable-column *ngFor="let col of columns; let colIndex=index"
+                              [prop]="col.key"
+                              [flexGrow]="1"
+                              [name]="col.label">
 
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
-                <div
-                    title="Click to edit"
-                    (click)="editing[rowIndex + '-' + col.key] = true"
-                    *ngIf="!editing[rowIndex + '-' + col.key]"
-                >
-                    {{ col.type === 'select' ? value.label : value }} &nbsp;
+
+                <div *ngIf="!editing[rowIndex + '-' + col.key]" [ngSwitch]="col.type"
+                     title="Click to edit"
+                     (click)="editing[rowIndex + '-' + col.key] = true">
+
+                    <span *ngSwitchCase="'date'">{{value | date}}</span>
+                    <span *ngSwitchCase="'select'">{{mapSelectValue(value.value, col.options)}}</span>
+                    <span *ngSwitchDefault>{{value}}</span>
+                    &nbsp;
                 </div>
 
-                <ige-grid-text *ngIf="editing[rowIndex + '-' + col.key] && (!col.type || col.type === 'text')"
-                               [value]="value"
-                               (tabkey)="focusNextCell(rowIndex, col.key, colIndex)"
-                               (update)="updateValue($event, rowIndex, col.key)"></ige-grid-text>
+                <ng-container *ngIf="editing[rowIndex + '-' + col.key]" [ngSwitch]="col.type">
 
-                <ige-grid-select *ngIf="editing[rowIndex + '-' + col.key] && col.type === 'select'"
-                                 [value]="value"
-                                 [options]="col.options"
-                                 (tabkey)="focusNextCell(rowIndex, col.key, colIndex)"
-                                 (update)="updateValue($event, rowIndex, col.key)"></ige-grid-select>
+                    <ige-grid-select *ngSwitchCase="'select'"
+                                     [value]="value"
+                                     [options]="col.options"
+                                     (tabkey)="focusNextCell(rowIndex, col.key, colIndex)"
+                                     (update)="updateValue($event, rowIndex, col.key)"></ige-grid-select>
 
-                <ige-grid-date *ngIf="editing[rowIndex + '-' + col.key] && col.type === 'date'"
-                                 [value]="value"
-                                 (tabkey)="focusNextCell(rowIndex, col.key, colIndex)"
-                                 (update)="updateValue($event, rowIndex, col.key)"></ige-grid-date>
+                    <ige-grid-date *ngSwitchCase="'date'"
+                                   [value]="value"
+                                   (tabkey)="focusNextCell(rowIndex, col.key, colIndex)"
+                                   (update)="updateValue($event, rowIndex, col.key)"></ige-grid-date>
+
+                    <ige-grid-text *ngSwitchDefault
+                                   [value]="value"
+                                   (tabkey)="focusNextCell(rowIndex, col.key, colIndex)"
+                                   (update)="updateValue($event, rowIndex, col.key)"></ige-grid-text>
+
+                </ng-container>
 
             </ng-template>
         </ngx-datatable-column>

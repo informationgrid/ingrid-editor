@@ -4,7 +4,6 @@ import {AuthGuard} from '../security/auth.guard';
 import {FormChangeDeactivateGuard} from '../security/form-change.guard';
 import {ListFormWizardsComponent} from '../wizard/list-form-wizards/list-form-wizards.component';
 import {OpenDataWizardComponent} from '../wizard/open-data-wizard/open-data-wizard.component';
-import {NoCatalogAssignedGuard} from "../security/no-catalog-assigned.guard";
 
 export const routing: Routes = [
   {

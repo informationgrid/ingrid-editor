@@ -2,6 +2,7 @@
     <mat-select #select
                 (openedChange)="updateValue({isOpen: $event, newValue: select.value})"
                 (keyup.enter)="updateValue({isOpen: false, newValue: select.value})"
+                (blur)="updateValue({isOpen: select.panelOpen, newValue: select.value})"
                 (keydown.tab)="sendTab($event, select.value)"
                 [value]="value.value">
 

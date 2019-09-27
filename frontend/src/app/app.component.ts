@@ -26,6 +26,7 @@ import {map} from 'rxjs/operators';
           bottom: 0;
           left: 0;
           right: 0;
+          height: 100%;
       }
 
       /deep/ mat-drawer-content.mat-drawer-content {

@@ -1,7 +1,7 @@
-import {Component, forwardRef, Input, OnInit} from '@angular/core';
+import {Component, forwardRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
-import {ColumnMode, DatatableComponent, INgxDatatableConfig, SelectionType} from '@swimlane/ngx-datatable';
+import {ColumnMode, DatatableComponent, DataTableHeaderComponent, SelectionType} from '@swimlane/ngx-datatable';
 
 export interface ColumnOptions {
   label: string;
@@ -21,13 +21,20 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR = {
   multi: true
 };
 
+interface SelectOption {
+  label: string;
+  value: string | number;
+}
+
 @Component({
   selector: 'ige-ngx-datagrid',
   templateUrl: './ngx-datagrid.component.html',
   styleUrls: ['./ngx-datagrid.component.scss'],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 })
-export class NgxDatagridComponent implements ControlValueAccessor, OnInit {
+export class NgxDatagridComponent implements ControlValueAccessor, OnInit, OnDestroy {
+
+  @ViewChild('table', {static: true}) table: DatatableComponent;
 
   @Input() columns: Column[] = [];
 
@@ -47,6 +54,18 @@ export class NgxDatagridComponent implements ControlValueAccessor, OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy(): void {
+    // in storybook after a hot refresh an error occurs, because of detection on a destroyed view
+    DataTableHeaderComponent.prototype.setStylesByGroup = function() {
+      this._styleByGroup.left = this.calcStylesByGroup('left');
+      this._styleByGroup.center = this.calcStylesByGroup('center');
+      this._styleByGroup.right = this.calcStylesByGroup('right');
+      if (!this.cd['destroyed']) {
+        this.cd.detectChanges();
+      }
+    }
   }
 
   handleChange() {
@@ -99,7 +118,7 @@ export class NgxDatagridComponent implements ControlValueAccessor, OnInit {
 
   }
 
-  mapSelectValue(value, options: ColumnOptions[]) {
+  mapSelectValue(value, options: SelectOption[]) {
     const optionItem = options.find(option => option.value === value);
 
     return optionItem ? optionItem.label : value;
@@ -112,4 +131,5 @@ export class NgxDatagridComponent implements ControlValueAccessor, OnInit {
     this.rows = this.rows.filter(row => this.selected.indexOf(row) === -1);
     this.selected = [];
   }
+
 }
