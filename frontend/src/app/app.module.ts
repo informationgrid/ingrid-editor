@@ -35,6 +35,7 @@ import {FormlyModule} from '@ngx-formly/core';
 import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.component';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {SideMenuComponent} from './side-menu/side-menu.component';
+import {PluginsModule} from './+behaviours/behaviours.module';
 
 registerLocaleData(de);
 
@@ -94,7 +95,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
     // IGE-Modules
     // IgeFormModule, FormFieldsModule,
-    routing, FormsModule
+    routing, FormsModule, PluginsModule
   ],
   providers: [
     appRoutingProviders,

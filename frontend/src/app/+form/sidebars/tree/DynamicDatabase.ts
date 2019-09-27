@@ -34,7 +34,8 @@ export class DynamicDatabase {
       title: doc.title ? doc.title : 'Kein Titel',
       state: doc._state,
       hasChildren: doc._hasChildren,
-      level: level
+      level: level,
+      profile: doc._profile
     };
 
   }

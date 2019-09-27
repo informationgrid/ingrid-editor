@@ -14,7 +14,7 @@ import {RoleService} from '../services/role/role.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
-import {NewDocumentComponent} from '../dialogs/form/new-document/new-document.component';
+import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
 import {DocumentQuery} from '../store/document/document.query';
 import {IgeDocument} from '../models/ige-document';
 import {takeUntil} from 'rxjs/operators';

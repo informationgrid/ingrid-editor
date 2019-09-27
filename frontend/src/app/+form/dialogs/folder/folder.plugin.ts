@@ -1,8 +1,8 @@
 import { ComponentFactoryResolver, Injectable } from '@angular/core';
-import { FormToolbarService } from '../../../+form/toolbar/form-toolbar.service';
+import { FormToolbarService } from '../../toolbar/form-toolbar.service';
 import { FormularService } from '../../../services/formular/formular.service';
 import { ModalService } from '../../../services/modal/modal.service';
-import { Plugin } from '../../plugin';
+import { Plugin } from '../../../+behaviours/plugin';
 import { CreateFolderComponent } from './create-folder.component';
 import { MatDialog } from '@angular/material/dialog';
 

@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {TreeNode} from "../../../store/tree/tree-node.model";
-import {DocumentAbstract} from "../../../store/document/document.model";
-import {DynamicDatabase} from "./DynamicDatabase";
-import { MatTreeFlatDataSource, MatTreeFlattener } from "@angular/material/tree";
-import {Observable} from "rxjs";
+import {TreeNode} from '../../../store/tree/tree-node.model';
+import {DocumentAbstract} from '../../../store/document/document.model';
+import {DynamicDatabase} from './DynamicDatabase';
+import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ige-tree',
@@ -73,7 +73,7 @@ export class MetadataTreeComponent implements OnInit {
       this.treeControl.expansionModel.clear();
       this.isLoading = null;
 
-      let nodesToExpand: TreeNode[] = this.treeControl.dataNodes.filter(node => ids.indexOf(node._id) !== -1);
+      const nodesToExpand: TreeNode[] = this.treeControl.dataNodes.filter(node => ids.indexOf(node._id) !== -1);
       this.treeControl.expansionModel.select(...nodesToExpand);
     });
 
@@ -93,7 +93,8 @@ export class MetadataTreeComponent implements OnInit {
    */
   hasChild = (_: number, node: TreeNode) => {
 
-    return node.hasChildren;
+    // return node.hasChildren;
+    return node.profile === 'FOLDER';
 
   };
 
@@ -104,7 +105,7 @@ export class MetadataTreeComponent implements OnInit {
   selectNode(node: TreeNode) {
 
     // deselect all nodes first
-    this.treeControl.dataNodes.forEach(node => node.isSelected = false);
+    this.treeControl.dataNodes.forEach(n => n.isSelected = false);
 
     // set selection state to new node
     node.isSelected = true;
@@ -116,7 +117,6 @@ export class MetadataTreeComponent implements OnInit {
     this.activate.next([node._id]);
 
     if (node.hasChildren) {
-      debugger;
       this.treeControl.toggle(node);
       this.toggleNode(node);
     }

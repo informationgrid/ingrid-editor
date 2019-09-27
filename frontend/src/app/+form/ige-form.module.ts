@@ -37,9 +37,9 @@ import {AngularSplitModule} from 'angular-split';
 import {RouterModule} from '@angular/router';
 import {FormlyModule} from '@ngx-formly/core';
 import {IgeFormlyModule} from '../formly/ige-formly.module';
-import { HeaderNavigationComponent } from './form-info/header-navigation/header-navigation.component';
-import { BreadcrumbComponent } from './form-info/breadcrumb/breadcrumb.component';
-import { HeaderTitleRowComponent } from './form-info/header-title-row/header-title-row.component';
+import {HeaderNavigationComponent} from './form-info/header-navigation/header-navigation.component';
+import {BreadcrumbComponent} from './form-info/breadcrumb/breadcrumb.component';
+import {HeaderTitleRowComponent} from './form-info/header-title-row/header-title-row.component';
 
 @NgModule({
   imports: [
@@ -52,13 +52,14 @@ import { HeaderTitleRowComponent } from './form-info/header-title-row/header-tit
     FlexLayoutModule,
     FormlyModule,
     IgeFormlyModule,
-    FormDialogsModule, FormFieldsModule],
+    FormFieldsModule],
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
     AddPartialDialogComponent,
     // OneColumnWrapperComponent,
-    ScrollToDirective, MainFormComponent, MainFormTabsComponent, SidebarComponent, FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent],
+    ScrollToDirective, MainFormComponent, MainFormTabsComponent, SidebarComponent,
+    FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent],
   providers: [NominatimService],
   exports: [FormsModule, ScrollToDirective, MainFormTabsComponent],
   entryComponents: [AddPartialDialogComponent]
