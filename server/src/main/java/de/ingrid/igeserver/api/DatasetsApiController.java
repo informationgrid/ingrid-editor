@@ -124,7 +124,8 @@ public class DatasetsApiController implements DatasetsApi {
             Map result = this.dbService.save(documentType, null, dataJson.toString());
 
 
-            String parentId = dataJson.get(PARENT_ID).textValue();
+            JsonNode nodeParentId = dataJson.get(PARENT_ID);
+            String parentId = nodeParentId == null ? null : nodeParentId.textValue();
 
             // create DocumentWrapper
             ObjectNode documentWrapper = this.documentService.getDocumentWrapper();
@@ -136,7 +137,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             // update parent that it has children if needed
             if (parentId != null) {
-                JsonNode parentDoc = this.documentService.getByDocId(parentId);
+                JsonNode parentDoc = this.documentService.getByDocId(parentId, true);
                 ObjectNode parentDocVersion = (ObjectNode) this.getLatestDocument(parentDoc);
                 if (!parentDocVersion.get(FIELD_HAS_CHILDREN).asBoolean()) {
                     parentDocVersion.put(FIELD_HAS_CHILDREN, true);
@@ -478,7 +479,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             while (destId != null) {
-                JsonNode doc = this.documentService.getByDocId(destId);
+                JsonNode doc = this.documentService.getByDocId(destId, false);
                 destId = doc.get("_parent").textValue();
                 path.add(destId);
             }

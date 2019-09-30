@@ -192,15 +192,15 @@ public class DocumentService extends MapperService {
 
     }
 
-    public JsonNode getByDocId(String id) {
+    public JsonNode getByDocId(String id, boolean withReferences) {
 
         Map<String, String> query = new HashMap<>();
         query.put(FIELD_ID, id);
-        List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, false);
+        List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, withReferences);
         try {
             return docs.size() > 0 ? getJsonMap(docs.get(0)) : null;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error getting document by ID: " + id, e);
             return null;
         }
     }
