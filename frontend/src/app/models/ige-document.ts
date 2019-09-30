@@ -31,4 +31,11 @@ export class IgeDocument {
 
   // profile specific fields
   [x: string]: any;
+
+  constructor(type: string, parent?: string) {
+    this._profile = type;
+    if (parent) {
+      this._parent = parent;
+    }
+  }
 }

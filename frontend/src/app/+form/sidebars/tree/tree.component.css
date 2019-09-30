@@ -60,3 +60,10 @@ mat-tree-node.selected:hover {
   right: 0;
   z-index: 1000
 }
+
+::ng-deep .mat-icon {
+  transition: all .2s linear;
+}
+::ng-deep .mat-icon.expanded {
+  transform:rotate(90deg);
+}

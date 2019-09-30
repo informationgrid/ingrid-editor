@@ -324,21 +324,37 @@ tree-node:hover .folder {
 /* ngx-formly layout classes */
 .display-flex { display: flex; }
 
-.flex-1 { flex: 1; }
+//.ige-formly-wrapper {
 
-.flex-2 { flex: 2; }
+.flex-1 {
+  flex: 1;
+}
 
-.flex-3 { flex: 3; }
+.flex-2 {
+  flex: 2;
+}
 
-.flex-4 { flex: 4; }
+.flex-3 {
+  flex: 3;
+}
 
-.flex-5 { flex: 5; }
+.flex-4 {
+  flex: 4;
+}
 
-.flex-6 { flex: 6; }
+.flex-5 {
+  flex: 5;
+}
 
+.flex-6 {
+  flex: 6;
+}
+
+
+//}
 [class*="flex-"] {
-  padding-left: 10px;
-  padding-right: 10px;
+  /*padding-left: 10px;
+  padding-right: 10px;*/
 }
 
 [class*="flex-"]:first-child {
@@ -355,9 +371,6 @@ tree-node:hover .folder {
 
 /* ngx-datatable */
 .ngx-datatable.material {
-  /*box-shadow: initial;
-  border: 1px solid #dfdede;
-  border-radius: 5px;*/
 
   .datatable-body-cell {
     padding: 0.4rem 1rem !important;
@@ -366,3 +379,5 @@ tree-node:hover .folder {
     margin-top: -3px !important;
   }
 }
+
+.datatable-row-detail { width: 100vw; }

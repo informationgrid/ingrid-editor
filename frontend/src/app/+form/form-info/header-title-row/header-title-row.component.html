@@ -5,8 +5,8 @@
 
     <span *ngIf="!showTitleInput" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
 
-    <form [formGroup]="form">
-        <mat-form-field [class.hide]="!showTitleInput">
+    <form [formGroup]="form" [class.hide]="!showTitleInput">
+        <mat-form-field>
             <input #titleInput matInput formControlName="title"
                    (blur)="showTitleInput = false">
         </mat-form-field>

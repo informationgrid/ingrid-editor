@@ -14,7 +14,7 @@ import {RoleService} from '../services/role/role.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
-import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
+import {CreateDocOptions, NewDocumentComponent} from './dialogs/new-document/new-document.component';
 import {DocumentQuery} from '../store/document/document.query';
 import {IgeDocument} from '../models/ige-document';
 import {takeUntil} from 'rxjs/operators';
@@ -25,6 +25,7 @@ import {McloudFormly} from '../formly/profiles/mcloud.formly';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {CodelistService} from '../services/codelist/codelist.service';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
+import {UpdateType} from '../models/update-type.enum';
 
 interface FormData extends Object {
   _id?: string;
@@ -39,17 +40,17 @@ export interface FormDataContainer {
   value: any;
 }
 
-@Component( {
+@Component({
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss'],
   providers: [FormControlService]
   // changeDetection: ChangeDetectionStrategy.OnPush
-} )
+})
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild( 'newDocModal', {static: true} ) newDocModal: TemplateRef<any>;
-  @ViewChild( 'deleteConfirmModal', {static: true} ) deleteConfirmModal: TemplateRef<any>;
-  @ViewChild( 'discardConfirmModal', {static: true} ) discardConfirmModal: TemplateRef<any>;
+  @ViewChild('newDocModal', {static: true}) newDocModal: TemplateRef<any>;
+  @ViewChild('deleteConfirmModal', {static: true}) deleteConfirmModal: TemplateRef<any>;
+  @ViewChild('discardConfirmModal', {static: true}) discardConfirmModal: TemplateRef<any>;
 
   // TODO: the width of the sidebar can be stored in a cookie/localstorage
   sidebarWidth = 15;
@@ -64,7 +65,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   form: FormGroup = new FormGroup({
     title: new FormControl('Kein Titel')
   });
-  data: IgeDocument|any = {};
+  data: IgeDocument | any = {};
   behaviours: Behaviour[];
   error = false;
   model: any = {};
@@ -106,45 +107,45 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // handle toolbar events
     this.formToolbarService.getEventObserver()
       // .pipe(takeUntil(this.componentDestroyed))
-      .subscribe( eventId => {
-        console.log( 'generic toolbar handler', eventId );
+      .subscribe(eventId => {
+        console.log('generic toolbar handler', eventId);
         if (eventId === 'SAVE') {
           this.save();
         } else if (eventId === 'NEW_DOC') {
           this.newDoc();
         }
-      } );
+      });
 
     // react on document selection
     this.treeQuery.selectActiveId().pipe(takeUntil(this.componentDestroyed)).subscribe((activeDocs) => {
       this.formToolbarService.setButtonState(
         'toolBtnSave',
-        activeDocs && activeDocs.length === 1 );
-    } );
+        activeDocs && activeDocs.length === 1);
+    });
 
-    this.behaviourService.initialized.then( () => {
+    this.behaviourService.initialized.then(() => {
       /*this.route.queryParams.subscribe( params => {
         this.debugEnabled = params['debug'] !== undefined;
         // this.editMode = params['editMode'] === 'true';
         // this.load(thisid);
       } );*/
-      this.route.params.subscribe( params => {
-        this.load( params['id'] );
-      } );
-    } );
+      this.route.params.subscribe(params => {
+        this.load(params['id']);
+      });
+    });
   }
 
   ngOnDestroy() {
-    console.log( 'destroy' );
+    console.log('destroy');
     this.formularService.currentProfile = null;
     this.componentDestroyed.next();
     this.componentDestroyed.unsubscribe();
     this.behaviourService.behaviours
-      .filter( behave => behave.isActive && behave.unregister )
-      .forEach( behave => behave.unregister() );
+      .filter(behave => behave.isActive && behave.unregister)
+      .forEach(behave => behave.unregister());
 
     // reset selected documents if we revisit the page
-    this.formularService.setSelectedDocuments( [] );
+    this.formularService.setSelectedDocuments([]);
     this.formsManager.unsubscribe();
   }
 
@@ -154,7 +155,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formsManager.upsert('document', this.form);
 
     this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
-        console.log( 'loaded data:', data );
+        console.log('loaded data:', data);
 
         if (data === null) {
           return;
@@ -177,27 +178,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
           // switch to the right profile depending on the data
           if (needsProfileSwitch) {
-            this.switchProfile( profile );
+            this.switchProfile(profile);
           }
 
           this.model = {...data};
           this.form.markAsPristine();
-          /*this.updateRepeatableFields( data );
-
-          this.createFormWithData( data );
-
-          this.behaviourService.apply( this.form, profile );*/
-          // this.documentService.afterProfileSwitch.next( data );
-
-          // this.documentService.afterLoadAndSet.next( data );
 
         } catch (ex) {
-          console.error( ex );
-          this.modalService.showJavascriptError( ex );
-          // this.data._id = id;
+          console.error(ex);
+          this.modalService.showJavascriptError(ex);
         }
       }
-      // , (err) => this.errorService.handle( err )
     );
 
     this.formularService.currentProfile = null;
@@ -223,14 +214,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       } );*/
 
+
     // load dataset when one was updated
-    /*this.documentService.datasetsChanged$
+    this.documentService.datasetsChanged$
       .pipe(takeUntil(this.componentDestroyed))
-      .subscribe( (msg) => {
+      .subscribe((msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
-          this.load( <string>msg.data[0].id );
+          this.load(<string>msg.data[0].id);
         }
-      } );*/
+      });
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -238,10 +230,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // add form errors check when saving/publishing
     this.documentService.beforeSave$
       .pipe(takeUntil(this.componentDestroyed))
-      .subscribe( (message: any) => {
-        message.errors.push( {invalid: this.form.invalid} );
-        console.log( 'in observer' );
-      } );
+      .subscribe((message: any) => {
+        message.errors.push({invalid: this.form.invalid});
+        console.log('in observer');
+      });
   }
 
   /*canDeactivate(component: DynamicFormComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot)
@@ -259,7 +251,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return true;
   }*/
 
-  @HostListener( 'window: keydown', ['$event'] )
+  @HostListener('window: keydown', ['$event'])
   hotkeys(event: KeyboardEvent) {
     this.formUtils.addHotkeys(event, this);
   }
@@ -271,47 +263,51 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // };
     const selectedDocs = this.treeQuery.getActive();
     this.newDocOptions.docTypes = this.formularService.getDocTypes()
-      .filter( type => type.id !== 'FOLDER' )
-      .sort( (a, b) => a.label.localeCompare( b.label ) );
+      .filter(type => type.id !== 'FOLDER')
+      .sort((a, b) => a.label.localeCompare(b.label));
 
     this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
-    this.formularService.newDocumentSubject.next( this.newDocOptions );
+    this.formularService.newDocumentSubject.next(this.newDocOptions);
 
-    const dlg = this.dialog.open( NewDocumentComponent, {
+    const dlg = this.dialog.open(NewDocumentComponent, {
       data:
         {
           docTypes: this.newDocOptions.docTypes,
           rootOption: this.newDocOptions.rootOption,
           choice: null
         }
-    } );
-    dlg.afterClosed().subscribe( result => {
+    });
+    dlg.afterClosed().subscribe((result: CreateDocOptions) => {
       if (result) {
         this.prepareNewDoc(result.choice, result.addBelowDoc);
       }
     })
   }
 
+  /**
+   * Create a new document and save it in the backend.
+   * @param type
+   * @param addBelowDoc
+   */
   prepareNewDoc(type: string, addBelowDoc: boolean) {
-    /*let previousId = null;
-    const selectedDocs = this.treeQuery.getActive();
-    if (selectedDocs && selectedDocs.length === 1) {
-      previousId = selectedDocs[0].id;
-    }
-    const needsProfileSwitch = this.formularService.currentProfile !== type;
 
-    if (this.form) {
-      this.form.reset();
-    }*/
     this.form = new FormGroup({});
     this.formsManager.upsert('document', this.form);
     this.model = {};
 
-    this.fields = new McloudFormly(null, this.codelistService).fields;
+
+    let parent = null;
+    if (addBelowDoc) {
+      parent = this.treeQuery.getActive()[0].id;
+    }
 
     // TODO: use constructor for creating new document
-    const newDoc = {_profile: type, _parent: this.data._parent ? this.data._parent : null};
-    this.documentService.save( newDoc, true );
+    const newDoc = new IgeDocument(type, parent);
+    this.documentService.save(newDoc, true);
+
+    // FIXME: create correct form by document type
+
+    // this.fields = new McloudFormly(null, this.codelistService).fields;
 
     return;
 
@@ -345,7 +341,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   discardChanges() {
     // this.form.reset();
-    this.load( this.pendingId );
+    this.load(this.pendingId);
 
     // this.discardConfirmModal.close();
   }
@@ -379,11 +375,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.documentService.load( id ).subscribe();
+    this.documentService.load(id).subscribe();
   }
 
   save() {
-    console.log( 'valid:', this.form.valid );
+    console.log('valid:', this.form.valid);
 
     // let errors: string[] = [];
     // alert('This form is valid: ' + this.form.valid);
@@ -393,7 +389,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.form.reset(this.form.value);
     this.form.markAsPristine();
 
-    this.documentService.save( data, false ).then(res => {
+    this.documentService.save(data, false).then(res => {
       this.documentStore.setOpenedDocument(res);
       // TODO: this.treeStore.upsert
       // this.data._id = res._id;
@@ -403,7 +399,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       // this.errorService.handleOwn( err.message, err.error );
       // setTimeout(() => this.error = false, 5000);
       throw err;
-    } );
+    });
   }
 
   // TODO: extract to permission service class
@@ -411,10 +407,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // TODO: check all roles
     if (this.userRoles.length > 0) {
       const attr = this.userRoles[0].attributes;
-      const docIDs = this.userRoles[0].datasets.map( dataset => dataset.id );
+      const docIDs = this.userRoles[0].datasets.map(dataset => dataset.id);
       // TODO: show why we don't have permission by remembering failed rule
-      const permissionByAttribute = !attr || attr.every( a => data[a.id] === a.value );
-      const permissionByDatasetId = !docIDs || docIDs.length === 0 || docIDs.some( id => data._id === id );
+      const permissionByAttribute = !attr || attr.every(a => data[a.id] === a.value);
+      const permissionByDatasetId = !docIDs || docIDs.length === 0 || docIDs.some(id => data._id === id);
 
       return permissionByAttribute && permissionByDatasetId;
     }
@@ -426,8 +422,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.behaviourService.unregisterAll();
 
     // @ts-ignore
-    this.fields = this.formularService.getFields( profile );
-
+    this.fields = this.formularService.getFields(profile);
 
 
     // add controls from active behaviours
@@ -455,7 +450,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   markFavorite($event: Event) {
     // TODO: mark favorite
     $event.stopImmediatePropagation();
-    console.log( 'TODO: Mark document as favorite' );
+    console.log('TODO: Mark document as favorite');
   }
 
 }

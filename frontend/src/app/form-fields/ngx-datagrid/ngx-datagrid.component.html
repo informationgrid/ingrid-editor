@@ -39,7 +39,9 @@
         </ngx-datatable-column>
         <ngx-datatable-column *ngFor="let col of columns; let colIndex=index"
                               [prop]="col.key"
+                              [resizeable]="true"
                               [flexGrow]="1"
+                              [canAutoResize]="colIndex === columns.length-1"
                               [name]="col.label">
 
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
@@ -51,7 +53,7 @@
                     <span *ngSwitchCase="'date'">{{value | date}}</span>
                     <span *ngSwitchCase="'select'">{{mapSelectValue(value.value, col.options)}}</span>
                     <span *ngSwitchDefault>{{value}}</span>
-                    &nbsp;
+                    &nbsp;{{colIndex === columns.length-1}}
                 </div>
 
                 <ng-container *ngIf="editing[rowIndex + '-' + col.key]" [ngSwitch]="col.type">

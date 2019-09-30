@@ -104,6 +104,9 @@ export class NgxDatagridComponent implements ControlValueAccessor, OnInit, OnDes
   addRow(table: DatatableComponent) {
     this.rows = [...this.rows, {}];
     // table.recalculate();
+
+    // TODO: jump to new row and open editor of first column
+
   }
 
   focusNextCell(row: number, cell: string, colIndex: number) {

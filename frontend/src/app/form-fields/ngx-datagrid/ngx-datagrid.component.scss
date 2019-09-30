@@ -1,6 +1,18 @@
+.grid-container {
+  position: relative;
+  //max-height: 200px;
+
+  ::ng-deep .ngx-datatable.material {
+    /*position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;*/
+  }
+}
+
 .material.ngx-datatable {
-  box-shadow: initial;
-  border: 1px solid #dfdede;
+  box-shadow: 0 0 1px #000;
   border-radius: 5px;
   margin-bottom: 10px;
 }
@@ -34,4 +46,9 @@
   .mat-select-arrow-wrapper {
     padding-top: 0;
   }
+}
+
+[class*="flex-"] {
+  padding-left: 0;
+  padding-right: 0;
 }

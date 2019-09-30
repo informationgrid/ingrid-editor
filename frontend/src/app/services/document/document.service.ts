@@ -5,13 +5,13 @@ import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 import {KeycloakService} from '../../security/keycloak/keycloak.service';
 import {Observable, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/internal/operators';
-import {IgeDocument} from "../../models/ige-document";
-import {DocumentDataService} from "./document-data.service";
-import {DocumentStore} from "../../store/document/document.store";
-import {DocumentAbstract} from "../../store/document/document.model";
-import {TreeStore} from "../../store/tree/tree.store";
-import {ProfileQuery} from "../../store/profile/profile.query";
-import {DocumentUtils} from "./document.utils";
+import {IgeDocument} from '../../models/ige-document';
+import {DocumentDataService} from './document-data.service';
+import {DocumentStore} from '../../store/document/document.store';
+import {DocumentAbstract} from '../../store/document/document.model';
+import {TreeStore} from '../../store/tree/tree.store';
+import {ProfileQuery} from '../../store/profile/profile.query';
+import {DocumentUtils} from './document.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -77,8 +77,8 @@ export class DocumentService {
     return {
       id: doc._id,
       title: doc.title,
-      icon: "",
-      //_id: doc._id,
+      icon: '',
+      // _id: doc._id,
       _profile: doc._profile,
       _state: doc._state,
       _parent: doc._parent,
@@ -90,11 +90,11 @@ export class DocumentService {
   getChildren(parentId: string): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId)
       .pipe(
-        //tap( docs => this.documentStore.set(docs))
+        // tap( docs => this.documentStore.set(docs))
         map(docs => {
           return docs.map(doc => {
-            let childTreeNode: DocumentAbstract = {
-              //_id: doc._id,
+            const childTreeNode: DocumentAbstract = {
+              // _id: doc._id,
               icon: null,
               id: doc._id,
               // TODO: get title from document, but circular dependency with formularservice
@@ -136,7 +136,7 @@ export class DocumentService {
 
       this.dataService.save(data)
         .subscribe(json => {
-          let info = DocumentUtils.createDocumentAbstract(json);
+          const info = DocumentUtils.createDocumentAbstract(json);
 
           this.afterSave.next(data);
           this.datasetsChanged.next({
@@ -168,7 +168,7 @@ export class DocumentService {
 
     this.dataService.publish(data)
       .subscribe(json => {
-          let info = DocumentUtils.createDocumentAbstract(json);
+          const info = DocumentUtils.createDocumentAbstract(json);
 
           this.afterSave.next(data);
           this.datasetsChanged.next({
@@ -181,8 +181,8 @@ export class DocumentService {
       );
   }
 
-  delete(ids: string[]): any {
-    const response = this.dataService.delete(ids)
+  delete(ids: string[]): void {
+    this.dataService.delete(ids)
       .subscribe(res => {
         console.log('ok', res);
         const data = ids.map(id => {
@@ -204,7 +204,7 @@ export class DocumentService {
 
   getPath(id: string): Observable<string[]> {
     return this.dataService.getPath(id).pipe(
-      //tap( path => this.treeStore.setExpandedNodes(path))
+      // tap( path => this.treeStore.setExpandedNodes(path))
     );
   }
 

@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormularService} from "../../services/formular/formular.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import {DocumentAbstract} from "../../store/document/document.model";
-import {TreeQuery} from "../../store/tree/tree.query";
-import {TreeStore} from "../../store/tree/tree.store";
-import {DocumentService} from "../../services/document/document.service";
-import {tap} from "rxjs/operators";
+import {FormularService} from '../../services/formular/formular.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {TreeQuery} from '../../store/tree/tree.query';
+import {TreeStore} from '../../store/tree/tree.store';
+import {DocumentService} from '../../services/document/document.service';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'ige-sidebar',
@@ -23,7 +22,8 @@ export class SidebarComponent implements OnInit {
 
   constructor(private formularService: FormularService, private router: Router,
               private route: ActivatedRoute,
-              private treeQuery: TreeQuery, private treeStore: TreeStore, private docService: DocumentService) { }
+              private treeQuery: TreeQuery, private treeStore: TreeStore, private docService: DocumentService) {
+  }
 
   ngOnInit() {
     this.route.params.subscribe( params => {
@@ -35,10 +35,10 @@ export class SidebarComponent implements OnInit {
             const id = params['id'];
             if (id !== undefined) {
               this.docService.getPath(params['id']).subscribe(path => {
-                let lastDocId = path.pop();
-                let promises = [];
-                for (let id of path) {
-                  promises.push(this.getChildrenDocs(id));
+                const lastDocId = path.pop();
+                const promises = [];
+                for (const pathId of path) {
+                  promises.push(this.getChildrenDocs(pathId));
                 }
 
                 Promise.all(promises).then(() => {
@@ -79,7 +79,7 @@ export class SidebarComponent implements OnInit {
     }
 
     // this.documentStore.setOpenedDocument(doc);
-    this.router.navigate( ['/form', {id: doc.id}] );
+    this.router.navigate(['/form', {id: doc.id}]);
   }
 
   handleSelection(selectedDocsId: string[]) {
@@ -87,7 +87,7 @@ export class SidebarComponent implements OnInit {
     //       which store to update
     if (selectedDocsId.length === 1) {
       // FIXME: OK? ID cannot be found if it's a children!
-      let selectedDocuments = this.treeQuery.getEntity(selectedDocsId[0]);
+      const selectedDocuments = this.treeQuery.getEntity(selectedDocsId[0]);
       this.treeStore.setOpenedDocument(selectedDocuments[0]);
     }
     this.treeStore.setActive(selectedDocsId);
@@ -105,10 +105,10 @@ export class SidebarComponent implements OnInit {
     }*/
   }
 
-  handleToggle(data: {parentId: string, expand: boolean}) {
+  handleToggle(data: { parentId: string, expand: boolean }) {
     if (data.expand) {
       // check if nodes have been loaded already
-      let children = this.treeQuery.getAll({filterBy: entity => entity._parent === data.parentId});
+      const children = this.treeQuery.getAll({filterBy: entity => entity._parent === data.parentId});
       if (children.length > 0) {
         this.addExpandedNode(data.parentId);
 
@@ -126,14 +126,14 @@ export class SidebarComponent implements OnInit {
       }
     } else {
 
-      let previouseExpandState = this.treeQuery.getValue().expandedNodes
-        .filter( nodeId => nodeId !== data.parentId);
+      const previouseExpandState = this.treeQuery.getValue().expandedNodes
+        .filter(nodeId => nodeId !== data.parentId);
       this.treeStore.setExpandedNodes([...previouseExpandState]);
     }
   }
 
   private addExpandedNode(nodeId) {
-    let previouseExpandState = this.treeQuery.getValue().expandedNodes;
+    const previouseExpandState = this.treeQuery.getValue().expandedNodes;
     this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
   }
 
@@ -141,7 +141,9 @@ export class SidebarComponent implements OnInit {
     this.docService.getChildren(null)
       .pipe(
         tap(docs => this.treeStore.set(docs))
-      ).subscribe();
+      ).subscribe( () => {
+        this.treeStore.setExpandedNodes([...this.treeQuery.expandedNodes]);
+    });
   }
 
 }

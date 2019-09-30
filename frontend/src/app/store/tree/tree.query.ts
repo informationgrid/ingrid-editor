@@ -29,4 +29,8 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
   get selectedDocuments(): DocumentAbstract[] {
     return this.getValue().selected;
   }
+
+  get expandedNodes(): string[] {
+    return this.getValue().expandedNodes;
+  }
 }

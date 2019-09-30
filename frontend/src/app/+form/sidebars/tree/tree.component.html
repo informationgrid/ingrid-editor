@@ -16,8 +16,8 @@
                     style="float: right;"
                     (click)="toggleNode(node)"
                     [attr.aria-label]="'toggle ' + node.name">
-                <mat-icon class="mat-icon-rtl-mirror">
-                    {{isLoading === node ? 'autorenew' : treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                <mat-icon class="mat-icon-rtl-mirror" [class.expanded]="treeControl.isExpanded(node)">
+                    {{isLoading === node ? 'autorenew' : 'chevron_right'}}
                 </mat-icon>
             </button>
             <div class="label">{{node.title}}</div>

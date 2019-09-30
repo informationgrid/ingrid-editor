@@ -12,7 +12,7 @@ import {Overlay} from '@angular/cdk/overlay';
       <div class="label-wrapper">
         <label (click)="showContextHelp($event)">{{ to.externalLabel }} <span *ngIf="to.required">*</span></label>
       </div>
-      <div class="flex-1">
+      <div class="ige-formly-wrapper flex-1">
         <ng-container #fieldComponent></ng-container>
       </div>
     </div>

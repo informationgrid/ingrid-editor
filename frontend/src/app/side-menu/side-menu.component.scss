@@ -5,8 +5,12 @@
 :host {
   display: block;
   background-color: #28225b;
-  width: 100%;
   height: 100%;
+  //width: 100%;
+}
+
+.mat-nav-list {
+  overflow: auto;
 }
 
 .mat-list-base .mat-list-item {
