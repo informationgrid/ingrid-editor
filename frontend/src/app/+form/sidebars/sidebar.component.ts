@@ -5,6 +5,9 @@ import {TreeQuery} from '../../store/tree/tree.query';
 import {TreeStore} from '../../store/tree/tree.store';
 import {DocumentService} from '../../services/document/document.service';
 import {tap} from 'rxjs/operators';
+import {TreeNode} from '../../store/tree/tree-node.model';
+import {DocumentAbstract} from '../../store/document/document.model';
+import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'ige-sidebar',
@@ -19,6 +22,7 @@ export class SidebarComponent implements OnInit {
   treeData = this.treeQuery.selectAll();
   expandedNodes = this.treeQuery.expandedNodes$;
   selectedIds = this.treeQuery.selectActiveId();
+  private initialExpandNodes: any = {};
 
   constructor(private formularService: FormularService, private router: Router,
               private route: ActivatedRoute,
@@ -26,30 +30,58 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.params.subscribe( params => {
-      this.docService.getChildren(null)
-        .pipe(
-          tap(docs => {
-            this.treeStore.set(docs);
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      if (id === undefined) {
 
-            const id = params['id'];
-            if (id !== undefined) {
-              this.docService.getPath(params['id']).subscribe(path => {
-                const lastDocId = path.pop();
-                const promises = [];
-                for (const pathId of path) {
-                  promises.push(this.getChildrenDocs(pathId));
-                }
+        this.docService.getChildren(null).subscribe();
 
-                Promise.all(promises).then(() => {
-                  this.treeStore.setActive([lastDocId]);
-                  this.treeStore.setExpandedNodes(path);
-                });
-              });
-            }
-          })
-        ).subscribe();
+      } else {
+
+        this.docService.getPath(params['id']).subscribe(path => {
+          const lastDocId = path.pop();
+          this.initialExpandNodes = path.reduce((obj, item) => {
+            obj[item] = true;
+            return obj
+          }, {});
+          this.reloadTreeWithChildren([null, ...path])
+            .subscribe( () => {
+              this.treeStore.setActive([lastDocId]);
+              this.treeStore.setExpandedNodes(path);
+            });
+        });
+
+      }
     }).unsubscribe();
+  }
+
+  transform(data: DocumentAbstract[], level: number, parent: string, expandState: any, initialState?: any): TreeNode[] {
+    const finalArray = [];
+
+    const parents = data
+      .filter(d => d._parent === parent)
+      .map(d => {
+        return {
+          _id: d.id,
+          title: d.title,
+          level: level,
+          profile: d._profile,
+          hasChildren: d._hasChildren,
+          isExpanded: expandState[d.id] || initialState[d.id]
+        } as TreeNode;
+      });
+
+    parents.forEach(p => {
+      finalArray.push(p);
+      if (p.hasChildren) {
+        const children = this.transform(data, level + 1, p._id, expandState, initialState);
+        if (children.length > 0) {
+          finalArray.push(...children);
+        }
+      }
+    });
+
+    return finalArray;
   }
 
   private getChildrenDocs(id: string): Promise<void> {
@@ -137,13 +169,29 @@ export class SidebarComponent implements OnInit {
     this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
   }
 
-  reloadTree() {
-    this.docService.getChildren(null)
+  /**
+   *
+   */
+  private reloadTreeWithChildren(expandedNodes: string[]) {
+
+    return forkJoin(expandedNodes.map(nodeId => this.docService.getChildren(nodeId)))
       .pipe(
-        tap(docs => this.treeStore.set(docs))
-      ).subscribe( () => {
-        this.treeStore.setExpandedNodes([...this.treeQuery.expandedNodes]);
-    });
+        tap(docs => {
+          const docsReduced = docs.reduce((acc, val) => acc.concat(val), []);
+          console.log('Setting tree nodes after reload:', docsReduced);
+          this.treeStore.set(docsReduced);
+        })
+      );
+
+  }
+
+  reloadTree() {
+    const id = this.treeQuery.getActive();
+    this.treeStore.setActive([]);
+    this.reloadTreeWithChildren([null, ...this.treeQuery.expandedNodes])
+      .subscribe( () => {
+        this.treeStore.setActive([id]);
+      });
   }
 
 }

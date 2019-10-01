@@ -1,19 +1,18 @@
-import {ID} from '@datorama/akita';
-
 export interface TreeNode {
-  parent: string;
+  parent?: string;
   _id: string;
   // id: ID;
   title: string;
-  iconClass: string;
+  iconClass?: string;
   hasChildren: boolean;
-  state: string;
-  profile: string;
+  state?: string;
+  profile?: string;
   isSelected?: boolean;
   // children: TreeNode[],
   // _childrenLoaded: boolean;
   level: number;
   isLoading?: boolean;
+  isExpanded?: boolean;
 }
 
 /**
