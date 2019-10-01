@@ -4,12 +4,26 @@
 
 mat-tree-node {
   cursor: pointer;
-}
-mat-tree-node .label {
-  padding-left: 10px;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  user-select: none;
+
+  &:hover {
+    background-color: #ededed;
+  }
+
+  .label {
+    padding-left: 10px;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    user-select: none;
+  }
+
+  &.selected {
+    background-color: #e5e5e5;
+    box-shadow: inset 3px 0 0 0 rgb(40, 34, 91);
+  }
+
+  &.selected:hover {
+    background-color: #e5e5e5;
+  }
 }
 
 .mat-icon-button {
@@ -17,22 +31,12 @@ mat-tree-node .label {
   line-height: 30px;
 }
 
-mat-tree-node:hover {
-  background-color: #ededed;
-}
-
-mat-tree-node.selected {
-  background-color: #e5e5e5;
-}
-mat-tree-node.selected:hover {
-  background-color: #e5e5e5;
-}
-
 .docType {
   padding-right: 10px;
   padding-left: 15px;
   line-height: 40px;
 }
+
 .docType.expandable {
   padding-right: 10px;
   padding-left: 0;
@@ -64,6 +68,7 @@ mat-tree-node.selected:hover {
 ::ng-deep .mat-icon {
   transition: all .2s linear;
 }
+
 ::ng-deep .mat-icon.expanded {
-  transform:rotate(90deg);
+  transform: rotate(90deg);
 }

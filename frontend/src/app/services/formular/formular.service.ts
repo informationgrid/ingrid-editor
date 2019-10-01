@@ -60,12 +60,18 @@ export class FormularService {
   getFields(profile: string) {
     let fields: IFieldBase<any>[];
 
-    fields = this.getProfile(profile).fields.slice(0);
+    let nextProfile = this.getProfile(profile);
 
-    this.currentProfile = profile;
+    if (nextProfile) {
+      fields = nextProfile.fields.slice(0);
 
-    // return a copy of our fields (immutable data!)
-    return fields.sort((a, b) => a.order - b.order);
+      this.currentProfile = profile;
+
+      // return a copy of our fields (immutable data!)
+      return fields.sort((a, b) => a.order - b.order);
+    } else {
+      throw new Error('Document type not found: ' + profile);
+    }
   }
 
   getProfile(id: string): Profile {

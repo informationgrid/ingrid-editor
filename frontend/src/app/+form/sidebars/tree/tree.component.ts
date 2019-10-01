@@ -9,7 +9,7 @@ import {ArrayDataSource} from '@angular/cdk/collections';
 @Component({
   selector: 'ige-tree',
   templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.css'],
+  styleUrls: ['./tree.component.scss'],
   providers: [DynamicDatabase]
 })
 export class MetadataTreeComponent implements OnInit {

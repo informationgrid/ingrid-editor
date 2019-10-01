@@ -34,7 +34,9 @@ export class SidebarComponent implements OnInit {
       const id = params['id'];
       if (id === undefined) {
 
-        this.docService.getChildren(null).subscribe();
+        this.docService.getChildren(null).subscribe( docs => {
+          this.treeStore.set(docs);
+        });
 
       } else {
 
@@ -186,11 +188,11 @@ export class SidebarComponent implements OnInit {
   }
 
   reloadTree() {
-    const id = this.treeQuery.getActive();
+    const activeDoc = this.treeQuery.getActive();
     this.treeStore.setActive([]);
     this.reloadTreeWithChildren([null, ...this.treeQuery.expandedNodes])
       .subscribe( () => {
-        this.treeStore.setActive([id]);
+        this.treeStore.setActive([activeDoc[0].id]);
       });
   }
 

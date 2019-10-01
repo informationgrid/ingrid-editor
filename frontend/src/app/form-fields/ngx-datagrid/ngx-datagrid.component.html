@@ -1,7 +1,7 @@
-<button mat-flat-button type="button" (click)="addRow(table)" title="Neue Zeile hinzufügen">
+<button mat-icon-button type="button" (click)="addRow(table)" title="Neue Zeile hinzufügen">
     <mat-icon>add</mat-icon>
 </button>
-<button mat-button type="button" color="warn"
+<button mat-icon-button type="button" color="warn"
         title="Löschen"
         [disabled]="selected.length === 0"
         (click)="removeRow()">
@@ -53,7 +53,7 @@
                     <span *ngSwitchCase="'date'">{{value | date}}</span>
                     <span *ngSwitchCase="'select'">{{mapSelectValue(value.value, col.options)}}</span>
                     <span *ngSwitchDefault>{{value}}</span>
-                    &nbsp;{{colIndex === columns.length-1}}
+                    &nbsp;
                 </div>
 
                 <ng-container *ngIf="editing[rowIndex + '-' + col.key]" [ngSwitch]="col.type">

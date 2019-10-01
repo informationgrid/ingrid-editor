@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormularService } from '../../../services/formular/formular.service';
 import { DocumentService } from '../../../services/document/document.service';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component( {
   templateUrl: './create-folder.component.html'
@@ -24,6 +24,7 @@ export class CreateFolderComponent implements OnInit {
 
   constructor(private formService: FormularService,
               private storageService: DocumentService,
+              public dialogRef: MatDialogRef<CreateFolderComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
     this.parent = data.parent;
   }
@@ -45,8 +46,7 @@ export class CreateFolderComponent implements OnInit {
       // by saving the folder an update event is sent automatically to notify tree
       this.storageService.save(folder, true);
 
-    } else {
-      // notify user to enter a title for the folder
+      this.dialogRef.close();
     }
   }
 
