@@ -26,3 +26,10 @@
 .fillVertical {
   flex: 1;
 }
+
+::ng-deep .tooltip-big {
+  font-size: 20px;
+  margin-left: 10px;
+  padding-left: 20px;
+  //background: #b71c1c;
+}

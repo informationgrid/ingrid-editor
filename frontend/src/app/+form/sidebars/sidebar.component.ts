@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {TreeQuery} from '../../store/tree/tree.query';
 import {TreeStore} from '../../store/tree/tree.store';
 import {DocumentService} from '../../services/document/document.service';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {TreeNode} from '../../store/tree/tree-node.model';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {forkJoin} from 'rxjs';
@@ -12,15 +12,11 @@ import {forkJoin} from 'rxjs';
 @Component({
   selector: 'ige-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.css']
+  styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
 
-  sideTab;
-  load;
-
-  treeData = this.treeQuery.selectAll();
-  expandedNodes = this.treeQuery.expandedNodes$;
+  treeData = this.treeQuery.selectAll().pipe(map(docs => docs.map(SidebarComponent.mapDocToTreeNode)));
   selectedIds = this.treeQuery.selectActiveId();
   private initialExpandNodes: any = {};
 
@@ -86,17 +82,6 @@ export class SidebarComponent implements OnInit {
     return finalArray;
   }
 
-  private getChildrenDocs(id: string): Promise<void> {
-    return new Promise(resolve => {
-      this.docService.getChildren(id).pipe(
-        tap(docs => {
-          this.treeStore.add(docs);
-          resolve();
-        })
-      ).subscribe();
-    });
-  }
-
   handleLoad(selectedDocIds: string[]) { // id: string, profile?: string, forceLoad?: boolean) {
     // when multiple nodes were selected then do not show any form
     if (selectedDocIds.length !== 1) {
@@ -142,9 +127,9 @@ export class SidebarComponent implements OnInit {
   handleToggle(data: { parentId: string, expand: boolean }) {
     if (data.expand) {
       // check if nodes have been loaded already
-      const children = this.treeQuery.getAll({filterBy: entity => entity._parent === data.parentId});
-      if (children.length > 0) {
-        this.addExpandedNode(data.parentId);
+      const childrenLength = this.treeQuery.getCount(entity => entity._parent === data.parentId);
+      if (childrenLength > 0) {
+        this.docService.addExpandedNode(data.parentId);
 
       } else {
 
@@ -153,22 +138,16 @@ export class SidebarComponent implements OnInit {
         this.docService.getChildren(data.parentId).pipe(
           tap(docs => {
             this.treeStore.add(docs);
-            this.addExpandedNode(data.parentId);
+            this.docService.addExpandedNode(data.parentId);
           })
         ).subscribe();
 
       }
     } else {
 
-      const previouseExpandState = this.treeQuery.getValue().expandedNodes
-        .filter(nodeId => nodeId !== data.parentId);
-      this.treeStore.setExpandedNodes([...previouseExpandState]);
-    }
-  }
+      this.docService.removeExpandedNode(data.parentId);
 
-  private addExpandedNode(nodeId) {
-    const previouseExpandState = this.treeQuery.getValue().expandedNodes;
-    this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
+    }
   }
 
   /**
@@ -196,4 +175,14 @@ export class SidebarComponent implements OnInit {
       });
   }
 
+  private static mapDocToTreeNode(doc: DocumentAbstract): TreeNode {
+    return {
+      _id: doc.id as string,
+      title: doc.title,
+      hasChildren: doc._hasChildren,
+      parent: doc._parent,
+      profile: doc._profile,
+      state: doc._state
+    };
+  }
 }

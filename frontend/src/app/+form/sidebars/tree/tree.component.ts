@@ -1,29 +1,32 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../../../store/tree/tree-node.model';
-import {DocumentAbstract} from '../../../store/document/document.model';
-import {DynamicDatabase} from './DynamicDatabase';
 import {Observable} from 'rxjs';
 import {ArrayDataSource} from '@angular/cdk/collections';
 
 @Component({
   selector: 'ige-tree',
   templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.scss'],
-  providers: [DynamicDatabase]
+  styleUrls: ['./tree.component.scss']
 })
 export class MetadataTreeComponent implements OnInit {
 
-  @Input() showFolderEditButton = true;
-  @Input() data: Observable<any[]>;
-  @Input() expandedNodeIds: Observable<string[]>;
-  @Input() initialExpandedNodeIds: string[];
+  // @Input() showFolderEditButton = true;
+  @Input() data: Observable<TreeNode[]>;
+  // @Input() expandedNodeIds: Observable<string[]>;
+  @Input() initialExpandedNodeIds: string[] = [];
   @Input() selectedIds: Observable<string[]>;
-  @Input() transform: (data: any[], level: number, parent: string, expandState: any, initialState: any) => TreeNode[];
+  @Input() showReloadButton = false;
+
+  /**
+   * A function to determine if a tree node should be disabled.
+   */
+  @Input() disabledCondition: (TreeNode) => boolean = () => { return false; };
 
   @Output() toggle = new EventEmitter<{ parentId: string, expand: boolean }>();
   @Output() selected = new EventEmitter<string[]>();
   @Output() activate = new EventEmitter<string[]>();
+  @Output() reload = new EventEmitter<null>();
 
   /**
    * The controller of the tree to identify if a node is expandable
@@ -36,17 +39,16 @@ export class MetadataTreeComponent implements OnInit {
   /**
    * The datasource is used by the mat-tree component to build the tree
    */
-  // dataSource: Observable<TreeNode[]>;
   dataSource: ArrayDataSource<TreeNode>;
 
   // signal to show that a tree node is loading
   private isLoading: TreeNode;
 
   // store all nodes where we can find the nested items
-  private allData: DocumentAbstract[];
   private copy: TreeNode[] = [];
 
-  constructor() {}
+  constructor() {
+  }
 
   ngOnInit(): void {
 
@@ -67,25 +69,54 @@ export class MetadataTreeComponent implements OnInit {
     });*/
 
     // react on external selection changes
-    this.selectedIds.subscribe(ids => this.copy.forEach((node) => {
-      if (ids.indexOf(node._id) !== -1) {
-        node.isSelected = true;
-      }
-    }));
+    if (this.selectedIds) {
+      this.selectedIds.subscribe(ids => this.copy.forEach((node) => {
+        if (ids.indexOf(node._id) !== -1) {
+          node.isSelected = true;
+        }
+      }));
+    }
 
   }
 
-  getExpandableState(): any {
+  private getState(type: 'isExpanded'|'isSelected'): any {
     return this.copy
       .reduce((obj, item) => {
-        obj[item._id] = item.isExpanded;
+        obj[item._id] = item[type];
         return obj
       }, {});
   }
 
-  updateTreeNodes(data) {
-    const expandState = this.getExpandableState();
-    this.copy = this.transform(data, 0, null, expandState, this.initialExpandedNodeIds);
+  private transform(data: TreeNode[], level: number, parent: string, expandState: any, selectState: any) {
+    const finalArray = [];
+
+    data
+      .filter(d => d.parent === parent)
+      .map(d => {
+        return {
+          ...d,
+          level: level,
+          isSelected: selectState[d._id],
+          isExpanded: expandState[d._id]
+        } as TreeNode;
+      })
+      .forEach(p => {
+        finalArray.push(p);
+        if (p.hasChildren) {
+          const children = this.transform(data, level + 1, p._id, expandState, selectState);
+          if (children.length > 0) {
+            finalArray.push(...children);
+          }
+        }
+      });
+
+    return finalArray;
+  }
+
+  private updateTreeNodes(data: TreeNode[]) {
+    const expandState = {...this.getState('isExpanded'), ...this.initialExpandedNodeIds};
+    const selectState = {...this.getState('isSelected')};
+    this.copy = this.transform(data, 0, null, expandState, selectState);
     this.dataSource = new ArrayDataSource(this.copy);
 
     this.treeControl.expansionModel.select(...this.copy.filter(d => d.isExpanded));
@@ -149,7 +180,7 @@ export class MetadataTreeComponent implements OnInit {
 
   }
 
-  getParentNode(node: TreeNode) {
+  private getParentNode(node: TreeNode) {
     const nodeIndex = this.copy.indexOf(node);
 
     for (let i = nodeIndex - 1; i >= 0; i--) {
@@ -166,4 +197,7 @@ export class MetadataTreeComponent implements OnInit {
     return !parent || parent.isExpanded;
   }
 
+  reloadTree() {
+    this.reload.next();
+  }
 }

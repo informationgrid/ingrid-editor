@@ -12,6 +12,7 @@ import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
 import {ProfileQuery} from '../../store/profile/profile.query';
 import {DocumentUtils} from './document.utils';
+import {arrayAdd, arrayRemove} from '@datorama/akita';
 
 @Injectable({
   providedIn: 'root'
@@ -114,8 +115,9 @@ export class DocumentService {
             //let entity = Object.assign({}, this.treeQuery.getEntity(parentId));
             //entity.children = docs;
             //this.treeStore.update(parentId, entity);
-            this.treeStore.upsert(parentId, { _children: docs });
-            // this.treeStore.add(docs);
+            //this.treeStore.upsert(parentId, { _children: docs });
+            this.treeStore.add(docs);
+            this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
           }
         })*/
       );
@@ -230,4 +232,15 @@ export class DocumentService {
     return this.dataService.move(srcIDs, dest, includeTree);
   }
 
+  addExpandedNode(nodeId: string) {
+    this.treeStore.update(node => {
+      expandedNodes: arrayAdd(node.expandedNodes, nodeId);
+    })
+  }
+
+  removeExpandedNode(nodeId: string) {
+    this.treeStore.update(node => {
+      expandedNodes: arrayRemove(node.expandedNodes, nodeId);
+    })
+  }
 }

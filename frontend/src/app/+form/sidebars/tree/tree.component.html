@@ -1,33 +1,46 @@
+<button *ngIf="showReloadButton" class="mat-icon-button" (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
+
+<span *ngIf="copy.length === 0">Leerer Baum</span>
+
 <!-- TODO: trackBy does not update isExpanded Flag [trackBy]="trackByNodeId"-->
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
 
     <!-- This is the tree node template for leaf nodes -->
     <mat-tree-node *matTreeNodeDef="let node"
                    matTreeNodePadding matTreeNodePaddingIndent="20"
-                   (click)="selectNode(node)"
+                   (click)="!disabledCondition(node) && selectNode(node)"
                    [style.display]="shouldRender(node) ? 'flex' : 'none'"
-                   [class.selected]="node.isSelected">
-        <!-- use a disabled button to provide padding for tree leaf -->
-        <div class="label">{{node.title}} ({{node.state}})</div>
+                   [class.selected]="node.isSelected"
+                   [class.disabled]="disabledCondition(node)">
+        <div class="label">
+            <mat-icon>insert_drive_file</mat-icon>
+            {{node.title}} ({{node.state}})
+        </div>
     </mat-tree-node>
 
     <!-- This is the tree node template for expandable nodes -->
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
-                   matTreeNodePadding matTreeNodePadding matTreeNodePaddingIndent="20"
-                   (click)="selectNode(node)"
+                   matTreeNodePadding matTreeNodePaddingIndent="20"
+                   (click)="!disabledCondition(node) && selectNode(node)"
                    [style.display]="shouldRender(node) ? 'flex' : 'none'"
                    [class.selected]="node.isSelected"
+                   [class.disabled]="disabledCondition(node)"
                    [class.rootNode]="!node.parent">
         <div style="width: 100%;">
             <button mat-icon-button matTreeNodeToggle
-                    style="float: right;"
+                    class="toggle"
                     (click)="toggleNode(node)"
-                    [attr.aria-label]="'toggle ' + node.name">
+                    [disabled]="!node.hasChildren"
+                    [attr.aria-label]="'toggle ' + node.title">
                 <mat-icon class="mat-icon-rtl-mirror" [class.expanded]="treeControl.isExpanded(node)">
                     {{isLoading === node ? 'autorenew' : 'chevron_right'}}
                 </mat-icon>
             </button>
-            <div class="label">{{node.title}}</div>
+
+            <div class="label">
+                <mat-icon>folder</mat-icon>
+                <span>{{node.title}}</span>
+            </div>
         </div>
     </mat-tree-node>
 </mat-tree>

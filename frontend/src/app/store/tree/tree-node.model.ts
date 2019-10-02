@@ -1,18 +1,15 @@
 export interface TreeNode {
-  parent?: string;
   _id: string;
-  // id: ID;
+  hasChildren: boolean;
+  parent: string;
+  profile: string;
+  state: string;
   title: string;
   iconClass?: string;
-  hasChildren: boolean;
-  state?: string;
-  profile?: string;
-  isSelected?: boolean;
-  // children: TreeNode[],
-  // _childrenLoaded: boolean;
-  level: number;
-  isLoading?: boolean;
   isExpanded?: boolean;
+  isLoading?: boolean;
+  isSelected?: boolean;
+  level?: number;
 }
 
 /**

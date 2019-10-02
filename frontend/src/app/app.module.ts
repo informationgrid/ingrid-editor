@@ -36,6 +36,7 @@ import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.com
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {SideMenuComponent} from './side-menu/side-menu.component';
 import {PluginsModule} from './+behaviours/behaviours.module';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 registerLocaleData(de);
 
@@ -80,6 +81,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
+    MatTooltipModule,
     // angular
     BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
     // Flex layout

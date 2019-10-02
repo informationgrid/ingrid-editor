@@ -1,42 +1,8 @@
-<div class="tabs-left">
-    <div class="tab-content">
-        <button class="mat-icon-button" (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
-        <div class="tab-pane" [class.active]="sideTab === 'tree'">
-            <ige-tree [data]="treeData"
-                      [expandedNodeIds]="expandedNodes"
-                      [initialExpandedNodeIds]="initialExpandNodes"
-                      [selectedIds]="selectedIds"
-                      [transform]="transform"
-                      (toggle)="handleToggle($event)"
-                      (activate)="handleLoad($event)"
-                      (selected)="handleSelection($event)"></ige-tree>
-        </div>
-        <!--<div class="tab-pane hide" [class.active]="sideTab === 'search'">
-            <browser (onSelected)="load($event.id)"></browser>
-        </div>-->
-        <div class="tab-pane hide" [class.active]="sideTab === 'wizards'">
-            <!--<a [routerLink]="['/form/10']">Zurück</a>-->
-            <router-outlet name="wizard"></router-outlet>
-        </div>
-        <div class="tab-pane hide" [class.active]="sideTab === 'favorites'">
-            <div class="panel panel-default">
-                <!-- Default panel contents -->
-                <div class="panel-heading">Favoriten</div>
-                <div class="list-group">
-                    <button (click)="load('1')" class="list-group-item list-group-item-action">
-                        <span class="fa fa-file-o"></span>
-                        Document 1 (TEST)
-                    </button>
-                    <button (click)="load('2')" class="list-group-item list-group-item-action">
-                        <span class="fa fa-file-o"></span>
-                        Document 5 (TEST)
-                    </button>
-                    <button (click)="load('3')" class="list-group-item list-group-item-action">
-                        <span class="fa fa-address-card-o"></span>
-                        Document 6 (TEST)
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div><!-- /tab-content -->
-</div>
+<ige-tree [data]="treeData"
+          [showReloadButton]="true"
+          [initialExpandedNodeIds]="initialExpandNodes"
+          [selectedIds]="selectedIds"
+          (toggle)="handleToggle($event)"
+          (activate)="handleLoad($event)"
+          (reload)="reloadTree()"
+          (selected)="handleSelection($event)"></ige-tree>
