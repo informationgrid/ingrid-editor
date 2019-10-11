@@ -21,7 +21,6 @@ import {takeUntil} from 'rxjs/operators';
 import {DocumentStore} from '../store/document/document.store';
 import {FormUtils} from './form.utils';
 import {TreeQuery} from '../store/tree/tree.query';
-import {McloudFormly} from '../formly/profiles/mcloud.formly';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {CodelistService} from '../services/codelist/codelist.service';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
@@ -65,10 +64,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   form: FormGroup = new FormGroup({
     title: new FormControl('Kein Titel')
   });
-  data: IgeDocument | any = {};
+
   behaviours: Behaviour[];
   error = false;
-  model: any = {};
+  model: IgeDocument | any = {};
 
   userRoles: Role[];
 
@@ -121,14 +120,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.formToolbarService.setButtonState(
         'toolBtnSave',
         activeDocs && activeDocs.length === 1);
+
+      // do not allow to modify form if multiple nodes have been selected in tree
+      activeDocs.length === 1 ? this.form.enable() : this.form.disable();
+
     });
 
     this.behaviourService.initialized.then(() => {
-      /*this.route.queryParams.subscribe( params => {
-        this.debugEnabled = params['debug'] !== undefined;
-        // this.editMode = params['editMode'] === 'true';
-        // this.load(thisid);
-      } );*/
       this.route.params.subscribe(params => {
         this.load(params['id']);
       });
@@ -149,47 +147,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formsManager.unsubscribe();
   }
 
-  // noinspection JSUnusedGlobalSymbols
   ngOnInit() {
 
     this.formsManager.upsert('document', this.form);
 
-    this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
-        console.log('loaded data:', data);
-
-        if (data === null) {
-          return;
-        }
-
-        // this.documentService.beforeLoad.next();
-
-        // if (data._profile === 'FOLDER' && !this.editMode) return;
-
-        const profile = data._profile;
-
-        if (profile === null) {
-          console.error('This document does not have any profile');
-          return;
-        }
-
-        const needsProfileSwitch = this.formularService.currentProfile !== profile;
-        this.data = data;
-        try {
-
-          // switch to the right profile depending on the data
-          if (needsProfileSwitch) {
-            this.switchProfile(profile);
-          }
-
-          this.model = {...data};
-          this.form.markAsPristine();
-
-        } catch (ex) {
-          console.error(ex);
-          this.modalService.showJavascriptError(ex);
-        }
+    /*this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
       }
-    );
+    );*/
 
     this.formularService.currentProfile = null;
 
@@ -353,11 +317,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   load(id: string, previousId?: string) {
 
-    // since data always stays the same there's no change detection if we load the same data again
-    // even if we already have changed the formular
-    // since loading will be async, we only have to reset the data first
-
-
     // check if form was changed and ask for saving data
     // TODO: handle double confirmation (deactivated this one for now)
     /*if (false && this.form && this.form.dirty) {
@@ -375,7 +334,43 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.documentService.load(id).subscribe();
+    this.documentService.load(id).subscribe( doc => this.updateFormWithData(doc));
+  }
+
+  updateFormWithData(data) {
+    console.log('loaded data:', data);
+
+    if (data === null) {
+      return;
+    }
+
+    // this.documentService.beforeLoad.next();
+
+    // if (data._profile === 'FOLDER' && !this.editMode) return;
+
+    const profile = data._profile;
+
+    if (profile === null) {
+      console.error('This document does not have any profile');
+      return;
+    }
+
+    const needsProfileSwitch = this.formularService.currentProfile !== profile;
+    // this.data = data;
+    try {
+
+      // switch to the right profile depending on the data
+      if (needsProfileSwitch) {
+        this.switchProfile(profile);
+      }
+
+      this.model = {...data};
+      this.form.markAsPristine();
+
+    } catch (ex) {
+      console.error(ex);
+      this.modalService.showJavascriptError(ex);
+    }
   }
 
   save() {
@@ -390,7 +385,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.form.markAsPristine();
 
     this.documentService.save(data, false).then(res => {
-      this.documentStore.setOpenedDocument(res);
+      // this.documentStore.setOpenedDocument(res);
       // TODO: this.treeStore.upsert
       // this.data._id = res._id;
       // this.messageService.show( 'Dokument wurde gespeichert' );
@@ -418,31 +413,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return true;
   }
 
+  /**
+   *
+   * @param profile
+   */
   switchProfile(profile: string) {
-    // this.behaviourService.unregisterAll();
-
-    // @ts-ignore
     this.fields = this.formularService.getFields(profile);
-
-
-    // add controls from active behaviours
-    // TODO: refactor to a function
-    /*this.behaviours = this.behaviourService.behaviours;
-    this.behaviours
-      .filter( behave => behave.isActive && behave.forProfile === profile )
-      .forEach( (behave) => {
-        if (behave.controls) {
-          behave.controls.forEach( (additionalField => {
-            this.fields.push( additionalField );
-          }) );
-        }
-      } );
-
-    // TODO: introduce order by field IDs as an array to make it easier to squeeze in a new field
-    //       => [ 'title', 'description', ... ]
-    // sort fields by its order field
-    // @ts-ignore
-    this.fields.sort( (a, b) => a.order - b.order ).slice( 0 );*/
 
     this.formularService.currentProfile = profile;
   }

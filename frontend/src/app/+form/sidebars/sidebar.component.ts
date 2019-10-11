@@ -19,6 +19,7 @@ export class SidebarComponent implements OnInit {
   treeData = this.treeQuery.selectAll().pipe(map(docs => docs.map(SidebarComponent.mapDocToTreeNode)));
   selectedIds = this.treeQuery.selectActiveId();
   private initialExpandNodes: any = {};
+  private initialActiveNodeId: string;
 
   constructor(private formularService: FormularService, private router: Router,
               private route: ActivatedRoute,
@@ -27,6 +28,8 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(params => {
+      console.log('SidebarComponent: RouteParams-subscription');
+
       const id = params['id'];
       if (id === undefined) {
 
@@ -37,14 +40,13 @@ export class SidebarComponent implements OnInit {
       } else {
 
         this.docService.getPath(params['id']).subscribe(path => {
-          const lastDocId = path.pop();
+          this.initialActiveNodeId = path.pop();
           this.initialExpandNodes = path.reduce((obj, item) => {
             obj[item] = true;
             return obj
           }, {});
           this.reloadTreeWithChildren([null, ...path])
             .subscribe( () => {
-              this.treeStore.setActive([lastDocId]);
               this.treeStore.setExpandedNodes(path);
             });
         });
@@ -102,16 +104,8 @@ export class SidebarComponent implements OnInit {
   }
 
   handleSelection(selectedDocsId: string[]) {
-    // TODO: Refactor this to the parent component so that the parent can decide
-    //       which store to update
-    if (selectedDocsId.length === 1) {
-      // FIXME: OK? ID cannot be found if it's a children!
-      const selectedDocuments = this.treeQuery.getEntity(selectedDocsId[0]);
-      this.treeStore.setOpenedDocument(selectedDocuments[0]);
-    }
-    this.treeStore.setActive(selectedDocsId);
 
-    // this.documentStore.setSelected(selectedDocs);
+    this.treeStore.setActive(selectedDocsId);
 
     // when multiple nodes were selected then do not show any form
     // TODO: update ui store for form
@@ -137,6 +131,7 @@ export class SidebarComponent implements OnInit {
         // get nodes from server
         this.docService.getChildren(data.parentId).pipe(
           tap(docs => {
+            console.log('HandleToggle');
             this.treeStore.add(docs);
             this.docService.addExpandedNode(data.parentId);
           })
@@ -175,7 +170,7 @@ export class SidebarComponent implements OnInit {
       });
   }
 
-  private static mapDocToTreeNode(doc: DocumentAbstract): TreeNode {
+  public static mapDocToTreeNode(doc: DocumentAbstract): TreeNode {
     return {
       _id: doc.id as string,
       title: doc.title,

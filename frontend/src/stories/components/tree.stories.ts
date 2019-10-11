@@ -9,7 +9,6 @@ import {BehaviorSubject, of} from 'rxjs';
 import {TreeNode} from '../../app/store/tree/tree-node.model';
 
 const imports = [
-  FormFieldsModule,
   MatInputModule, SharedModule,
   MatFormFieldModule,
   BrowserAnimationsModule,

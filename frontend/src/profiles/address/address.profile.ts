@@ -58,6 +58,16 @@ export class ProfileAddress implements Profile {
         ]
       }
     }, {
+      key: 'contact-link',
+      type: 'doc-reference',
+      wrappers: ['panel'],
+      templateOptions: {
+        externalLabel: 'Kommunikation-Link',
+        filter: {
+          docType: 'ADDRESS'
+        }
+      }
+    }, {
       key: 'address',
       wrappers: ['panel'],
       templateOptions: {

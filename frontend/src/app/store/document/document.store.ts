@@ -23,9 +23,9 @@ export class DocumentStore extends EntityStore<DocumentState, DocumentAbstract> 
     super(createStore());
   }
 
-  setOpenedDocument(doc: IgeDocument) {
+  /*setOpenedDocument(doc: IgeDocument) {
     this.update({ openedDocument: doc });
-  }
+  }*/
 
   setSelected(docs: DocumentAbstract[]) {
     this.update({selected: docs});

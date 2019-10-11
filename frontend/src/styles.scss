@@ -225,46 +225,6 @@ p-dataTable {
   height: 100px;
 }
 
-/*
-.splitWrapper {
-    position: absolute;
-    top: 92px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-.split {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.gutter {
-    background-color: #eee;
-
-    background-repeat: no-repeat;
-    background-position: 50%;
-}
-
-.gutter.gutter-horizontal {
-    background-image: url('./assets/grips/vertical.png');
-    cursor: ew-resize;
-}
-
-.gutter.gutter-vertical {
-    background-image: url('./assets/grips/horizontal.png');
-    cursor: ns-resize;
-}
-
-.split.split-horizontal, .gutter.gutter-horizontal {
-    height: 100%;
-    float: left;
-}*/
-
 .ag-body-viewport {
   -webkit-overflow-scrolling: touch;
 }
@@ -353,8 +313,8 @@ tree-node:hover .folder {
 
 //}
 [class*="flex-"] {
-  /*padding-left: 10px;
-  padding-right: 10px;*/
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 [class*="flex-"]:first-child {

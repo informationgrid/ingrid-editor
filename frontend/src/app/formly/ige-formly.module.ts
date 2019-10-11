@@ -23,6 +23,9 @@ import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit'
 import {NgxDatatableTypeComponent} from './types/ngx-datatable-type.component';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
+import {DocReferenceTypeComponent} from './types/doc-reference-type.component';
+import {TreeSelectDialog} from '../dialogs/form/tree-select.dialog';
+import {SharedModule} from '../shared/shared.module';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -51,6 +54,9 @@ export function IpValidator(control: FormControl): ValidationErrors {
       }, {
         name: 'ngx-table',
         component: NgxDatatableTypeComponent
+      }, {
+        name: 'doc-reference',
+        component: DocReferenceTypeComponent
       }],
       validators: [
         {name: 'ip', validation: IpValidator}
@@ -67,7 +73,8 @@ export function IpValidator(control: FormControl): ValidationErrors {
         totalMessage: 'total', // Footer total message
         selectedMessage: 'selected' // Footer selected message
       }
-    }), FormFieldsModule
+    }), FormFieldsModule,
+    SharedModule
   ],
   providers: [
     {
@@ -77,9 +84,9 @@ export function IpValidator(control: FormControl): ValidationErrors {
   ],
   declarations: [
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, NgxDatatableTypeComponent,
-    TableTypeComponent
+    TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog
   ],
-  entryComponents: [ContextHelpComponent],
+  entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [
     ReactiveFormsModule, FormsModule,
     FormlyModule,

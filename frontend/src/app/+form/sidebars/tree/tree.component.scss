@@ -25,12 +25,15 @@ mat-tree-node {
   }
 
   &.selected {
-    background-color: #e5e5e5;
-    box-shadow: inset 3px 0 0 0 rgb(40, 34, 91);
+    background-color: #00000033;
   }
 
   &.selected:hover {
-    background-color: #e5e5e5;
+    background-color: #00000022;
+  }
+
+  &.active {
+    box-shadow: inset 3px 0 0 0 rgb(40, 34, 91);
   }
 
   &.disabled {

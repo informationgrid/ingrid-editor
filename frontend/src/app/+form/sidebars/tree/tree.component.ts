@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../../../store/tree/tree-node.model';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {ArrayDataSource} from '@angular/cdk/collections';
 
 @Component({
@@ -13,15 +13,17 @@ export class MetadataTreeComponent implements OnInit {
 
   // @Input() showFolderEditButton = true;
   @Input() data: Observable<TreeNode[]>;
-  // @Input() expandedNodeIds: Observable<string[]>;
   @Input() initialExpandedNodeIds: string[] = [];
   @Input() selectedIds: Observable<string[]>;
   @Input() showReloadButton = false;
+  @Input() initialActiveNodeId: string = null;
 
   /**
    * A function to determine if a tree node should be disabled.
    */
-  @Input() disabledCondition: (TreeNode) => boolean = () => { return false; };
+  @Input() disabledCondition: (TreeNode) => boolean = () => {
+    return false;
+  };
 
   @Output() toggle = new EventEmitter<{ parentId: string, expand: boolean }>();
   @Output() selected = new EventEmitter<string[]>();
@@ -52,34 +54,27 @@ export class MetadataTreeComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // listen to external node changes and update connected datasource
-    this.data.subscribe(docs => {
-      this.updateTreeNodes(docs);
-    });
-
-    // react on external ui changes (expand/collapse)
-    /*this.expandedNodeIds.subscribe(ids => {
-      /!*this.treeControl.expansionModel.clear();
-      this.isLoading = null;
-
-      const nodesToExpand: TreeNode[] = this.copy.filter(node => ids.indexOf(node._id) !== -1);
-      this.treeControl.expansionModel.select(...nodesToExpand);*!/
-      console.log('expanded nodes', this.copy.filter(d => ids.indexOf(d._id) !== -1));
-      this.treeControl.expansionModel.select(...this.copy.filter(d => ids.indexOf(d._id) !== -1));
-    });*/
-
-    // react on external selection changes
-    if (this.selectedIds) {
-      this.selectedIds.subscribe(ids => this.copy.forEach((node) => {
-        if (ids.indexOf(node._id) !== -1) {
-          node.isSelected = true;
-        }
-      }));
+    if (this.selectedIds === undefined) {
+      this.selectedIds = of([]);
     }
+    // listen to external node changes (tree nodes and selection state) and update connected datasource
+    combineLatest([
+      this.data,
+      this.selectedIds
+    ]).subscribe(([data, selection]) => {
+      this.updateTreeNodes(data);
+      if (data.length > 0) {
+        this.markSelectedNodes(selection);
+      }
+    });
 
   }
 
-  private getState(type: 'isExpanded'|'isSelected'): any {
+  private markSelectedNodes(ids: string[]) {
+    this.copy.forEach((node) => node.isSelected = ids.indexOf(node._id) !== -1);
+  }
+
+  private getState(type: 'isExpanded' | 'isSelected'): any {
     return this.copy
       .reduce((obj, item) => {
         obj[item._id] = item[type];
@@ -158,25 +153,40 @@ export class MetadataTreeComponent implements OnInit {
   /**
    *
    * @param node
+   * @param $event
    */
-  selectNode(node: TreeNode) {
+  selectNode(node: TreeNode, $event: MouseEvent) {
 
     // deselect all nodes first
-    this.copy.forEach(n => n.isSelected = false);
+    // TODO: handle shiftKey
+    let selectedIds = [];
+    if ($event.ctrlKey) {
+      selectedIds = this.copy
+        .filter(n => n.isSelected)
+        .map(n => n._id);
+    }
 
     // set selection state to new node
-    node.isSelected = true;
+    // toggle state if ctrl-key is pressed, otherwise selected
+    if ($event.ctrlKey && node.isSelected) {
+      // deselect
+      selectedIds.splice(selectedIds.indexOf(node._id), 1);
+    } else {
+      selectedIds.push(node._id);
 
-    this.selected.next([node._id]);
+      if (selectedIds.length === 1) {
+        this.initialActiveNodeId = node._id;
+        this.activate.next([node._id]);
+      }
 
-    // the data in dataSource only contains root nodes!!!
-    // let docs = this.dataSource.data.filter( n => n._id === node._id);
-    this.activate.next([node._id]);
+      if (node.hasChildren) {
+        this.treeControl.toggle(node);
+        this.toggleNode(node);
+      }
 
-    if (node.hasChildren) {
-      this.treeControl.toggle(node);
-      this.toggleNode(node);
     }
+
+    this.selected.next(selectedIds);
 
   }
 

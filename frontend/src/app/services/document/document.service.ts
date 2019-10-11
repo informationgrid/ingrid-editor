@@ -125,7 +125,7 @@ export class DocumentService {
 
   load(id: string): Observable<IgeDocument> {
     return this.dataService.load(id).pipe(
-      tap(doc => this.documentStore.setOpenedDocument(doc)),
+      // tap(doc => this.documentStore.setOpenedDocument(doc)),
       tap(doc => setTimeout(() => this.treeStore.setActive([doc._id]), 0))
     );
   }

@@ -3,37 +3,29 @@ import {EntityState, EntityStore, MultiActiveState, StoreConfig} from '@datorama
 import {DocumentAbstract} from "../document/document.model";
 
 export interface TreeState extends EntityState<DocumentAbstract>, MultiActiveState {
+  // TODO: what is this used for?
   openedNodes: DocumentAbstract[],
-  selected: DocumentAbstract[],
   openedDocument: DocumentAbstract,
   expandedNodes: string[]
 }
 
-export function createStore() {
-  return {
-    selected: [],
-    openedDocument: null,
-    expandedNodes: []
-  };
-}
+const initialState = {
+  active: [],
+  openedDocument: null,
+  expandedNodes: []
+};
 
-@Injectable({ providedIn: 'root' })
-@StoreConfig({ name: 'tree' })
+@Injectable({providedIn: 'root'})
+@StoreConfig({name: 'tree'})
 export class TreeStore extends EntityStore<TreeState, DocumentAbstract> {
 
   constructor() {
-    super(createStore());
+    super(initialState);
   }
 
   addOpenedNode(entity: DocumentAbstract) {
     this.update({
       openedNodes: [entity]
-    });
-  }
-
-  setSelected(selection: DocumentAbstract[]) {
-    this.update({
-      selected: selection
     });
   }
 

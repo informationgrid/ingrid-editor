@@ -8,9 +8,10 @@
     <!-- This is the tree node template for leaf nodes -->
     <mat-tree-node *matTreeNodeDef="let node"
                    matTreeNodePadding matTreeNodePaddingIndent="20"
-                   (click)="!disabledCondition(node) && selectNode(node)"
+                   (click)="!disabledCondition(node) && selectNode(node, $event)"
                    [style.display]="shouldRender(node) ? 'flex' : 'none'"
                    [class.selected]="node.isSelected"
+                   [class.active]="node._id === initialActiveNodeId"
                    [class.disabled]="disabledCondition(node)">
         <div class="label">
             <mat-icon>insert_drive_file</mat-icon>
@@ -21,9 +22,10 @@
     <!-- This is the tree node template for expandable nodes -->
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
                    matTreeNodePadding matTreeNodePaddingIndent="20"
-                   (click)="!disabledCondition(node) && selectNode(node)"
+                   (click)="!disabledCondition(node) && selectNode(node, $event)"
                    [style.display]="shouldRender(node) ? 'flex' : 'none'"
                    [class.selected]="node.isSelected"
+                   [class.active]="node._id === initialActiveNodeId"
                    [class.disabled]="disabledCondition(node)"
                    [class.rootNode]="!node.parent">
         <div style="width: 100%;">
