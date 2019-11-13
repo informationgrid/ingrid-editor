@@ -1,0 +1,7 @@
+{% macro anchor(item) %}
+  {% if item.link is null %}
+	<gco:CharacterString>{{item.name}}</gco:CharacterString>
+  {% else %}
+    <gmx:Anchor xlink:href="{{item.link}}">{{item.name}}</gmx:Anchor>
+  {% endif %}
+{% endmacro %}

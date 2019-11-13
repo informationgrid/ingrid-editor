@@ -8,9 +8,15 @@ import javax.xml.bind.Marshaller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.ingrid.igeserver.exports.ExportTypeInfo;
 import de.ingrid.igeserver.exports.IgeExporter;
 
 public class IsoExporter implements IgeExporter {
+
+	@Override
+	public ExportTypeInfo getTypeInfo() {
+		return null;
+	}
 
 	@Override
 	public Object run(JsonNode jsonData) {

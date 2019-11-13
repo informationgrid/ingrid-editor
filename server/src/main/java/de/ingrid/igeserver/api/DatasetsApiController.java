@@ -25,6 +25,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -325,7 +326,7 @@ public class DatasetsApiController implements DatasetsApi {
     public ResponseEntity<String> exportDataset(
             Principal principal,
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException {
+            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException, IOException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);

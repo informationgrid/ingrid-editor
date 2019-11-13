@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -71,7 +72,7 @@ public interface DatasetsApi {
     ResponseEntity<String> exportDataset(
     		Principal principal,
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException;
+            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException, IOException;
 
     @ApiOperation(value = "Get datasets by a query or as child documents", notes = "Get all datasets or those which match a given query. You can define the fields where the search should be, in case the documents have different attributes for their title. The results can also be sorted.", response = Void.class, tags = {
             "Datasets", })

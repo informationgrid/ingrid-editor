@@ -10,6 +10,8 @@ import de.ingrid.igeserver.exports.ExporterFactory;
 import de.ingrid.igeserver.exports.IgeExporter;
 import de.ingrid.igeserver.services.ExportPostProcessors.TransformationType;
 
+import java.io.IOException;
+
 @Service
 public class ExportService {
 
@@ -19,7 +21,7 @@ public class ExportService {
 	@Autowired(required = false)
 	private ExportPostProcessors[] postProcessors;
 
-	public String doExport(JsonNode jsonData, String format) throws ApiException {
+	public String doExport(JsonNode jsonData, String format) throws ApiException, IOException {
 
 		Object exportedDoc = null;
 		
