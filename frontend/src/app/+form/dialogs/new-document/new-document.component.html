@@ -7,8 +7,8 @@
     </mat-radio-group>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <mat-checkbox [disabled]="!data.rootOption" [(ngModel)]="result.addBelowDoc">unter ausgewähltem Dokument/Ordner
-        anlegen
+    <mat-checkbox [disabled]="!data.rootOption || data.parent?._profile !== 'FOLDER'" [(ngModel)]="result.addBelowDoc">
+        unter ausgewähltem Ordner anlegen
     </mat-checkbox>
     <button mat-button color="primary" [mat-dialog-close]="result">Anlegen</button>
 </mat-dialog-actions>

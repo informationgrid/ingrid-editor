@@ -347,7 +347,7 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<String> find(
             Principal principal,
-            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String[] fields,
+//            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String[] fields,
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
             @ApiParam(value = "Get all children of a dataset. The parameter 'parentId' is also needed for this request.") @RequestParam(value = "children", defaultValue = "false", required = false) Boolean children,
             @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId,
@@ -367,9 +367,9 @@ public class DatasetsApiController implements DatasetsApi {
                 docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.like, true);
             } else {
                 Map<String, String> queryMap = new HashMap<>();
-                for (String field : fields) {
+                /*for (String field : fields) {
                     queryMap.put(field, query);
-                }
+                }*/
                 docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.like, true); // fields );
             }
 
@@ -387,15 +387,7 @@ public class DatasetsApiController implements DatasetsApi {
                         node.put(FIELD_STATE, this.documentService.determineState(doc));
                         return node;
                     })
-                    .map(doc -> {
-                        try {
-                            doc.retain(fields);
-                            return doc.toString();
-                        } catch (Exception e) {
-                            log.error(e);
-                            return null;
-                        }
-                    })
+                    .map(doc -> doc.toString())
                     .collect(Collectors.joining(","));
 
             /*for (String doc : docs) {
@@ -460,7 +452,7 @@ public class DatasetsApiController implements DatasetsApi {
                 log.debug("getById took: " + (end - start) + "ms");
                 return ResponseEntity.ok(body);
             } else {
-                throw new ApiException("Document not found with id: " + id);
+                throw new NotFoundException(404, "Document not found with id: " + id);
             }
         }
 

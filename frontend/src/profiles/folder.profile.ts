@@ -2,6 +2,7 @@ import { Profile } from '../app/services/formular/profile';
 import { TextboxField } from '../app/+form/controls';
 import { DocumentService } from '../app/services/document/document.service';
 import { CodelistService } from '../app/services/codelist/codelist.service';
+import {FormlyFieldConfig} from '@ngx-formly/core';
 
 export class ProfileFolder implements Profile {
   id = 'FOLDER';
@@ -10,12 +11,15 @@ export class ProfileFolder implements Profile {
 
   treeIconClass = 'fa fa-folder-o';
 
-  fields = [
-
-    new TextboxField({
+  fields = <FormlyFieldConfig[]>[
+    {
       key: 'title',
-      label: 'Label'
-    })
+      type: 'input',
+      wrappers: ['panel'],
+      templateOptions: {
+        externalLabel: 'Label'
+      }
+    }
   ];
 
   constructor(storageService: DocumentService, codelistService: CodelistService) {

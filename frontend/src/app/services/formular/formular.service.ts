@@ -10,6 +10,7 @@ import {DocumentAbstract} from "../../store/document/document.model";
 import {TreeQuery} from "../../store/tree/tree.query";
 import {TreeStore} from "../../store/tree/tree.store";
 import {IgeDocument} from "../../models/ige-document";
+import {FormlyFieldConfig} from '@ngx-formly/core';
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +49,8 @@ export class FormularService {
 
     console.log('init profiles');
     this.profiles.initialized
-      .then(registeredProfiles => this.profileDefinitions = registeredProfiles);
+      .then(registeredProfiles => this.profileDefinitions = registeredProfiles)
+      .then(profiles => console.log('Profiles: ', this.profileDefinitions));
 
     /*profileQuery.isInitialized$.subscribe((isInitialized) => {
       if (isInitialized) {
@@ -57,7 +59,7 @@ export class FormularService {
     });*/
   }
 
-  getFields(profile: string) {
+  getFields(profile: string): FormlyFieldConfig[] {
     let fields: IFieldBase<any>[];
 
     let nextProfile = this.getProfile(profile);
@@ -120,7 +122,8 @@ export class FormularService {
   }
 
   getSelectedDocuments(): DocumentAbstract[] {
-    return this.treeQuery.selectedDocuments;
+    return this.treeQuery.getActive();
+    // return this.treeQuery.selectedDocuments;
     // return this.selectedDocs;
   }
 

@@ -31,4 +31,8 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
   get expandedNodes(): string[] {
     return this.getValue().expandedNodes;
   }
+
+  getChildren(parent: string): DocumentAbstract[] {
+    return this.getAll().filter( doc => doc._parent === parent);
+  }
 }

@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {FieldType} from '@ngx-formly/material';
 import {MatDialog} from '@angular/material/dialog';
-import {MetadataTreeComponent} from '../../+form/sidebars/tree/tree.component';
+import {TreeComponent} from '../../+form/sidebars/tree/tree.component';
 import {TreeQuery} from '../../store/tree/tree.query';
 import {map} from 'rxjs/operators';
 import {SidebarComponent} from '../../+form/sidebars/sidebar.component';
@@ -52,11 +52,11 @@ export class DocReferenceTypeComponent extends FieldType implements OnInit, Afte
 
   showTree() {
     this.dialog.open(TreeSelectDialog, {
-      data: {
+      /*data: {
         data: this.treeQuery.selectAll().pipe(
           map(docs => docs.map(SidebarComponent.mapDocToTreeNode))
         )
-      }
+      }*/
     }).afterClosed().subscribe(result => {
       console.log('Tree dialog result', result);
       this.docs.push({

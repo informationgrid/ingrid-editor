@@ -1,9 +1,7 @@
-<ige-tree [data]="treeData"
-          [showReloadButton]="true"
-          [initialExpandedNodeIds]="initialExpandNodes"
+<ige-tree [showReloadButton]="true"
+          [expandNodeIds]="initialExpandNodes"
           [initialActiveNodeId]="initialActiveNodeId"
           [selectedIds]="selectedIds"
-          (toggle)="handleToggle($event)"
+          [update]="updateTree"
           (activate)="handleLoad($event)"
-          (reload)="reloadTree()"
           (selected)="handleSelection($event)"></ige-tree>

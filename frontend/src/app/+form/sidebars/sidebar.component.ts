@@ -4,10 +4,9 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {TreeQuery} from '../../store/tree/tree.query';
 import {TreeStore} from '../../store/tree/tree.store';
 import {DocumentService} from '../../services/document/document.service';
-import {map, tap} from 'rxjs/operators';
-import {TreeNode} from '../../store/tree/tree-node.model';
-import {DocumentAbstract} from '../../store/document/document.model';
-import {forkJoin} from 'rxjs';
+import {Subject} from 'rxjs';
+import {TreeAction} from './tree/tree.component';
+import {UpdateType} from '../../models/update-type.enum';
 
 @Component({
   selector: 'ige-sidebar',
@@ -16,72 +15,42 @@ import {forkJoin} from 'rxjs';
 })
 export class SidebarComponent implements OnInit {
 
-  treeData = this.treeQuery.selectAll().pipe(map(docs => docs.map(SidebarComponent.mapDocToTreeNode)));
   selectedIds = this.treeQuery.selectActiveId();
-  private initialExpandNodes: any = {};
+  private initialExpandNodes = new Subject<string[]>();
   private initialActiveNodeId: string;
+  updateTree = new Subject<TreeAction[]>();
 
   constructor(private formularService: FormularService, private router: Router,
               private route: ActivatedRoute,
               private treeQuery: TreeQuery, private treeStore: TreeStore, private docService: DocumentService) {
+
   }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      console.log('SidebarComponent: RouteParams-subscription');
 
       const id = params['id'];
-      if (id === undefined) {
-
-        this.docService.getChildren(null).subscribe( docs => {
-          this.treeStore.set(docs);
-        });
-
-      } else {
+      if (id !== undefined) {
 
         this.docService.getPath(params['id']).subscribe(path => {
           this.initialActiveNodeId = path.pop();
-          this.initialExpandNodes = path.reduce((obj, item) => {
-            obj[item] = true;
-            return obj
-          }, {});
-          this.reloadTreeWithChildren([null, ...path])
-            .subscribe( () => {
-              this.treeStore.setExpandedNodes(path);
-            });
+          this.initialExpandNodes.next(path);
         });
 
       }
     }).unsubscribe();
-  }
-
-  transform(data: DocumentAbstract[], level: number, parent: string, expandState: any, initialState?: any): TreeNode[] {
-    const finalArray = [];
-
-    const parents = data
-      .filter(d => d._parent === parent)
-      .map(d => {
-        return {
-          _id: d.id,
-          title: d.title,
-          level: level,
-          profile: d._profile,
-          hasChildren: d._hasChildren,
-          isExpanded: expandState[d.id] || initialState[d.id]
-        } as TreeNode;
-      });
-
-    parents.forEach(p => {
-      finalArray.push(p);
-      if (p.hasChildren) {
-        const children = this.transform(data, level + 1, p._id, expandState, initialState);
-        if (children.length > 0) {
-          finalArray.push(...children);
-        }
-      }
-    });
-
-    return finalArray;
+/*
+    setTimeout(() => {
+      console.log('Updating tree');
+      // this.updateTree.next([{id: '36766968-7fb8-4e43-8447-93f2b21995e2', type: TreeActionType.DELETE}]);
+      // this.treeStore.remove('36766968-7fb8-4e43-8447-93f2b21995e2');
+      // @ts-ignore
+      this.docService.datasetsChanged.next({type: UpdateType.Delete, data: [{id: '36766968-7fb8-4e43-8447-93f2b21995e2'}]});
+      // @ts-ignore
+      this.docService.datasetsChanged.next({type: UpdateType.New, data: [{id: '12345', title: 'New node', _profile: 'ADDRESS'}], parent: null});
+      // @ts-ignore
+      this.docService.datasetsChanged.next({type: UpdateType.Update, data: [{id: '4cc6fbeb-e562-47f0-a24d-e6b624387f89', title: 'Updated Folder :)', _profile: 'FOLDER'}]});
+    }, 3000);*/
   }
 
   handleLoad(selectedDocIds: string[]) { // id: string, profile?: string, forceLoad?: boolean) {
@@ -118,66 +87,4 @@ export class SidebarComponent implements OnInit {
     }*/
   }
 
-  handleToggle(data: { parentId: string, expand: boolean }) {
-    if (data.expand) {
-      // check if nodes have been loaded already
-      const childrenLength = this.treeQuery.getCount(entity => entity._parent === data.parentId);
-      if (childrenLength > 0) {
-        this.docService.addExpandedNode(data.parentId);
-
-      } else {
-
-        // TODO: CHECK IF SUBSCRIPTIONS CREATE MEMORY LEAK!
-        // get nodes from server
-        this.docService.getChildren(data.parentId).pipe(
-          tap(docs => {
-            console.log('HandleToggle');
-            this.treeStore.add(docs);
-            this.docService.addExpandedNode(data.parentId);
-          })
-        ).subscribe();
-
-      }
-    } else {
-
-      this.docService.removeExpandedNode(data.parentId);
-
-    }
-  }
-
-  /**
-   *
-   */
-  private reloadTreeWithChildren(expandedNodes: string[]) {
-
-    return forkJoin(expandedNodes.map(nodeId => this.docService.getChildren(nodeId)))
-      .pipe(
-        tap(docs => {
-          const docsReduced = docs.reduce((acc, val) => acc.concat(val), []);
-          console.log('Setting tree nodes after reload:', docsReduced);
-          this.treeStore.set(docsReduced);
-        })
-      );
-
-  }
-
-  reloadTree() {
-    const activeDoc = this.treeQuery.getActive();
-    this.treeStore.setActive([]);
-    this.reloadTreeWithChildren([null, ...this.treeQuery.expandedNodes])
-      .subscribe( () => {
-        this.treeStore.setActive([activeDoc[0].id]);
-      });
-  }
-
-  public static mapDocToTreeNode(doc: DocumentAbstract): TreeNode {
-    return {
-      _id: doc.id as string,
-      title: doc.title,
-      hasChildren: doc._hasChildren,
-      parent: doc._parent,
-      profile: doc._profile,
-      state: doc._state
-    };
-  }
 }

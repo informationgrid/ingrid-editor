@@ -1,8 +1,8 @@
 <button *ngIf="showReloadButton" class="mat-icon-button" (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
 
-<span *ngIf="copy.length === 0">Leerer Baum</span>
+<span *ngIf="dataSource.data.length === 0">Leerer Baum</span>
 
-<!-- TODO: trackBy does not update isExpanded Flag [trackBy]="trackByNodeId"-->
+<!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
 
     <!-- This is the tree node template for leaf nodes -->
@@ -31,9 +31,9 @@
         <div style="width: 100%;">
             <button mat-icon-button matTreeNodeToggle
                     class="toggle"
-                    (click)="toggleNode(node)"
                     [disabled]="!node.hasChildren"
                     [attr.aria-label]="'toggle ' + node.title">
+<!--                    (click)="toggleNode(node)"-->
                 <mat-icon class="mat-icon-rtl-mirror" [class.expanded]="treeControl.isExpanded(node)">
                     {{isLoading === node ? 'autorenew' : 'chevron_right'}}
                 </mat-icon>

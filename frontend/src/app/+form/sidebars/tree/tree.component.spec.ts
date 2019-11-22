@@ -1,6 +1,6 @@
 import {createHostComponentFactory, Spectator} from "@netbasal/spectator";
 import {DocumentDataService} from "../../../services/document/document-data.service";
-import {MetadataTreeComponent} from "./tree.component";
+import {TreeComponent} from "./tree.component";
 import {DocumentAbstract} from "../../../store/document/document.model";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -14,10 +14,10 @@ let childrenTree = childrenThree;
 
 describe('TreeComponent', () => {
 
-  let spectator: Spectator<MetadataTreeComponent>;
+  let spectator: Spectator<TreeComponent>;
   let host;
   const createComponent = createHostComponentFactory({
-    component: MetadataTreeComponent,
+    component: TreeComponent,
     imports: [MatTreeModule, MatIconModule, MatDialogModule, MatButtonModule],
     mocks: [DocumentDataService],
     detectChanges: false

@@ -6,7 +6,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../../app/shared/shared.module';
 import {BehaviorSubject, of} from 'rxjs';
-import {TreeNode} from '../../app/store/tree/tree-node.model';
+import {TreeQuery} from '../../app/store/tree/tree.query';
+import {TreeStore} from '../../app/store/tree/tree.store';
+import {DocumentAbstract} from '../../app/store/document/document.model';
 
 const imports = [
   MatInputModule, SharedModule,
@@ -20,8 +22,43 @@ let data = new BehaviorSubject([
   {title: 'folder', profile: 'FOLDER', _id: '2', parent: null, hasChildren: true},
   {title: 'node 1.1', profile: 'AddressDoc', _id: '3', parent: '2'}
 ]);
+let dataRoot = new BehaviorSubject([
+  {title: 'root node 1', profile: 'AddressDoc', _id: '1', parent: null},
+  {title: 'root folder 2', profile: 'FOLDER', _id: '2', parent: null, hasChildren: true},
+  {title: 'root node 3', profile: 'AddressDoc', _id: '3', parent: null}
+]);
 
-storiesOf('Tree', module).add('empty', () => ({
+const store = new TreeStore();
+const query = new TreeQuery(store);
+
+const docService = {
+  addDocumentToStore: (value) => store.add(value),
+  addExpandedNode: () => {},
+  removeExpandedNode: () => {},
+  getChildren: (parentId) => {
+    return of([{
+      title: 'my node 1',
+      _hasChildren: true,
+      _parent: '1',
+      _profile: 'AddressDoc',
+      id: '2',
+      _state: 'W',
+      icon: ''
+    }] as DocumentAbstract[])
+  }
+};
+
+store.set([{
+  title: 'root 1',
+  _hasChildren: true,
+  _parent: null,
+  _profile: 'FOLDER',
+  id: '1',
+  _state: 'W',
+  icon: ''
+}]);
+
+storiesOf('Tree', module)/*.add('empty', () => ({
   moduleMetadata: {
     imports
   },
@@ -33,9 +70,11 @@ storiesOf('Tree', module).add('empty', () => ({
   moduleMetadata: {
     imports
   },
-  template: `<ige-tree [data]="data" (reload)="doReload()"></ige-tree>`,
+  template: `<ige-tree [data]="data" [treeController]="controller" (reload)="doReload()"></ige-tree>`,
   props: {
     data: data,
+    // @ts-ignore
+    controller: new DocumentsTreeConfigure({getChildren: docService}, query),
     doReload: () => {
       data.next([
         {title: 'node 1X', profile: 'AddressDoc', _id: '1', parent: null},
@@ -84,4 +123,4 @@ storiesOf('Tree', module).add('empty', () => ({
     ]),
     isDisabled: (node: TreeNode) => node.level > 0
   }
-}));
+}))*/;

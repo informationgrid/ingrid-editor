@@ -1,8 +1,6 @@
 <h2 mat-dialog-title>Datensatz auswählen</h2>
 <mat-dialog-content>
-    <ige-tree [data]="treeData"
-              (selected)="handleSelection($event)"
-              (toggle)="handleToggle($event)"></ige-tree>
+    <ige-tree (selected)="handleSelection($event)"></ige-tree>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
     <button mat-button type="submit" [mat-dialog-close]="selected">Auswählen</button>

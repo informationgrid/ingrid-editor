@@ -8,11 +8,11 @@
     </mat-form-field>
 
     <div>
-        <mat-checkbox *ngIf="parent?.profile === 'FOLDER'" (change)="asSubFolder = $event.checked">unter ausgewähltem Ordner anlegen</mat-checkbox>
+        <mat-checkbox *ngIf="parent?._profile === 'FOLDER'" (change)="asSubFolder = $event.checked">unter ausgewähltem Ordner anlegen</mat-checkbox>
     </div>
 
     <div>
-        <small class="form-text" *ngIf="parent?.profile !== 'FOLDER'">
+        <small class="form-text" *ngIf="parent?._profile !== 'FOLDER'">
             Wenn Sie einen Unterordner erstellen möchten, müssen Sie zuerst einen Ordner auswählen.
         </small>
     </div>

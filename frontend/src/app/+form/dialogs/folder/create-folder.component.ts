@@ -2,13 +2,14 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormularService } from '../../../services/formular/formular.service';
 import { DocumentService } from '../../../services/document/document.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {DocumentAbstract} from '../../../store/document/document.model';
 
 @Component( {
   templateUrl: './create-folder.component.html'
 } )
 export class CreateFolderComponent implements OnInit {
 
-  parent: any = null;
+  parent: DocumentAbstract = null;
   asSubFolder = false;
 
   private static createNewFolderDoc(folderName: string, parent?: string) {

@@ -238,6 +238,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         {
           docTypes: this.newDocOptions.docTypes,
           rootOption: this.newDocOptions.rootOption,
+          parent: this.newDocOptions.selectedDataset,
           choice: null
         }
     });
@@ -334,7 +335,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.documentService.load(id).subscribe( doc => this.updateFormWithData(doc));
+    this.documentService.load(id)
+      .subscribe(
+        doc => this.updateFormWithData(doc),
+        error => console.error('Could not load document', error));
   }
 
   updateFormWithData(data) {

@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -81,7 +80,7 @@ public interface DatasetsApi {
     @RequestMapping(value = "/datasets", produces = { "application/json" }, method = RequestMethod.GET)
     ResponseEntity<String> find(
     		Principal principal,
-            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String[] fields,
+//            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String[] fields,
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
             @ApiParam(value = "Get all children of a dataset. The parameter 'parentId' is also needed for this request.") @RequestParam(value = "children", required = false) Boolean children,
             @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId,

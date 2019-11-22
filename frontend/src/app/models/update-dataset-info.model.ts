@@ -12,4 +12,5 @@ export interface DocMainInfo {
 export interface UpdateDatasetInfo {
   type: UpdateType;
   data: DocumentAbstract[];
+  parent?: string;
 }

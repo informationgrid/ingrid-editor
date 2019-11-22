@@ -133,6 +133,7 @@ export class NgxDatagridComponent implements ControlValueAccessor, OnInit, OnDes
   removeRow() {
     this.rows = this.rows.filter(row => this.selected.indexOf(row) === -1);
     this.selected = [];
+    this.handleChange();
   }
 
 }

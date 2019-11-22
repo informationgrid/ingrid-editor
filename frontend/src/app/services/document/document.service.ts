@@ -91,36 +91,34 @@ export class DocumentService {
   getChildren(parentId: string): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId)
       .pipe(
-        // tap( docs => this.documentStore.set(docs))
-        map(docs => {
-          return docs.map(doc => {
-            const childTreeNode: DocumentAbstract = {
-              // _id: doc._id,
-              icon: null,
-              id: doc._id,
-              // TODO: get title from document, but circular dependency with formularservice
-              title: doc.title, // this.formularService.getTitle( doc._profile, doc ); // doc.title,
-              _state: doc._state,
-              _hasChildren: doc._hasChildren,
-              _parent: parentId,
-              _profile: doc._profile,
-            };
-            return childTreeNode;
-          })
-        })/*,
+        map(docs => this.mapToDocumentAbstracts(docs, parentId)),
+        map(docs => docs.sort((a,b) => a.title.localeCompare(b.title))),
         tap(docs => {
           if (parentId === null) {
             this.treeStore.set(docs);
           } else {
-            //let entity = Object.assign({}, this.treeQuery.getEntity(parentId));
-            //entity.children = docs;
-            //this.treeStore.update(parentId, entity);
-            //this.treeStore.upsert(parentId, { _children: docs });
             this.treeStore.add(docs);
-            this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
+            // this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
           }
-        })*/
+        })
       );
+  }
+
+  private mapToDocumentAbstracts(docs: any[], parentId: string) {
+    return docs.map(doc => {
+      const childTreeNode: DocumentAbstract = {
+        // _id: doc._id,
+        icon: null,
+        id: doc._id,
+        // TODO: get title from document, but circular dependency with formularservice
+        title: doc.title || '-Ohne Titel-',
+        _state: doc._state,
+        _hasChildren: doc._hasChildren,
+        _parent: parentId,
+        _profile: doc._profile
+      };
+      return childTreeNode;
+    });
   }
 
   load(id: string): Observable<IgeDocument> {
@@ -143,7 +141,8 @@ export class DocumentService {
           this.afterSave.next(data);
           this.datasetsChanged.next({
             type: isNewDoc ? UpdateType.New : UpdateType.Update,
-            data: [info]
+            data: [info],
+            parent: info._parent
           });
           this.treeStore.upsert(info.id, info);
           resolve(data);
@@ -242,5 +241,9 @@ export class DocumentService {
     this.treeStore.update(node => {
       expandedNodes: arrayRemove(node.expandedNodes, nodeId);
     })
+  }
+
+  addDocumentToStore(docs: DocumentAbstract[]) {
+    this.treeStore.add(docs);
   }
 }

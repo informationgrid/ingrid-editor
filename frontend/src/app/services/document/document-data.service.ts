@@ -30,11 +30,9 @@ export class DocumentDataService {
   }
 
   getChildren(parentId: string): Observable<any[]> {
-    const fields = 'fields=_id,_profile,_state,_hasChildren,title'; // + this.titleFields;
     const idQuery = parentId === null ? '' : '&parentId=' + parentId;
-    // headers.append('Content-Type', 'text/plain');
 
-    return this.http.get<any[]>(this.configuration.backendUrl + 'datasets?children=true&' + fields + idQuery)
+    return this.http.get<any[]>(this.configuration.backendUrl + 'datasets?children=true' + idQuery)
       .pipe(
         // catchError( (err) => this.errorService.handle( err ) )
       );

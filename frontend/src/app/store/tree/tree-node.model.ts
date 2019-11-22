@@ -1,15 +1,15 @@
-export interface TreeNode {
-  _id: string;
-  hasChildren: boolean;
+export class TreeNode {
   parent: string;
-  profile: string;
-  state: string;
-  title: string;
   iconClass?: string;
   isExpanded?: boolean;
-  isLoading?: boolean;
   isSelected?: boolean;
-  level?: number;
+
+  constructor(public _id: string,
+              public title: string,
+              public profile: string,
+              public state: string = null,
+              public level = 1,
+              public hasChildren = false, public isLoading = false) {}
 }
 
 /**

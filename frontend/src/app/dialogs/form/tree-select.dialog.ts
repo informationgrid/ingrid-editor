@@ -1,16 +1,17 @@
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Component, Inject} from '@angular/core';
+import {DocumentService} from '../../services/document/document.service';
+import {TreeQuery} from '../../store/tree/tree.query';
 
 @Component( {
   templateUrl: './tree-select.dialog.html'
 } )
 export class TreeSelectDialog {
-  treeData: any;
   selected: string[];
 
   constructor(public dialogRef: MatDialogRef<TreeSelectDialog>,
-              @Inject( MAT_DIALOG_DATA ) public data: any) {
-    this.treeData = data.data;
+              @Inject( MAT_DIALOG_DATA ) public data: any,
+              docService: DocumentService, treeQuery: TreeQuery) {
   }
 
   handleSelection($event: string[]) {

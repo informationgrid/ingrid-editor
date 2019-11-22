@@ -61,8 +61,8 @@ dependencies {
     }
     compile 'io.springfox:springfox-swagger2:2.9.2'
     compile 'io.springfox:springfox-swagger-ui:2.9.2'
-    compile 'com.orientechnologies:orientdb-core:3.0.21'
-    compile 'com.orientechnologies:orientdb-server:3.0.21'
+    compile 'com.orientechnologies:orientdb-core:3.0.23'
+    compile 'com.orientechnologies:orientdb-server:3.0.23'
     compile 'com.github.fge:json-schema-validator:2.2.6'
     compile('de.ingrid:ingrid-codelist-service:5.1.0') {
         exclude group: 'log4j', module: 'log4j'

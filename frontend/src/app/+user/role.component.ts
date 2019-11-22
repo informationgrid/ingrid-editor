@@ -4,7 +4,7 @@ import {ErrorService} from '../services/error.service';
 import {RoleService} from '../services/role/role.service';
 import {MenuService} from '../menu/menu.service';
 import {Role, RoleAttribute} from '../models/user-role';
-import {MetadataTreeComponent} from '../+form/sidebars/tree/tree.component';
+import {TreeComponent} from '../+form/sidebars/tree/tree.component';
 import { Observable } from 'rxjs';
 
 @Component( {
@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
 export class RoleComponent implements OnInit {
 
   @ViewChild( 'loginRef', {static: true} ) loginRef: ElementRef;
-  @ViewChild( 'datasetTree', {static: true} ) datasetTree: MetadataTreeComponent;
+  @ViewChild( 'datasetTree', {static: true} ) datasetTree: TreeComponent;
 
   @Output() onRoleChange = new EventEmitter<Role[]>();
 
