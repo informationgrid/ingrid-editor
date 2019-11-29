@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
-import { FormularService } from '../../../services/formular/formular.service';
-import { DocumentService } from '../../../services/document/document.service';
-import { Plugin } from '../../plugin';
-import { FormToolbarService, Separator, ToolbarItem } from '../../../+form/toolbar/form-toolbar.service';
-import { UpdateType } from '../../../models/update-type.enum';
-import { ModalService } from '../../../services/modal/modal.service';
-import { PasteDialogComponent } from './paste-dialog.component';
-import { CopyMoveEnum } from './enums';
-import { Subscription } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import {Injectable} from '@angular/core';
+import {DocumentService} from '../../../services/document/document.service';
+import {Plugin} from '../../plugin';
+import {FormToolbarService, Separator, ToolbarItem} from '../../../+form/toolbar/form-toolbar.service';
+import {UpdateType} from '../../../models/update-type.enum';
+import {ModalService} from '../../../services/modal/modal.service';
+import {PasteDialogComponent} from './paste-dialog.component';
+import {CopyMoveEnum} from './enums';
+import {Subscription} from 'rxjs';
+import {MatDialog} from '@angular/material/dialog';
+import {FormularService} from '../../../+form/formular.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +31,6 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   constructor(private formService: FormularService,
-              // private messageService: MessageService,
               private toolbarService: FormToolbarService,
               private storageService: DocumentService,
               private modalService: ModalService,
@@ -94,8 +93,8 @@ export class CopyCutPastePlugin extends Plugin {
     this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
-      data: { mode: CopyMoveEnum.COPY }
-    }).afterClosed().subscribe( result => {
+      data: {mode: CopyMoveEnum.COPY}
+    }).afterClosed().subscribe(result => {
       console.log('result', result);
       this.paste(result, CopyMoveEnum.COPY);
     });
@@ -106,8 +105,8 @@ export class CopyCutPastePlugin extends Plugin {
     this.cutDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
-      data: { mode: CopyMoveEnum.MOVE }
-    }).afterClosed().subscribe( result => {
+      data: {mode: CopyMoveEnum.MOVE}
+    }).afterClosed().subscribe(result => {
       console.log('result', result);
       this.paste(result, CopyMoveEnum.MOVE);
     });

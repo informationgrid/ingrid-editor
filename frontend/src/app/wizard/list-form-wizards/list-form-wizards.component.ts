@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {FormularService} from '../../services/formular/formular.service';
 import {DocumentService} from '../../services/document/document.service';
 
 @Component( {
@@ -11,7 +10,7 @@ export class ListFormWizardsComponent implements OnInit {
 
   data = {};
 
-  constructor(private formularService: FormularService, private storageService: DocumentService) {
+  constructor(private storageService: DocumentService) {
   }
 
   ngOnInit() {

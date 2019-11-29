@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
-import {FormularService} from '../../../services/formular/formular.service';
 import {Plugin} from '../../plugin';
 import {DeleteDialogComponent} from './delete-dialog.component';
 import {Subscription} from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import {TreeQuery} from "../../../store/tree/tree.query";
+import {FormularService} from '../../../+form/formular.service';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +37,7 @@ export class DeleteDocsPlugin extends Plugin {
       {id: 'toolBtnRemove', tooltip: 'Remove', cssClasses: 'delete', eventId: 'DELETE', pos: 100, active: false}
     );
 
-    const loadSaveSubscriber = this.formToolbarService.getEventObserver().subscribe(eventId => {
+    const loadSaveSubscriber = this.formToolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'DELETE') {
         this.deleteDoc();
       }

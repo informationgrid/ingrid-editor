@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {ConfigService, Configuration} from '../services/config/config.service';
-import {FormularService} from '../services/formular/formular.service';
 import {DocumentService} from '../services/document/document.service';
 import {DocumentQuery} from '../store/document/document.query';
 import {DocumentAbstract} from '../store/document/document.model';
@@ -27,9 +26,6 @@ export class DashboardComponent implements OnInit {
   };
   datasets;
 
-  titleFields: string;
-
-  sideTab = 'myData';
   private configuration: Configuration;
   allDocuments$: Observable<DocumentAbstract[]>;
   recentDocs$: Observable<DocumentAbstract[]>;
@@ -37,16 +33,11 @@ export class DashboardComponent implements OnInit {
   constructor(configService: ConfigService,
               private docService: DocumentService,
               private profileService: ProfileService,
-              private docQuery: DocumentQuery,
-              private formularService: FormularService) {
+              private docQuery: DocumentQuery) {
     this.configuration = configService.getConfiguration();
   }
 
   ngOnInit() {
-    this.profileService.initialized.then( () => {
-      this.titleFields = this.formularService.getFieldsNeededForTitle().join(',');
-    } );
-
     this.allDocuments$ = this.docQuery.selectAll();
     this.recentDocs$ = this.docQuery.recentDocuments$;
     this.fetchStatistic();
@@ -54,61 +45,15 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchStatistic() {
-    /*this.http.get<any>(this.configuration.backendUrl + 'statistic').subscribe(
-      data => this.prepareData(data)
-      // (err) => this.errorService.handle(err)
-    );*/
+
   }
 
   fetchData(query?: string) {
-    if (!query) {
-      query = '';
-    }
 
     this.docService.findRecent();
-      /*.pipe(
-        map(json => {
-          let noFolderDocs = json.filter(item => item && item._profile !== 'FOLDER');
-          // return this.prepareTableData(noFolderDocs);
-          return noFolderDocs;
-        })
-      );*/
+
   }
 
-  prepareData(data: any) {
-    // do not show folders
-    if (data.FOLDER) {
-      delete data.FOLDER;
-    }
-    if (data['@type'] !== undefined) {
-      delete data['@type'];
-    }
-    if (data['@version'] !== undefined) {
-      delete data['@version'];
-    }
-
-    const newData: any = {};
-    newData.labels = Object.keys(data);
-    newData.series = [[]];
-    newData.labels.forEach(label => {
-      newData.series[0].push(data[label]);
-    });
-
-    this.data = newData;
-  }
-
-  /*private prepareTableData(data: any[]): DocumentAbstract[] {
-    return data.map(item => {
-      return {
-        _id: item._id,
-        _profile: "",
-        icon: "",
-        _children: null,
-        _hasChildren: false,
-        title: this.formularService.getTitle(item._profile, item)
-      };
-    });
-  }*/
   createNewDocument() {
     console.log('Create new document');
   }

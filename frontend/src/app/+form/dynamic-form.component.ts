@@ -1,23 +1,18 @@
-import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {FormControlService} from '../services/form-control.service';
 import {BehaviourService} from '../services/behavior/behaviour.service';
-import {FormularService} from '../services/formular/formular.service';
 import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {DocumentService} from '../services/document/document.service';
 import {ModalService} from '../services/modal/modal.service';
 import {ErrorService} from '../services/error.service';
 import {Role} from '../models/user-role';
 import {RoleService} from '../services/role/role.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {Observable, Subject} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
-import {CreateDocOptions, NewDocumentComponent} from './dialogs/new-document/new-document.component';
 import {DocumentQuery} from '../store/document/document.query';
 import {IgeDocument} from '../models/ige-document';
-import {takeUntil} from 'rxjs/operators';
 import {DocumentStore} from '../store/document/document.store';
 import {FormUtils} from './form.utils';
 import {TreeQuery} from '../store/tree/tree.query';
@@ -25,39 +20,20 @@ import {FormlyFieldConfig} from '@ngx-formly/core';
 import {CodelistService} from '../services/codelist/codelist.service';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {UpdateType} from '../models/update-type.enum';
-
-interface FormData extends Object {
-  _id?: string;
-  _parent?: string;
-  taskId?: string;
-  title?: string;
-}
-
-export interface FormDataContainer {
-  form: any;
-  fields: any;
-  value: any;
-}
+import {SessionQuery} from '../store/session.query';
+import {untilDestroyed} from 'ngx-take-until-destroy';
+import {FormularService} from './formular.service';
+import {FormPluginsService} from './form-plugins.service';
 
 @Component({
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss'],
-  providers: [FormControlService]
+  providers: [FormControlService, FormPluginsService]
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild('newDocModal', {static: true}) newDocModal: TemplateRef<any>;
-  @ViewChild('deleteConfirmModal', {static: true}) deleteConfirmModal: TemplateRef<any>;
-  @ViewChild('discardConfirmModal', {static: true}) discardConfirmModal: TemplateRef<any>;
-
-  // TODO: the width of the sidebar can be stored in a cookie/localstorage
   sidebarWidth = 15;
-
-  debugEnabled = false;
-
-  // when editing a folder this flag must be set
-  // editMode: boolean = false;
 
   fields: FormlyFieldConfig[] = [];
 
@@ -71,52 +47,35 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   userRoles: Role[];
 
-  // choice of doc types to be shown when creating new document
-  newDocOptions: any = {
-    docTypes: [],
-    selectedDataset: {},
-    rootOption: true
-  };
-
-
-  // the id to remember when dirty check was true
-  // a modal will be shown and if changes shall be discarded then use this id to load dataset afterwards again
-  pendingId: string;
-  private currentDocument$: Observable<IgeDocument>;
-  private componentDestroyed: Subject<void> = new Subject();
   private formUtils: FormUtils;
 
   constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
               private formularService: FormularService, private formToolbarService: FormToolbarService,
+              private formPlugins: FormPluginsService,
               private documentService: DocumentService, private modalService: ModalService,
               private dialog: MatDialog,
-              private formsManager: AkitaNgFormsManager<any>,
+              private formsManager: AkitaNgFormsManager,
               private roleService: RoleService,
               private documentQuery: DocumentQuery,
               private treeQuery: TreeQuery,
+              private session: SessionQuery,
               private documentStore: DocumentStore,
               private codelistService: CodelistService,
-              private errorService: ErrorService, private route: ActivatedRoute, private router: Router) {
+              private errorService: ErrorService, private route: ActivatedRoute) {
 
     // TODO: get roles definiton
     this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
     this.formUtils = new FormUtils();
-    // KeycloakService.auth.authz.
 
     // handle toolbar events
-    this.formToolbarService.getEventObserver()
-      // .pipe(takeUntil(this.componentDestroyed))
-      .subscribe(eventId => {
-        console.log('generic toolbar handler', eventId);
-        if (eventId === 'SAVE') {
-          this.save();
-        } else if (eventId === 'NEW_DOC') {
-          this.newDoc();
-        }
-      });
+    this.formToolbarService.toolbarEvent$
+      .pipe(untilDestroyed(this))
+      .subscribe(eventId => this.formularService.handleToolbarEvents(eventId, this.form, this.model));
 
     // react on document selection
-    this.treeQuery.selectActiveId().pipe(takeUntil(this.componentDestroyed)).subscribe((activeDocs) => {
+    this.treeQuery.selectActiveId()
+      .pipe(untilDestroyed(this))
+      .subscribe((activeDocs) => {
       this.formToolbarService.setButtonState(
         'toolBtnSave',
         activeDocs && activeDocs.length === 1);
@@ -128,16 +87,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.behaviourService.initialized.then(() => {
       this.route.params.subscribe(params => {
-        this.load(params['id']);
+        this.loadDocument(params['id']);
       });
     });
+
+    this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
+
   }
 
   ngOnDestroy() {
     console.log('destroy');
     this.formularService.currentProfile = null;
-    this.componentDestroyed.next();
-    this.componentDestroyed.unsubscribe();
     this.behaviourService.behaviours
       .filter(behave => behave.isActive && behave.unregister)
       .forEach(behave => behave.unregister());
@@ -148,6 +108,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+
 
     this.formsManager.upsert('document', this.form);
 
@@ -181,10 +142,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // load dataset when one was updated
     this.documentService.datasetsChanged$
-      .pipe(takeUntil(this.componentDestroyed))
+      .pipe(untilDestroyed(this))
       .subscribe((msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
-          this.load(<string>msg.data[0].id);
+          const id = <string>msg.data[0].id;
+          this.loadDocument(id);
         }
       });
   }
@@ -193,143 +155,24 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): any {
     // add form errors check when saving/publishing
     this.documentService.beforeSave$
-      .pipe(takeUntil(this.componentDestroyed))
+      .pipe(untilDestroyed(this))
       .subscribe((message: any) => {
         message.errors.push({invalid: this.form.invalid});
         console.log('in observer');
       });
   }
 
-  /*canDeactivate(component: DynamicFormComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot)
-      W: Observable<DynamicFormComponent>|Promise<DynamicFormComponent>|boolean {
-    console.log( 'can deactive (form)' );
-    /!*if (this.form && this.form.dirty) {
-      this.pendingId = null;
-      this.discardConfirmModal.open();
-      return false;
-    }
-    return true;*!/
-    if (component.hasChanges()) {
-      return window.confirm('Do you really want to cancel?');
-    }
-    return true;
-  }*/
-
   @HostListener('window: keydown', ['$event'])
   hotkeys(event: KeyboardEvent) {
-    this.formUtils.addHotkeys(event, this);
+    this.formUtils.addHotkeys(event, this.formularService, this.form, this.model);
   }
 
-  newDoc() {
-    // let options = {
-    //   availableTypes: this.formularService.docTypes,
-    //   rootOption: true
-    // };
-    const selectedDocs = this.treeQuery.getActive();
-    this.newDocOptions.docTypes = this.formularService.getDocTypes()
-      .filter(type => type.id !== 'FOLDER')
-      .sort((a, b) => a.label.localeCompare(b.label));
-
-    this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
-    this.formularService.newDocumentSubject.next(this.newDocOptions);
-
-    const dlg = this.dialog.open(NewDocumentComponent, {
-      data:
-        {
-          docTypes: this.newDocOptions.docTypes,
-          rootOption: this.newDocOptions.rootOption,
-          parent: this.newDocOptions.selectedDataset,
-          choice: null
-        }
-    });
-    dlg.afterClosed().subscribe((result: CreateDocOptions) => {
-      if (result) {
-        this.prepareNewDoc(result.choice, result.addBelowDoc);
-      }
-    })
-  }
-
-  /**
-   * Create a new document and save it in the backend.
-   * @param type
-   * @param addBelowDoc
-   */
-  prepareNewDoc(type: string, addBelowDoc: boolean) {
-
-    this.form = new FormGroup({});
-    this.formsManager.upsert('document', this.form);
-    this.model = {};
-
-
-    let parent = null;
-    if (addBelowDoc) {
-      parent = this.treeQuery.getActive()[0].id;
-    }
-
-    // TODO: use constructor for creating new document
-    const newDoc = new IgeDocument(type, parent);
-    this.documentService.save(newDoc, true);
-
-    // FIXME: create correct form by document type
-
-    // this.fields = new McloudFormly(null, this.codelistService).fields;
-
-    return;
-
-    /*try {
-      if (needsProfileSwitch) {
-        this.switchProfile( type );
-      }
-
-      this.data = {};
-      if (addBelowDoc) {
-        this.data._parent = previousId;
-      }
-
-      this.updateRepeatableFields( this.data );
-
-      this.createFormWithData( this.data );
-
-      this.behaviourService.apply( this.form, type );
-      // after type switch inform the subscribers about it to recognize initial data set
-      this.documentService.afterProfileSwitch.next( this.form.value );
-
-      // notify browser/tree of new dataset
-      // TODO: use constructor for creating new document
-      const newDoc = {_profile: type, _parent: this.data._parent ? this.data._parent : null};
-      this.documentService.save( newDoc, true );
-
-    } catch (ex) {
-      console.error( 'Error adding new document: ', ex );
-    }*/
-  }
-
-  discardChanges() {
-    // this.form.reset();
-    this.load(this.pendingId);
-
-    // this.discardConfirmModal.close();
-  }
 
   /**
    * Load a document and prepare the form for the data.
    * @param {string} id is the ID of document to be loaded
-   * @param {string} previousId is the ID of the previous document in case we want to switch back!???
    */
-  load(id: string, previousId?: string) {
-
-    // check if form was changed and ask for saving data
-    // TODO: handle double confirmation (deactivated this one for now)
-    /*if (false && this.form && this.form.dirty) {
-      this.pendingId = id;
-      this.discardConfirmModal.open();
-      // TODO: notify sidebar to select previously dataset before we changed
-      return;
-    } else {*/
-
-    // }
-
-    // TODO: remove new dataset if not saved already -> we only want at most one new dataset at a time!
+  loadDocument(id: string) {
 
     if (id === undefined) {
       return;
@@ -377,30 +220,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  save() {
-    console.log('valid:', this.form.valid);
-
-    // let errors: string[] = [];
-    // alert('This form is valid: ' + this.form.valid);
-    const data = this.model; // this.form.value;
-
-    // during save the listeners for dataset changes are already called
-    // this.form.reset(this.form.value);
-    this.form.markAsPristine();
-
-    this.documentService.save(data, false).then(res => {
-      // this.documentStore.setOpenedDocument(res);
-      // TODO: this.treeStore.upsert
-      // this.data._id = res._id;
-      // this.messageService.show( 'Dokument wurde gespeichert' );
-      // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});
-    }, (err: HttpErrorResponse) => {
-      // this.errorService.handleOwn( err.message, err.error );
-      // setTimeout(() => this.error = false, 5000);
-      throw err;
-    });
-  }
-
   // TODO: extract to permission service class
   hasPermission(data: any): boolean {
     // TODO: check all roles
@@ -433,4 +252,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('TODO: Mark document as favorite');
   }
 
+  rememberSizebarWidth(info) {
+    console.log('Sizebar width: ', info);
+    this.formularService.updateSidebarWidth(info.sizes[0]);
+  }
 }

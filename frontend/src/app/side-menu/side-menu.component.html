@@ -12,7 +12,7 @@
 
     <div class="fillVertical"></div>
 
-    <a mat-list-item (click)="menuIsExpanded = !menuIsExpanded" *ngIf="showDrawer | async">
+    <a mat-list-item (click)="toggleSidebar(!menuIsExpanded)" *ngIf="showDrawer | async">
         <mat-icon *ngIf="!menuIsExpanded" mat-list-icon
                   matTooltip="Vergrößern"
                   matTooltipClass="tooltip-big"

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormularService } from '../../../services/formular/formular.service';
 import { ApiService } from '../../../services/ApiService';
+import {FormularService} from '../../../+form/formular.service';
 
 @Component( {
   templateUrl: './iso-view.component.html'

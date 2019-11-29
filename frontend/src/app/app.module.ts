@@ -35,8 +35,9 @@ import {FormlyModule} from '@ngx-formly/core';
 import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.component';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {SideMenuComponent} from './side-menu/side-menu.component';
-import {PluginsModule} from './+behaviours/behaviours.module';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 registerLocaleData(de);
 
@@ -93,11 +94,11 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     }),
     FormlyMaterialModule,
     // Material
-    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule,
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatRadioModule, MatCheckboxModule,
     MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
     // IGE-Modules
     // IgeFormModule, FormFieldsModule,
-    routing, FormsModule, PluginsModule
+    routing, FormsModule
   ],
   providers: [
     appRoutingProviders,

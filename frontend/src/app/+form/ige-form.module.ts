@@ -40,6 +40,11 @@ import {IgeFormlyModule} from '../formly/ige-formly.module';
 import {HeaderNavigationComponent} from './form-info/header-navigation/header-navigation.component';
 import {BreadcrumbComponent} from './form-info/breadcrumb/breadcrumb.component';
 import {HeaderTitleRowComponent} from './form-info/header-title-row/header-title-row.component';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
+import {FormularService} from './formular.service';
+import {FormPluginsService} from './form-plugins.service';
 
 @NgModule({
   imports: [
@@ -47,7 +52,7 @@ import {HeaderTitleRowComponent} from './form-info/header-title-row/header-title
     CommonModule,
     AngularSplitModule,
     IgeWizardModule, FormDialogsModule, SharedModule,
-    MatFormFieldModule, MatToolbarModule, MatInputModule, MatTableModule,
+    MatFormFieldModule, MatToolbarModule, MatInputModule, MatTableModule, MatMenuModule, MatButtonToggleModule,
     MatTabsModule, MatDividerModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule, MatCardModule,
     FlexLayoutModule,
     FormlyModule,
@@ -56,13 +61,13 @@ import {HeaderTitleRowComponent} from './form-info/header-title-row/header-title
   declarations: [
     FormToolbarComponent, DynamicFieldComponent, PartialGenerator,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
-    AddPartialDialogComponent,
+    AddPartialDialogComponent, NewDocumentComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, MainFormComponent, MainFormTabsComponent, SidebarComponent,
     FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent],
-  providers: [NominatimService],
+  providers: [NominatimService, FormularService],
   exports: [FormsModule, ScrollToDirective, MainFormTabsComponent],
-  entryComponents: [AddPartialDialogComponent]
+  entryComponents: [AddPartialDialogComponent, NewDocumentComponent]
 })
 export class IgeFormModule {
 }

@@ -4,6 +4,8 @@ import {map} from 'rxjs/operators';
 import {ConfigService} from '../services/config/config.service';
 import {MenuItem, MenuService} from '../menu/menu.service';
 import {NavigationEnd, Router} from '@angular/router';
+import {SessionStore} from '../store/session.store';
+import {SessionQuery} from '../store/session.query';
 
 @Component({
   selector: 'ige-side-menu',
@@ -20,10 +22,13 @@ export class SideMenuComponent implements OnInit {
 
   currentRoute: string;
 
-  constructor(private router: Router, private configService: ConfigService, private menuService: MenuService) {
+  constructor(private router: Router, private configService: ConfigService, private menuService: MenuService,
+              private session: SessionQuery) {
   }
 
   ngOnInit() {
+
+    this.session.isSidebarExpanded$.subscribe(expanded => this.menuIsExpanded = expanded);
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -42,6 +47,10 @@ export class SideMenuComponent implements OnInit {
       this.routes = this.menuService.menuItems;
     });
 
+  }
+
+  toggleSidebar(setExanded: boolean) {
+    this.menuService.toggleSidebar(setExanded);
   }
 
 }

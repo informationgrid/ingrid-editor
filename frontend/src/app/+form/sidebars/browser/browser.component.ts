@@ -1,12 +1,11 @@
-import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from "@angular/core";
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
 import {DocumentService} from "../../../services/document/document.service";
 // import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
 import {ActivatedRoute} from '@angular/router';
-import {FormularService} from '../../../services/formular/formular.service';
-import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {UpdateType} from '../../../models/update-type.enum';
-import { ProfileService } from '../../../services/profile.service';
-import { Subscription } from 'rxjs';
+import {ProfileService} from '../../../services/profile.service';
+import {Subscription} from 'rxjs';
+import {FormularService} from '../../formular.service';
 
 @Component( {
   selector: 'browser',

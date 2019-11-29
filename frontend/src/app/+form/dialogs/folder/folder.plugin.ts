@@ -1,10 +1,10 @@
 import { ComponentFactoryResolver, Injectable } from '@angular/core';
 import { FormToolbarService } from '../../toolbar/form-toolbar.service';
-import { FormularService } from '../../../services/formular/formular.service';
 import { ModalService } from '../../../services/modal/modal.service';
 import { Plugin } from '../../../+behaviours/plugin';
 import { CreateFolderComponent } from './create-folder.component';
 import { MatDialog } from '@angular/material/dialog';
+import {FormularService} from '../../formular.service';
 
 @Injectable({
   providedIn: 'root'

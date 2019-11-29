@@ -50,6 +50,7 @@
     "leaflet": "^1.5.1",
     "material-design-icons-iconfont": "^4.0.5",
     "ng-chartist": "^4.1.0",
+    "ngx-take-until-destroy": "^5.4.0",
     "rxjs": "^6.5.2",
     "rxjs-compat": "^6.4.0",
     "scriptjs": "^2.5.9",

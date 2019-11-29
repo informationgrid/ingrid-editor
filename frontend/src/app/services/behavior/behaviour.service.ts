@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {Behaviour, BehavioursDefault} from '../../+behaviours/behaviours';
 import {EventManager} from '@angular/platform-browser';
-import {ModalService} from '../modal/modal.service';
-import {Plugin} from '../../+behaviours';
+import {Plugin} from '../../+behaviours/plugin';
 import {ProfileService} from '../profile.service';
 import {throwError} from 'rxjs';
 import {tap} from 'rxjs/internal/operators';
@@ -11,7 +10,6 @@ import {BehaviorDataService} from "./behavior-data.service";
 import {ProfileQuery} from "../../store/profile/profile.query";
 import {ProfileStore} from "../../store/profile/profile.store";
 import {ConfigService} from "../config/config.service";
-import {toPromise} from "rxjs-compat/operator/toPromise";
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;

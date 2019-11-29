@@ -24,10 +24,10 @@ export interface Separator extends DefaultToolbarItem {
 export class FormToolbarService {
 
   // event when a new button was added
-  toolbar$: Subject<ToolbarItem|Separator>;
+  toolbar$ = new Subject<ToolbarItem|Separator>();
 
   // events coming from a toolbar button
-  toolbarEvent$: Subject<string>;
+  toolbarEvent$ = new Subject<string>();
 
   _buttons: Array<ToolbarItem|Separator> = [
     {id: 'toolBtnNew', tooltip: 'New', cssClasses: 'add', eventId: 'NEW_DOC', pos: 10, active: true},
@@ -35,16 +35,6 @@ export class FormToolbarService {
   ];
 
   constructor() {
-    this.toolbar$ = new Subject<ToolbarItem>();
-    this.toolbarEvent$ = new Subject<string>();
-  }
-
-  /**
-   * Get an observable to subscribe to events from the toolbar.
-   * @returns {Observable<string>}
-   */
-  getEventObserver() {
-    return this.toolbarEvent$.asObservable();
   }
 
   get buttons(): Array<ToolbarItem|Separator> {

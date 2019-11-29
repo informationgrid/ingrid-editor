@@ -1,9 +1,9 @@
 import {EventManager} from '@angular/platform-browser';
 import {FormGroup} from '@angular/forms';
-import {TextboxField} from '../../../../../+form/controls/field-textbox';
+import {TextboxField} from '../../../../../+form/controls';
 import {Behaviour} from '../../../../behaviours';
 import {BaseBehaviour} from '../../../../base.behaviour';
-import {FormularService} from '../../../../../services/formular/formular.service';
+import {FormularService} from '../../../../../+form/formular.service';
 /**
  * Add Control Behaviour
  */

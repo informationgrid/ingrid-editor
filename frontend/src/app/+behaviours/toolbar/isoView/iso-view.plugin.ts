@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Plugin } from '../../plugin';
 import { FormToolbarService } from '../../../+form/toolbar/form-toolbar.service';
 import { IsoViewComponent } from './iso-view.component';
-import { FormularService } from '../../../services/formular/formular.service';
 import { MatDialog } from '@angular/material/dialog';
+import {FormularService} from '../../../+form/formular.service';
 
 @Injectable({
   providedIn: 'root'

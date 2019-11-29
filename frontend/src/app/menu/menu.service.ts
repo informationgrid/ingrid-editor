@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {BehaviorSubject} from 'rxjs';
+import {SessionStore} from '../store/session.store';
+import {getValue} from '@datorama/akita';
 
 export interface MenuItem {
   name: string;
@@ -28,7 +30,7 @@ export class MenuService {
   menu: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this._menuItems);
   menu$ = this.menu.asObservable();
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private sessionStore: SessionStore) {}
 
   get menuItems(): MenuItem[] {
     const validPages = []; // this.authService.getAccessiblePages();
@@ -61,4 +63,11 @@ export class MenuService {
     this.menu.next( null );
   }
 
+  toggleSidebar(setExpanded: boolean) {
+    this.sessionStore.update({
+      ui: {
+        sidebarExpanded: setExpanded
+      }
+    });
+  }
 }

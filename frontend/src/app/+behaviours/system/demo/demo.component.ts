@@ -17,7 +17,7 @@ export class DemoComponent implements OnInit {
       id: 'toolBtnDemo', tooltip: 'Demo: Alert Me', cssClasses: 'glyphicon glyphicon-apple', eventId: 'DEMO_ALERT', isSeparator: false, active: true, pos: 100
     } );
 
-    this.formToolbarService.getEventObserver().subscribe( eventId => {
+    this.formToolbarService.toolbarEvent$.subscribe( eventId => {
       console.log( 'demoAlert-handler' );
       if (eventId === 'DEMO_ALERT') {
         alert( 'This is a demo alert.' );

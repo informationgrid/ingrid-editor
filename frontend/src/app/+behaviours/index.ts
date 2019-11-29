@@ -1,4 +1,3 @@
-export * from './plugin';
 export {PublishPlugin} from './system/publish/publish.plugin';
 export * from './system/workflow/workflow.plugin';
 export * from './system/statistic/statistic.plugin';

@@ -1,8 +1,6 @@
-import {FormularService} from '../services/formular/formular.service';
 import {EventManager} from '@angular/platform-browser';
 import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {AddControlBehaviour} from './system/demo/behaviours/AddControl/addControl.behaviour';
 import {DocumentService} from '../services/document/document.service';
 import {ShowDateInSectionBehaviour} from './form/ShowDateInSection/show-date-in-section.behaviour';
 import {TitleValidatorBehaviour} from './form/TitleValidator/title-validator.behaviour';
@@ -10,12 +8,12 @@ import {Plugin} from './plugin';
 import {
   CopyCutPastePlugin,
   CreateDocRulesPlugin,
+  FolderPlugin,
   PrintViewPlugin,
   PublishPlugin,
   StatisticPlugin,
-  WorkflowPlugin,
-  FolderPlugin,
-  UndoPlugin
+  UndoPlugin,
+  WorkflowPlugin
 } from '.';
 import {DeleteDocsPlugin} from './toolbar/deleteDocs/delete-docs.plugin';
 import {IsoViewPlugin} from './toolbar/isoView/iso-view.plugin';
@@ -47,13 +45,13 @@ export class BehavioursDefault {
     // new ClickAndChangeTitleBehaviour( this.storageService ),
     // new MapAndChangeTitleBehaviour( this.formService ),
     // new OpenDataBehaviour(this.storageService),
-    new AddControlBehaviour( this.formService ),
-    new ShowDateInSectionBehaviour( this.storageService ),
-    new TitleValidatorBehaviour()
+    // new AddControlBehaviour( this.formService ),
+    // new ShowDateInSectionBehaviour( this.storageService ),
+    // new TitleValidatorBehaviour()
   ];
 
   systemBehaviours: Plugin[] = [
-    this.deletePlugin,
+    /*this.deletePlugin,
     this.publishPlugin,
     this.statisticPlugin,
     this.workflowPlugin,
@@ -62,11 +60,10 @@ export class BehavioursDefault {
     this.printviewPlugin,
     this.folderPlugin,
     this.isoviewPlugin,
-    this.undoPlugin
+    this.undoPlugin*/
   ];
 
-  constructor(private formService: FormularService,
-              private storageService: DocumentService,
+  constructor(/*private storageService: DocumentService,
               private statisticPlugin: StatisticPlugin,
               private workflowPlugin: WorkflowPlugin,
               private printviewPlugin: PrintViewPlugin,
@@ -76,6 +73,6 @@ export class BehavioursDefault {
               private folderPlugin: FolderPlugin,
               private publishPlugin: PublishPlugin,
               private deletePlugin: DeleteDocsPlugin,
-              private undoPlugin: UndoPlugin) {
+              private undoPlugin: UndoPlugin*/) {
   }
 }

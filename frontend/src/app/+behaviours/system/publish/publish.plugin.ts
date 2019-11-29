@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
-import {FormularService} from '../../../services/formular/formular.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
 import {DocumentQuery} from "../../../store/document/document.query";
 import {DocumentState} from "../../../models/ige-document";
+import {TreeQuery} from '../../../store/tree/tree.query';
+import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
+import {FormularService} from '../../../+form/formular.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +20,8 @@ export class PublishPlugin extends Plugin {
   eventPublishId = 'PUBLISH';
   eventRevertId = 'REVERT';
 
+  formIsValid = false;
+
   get name() {
     return this._name;
   }
@@ -26,6 +30,8 @@ export class PublishPlugin extends Plugin {
               private formService: FormularService,
               private modalService: ModalService,
               private documentQuery: DocumentQuery,
+              private treeQuery: TreeQuery,
+              private formsManager: AkitaNgFormsManager,
               private storageService: DocumentService) {
     super();
     this.isActive = true;
@@ -57,6 +63,11 @@ export class PublishPlugin extends Plugin {
       }
     } );
 
+    this.formsManager.selectValid('document').subscribe( value => {
+      console.log('This form is: ' + value);
+      this.formIsValid = value;
+    });
+
     // add behaviour to set active states for toolbar buttons
     this.addBehaviour();
 
@@ -71,14 +82,10 @@ export class PublishPlugin extends Plugin {
   }
 
   publish() {
-    const formData = this.formService.requestFormValues();
-    // let errors: any = {errors: []};
-    // this.storageService.beforeSave.next(errors);
-
-    if (formData.form.invalid) {
-      this.modalService.showJavascriptError('Es müssen alle Felder korrekt ausgefüllt werden.');
+    if (this.formIsValid) {
+      this.storageService.publish(this.formsManager.getForm('document').value);
     } else {
-      this.storageService.publish(formData.value);
+      this.modalService.showJavascriptError('Es müssen alle Felder korrekt ausgefüllt werden.');
     }
   }
 

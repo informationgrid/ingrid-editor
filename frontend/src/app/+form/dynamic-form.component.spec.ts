@@ -1,11 +1,11 @@
 import {TestBed} from '@angular/core/testing';
 import {DynamicFormComponent} from './dynamic-form.component';
-import {FormularService} from '../services/formular/formular.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {DocumentService} from '../services/document/document.service';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {IgeFormModule} from './ige-form.module';
 import {HttpClientModule} from '@angular/common/http';
+import {FormularService} from './formular.service';
 
 let fixture: any, comp: DynamicFormComponent, el: any, fService: FormularService;
 

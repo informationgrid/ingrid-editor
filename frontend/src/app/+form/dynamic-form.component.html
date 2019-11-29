@@ -2,7 +2,7 @@
     <!-- Toolbar -->
     <form-toolbar></form-toolbar>
 
-    <as-split [useTransition]="true">
+    <as-split [useTransition]="true" (dragEnd)="rememberSizebarWidth($event)">
         <!--<split-area [size]="5">
             <div class="tabs-left menu">
                 <ul class="nav-tabs flex-column">
@@ -54,8 +54,8 @@
                 <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
 
                 <pre>
-JSON:
-{{model | json}}
+<!--JSON:
+{{model | json}}-->
                 </pre>
             </form>
 

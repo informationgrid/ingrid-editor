@@ -131,9 +131,6 @@ export class DocumentService {
   save(data: IgeDocument, isNewDoc?: boolean): Promise<IgeDocument> {
     return new Promise((resolve, reject) => {
 
-      // title will be added by the backend, since imports also have to generate correct titles
-      // this.handleTitle(data);
-
       this.dataService.save(data)
         .subscribe(json => {
           const info = DocumentUtils.createDocumentAbstract(json);

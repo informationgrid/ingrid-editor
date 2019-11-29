@@ -1,12 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormularService} from '../../services/formular/formular.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TreeQuery} from '../../store/tree/tree.query';
 import {TreeStore} from '../../store/tree/tree.store';
 import {DocumentService} from '../../services/document/document.service';
 import {Subject} from 'rxjs';
 import {TreeAction} from './tree/tree.component';
-import {UpdateType} from '../../models/update-type.enum';
 
 @Component({
   selector: 'ige-sidebar',
@@ -20,7 +18,7 @@ export class SidebarComponent implements OnInit {
   private initialActiveNodeId: string;
   updateTree = new Subject<TreeAction[]>();
 
-  constructor(private formularService: FormularService, private router: Router,
+  constructor(private router: Router,
               private route: ActivatedRoute,
               private treeQuery: TreeQuery, private treeStore: TreeStore, private docService: DocumentService) {
 

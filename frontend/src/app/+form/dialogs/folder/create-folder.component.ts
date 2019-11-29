@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormularService } from '../../../services/formular/formular.service';
 import { DocumentService } from '../../../services/document/document.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {DocumentAbstract} from '../../../store/document/document.model';
+import {FormularService} from '../../formular.service';
 
 @Component( {
   templateUrl: './create-folder.component.html'

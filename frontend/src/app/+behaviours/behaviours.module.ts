@@ -15,8 +15,6 @@ import {RouterModule, Routes} from '@angular/router';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {PasteDialogComponent} from './system/CopyCutPaste/paste-dialog.component';
 import {PrintViewDialogComponent} from '../+form/dialogs/print-view/print-view-dialog.component';
-import {CreateFolderComponent} from '../+form/dialogs/folder/create-folder.component';
-import {IsoViewComponent} from './toolbar/isoView/iso-view.component';
 import {DemoComponent} from './system/demo/demo.component';
 import {StatisticComponent} from './system/statistic/statistic.component';
 
@@ -31,13 +29,13 @@ const routes: Routes = [
   imports: [
     RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule, SharedModule,
     routing, MatCardModule, MatTabsModule, MatDialogModule,
-  MatButtonModule, MatInputModule, MatCheckboxModule, FormFieldsModule],
+    MatButtonModule, MatInputModule, MatCheckboxModule, FormFieldsModule],
   declarations: [
     PluginsComponent, Collapse,
-    PasteDialogComponent, PrintViewDialogComponent, CreateFolderComponent,
-    IsoViewComponent, DemoComponent, StatisticComponent
+    PasteDialogComponent, PrintViewDialogComponent,
+    DemoComponent, StatisticComponent
   ],
-  entryComponents: [CreateFolderComponent],
+  entryComponents: [],
   exports: [RouterModule]
 })
 export class PluginsModule {

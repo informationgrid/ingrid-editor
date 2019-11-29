@@ -39,8 +39,40 @@
                 </button>
                 <button *ngIf="button.label && !button.isPrimary" mat-stroked-button
                         (click)="sendEvent(button.eventId)">{{button.label}}</button>
-                <button *ngIf="button.label && button.isPrimary" mat-flat-button color="primary"
-                        (click)="sendEvent(button.eventId)">Veröffentlichen</button>
+                <ng-container *ngIf="button.label && button.isPrimary">
+                    <!--<mat-menu #appMenu="matMenu">
+                        <button mat-menu-item>... Black Forest</button>
+                        <button mat-menu-item>... Salted Caramel</button>
+                      </mat-menu>
+
+                      <mat-button-toggle-group>
+                        <mat-button-toggle>
+                          Tell me about Earl Gray Ice Cream
+                        </mat-button-toggle>
+
+                        <mat-button-toggle [matMenuTriggerFor]="appMenu">
+                          <mat-icon>arrow_drop_down</mat-icon>
+                        </mat-button-toggle>
+                      </mat-button-toggle-group>-->
+
+                    <button mat-flat-button color="primary"
+                            (click)="sendEvent(button.eventId)">Veröffentlichen</button>
+
+                    <button mat-icon-button [matMenuTriggerFor]="publishMenu" aria-label="Additional publish options">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #publishMenu="matMenu">
+                      <button mat-menu-item disabled>
+    <!--                    <mat-icon>dialpad</mat-icon>-->
+                        <span>Planen</span>
+                      </button>
+                      <button mat-menu-item disabled>
+    <!--                    <mat-icon>voicemail</mat-icon>-->
+                        <span>Zurücknehmen</span>
+                      </button>
+                    </mat-menu>
+                </ng-container>
+
             </ng-container>
         </span>
     </mat-toolbar-row>

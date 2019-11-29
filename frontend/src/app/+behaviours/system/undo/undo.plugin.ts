@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { FormToolbarService } from '../../../+form/toolbar/form-toolbar.service';
-import { FormularService } from '../../../services/formular/formular.service';
 import { ModalService } from '../../../services/modal/modal.service';
 import { DocumentService } from '../../../services/document/document.service';
 import { Plugin } from '../../plugin';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import {FormularService} from '../../../+form/formular.service';
 
 @Injectable({
   providedIn: 'root'

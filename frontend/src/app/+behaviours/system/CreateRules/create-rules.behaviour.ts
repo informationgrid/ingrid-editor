@@ -1,8 +1,8 @@
 import {Inject, Injectable} from '@angular/core';
-import {FormularService} from '../../../services/formular/formular.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
 import { Subscription } from 'rxjs';
+import {FormularService} from '../../../+form/formular.service';
 
 @Injectable({
   providedIn: 'root'

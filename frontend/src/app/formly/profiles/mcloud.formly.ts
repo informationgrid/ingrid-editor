@@ -20,6 +20,16 @@ export class McloudFormly implements Profile {
       hide: true
     },
     {
+      key: '_id',
+      type: 'input',
+      hide: true
+    },
+    {
+      key: '_profile',
+      type: 'input',
+      hide: true
+    },
+    {
       key: 'description',
       type: 'textarea',
       wrappers: ['panel', 'form-field'],
