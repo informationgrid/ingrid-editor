@@ -1,8 +1,6 @@
-import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {FieldType} from '@ngx-formly/material';
-import {FormlyFieldConfig} from '@ngx-formly/core';
-import {TableColumn, SelectionType, ColumnMode} from '@swimlane/ngx-datatable';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {ColumnMode, SelectionType} from '@swimlane/ngx-datatable';
 
 @Component({
   selector: 'ige-field-datatable',

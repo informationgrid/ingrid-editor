@@ -8,7 +8,6 @@ import {PasteDialogComponent} from './paste-dialog.component';
 import {CopyMoveEnum} from './enums';
 import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
-import {FormularService} from '../../../+form/formular.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,8 +29,7 @@ export class CopyCutPastePlugin extends Plugin {
     return this._name;
   }
 
-  constructor(private formService: FormularService,
-              private toolbarService: FormToolbarService,
+  constructor(private toolbarService: FormToolbarService,
               private storageService: DocumentService,
               private modalService: ModalService,
               private dialog: MatDialog) {
@@ -69,7 +67,7 @@ export class CopyCutPastePlugin extends Plugin {
     });
 
     // set button state according to selected documents
-    this.formService.selectedDocuments$.subscribe(data => {
+    /*this.formService.selectedDocuments$.subscribe(data => {
       if (data.length === 0) {
         // handleButtonState( data[0] );
         this.toolbarService.setButtonState('toolBtnCopy', false);
@@ -78,7 +76,7 @@ export class CopyCutPastePlugin extends Plugin {
         this.toolbarService.setButtonState('toolBtnCopy', true);
         this.toolbarService.setButtonState('toolBtnCut', true);
       }
-    });
+    });*/
   }
 
   private handleEvent(type: UpdateType) {
@@ -90,7 +88,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   copy() {
     // remove last remembered copied documents
-    this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
+    // this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
       data: {mode: CopyMoveEnum.COPY}
@@ -102,7 +100,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   cut() {
     // remove last remembered copied documents
-    this.cutDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
+    // this.cutDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
       data: {mode: CopyMoveEnum.MOVE}

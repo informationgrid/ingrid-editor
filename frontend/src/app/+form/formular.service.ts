@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {Observable, Subject} from 'rxjs';
 import {DocumentAbstract} from '../store/document/document.model';
 import {Profile} from '../services/formular/profile';
 import {ConfigService, Configuration} from '../services/config/config.service';
@@ -16,7 +15,6 @@ import {IFieldBase} from './controls';
 import {FormGroup} from '@angular/forms';
 import {CreateDocOptions, NewDocumentComponent} from './dialogs/new-document/new-document.component';
 import {IgeDocument} from '../models/ige-document';
-import {FormPluginsService} from './form-plugins.service';
 
 @Injectable()
 export class FormularService {
@@ -32,15 +30,9 @@ export class FormularService {
 
   currentProfile: string;
 
-  formDataSubject = new Subject<any>();
-
-  // an observer when a new document is created
-  newDocumentSubject = new Subject<any>();
-
   profileDefinitions: Profile[];
 
   private configuration: Configuration;
-  private formPluginsService: FormPluginsService;
 
   constructor(private http: HttpClient,
               private dialog: MatDialog,
@@ -52,7 +44,7 @@ export class FormularService {
               private treeStore: TreeStore,
               private sessionStore: SessionStore) {
 
-    this.formPluginsService = new FormPluginsService();
+    // this.formPluginsService = new FormPluginsService();
 
     this.configuration = configService.getConfiguration();
 
@@ -61,14 +53,14 @@ export class FormularService {
     console.log('init profiles');
     this.profiles.initialized
       .then(registeredProfiles => this.profileDefinitions = registeredProfiles)
-      .then(profiles => console.log('Profiles: ', this.profileDefinitions));
+      .then(() => console.log('Profiles: ', this.profileDefinitions));
 
   }
 
   getFields(profile: string): FormlyFieldConfig[] {
     let fields: IFieldBase<any>[];
 
-    let nextProfile = this.getProfile(profile);
+    const nextProfile = this.getProfile(profile);
 
     if (nextProfile) {
       fields = nextProfile.fields.slice(0);
@@ -96,21 +88,21 @@ export class FormularService {
     }
   }
 
-  handleToolbarEvents(eventId: string, form, model) {
+  handleToolbarEvents(eventId: string, form) {
     console.log('generic toolbar handler', eventId);
     if (eventId === 'SAVE') {
-      this.save(form, model);
+      this.save(form);
     } else if (eventId === 'NEW_DOC') {
       this.newDoc();
     }
   }
 
-  save(form: FormGroup, data) {
+  save(form: FormGroup) {
     console.log('valid:', form.valid);
 
     form.markAsPristine();
 
-    this.documentService.save(data, false).then(res => {
+    this.documentService.save(form.value, false).then(() => {
       // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});
     }, (err: HttpErrorResponse) => {
       throw err;
@@ -128,7 +120,6 @@ export class FormularService {
       .sort((a, b) => a.label.localeCompare(b.label));
 
     this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
-    this.newDocumentSubject.next(this.newDocOptions);
 
     const dlg = this.dialog.open(NewDocumentComponent, {
       data:
@@ -184,22 +175,8 @@ export class FormularService {
     return profileVal ? profileVal.treeIconClass : 'xxx';
   }
 
-  /**
-   *
-   * @Deprecated
-   */
-  getFieldsNeededForTitle(): string[] {
-    return [];
-  }
-
-  requestFormValues(): any {
-    const formData: any = {};
-    this.formDataSubject.next(formData);
-    return formData;
-  }
-
   setSelectedDocuments(docs: DocumentAbstract[]) {
-    this.treeStore.setActive(docs.map( d => d.id));
+    this.treeStore.setActive(docs.map(d => d.id));
   }
 
   getSelectedDocuments(): DocumentAbstract[] {

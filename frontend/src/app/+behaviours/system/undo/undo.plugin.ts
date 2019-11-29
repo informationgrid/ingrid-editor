@@ -1,11 +1,10 @@
-import { Injectable } from '@angular/core';
-import { FormToolbarService } from '../../../+form/toolbar/form-toolbar.service';
-import { ModalService } from '../../../services/modal/modal.service';
-import { DocumentService } from '../../../services/document/document.service';
-import { Plugin } from '../../plugin';
-import { FormGroup } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
+import {ModalService} from '../../../services/modal/modal.service';
+import {DocumentService} from '../../../services/document/document.service';
+import {Plugin} from '../../plugin';
+import {FormGroup} from '@angular/forms';
+import {Subscription} from 'rxjs';
 import {FormularService} from '../../../+form/formular.service';
 
 @Injectable({
@@ -144,28 +143,30 @@ export class UndoPlugin extends Plugin {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    const formData = this.formService.requestFormValues();
+    /*
+        const formData = this.formService.requestFormValues();
 
-    this.form = formData.form;
-    this.formValueSubscription = this.form.valueChanges
-      .pipe(
-        debounceTime(500)
-      )
-      .subscribe((value) => {
-        console.log('The form value changed:', value);
+        this.form = formData.form;
+        this.formValueSubscription = this.form.valueChanges
+          .pipe(
+            debounceTime(500)
+          )
+          .subscribe((value) => {
+            console.log('The form value changed:', value);
 
-        // if we used the undo/redo button then ignore this event
-        if (this.actionTriggered) {
-          this.actionTriggered = false;
-          // return;
-        }
+            // if we used the undo/redo button then ignore this event
+            if (this.actionTriggered) {
+              this.actionTriggered = false;
+              // return;
+            }
 
-        // only push if other field was changed, otherwise remove last change and push new value
-        // => so we only remember complete field changes instead of each character
-        this.history.push(value);
-        if (this.history.length > 1) {
-          this.formToolbarService.setButtonState('toolBtnUndo', true);
-        }
-      });
+            // only push if other field was changed, otherwise remove last change and push new value
+            // => so we only remember complete field changes instead of each character
+            this.history.push(value);
+            if (this.history.length > 1) {
+              this.formToolbarService.setButtonState('toolBtnUndo', true);
+            }
+          });
+    */
   }
 }

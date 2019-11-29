@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {Plugin} from '../../plugin';
 import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {PrintViewDialogComponent} from '../../../+form/dialogs/print-view/print-view-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import {FormularService} from '../../../+form/formular.service';
+import {MatDialog} from '@angular/material/dialog';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +13,6 @@ export class PrintViewPlugin extends Plugin {
   defaultActive = true;
 
   constructor(private toolbarService: FormToolbarService,
-              private formService: FormularService,
               private dialog: MatDialog) {
     super();
   }
@@ -41,11 +39,13 @@ export class PrintViewPlugin extends Plugin {
       }
     });
 
+/*
     this.formService.selectedDocuments$.subscribe( data => {
       this.toolbarService.setButtonState(
         'toolBtnPrint',
         data.length === 1);
     } );
+*/
   };
 
   private showPrintDialog() {

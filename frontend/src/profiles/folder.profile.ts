@@ -13,6 +13,16 @@ export class ProfileFolder implements Profile {
 
   fields = <FormlyFieldConfig[]>[
     {
+      key: '_id',
+      type: 'input',
+      hide: true
+    },
+    {
+      key: '_profile',
+      type: 'input',
+      hide: true
+    },
+    {
       key: 'title',
       type: 'input',
       wrappers: ['panel'],

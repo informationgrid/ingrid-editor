@@ -9,14 +9,15 @@ export class IsoViewComponent implements OnInit {
 
   doc: any;
 
-  constructor(private formService: FormularService, private apiService: ApiService) {
+  constructor(private apiService: ApiService) {
   }
 
   ngOnInit() {
     // get current document
-    const currentForm = this.formService.requestFormValues();
+    /*const currentForm = this.formService.requestFormValues();
 
-    this.getIso(currentForm.value);
+    this.getIso(currentForm.value);*/
+    this.getIso({_id: 1});
   }
 
   getIso(doc: any) {

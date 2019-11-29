@@ -8,7 +8,8 @@
     <form [formGroup]="form" [class.hide]="!showTitleInput">
         <mat-form-field>
             <input #titleInput matInput formControlName="title"
-                   (blur)="showTitleInput = false">
+                   (blur)="showTitleInput = false"
+                   (keyup.enter)="showTitleInput = false">
         </mat-form-field>
     </form>
 

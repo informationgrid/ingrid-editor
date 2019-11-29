@@ -22,6 +22,16 @@ export class ProfileAddress implements Profile {
       hide: true
     },
     {
+      key: '_id',
+      type: 'input',
+      hide: true
+    },
+    {
+      key: '_profile',
+      type: 'input',
+      hide: true
+    },
+    {
       fieldGroupClassName: 'display-flex',
       wrappers: ['panel'],
       templateOptions: {

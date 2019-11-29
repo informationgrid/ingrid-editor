@@ -1,7 +1,5 @@
 import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {FormControlService} from '../services/form-control.service';
-import {BehaviourService} from '../services/behavior/behaviour.service';
 import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {ActivatedRoute} from '@angular/router';
@@ -28,7 +26,7 @@ import {FormPluginsService} from './form-plugins.service';
 @Component({
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss'],
-  providers: [FormControlService, FormPluginsService]
+  providers: [FormularService, FormPluginsService]
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -49,7 +47,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private formUtils: FormUtils;
 
-  constructor(private qcs: FormControlService, private behaviourService: BehaviourService,
+  constructor(/*private behaviourService: BehaviourService,*/
               private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
               private documentService: DocumentService, private modalService: ModalService,
@@ -70,26 +68,26 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // handle toolbar events
     this.formToolbarService.toolbarEvent$
       .pipe(untilDestroyed(this))
-      .subscribe(eventId => this.formularService.handleToolbarEvents(eventId, this.form, this.model));
+      .subscribe(eventId => this.formularService.handleToolbarEvents(eventId, this.form));
 
     // react on document selection
     this.treeQuery.selectActiveId()
       .pipe(untilDestroyed(this))
       .subscribe((activeDocs) => {
-      this.formToolbarService.setButtonState(
-        'toolBtnSave',
-        activeDocs && activeDocs.length === 1);
+        this.formToolbarService.setButtonState(
+          'toolBtnSave',
+          activeDocs && activeDocs.length === 1);
 
-      // do not allow to modify form if multiple nodes have been selected in tree
-      activeDocs.length === 1 ? this.form.enable() : this.form.disable();
+        // do not allow to modify form if multiple nodes have been selected in tree
+        activeDocs.length === 1 ? this.form.enable() : this.form.disable();
 
-    });
+      });
 
-    this.behaviourService.initialized.then(() => {
+    // this.behaviourService.initialized.then(() => {
       this.route.params.subscribe(params => {
         this.loadDocument(params['id']);
       });
-    });
+    // });
 
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
 
@@ -98,9 +96,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     console.log('destroy');
     this.formularService.currentProfile = null;
-    this.behaviourService.behaviours
+    /*this.behaviourService.behaviours
       .filter(behave => behave.isActive && behave.unregister)
-      .forEach(behave => behave.unregister());
+      .forEach(behave => behave.unregister());*/
 
     // reset selected documents if we revisit the page
     this.formularService.setSelectedDocuments([]);
@@ -164,7 +162,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener('window: keydown', ['$event'])
   hotkeys(event: KeyboardEvent) {
-    this.formUtils.addHotkeys(event, this.formularService, this.form, this.model);
+    this.formUtils.addHotkeys(event, this.formularService, this.form);
   }
 
 

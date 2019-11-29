@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Plugin } from '../../plugin';
-import { FormToolbarService } from '../../../+form/toolbar/form-toolbar.service';
-import { IsoViewComponent } from './iso-view.component';
-import { MatDialog } from '@angular/material/dialog';
-import {FormularService} from '../../../+form/formular.service';
+import {Injectable} from '@angular/core';
+import {Plugin} from '../../plugin';
+import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
+import {IsoViewComponent} from './iso-view.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +13,6 @@ export class IsoViewPlugin extends Plugin {
   defaultActive = true;
 
   constructor(private formToolbarService: FormToolbarService,
-              private formService: FormularService,
               private dialog: MatDialog) {
     super();
   }
@@ -38,11 +36,13 @@ export class IsoViewPlugin extends Plugin {
       }
     });
 
+/*
     this.formService.selectedDocuments$.subscribe( data => {
       this.formToolbarService.setButtonState(
         'toolBtnIso',
         data.length === 1 && data[0]._profile.startsWith('ISO') );
     } );
+*/
   };
 
   private showISODialog() {

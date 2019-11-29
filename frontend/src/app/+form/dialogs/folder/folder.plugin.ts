@@ -1,14 +1,12 @@
-import { ComponentFactoryResolver, Injectable } from '@angular/core';
-import { FormToolbarService } from '../../toolbar/form-toolbar.service';
-import { ModalService } from '../../../services/modal/modal.service';
-import { Plugin } from '../../../+behaviours/plugin';
-import { CreateFolderComponent } from './create-folder.component';
-import { MatDialog } from '@angular/material/dialog';
-import {FormularService} from '../../formular.service';
+import {ComponentFactoryResolver, Injectable} from '@angular/core';
+import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {ModalService} from '../../../services/modal/modal.service';
+import {Plugin} from '../../../+behaviours/plugin';
+import {MatDialog} from '@angular/material/dialog';
+import {TreeQuery} from '../../../store/tree/tree.query';
+import {CreateFolderComponent} from './create-folder.component';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class FolderPlugin extends Plugin {
   id = 'plugin.folder';
   _name = 'Folder Plugin';
@@ -20,7 +18,8 @@ export class FolderPlugin extends Plugin {
   }
 
   constructor(private formToolbarService: FormToolbarService,
-              private formService: FormularService,
+              // private formService: FormularService,
+              private treeQuery: TreeQuery,
               private modalService: ModalService,
               private dialog: MatDialog,
               private _cr: ComponentFactoryResolver) {
@@ -31,23 +30,23 @@ export class FolderPlugin extends Plugin {
   register() {
     super.register();
 
-    console.log( 'register folder plugin' );
+    console.log('register folder plugin');
     // add button to toolbar for publish action
-    this.formToolbarService.addButton( {
+    this.formToolbarService.addButton({
       id: 'toolBtnFolder',
       tooltip: 'Create Folder',
       cssClasses: 'create_new_folder',
       eventId: this.eventCreateFolderId,
       pos: 15,
       active: true
-    } );
+    });
 
     // add event handler for revert
-    this.formToolbarService.toolbarEvent$.subscribe( eventId => {
+    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === this.eventCreateFolderId) {
         this.createFolder();
       }
-    } );
+    });
 
     // add behaviour to set active states for toolbar buttons
     this.addBehaviour();
@@ -65,7 +64,8 @@ export class FolderPlugin extends Plugin {
   createFolder() {
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
-    const parents = this.formService.getSelectedDocuments();
+    // const parents = this.formService.getSelectedDocuments();
+    const parents = this.treeQuery.getActive();
 
     this.dialog.open(CreateFolderComponent, {
       data: { parent: parents ? parents[0] : null }
@@ -75,7 +75,7 @@ export class FolderPlugin extends Plugin {
   unregister() {
     super.unregister();
 
-    this.formToolbarService.removeButton( 'toolBtnFolder' );
+    this.formToolbarService.removeButton('toolBtnFolder');
   }
 
   /**

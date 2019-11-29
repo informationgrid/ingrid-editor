@@ -1,18 +1,14 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {DynamicFieldComponent} from './dynamic-field.component';
 import {FormToolbarComponent} from './toolbar/form-toolbar.component';
 import {FormsModule} from '@angular/forms';
 import {DynamicFormComponent} from './dynamic-form.component';
 import {LeafletComponent} from './leaflet/leaflet.component';
 import {routing} from './ige-form.routing';
 import {BrowserComponent} from './sidebars/browser/browser.component';
-import {PartialGenerator} from './partialGenerator/partial-generator.component';
 import {LinkDatasetComponent} from './linkDataset/link-dataset.component';
 import {SharedModule} from '../shared/shared.module';
 import {NominatimService} from './leaflet/nominatim.service';
-import {MainFormComponent} from './main-form/main-form.component';
-import {MainFormTabsComponent} from './main-form-tabs/main-form-tabs.component';
 import {IgeWizardModule} from '../wizard/wizard.module';
 import {ScrollToDirective} from '../directives/scrollTo.directive';
 import {MatCardModule} from '@angular/material/card';
@@ -28,7 +24,6 @@ import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {AddPartialDialogComponent} from './partialGenerator/dialog/add-partial-dialog.component';
 import {SidebarComponent} from './sidebars/sidebar.component';
 import {FormInfoComponent} from './form-info/form-info.component';
 import {FormDialogsModule} from '../dialogs/form/form-dialogs.module';
@@ -44,7 +39,8 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
 import {FormularService} from './formular.service';
-import {FormPluginsService} from './form-plugins.service';
+import {CreateFolderComponent} from './dialogs/folder/create-folder.component';
+import {FolderPlugin} from './dialogs/folder/folder.plugin';
 
 @NgModule({
   imports: [
@@ -59,15 +55,15 @@ import {FormPluginsService} from './form-plugins.service';
     IgeFormlyModule,
     FormFieldsModule],
   declarations: [
-    FormToolbarComponent, DynamicFieldComponent, PartialGenerator,
+    FormToolbarComponent,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
-    AddPartialDialogComponent, NewDocumentComponent,
+    NewDocumentComponent, CreateFolderComponent,
     // OneColumnWrapperComponent,
-    ScrollToDirective, MainFormComponent, MainFormTabsComponent, SidebarComponent,
+    ScrollToDirective, SidebarComponent,
     FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent],
-  providers: [NominatimService, FormularService],
-  exports: [FormsModule, ScrollToDirective, MainFormTabsComponent],
-  entryComponents: [AddPartialDialogComponent, NewDocumentComponent]
+  providers: [NominatimService, FormularService, FolderPlugin],
+  exports: [FormsModule, ScrollToDirective],
+  entryComponents: [NewDocumentComponent, CreateFolderComponent]
 })
 export class IgeFormModule {
 }

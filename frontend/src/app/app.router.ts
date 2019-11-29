@@ -8,7 +8,6 @@ export const routes: Routes = [
   {path: 'form', loadChildren: () => import('./+form/ige-form.module').then(m => m.IgeFormModule), canActivate: [AuthGuard]},
   // {path: 'form/:id', loadChildren: './+form/ige-form.module#IgeFormModule'},
   {path: 'plugins', loadChildren: () => import('./+behaviours/behaviours.module').then(m => m.PluginsModule), canActivate: [AuthGuard]},
-  {path: 'fields', loadChildren: () => import('./+fields/fields.module').then(m => m.FieldsModule), canActivate: [AuthGuard]},
   {path: 'user', loadChildren: () => import('./+user/user.module').then(m => m.UserModule)}, // TODO: check canActivateChild: [AuthGuard],
   {path: 'importExport', loadChildren: () => import('./+importExport/import-export.module').then(m => m.ImportExportModule), canActivate: [AuthGuard]},
   {path: 'catalogs', loadChildren: () => import('./+catalog/catalog.module').then(m => m.CatalogModule)},

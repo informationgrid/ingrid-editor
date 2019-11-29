@@ -3,11 +3,10 @@ import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
-import {DocumentQuery} from "../../../store/document/document.query";
-import {DocumentState} from "../../../models/ige-document";
+import {DocumentQuery} from '../../../store/document/document.query';
+import {DocumentState} from '../../../models/ige-document';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
-import {FormularService} from '../../../+form/formular.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +26,7 @@ export class PublishPlugin extends Plugin {
   }
 
   constructor(private formToolbarService: FormToolbarService,
-              private formService: FormularService,
+              // private formService: FormularService,
               private modalService: ModalService,
               private documentQuery: DocumentQuery,
               private treeQuery: TreeQuery,
@@ -92,11 +91,11 @@ export class PublishPlugin extends Plugin {
   revert() {
     // TODO: confirm before revert!
 
-    const formData = this.formService.requestFormValues();
+    /*const formData = this.formService.requestFormValues();
     this.storageService.revert(formData.value._id).subscribe(null, err => {
       console.log( 'Error when reverting data', err );
       throw(err);
-    });
+    });*/
   }
 
   unregister() {
@@ -135,7 +134,7 @@ export class PublishPlugin extends Plugin {
     });
 
     this.documentQuery.openedDocument$
-    //TODO: .pipe(takeUntil(this.componentDestroyed))
+    // TODO: .pipe(takeUntil(this.componentDestroyed))
       .subscribe(data => {
         this.formToolbarService.setButtonState( 'toolBtnPublish', data !== null );
         this.formToolbarService.setButtonState( 'toolBtnRevert', data !== null && data._state === DocumentState.PW );

@@ -22,15 +22,14 @@ export class CreateDocRulesPlugin extends Plugin {
     return this._name;
   }
 
-  constructor(@Inject( FormularService ) private formService: FormularService,
-              @Inject( DocumentService ) private storageService: DocumentService) {
+  constructor(@Inject( DocumentService ) private storageService: DocumentService) {
     super();
   }
 
   register() {
     super.register();
 
-    this.subscription = this.formService.newDocumentSubject$.subscribe( data => {
+/*    this.subscription = this.formService.newDocumentSubject$.subscribe( data => {
       console.log( 'handle new documents', data );
 
       // if no document was selected then everything is allowed
@@ -57,7 +56,7 @@ export class CreateDocRulesPlugin extends Plugin {
 
       }
       console.log( 'handle new documents (after)', data );
-    } );
+    } )*/;
   }
 
   unregister() {
