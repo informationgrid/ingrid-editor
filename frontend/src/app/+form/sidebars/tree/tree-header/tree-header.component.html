@@ -1,0 +1,12 @@
+<div class="header" fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="space-between">
+        <mat-slide-toggle [style.fontSize]="'14px'">Alle anzeigen</mat-slide-toggle>
+
+        <button *ngIf="showReloadButton" class="mat-icon-button" (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
+    </div>
+
+    <mat-form-field class="search" appearance="outline">
+        <input matInput>
+        <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+</div>

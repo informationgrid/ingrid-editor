@@ -5,6 +5,10 @@
   overflow: auto;
 }
 
+::ng-deep .as-split-gutter {
+  background-color: #dfdfdf !important;
+}
+
 .form-content {
   //height: auto !important;
   min-width: 400px;

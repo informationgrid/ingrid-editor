@@ -1,4 +1,4 @@
-<button *ngIf="showReloadButton" class="mat-icon-button" (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
+<ige-tree-header (reload)="reloadTree()"></ige-tree-header>
 
 <span *ngIf="dataSource.data.length === 0">Leerer Baum</span>
 
@@ -25,7 +25,7 @@
                    [class.selected]="node.isSelected"
                    [class.active]="node._id === initialActiveNodeId"
                    [class.disabled]="disabledCondition(node)"
-                   [class.rootNode]="!node.parent">
+                   [class.rootNode]="node.level === 0 && node.profile === 'FOLDER'">
         <div style="width: 100%;">
             <button mat-icon-button matTreeNodeToggle
                     class="toggle"

@@ -1,9 +1,20 @@
-::ng-deep mat-tree .mat-tree-node {
-  min-height: 20px;
+::ng-deep .mat-drawer-container {
+  background-color: #f3f3f3;
+}
+
+::ng-deep .mat-tree {
+  background-color: transparent;
 }
 
 mat-tree-node {
   cursor: pointer;
+  min-height: 20px;
+
+  border-bottom: 1px solid #dfdfdf;
+
+  &:first-child {
+    border-top: 1px solid #dfdfdf;
+  }
 
   &:hover {
     background-color: #ededed;
@@ -64,7 +75,8 @@ mat-tree-node {
 
 .rootNode {
   background-color: #f3f3f3;
-  padding: 10px 0;
+  padding: 7px 0;
+  font-size: 16px;
 }
 
 .clickable {

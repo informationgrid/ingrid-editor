@@ -6,10 +6,15 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatTreeModule} from "@angular/material/tree";
 import {AngularSplitModule} from "angular-split";
 import {TreeComponent} from '../+form/sidebars/tree/tree.component';
+import {TreeHeaderComponent} from '../+form/sidebars/tree/tree-header/tree-header.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {FlexModule} from '@angular/flex-layout';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 
 @NgModule({
-  imports: [CommonModule, MatIconModule, MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatProgressBarModule],
-  declarations: [TreeComponent],
+  imports: [CommonModule, MatIconModule, MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule, MatSlideToggleModule, FlexModule, MatInputModule],
+  declarations: [TreeComponent, TreeHeaderComponent],
   exports: [TreeComponent, MatIconModule, MatButtonModule]
 })
 export class SharedModule {

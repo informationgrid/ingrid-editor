@@ -41,6 +41,7 @@ import {NewDocumentComponent} from './dialogs/new-document/new-document.componen
 import {FormularService} from './formular.service';
 import {CreateFolderComponent} from './dialogs/folder/create-folder.component';
 import {FolderPlugin} from './dialogs/folder/folder.plugin';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   imports: [
@@ -48,7 +49,7 @@ import {FolderPlugin} from './dialogs/folder/folder.plugin';
     CommonModule,
     AngularSplitModule,
     IgeWizardModule, FormDialogsModule, SharedModule,
-    MatFormFieldModule, MatToolbarModule, MatInputModule, MatTableModule, MatMenuModule, MatButtonToggleModule,
+    MatFormFieldModule, MatToolbarModule, MatInputModule, MatTableModule, MatMenuModule, MatButtonToggleModule, MatSlideToggleModule,
     MatTabsModule, MatDividerModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule, MatCardModule,
     FlexLayoutModule,
     FormlyModule,

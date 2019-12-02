@@ -13,12 +13,3 @@ export class TreeNode {
               public isLoading = false) {
   }
 }
-
-/**
- * A factory function that creates Tree
- */
-export function createTreeNode(params: Partial<TreeNode>) {
-  return {
-    title: 'no title'
-  } as TreeNode;
-}
