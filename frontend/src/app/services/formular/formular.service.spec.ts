@@ -1,8 +1,8 @@
-import {FormularService} from './formular.service';
-import objectContaining = jasmine.objectContaining;
+import {FormularService} from '../../+form/formular.service';
+
 
 describe( 'Formular', () => {
-  let myFormularService: FormularService;
+  // let myFormularService: FormularService;
 
   beforeEach(() => {
     // myFormularService = new FormularService();

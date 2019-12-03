@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
-import {DocumentService} from "../../../services/document/document.service";
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {DocumentService} from '../../../services/document/document.service';
 // import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
 import {ActivatedRoute} from '@angular/router';
 import {UpdateType} from '../../../models/update-type.enum';
@@ -34,7 +34,7 @@ export class BrowserComponent implements OnInit, OnDestroy {
       this.selectedId = params['id'];
     });
 
-    this.subscription = this.storageService.datasetsChanged$.subscribe( (event) => {
+    this.subscription = this.storageService.datasetsChanged.subscribe( (event) => {
       if (event.type === UpdateType.Update) {
         this.query();
       }

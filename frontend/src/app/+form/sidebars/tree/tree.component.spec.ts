@@ -1,80 +1,41 @@
-import {createHostComponentFactory, Spectator} from "@netbasal/spectator";
-import {DocumentDataService} from "../../../services/document/document-data.service";
-import {TreeComponent} from "./tree.component";
-import {DocumentAbstract} from "../../../store/document/document.model";
-import { MatButtonModule } from "@angular/material/button";
-import { MatDialogModule } from "@angular/material/dialog";
-import { MatIconModule } from "@angular/material/icon";
-import { MatTreeModule } from "@angular/material/tree";
-import {createHost} from "@angular/compiler/src/core";
-
-const childrenThree = [{_id: '1', _profile: 'A'}, {_id: '2', _profile: 'A'}, {_id: '3', _profile: 'A'}];
-const childrenNoProfile = [{_id: '1'}, {_id: '2'}, {_id: '3'}];
-let childrenTree = childrenThree;
+import {DynamicDatabase, TreeComponent} from './tree.component';
+import {MatButtonModule} from '@angular/material/button';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTreeModule} from '@angular/material/tree';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {recentDocuments} from '../../../_test-data/documents';
+import {of, Subject} from 'rxjs';
 
 describe('TreeComponent', () => {
 
   let spectator: Spectator<TreeComponent>;
-  let host;
-  const createComponent = createHostComponentFactory({
+  const createHost = createComponentFactory({
     component: TreeComponent,
     imports: [MatTreeModule, MatIconModule, MatDialogModule, MatButtonModule],
-    mocks: [DocumentDataService],
+    componentMocks: [DynamicDatabase],
     detectChanges: false
   });
 
-  beforeEach(() => {
-    host = createHost(`<ige-tree></ige-tree>`)
-  });
-
-  it('should create', () => {
-    expect(host.component).toBeDefined();
+  it('should create component', () => {
+    // spectator = createHost(`<ige-tree></ige-tree>`);
+    spectator = createHost();
+    expect(spectator.component).toBeDefined();
   });
 
   it('should show root nodes on startup', () => {
-    /*let dataService = spectator.get<DocumentDataService>(DocumentDataService);
-    dataService.find.and.returnValue(of(recentDocuments));
-    let formService = spectator.get<FormularService>(FormularService);
-    formService.getTitle.and.callFake((profile, item) => {
-      return item.title;
-    });*/
-
-
-    spectator.component.dataSource.data = <DocumentAbstract[]>[
-      {
-        id: '',
-        title: 'Node 1',
-        icon: '',
-        _state: '',
-        _profile: '',
-        _hasChildren: false
-      },
-      {
-        id: '',
-        title: 'Node 2',
-        icon: '',
-        _state: '',
-        _profile: '',
-        _hasChildren: false,
-        _id: ''
-      },
-      {
-        id: '',
-        title: 'Node 3',
-        icon: '',
-        _state: '',
-        _profile: '',
-        _hasChildren: false,
-        _id: ''
-      }
-    ];
+    spectator = createHost();
+    const db = spectator.get(DynamicDatabase, true);
+    db.initialData.and.returnValue(of(recentDocuments));
+    db.treeUpdates = new Subject();
 
     spectator.detectChanges();
 
-    let recentDocs = spectator.queryAll('.recentDocs li');
-    expect(recentDocs[0].textContent.trim()).toEqual('Test Document 1');
-    expect(recentDocs[1].textContent.trim()).toEqual('Test Document 2');
-    expect(recentDocs[2].textContent.trim()).toEqual('Test Document 3');
+    const recentDocs = spectator.queryAll('.mat-tree-node');
+    expect(recentDocs.length).toEqual(3);
+    expect(recentDocs[0].textContent.trim()).toContain('Test Document 1');
+    expect(recentDocs[1].textContent.trim()).toContain('Test Document 2');
+    expect(recentDocs[2].textContent.trim()).toContain('Test Document 3');
   });
   /*
 

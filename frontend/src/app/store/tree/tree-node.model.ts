@@ -9,7 +9,9 @@ export class TreeNode {
               public profile: string,
               public state: string = null,
               public level = 1,
-              public hasChildren = false, public isLoading = false) {}
+              public hasChildren = false,
+              public isLoading = false) {
+  }
 }
 
 /**

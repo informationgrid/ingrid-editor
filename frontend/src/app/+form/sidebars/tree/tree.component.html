@@ -9,7 +9,6 @@
     <mat-tree-node *matTreeNodeDef="let node"
                    matTreeNodePadding matTreeNodePaddingIndent="20"
                    (click)="!disabledCondition(node) && selectNode(node, $event)"
-                   [style.display]="shouldRender(node) ? 'flex' : 'none'"
                    [class.selected]="node.isSelected"
                    [class.active]="node._id === initialActiveNodeId"
                    [class.disabled]="disabledCondition(node)">
@@ -23,7 +22,6 @@
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
                    matTreeNodePadding matTreeNodePaddingIndent="20"
                    (click)="!disabledCondition(node) && selectNode(node, $event)"
-                   [style.display]="shouldRender(node) ? 'flex' : 'none'"
                    [class.selected]="node.isSelected"
                    [class.active]="node._id === initialActiveNodeId"
                    [class.disabled]="disabledCondition(node)"
@@ -34,7 +32,7 @@
                     [disabled]="!node.hasChildren"
                     [attr.aria-label]="'toggle ' + node.title">
 <!--                    (click)="toggleNode(node)"-->
-                <mat-icon class="mat-icon-rtl-mirror" [class.expanded]="treeControl.isExpanded(node)">
+                <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror" [class.expanded]="treeControl.isExpanded(node)">
                     {{isLoading === node ? 'autorenew' : 'chevron_right'}}
                 </mat-icon>
             </button>

@@ -25,6 +25,11 @@ export class McloudFormly implements Profile {
       hide: true
     },
     {
+      key: '_parent',
+      type: 'input',
+      hide: true
+    },
+    {
       key: '_profile',
       type: 'input',
       hide: true

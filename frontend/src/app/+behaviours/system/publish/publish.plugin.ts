@@ -123,7 +123,7 @@ export class PublishPlugin extends Plugin {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    this.storageService.datasetsChanged$.subscribe( (data) => {
+    this.storageService.datasetsChanged.subscribe( (data) => {
       this.handleRevertButtonState(data);
     });
 

@@ -144,10 +144,6 @@ export class FormularService {
    */
   prepareNewDoc(type: string, addBelowDoc: boolean) {
 
-    /*this.form = new FormGroup({});
-    this.formsManager.upsert('document', this.form);
-    this.model = {};*/
-
     let parent = null;
     if (addBelowDoc) {
       parent = this.treeQuery.getActive()[0].id;
@@ -156,8 +152,6 @@ export class FormularService {
     // TODO: use constructor for creating new document
     const newDoc = new IgeDocument(type, parent);
     this.documentService.save(newDoc, true);
-
-    return;
 
   }
 

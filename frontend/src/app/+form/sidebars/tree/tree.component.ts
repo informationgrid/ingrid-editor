@@ -29,7 +29,7 @@ export class DynamicDatabase {
   }
 
   getChildren(node: string, forceFromServer?: boolean): Observable<DocumentAbstract[]> {
-    let children = forceFromServer ? [] : this.treeQuery.getChildren(node);
+    const children = forceFromServer ? [] : this.treeQuery.getChildren(node);
 
     if (children.length > 0) {
       return of(children);
@@ -121,12 +121,12 @@ export class DynamicDataSource {
   }
 
   mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
-    return docs.map(doc => new TreeNode(doc.id.toString(), doc.title, doc._profile, doc._state, level, true));
+    return docs.map(doc => new TreeNode(doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren));
   }
 
   removeNode(docs: DocumentAbstract[]) {
     docs.forEach(doc => {
-      let index = this.data.findIndex(node => node._id === doc.id);
+      const index = this.data.findIndex(node => node._id === doc.id);
       if (index !== -1) {
         this.data.splice(index, 1);
         this.dataChange.next(this.data);
@@ -136,7 +136,7 @@ export class DynamicDataSource {
 
   updateNode(docs: DocumentAbstract[]) {
     docs.forEach(doc => {
-      let index = this.data.findIndex(node => node._id === doc.id);
+      const index = this.data.findIndex(node => node._id === doc.id);
       if (index !== -1) {
         this.data.splice(index, 1, ...this.mapDocumentsToTreeNodes([doc], this.data[index].level));
         this.dataChange.next(this.data);
@@ -145,7 +145,7 @@ export class DynamicDataSource {
   }
 
   addNode(parent: string, docs: DocumentAbstract[]) {
-    let index = this.data.findIndex(node => node._id === parent);
+    const index = this.data.findIndex(node => node._id === parent);
     let childLevel = 0;
     if (parent) {
       childLevel = this.data[index].level + 1;
@@ -179,13 +179,6 @@ export class TreeComponent implements OnInit {
   @Input() initialActiveNodeId: string = null;
   @Input() update: Observable<any>;
 
-  /**
-   * A function to determine if a tree node should be disabled.
-   */
-  @Input() disabledCondition: (TreeNode) => boolean = () => {
-    return false;
-  };
-
   @Output() selected = new EventEmitter<string[]>();
   @Output() activate = new EventEmitter<string[]>();
   // @Output() reload = new EventEmitter<null>();
@@ -194,32 +187,40 @@ export class TreeComponent implements OnInit {
   private isLoading: TreeNode;
 
   // store all nodes where we can find the nested items
-  private copy: TreeNode[] = [];
+  // private copy: TreeNode[] = [];
+
+  treeControl: FlatTreeControl<TreeNode>;
+
+  dataSource: DynamicDataSource;
+
+  /**
+   * A function to determine if a tree node should be disabled.
+   */
+  @Input() disabledCondition: (TreeNode) => boolean = () => {
+    return false;
+  };
 
   constructor(private database: DynamicDatabase) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database);
 
-    this.reloadTree();
 
   }
-
-  treeControl: FlatTreeControl<TreeNode>;
-
-  dataSource: DynamicDataSource;
 
   getLevel = (node: TreeNode) => node.level;
 
   isExpandable = (node: TreeNode) => node.hasChildren;
 
   ngOnInit(): void {
+    this.reloadTree();
+
     this.database.treeUpdates.subscribe(data => this.handleUpdate(data));
 
     if (this.expandNodeIds) {
       this.expandNodeIds.subscribe(ids => this.expandOnDataChange(ids));
     }
     if (this.update) {
-      this.update.subscribe(data => this.handleUpdate(data));
+      // this.update.subscribe(data => this.handleUpdate(data));
     }
   }
 
@@ -231,9 +232,8 @@ export class TreeComponent implements OnInit {
           const nextId = ids.shift();
           const nodeToExpand = data.filter(node => node._id === nextId)[0];
           this.treeControl.expand(nodeToExpand);
-        } else {
-          changeObserver.unsubscribe();
         }
+        setTimeout(() => changeObserver.unsubscribe(), 0);
       });
     }
   }
@@ -261,7 +261,7 @@ export class TreeComponent implements OnInit {
     // TODO: handle shiftKey
     let selectedIds = [];
     if ($event.ctrlKey) {
-      selectedIds = this.copy
+      selectedIds = this.dataSource.data
         .filter(n => n.isSelected)
         .map(n => n._id);
     }
@@ -291,11 +291,11 @@ export class TreeComponent implements OnInit {
   }
 
   private getParentNode(node: TreeNode) {
-    const nodeIndex = this.copy.indexOf(node);
+    const nodeIndex = this.dataSource.data.findIndex( item => item._id === node._id);
 
     for (let i = nodeIndex - 1; i >= 0; i--) {
-      if (this.copy[i].level === node.level - 1) {
-        return this.copy[i];
+      if (this.dataSource.data[i].level === node.level - 1) {
+        return this.dataSource.data[i];
       }
     }
 
@@ -308,7 +308,6 @@ export class TreeComponent implements OnInit {
   }
 
   reloadTree() {
-    // this.reload.next();
     this.database.initialData(true)
       .pipe(
         map(docs => this.dataSource.mapDocumentsToTreeNodes(docs, 0))
@@ -326,15 +325,36 @@ export class TreeComponent implements OnInit {
   }
 
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
-      switch (updateInfo.type) {
-        case UpdateType.New:
-          return this.dataSource.addNode(updateInfo.parent, updateInfo.data);
-        case UpdateType.Update:
-          return this.dataSource.updateNode(updateInfo.data);
-        case UpdateType.Delete:
-          return this.dataSource.removeNode(updateInfo.data);
-        default:
-          throw new Error('Tree Action type not known: ' + updateInfo.type);
-      }
+    switch (updateInfo.type) {
+      case UpdateType.New:
+        if (updateInfo.parent) {
+          const parentNodeIndex = this.dataSource.data.findIndex( item => item._id === updateInfo.parent);
+          const parentNode = this.dataSource.data[parentNodeIndex];
+          parentNode.hasChildren = true;
+
+          this.treeControl.expand(parentNode);
+        }
+        return this.dataSource.addNode(updateInfo.parent, updateInfo.data);
+      case UpdateType.Update:
+        return this.dataSource.updateNode(updateInfo.data);
+      case UpdateType.Delete:
+        updateInfo.data
+          .map(doc => this.dataSource.data.find(item => item._id === doc.id))
+          .map(node => this.getParentNode(node))
+          .forEach(parentNode => this.updateChildrenInfo(parentNode));
+
+        this.dataSource.removeNode(updateInfo.data);
+        return;
+      default:
+        throw new Error('Tree Action type not known: ' + updateInfo.type);
+    }
+  }
+
+  private updateChildrenInfo(parentNode: TreeNode) {
+    const index = this.dataSource.data.indexOf(parentNode);
+    let count = 0;
+    for (let i = index + 1; i < this.dataSource.data.length && this.dataSource.data[i].level > parentNode.level; i++, count++) {
+    }
+    parentNode.hasChildren = count !== 0;
   }
 }

@@ -3,9 +3,8 @@ import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {Plugin} from '../../plugin';
 import {DeleteDialogComponent} from './delete-dialog.component';
 import {Subscription} from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-import {TreeQuery} from "../../../store/tree/tree.query";
-import {FormularService} from '../../../+form/formular.service';
+import {MatDialog} from '@angular/material/dialog';
+import {TreeQuery} from '../../../store/tree/tree.query';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +22,6 @@ export class DeleteDocsPlugin extends Plugin {
   }
 
   constructor(private formToolbarService: FormToolbarService,
-              private formService: FormularService,
               private treeQuery: TreeQuery,
               private dialog: MatDialog) {
     super();
@@ -43,11 +41,11 @@ export class DeleteDocsPlugin extends Plugin {
       }
     });
 
-    this.subscription = this.treeQuery.selectActiveId().subscribe( data => {
+    this.subscription = this.treeQuery.selectActiveId().subscribe(data => {
       this.formToolbarService.setButtonState(
         'toolBtnRemove',
         data && data.length > 0);
-    } );
+    });
   }
 
   deleteDoc() {

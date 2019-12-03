@@ -29,7 +29,6 @@ export class DocumentService {
 
   afterLoadAndSet$ = this.afterLoadAndSet.asObservable();
   afterProfileSwitch$ = this.afterProfileSwitch.asObservable();
-  datasetsChanged$ = this.datasetsChanged.asObservable();
   beforeSave$ = this.beforeSave.asObservable();
 
   constructor(private modalService: ModalService,
@@ -92,7 +91,7 @@ export class DocumentService {
     return this.dataService.getChildren(parentId)
       .pipe(
         map(docs => this.mapToDocumentAbstracts(docs, parentId)),
-        map(docs => docs.sort((a,b) => a.title.localeCompare(b.title))),
+        map(docs => docs.sort((a, b) => a.title.localeCompare(b.title))),
         tap(docs => {
           if (parentId === null) {
             this.treeStore.set(docs);
@@ -100,6 +99,7 @@ export class DocumentService {
             this.treeStore.add(docs);
             // this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
           }
+          return docs;
         })
       );
   }
@@ -229,15 +229,11 @@ export class DocumentService {
   }
 
   addExpandedNode(nodeId: string) {
-    this.treeStore.update(node => {
-      expandedNodes: arrayAdd(node.expandedNodes, nodeId);
-    })
+    this.treeStore.update(node => ({expandedNodes: arrayAdd(node.expandedNodes, nodeId)}));
   }
 
   removeExpandedNode(nodeId: string) {
-    this.treeStore.update(node => {
-      expandedNodes: arrayRemove(node.expandedNodes, nodeId);
-    })
+    this.treeStore.update(node => ({expandedNodes: arrayRemove(node.expandedNodes, nodeId)}));
   }
 
   addDocumentToStore(docs: DocumentAbstract[]) {

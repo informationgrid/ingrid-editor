@@ -1,19 +1,19 @@
-import {DashboardComponent} from "./dashboard.component";
+import {DashboardComponent} from './dashboard.component';
 
-import {createTestComponentFactory, Spectator} from '@netbasal/spectator';
-import {RouterTestingModule} from "@angular/router/testing";
-import {ChartistModule} from "ng-chartist";
-import {ConfigService} from "../services/config/config.service";
-import {FormularService} from "../services/formular/formular.service";
-import {of} from "rxjs";
-import {recentDocuments} from "../_test-data/documents";
-import {DocumentDataService} from "../services/document/document-data.service";
-import {ModalService} from "../services/modal/modal.service";
+import {RouterTestingModule} from '@angular/router/testing';
+import {ChartistModule} from 'ng-chartist';
+import {ConfigService} from '../services/config/config.service';
+import {of} from 'rxjs';
+import {recentDocuments} from '../_test-data/documents';
+import {DocumentDataService} from '../services/document/document-data.service';
+import {ModalService} from '../services/modal/modal.service';
+import {FormularService} from '../+form/formular.service';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
 
 
 describe('DashboardComponent', () => {
   let spectator: Spectator<DashboardComponent>;
-  const createComponent = createTestComponentFactory({
+  const createComponent = createComponentFactory({
     component: DashboardComponent,
     imports: [ChartistModule, RouterTestingModule],
     mocks: [ConfigService, DocumentDataService, FormularService, ModalService],

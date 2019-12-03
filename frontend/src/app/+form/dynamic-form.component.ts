@@ -139,7 +139,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
     // load dataset when one was updated
-    this.documentService.datasetsChanged$
+    this.documentService.datasetsChanged
       .pipe(untilDestroyed(this))
       .subscribe((msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
