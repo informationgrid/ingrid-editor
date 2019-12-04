@@ -2,7 +2,7 @@
     <div fxLayout="row" fxLayoutAlign="space-between">
         <mat-slide-toggle [style.fontSize]="'14px'">Alle anzeigen</mat-slide-toggle>
 
-        <button *ngIf="showReloadButton" class="mat-icon-button" (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
+        <button *ngIf="showReloadButton" mat-icon-button (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
     </div>
 
     <mat-form-field class="search" appearance="outline">

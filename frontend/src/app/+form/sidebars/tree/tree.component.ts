@@ -327,34 +327,44 @@ export class TreeComponent implements OnInit {
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
     switch (updateInfo.type) {
       case UpdateType.New:
-        if (updateInfo.parent) {
-          const parentNodeIndex = this.dataSource.data.findIndex( item => item._id === updateInfo.parent);
-          const parentNode = this.dataSource.data[parentNodeIndex];
-          parentNode.hasChildren = true;
-
-          this.treeControl.expand(parentNode);
-        }
-        return this.dataSource.addNode(updateInfo.parent, updateInfo.data);
+        return this.addNewNode(updateInfo);
       case UpdateType.Update:
         return this.dataSource.updateNode(updateInfo.data);
       case UpdateType.Delete:
-        updateInfo.data
-          .map(doc => this.dataSource.data.find(item => item._id === doc.id))
-          .map(node => this.getParentNode(node))
-          .forEach(parentNode => this.updateChildrenInfo(parentNode));
-
-        this.dataSource.removeNode(updateInfo.data);
+        this.deleteNode(updateInfo);
         return;
       default:
         throw new Error('Tree Action type not known: ' + updateInfo.type);
     }
   }
 
-  private updateChildrenInfo(parentNode: TreeNode) {
-    const index = this.dataSource.data.indexOf(parentNode);
-    let count = 0;
-    for (let i = index + 1; i < this.dataSource.data.length && this.dataSource.data[i].level > parentNode.level; i++, count++) {
+  private deleteNode(updateInfo: UpdateDatasetInfo) {
+    updateInfo.data
+      .map(doc => this.dataSource.data.find(item => item._id === doc.id))
+      .map(node => this.getParentNode(node))
+      .forEach(parentNode => this.updateChildrenInfo(parentNode));
+
+    this.dataSource.removeNode(updateInfo.data);
+  }
+
+  private addNewNode(updateInfo: UpdateDatasetInfo) {
+    if (updateInfo.parent) {
+      const parentNodeIndex = this.dataSource.data.findIndex(item => item._id === updateInfo.parent);
+      const parentNode = this.dataSource.data[parentNodeIndex];
+      parentNode.hasChildren = true;
+
+      this.treeControl.expand(parentNode);
     }
-    parentNode.hasChildren = count !== 0;
+    return this.dataSource.addNode(updateInfo.parent, updateInfo.data);
+  }
+
+  private updateChildrenInfo(parentNode: TreeNode) {
+    if (parentNode) {
+      const index = this.dataSource.data.indexOf(parentNode);
+      let count = 0;
+      for (let i = index + 1; i < this.dataSource.data.length && this.dataSource.data[i].level > parentNode.level; i++, count++) {
+      }
+      parentNode.hasChildren = count !== 0;
+    }
   }
 }

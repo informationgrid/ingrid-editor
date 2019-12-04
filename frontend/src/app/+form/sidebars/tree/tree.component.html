@@ -31,7 +31,6 @@
                     class="toggle"
                     [disabled]="!node.hasChildren"
                     [attr.aria-label]="'toggle ' + node.title">
-<!--                    (click)="toggleNode(node)"-->
                 <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror" [class.expanded]="treeControl.isExpanded(node)">
                     {{isLoading === node ? 'autorenew' : 'chevron_right'}}
                 </mat-icon>
