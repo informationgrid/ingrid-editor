@@ -3,7 +3,7 @@
         <mat-icon>brightness_5</mat-icon>
     </div>
 
-    <span *ngIf="!showTitleInput" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
+    <span *ngIf="!showTitleInput" class="label" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
 
     <form [formGroup]="form" [class.hide]="!showTitleInput">
         <mat-form-field>
@@ -15,10 +15,10 @@
 
     <div fxFlex></div>
 
-    <button mat-icon-button mat-stroked-button>
+    <button mat-icon-button mat-stroked-button class="more">
         <mat-icon>keyboard_arrow_down</mat-icon>
     </button>
-    <button mat-icon-button>
+    <button mat-icon-button class="menu">
         <mat-icon>more_vert</mat-icon>
     </button>
 </div>

@@ -5,7 +5,7 @@
                   matTooltipPosition="right"
                   [matTooltipDisabled]="menuIsExpanded"
                   matTooltipClass="tooltip-big">
-            exit_to_app
+            {{mapRouteToIcon(route.path)}}
         </mat-icon>
         <p mat-line *ngIf="menuIsExpanded">{{route.name}}</p>
     </a>

@@ -1,20 +1,39 @@
+@import "../../../../variables";
+
 .title {
 
-  padding-bottom: 30px;
+  padding-bottom: 10px;
 
   .document-type {
     display: inline-block;
     background-color: white;
     border-radius: 50%;
-    height: 32px;
-    width: 32px;
+    height: 24px;
+    width: 24px;
     margin-right: 10px;
+    margin-top: 5px;
 
     mat-icon {
       line-height: 32px;
       margin-left: 4px;
+      margin-top: -4px;
       color: #f27100;
+      font-size: 16px;
     }
+  }
+
+  .label {
+    color: $ige-primary;
+  }
+
+  .more, .menu {
+    width: 25px;
+    height: 25px;
+    line-height: 24px;
+  }
+
+  .menu {
+    margin-left: 15px;
   }
 
   mat-form-field, form {

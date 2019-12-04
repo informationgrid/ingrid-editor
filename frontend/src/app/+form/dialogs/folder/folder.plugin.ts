@@ -37,7 +37,7 @@ export class FolderPlugin extends Plugin {
       tooltip: 'Create Folder',
       cssClasses: 'create_new_folder',
       eventId: this.eventCreateFolderId,
-      pos: 15,
+      pos: 1,
       active: true
     });
 

@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'ige-header-navigation',
   templateUrl: './header-navigation.component.html',
-  styleUrls: ['./header-navigation.component.css']
+  styleUrls: ['./header-navigation.component.scss']
 })
 export class HeaderNavigationComponent implements OnInit {
+  @Input() sections: string[] = [];
 
   constructor() { }
 

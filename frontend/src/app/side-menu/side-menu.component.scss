@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .mat-list-base {
   padding-top: 0;
 }
@@ -9,18 +11,26 @@
   //width: 100%;
 }
 
+.active {
+  background: $ige-primary !important;
+}
+
 .mat-nav-list {
   overflow: auto;
+
+  .mat-list-item:hover {
+    background: #00000018 !important;
+  }
+
+  .mat-list-item.active:hover {
+    background: #ffffff18 !important;
+  }
 }
 
 .mat-list-base .mat-list-item {
   color: #ffffff;
   height: 55px;
-}
-
-.mat-list-item.active {
-  background-color: #196ea2;
-  /*background-color: #f48829;*/
+  font-size: 18px;
 }
 
 .fillVertical {

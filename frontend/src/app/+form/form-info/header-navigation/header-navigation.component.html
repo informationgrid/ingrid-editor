@@ -1,3 +1,8 @@
 <div class="anchor-navigation mat-body">
-    <a mat-button>Allgemeines</a> | <a mat-button>Verschlagwortung</a> | <a mat-button>Fachbezug</a> | <a mat-button>Raumbezugssystem</a> | <a mat-button>Zeitbezug</a> | <a mat-button>Zusatzinformation</a> | <a mat-button>Verweise</a>
+    <ng-container *ngFor="let section of sections; let i = index;">
+        <a mat-button>
+            {{section}}
+        </a>
+        <ng-container *ngIf="i !== sections.length - 1">|</ng-container>
+    </ng-container>
 </div>

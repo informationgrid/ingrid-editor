@@ -35,6 +35,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   fields: FormlyFieldConfig[] = [];
 
+  sections: string[];
+
   form: FormGroup = new FormGroup({
     title: new FormControl('Kein Titel')
   });
@@ -206,7 +208,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // switch to the right profile depending on the data
       if (needsProfileSwitch) {
-        this.switchProfile(profile);
+        this.fields = this.switchProfile(profile);
+        this.sections = this.getSectionsFromProfile(this.fields);
       }
 
       this.model = {...data};
@@ -216,6 +219,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error(ex);
       this.modalService.showJavascriptError(ex);
     }
+  }
+
+  // TODO: move to profile service
+  private getSectionsFromProfile(profile: FormlyFieldConfig[]): string[] {
+    let sections = [];
+    for (let item of profile) {
+      if (item.wrappers && item.wrappers.indexOf('section') !== -1) {
+        sections.push(item.templateOptions.label);
+      }
+    }
+    return sections;
   }
 
   // TODO: extract to permission service class
@@ -238,10 +252,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    *
    * @param profile
    */
-  switchProfile(profile: string) {
-    this.fields = this.formularService.getFields(profile);
-
+  switchProfile(profile: string): FormlyFieldConfig[] {
     this.formularService.currentProfile = profile;
+
+    return this.formularService.getFields(profile);
   }
 
   markFavorite($event: Event) {

@@ -9,6 +9,7 @@ import {FormGroup} from '@angular/forms';
 export class FormInfoComponent implements OnInit {
 
   @Input() form: FormGroup;
+  @Input() sections: string[] = [];
 
   showDateBar;
   markFavorite;

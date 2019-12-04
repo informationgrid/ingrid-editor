@@ -3,7 +3,6 @@ import {registerLocaleData} from '@angular/common';
 import {appRoutingProviders, routing} from './app.router';
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, ErrorHandler, NgModule} from '@angular/core';
-import {MenuComponent} from './menu/menu.component';
 import {ModalService} from './services/modal/modal.service';
 import {HelpComponent} from './help/help.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -38,6 +37,7 @@ import {SideMenuComponent} from './side-menu/side-menu.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {SectionWrapper} from './formly/wrapper/section-wrapper.component';
 
 registerLocaleData(de);
 
@@ -75,9 +75,9 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
-  declarations: [AppComponent, HelpComponent, MenuComponent, LoginComponent, ErrorDialogComponent,
+  declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
     SearchBarComponent, DeleteDialogComponent,
-    OneColumnWrapperComponent,
+    OneColumnWrapperComponent, SectionWrapper,
     SideMenuComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
@@ -89,7 +89,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     FlexLayoutModule,
     FormlyModule.forRoot({
       wrappers: [
-        {name: 'panel', component: OneColumnWrapperComponent}
+        {name: 'panel', component: OneColumnWrapperComponent},
+        {name: 'section', component: SectionWrapper}
       ]
     }),
     FormlyMaterialModule,
