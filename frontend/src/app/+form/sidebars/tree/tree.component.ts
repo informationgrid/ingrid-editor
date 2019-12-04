@@ -175,7 +175,7 @@ export class TreeComponent implements OnInit {
 
   @Input() expandNodeIds: Observable<string[]>;
   @Input() selectedIds: Observable<string[]>;
-  @Input() showReloadButton = false;
+  @Input() showReloadButton = true;
   @Input() initialActiveNodeId: string = null;
   @Input() update: Observable<any>;
 
@@ -281,7 +281,6 @@ export class TreeComponent implements OnInit {
 
       if (node.hasChildren) {
         this.treeControl.toggle(node);
-        // this.toggleNode(node);
       }
 
     }
@@ -332,6 +331,12 @@ export class TreeComponent implements OnInit {
         return this.dataSource.updateNode(updateInfo.data);
       case UpdateType.Delete:
         this.deleteNode(updateInfo);
+        return;
+      case UpdateType.Copy:
+        // no marking of nodes
+        return;
+      case UpdateType.Paste:
+        console.warn('Paste not implemented yet');
         return;
       default:
         throw new Error('Tree Action type not known: ' + updateInfo.type);

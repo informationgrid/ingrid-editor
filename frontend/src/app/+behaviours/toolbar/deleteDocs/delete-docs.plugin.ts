@@ -12,10 +12,7 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 export class DeleteDocsPlugin extends Plugin {
   id = 'plugin.deleteDocs';
   _name = 'Delete Docs Plugin';
-
-  docsToDelete = [];
-
-  subscription: Subscription;
+  subscriptions: Subscription[] = [];
 
   get name() {
     return this._name;
@@ -35,17 +32,19 @@ export class DeleteDocsPlugin extends Plugin {
       {id: 'toolBtnRemove', tooltip: 'Remove', cssClasses: 'delete', eventId: 'DELETE', pos: 100, active: false}
     );
 
-    const loadSaveSubscriber = this.formToolbarService.toolbarEvent$.subscribe(eventId => {
-      if (eventId === 'DELETE') {
-        this.deleteDoc();
-      }
-    });
+    this.subscriptions.push(
+      this.formToolbarService.toolbarEvent$.subscribe(eventId => {
+        if (eventId === 'DELETE') {
+          this.deleteDoc();
+        }
+      }),
 
-    this.subscription = this.treeQuery.selectActiveId().subscribe(data => {
-      this.formToolbarService.setButtonState(
-        'toolBtnRemove',
-        data && data.length > 0);
-    });
+      this.treeQuery.selectActiveId().subscribe(data => {
+        this.formToolbarService.setButtonState(
+          'toolBtnRemove',
+          data && data.length > 0);
+      })
+    );
   }
 
   deleteDoc() {
@@ -59,8 +58,9 @@ export class DeleteDocsPlugin extends Plugin {
   unregister() {
     super.unregister();
 
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+    if (this.subscriptions.length > 0) {
+      this.subscriptions.forEach(s => s.unsubscribe());
+      this.subscriptions = [];
     }
 
     this.formToolbarService.removeButton('toolBtnRemove');

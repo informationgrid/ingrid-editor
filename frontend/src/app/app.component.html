@@ -4,7 +4,7 @@
         <mat-toolbar-row>
             <span><strong>INGRID</strong> EDITOR Daten</span>
             <div fxFlex></div>
-            <button type="button" mat-button class="pull-right" (click)="logout()">
+            <button type="button" class="logout" mat-button (click)="logout()">
                 {{username | async}}
                 <mat-icon title="Logout">perm_identity</mat-icon>
             </button>

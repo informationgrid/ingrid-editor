@@ -1,8 +1,13 @@
 .header {
   padding: 10px 12px 10px 12px;
 
+  .options {
+    padding-bottom: 5px;
+  }
+
   ::ng-deep .mat-icon-button {
     height: 35px;
+    margin-top: -10px;
   }
 }
 

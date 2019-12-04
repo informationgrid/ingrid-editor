@@ -1,22 +1,7 @@
 import {EventManager} from '@angular/platform-browser';
 import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {DocumentService} from '../services/document/document.service';
-import {ShowDateInSectionBehaviour} from './form/ShowDateInSection/show-date-in-section.behaviour';
-import {TitleValidatorBehaviour} from './form/TitleValidator/title-validator.behaviour';
 import {Plugin} from './plugin';
-import {
-  CopyCutPastePlugin,
-  CreateDocRulesPlugin,
-  FolderPlugin,
-  PrintViewPlugin,
-  PublishPlugin,
-  StatisticPlugin,
-  UndoPlugin,
-  WorkflowPlugin
-} from '.';
-import {DeleteDocsPlugin} from './toolbar/deleteDocs/delete-docs.plugin';
-import {IsoViewPlugin} from './toolbar/isoView/iso-view.plugin';
 
 export interface Behaviour {
   id: string;

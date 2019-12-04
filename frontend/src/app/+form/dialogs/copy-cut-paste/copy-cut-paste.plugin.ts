@@ -1,13 +1,14 @@
 import {Injectable} from '@angular/core';
 import {DocumentService} from '../../../services/document/document.service';
-import {Plugin} from '../../plugin';
-import {FormToolbarService, Separator, ToolbarItem} from '../../../+form/toolbar/form-toolbar.service';
+import {Plugin} from '../../../+behaviours/plugin';
+import {FormToolbarService, Separator, ToolbarItem} from '../../toolbar/form-toolbar.service';
 import {UpdateType} from '../../../models/update-type.enum';
 import {ModalService} from '../../../services/modal/modal.service';
 import {PasteDialogComponent} from './paste-dialog.component';
 import {CopyMoveEnum} from './enums';
 import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
+import {TreeQuery} from '../../../store/tree/tree.query';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   constructor(private toolbarService: FormToolbarService,
               private storageService: DocumentService,
+              private treeQuery: TreeQuery,
               private modalService: ModalService,
               private dialog: MatDialog) {
     super();
@@ -46,7 +48,7 @@ export class CopyCutPastePlugin extends Plugin {
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
 
-    this.subscription = this.storageService.afterLoadAndSet$.subscribe((data) => {
+    /*this.subscription = this.storageService.afterLoadAndSet$.subscribe((data) => {
 
       if (data === null) {
         return;
@@ -54,7 +56,7 @@ export class CopyCutPastePlugin extends Plugin {
 
       this.toolbarService.setButtonState('toolBtnCopy', true);
       this.toolbarService.setButtonState('toolBtnCut', true);
-    });
+    });*/
 
     // add event handler for revert
     this.toolbarService.toolbarEvent$.subscribe(eventId => {
@@ -67,16 +69,15 @@ export class CopyCutPastePlugin extends Plugin {
     });
 
     // set button state according to selected documents
-    /*this.formService.selectedDocuments$.subscribe(data => {
+    this.treeQuery.selectActiveId().subscribe(data => {
       if (data.length === 0) {
-        // handleButtonState( data[0] );
         this.toolbarService.setButtonState('toolBtnCopy', false);
         this.toolbarService.setButtonState('toolBtnCut', false);
       } else {
         this.toolbarService.setButtonState('toolBtnCopy', true);
         this.toolbarService.setButtonState('toolBtnCut', true);
       }
-    });*/
+    });
   }
 
   private handleEvent(type: UpdateType) {

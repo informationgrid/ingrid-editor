@@ -13,7 +13,6 @@ import {MatInputModule} from '@angular/material/input';
 import {MatTabsModule} from '@angular/material/tabs';
 import {RouterModule, Routes} from '@angular/router';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
-import {PasteDialogComponent} from './system/CopyCutPaste/paste-dialog.component';
 import {PrintViewDialogComponent} from '../+form/dialogs/print-view/print-view-dialog.component';
 import {DemoComponent} from './system/demo/demo.component';
 import {StatisticComponent} from './system/statistic/statistic.component';
@@ -32,7 +31,7 @@ const routes: Routes = [
     MatButtonModule, MatInputModule, MatCheckboxModule, FormFieldsModule],
   declarations: [
     PluginsComponent, Collapse,
-    PasteDialogComponent, PrintViewDialogComponent,
+    PrintViewDialogComponent,
     DemoComponent, StatisticComponent
   ],
   entryComponents: [],

@@ -18,6 +18,10 @@ import {map} from 'rxjs/operators';
           height: 100%;
       }
 
+      .logout {
+        padding-right: 0;
+      }
+
       .wrapper {
           display: flex;
           flex-direction: column;

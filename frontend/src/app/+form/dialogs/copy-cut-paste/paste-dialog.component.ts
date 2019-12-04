@@ -7,7 +7,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
     <h2 mat-dialog-title>Einfügen</h2>
     <mat-dialog-content>
       <p>Wohin wollen Sie die ausgewählten Datensätze kopieren?</p>
-      <ige-tree (selected)="handleSelected($event)"></ige-tree>
+      <ige-tree (selected)="handleSelected($event)" [showReloadButton]="false"></ige-tree>
     </mat-dialog-content>
     <mat-dialog-actions>
       <button mat-button [mat-dialog-close]="selection" class="pull-right" [disabled]="!selection">{{copyOrMoveText}}</button>

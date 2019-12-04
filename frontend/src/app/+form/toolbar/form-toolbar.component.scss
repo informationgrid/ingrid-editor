@@ -45,8 +45,10 @@
 .save-buttons button {
   text-transform: uppercase;
   letter-spacing: 1px;
+  margin-right: 15px;
 
-  &:not(:last-child) {
-    margin-right: 15px;
+  &.menu {
+    margin-right: -15px;
+    margin-left: -15px;
   }
 }

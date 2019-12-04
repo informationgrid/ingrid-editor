@@ -58,7 +58,7 @@
                     <button mat-flat-button color="primary"
                             (click)="sendEvent(button.eventId)">Veröffentlichen</button>
 
-                    <button mat-icon-button [matMenuTriggerFor]="publishMenu" aria-label="Additional publish options">
+                    <button class="menu" mat-icon-button [matMenuTriggerFor]="publishMenu" aria-label="Additional publish options">
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #publishMenu="matMenu">
