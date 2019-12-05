@@ -20,7 +20,7 @@ export class GridDateComponent extends GridBaseComponent implements OnInit {
     this.inputDate = (<Date>this.value).toString();
   }
 
-  updateInputValue(newValue: string, $event: Event) {
+  updateInputValue(newValue: string, $event?: Event) {
     console.log('Event', $event);
     // if ($event.pageX) {}
     // if (!checkIfChanged || newValue !== this.inputDate ) {

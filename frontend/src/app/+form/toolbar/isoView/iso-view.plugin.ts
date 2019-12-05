@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Plugin} from '../../plugin';
-import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
+import {Plugin} from '../../../+behaviours/plugin';
+import {FormToolbarService} from '../form-toolbar.service';
 import {IsoViewComponent} from './iso-view.component';
 import {MatDialog} from '@angular/material/dialog';
 

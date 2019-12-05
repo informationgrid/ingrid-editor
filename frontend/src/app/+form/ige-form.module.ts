@@ -44,6 +44,7 @@ import {FolderPlugin} from './dialogs/folder/folder.plugin';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {PasteDialogComponent} from './dialogs/copy-cut-paste/paste-dialog.component';
 import {CopyCutPastePlugin} from './dialogs/copy-cut-paste/copy-cut-paste.plugin';
+import {IsoViewComponent} from './toolbar/isoView/iso-view.component';
 
 @NgModule({
   imports: [
@@ -60,13 +61,13 @@ import {CopyCutPastePlugin} from './dialogs/copy-cut-paste/copy-cut-paste.plugin
   declarations: [
     FormToolbarComponent,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
-    NewDocumentComponent, CreateFolderComponent, PasteDialogComponent,
+    NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
     FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent],
   providers: [NominatimService, FormularService, FolderPlugin, CopyCutPastePlugin],
   exports: [FormsModule, ScrollToDirective],
-  entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent]
+  entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent]
 })
 export class IgeFormModule {
 }

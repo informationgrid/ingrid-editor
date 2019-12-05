@@ -5,7 +5,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 })
 export class GridBaseComponent implements OnInit {
 
-  @Input() value: string|Date | { value: string | number, label: string };
+  @Input() value: any; //string | Date | { value: string | number, label: string };
   @Output() update = new EventEmitter();
   @Output() tabkey = new EventEmitter();
 
@@ -18,7 +18,7 @@ export class GridBaseComponent implements OnInit {
 
   updateValue(newValue: any) {
     // if (this.value !== newValue) {
-        this.update.next(newValue);
+    this.update.next(newValue);
     // }
   };
 

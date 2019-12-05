@@ -21,6 +21,7 @@ import {GridTextComponent} from './ngx-datagrid/grid-text/grid-text.component';
 import {GridSelectComponent} from './ngx-datagrid/grid-select/grid-select.component';
 import {FocusDirective} from '../directives/focus.directive';
 import { GridDateComponent } from './ngx-datagrid/grid-date/grid-date.component';
+import {GridBaseComponent} from './ngx-datagrid/grid-base/grid-base.component';
 
 @NgModule({
   imports: [
@@ -32,7 +33,7 @@ import { GridDateComponent } from './ngx-datagrid/grid-date/grid-date.component'
   ],
   declarations: [
     DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent,
-    NgxDatagridComponent, GridTextComponent, GridSelectComponent, FocusDirective, GridDateComponent
+    NgxDatagridComponent, GridTextComponent, GridSelectComponent, FocusDirective, GridDateComponent, GridBaseComponent
   ],
   exports: [
     DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent, NgxDatagridComponent,

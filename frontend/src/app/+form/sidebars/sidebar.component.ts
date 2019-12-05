@@ -14,8 +14,8 @@ import {TreeAction} from './tree/tree.component';
 export class SidebarComponent implements OnInit {
 
   selectedIds = this.treeQuery.selectActiveId();
-  private initialExpandNodes = new Subject<string[]>();
-  private initialActiveNodeId: string;
+  initialExpandNodes = new Subject<string[]>();
+  initialActiveNodeId: string;
   updateTree = new Subject<TreeAction[]>();
 
   constructor(private router: Router,

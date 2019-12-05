@@ -1,5 +1,5 @@
 {
-  "name": "ige-remastered-cli",
+  "name": "ige-ng",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -8,10 +8,10 @@
     "hmr": "ng serve --configuration hmr",
     "startIp": "ng serve --host 192.168.0.132",
     "startAot": "ng serve --aot",
-    "build": "ng build ige-remastered-cli",
+    "build": "ng build ige-ng",
     "profiles": "webpack --config src/profiles/webpack.config.js",
-    "prod": "ng build ige-remastered-cli --prod",
-    "prod-stats": "ng build ige-remastered-cli --prod --stats-json",
+    "prod": "ng build ige-ng --prod",
+    "prod-stats": "ng build ige-ng --prod --stats-json",
     "update": "ng update @angular/cli @angular/core @angular/material @datorama/akita",
     "test": "ng test",
     "lint": "ng lint",

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ige-remastered-cli": {
+    "ige-ng": {
       "root": "",
       "projectType": "application",
       "architect": {
@@ -70,7 +70,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ige-remastered-cli:build",
+            "browserTarget": "ige-ng:build",
             "proxyConfig": "src/environments/proxy.config.json",
             "port": 4300
           },
@@ -78,17 +78,17 @@
             "hmr": {
               "hmr": true,
               "hmrWarning": false,
-              "browserTarget": "ige-remastered-cli:build:hmr"
+              "browserTarget": "ige-ng:build:hmr"
             },
             "production": {
-              "browserTarget": "ige-remastered-cli:build:production"
+              "browserTarget": "ige-ng:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ige-remastered-cli:build"
+            "browserTarget": "ige-ng:build"
           }
         },
         "test": {
@@ -130,7 +130,7 @@
         }
       }
     },
-    "ige-remastered-cli-e2e": {
+    "ige-ng-e2e": {
       "root": "e2e",
       "projectType": "application",
       "cli": {},
@@ -140,7 +140,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "ige-remastered-cli:serve"
+            "devServerTarget": "ige-ng:serve"
           }
         },
         "lint": {
