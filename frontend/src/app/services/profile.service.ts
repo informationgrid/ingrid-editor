@@ -87,7 +87,7 @@ export class ProfileService {
               let profilesAbstract = this.profiles.map(p => {
                 return {
                   id: p.id,
-                  fields: p.fields
+                  fields: p.getFields()
                 }
               });
 

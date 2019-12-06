@@ -1,4 +1,4 @@
-import {DocumentState, IgeDocument} from "../../models/ige-document";
+import {IgeDocument} from "../../models/ige-document";
 import {DocumentAbstract} from "../../store/document/document.model";
 
 export class DocumentUtils {
@@ -13,7 +13,7 @@ export class DocumentUtils {
       id: doc._id,
       title: doc.title,
       //_id: doc._id,
-      _state: doc._state+''
+      _state: doc._state
     };
 
   }

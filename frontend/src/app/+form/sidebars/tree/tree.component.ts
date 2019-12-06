@@ -52,7 +52,7 @@ export class DynamicDatabase {
 @Injectable()
 export class DynamicDataSource {
 
-  dataChange = new BehaviorSubject<TreeNode[]>([]);
+  dataChange = new BehaviorSubject<TreeNode[]>(null);
 
   get data(): TreeNode[] {
     return this.dataChange.value;
@@ -214,11 +214,13 @@ export class TreeComponent implements OnInit {
   ngOnInit(): void {
     this.reloadTree();
 
+    // after root nodes are loaded start expansion
+    if (this.expandNodeIds) {
+      this.expandNodeIds.subscribe(ids => this.handleExpandNodes(ids));
+    }
+
     this.database.treeUpdates.subscribe(data => this.handleUpdate(data));
 
-    if (this.expandNodeIds) {
-      this.expandNodeIds.subscribe(ids => this.expandOnDataChange(ids));
-    }
     if (this.update) {
       // this.update.subscribe(data => this.handleUpdate(data));
     }
@@ -226,16 +228,16 @@ export class TreeComponent implements OnInit {
 
 
   private expandOnDataChange(ids: string[]) {
-    if (ids.length > 0) {
-      const changeObserver = this.dataSource.dataChange.subscribe(data => {
-        if (ids.length > 0) {
-          const nextId = ids.shift();
-          const nodeToExpand = data.filter(node => node._id === nextId)[0];
-          this.treeControl.expand(nodeToExpand);
-        }
-        setTimeout(() => changeObserver.unsubscribe(), 0);
-      });
-    }
+    const changeObserver = this.dataSource.dataChange.subscribe(data => {
+      if (data === null) return;
+
+      if (ids.length > 0) {
+        const nextId = ids.shift();
+        const nodeToExpand = data.filter(node => node._id === nextId)[0];
+        this.treeControl.expand(nodeToExpand);
+      }
+      setTimeout(() => changeObserver.unsubscribe(), 0);
+    });
   }
 
   /**
@@ -370,6 +372,25 @@ export class TreeComponent implements OnInit {
       for (let i = index + 1; i < this.dataSource.data.length && this.dataSource.data[i].level > parentNode.level; i++, count++) {
       }
       parentNode.hasChildren = count !== 0;
+    }
+  }
+
+  private handleExpandNodes(ids: string[]) {
+    if (ids && ids.length > 0) {
+      this.expandOnDataChange(ids);
+    }
+  }
+
+  getStateClass(node: TreeNode) {
+    switch (node.state) {
+      case 'W':
+        return 'working';
+      case 'PW':
+        return 'workingWithPublished';
+      case 'P':
+        return 'published';
+      default:
+        throw new Error('State is not supported: ' + node.state);
     }
   }
 }

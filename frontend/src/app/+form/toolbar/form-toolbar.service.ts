@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
-import { Subject } from 'rxjs';
+import {Subject} from 'rxjs';
 
 export interface DefaultToolbarItem {
   id: string;
   pos: number;
   align?: 'right' | 'left';
 }
+
 export interface ToolbarItem extends DefaultToolbarItem {
   tooltip: string;
   cssClasses: string;
@@ -14,6 +15,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   label?: string;
   isPrimary?: boolean;
 }
+
 export interface Separator extends DefaultToolbarItem {
   isSeparator: boolean;
 }
@@ -24,37 +26,51 @@ export interface Separator extends DefaultToolbarItem {
 export class FormToolbarService {
 
   // event when a new button was added
-  toolbar$ = new Subject<ToolbarItem|Separator>();
+  toolbar$ = new Subject<ToolbarItem | Separator>();
 
   // events coming from a toolbar button
   toolbarEvent$ = new Subject<string>();
 
-  _buttons: Array<ToolbarItem|Separator> = [
+  _buttons: Array<ToolbarItem | Separator> = [
     {id: 'toolBtnNew', tooltip: 'New', cssClasses: 'add', eventId: 'NEW_DOC', pos: 10, active: true},
-    {id: 'toolBtnSave', tooltip: 'Save', label: 'Speichern', cssClasses: 'save', eventId: 'SAVE', pos: 20, active: false, align: 'right'}
+    {
+      id: 'toolBtnSave',
+      tooltip: 'Save',
+      label: 'Speichern',
+      cssClasses: 'save',
+      eventId: 'SAVE',
+      pos: 20,
+      active: false,
+      align: 'right'
+    }
   ];
 
   constructor() {
   }
 
-  get buttons(): Array<ToolbarItem|Separator> {
+  get buttons(): Array<ToolbarItem | Separator> {
     return this._buttons;
   }
 
-  addButton(button: ToolbarItem|Separator) {
+  addButton(button: ToolbarItem | Separator) {
     const pos = this._buttons.length;
 
     this._buttons.splice(pos, 0, button);
 
     // sort buttons
-    this._buttons.sort( (a, b) => a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1 );
+    this._buttons.sort((a, b) => a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1);
 
     this.toolbar$.next(button);
   }
 
   removeButton(id: string): void {
     let index = null;
-    this._buttons.some( (b, i) => { if (b.id === id) { index = i; return true; } } );
+    this._buttons.some((b, i) => {
+      if (b.id === id) {
+        index = i;
+        return true;
+      }
+    });
 
     if (index !== null) {
       this._buttons.splice(index, 1);
@@ -72,11 +88,13 @@ export class FormToolbarService {
    * @param active
    */
   setButtonState(eventId: string, active: boolean) {
-    const button = <ToolbarItem>this.getButtonById( eventId );
-    button.active = active;
+    const button = <ToolbarItem>this.getButtonById(eventId);
+    if (button) {
+      button.active = active;
+    }
   }
 
   private getButtonById(id: string): DefaultToolbarItem {
-    return this._buttons.find( (b) => b.id === id );
+    return this._buttons.find((b) => b.id === id);
   }
 }

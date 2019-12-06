@@ -1,0 +1,11 @@
+@import "../../../../variables";
+
+:host {
+  line-height: 50px;
+  font-size: 14px;
+  color: $ige-secondary;
+}
+
+mat-icon {
+  vertical-align: middle;
+}

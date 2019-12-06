@@ -4,7 +4,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTreeModule} from '@angular/material/tree';
 import {createComponentFactory, Spectator, SpyObject} from '@ngneat/spectator';
-import {recentDocuments} from '../../../_test-data/documents';
+import {childDocuments1, recentDocuments} from '../../../_test-data/documents';
 import {of, Subject} from 'rxjs';
 import {TreeHeaderComponent} from './tree-header/tree-header.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -12,6 +12,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormFieldsModule} from '../../../form-fields/form-fields.module';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {UpdateType} from '../../../models/update-type.enum';
+import {createDocument, DocumentAbstract} from '../../../store/document/document.model';
+import {delay} from 'rxjs/operators';
 
 describe('TreeComponent', () => {
 
@@ -30,6 +32,8 @@ describe('TreeComponent', () => {
     db = spectator.get(DynamicDatabase, true);
     db.initialData.and.returnValue(of(recentDocuments));
     db.treeUpdates = new Subject();
+    // by default return no children when requested (can be overridden)
+    db.getChildren.and.returnValue(of([]));
   });
 
   it('should create component', () => {
@@ -40,47 +44,27 @@ describe('TreeComponent', () => {
   it('should show root nodes on startup', () => {
     spectator.detectChanges();
 
-    const recentDocs = spectator.queryAll('.mat-tree-node');
-    expect(recentDocs.length).toEqual(3);
-    expect(recentDocs[0].textContent.trim()).toContain('Test Document 1');
-    expect(recentDocs[1].textContent.trim()).toContain('Test Document 2');
-    expect(recentDocs[2].textContent.trim()).toContain('Test Document 3');
+    hasNumberOfTreeNodes(3);
+    nodeContainsTitle(0, 'Test Document 1');
+    nodeContainsTitle(1, 'Test Document 2');
+    nodeContainsTitle(2, 'Test Document 3');
   });
 
-  /*
+  it('should show no tree if documents have no profile info set', () => {
+    db.initialData.and.returnValue(of([]));
+    spectator.detectChanges();
 
-      it( 'should show no tree if documents have no profile info set', () => {
-        childrenTree = <any>childrenNoProfile;
-        fixture.detectChanges();
+    // find the title element in the DOM using a CSS selector
+    hasNumberOfTreeNodes(0);
+  });
 
-        // find the title element in the DOM using a CSS selector
-        const doc = fixture.debugElement;
-        el = doc.queryAll( By.css( 'tree-node' ) );
-
-        // confirm the element's content
-        expect( el.length ).toBe( 0 );
-      } );
-
-      it( 'should show create a tree structure', () => {
-        childrenTree = childrenThree;
-        fixture.detectChanges();
-
-        // find the title element in the DOM using a CSS selector
-        const doc = fixture.debugElement;
-        el = doc.queryAll( By.css( 'tree-node' ) );
-
-        // confirm the element's content
-        expect( el.length ).toBe( 3 );
-
-      } );
-  */
   it('should add a new root node', fakeAsync(() => {
     spectator.detectChanges();
 
     hasNumberOfTreeNodes(3);
 
-    // @ts-ignore
-    db.treeUpdates.next({type: UpdateType.New, data: [{id: '-1', _profile: 'A'}]});
+    const doc = createDocument({id: '12345', _profile: 'A', title: 'new node'});
+    sendTreeEvent(UpdateType.New, [doc]);
 
     hasNumberOfTreeNodes(4);
     expect(spectator.component.dataSource.data.length).toBe(4);
@@ -117,121 +101,80 @@ describe('TreeComponent', () => {
     expect(treeNode[1]._id).toBe('3');
   }));
 
+  fit('should add a new child node', fakeAsync(() => {
+    spectator.detectChanges();
+
+    // add a new document via the storage service
+    const doc = createDocument({id: '12345', _profile: 'A', title: 'child'});
+    sendTreeEvent(UpdateType.New, [doc], '3');
+    // children.push(doc);
+
+    // tree node should be expanded and show new node
+    hasNumberOfTreeNodes(4);
+
+    // when collapsing node then child should disappear
+    toggleTreeNode(2);
+
+    hasNumberOfTreeNodes(3);
+
+  }));
+
+  it('should modify a child node', fakeAsync(() => {
+    spectator.detectChanges();
+
+    // add a new document and update it via the storage service
+    const doc = createDocument({id: '12345', _profile: 'A', title: 'child node'});
+    sendTreeEvent(UpdateType.New, [doc], '3');
+
+    // after changes to tree are visible, modify dataset
+    const child = createDocument({id: '12345', _profile: 'A', title: 'modified child node'});
+    sendTreeEvent(UpdateType.Update, [child]);
+
+    hasNumberOfTreeNodes(4);
+
+    // check if correct node has been modified
+    nodeContainsTitle(0, 'Test Document 1');
+    nodeContainsTitle(1, 'Test Document 2');
+    nodeContainsTitle(2, 'Test Document 3');
+    nodeContainsTitle(3, 'modified child node');
+  }));
+
+  it('should delete a child node', fakeAsync(() => {
+    spectator.detectChanges();
+
+    // add a new document via the storage service
+    const doc = createDocument({id: '12345', _profile: 'A', title: 'child node'});
+    sendTreeEvent(UpdateType.New, [doc], '3');
+
+    hasNumberOfTreeNodes(4);
+
+    // @ts-ignore
+    sendTreeEvent(UpdateType.Delete, [{id: '12345'}]);
+
+    hasNumberOfTreeNodes(3);
+
+    // TODO: check if correct node has been removed
+  }));
+
+  it('should expand a node and load remote children', fakeAsync(() => {
+    recentDocuments[0]._hasChildren = true;
+    db.initialData.and.returnValue(of(recentDocuments));
+    db.getChildren.and.returnValue(of(childDocuments1).pipe(delay(2000)));
+    spectator.detectChanges();
+
+    toggleTreeNode(0);
+
+    hasNumberOfTreeNodes(3);
+
+    tick(3000);
+
+    hasNumberOfTreeNodes(5);
+  }));
+
+
   /*
-        it( 'should add a new child node', fakeAsync( () => {
-          fixture.detectChanges();
-
-          tick( 10 );
-
-          // add a new document via the storage service
-          storageService = TestBed.get( DocumentService );
-          storageService.datasetsChanged.next( {type: UpdateType.New, data: [{_id: '-1', _profile: 'A', _parent: '3'}]} );
-
-          // find the title element in the DOM using a CSS selector
-          const doc = fixture.debugElement;
-          el = doc.queryAll( By.css( 'tree-node' ) );
-
-          // root nodes should still be three
-          expect( el.length ).toBe( 3 );
-
-          tick( 100 );
-
-          // after some time the node should be added to the parent
-          fixture.detectChanges();
-
-          const el2 = doc.query( By.css( 'tree-node:nth-child(3) .toggle-children-wrapper' ) );
-          el2.nativeElement.click();
-
-          tick( 100 );
-
-          el = doc.queryAll( By.css( '.tree-children tree-node' ) );
-
-          // node with id should have a child now
-          expect( el.length ).toBe( 1 );
-
-          // the model also
-          expect( comp.nodes[2].children.length ).toBe( 1 );
-          expect( comp.nodes[2].children[0].id ).toBe( '-1' );
-        } ) );
-
-        it( 'should modify a child node', fakeAsync( () => {
-          fixture.detectChanges();
-
-          tick( 10 );
-
-          // add a new document and update it via the storage service
-          storageService = TestBed.get( DocumentService );
-          storageService.datasetsChanged.next( {type: UpdateType.New, data: [{_id: '-1', _profile: 'A', _parent: '3'}]} );
-
-          // find the title element in the DOM using a CSS selector
-          const doc = fixture.debugElement;
-
-          tick( 100 );
-
-          fixture.detectChanges();
-
-          const el2 = doc.query( By.css( 'tree-node:nth-child(3) .toggle-children-wrapper' ) );
-          el2.nativeElement.click();
-
-          // after changes to tree are visible, modify dataset
-          storageService.datasetsChanged.next( {
-            type: UpdateType.Update,
-            data: [{_id: '12345', _previousId: '-1', title: 'modified'}]
-          } );
-
-          el = doc.queryAll( By.css( '.tree-children tree-node' ) );
-
-          // node with id should have a child now
-          expect( el.length ).toBe( 1 );
-
-          // the model also
-          expect( comp.nodes[2].children.length ).toBe( 1 );
-          expect( comp.nodes[2].children[0].id ).toBe( '12345' );
-        } ) );
-
-        it( 'should delete a child node', fakeAsync( () => {
-          fixture.detectChanges();
-
-          tick( 10 );
-
-          // add a new document via the storage service
-          storageService = TestBed.get( DocumentService );
-          storageService.datasetsChanged.next( {type: UpdateType.New, data: [{_id: '-1', _profile: 'A', _parent: '3'}]} );
-
-          // find the title element in the DOM using a CSS selector
-          const doc = fixture.debugElement;
-
-          tick( 100 );
-
-          // after some time the node should be added to the parent
-          fixture.detectChanges();
-
-          const el2 = doc.query( By.css( 'tree-node:nth-child(3) .toggle-children-wrapper' ) );
-          el2.nativeElement.click();
-
-          tick( 100 );
-
-          el = doc.queryAll( By.css( '.tree-children tree-node' ) );
-
-          // node with id should have a child now
-          expect( el.length ).toBe( 1 );
-
-          storageService.datasetsChanged.next( {type: UpdateType.Delete, data: [{_id: '-1'}]} );
-          fixture.detectChanges();
-          el = doc.queryAll( By.css( '.tree-children tree-node' ) );
-
-          // node with id should have a child now
-          expect( el.length ).toBe( 0 );
-
-          // the model also should have a child
-          expect( comp.nodes.length ).toBe( 3 );
-          expect( comp.nodes[2].children.length ).toBe( 0 );
-        } ) );
-
-        xit( 'should expand a node and load remote children', () => {
-        } );
-      */
-
+   * Utility Functions
+   */
 
   function hasNumberOfTreeNodes(num) {
     const nodes = spectator.queryAll('.mat-tree-node');
@@ -243,4 +186,12 @@ describe('TreeComponent', () => {
     expect(nodes[nodeIndex].textContent.trim()).toContain(title);
   }
 
+  function toggleTreeNode(index: number) {
+    const nodes = spectator.queryAll('.mat-tree-node');
+    spectator.click(nodes[index]);
+  }
+
+  function sendTreeEvent(type: UpdateType, docs: DocumentAbstract[], parent?: string) {
+    db.treeUpdates.next({type: type, data: docs, parent: parent});
+  }
 });

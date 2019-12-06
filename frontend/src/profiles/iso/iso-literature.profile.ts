@@ -13,7 +13,7 @@ export class IsoLiteratureProfile extends IsoBaseProfile {
   constructor(storageService: DocumentService, codelistService: CodelistService) {
     super(storageService, codelistService);
 
-    this.fields.push(...[
+/*    this.fields.push(...[
 
       new Rubric({
         label: 'Literatur',
@@ -96,7 +96,7 @@ export class IsoLiteratureProfile extends IsoBaseProfile {
         ]
       })
 
-    ]);
+    ])*/;
   }
 
   getTitle(doc: any): string {

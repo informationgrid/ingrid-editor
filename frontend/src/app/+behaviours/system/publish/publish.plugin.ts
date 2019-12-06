@@ -4,7 +4,6 @@ import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
 import {DocumentQuery} from '../../../store/document/document.query';
-import {DocumentState} from '../../../models/ige-document';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 
@@ -123,21 +122,21 @@ export class PublishPlugin extends Plugin {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    this.storageService.datasetsChanged.subscribe( (data) => {
-      this.handleRevertButtonState(data);
+    /*this.storageService.datasetsChanged.subscribe( (data) => {
+      this.handleRevertButtonState(data.data);
     });
 
     this.storageService.afterLoadAndSet$.subscribe( (data) => {
       if (data) {
         this.handleRevertButtonState(data);
       }
-    });
+    });*/
 
     this.documentQuery.openedDocument$
     // TODO: .pipe(takeUntil(this.componentDestroyed))
       .subscribe(data => {
         this.formToolbarService.setButtonState( 'toolBtnPublish', data !== null );
-        this.formToolbarService.setButtonState( 'toolBtnRevert', data !== null && data._state === DocumentState.PW );
+        this.formToolbarService.setButtonState( 'toolBtnRevert', data !== null && data._state === 'PW' );
       } );
   }
 }

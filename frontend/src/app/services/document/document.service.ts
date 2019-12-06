@@ -239,4 +239,5 @@ export class DocumentService {
   addDocumentToStore(docs: DocumentAbstract[]) {
     this.treeStore.add(docs);
   }
+
 }

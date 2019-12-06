@@ -6,8 +6,9 @@ import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {from} from 'rxjs';
+import {BaseProfile} from '../base.profile';
 
-export class ProfileAddress implements Profile {
+export class ProfileAddress extends BaseProfile {
   // must be same as DBClass!
   id = 'AddressDoc';
 
@@ -15,27 +16,7 @@ export class ProfileAddress implements Profile {
 
   treeIconClass = 'fa fa-address-card-o';
 
-  fields = <FormlyFieldConfig[]>[
-    {
-      key: 'title',
-      type: 'input',
-      hide: true
-    },
-    {
-      key: '_id',
-      type: 'input',
-      hide: true
-    },
-    {
-      key: '_parent',
-      type: 'input',
-      hide: true
-    },
-    {
-      key: '_profile',
-      type: 'input',
-      hide: true
-    },
+  profileFields = <FormlyFieldConfig[]>[
     {
       fieldGroupClassName: 'display-flex',
       wrappers: ['panel'],
@@ -312,6 +293,10 @@ export class ProfileAddress implements Profile {
   ];
 
   constructor(storageService: DocumentService, private codelistService: CodelistService) {
+    super();
+
+    this.fields.push(...this.profileFields);
+
     /*codelistService.byIds(['6200', '6400']).then(codelists => {
       this.countrySelect.options = codelists[0];
       this.adminAreaSelect.options = codelists[1];

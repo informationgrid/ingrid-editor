@@ -1,39 +1,16 @@
-import { Profile } from '../app/services/formular/profile';
-import { TextboxField } from '../app/+form/controls';
-import { DocumentService } from '../app/services/document/document.service';
-import { CodelistService } from '../app/services/codelist/codelist.service';
-import {FormlyFieldConfig} from '@ngx-formly/core';
+import {DocumentService} from '../app/services/document/document.service';
+import {CodelistService} from '../app/services/codelist/codelist.service';
+import {BaseProfile} from './base.profile';
 
-export class ProfileFolder implements Profile {
+export class ProfileFolder extends BaseProfile {
   id = 'FOLDER';
 
   label = 'Ordner';
 
   treeIconClass = 'fa fa-folder-o';
 
-  fields = <FormlyFieldConfig[]>[
-    {
-      key: '_id',
-      type: 'input',
-      hide: true
-    },
-    {
-      key: '_profile',
-      type: 'input',
-      hide: true
-    },
-    {
-      key: 'title',
-      type: 'input',
-      wrappers: ['panel'],
-      templateOptions: {
-        externalLabel: 'Label'
-      }
-    }
-  ];
-
   constructor(storageService: DocumentService, codelistService: CodelistService) {
-
+    super();
   }
 
   getTitle(doc: any): string {

@@ -43,4 +43,9 @@
   span {
     font-size: 30px;
   }
+
+  ::ng-deep .expanded .mat-icon {
+    transform: rotate(180deg);
+  }
+
 }

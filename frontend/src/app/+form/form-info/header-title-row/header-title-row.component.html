@@ -1,24 +1,27 @@
 <div class="title">
-    <div class="document-type">
-        <mat-icon>brightness_5</mat-icon>
+    <div>
+        <div class="document-type">
+            <mat-icon>brightness_5</mat-icon>
+        </div>
+
+        <span *ngIf="!showTitleInput" class="label" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
+
+        <form [formGroup]="form" [class.hide]="!showTitleInput">
+            <mat-form-field>
+                <input #titleInput matInput formControlName="title"
+                       (blur)="showTitleInput = false"
+                       (keyup.enter)="showTitleInput = false">
+            </mat-form-field>
+        </form>
+
+        <div fxFlex></div>
+
+        <button mat-icon-button mat-stroked-button class="more" [class.expanded]="showMore" (click)="toggleMoreInfo()">
+            <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+        <button mat-icon-button class="menu">
+            <mat-icon>more_vert</mat-icon>
+        </button>
     </div>
 
-    <span *ngIf="!showTitleInput" class="label" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
-
-    <form [formGroup]="form" [class.hide]="!showTitleInput">
-        <mat-form-field>
-            <input #titleInput matInput formControlName="title"
-                   (blur)="showTitleInput = false"
-                   (keyup.enter)="showTitleInput = false">
-        </mat-form-field>
-    </form>
-
-    <div fxFlex></div>
-
-    <button mat-icon-button mat-stroked-button class="more">
-        <mat-icon>keyboard_arrow_down</mat-icon>
-    </button>
-    <button mat-icon-button class="menu">
-        <mat-icon>more_vert</mat-icon>
-    </button>
 </div>

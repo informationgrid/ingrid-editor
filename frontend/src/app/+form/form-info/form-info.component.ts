@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
+import {IgeDocument} from '../../models/ige-document';
 
 @Component({
   selector: 'ige-form-info',
@@ -9,10 +10,12 @@ import {FormGroup} from '@angular/forms';
 export class FormInfoComponent implements OnInit {
 
   @Input() form: FormGroup;
+  @Input() model: IgeDocument;
   @Input() sections: string[] = [];
 
   showDateBar;
   markFavorite;
+  showMore = false;
 
   constructor() { }
 

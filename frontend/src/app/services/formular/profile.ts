@@ -21,7 +21,9 @@ export interface Profile {
   /**
    * The field definitions for the formular, which also contains the layout classes and the validation.
    */
-  fields: FormlyFieldConfig[];
+  // fields: FormlyFieldConfig[];
+
+  getFields(): FormlyFieldConfig[];
 
 
   /**

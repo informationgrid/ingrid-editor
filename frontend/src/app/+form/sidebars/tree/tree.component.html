@@ -1,6 +1,6 @@
 <ige-tree-header *ngIf="showReloadButton" (reload)="reloadTree()"></ige-tree-header>
 
-<span *ngIf="dataSource.data.length === 0">Leerer Baum</span>
+<span *ngIf="dataSource.data?.length === 0">Leerer Baum</span>
 
 <!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
@@ -13,8 +13,8 @@
                    [class.active]="node._id === initialActiveNodeId"
                    [class.disabled]="disabledCondition(node)">
         <div class="label">
-            <mat-icon>insert_drive_file</mat-icon>
-            {{node.title}} ({{node.state}})
+            <mat-icon [ngClass]="getStateClass(node)">insert_drive_file</mat-icon>
+            {{node.title}}
         </div>
     </mat-tree-node>
 
@@ -23,6 +23,7 @@
                    matTreeNodePadding matTreeNodePaddingIndent="20"
                    (click)="!disabledCondition(node) && selectNode(node, $event)"
                    [class.selected]="node.isSelected"
+                   [class.expanded]="treeControl.isExpanded(node)"
                    [class.active]="node._id === initialActiveNodeId"
                    [class.disabled]="disabledCondition(node)"
                    [class.rootNode]="node.level === 0 && node.profile === 'FOLDER'">
@@ -31,7 +32,7 @@
                     class="toggle"
                     [disabled]="!node.hasChildren"
                     [attr.aria-label]="'toggle ' + node.title">
-                <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror" [class.expanded]="treeControl.isExpanded(node)">
+                <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror expander">
                     {{isLoading === node ? 'autorenew' : 'chevron_right'}}
                 </mat-icon>
             </button>

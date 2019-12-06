@@ -1,11 +1,11 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {Profile} from '../../services/formular/profile';
 import {DocumentService} from '../../services/document/document.service';
 import {CodelistService} from '../../services/codelist/codelist.service';
 import {from} from 'rxjs';
+import {BaseProfile} from '../../../profiles/base.profile';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
-export class McloudFormly implements Profile {
+export class McloudFormly extends BaseProfile {
   // must be same as DBClass!?
   id = 'mCloudDoc';
 
@@ -13,27 +13,8 @@ export class McloudFormly implements Profile {
 
   treeIconClass = 'fa fa-address-card-o';
 
-  fields = <FormlyFieldConfig[]>[
+  profileFields = <FormlyFieldConfig[]>[
     {
-      key: 'title',
-      type: 'input',
-      hide: true
-    },
-    {
-      key: '_id',
-      type: 'input',
-      hide: true
-    },
-    {
-      key: '_parent',
-      type: 'input',
-      hide: true
-    },
-    {
-      key: '_profile',
-      type: 'input',
-      hide: true
-    }, {
       wrappers: ['section'],
       templateOptions: {
         label: 'Allgemeines'
@@ -253,7 +234,8 @@ export class McloudFormly implements Profile {
   ];
 
   constructor(storageService?: DocumentService, private codelistService?: CodelistService) {
-
+    super();
+    this.fields.push(...this.profileFields);
   }
 
   private getCodelistForSelect(codelistId: number) {

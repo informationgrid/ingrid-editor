@@ -1,6 +1,5 @@
-import {DocumentState, IgeDocument} from "../../models/ige-document";
+import {IgeDocument} from "../../models/ige-document";
 import {Observable, of} from "rxjs";
-import {DocMainInfo} from "../../models/update-dataset-info.model";
 
 export class DocumentMockService {
 
@@ -9,7 +8,7 @@ export class DocumentMockService {
       _id: '1',
       _parent: null,
       _profile: 'UVP',
-      _state: DocumentState.W,
+      _state: 'W',
       _created: new Date().toDateString(),
       _modified: new Date().toDateString(),
       _hasChildren: false,
@@ -28,7 +27,7 @@ export class DocumentMockService {
       _id: '1',
       _parent: null,
       _profile: 'UVP',
-      _state: DocumentState.W,
+      _state: 'W',
       _created: new Date().toDateString(),
       _modified: new Date().toDateString(),
       _hasChildren: false,
@@ -64,7 +63,7 @@ export class DocumentMockService {
       _id: '1',
       _parent: null,
       _profile: 'UVP',
-      _state: DocumentState.P,
+      _state: 'P',
       _created: new Date().toDateString(),
       _modified: new Date().toDateString(),
       _hasChildren: false,

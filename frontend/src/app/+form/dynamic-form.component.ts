@@ -85,11 +85,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       });
 
-    // this.behaviourService.initialized.then(() => {
-      this.route.params.subscribe(params => {
-        this.loadDocument(params['id']);
-      });
-    // });
+    this.route.params.subscribe(params => {
+      this.loadDocument(params['id']);
+    });
 
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
 
@@ -98,9 +96,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     console.log('destroy');
     this.formularService.currentProfile = null;
-    /*this.behaviourService.behaviours
-      .filter(behave => behave.isActive && behave.unregister)
-      .forEach(behave => behave.unregister());*/
 
     // reset selected documents if we revisit the page
     this.formularService.setSelectedDocuments([]);

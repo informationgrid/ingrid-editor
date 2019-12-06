@@ -13,16 +13,21 @@ import {Rubric} from '../../app/+form/controls/rubric';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {TreeField} from '../../app/+form/controls/field-tree';
 import {DocumentService} from '../../app/services/document/document.service';
+import {BaseProfile} from '../base.profile';
 
-export class IsoBaseProfile implements Profile {
+export class IsoBaseProfile extends BaseProfile {
 
   id = 'ISOService';
 
   label = 'no-name';
 
-  fields: Array<FieldBase<any>> = null;
+  //fields: Array<FieldBase<any>> = null;
 
   constructor(storageService: DocumentService, public codelistService: CodelistService) {
+    super();
+
+
+
     const [addressTypes, advProductGroup, metadataLanguage, publicationInfo] = this.prepareSelects();
 
     this.fields = [

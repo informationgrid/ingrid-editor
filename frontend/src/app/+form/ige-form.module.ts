@@ -45,6 +45,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {PasteDialogComponent} from './dialogs/copy-cut-paste/paste-dialog.component';
 import {CopyCutPastePlugin} from './dialogs/copy-cut-paste/copy-cut-paste.plugin';
 import {IsoViewComponent} from './toolbar/isoView/iso-view.component';
+import { FormDashboardComponent } from './form-dashboard/form-dashboard.component';
+import { HeaderMoreComponent } from './form-info/header-more/header-more.component';
 
 @NgModule({
   imports: [
@@ -64,7 +66,7 @@ import {IsoViewComponent} from './toolbar/isoView/iso-view.component';
     NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
-    FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent],
+    FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent, HeaderMoreComponent],
   providers: [NominatimService, FormularService, FolderPlugin, CopyCutPastePlugin],
   exports: [FormsModule, ScrollToDirective],
   entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent]

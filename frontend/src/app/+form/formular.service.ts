@@ -63,7 +63,7 @@ export class FormularService {
     const nextProfile = this.getProfile(profile);
 
     if (nextProfile) {
-      fields = nextProfile.fields.slice(0);
+      fields = nextProfile.getFields().slice(0);
 
       this.currentProfile = profile;
 
