@@ -9,8 +9,8 @@
     <mat-tree-node *matTreeNodeDef="let node"
                    matTreeNodePadding matTreeNodePaddingIndent="20"
                    (click)="!disabledCondition(node) && selectNode(node, $event)"
-                   [class.selected]="node.isSelected"
-                   [class.active]="node._id === initialActiveNodeId"
+                   [class.selected]="selectionModel.isSelected(node)"
+                   [class.active]="node._id === activeNodeId"
                    [class.disabled]="disabledCondition(node)">
         <div class="label">
             <mat-icon [ngClass]="getStateClass(node)">insert_drive_file</mat-icon>
@@ -22,9 +22,9 @@
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
                    matTreeNodePadding matTreeNodePaddingIndent="20"
                    (click)="!disabledCondition(node) && selectNode(node, $event)"
-                   [class.selected]="node.isSelected"
+                   [class.selected]="selectionModel.isSelected(node)"
+                   [class.active]="node._id === activeNodeId"
                    [class.expanded]="treeControl.isExpanded(node)"
-                   [class.active]="node._id === initialActiveNodeId"
                    [class.disabled]="disabledCondition(node)"
                    [class.rootNode]="node.level === 0 && node.profile === 'FOLDER'">
         <div style="width: 100%;">

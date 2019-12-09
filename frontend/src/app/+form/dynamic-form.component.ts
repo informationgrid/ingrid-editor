@@ -22,6 +22,7 @@ import {SessionQuery} from '../store/session.query';
 import {untilDestroyed} from 'ngx-take-until-destroy';
 import {FormularService} from './formular.service';
 import {FormPluginsService} from './form-plugins.service';
+import {Subject} from 'rxjs';
 
 @Component({
   templateUrl: './dynamic-form.component.html',
@@ -36,6 +37,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   fields: FormlyFieldConfig[] = [];
 
   sections: string[];
+
+  formHeaderExpanded = new Subject<boolean>();
 
   form: FormGroup = new FormGroup({
     title: new FormControl('Kein Titel')
@@ -162,6 +165,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formUtils.addHotkeys(event, this.formularService, this.form);
   }
 
+  @HostListener('window:scroll', ['$event']) // for window scroll events
+  onScroll($event) {
+    if ($event.target.scrollTop > 100) {
+      // this.formHeaderExpanded.next(false);
+      // console.log('collapse header');
+    } else {
+      // this.formHeaderExpanded.next(true);
+    }
+  }
+
 
   /**
    * Load a document and prepare the form for the data.
@@ -228,6 +241,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // TODO: extract to permission service class
+
   hasPermission(data: any): boolean {
     // TODO: check all roles
     if (this.userRoles.length > 0) {

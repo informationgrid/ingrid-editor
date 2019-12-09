@@ -37,18 +37,6 @@ export class SidebarComponent implements OnInit {
 
       }
     }).unsubscribe();
-/*
-    setTimeout(() => {
-      console.log('Updating tree');
-      // this.updateTree.next([{id: '36766968-7fb8-4e43-8447-93f2b21995e2', type: TreeActionType.DELETE}]);
-      // this.treeStore.remove('36766968-7fb8-4e43-8447-93f2b21995e2');
-      // @ts-ignore
-      this.docService.datasetsChanged.next({type: UpdateType.Delete, data: [{id: '36766968-7fb8-4e43-8447-93f2b21995e2'}]});
-      // @ts-ignore
-      this.docService.datasetsChanged.next({type: UpdateType.New, data: [{id: '12345', title: 'New node', _profile: 'ADDRESS'}], parent: null});
-      // @ts-ignore
-      this.docService.datasetsChanged.next({type: UpdateType.Update, data: [{id: '4cc6fbeb-e562-47f0-a24d-e6b624387f89', title: 'Updated Folder :)', _profile: 'FOLDER'}]});
-    }, 3000);*/
   }
 
   handleLoad(selectedDocIds: string[]) { // id: string, profile?: string, forceLoad?: boolean) {
@@ -74,15 +62,6 @@ export class SidebarComponent implements OnInit {
 
     this.treeStore.setActive(selectedDocsId);
 
-    // when multiple nodes were selected then do not show any form
-    // TODO: update ui store for form
-    /*if (this.form) {
-      if (selectedDocs.length !== 1 && this.form.enabled) {
-        this.form.disable();
-      } else if (this.form.disabled) {
-        this.form.enable();
-      }
-    }*/
   }
 
 }

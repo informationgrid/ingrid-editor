@@ -4,7 +4,6 @@ export class TreeNode {
   parent: string;
   iconClass?: string;
   isExpanded?: boolean;
-  isSelected?: boolean;
 
   constructor(public _id: string,
               public title: string,

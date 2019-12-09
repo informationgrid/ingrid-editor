@@ -2,7 +2,7 @@ import {Component, EventEmitter, Injectable, Input, OnInit, Output} from '@angul
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../../../store/tree/tree-node.model';
 import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
-import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
+import {CollectionViewer, SelectionChange, SelectionModel} from '@angular/cdk/collections';
 import {map} from 'rxjs/operators';
 import {DocumentService} from '../../../services/document/document.service';
 import {DocumentAbstract} from '../../../store/document/document.model';
@@ -176,22 +176,23 @@ export class TreeComponent implements OnInit {
   @Input() expandNodeIds: Observable<string[]>;
   @Input() selectedIds: Observable<string[]>;
   @Input() showReloadButton = true;
-  @Input() initialActiveNodeId: string = null;
+  @Input() activeNodeId: string = null;
   @Input() update: Observable<any>;
 
-  @Output() selected = new EventEmitter<string[]>();
+  /** The selection for checklist */
+  selectionModel = new SelectionModel<TreeNode>(true);
+  @Output() selected = this.selectionModel.changed.pipe(
+    map(data => data.source.selected.map(item => item._id))
+  );
   @Output() activate = new EventEmitter<string[]>();
-  // @Output() reload = new EventEmitter<null>();
 
   // signal to show that a tree node is loading
   private isLoading: TreeNode;
 
-  // store all nodes where we can find the nested items
-  // private copy: TreeNode[] = [];
-
   treeControl: FlatTreeControl<TreeNode>;
 
   dataSource: DynamicDataSource;
+
 
   /**
    * A function to determine if a tree node should be disabled.
@@ -200,11 +201,10 @@ export class TreeComponent implements OnInit {
     return false;
   };
 
+
   constructor(private database: DynamicDatabase) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database);
-
-
   }
 
   getLevel = (node: TreeNode) => node.level;
@@ -261,38 +261,23 @@ export class TreeComponent implements OnInit {
 
     // deselect all nodes first
     // TODO: handle shiftKey
-    let selectedIds = [];
     if ($event.ctrlKey) {
-      selectedIds = this.dataSource.data
-        .filter(n => n.isSelected)
-        .map(n => n._id);
-    }
-
-    // set selection state to new node
-    // toggle state if ctrl-key is pressed, otherwise selected
-    if ($event.ctrlKey && node.isSelected) {
-      // deselect
-      selectedIds.splice(selectedIds.indexOf(node._id), 1);
+      this.selectionModel.toggle(node);
     } else {
-      selectedIds.push(node._id);
-
-      if (selectedIds.length === 1) {
-        this.initialActiveNodeId = node._id;
-        this.activate.next([node._id]);
-      }
-
-      if (node.hasChildren) {
-        this.treeControl.toggle(node);
-      }
-
+      this.selectionModel.clear();
+      this.selectionModel.select(node);
+      this.activeNodeId = this.selectionModel.selected[0]._id;
+      this.activate.next([this.activeNodeId]);
     }
 
-    this.selected.next(selectedIds);
+    if (node.hasChildren) {
+      this.treeControl.toggle(node);
+    }
 
   }
 
   private getParentNode(node: TreeNode) {
-    const nodeIndex = this.dataSource.data.findIndex( item => item._id === node._id);
+    const nodeIndex = this.dataSource.data.findIndex(item => item._id === node._id);
 
     for (let i = nodeIndex - 1; i >= 0; i--) {
       if (this.dataSource.data[i].level === node.level - 1) {
