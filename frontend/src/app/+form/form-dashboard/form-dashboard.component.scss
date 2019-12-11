@@ -1,0 +1,19 @@
+@import "../../../variables";
+
+:host {
+  display: block;
+  padding: 0 24px 24px;
+}
+
+h1, .button-bar {
+  text-align: center;
+}
+
+.button-bar {
+  color: $ige-secondary;
+  padding-bottom: 24px;
+}
+
+.info-box {
+  padding-bottom: 24px;
+}

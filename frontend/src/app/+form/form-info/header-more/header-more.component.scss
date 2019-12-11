@@ -1,0 +1,26 @@
+@import "../../../../variables";
+
+:host {
+  transition: height, 1s linear;
+  display: block;
+  max-height: 300px;
+
+  &.hide-animated {
+    max-height: 0;
+    overflow: hidden;
+  }
+}
+
+.more-info {
+
+  padding-bottom: 20px;
+
+  > div > div:nth-child(1) {
+    width: 230px;
+    color: $ige-comment-color;
+  }
+
+  .padding-below {
+    padding-bottom: 10px;
+  }
+}
