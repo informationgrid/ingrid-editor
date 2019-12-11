@@ -1,19 +1,13 @@
 @import "../../../../variables";
 
 :host {
-  transition: height, 1s linear;
   display: block;
-  max-height: 300px;
-
-  &.hide-animated {
-    max-height: 0;
-    overflow: hidden;
-  }
 }
 
 .more-info {
 
-  padding-bottom: 20px;
+  //padding-bottom: 20px;
+  overflow: hidden;
 
   > div > div:nth-child(1) {
     width: 230px;
@@ -21,6 +15,6 @@
   }
 
   .padding-below {
-    padding-bottom: 10px;
+    //padding-bottom: 10px;
   }
 }

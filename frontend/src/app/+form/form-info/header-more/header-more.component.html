@@ -1,4 +1,4 @@
-<div class="more-info">
+<div *ngIf="showMore" [@slideDown] class="more-info">
     <div fxLayout="row">
         <div>Status</div>
         <div>{{getState(model._state)}}</div>

@@ -33,7 +33,7 @@ export abstract class BaseProfile implements Profile {
   label: string;
 
   getFields(): FormlyFieldConfig[] {
-    return [];
+    return this.fields;
   }
 
 

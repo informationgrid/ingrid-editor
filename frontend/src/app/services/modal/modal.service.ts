@@ -63,11 +63,11 @@ export class ModalService {
       console.log('The dialog was closed');
     });*/
 
-    this.ngZone.run( () => {
-      this.dialog.open( ErrorDialogComponent, {
+    // this.ngZone.run( () => {
+      return this.dialog.open( ErrorDialogComponent, {
         data: errorObj
-      } );
-    });
+      } ).afterOpened();
+    // });
 
   }
 

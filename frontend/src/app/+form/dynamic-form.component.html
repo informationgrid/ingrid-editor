@@ -3,39 +3,6 @@
     <form-toolbar></form-toolbar>
 
     <as-split [useTransition]="true" (dragEnd)="rememberSizebarWidth($event)">
-        <!--<split-area [size]="5">
-            <div class="tabs-left menu">
-                <ul class="nav-tabs flex-column">
-                    <li [class.active]="sideTab === 'tree'">
-                        <a mat-button (click)="sideTab = 'tree'" title="Baumstruktur" data-toggle="tab">
-                            <span class="fa fa-tree"></span>
-                        </a>
-                    </li>
-                    <li [class.active]="sideTab === 'search'">
-                        <a mat-button (click)="sideTab = 'search'" title="Suche" data-toggle="tab">
-                            <span class="fa fa-search"></span>
-                        </a>
-                    </li>
-                    <li [class.active]="sideTab === 'wizards'">
-                        <a mat-button (click)="sideTab = 'wizards'" title="Assistenten" data-toggle="tab">
-                            <span class="fa fa-magic"></span>
-                        </a>
-                    </li>
-                    <li [class.active]="sideTab === 'favorites'">
-                        <a mat-button (click)="sideTab = 'favorites'" title="Favoriten" data-toggle="tab">
-                            <span class="fa fa-star"></span>
-                        </a>
-                    </li>
-                    <li class="toggle">
-                        <a title="Ein-/Ausklappen" (click)="hideSidebar = !hideSidebar">
-                    <span class="fa"
-                          [class.fa-chevron-left]="!hideSidebar"
-                          [class.fa-chevron-right]="hideSidebar"></span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </split-area>-->
 
         <!-- exchangable sidebar -->
         <as-split-area [size]="sidebarWidth" id="sidebar">
@@ -47,7 +14,7 @@
             <ige-form-dashboard *ngIf="fields.length === 0"></ige-form-dashboard>
 
             <ng-container *ngIf="fields.length !== 0">
-                <ige-form-info [form]="form" [model]="model" [sections]="sections" [expanded]="formHeaderExpanded"></ige-form-info>
+                <ige-form-info [form]="form" [model]="model" [sections]="sections" [class.scrolled]="isScrolled"></ige-form-info>
 
                 <form [formGroup]="form">
                     <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>

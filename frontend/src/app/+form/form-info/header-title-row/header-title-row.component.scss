@@ -40,6 +40,15 @@
     width: 100%;
   }
 
+  form {
+    margin-top: -10px;
+    margin-right: 10px;
+  }
+
+  ::ng-deep .mat-form-field-outline > div {
+    background-color: #ffffff;
+  }
+
   span {
     font-size: 30px;
   }

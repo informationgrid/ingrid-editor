@@ -2,10 +2,8 @@ import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DocumentAbstract} from '../store/document/document.model';
 import {Profile} from '../services/formular/profile';
-import {ConfigService, Configuration} from '../services/config/config.service';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpErrorResponse} from '@angular/common/http';
 import {ProfileService} from '../services/profile.service';
-import {ProfileQuery} from '../store/profile/profile.query';
 import {DocumentService} from '../services/document/document.service';
 import {TreeQuery} from '../store/tree/tree.query';
 import {TreeStore} from '../store/tree/tree.store';
@@ -15,6 +13,7 @@ import {IFieldBase} from './controls';
 import {FormGroup} from '@angular/forms';
 import {CreateDocOptions, NewDocumentComponent} from './dialogs/new-document/new-document.component';
 import {IgeDocument} from '../models/ige-document';
+import {FormMessageService} from './form-info/form-message/form-message.service';
 
 @Injectable()
 export class FormularService {
@@ -32,24 +31,15 @@ export class FormularService {
 
   profileDefinitions: Profile[];
 
-  private configuration: Configuration;
-
-  constructor(private http: HttpClient,
-              private dialog: MatDialog,
-              configService: ConfigService,
+  constructor(private dialog: MatDialog,
               private profiles: ProfileService,
-              profileQuery: ProfileQuery,
               private documentService: DocumentService,
+              private formMessageService: FormMessageService,
               private treeQuery: TreeQuery,
               private treeStore: TreeStore,
               private sessionStore: SessionStore) {
 
-    // this.formPluginsService = new FormPluginsService();
-
-    this.configuration = configService.getConfiguration();
-
     // create profiles after we have logged in
-
     console.log('init profiles');
     this.profiles.initialized
       .then(registeredProfiles => this.profileDefinitions = registeredProfiles)
@@ -88,7 +78,7 @@ export class FormularService {
     }
   }
 
-  handleToolbarEvents(eventId: string, form) {
+  handleToolbarEvents(eventId: string, form: FormGroup) {
     console.log('generic toolbar handler', eventId);
     if (eventId === 'SAVE') {
       this.save(form);
@@ -102,8 +92,12 @@ export class FormularService {
 
     form.markAsPristine();
 
-    this.documentService.save(form.value, false).then(() => {
-      // TODO: this.messageService.add({severity: 'success', summary: 'Dokument wurde gespeichert'});
+    this.saveForm(form.value);
+  }
+
+  private saveForm(data: IgeDocument, isNewDoc= false) {
+    this.documentService.save(data, isNewDoc).then(() => {
+      this.formMessageService.sendInfo('Ihre Eingabe wurde gespeichert');
     }, (err: HttpErrorResponse) => {
       throw err;
     });
@@ -149,9 +143,9 @@ export class FormularService {
       parent = this.treeQuery.getActive()[0].id;
     }
 
-    // TODO: use constructor for creating new document
     const newDoc = new IgeDocument(type, parent);
-    this.documentService.save(newDoc, true);
+
+    this.saveForm(newDoc, true);
 
   }
 

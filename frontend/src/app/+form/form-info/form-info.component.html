@@ -1,12 +1,11 @@
-<div class="form-info-bar"
-     (click)="showDateBar = !showDateBar"
-     [@openClose]="headerState">
-    <ige-breadcrumb *ngIf="headerState === 'expanded'"></ige-breadcrumb>
+<div class="form-info-bar" (click)="showDateBar = !showDateBar">
+    <ige-breadcrumb></ige-breadcrumb>
 
     <ige-header-title-row [form]="form" (toggleMore)="showMore = !showMore"></ige-header-title-row>
 
-    <ige-header-more [class.hide-animated]="!showMore" [model]="model"></ige-header-more>
+    <ige-header-more [showMore]="showMore" [model]="model"></ige-header-more>
 
     <ige-header-navigation [sections]="sections"></ige-header-navigation>
-
 </div>
+
+<ige-form-message></ige-form-message>

@@ -1,0 +1,4 @@
+<div class="wrapper" *ngIf="type" [ngClass]="type.severity" [@slideDown]>
+    <mat-icon>{{getIconClass(type.severity)}}</mat-icon>
+    {{type.message}}
+</div>

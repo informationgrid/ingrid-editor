@@ -7,24 +7,23 @@ import {HttpErrorResponse} from '@angular/common/http';
   providedIn: 'root'
 })
 export class GlobalErrorHandler implements ErrorHandler {
+
   constructor(private modalService: ModalService) {
   }
 
   handleError(error) {
-    // debugger;
     console.log("HANDLE ERROR", error);
 
     if (error instanceof IgeError) {
       this.modalService.showIgeError( error );
     } else if (error instanceof HttpErrorResponse) {
       const e = new IgeError();
-      // e.setMessage(error.message, error.error);
       e.setMessage(error.message, error.error.message ? error.error.message : error.error);
       this.modalService.showIgeError(e);
     } else {
-      // alert('This error should be handled differently!')
       this.modalService.showJavascriptError(error.message, error.stack);
     }
+    throw(error);
   }
 
 }

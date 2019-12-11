@@ -4,6 +4,13 @@
   position: sticky;
   z-index: 10;
   top: 0;
-  padding: 0 10px 4px 36px;
+  background-color: $ige-background;
+
+  &.scrolled {
+    box-shadow: 0 0 2px 0 #666666;
+  }
 }
 
+.form-info-bar {
+  padding: 0 10px 4px 36px;
+}

@@ -47,6 +47,7 @@ import {CopyCutPastePlugin} from './dialogs/copy-cut-paste/copy-cut-paste.plugin
 import {IsoViewComponent} from './toolbar/isoView/iso-view.component';
 import { FormDashboardComponent } from './form-dashboard/form-dashboard.component';
 import { HeaderMoreComponent } from './form-info/header-more/header-more.component';
+import { FormMessageComponent } from './form-info/form-message/form-message.component';
 
 @NgModule({
   imports: [
@@ -66,7 +67,7 @@ import { HeaderMoreComponent } from './form-info/header-more/header-more.compone
     NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
-    FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent, HeaderMoreComponent],
+    FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent, HeaderMoreComponent, FormMessageComponent],
   providers: [NominatimService, FormularService, FolderPlugin, CopyCutPastePlugin],
   exports: [FormsModule, ScrollToDirective],
   entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent]

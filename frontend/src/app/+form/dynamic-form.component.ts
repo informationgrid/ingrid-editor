@@ -23,6 +23,7 @@ import {untilDestroyed} from 'ngx-take-until-destroy';
 import {FormularService} from './formular.service';
 import {FormPluginsService} from './form-plugins.service';
 import {Subject} from 'rxjs';
+import {FormMessageType} from './form-info/form-message/form-message.component';
 
 @Component({
   templateUrl: './dynamic-form.component.html',
@@ -38,7 +39,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sections: string[];
 
-  formHeaderExpanded = new Subject<boolean>();
+  isScrolled = false; // new Subject<boolean>();
 
   form: FormGroup = new FormGroup({
     title: new FormControl('Kein Titel')
@@ -47,6 +48,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   behaviours: Behaviour[];
   error = false;
   model: IgeDocument | any = {};
+
+  formMessage = new Subject<FormMessageType>();
 
   userRoles: Role[];
 
@@ -167,12 +170,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener('window:scroll', ['$event']) // for window scroll events
   onScroll($event) {
-    if ($event.target.scrollTop > 100) {
-      // this.formHeaderExpanded.next(false);
-      // console.log('collapse header');
-    } else {
-      // this.formHeaderExpanded.next(true);
-    }
+    this.isScrolled = $event.target.scrollTop > 0;
   }
 
 
@@ -241,7 +239,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // TODO: extract to permission service class
-
   hasPermission(data: any): boolean {
     // TODO: check all roles
     if (this.userRoles.length > 0) {

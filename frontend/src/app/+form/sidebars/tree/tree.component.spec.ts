@@ -66,30 +66,30 @@ describe('TreeComponent', () => {
     hasNumberOfTreeNodes(0);
   });
 
-  it('should add a new root node', fakeAsync(() => {
+  fit('should add a new root node', fakeAsync(() => {
     spectator.detectChanges();
 
     hasNumberOfTreeNodes(3);
 
-    const doc = createDocument({id: '12345', _profile: 'A', title: 'new node'});
+    const doc = createDocument({id: '12345', _profile: 'A', title: 'new node', _state: 'W'});
     sendTreeEvent(UpdateType.New, [doc]);
 
     hasNumberOfTreeNodes(4);
     expect(spectator.component.dataSource.data.length).toBe(4);
   }));
 
-  it('should modifiy a root node', fakeAsync(() => {
+  it('should modify a root node', fakeAsync(() => {
     spectator.detectChanges();
 
     // add a new document via the storage service
-    // @ts-ignore
-    db.treeUpdates.next({type: UpdateType.New, data: [{id: '12345', _profile: 'A', title: 'initial node'}]});
+    const doc = createDocument({id: '12345', _profile: 'A', title: 'initial node', _state: 'W'});
+    sendTreeEvent(UpdateType.New, [doc]);
     hasNumberOfTreeNodes(4);
     nodeContainsTitle(0, 'initial node');
 
     // update document with a new id
-    // @ts-ignore
-    db.treeUpdates.next({type: UpdateType.Update, data: [{id: '12345', _profile: 'A', title: 'modified node'}]});
+    const docUpdate = createDocument({id: '12345', _profile: 'A', title: 'modified node', _state: 'W'});
+    sendTreeEvent(UpdateType.Update, [docUpdate]);
 
     nodeContainsTitle(3, 'modified node');
 
@@ -232,7 +232,39 @@ describe('TreeComponent', () => {
 
   }));
 
-  fit('should select a node when clicking on it', fakeAsync(() => {
+  xit('should copy a root node to root', fakeAsync(() => {
+
+  }));
+
+  xit('should copy a root node to a folder', fakeAsync(() => {
+
+  }));
+
+  xit('should copy a child node to root', fakeAsync(() => {
+
+  }));
+
+  xit('should copy a whole tree/folder to root', fakeAsync(() => {
+
+  }));
+
+  xit('should not move a root node to root?', fakeAsync(() => {
+
+  }));
+
+  xit('should move a root node to a folder', fakeAsync(() => {
+
+  }));
+
+  xit('should move a child node to root', fakeAsync(() => {
+
+  }));
+
+  xit('should move a whole tree/folder to root', fakeAsync(() => {
+
+  }));
+
+  it('should select a node when clicking on it', fakeAsync(() => {
     db.initialData.and.returnValue(of(rootDocumentsWithDifferentStates));
     spectator.detectChanges();
 

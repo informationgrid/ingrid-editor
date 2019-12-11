@@ -384,6 +384,7 @@ export class TreeComponent implements OnInit {
       case 'P':
         return 'published';
       default:
+        console.error('State is not supported: ' + node.state, node);
         throw new Error('State is not supported: ' + node.state);
     }
   }

@@ -7,22 +7,14 @@ import {IgeDocument} from '../../models/ige-document';
 @Component({
   selector: 'ige-form-info',
   templateUrl: './form-info.component.html',
-  styleUrls: ['./form-info.component.scss'],
-  animations: [
-    trigger('openClose', [
-      state('collapsed, void', style({height: '50px'})),
-      state('expanded', style({height: 'auto'})),
-      transition('collapsed => expanded', animate('200ms ease-in')),
-      transition('* => collapsed', animate('200ms ease-out'))
-    ])
-  ]
+  styleUrls: ['./form-info.component.scss']
 })
 export class FormInfoComponent implements OnInit {
 
   @Input() form: FormGroup;
   @Input() model: IgeDocument;
   @Input() sections: string[] = [];
-  @Input() expanded: Observable<boolean>;
+  // @Input() expanded: Observable<boolean>;
 
   showDateBar;
   markFavorite;
@@ -33,7 +25,7 @@ export class FormInfoComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.expanded.subscribe(expand => this.headerState = expand ? 'expanded' : 'collapsed');
+    // this.expanded.subscribe(expand => this.headerState = expand ? 'expanded' : 'collapsed');
   }
 
 }
