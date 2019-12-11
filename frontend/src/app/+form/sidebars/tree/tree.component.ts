@@ -93,7 +93,11 @@ export class DynamicDataSource {
    */
   toggleNode(node: TreeNode, expand: boolean) {
     const index = this.data.indexOf(node);
-    if (expand) {
+    if (index === -1) {
+      console.warn('Node not found');
+      return;
+    }
+    if (expand && !node.isExpanded) {
       this._database.getChildren(node._id)
         .pipe(
           map(docs => this.mapDocumentsToTreeNodes(docs, node.level + 1))
@@ -107,21 +111,23 @@ export class DynamicDataSource {
         // const nodes = children.map(child =>
         //   new TreeNode(name, node.profile, node.level + 1, this._database.isExpandable(name)));
         this.data.splice(index + 1, 0, ...children);
+        node.isLoading = false;
+        node.isExpanded = true;
         // notify the change
         this.dataChange.next(this.data);
-        node.isLoading = false;
       });
-    } else {
+    } else if (!expand && node.isExpanded) {
       let count = 0;
       for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {
       }
       this.data.splice(index + 1, count);
       this.dataChange.next(this.data);
+      node.isExpanded = false;
     }
   }
 
   mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
-    return docs.map(doc => new TreeNode(doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren));
+    return docs.map(doc => new TreeNode(doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren, doc._parent));
   }
 
   removeNode(docs: DocumentAbstract[]) {
@@ -236,7 +242,10 @@ export class TreeComponent implements OnInit {
         const nodeToExpand = data.filter(node => node._id === nextId)[0];
         this.treeControl.expand(nodeToExpand);
       }
-      setTimeout(() => changeObserver.unsubscribe(), 0);
+
+      if (ids.length === 0) {
+        setTimeout(() => changeObserver.unsubscribe(), 0);
+      }
     });
   }
 

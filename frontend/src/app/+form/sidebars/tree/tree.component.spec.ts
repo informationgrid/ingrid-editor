@@ -4,7 +4,15 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTreeModule} from '@angular/material/tree';
 import {createComponentFactory, Spectator, SpyObject} from '@ngneat/spectator';
-import {childDocuments1, recentDocuments} from '../../../_test-data/documents';
+import {
+  childDocuments1,
+  deeplyNestedDocumentsLevel1,
+  deeplyNestedDocumentsLevel2,
+  deeplyNestedDocumentsLevel3,
+  deeplyNestedDocumentsRoot,
+  recentDocuments,
+  rootDocumentsWithDifferentStates
+} from '../../../_test-data/documents';
 import {of, Subject} from 'rxjs';
 import {TreeHeaderComponent} from './tree-header/tree-header.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -101,11 +109,11 @@ describe('TreeComponent', () => {
     expect(treeNode[1]._id).toBe('3');
   }));
 
-  fit('should add a new child node', fakeAsync(() => {
+  it('should add a new child node', fakeAsync(() => {
     spectator.detectChanges();
 
     // add a new document via the storage service
-    const doc = createDocument({id: '12345', _profile: 'A', title: 'child'});
+    const doc = createDocument({id: '12345', _profile: 'A', title: 'child', _state: 'W'});
     sendTreeEvent(UpdateType.New, [doc], '3');
     // children.push(doc);
 
@@ -113,7 +121,7 @@ describe('TreeComponent', () => {
     hasNumberOfTreeNodes(4);
 
     // when collapsing node then child should disappear
-    toggleTreeNode(2);
+    selectNode(2);
 
     hasNumberOfTreeNodes(3);
 
@@ -123,11 +131,11 @@ describe('TreeComponent', () => {
     spectator.detectChanges();
 
     // add a new document and update it via the storage service
-    const doc = createDocument({id: '12345', _profile: 'A', title: 'child node'});
+    const doc = createDocument({id: '12345', _profile: 'A', title: 'child node', _state: 'W'});
     sendTreeEvent(UpdateType.New, [doc], '3');
 
     // after changes to tree are visible, modify dataset
-    const child = createDocument({id: '12345', _profile: 'A', title: 'modified child node'});
+    const child = createDocument({id: '12345', _profile: 'A', title: 'modified child node', _state: 'W'});
     sendTreeEvent(UpdateType.Update, [child]);
 
     hasNumberOfTreeNodes(4);
@@ -143,7 +151,7 @@ describe('TreeComponent', () => {
     spectator.detectChanges();
 
     // add a new document via the storage service
-    const doc = createDocument({id: '12345', _profile: 'A', title: 'child node'});
+    const doc = createDocument({id: '12345', _profile: 'A', title: 'child node', _state: 'W'});
     sendTreeEvent(UpdateType.New, [doc], '3');
 
     hasNumberOfTreeNodes(4);
@@ -162,7 +170,7 @@ describe('TreeComponent', () => {
     db.getChildren.and.returnValue(of(childDocuments1).pipe(delay(2000)));
     spectator.detectChanges();
 
-    toggleTreeNode(0);
+    selectNode(0);
 
     hasNumberOfTreeNodes(3);
 
@@ -171,6 +179,78 @@ describe('TreeComponent', () => {
     hasNumberOfTreeNodes(5);
   }));
 
+  it('should represent all states of a node (published, working, both)', fakeAsync(() => {
+    db.initialData.and.returnValue(of(rootDocumentsWithDifferentStates));
+    spectator.detectChanges();
+
+    hasNumberOfTreeNodes(3);
+    nodeHasClass(0, 'published');
+    nodeHasNotClass(0, 'working');
+    nodeHasClass(1, 'working');
+    nodeHasNotClass(1, 'published');
+    nodeHasClass(2, 'workingWithPublished');
+    nodeHasNotClass(2, 'working');
+    nodeHasNotClass(2, 'published');
+  }));
+
+  it('should initially expand to a deeply nested node', fakeAsync(() => {
+    db.initialData.and.returnValue(of(deeplyNestedDocumentsRoot));
+    db.getChildren.and.callFake(id => {
+      switch (id) {
+        case '1':
+          return of(deeplyNestedDocumentsLevel1);
+        case '2':
+          return of(deeplyNestedDocumentsLevel2);
+        case '3':
+          return of(deeplyNestedDocumentsLevel3);
+        default:
+          throw new Error('Unknown parent: ' + id);
+      }
+    });
+
+    spectator.component.activeNodeId = '4';
+    spectator.component.expandNodeIds = of(['1', '2', '3']).pipe(delay(0));
+    spectator.detectChanges();
+
+    tick();
+
+    hasNumberOfTreeNodes(4);
+
+    nodeIsExpanded(0);
+    nodeIsExpanded(1);
+    nodeIsExpanded(2);
+    nodeContainsTitle(3, 'Nested Document');
+    nodeIsSelected(3);
+
+  }));
+
+  xit('should reload the tree (nodes expanded state remembered?)', fakeAsync(() => {
+
+  }));
+
+  xit('should select multiple nodes and delete them at once', fakeAsync(() => {
+
+  }));
+
+  fit('should select a node when clicking on it', fakeAsync(() => {
+    db.initialData.and.returnValue(of(rootDocumentsWithDifferentStates));
+    spectator.detectChanges();
+
+    selectNode(0);
+    nodeIsSelected(0);
+    selectNode(1);
+    nodeIsSelected(1);
+    selectNode(2);
+    nodeIsSelected(2);
+  }));
+
+  xit('should find a node by search', fakeAsync(() => {
+
+  }));
+
+  xit('should show no result info if search did not found anything', fakeAsync(() => {
+
+  }));
 
   /*
    * Utility Functions
@@ -186,7 +266,7 @@ describe('TreeComponent', () => {
     expect(nodes[nodeIndex].textContent.trim()).toContain(title);
   }
 
-  function toggleTreeNode(index: number) {
+  function selectNode(index: number) {
     const nodes = spectator.queryAll('.mat-tree-node');
     spectator.click(nodes[index]);
   }
@@ -194,4 +274,22 @@ describe('TreeComponent', () => {
   function sendTreeEvent(type: UpdateType, docs: DocumentAbstract[], parent?: string) {
     db.treeUpdates.next({type: type, data: docs, parent: parent});
   }
+
+  function nodeHasClass(index: number, stateClass: string) {
+    expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]).toHaveClass(stateClass);
+  }
+
+  function nodeHasNotClass(index: number, stateClass: string) {
+    expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]).not.toHaveClass(stateClass);
+  }
+
+  function nodeIsExpanded(index: number) {
+    expect(spectator.queryAll('.mat-tree-node')[index]).toHaveClass('expanded');
+  }
+
+  function nodeIsSelected(index: number) {
+    expect(spectator.queryAll('.mat-tree-node')[index]).toHaveClass('active');
+  }
+
+
 });

@@ -1,7 +1,6 @@
 import {DocumentState} from '../../models/ige-document';
 
 export class TreeNode {
-  parent: string;
   iconClass?: string;
   isExpanded?: boolean;
 
@@ -11,6 +10,7 @@ export class TreeNode {
               public state: DocumentState = null,
               public level = 1,
               public hasChildren = false,
+              public parent: string = null,
               public isLoading = false) {
   }
 }
