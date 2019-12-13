@@ -17,13 +17,31 @@
 <mat-toolbar>
     <mat-toolbar-row>
         <ng-container *ngFor="let button of buttons_left">
-            <button *ngIf="!button.isSeparator" mat-icon-button
+            <button *ngIf="!button.isSeparator && !button.menu" mat-icon-button
                     [title]="button.tooltip"
                     (click)="sendEvent(button.eventId)"
                     [disabled]="!button.active">
                 <!--aria-label="{{button.tooltip}}"-->
                 <mat-icon>{{button.cssClasses}}</mat-icon>
             </button>
+
+            <ng-container *ngIf="!button.isSeparator && button.menu">
+                <button mat-icon-button
+                        class="drop-down"
+                        [matMenuTriggerFor]="copyMenu"
+                        [title]="button.tooltip"
+                        [disabled]="!button.active"
+                        (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
+                    <mat-icon>{{button.cssClasses}}</mat-icon>
+                    <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+                </button>
+                <mat-menu #copyMenu="matMenu">
+                    <button *ngFor="let menuItem of button.menu" mat-menu-item (click)="sendEvent(menuItem.eventId)">
+                        <span>{{menuItem.label}}</span>
+                    </button>
+                </mat-menu>
+            </ng-container>
+
             <mat-divider *ngIf="button.isSeparator" [vertical]="true" style="height: 20px"></mat-divider>
         </ng-container>
         <div fxFlex></div>
@@ -38,30 +56,22 @@
                     <mat-icon>{{button.cssClasses}}</mat-icon>
                 </button>
                 <button *ngIf="button.label && !button.isPrimary" mat-stroked-button
-                        (click)="sendEvent(button.eventId)">{{button.label}}</button>
+                        [disabled]="!button.active"
+                        (click)="sendEvent(button.eventId)">
+                    {{button.label}}
+                </button>
                 <ng-container *ngIf="button.label && button.isPrimary">
-                    <!--<mat-menu #appMenu="matMenu">
-                        <button mat-menu-item>... Black Forest</button>
-                        <button mat-menu-item>... Salted Caramel</button>
-                      </mat-menu>
-
-                      <mat-button-toggle-group>
-                        <mat-button-toggle>
-                          Tell me about Earl Gray Ice Cream
-                        </mat-button-toggle>
-
-                        <mat-button-toggle [matMenuTriggerFor]="appMenu">
-                          <mat-icon>arrow_drop_down</mat-icon>
-                        </mat-button-toggle>
-                      </mat-button-toggle-group>-->
-
-                    <button mat-flat-button color="primary"
-                            (click)="sendEvent(button.eventId)">Veröffentlichen</button>
-
-                    <button class="menu" mat-icon-button [matMenuTriggerFor]="publishMenu" aria-label="Additional publish options">
-                      <mat-icon>more_vert</mat-icon>
+                    <button class="btnPublish" mat-flat-button color="primary" [matMenuTriggerFor]="publishMenu"
+                            [disabled]="!button.active"
+                            (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
+                        {{button.label}}
+                        <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
                     </button>
+
                     <mat-menu #publishMenu="matMenu">
+                      <button mat-menu-item (click)="sendEvent(button.eventId)">
+                        <span>Jetzt veröffentlichen</span>
+                      </button>
                       <button mat-menu-item disabled>
     <!--                    <mat-icon>dialpad</mat-icon>-->
                         <span>Planen</span>

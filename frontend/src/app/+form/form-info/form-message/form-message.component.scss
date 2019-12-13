@@ -3,24 +3,33 @@
   line-height: 48px;
 
   .wrapper {
-    //height: 0;
+    display: flex;
     padding: 4px 10px 4px 36px;
     overflow: hidden;
-    //transition: height 300ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
+    align-items: center;
+
+    span .mat-icon {
+      padding-right: 10px;
+      font-size: 28px;
+      line-height: 24px;
+      vertical-align: text-bottom;
+    }
 
     &.info {
-      //height: 56px;
       background-color: #ECF5EB;
 
       .mat-icon {
         color: #35922C;
       }
     }
+
+    &.error {
+      background-color: #F7E5E8;
+
+      .mat-icon {
+        color: #B00020;
+      }
+    }
   }
 
-  ::ng-deep mat-icon {
-    font-size: 28px;
-    padding-right: 10px;
-    vertical-align: text-bottom;
-  }
 }

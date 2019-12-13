@@ -288,7 +288,10 @@ tree-node:hover .folder {
 
 
 /* ngx-formly layout classes */
-.display-flex { display: flex; }
+.display-flex {
+  display: flex;
+  flex: 1;
+}
 
 //.ige-formly-wrapper {
 

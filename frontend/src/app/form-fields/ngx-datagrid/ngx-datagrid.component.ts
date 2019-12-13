@@ -49,6 +49,7 @@ export class NgxDatagridComponent implements ControlValueAccessor, OnInit, OnDes
 
   editing = {};
   rows = [];
+  private disabled = false;
 
   constructor() {
   }
@@ -66,6 +67,10 @@ export class NgxDatagridComponent implements ControlValueAccessor, OnInit, OnDes
         this.cd.detectChanges();
       }
     }
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
   }
 
   handleChange() {

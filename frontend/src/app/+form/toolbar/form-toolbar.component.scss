@@ -6,6 +6,11 @@
 
 .mat-toolbar-row, .mat-toolbar-single-row {
   height: 56px;
+  padding-right: 12px;
+
+  .drop-down {
+    width: 60px;
+  }
 }
 
 .btn {
@@ -50,5 +55,15 @@
   &.menu {
     margin-right: -15px;
     margin-left: -15px;
+  }
+}
+
+.save-buttons button.btnPublish {
+  margin-right: 0;
+}
+
+.btnPublish {
+  .mat-icon {
+    margin-right: -10px;
   }
 }

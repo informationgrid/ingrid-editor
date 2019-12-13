@@ -1,6 +1,5 @@
 import {FormGroup} from '@angular/forms';
 import {EventManager} from '@angular/platform-browser';
-import {Profile} from '../../app/services/formular/profile';
 import {Behaviour} from '../../app/+behaviours/behaviours';
 import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';

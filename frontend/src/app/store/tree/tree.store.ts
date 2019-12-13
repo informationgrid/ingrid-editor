@@ -22,23 +22,5 @@ export class TreeStore extends EntityStore<TreeState, DocumentAbstract> {
   constructor() {
     super(initialState);
   }
-
-  addOpenedNode(entity: DocumentAbstract) {
-    this.update({
-      openedNodes: [entity]
-    });
-  }
-
-  setOpenedDocument(selected: DocumentAbstract) {
-    this.update({
-      openedDocument: selected
-    });
-  }
-
-  setExpandedNodes(ids: string[]) {
-    this.update({
-      expandedNodes: ids
-    });
-  }
 }
 

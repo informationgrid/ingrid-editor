@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ConfigService, Configuration} from '../services/config/config.service';
 import {DocumentService} from '../services/document/document.service';
-import {DocumentQuery} from '../store/document/document.query';
 import {DocumentAbstract} from '../store/document/document.model';
 import {Observable} from 'rxjs';
 import {ProfileService} from '../services/profile.service';
@@ -32,14 +31,13 @@ export class DashboardComponent implements OnInit {
 
   constructor(configService: ConfigService,
               private docService: DocumentService,
-              private profileService: ProfileService,
-              private docQuery: DocumentQuery) {
+              private profileService: ProfileService) {
     this.configuration = configService.getConfiguration();
   }
 
   ngOnInit() {
-    this.allDocuments$ = this.docQuery.selectAll();
-    this.recentDocs$ = this.docQuery.recentDocuments$;
+    // this.allDocuments$ = this.docQuery.selectAll();
+    // this.recentDocs$ = this.docQuery.recentDocuments$;
     this.fetchStatistic();
     this.fetchData();
   }

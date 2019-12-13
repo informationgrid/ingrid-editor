@@ -1,54 +1,70 @@
-import {By} from "@angular/platform-browser";
 import {FormToolbarComponent} from "./form-toolbar.component";
-import {TestBed} from "@angular/core/testing";
-import {FormToolbarService, ToolbarItem} from "./form-toolbar.service";
+import {createComponentFactory, Spectator, SpyObject} from '@ngneat/spectator';
+import {DynamicDatabase} from '../sidebars/tree/tree.component';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {FormToolbarService, ToolbarItem} from './form-toolbar.service';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-let fixture: any, comp: any, el: any, ftService: FormToolbarService;
+let spectator: Spectator<FormToolbarComponent>;
+let service: FormToolbarService;
+let db: SpyObject<DynamicDatabase>;
+const createHost = createComponentFactory({
+  component: FormToolbarComponent,
+  imports: [MatIconModule, MatDividerModule, MatButtonModule, MatMenuModule, MatToolbarModule, FlexLayoutModule, BrowserAnimationsModule]
+});
 
 describe('Form-Toolbar', () => {
   beforeEach(() => {
-
-    // refine the test module by declaring the test component
-    TestBed.configureTestingModule({
-      declarations: [FormToolbarComponent],
-      providers: [FormToolbarService]
-    });
-
-    // create component and test fixture
-    fixture = TestBed.createComponent(FormToolbarComponent);
-
-    // get test component from the fixture
-    comp = fixture.componentInstance;
-
-    // UserService actually injected into the component
-    ftService = fixture.debugElement.injector.get(FormToolbarService);
+    spectator = createHost();
+    service = spectator.get(FormToolbarService);
   });
 
   it('should show some toolbar items', () => {
 
     // trigger data binding to update the view
-    fixture.detectChanges();
+    spectator.detectChanges();
 
     // find the title element in the DOM using a CSS selector
-    el = fixture.debugElement.queryAll(By.css('button'));
+    const buttons = spectator.queryAll('button');
 
     // confirm the element's content
-    expect(el.length).toBe(4);
-    expect(el[0].parent.queryAll(By.css('.glyphicon-file')).length).toBe(1);
+    expect(buttons.length).toBe(2);
+
   });
 
   it('should add a toolbar item through the service', () => {
     const item: ToolbarItem = {
-      id: 'btnToolbarTest', tooltip: 'TEST_TOOLBAR_ITEM', cssClasses: 'TEST_CSS_CLASS', pos: 1, eventId: 'TEST_EVENT'
+      id: 'btnToolbarTest', tooltip: 'TEST_TOOLBAR_ITEM', cssClasses: 'remove', pos: 1, eventId: 'TEST_EVENT'
     };
-    ftService.addButton(item);
+    service.addButton(item);
 
-    fixture.detectChanges();
+    spectator.detectChanges();
 
     // find the title element in the DOM using a CSS selector
-    el = fixture.debugElement.queryAll(By.css('button'));
+    const buttons = spectator.queryAll('button');
 
     // confirm the element's content
-    expect(el.length).toBe(5);
+    expect(buttons.length).toBe(3);
+  });
+
+  fit('should add a publish button through the service', () => {
+    const item: ToolbarItem = {
+      id: 'btnPublish', tooltip: 'TEST_TOOLBAR_ITEM', cssClasses: 'remove', pos: 100, eventId: 'TEST_EVENT',
+      isPrimary: true, label: 'Veröffentlichen', align: 'right'
+    };
+    service.addButton(item);
+
+    spectator.detectChanges();
+
+    // find the title element in the DOM using a CSS selector
+    const buttons = spectator.queryAll('button');
+
+    // confirm the element's content
+    expect(buttons.length).toBe(3);
   });
 });

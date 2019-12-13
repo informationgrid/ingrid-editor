@@ -7,7 +7,6 @@ import {Observable, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/internal/operators';
 import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
-import {DocumentStore} from '../../store/document/document.store';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
 import {ProfileQuery} from '../../store/profile/profile.query';
@@ -33,7 +32,6 @@ export class DocumentService {
 
   constructor(private modalService: ModalService,
               private dataService: DocumentDataService,
-              private documentStore: DocumentStore,
               private profileQuery: ProfileQuery,
               private treeStore: TreeStore) {
     if (KeycloakService.auth.loggedIn) {
@@ -45,12 +43,7 @@ export class DocumentService {
     // TODO: use general sort filter
     this.dataService.find(query)
       .pipe(
-        map(json => {
-          return json.filter(item => item && item._profile !== 'FOLDER');
-        }),
-        tap(docs => {
-          this.documentStore.set(this.mapToDocuments(docs));
-        })
+        map(json => json.filter(item => item && item._profile !== 'FOLDER'))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       ).subscribe();
   }
@@ -59,12 +52,7 @@ export class DocumentService {
     // TODO: use general sort filter
     this.dataService.find(null)
       .pipe(
-        map(json => {
-          return json.filter(item => item && item._profile !== 'FOLDER');
-        }),
-        tap(docs => {
-          this.documentStore.setRecent(this.mapToDocuments(docs));
-        })
+        map(json => json.filter(item => item && item._profile !== 'FOLDER'))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       ).subscribe();
   }
@@ -123,7 +111,7 @@ export class DocumentService {
 
   load(id: string): Observable<IgeDocument> {
     return this.dataService.load(id).pipe(
-      // tap(doc => this.documentStore.setOpenedDocument(doc)),
+      tap(doc => this.treeStore.update({openedDocument: DocumentUtils.createDocumentAbstract(doc)})),
       tap(doc => setTimeout(() => this.treeStore.setActive([doc._id]), 0))
     );
   }

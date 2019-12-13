@@ -18,16 +18,25 @@ mat-tree-node {
     border-top: 1px solid $ige-background-bar;
   }
 
-  &.rootNode {
-    background-color: $ige-background;
+  &.folder {
     padding: 6px 0 7px;
-    font-size: 16px;
     border-bottom: 1px solid $ige-background-bar;
 
     &.expanded {
       border-bottom: 0;
     }
+  }
 
+  &.rootNode {
+
+    &.folder {
+      background-color: $ige-background;
+      font-size: 16px;
+    }
+
+    .label {
+      padding-left: 24px;
+    }
   }
 
   &:hover {
@@ -35,7 +44,6 @@ mat-tree-node {
   }
 
   .label {
-    padding-left: 10px;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
     user-select: none;
@@ -73,7 +81,7 @@ mat-tree-node {
     height: 30px;
     width: 30px;
     line-height: 30px;
-    margin-right: 5px;
+    margin-right: 15px;
   }
 
   .mat-icon {
@@ -82,9 +90,9 @@ mat-tree-node {
     }
 
     &.workingWithPublished {
-      background: -moz-linear-gradient(45deg, $state-working-color 50%, #333333 50%);
-      background: -webkit-linear-gradient(45deg, $state-working-color 50%, #333333 50%);
-      background: linear-gradient(45deg, $state-working-color 50%, #333333 50%);
+      background: -moz-linear-gradient(270deg, $state-working-color 50%, #333333 50%);
+      background: -webkit-linear-gradient(270deg, $state-working-color 50%, #333333 50%);
+      background: linear-gradient(270deg, $state-working-color 50%, #333333 50%);
       -webkit-background-clip: text;
       -moz-background-clip: text;
       background-clip: text;
@@ -114,12 +122,12 @@ mat-tree-node {
   text-decoration: none;
 }
 
-.folder {
+/*.folder {
   position: absolute;
   right: 5px;
   margin-top: -15px;
   display: none;
-}
+}*/
 
 .refresh {
   position: absolute;

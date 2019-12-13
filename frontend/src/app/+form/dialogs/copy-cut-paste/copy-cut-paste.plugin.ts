@@ -43,8 +43,13 @@ export class CopyCutPastePlugin extends Plugin {
 
     const buttons: Array<ToolbarItem | Separator> = [
       {id: 'toolBtnCopyCutSeparator', pos: 30, isSeparator: true},
-      {id: 'toolBtnCopy', tooltip: 'Copy', cssClasses: 'content_copy', eventId: 'COPY', pos: 40, active: false},
-      {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'content_cut', eventId: 'CUT', pos: 50, active: false}
+      {id: 'toolBtnCopy', tooltip: 'Copy', cssClasses: 'content_copy', eventId: 'COPY', pos: 40, active: false, menu: [
+          {eventId: 'COPY', label: 'Kopieren'},
+          {eventId: 'CUT', label: 'Verschieben'},
+          {eventId: 'COPYTREE', label: 'Mit Teilbaum kopieren'},
+          {eventId: 'CUTTREE', label: 'Mit Teilbaum verschieben'}
+        ]}
+      // {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'content_cut', eventId: 'CUT', pos: 50, active: false}
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
 
@@ -72,10 +77,10 @@ export class CopyCutPastePlugin extends Plugin {
     this.treeQuery.selectActiveId().subscribe(data => {
       if (data.length === 0) {
         this.toolbarService.setButtonState('toolBtnCopy', false);
-        this.toolbarService.setButtonState('toolBtnCut', false);
+        // this.toolbarService.setButtonState('toolBtnCut', false);
       } else {
         this.toolbarService.setButtonState('toolBtnCopy', true);
-        this.toolbarService.setButtonState('toolBtnCut', true);
+        // this.toolbarService.setButtonState('toolBtnCut', true);
       }
     });
   }
@@ -94,8 +99,10 @@ export class CopyCutPastePlugin extends Plugin {
     this.dialog.open(PasteDialogComponent, {
       data: {mode: CopyMoveEnum.COPY}
     }).afterClosed().subscribe(result => {
-      console.log('result', result);
-      this.paste(result, CopyMoveEnum.COPY);
+      if (result) {
+        console.log('result', result);
+        this.paste(result, CopyMoveEnum.COPY);
+      }
     });
   }
 
@@ -106,8 +113,10 @@ export class CopyCutPastePlugin extends Plugin {
     this.dialog.open(PasteDialogComponent, {
       data: {mode: CopyMoveEnum.MOVE}
     }).afterClosed().subscribe(result => {
-      console.log('result', result);
-      this.paste(result, CopyMoveEnum.MOVE);
+      if (result) {
+        console.log('result', result);
+        this.paste(result, CopyMoveEnum.MOVE);
+      }
     });
   }
 
@@ -142,7 +151,7 @@ export class CopyCutPastePlugin extends Plugin {
 
     // remove from same index since buttons take the neighbor place after deletion
     this.toolbarService.removeButton('toolBtnCopy');
-    this.toolbarService.removeButton('toolBtnCut');
+    // this.toolbarService.removeButton('toolBtnCut');
     this.toolbarService.removeButton('toolBtnCopyCutSeparator');
   }
 }

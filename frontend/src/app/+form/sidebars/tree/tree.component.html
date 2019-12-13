@@ -7,10 +7,11 @@
 
     <!-- This is the tree node template for leaf nodes -->
     <mat-tree-node *matTreeNodeDef="let node"
-                   matTreeNodePadding matTreeNodePaddingIndent="20"
+                   matTreeNodePadding matTreeNodePaddingIndent="24"
                    (click)="!disabledCondition(node) && selectNode(node, $event)"
                    [class.selected]="selectionModel.isSelected(node)"
                    [class.active]="node._id === activeNodeId"
+                   [class.rootNode]="node.level === 0"
                    [class.disabled]="disabledCondition(node)">
         <div class="label">
             <mat-icon [ngClass]="getStateClass(node)">insert_drive_file</mat-icon>
@@ -20,13 +21,14 @@
 
     <!-- This is the tree node template for expandable nodes -->
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
-                   matTreeNodePadding matTreeNodePaddingIndent="20"
+                   matTreeNodePadding matTreeNodePaddingIndent="24"
                    (click)="!disabledCondition(node) && selectNode(node, $event)"
                    [class.selected]="selectionModel.isSelected(node)"
                    [class.active]="node._id === activeNodeId"
                    [class.expanded]="treeControl.isExpanded(node)"
                    [class.disabled]="disabledCondition(node)"
-                   [class.rootNode]="node.level === 0 && node.profile === 'FOLDER'">
+                   [class.rootNode]="node.level === 0"
+                   [class.folder]="node.profile === 'FOLDER'">
         <div style="width: 100%;">
             <button mat-icon-button matTreeNodeToggle
                     class="toggle"
@@ -38,7 +40,7 @@
             </button>
 
             <div class="label">
-                <mat-icon>folder</mat-icon>
+                <mat-icon *ngIf="node.profile !== 'FOLDER'">folder</mat-icon>
                 <span>{{node.title}}</span>
             </div>
         </div>

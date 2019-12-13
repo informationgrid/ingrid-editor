@@ -33,7 +33,6 @@ export class FormMessageComponent implements OnInit, OnDestroy {
   private timer;
 
   private defaultDuration = 3000;
-  messageState: 'shown' | 'hidden';
 
   constructor(private messageService: FormMessageService) { }
 
@@ -50,11 +49,10 @@ export class FormMessageComponent implements OnInit, OnDestroy {
     clearTimeout(this.timer);
 
     this.type = type;
-    this.messageState = 'shown';
-    this.timer = setTimeout(() => {
-      this.messageState = 'hidden';
-      this.type = null;
-    }, type.duration || this.defaultDuration);
+
+    if (type.severity === 'info') {
+      this.timer = setTimeout(() => this.type = null, type.duration || this.defaultDuration);
+    }
   }
 
   getIconClass(severity: "info" | "error") {

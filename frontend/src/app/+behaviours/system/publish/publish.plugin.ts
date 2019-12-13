@@ -3,7 +3,6 @@ import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
-import {DocumentQuery} from '../../../store/document/document.query';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 
@@ -25,9 +24,7 @@ export class PublishPlugin extends Plugin {
   }
 
   constructor(private formToolbarService: FormToolbarService,
-              // private formService: FormularService,
               private modalService: ModalService,
-              private documentQuery: DocumentQuery,
               private treeQuery: TreeQuery,
               private formsManager: AkitaNgFormsManager,
               private storageService: DocumentService) {
@@ -69,18 +66,11 @@ export class PublishPlugin extends Plugin {
     // add behaviour to set active states for toolbar buttons
     this.addBehaviour();
 
-    // add action for button
-    // -> add field to document tagging publish state
-
-    // how to display document that it is published or not?
-    // -> tree, symbol in formular, which works in all kinds of formulars
-    // -> or make view flexible which can be overridden
-
-    // add hook to attach to when action is triggered
   }
 
   publish() {
     if (this.formIsValid) {
+      // TODO: show confirm dialog
       this.storageService.publish(this.formsManager.getForm('document').value);
     } else {
       this.modalService.showJavascriptError('Es müssen alle Felder korrekt ausgefüllt werden.');
@@ -122,21 +112,10 @@ export class PublishPlugin extends Plugin {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    /*this.storageService.datasetsChanged.subscribe( (data) => {
-      this.handleRevertButtonState(data.data);
+    this.treeQuery.openedDocument$.subscribe( loadedDocument => {
+      this.formToolbarService.setButtonState( 'toolBtnPublish', loadedDocument !== null );
+      this.formToolbarService.setButtonState( 'toolBtnRevert', loadedDocument !== null && loadedDocument._state === 'PW' );
     });
 
-    this.storageService.afterLoadAndSet$.subscribe( (data) => {
-      if (data) {
-        this.handleRevertButtonState(data);
-      }
-    });*/
-
-    this.documentQuery.openedDocument$
-    // TODO: .pipe(takeUntil(this.componentDestroyed))
-      .subscribe(data => {
-        this.formToolbarService.setButtonState( 'toolBtnPublish', data !== null );
-        this.formToolbarService.setButtonState( 'toolBtnRevert', data !== null && data._state === 'PW' );
-      } );
   }
 }

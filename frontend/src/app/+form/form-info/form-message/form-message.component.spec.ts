@@ -1,25 +1,98 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { FormMessageComponent } from './form-message.component';
+import {FormMessageComponent, FormMessageType} from './form-message.component';
+import {createComponentFactory, Spectator, SpyObject} from '@ngneat/spectator';
+import {DynamicDatabase} from '../../sidebars/tree/tree.component';
+import {MatIconModule} from '@angular/material/icon';
+import {fakeAsync, tick} from '@angular/core/testing';
+import {FormMessageService} from './form-message.service';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {MatButtonModule} from '@angular/material/button';
 
 describe('FormMessageComponent', () => {
-  let component: FormMessageComponent;
-  let fixture: ComponentFixture<FormMessageComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FormMessageComponent ]
-    })
-    .compileComponents();
-  }));
+  const INFO_MESSAGE: FormMessageType = {
+    severity: 'info',
+    message: 'Dies ist eine Infonachricht'
+  };
+
+  const ERROR_MESSAGE: FormMessageType = {
+    severity: 'error',
+    message: 'Dies ist eine Fehlernachricht'
+  };
+
+  let spectator: Spectator<FormMessageComponent>;
+  let db: SpyObject<DynamicDatabase>;
+  const createHost = createComponentFactory({
+    component: FormMessageComponent,
+    imports: [MatIconModule, MatButtonModule, FlexLayoutModule]
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FormMessageComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createHost();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
+  });
+
+  it('should be hidden if no message was received', () => {
+    spectator.detectChanges();
+    const wrapper = spectator.query('.wrapper');
+    expect(wrapper).not.toExist();
+  });
+
+  it('should show info message', () => {
+    const service = spectator.get(FormMessageService);
+    service.message$.next(INFO_MESSAGE);
+
+    spectator.detectChanges();
+
+    const wrapper = spectator.query('.wrapper');
+    expect(wrapper).toExist();
+    expect(wrapper).toContainText('Dies ist eine Infonachricht');
+    expect(wrapper).toHaveClass('info');
+  });
+
+  it('should hide an info message after 3s', fakeAsync(() => {
+    const service = spectator.get(FormMessageService);
+    service.message$.next(INFO_MESSAGE);
+
+    spectator.detectChanges();
+    tick(3000);
+    spectator.detectChanges();
+
+    const wrapper = spectator.query('.wrapper');
+    expect(wrapper).not.toExist();
+  }));
+
+  fit('should show an error message', () => {
+    const service = spectator.get(FormMessageService);
+    service.message$.next(ERROR_MESSAGE);
+
+    spectator.detectChanges();
+
+    const wrapper = spectator.query('.wrapper');
+    expect(wrapper).toExist();
+    expect(wrapper).toContainText('Dies ist eine Fehlernachricht');
+    expect(wrapper).toHaveClass('error');
+  });
+
+  it('should not hide an error message after 3s', fakeAsync(() => {
+    const service = spectator.get(FormMessageService);
+    service.message$.next(ERROR_MESSAGE);
+
+    spectator.detectChanges();
+    tick(3000);
+    spectator.detectChanges();
+
+    const wrapper = spectator.query('.wrapper');
+    expect(wrapper).toExist();
+  }));
+
+  xit('should jump to next and previous error', () => {
+
+  });
+
+  xit('should explicitly close an error message', () => {
+
   });
 });

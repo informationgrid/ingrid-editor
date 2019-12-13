@@ -9,9 +9,7 @@ import {ErrorService} from '../services/error.service';
 import {Role} from '../models/user-role';
 import {RoleService} from '../services/role/role.service';
 import {MatDialog} from '@angular/material/dialog';
-import {DocumentQuery} from '../store/document/document.query';
 import {IgeDocument} from '../models/ige-document';
-import {DocumentStore} from '../store/document/document.store';
 import {FormUtils} from './form.utils';
 import {TreeQuery} from '../store/tree/tree.query';
 import {FormlyFieldConfig} from '@ngx-formly/core';
@@ -22,8 +20,6 @@ import {SessionQuery} from '../store/session.query';
 import {untilDestroyed} from 'ngx-take-until-destroy';
 import {FormularService} from './formular.service';
 import {FormPluginsService} from './form-plugins.service';
-import {Subject} from 'rxjs';
-import {FormMessageType} from './form-info/form-message/form-message.component';
 
 @Component({
   templateUrl: './dynamic-form.component.html',
@@ -49,8 +45,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   error = false;
   model: IgeDocument | any = {};
 
-  formMessage = new Subject<FormMessageType>();
-
   userRoles: Role[];
 
   private formUtils: FormUtils;
@@ -62,10 +56,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private dialog: MatDialog,
               private formsManager: AkitaNgFormsManager,
               private roleService: RoleService,
-              private documentQuery: DocumentQuery,
               private treeQuery: TreeQuery,
               private session: SessionQuery,
-              private documentStore: DocumentStore,
               private codelistService: CodelistService,
               private errorService: ErrorService, private route: ActivatedRoute) {
 
@@ -79,15 +71,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(eventId => this.formularService.handleToolbarEvents(eventId, this.form));
 
     // react on document selection
-    this.treeQuery.selectActiveId()
+    this.treeQuery.openedDocument$
       .pipe(untilDestroyed(this))
-      .subscribe((activeDocs) => {
+      .subscribe((openedDoc) => {
         this.formToolbarService.setButtonState(
           'toolBtnSave',
-          activeDocs && activeDocs.length === 1);
+          openedDoc !== null);
 
         // do not allow to modify form if multiple nodes have been selected in tree
-        activeDocs.length === 1 ? this.form.enable() : this.form.disable();
+        // openedDoc !== null ? this.form.enable() : this.form.disable();
 
       });
 

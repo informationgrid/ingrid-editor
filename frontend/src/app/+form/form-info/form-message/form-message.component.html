@@ -1,4 +1,12 @@
 <div class="wrapper" *ngIf="type" [ngClass]="type.severity" [@slideDown]>
-    <mat-icon>{{getIconClass(type.severity)}}</mat-icon>
-    {{type.message}}
+    <span>
+        <mat-icon>{{getIconClass(type.severity)}}</mat-icon>
+        {{type.message}}
+    </span>
+    <ng-container *ngIf="type.severity === 'error'">
+        <div fxFlex></div>
+        <button mat-icon-button>
+            <mat-icon>close</mat-icon>
+        </button>
+    </ng-container>
 </div>

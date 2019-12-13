@@ -14,6 +14,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   active?: boolean;
   label?: string;
   isPrimary?: boolean;
+  menu?: any
 }
 
 export interface Separator extends DefaultToolbarItem {
