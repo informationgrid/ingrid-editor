@@ -270,10 +270,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/flex-layout@^8.0.0-beta.26":
-  version "8.0.0-beta.26"
-  resolved "https://registry.yarnpkg.com/@angular/flex-layout/-/flex-layout-8.0.0-beta.26.tgz#05807e4daeb7c70da5653b681f8e8c0da87d133e"
-  integrity sha512-lXDLlMSNQhidW0grvisIsj/3gqLuYyN2MvABuRYybnFTc233sXGZuOAaulqq663LA0/DP/GNcz6a+A4ZAAlmPA==
+"@angular/flex-layout@^8.0.0-beta.27":
+  version "8.0.0-beta.27"
+  resolved "https://registry.yarnpkg.com/@angular/flex-layout/-/flex-layout-8.0.0-beta.27.tgz#a697d5a90e6d04c06b02ee872f88f384d1723f7c"
+  integrity sha512-qmpvQPesU4ZQ56IscwgmVRpK2UnyV+gwvXUql7TMv0QV215hLcHczjGsrKkLfW2By5E7XEyDat9br72uVXcPMw==
   dependencies:
     tslib "^1.7.1"
 
@@ -1299,10 +1299,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@datorama/akita-ng-forms-manager@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@datorama/akita-ng-forms-manager/-/akita-ng-forms-manager-3.1.0.tgz#81fd0708c3eab62efe07e783d3c2c834b5a2d251"
-  integrity sha512-gmiGUvEzVlrIXR2rjKRFPzo2Y4oA0+ZwZOPxsYf5j+UoDB7xhcShB87OEWbJ6Pf2NQ67pOHFSqzgRl5vlgE2Kg==
+"@datorama/akita-ng-forms-manager@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@datorama/akita-ng-forms-manager/-/akita-ng-forms-manager-3.3.0.tgz#8f2ccd5790656f64fc7f68755834a2982a6437be"
+  integrity sha512-gsz8phK5ejWg/RVTlAFeXSMv1xlXuveP44lEAZ5mEr5BmeloDBhfsJqQwG2lgVYVJJnIDJUSScA06TrbDvHKDA==
   dependencies:
     tslib "^1.9.0"
 
@@ -1515,17 +1515,17 @@
     tree-kill "1.2.1"
     webpack-sources "1.4.3"
 
-"@ngx-formly/core@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.2.0.tgz#bd42dcb81f5d3211e19029fd2df3a801483d0bcc"
-  integrity sha512-RurQRaZuqLsAC+Sj5MrBXJ0yXb9n9tMhnlRamL3iyBEZ119ds1DWce5KQ3YCbi7NEZYSJI/LNcdqp8Irvu6/ow==
+"@ngx-formly/core@5.4.3":
+  version "5.4.3"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.4.3.tgz#84cfee5b82f9c6a400a02c4d4d951705ec7ae8c8"
+  integrity sha512-ntCdT3H5qvEgBYw8ekK3mUC9AHh+hLHhOeZ3raLZqGhVrx7F7WPZsLKUV61Uqi7iPHFkxbBPfOftAefbedDYoQ==
   dependencies:
     tslib "^1.7.1"
 
-"@ngx-formly/material@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.2.0.tgz#dfbe8109f1af0f63221169bffabcf4e6bce90f18"
-  integrity sha512-RQajdWJz5fGmyRWzdcr3z3rGJF3X1xgqY9305Bw/vJyckTRfuT7yD4bZNna01HkeADafCVipnC2EogtdETNkoQ==
+"@ngx-formly/material@5.4.3":
+  version "5.4.3"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.4.3.tgz#2962398898d7d6bbe81f6174cd1c0a3a081ee5b0"
+  integrity sha512-9qd1j1z56pccVqK6jZdUweZxQuB2NKpsUyBi1bHz/OU9K6rkX4aNPPbYSMQrTgD2iIt4w5ob4ci3M/KJIN8bLA==
   dependencies:
     tslib "^1.9.0"
 
@@ -3855,10 +3855,10 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
-chartist@^0.11.3:
-  version "0.11.3"
-  resolved "https://registry.yarnpkg.com/chartist/-/chartist-0.11.3.tgz#939d525669d9bffdb0dbcd0f38e7416d2bf0a93a"
-  integrity sha512-ENqCECh7iu0Mm36NNKqeECdGQ9dIcHXmf8fqSWmcmt/XDtl0mqpVNNC9aChoyrJYrlFBOlLGOeAb7fIHFDMNvg==
+chartist@^0.11.4:
+  version "0.11.4"
+  resolved "https://registry.yarnpkg.com/chartist/-/chartist-0.11.4.tgz#e96e1c573d8b67478920a3a6ae52359d9fc8d8b7"
+  integrity sha512-H4AimxaUD738/u9Mq8t27J4lh6STsLi4BQHt65nOtpLk3xyrBPaLiLMrHw7/WV9CmsjGA02WihjuL5qpSagLYw==
 
 chokidar@2.0.4, chokidar@^2.0.2, chokidar@^2.0.3:
   version "2.0.4"
@@ -5776,11 +5776,6 @@ follow-redirects@^1.0.0:
   integrity sha512-sy1mXPmv7kLAMKW/8XofG7o9T+6gAjzdZK4AJF6ryqQYUa/hnzgiypoeUecZ53x7XiqKNEpNqLtS97MshW2nxg==
   dependencies:
     debug "=3.1.0"
-
-font-awesome@^4.7.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/font-awesome/-/font-awesome-4.7.0.tgz#8fa8cf0411a1a31afd07b06d2902bb9fc815a133"
-  integrity sha1-j6jPBBGhoxr9B7BtKQK7n8gVoTM=
 
 for-in@^0.1.3:
   version "0.1.8"
@@ -8029,10 +8024,10 @@ material-colors@^1.2.1:
   resolved "https://registry.yarnpkg.com/material-colors/-/material-colors-1.2.6.tgz#6d1958871126992ceecc72f4bcc4d8f010865f46"
   integrity sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==
 
-material-design-icons-iconfont@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/material-design-icons-iconfont/-/material-design-icons-iconfont-4.0.5.tgz#4107ba3b8a9d688a3d9325fc7363af51b17d3aee"
-  integrity sha512-ByJJ1yz8+RfCx2uNiC5WjVCR7K3UWRb8ytWV3RMaoFRzQLNr/J5x7+Wg1+3OlIZahNXrId9Hu+BfXfQIo01v7g==
+material-design-icons-iconfont@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/material-design-icons-iconfont/-/material-design-icons-iconfont-5.0.1.tgz#371875ed7fe9c8c520bc7123c3231feeab731c31"
+  integrity sha512-Xg6rIdGrfySTqiTZ6d+nQbcFepS6R4uKbJP0oAqyeZXJY/bX6mZDnOmmUJusqLXfhIwirs0c++a6JpqVa8RFvA==
 
 md5.js@^1.3.4:
   version "1.3.5"
