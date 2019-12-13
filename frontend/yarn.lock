@@ -1515,17 +1515,17 @@
     tree-kill "1.2.1"
     webpack-sources "1.4.3"
 
-"@ngx-formly/core@5.4.3":
-  version "5.4.3"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.4.3.tgz#84cfee5b82f9c6a400a02c4d4d951705ec7ae8c8"
-  integrity sha512-ntCdT3H5qvEgBYw8ekK3mUC9AHh+hLHhOeZ3raLZqGhVrx7F7WPZsLKUV61Uqi7iPHFkxbBPfOftAefbedDYoQ==
+"@ngx-formly/core@5.5.2":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.5.2.tgz#36d75510df3df2994d907db222143f6ad0c78fbe"
+  integrity sha512-z1r1mIU3ciyGc44EFpo/fDoSI3W2vEvKp36QZbvVpxo3rQtQHl+rCVj4HMA6cb91iwUjYR0TW/70fLo8PMLF+w==
   dependencies:
     tslib "^1.7.1"
 
-"@ngx-formly/material@5.4.3":
-  version "5.4.3"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.4.3.tgz#2962398898d7d6bbe81f6174cd1c0a3a081ee5b0"
-  integrity sha512-9qd1j1z56pccVqK6jZdUweZxQuB2NKpsUyBi1bHz/OU9K6rkX4aNPPbYSMQrTgD2iIt4w5ob4ci3M/KJIN8bLA==
+"@ngx-formly/material@5.5.2":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.5.2.tgz#cb31a7f2deae127ab1054647222723a454d0fbc3"
+  integrity sha512-JuVgc/Kn9wY2mL4O4U56ExL5oy2cd2wCanqVMy7G3ywxryJuGgX7CiPgeJd0an6rLPaDcC0yuY6yXeSjlUGXCw==
   dependencies:
     tslib "^1.9.0"
 
