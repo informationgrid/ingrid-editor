@@ -5,24 +5,16 @@ export abstract class BaseProfile implements Profile {
 
   fields = <FormlyFieldConfig[]>[
     {
-      key: 'title',
-      type: 'input',
-      hide: true
+      key: 'title'
     },
     {
-      key: '_id',
-      type: 'input',
-      hide: true
+      key: '_id'
     },
     {
-      key: '_parent',
-      type: 'input',
-      hide: true
+      key: '_parent'
     },
     {
-      key: '_profile',
-      type: 'input',
-      hide: true
+      key: '_profile'
     }
   ];
 

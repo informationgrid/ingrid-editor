@@ -3,6 +3,10 @@
 
   .options {
     padding-bottom: 5px;
+
+    .show-all {
+      font-size: 14px;
+    }
   }
 
   ::ng-deep .mat-icon-button {

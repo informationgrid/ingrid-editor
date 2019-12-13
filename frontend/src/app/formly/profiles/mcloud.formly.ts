@@ -216,7 +216,7 @@ export class McloudFormly extends BaseProfile {
           className: 'flex-1',
           wrappers: ['form-field'],
           templateOptions: {
-            label: 'von',
+            label: 'am / von',
             appearance: 'outline'
           }
         }, {
@@ -227,6 +227,13 @@ export class McloudFormly extends BaseProfile {
           templateOptions: {
             label: 'bis',
             appearance: 'outline'
+          },
+          hideExpression: (model: any, formState: any, field: FormlyFieldConfig) => {
+            // access to the main model can be through `this.model` or `formState` or `model\n' +
+            if (model && model.rangeType) {
+              return model.rangeType !== 'range';
+            }
+            return true;
           }
         }]
       }]

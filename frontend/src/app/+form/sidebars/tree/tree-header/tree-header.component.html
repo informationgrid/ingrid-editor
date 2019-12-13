@@ -1,12 +1,12 @@
 <div class="header" fxLayout="column">
     <div class="options" fxLayout="row" fxLayoutAlign="space-between">
-        <mat-slide-toggle [style.fontSize]="'14px'">Alle anzeigen</mat-slide-toggle>
+        <mat-slide-toggle class="show-all" disabled>Alle anzeigen</mat-slide-toggle>
 
         <button *ngIf="showReloadButton" mat-icon-button (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
     </div>
 
     <mat-form-field class="search" appearance="outline">
-        <input matInput placeholder="Suche">
+        <input matInput placeholder="Suche" disabled>
         <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 </div>
