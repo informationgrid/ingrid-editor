@@ -69,6 +69,8 @@ export class PublishPlugin extends Plugin {
   }
 
   publish() {
+    this.storageService.publishState$.next(true);
+
     if (this.formIsValid) {
       // TODO: show confirm dialog
       this.storageService.publish(this.formsManager.getForm('document').value);

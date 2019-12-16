@@ -26,7 +26,18 @@ export class McloudFormly extends BaseProfile {
         templateOptions: {
           externalLabel: 'Beschreibung',
           rows: 3,
-          appearance: 'outline'
+          appearance: 'outline',
+          required: true
+        },
+        validators: {
+          /*requiredMe: {
+            expression: (c) => {
+              // debugger;
+              return c.root.publish && c.value && c.value.trim().length > 0;
+              // return !c.root.publish || (c.root.publish && c.value && c.value.trim().length > 0);
+            },
+            message: (error, field: FormlyFieldConfig) => `This field is required`,
+          }*/
         }
       }, {
         key: 'addresses',
@@ -121,7 +132,10 @@ export class McloudFormly extends BaseProfile {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Downloads',
-          appearance: 'outline'
+          appearance: 'outline',
+          click: () => {
+            console.log('downloads clicked');
+          }
         }
       }, {
         key: 'license',

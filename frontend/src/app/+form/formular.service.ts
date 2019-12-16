@@ -88,7 +88,7 @@ export class FormularService {
   }
 
   save(form: FormGroup) {
-    console.log('valid:', form.valid);
+    this.documentService.publishState$.next(false);
 
     form.markAsPristine();
 

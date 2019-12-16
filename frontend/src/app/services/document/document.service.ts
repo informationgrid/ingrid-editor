@@ -3,7 +3,7 @@ import {ModalService} from '../modal/modal.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 import {KeycloakService} from '../../security/keycloak/keycloak.service';
-import {Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/internal/operators';
 import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
@@ -29,6 +29,8 @@ export class DocumentService {
   afterLoadAndSet$ = this.afterLoadAndSet.asObservable();
   afterProfileSwitch$ = this.afterProfileSwitch.asObservable();
   beforeSave$ = this.beforeSave.asObservable();
+
+  publishState$ = new BehaviorSubject<boolean>(false);
 
   constructor(private modalService: ModalService,
               private dataService: DocumentDataService,

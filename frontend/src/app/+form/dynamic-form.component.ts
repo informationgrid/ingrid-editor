@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {ActivatedRoute} from '@angular/router';
@@ -12,7 +12,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {IgeDocument} from '../models/ige-document';
 import {FormUtils} from './form.utils';
 import {TreeQuery} from '../store/tree/tree.query';
-import {FormlyFieldConfig} from '@ngx-formly/core';
+import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {CodelistService} from '../services/codelist/codelist.service';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {UpdateType} from '../models/update-type.enum';
@@ -33,12 +33,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   fields: FormlyFieldConfig[] = [];
 
+  formOptions: FormlyFormOptions = {
+    formState: {
+      forPublish: false
+    }
+  };
+
   sections: string[];
 
   isScrolled = false; // new Subject<boolean>();
 
   form: FormGroup = new FormGroup({
-    title: new FormControl('Kein Titel')
+    // title: new FormControl('Kein Titel')
   });
 
   behaviours: Behaviour[];
@@ -101,7 +107,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-
 
     this.formsManager.upsert('document', this.form);
 
@@ -221,8 +226,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // TODO: move to profile service
   private getSectionsFromProfile(profile: FormlyFieldConfig[]): string[] {
-    let sections = [];
-    for (let item of profile) {
+    const sections = [];
+    for (const item of profile) {
       if (item.wrappers && item.wrappers.indexOf('section') !== -1) {
         sections.push(item.templateOptions.label);
       }
