@@ -39,7 +39,7 @@ describe('Form-Toolbar', () => {
 
   it('should add a toolbar item through the service', () => {
     const item: ToolbarItem = {
-      id: 'btnToolbarTest', tooltip: 'TEST_TOOLBAR_ITEM', cssClasses: 'remove', pos: 1, eventId: 'TEST_EVENT'
+      id: 'btnToolbarTest', tooltip: 'TEST_TOOLBAR_ITEM', matIconVariable: 'remove', pos: 1, eventId: 'TEST_EVENT'
     };
     service.addButton(item);
 
@@ -54,7 +54,7 @@ describe('Form-Toolbar', () => {
 
   fit('should add a publish button through the service', () => {
     const item: ToolbarItem = {
-      id: 'btnPublish', tooltip: 'TEST_TOOLBAR_ITEM', cssClasses: 'remove', pos: 100, eventId: 'TEST_EVENT',
+      id: 'btnPublish', tooltip: 'TEST_TOOLBAR_ITEM', matIconVariable: 'remove', pos: 100, eventId: 'TEST_EVENT',
       isPrimary: true, label: 'Veröffentlichen', align: 'right'
     };
     service.addButton(item);

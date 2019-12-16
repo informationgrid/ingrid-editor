@@ -50,9 +50,9 @@ export class SidebarComponent implements OnInit {
 
     // if a folder was selected then normally do not show the form
     // show folder form only if the edit button was clicked which adds the forceLoad option
-    if (doc._profile === 'FOLDER') { // && !doc.editable) {
+    /*if (doc._profile === 'FOLDER') { // && !doc.editable) {
       return;
-    }
+    }*/
 
     // this.documentStore.setOpenedDocument(doc);
     this.router.navigate(['/form', {id: doc.id}]);

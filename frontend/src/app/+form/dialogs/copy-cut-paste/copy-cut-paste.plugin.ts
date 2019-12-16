@@ -43,7 +43,7 @@ export class CopyCutPastePlugin extends Plugin {
 
     const buttons: Array<ToolbarItem | Separator> = [
       {id: 'toolBtnCopyCutSeparator', pos: 30, isSeparator: true},
-      {id: 'toolBtnCopy', tooltip: 'Copy', cssClasses: 'content_copy', eventId: 'COPY', pos: 40, active: false, menu: [
+      {id: 'toolBtnCopy', tooltip: 'Copy', matIconVariable: 'content_copy', eventId: 'COPY', pos: 40, active: false, menu: [
           {eventId: 'COPY', label: 'Kopieren'},
           {eventId: 'CUT', label: 'Verschieben'},
           {eventId: 'COPYTREE', label: 'Mit Teilbaum kopieren'},

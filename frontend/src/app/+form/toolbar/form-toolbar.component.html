@@ -22,7 +22,7 @@
                     (click)="sendEvent(button.eventId)"
                     [disabled]="!button.active">
                 <!--aria-label="{{button.tooltip}}"-->
-                <mat-icon>{{button.cssClasses}}</mat-icon>
+                <mat-icon class="material-icons-outlined">{{button.matIconVariable}}</mat-icon>
             </button>
 
             <ng-container *ngIf="!button.isSeparator && button.menu">
@@ -32,7 +32,7 @@
                         [title]="button.tooltip"
                         [disabled]="!button.active"
                         (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
-                    <mat-icon>{{button.cssClasses}}</mat-icon>
+                    <mat-icon>{{button.matIconVariable}}</mat-icon>
                     <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
                 </button>
                 <mat-menu #copyMenu="matMenu">
@@ -53,7 +53,7 @@
                         (click)="sendEvent(button.eventId)"
                         [disabled]="!button.active">
                     <!--aria-label="{{button.tooltip}}"-->
-                    <mat-icon>{{button.cssClasses}}</mat-icon>
+                    <mat-icon>{{button.matIconVariable}}</mat-icon>
                 </button>
                 <button *ngIf="button.label && !button.isPrimary" mat-stroked-button
                         [disabled]="!button.active"

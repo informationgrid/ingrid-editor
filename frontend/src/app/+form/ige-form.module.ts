@@ -48,6 +48,7 @@ import {IsoViewComponent} from './toolbar/isoView/iso-view.component';
 import { FormDashboardComponent } from './form-dashboard/form-dashboard.component';
 import { HeaderMoreComponent } from './form-info/header-more/header-more.component';
 import { FormMessageComponent } from './form-info/form-message/form-message.component';
+import {FormMessageService} from './form-info/form-message/form-message.service';
 
 @NgModule({
   imports: [
@@ -68,7 +69,7 @@ import { FormMessageComponent } from './form-info/form-message/form-message.comp
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
     FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent, HeaderMoreComponent, FormMessageComponent],
-  providers: [NominatimService, FormularService, FolderPlugin, CopyCutPastePlugin],
+  providers: [NominatimService, FormularService, FormMessageService, FolderPlugin, CopyCutPastePlugin],
   exports: [FormsModule, ScrollToDirective],
   entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent]
 })

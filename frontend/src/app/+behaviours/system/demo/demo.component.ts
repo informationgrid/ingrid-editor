@@ -14,7 +14,7 @@ export class DemoComponent implements OnInit {
 
   addToolbarButton() {
     this.formToolbarService.addButton( {
-      id: 'toolBtnDemo', tooltip: 'Demo: Alert Me', cssClasses: 'glyphicon glyphicon-apple', eventId: 'DEMO_ALERT', isSeparator: false, active: true, pos: 100
+      id: 'toolBtnDemo', tooltip: 'Demo: Alert Me', matIconVariable: 'glyphicon glyphicon-apple', eventId: 'DEMO_ALERT', isSeparator: false, active: true, pos: 100
     } );
 
     this.formToolbarService.toolbarEvent$.subscribe( eventId => {

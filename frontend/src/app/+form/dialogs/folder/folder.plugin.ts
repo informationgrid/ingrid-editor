@@ -18,7 +18,6 @@ export class FolderPlugin extends Plugin {
   }
 
   constructor(private formToolbarService: FormToolbarService,
-              // private formService: FormularService,
               private treeQuery: TreeQuery,
               private modalService: ModalService,
               private dialog: MatDialog,
@@ -35,7 +34,7 @@ export class FolderPlugin extends Plugin {
     this.formToolbarService.addButton({
       id: 'toolBtnFolder',
       tooltip: 'Create Folder',
-      cssClasses: 'create_new_folder',
+      matIconVariable: 'create_new_folder',
       eventId: this.eventCreateFolderId,
       pos: 1,
       active: true

@@ -45,7 +45,7 @@ export class UndoPlugin extends Plugin {
     this.formToolbarService.addButton({
       id: 'toolBtnUndo',
       tooltip: 'Undo',
-      cssClasses: 'undo',
+      matIconVariable: 'undo',
       eventId: this.eventUndoId,
       pos: 150,
       active: false
@@ -55,7 +55,7 @@ export class UndoPlugin extends Plugin {
     this.formToolbarService.addButton({
       id: 'toolBtnRedo',
       tooltip: 'Redo',
-      cssClasses: 'redo',
+      matIconVariable: 'redo',
       eventId: this.eventRedoId,
       pos: 160,
       active: false
