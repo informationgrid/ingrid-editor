@@ -29,7 +29,6 @@ import de from '@angular/common/locales/de';
 import {AkitaNgDevtools} from '@datorama/akita-ngdevtools';
 import {AngularSplitModule} from 'angular-split';
 import {SearchBarComponent} from './+dashboard/search-bar/search-bar.component';
-import {DeleteDialogComponent} from './+behaviours/toolbar/deleteDocs/delete-dialog.component';
 import {FormlyModule} from '@ngx-formly/core';
 import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.component';
 import {FormlyMaterialModule} from '@ngx-formly/material';
@@ -38,6 +37,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {SectionWrapper} from './formly/wrapper/section-wrapper.component';
+import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component';
 
 registerLocaleData(de);
 
@@ -76,7 +76,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
-    SearchBarComponent, DeleteDialogComponent,
+    SearchBarComponent, ConfirmDialogComponent,
     OneColumnWrapperComponent, SectionWrapper,
     SideMenuComponent],
   imports: [
@@ -153,7 +153,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent, DeleteDialogComponent],
+  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent],
   exports: []
 })
 

@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
-import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
-import {Plugin} from '../../plugin';
-import {DeleteDialogComponent} from './delete-dialog.component';
+import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {Plugin} from '../../../+behaviours/plugin';
 import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
+import {ConfirmDialogComponent} from '../../../dialogs/confirm/confirm-dialog.component';
+import {DocumentService} from '../../../services/document/document.service';
+import {Router} from '@angular/router';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class DeleteDocsPlugin extends Plugin {
   id = 'plugin.deleteDocs';
   _name = 'Delete Docs Plugin';
@@ -20,6 +20,8 @@ export class DeleteDocsPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private treeQuery: TreeQuery,
+              private storageService: DocumentService,
+              private router: Router,
               private dialog: MatDialog) {
     super();
     this.isActive = true;
@@ -35,7 +37,7 @@ export class DeleteDocsPlugin extends Plugin {
     this.subscriptions.push(
       this.formToolbarService.toolbarEvent$.subscribe(eventId => {
         if (eventId === 'DELETE') {
-          this.deleteDoc();
+          this.showDeleteDialog();
         }
       }),
 
@@ -47,12 +49,30 @@ export class DeleteDocsPlugin extends Plugin {
     );
   }
 
-  deleteDoc() {
+  showDeleteDialog() {
     const docs = this.treeQuery.getActive();
 
-    this.dialog.open(DeleteDialogComponent, {
-      data: docs
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        message: 'Möchten Sie wirklich diese Datensätze löschen:',
+        title: 'Löschen',
+        list: docs.map(doc => doc.title)
+      }
+    }).afterClosed().subscribe(doDelete => {
+      if (doDelete) {
+        this.deleteDocs(docs.map(doc => <string>doc.id));
+      }
     });
+  }
+
+  deleteDocs(docIdsToDelete: string[]) {
+    try {
+      this.storageService.delete(docIdsToDelete);
+
+      this.router.navigate(['/form']);
+    } catch (ex) {
+      console.error('Could not delete', ex);
+    }
   }
 
   unregister() {

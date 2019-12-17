@@ -1,9 +1,10 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {PublishPlugin} from '../+behaviours';
-import {DeleteDocsPlugin} from '../+behaviours/toolbar/deleteDocs/delete-docs.plugin';
+import {DeleteDocsPlugin} from './dialogs/delete-docs/delete-docs.plugin';
 import {FolderPlugin} from './dialogs/folder/folder.plugin';
 import {CopyCutPastePlugin} from './dialogs/copy-cut-paste/copy-cut-paste.plugin';
 import {Plugin} from '../+behaviours/plugin';
+import {PublishPlugin} from './dialogs/publish/publish.plugin';
+import {PrintViewPlugin} from './dialogs/print-view/print-view.plugin';
 
 @Injectable()
 export class FormPluginsService implements OnDestroy {
@@ -13,9 +14,10 @@ export class FormPluginsService implements OnDestroy {
   constructor(publishPlugin: PublishPlugin,
               folderPlugin: FolderPlugin,
               copyCutPastePlugin: CopyCutPastePlugin,
+              printPlugin: PrintViewPlugin,
               deletePlugin: DeleteDocsPlugin) {
 
-    this.plugins.push(publishPlugin, folderPlugin, copyCutPastePlugin, deletePlugin);
+    this.plugins.push(publishPlugin, folderPlugin, copyCutPastePlugin, deletePlugin, printPlugin);
     this.plugins.forEach(p => p.register());
   }
 

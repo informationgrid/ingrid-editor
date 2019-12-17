@@ -140,33 +140,36 @@ export class DocumentService {
   }
 
   // FIXME: this should be added with a plugin
-  publish(data: IgeDocument) {
-    console.log('PUBLISHING');
-    const errors: any = {errors: []};
+  publish(data: IgeDocument): Promise<void> {
+    return new Promise((resolve, reject) => {
+      console.log('PUBLISHING');
+      const errors: any = {errors: []};
 
-    // this.handleTitle(data);
+      // this.handleTitle(data);
 
-    this.beforeSave.next(errors);
-    console.log('After validation:', data);
-    const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
-    if (formInvalid && formInvalid.invalid) {
-      this.modalService.showJavascriptError('Der Datensatz kann nicht veröffentlicht werden.');
-      return;
-    }
+      this.beforeSave.next(errors);
+      console.log('After validation:', data);
+      const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
+      if (formInvalid && formInvalid.invalid) {
+        this.modalService.showJavascriptError('Der Datensatz kann nicht veröffentlicht werden.');
+        return;
+      }
 
-    this.dataService.publish(data)
-      .subscribe(json => {
-          const info = DocumentUtils.createDocumentAbstract(json);
+      this.dataService.publish(data)
+        .subscribe(json => {
+            const info = DocumentUtils.createDocumentAbstract(json);
 
-          this.afterSave.next(data);
-          this.datasetsChanged.next({
-            type: UpdateType.Update,
-            data: [info]
-          });
-          this.treeStore.upsert(info.id, info);
-        }
-        // , err => this.errorService.handle( err )
-      );
+            this.afterSave.next(data);
+            this.datasetsChanged.next({
+              type: UpdateType.Update,
+              data: [info]
+            });
+            this.treeStore.upsert(info.id, info);
+            resolve();
+          }
+          // , err => this.errorService.handle( err )
+        );
+    });
   }
 
   delete(ids: string[]): void {

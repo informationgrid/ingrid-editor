@@ -23,7 +23,7 @@ mat-tree-node {
     border-bottom: 1px solid $ige-background-bar;
 
     &.expanded {
-      border-bottom: 0;
+      border-bottom-color: transparent;
     }
   }
 

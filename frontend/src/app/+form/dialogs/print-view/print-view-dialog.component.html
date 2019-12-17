@@ -1,4 +1,4 @@
-<h2 mat-dialog-title="Detailansicht"></h2>
+<h2 mat-dialog-title>Detailansicht</h2>
 <mat-dialog-content>
     <div *ngFor="let field of profile">
         <div [ngSwitch]="field.controlType">
@@ -26,6 +26,6 @@
         </div>
     </div>
 </mat-dialog-content>
-<mat-dialog-actions>
-    <button mat-button>Schließen</button>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Schließen</button>
 </mat-dialog-actions>

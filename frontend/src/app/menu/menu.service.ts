@@ -19,12 +19,12 @@ export class MenuService {
   _menuItems: MenuItem[] = [
     {name: 'Dashboard', path: '/dashboard'},
     {name: 'Formular', path: '/form'},
-    {name: 'Plugins', path: '/plugins', onlyAdmin: true},
+    // {name: 'Plugins', path: '/plugins', onlyAdmin: true},
     // {name: 'Fields', path: '/fields'}
     {name: 'Benutzer', path: '/user', onlyAdmin: true},
     {name: 'Im-/Export', path: '/importExport', onlyAdmin: true},
-    {name: 'Katalogverwaltung', path: '/catalogs', onlyAdmin: true},
-    {name: 'Demo', path: '/demo'}
+    {name: 'Katalogverwaltung', path: '/catalogs', onlyAdmin: true}
+    // {name: 'Demo', path: '/demo'}
   ];
 
   menu: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this._menuItems);

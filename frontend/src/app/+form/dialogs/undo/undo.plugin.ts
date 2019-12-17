@@ -1,15 +1,13 @@
 import {Injectable} from '@angular/core';
-import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
-import {Plugin} from '../../plugin';
+import {Plugin} from '../../../+behaviours/plugin';
 import {FormGroup} from '@angular/forms';
 import {Subscription} from 'rxjs';
-import {FormularService} from '../../../+form/formular.service';
+import {FormularService} from '../../formular.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class UndoPlugin extends Plugin {
   id = 'plugin.undo';
   _name = 'Undo Plugin';

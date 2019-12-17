@@ -23,8 +23,7 @@ import {FormPluginsService} from './form-plugins.service';
 
 @Component({
   templateUrl: './dynamic-form.component.html',
-  styleUrls: ['./dynamic-form.component.scss'],
-  providers: [FormularService, FormPluginsService]
+  styleUrls: ['./dynamic-form.component.scss']
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -55,8 +54,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private formUtils: FormUtils;
 
-  constructor(/*private behaviourService: BehaviourService,*/
-              private formularService: FormularService, private formToolbarService: FormToolbarService,
+  constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
               private documentService: DocumentService, private modalService: ModalService,
               private dialog: MatDialog,

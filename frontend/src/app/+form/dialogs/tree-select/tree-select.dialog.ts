@@ -1,7 +1,7 @@
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Component, Inject} from '@angular/core';
-import {DocumentService} from '../../services/document/document.service';
-import {TreeQuery} from '../../store/tree/tree.query';
+import {DocumentService} from '../../../services/document/document.service';
+import {TreeQuery} from '../../../store/tree/tree.query';
 
 @Component( {
   templateUrl: './tree-select.dialog.html'

@@ -1,20 +1,24 @@
-import {Injectable} from '@angular/core';
-import {Plugin} from '../../plugin';
-import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
-import {PrintViewDialogComponent} from '../../../+form/dialogs/print-view/print-view-dialog.component';
+import {Injectable, OnDestroy} from '@angular/core';
+import {Plugin} from '../../../+behaviours/plugin';
+import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {PrintViewDialogComponent} from './print-view-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
+import {untilDestroyed} from 'ngx-take-until-destroy';
+import {TreeQuery} from '../../../store/tree/tree.query';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class PrintViewPlugin extends Plugin {
+@Injectable()
+export class PrintViewPlugin extends Plugin implements OnDestroy{
   id = 'plugin.printView';
   _name = 'Print View Plugin';
   defaultActive = true;
 
   constructor(private toolbarService: FormToolbarService,
+              private treeQuery: TreeQuery,
               private dialog: MatDialog) {
     super();
+  }
+
+  ngOnDestroy(): void {
   }
 
   get name() {
@@ -39,13 +43,13 @@ export class PrintViewPlugin extends Plugin {
       }
     });
 
-/*
-    this.formService.selectedDocuments$.subscribe( data => {
-      this.toolbarService.setButtonState(
-        'toolBtnPrint',
-        data.length === 1);
-    } );
-*/
+    this.treeQuery.openedDocument$
+      .pipe(untilDestroyed(this))
+      .subscribe((openedDoc) => {
+        this.toolbarService.setButtonState(
+          'toolBtnPrint', openedDoc !== null
+        );
+      });
   };
 
   private showPrintDialog() {

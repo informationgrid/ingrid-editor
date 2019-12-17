@@ -24,7 +24,7 @@ import {NgxDatatableTypeComponent} from './types/ngx-datatable-type.component';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {DocReferenceTypeComponent} from './types/doc-reference-type.component';
-import {TreeSelectDialog} from '../dialogs/form/tree-select.dialog';
+import {TreeSelectDialog} from '../+form/dialogs/tree-select/tree-select.dialog';
 import {SharedModule} from '../shared/shared.module';
 
 export function IpValidator(control: FormControl): ValidationErrors {

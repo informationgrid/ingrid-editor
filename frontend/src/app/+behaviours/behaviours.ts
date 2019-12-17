@@ -39,7 +39,6 @@ export class BehavioursDefault {
     /*this.deletePlugin,
     this.publishPlugin,
     this.statisticPlugin,
-    this.workflowPlugin,
     this.createDocRules,
     this.copyCutPastePlugin,
     this.printviewPlugin,
@@ -50,7 +49,6 @@ export class BehavioursDefault {
 
   constructor(/*private storageService: DocumentService,
               private statisticPlugin: StatisticPlugin,
-              private workflowPlugin: WorkflowPlugin,
               private printviewPlugin: PrintViewPlugin,
               private isoviewPlugin: IsoViewPlugin,
               private createDocRules: CreateDocRulesPlugin,

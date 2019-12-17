@@ -1,14 +1,13 @@
 import {Injectable} from '@angular/core';
-import {FormToolbarService} from '../../../+form/toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
-import {Plugin} from '../../plugin';
+import {Plugin} from '../../../+behaviours/plugin';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
+import {FormMessageService} from '../../form-info/form-message/form-message.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class PublishPlugin extends Plugin {
   id = 'plugin.publish';
   _name = 'Publish Plugin';
@@ -25,6 +24,7 @@ export class PublishPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private modalService: ModalService,
+              private messageService: FormMessageService,
               private treeQuery: TreeQuery,
               private formsManager: AkitaNgFormsManager,
               private storageService: DocumentService) {
@@ -35,31 +35,30 @@ export class PublishPlugin extends Plugin {
   register() {
     super.register();
 
-    console.log( 'register publish plugin' );
+    console.log('register publish plugin');
     // add button to toolbar for publish action
-    this.formToolbarService.addButton( {id: 'toolBtnPublishSeparator',  isSeparator: true, pos: 100 } );
+    this.formToolbarService.addButton({id: 'toolBtnPublishSeparator', isSeparator: true, pos: 100});
 
-    this.formToolbarService.addButton( {
+    this.formToolbarService.addButton({
       id: 'toolBtnPublish', tooltip: 'Publish', label: 'Veröffentlichen', matIconVariable: 'publish',
       eventId: this.eventPublishId, pos: 25, align: 'right', active: false, isPrimary: true
-    } );
+    });
 
     // add button to toolbar for revert action
-    this.formToolbarService.addButton( {
+    this.formToolbarService.addButton({
       id: 'toolBtnRevert', tooltip: 'Revert', matIconVariable: 'backspace', eventId: this.eventRevertId, pos: 110, active: false
-    } );
+    });
 
     // add event handler for revert
-    this.formToolbarService.toolbarEvent$.subscribe( eventId => {
+    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'REVERT') {
         this.revert();
       } else if (eventId === 'PUBLISH') {
         this.publish();
       }
-    } );
+    });
 
-    this.formsManager.selectValid('document').subscribe( value => {
-      console.log('This form is: ' + value);
+    this.formsManager.selectValid('document').subscribe(value => {
       this.formIsValid = value;
     });
 
@@ -72,21 +71,34 @@ export class PublishPlugin extends Plugin {
     this.storageService.publishState$.next(true);
 
     if (this.formIsValid) {
-      // TODO: show confirm dialog
-      this.storageService.publish(this.formsManager.getForm('document').value);
+      // show confirm dialog
+      const message = 'Wollen Sie diesen Datensatz wirklich veröffentlichen?';
+      this.modalService.confirm('Veröffentlichen', message).subscribe(doPublish => {
+        if (doPublish) {
+          this.storageService.publish(this.formsManager.getForm('document').value)
+            .then(() => this.messageService.sendInfo('Das Dokument wurde veröffentlicht.'));
+        }
+      });
     } else {
       this.modalService.showJavascriptError('Es müssen alle Felder korrekt ausgefüllt werden.');
     }
   }
 
   revert() {
-    // TODO: confirm before revert!
+    const doc = this.formsManager.getForm('document').value;
 
-    /*const formData = this.formService.requestFormValues();
-    this.storageService.revert(formData.value._id).subscribe(null, err => {
-      console.log( 'Error when reverting data', err );
-      throw(err);
-    });*/
+    const message = 'Wollen Sie diesen Datensatz wirklich auf die letzte Veröffentlichungsversion zurücksetzen?';
+    this.modalService.confirm('Zurücksetzen', message).subscribe(doRevert => {
+      if (doRevert) {
+        this.storageService.revert(doc._id).subscribe(
+          () => {
+          },
+          err => {
+            console.log('Error when reverting data', err);
+            throw(err);
+          });
+      }
+    });
   }
 
   unregister() {
@@ -98,25 +110,12 @@ export class PublishPlugin extends Plugin {
   }
 
   /**
-   * Depending on the state of a dataset set the toolbar button state.
-   * @param data
-   */
-  private handleRevertButtonState(data: any) {
-    let revertButtonActive = false;
-    if (data._state === 'PW') {
-      revertButtonActive = true;
-    }
-
-    this.formToolbarService.setButtonState('toolBtnRevert', revertButtonActive);
-  }
-
-  /**
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    this.treeQuery.openedDocument$.subscribe( loadedDocument => {
-      this.formToolbarService.setButtonState( 'toolBtnPublish', loadedDocument !== null );
-      this.formToolbarService.setButtonState( 'toolBtnRevert', loadedDocument !== null && loadedDocument._state === 'PW' );
+    this.treeQuery.openedDocument$.subscribe(loadedDocument => {
+      this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null);
+      this.formToolbarService.setButtonState('toolBtnRevert', loadedDocument !== null && loadedDocument._state === 'PW');
     });
 
   }

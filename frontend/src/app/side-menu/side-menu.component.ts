@@ -6,11 +6,24 @@ import {MenuItem, MenuService} from '../menu/menu.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {SessionStore} from '../store/session.store';
 import {SessionQuery} from '../store/session.query';
+import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'ige-side-menu',
   templateUrl: './side-menu.component.html',
-  styleUrls: ['./side-menu.component.scss']
+  styleUrls: ['./side-menu.component.scss'],
+  animations: [
+    trigger('toggle', [
+      transition(':enter', [
+        style({ height: 0, opacity: 0}),
+        animate('300ms ease-in', style({ height: 48, opacity: 1 }))
+      ]),
+      transition(':leave', [
+        style({ height: 48, opacity: 1 }),
+        animate('300ms ease-out', style({ height: 0, opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class SideMenuComponent implements OnInit {
 
@@ -58,10 +71,10 @@ export class SideMenuComponent implements OnInit {
       case '/dashboard': return 'dashboard';
       case '/form': return 'description';
       case '/user': return 'people';
-      case '/plugins': return 'extension';
+      // case '/plugins': return 'extension';
       case '/importExport': return 'import_export';
       case '/catalogs': return 'build';
-      case '/demo': return 'play_circle_outline';
+      // case '/demo': return 'play_circle_outline';
       default: return 'exit_to_app';
     }
   }

@@ -26,7 +26,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {SidebarComponent} from './sidebars/sidebar.component';
 import {FormInfoComponent} from './form-info/form-info.component';
-import {FormDialogsModule} from '../dialogs/form/form-dialogs.module';
+import {FormDialogsModule} from './dialogs/tree-select/form-dialogs.module';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {AngularSplitModule} from 'angular-split';
 import {RouterModule} from '@angular/router';
@@ -38,17 +38,25 @@ import {HeaderTitleRowComponent} from './form-info/header-title-row/header-title
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
-import {FormularService} from './formular.service';
 import {CreateFolderComponent} from './dialogs/folder/create-folder.component';
 import {FolderPlugin} from './dialogs/folder/folder.plugin';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {PasteDialogComponent} from './dialogs/copy-cut-paste/paste-dialog.component';
 import {CopyCutPastePlugin} from './dialogs/copy-cut-paste/copy-cut-paste.plugin';
-import {IsoViewComponent} from './toolbar/isoView/iso-view.component';
-import { FormDashboardComponent } from './form-dashboard/form-dashboard.component';
-import { HeaderMoreComponent } from './form-info/header-more/header-more.component';
-import { FormMessageComponent } from './form-info/form-message/form-message.component';
+import {IsoViewComponent} from './dialogs/isoView/iso-view.component';
+import {FormDashboardComponent} from './form-dashboard/form-dashboard.component';
+import {HeaderMoreComponent} from './form-info/header-more/header-more.component';
+import {FormMessageComponent} from './form-info/form-message/form-message.component';
 import {FormMessageService} from './form-info/form-message/form-message.service';
+import {IsoViewPlugin} from './dialogs/isoView/iso-view.plugin';
+import {FormularService} from './formular.service';
+import {FormPluginsService} from './form-plugins.service';
+import {PublishPlugin} from './dialogs/publish/publish.plugin';
+import {UndoPlugin} from './dialogs/undo/undo.plugin';
+import {PrintViewPlugin} from './dialogs/print-view/print-view.plugin';
+import {DeleteDocsPlugin} from './dialogs/delete-docs/delete-docs.plugin';
+import {FormToolbarService} from './toolbar/form-toolbar.service';
+import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.component';
 
 @NgModule({
   imports: [
@@ -65,13 +73,13 @@ import {FormMessageService} from './form-info/form-message/form-message.service'
   declarations: [
     FormToolbarComponent,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
-    NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent,
+    NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
     FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent, HeaderMoreComponent, FormMessageComponent],
-  providers: [NominatimService, FormularService, FormMessageService, FolderPlugin, CopyCutPastePlugin],
+  providers: [FormularService, FormToolbarService, FormPluginsService, NominatimService, FolderPlugin, DeleteDocsPlugin, IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormMessageService],
   exports: [FormsModule, ScrollToDirective],
-  entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent]
+  entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
 })
 export class IgeFormModule {
 }

@@ -1,12 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Plugin} from '../../../+behaviours/plugin';
-import {FormToolbarService} from '../form-toolbar.service';
+import {FormToolbarService} from '../../toolbar/form-toolbar.service';
 import {IsoViewComponent} from './iso-view.component';
 import {MatDialog} from '@angular/material/dialog';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class IsoViewPlugin extends Plugin {
   id = 'plugin.isoView';
   _name = 'Iso View Plugin';

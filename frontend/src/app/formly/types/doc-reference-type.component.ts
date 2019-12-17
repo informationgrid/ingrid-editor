@@ -5,7 +5,7 @@ import {TreeComponent} from '../../+form/sidebars/tree/tree.component';
 import {TreeQuery} from '../../store/tree/tree.query';
 import {map} from 'rxjs/operators';
 import {SidebarComponent} from '../../+form/sidebars/sidebar.component';
-import {TreeSelectDialog} from '../../dialogs/form/tree-select.dialog';
+import {TreeSelectDialog} from '../../+form/dialogs/tree-select/tree-select.dialog';
 
 @Component({
   selector: 'formly-docreference-type',

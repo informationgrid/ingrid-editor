@@ -174,6 +174,13 @@ public class DatasetsApiController implements DatasetsApi {
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
+
+            if (revert) {
+                // prepareDocumentFromDB = this.jsonFromService.revertDocument( id );
+                throw new NotImplementedException();
+                // return;
+            }
+
             ObjectNode mapDocument = (ObjectNode) getJsonMap(data);
             mapDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString());
 
@@ -183,16 +190,7 @@ public class DatasetsApiController implements DatasetsApi {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The user does not seem to be assigned to any database.");
             }
 
-            if (revert) {
-                // prepareDocumentFromDB = this.jsonFromService.revertDocument( id );
-                throw new NotImplementedException();
-            } else {
-                // mapDocument = this.documentService.mapDocumentToDatabase(data, publish, userId);
-            }
-
             String recordId = null;
-
-
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
             List<String> docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, false);
