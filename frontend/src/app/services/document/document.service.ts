@@ -41,13 +41,14 @@ export class DocumentService {
     }
   }
 
-  find(query: string): void {
+  find(query: string): Observable<DocumentAbstract[]> {
     // TODO: use general sort filter
-    this.dataService.find(query)
+    return this.dataService.find(query)
       .pipe(
-        map(json => json.filter(item => item && item._profile !== 'FOLDER'))
+        map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        map(docs => this.mapToDocumentAbstracts(docs, null))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
-      ).subscribe();
+      );
   }
 
   findRecent(): void {

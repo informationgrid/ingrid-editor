@@ -11,9 +11,11 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {FlexModule} from '@angular/flex-layout';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
-  imports: [CommonModule, MatIconModule, MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule, MatSlideToggleModule, FlexModule, MatInputModule],
+  imports: [CommonModule, MatIconModule, MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule, MatSlideToggleModule, FlexModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule],
   declarations: [TreeComponent, TreeHeaderComponent],
   exports: [TreeComponent, MatIconModule, MatButtonModule]
 })

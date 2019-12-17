@@ -2,11 +2,21 @@
     <div class="options" fxLayout="row" fxLayoutAlign="space-between">
         <mat-slide-toggle class="show-all" disabled>Alle anzeigen</mat-slide-toggle>
 
-        <button *ngIf="showReloadButton" mat-icon-button (click)="reloadTree()"><mat-icon>refresh</mat-icon></button>
+        <button *ngIf="showReloadButton" mat-icon-button (click)="reloadTree()">
+            <mat-icon>refresh</mat-icon>
+        </button>
     </div>
 
     <mat-form-field class="search" appearance="outline">
-        <input matInput placeholder="Suche" disabled>
+        <input matInput placeholder="Suche" aria-label="Search"
+               [formControl]="searchValue"
+               [matAutocomplete]="searchAuto">
         <mat-icon matSuffix>search</mat-icon>
+        <mat-autocomplete #searchAuto="matAutocomplete">
+            <mat-option *ngFor="let doc of searchResult | async" (onSelectionChange)="loadResultDocument(doc)" [value]="doc.id">
+                <span>{{doc.title}}</span>
+                <!-- <small>Population: {{state.population}}</small>-->
+            </mat-option>
+        </mat-autocomplete>
     </mat-form-field>
 </div>
