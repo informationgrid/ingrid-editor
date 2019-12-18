@@ -1,18 +1,18 @@
-<mat-nav-list fxFlex fxLayout="column">
+<mat-nav-list fxFlex fxLayout="column" [class.collapsed]="!menuIsExpanded">
     <a mat-list-item *ngFor="let route of routes" [routerLink]="route.path"
        [class.active]="route.path === currentRoute">
         <mat-icon mat-list-icon [matTooltip]="route.name"
                   matTooltipPosition="right"
                   [matTooltipDisabled]="menuIsExpanded"
+                  [svgIcon]="mapRouteToIcon(route.path)"
                   matTooltipClass="tooltip-big">
-            {{mapRouteToIcon(route.path)}}
         </mat-icon>
-        <p mat-line *ngIf="menuIsExpanded">{{route.name}}</p>
+        <p mat-line>{{route.name}}</p>
     </a>
 
     <div class="fillVertical"></div>
 
-    <a mat-list-item (click)="toggleSidebar(!menuIsExpanded)" *ngIf="showDrawer | async">
+    <a mat-list-item (click)="toggleSidebar(!menuIsExpanded)" *ngIf="showDrawer | async" class="menu-toggle">
         <mat-icon *ngIf="!menuIsExpanded" mat-list-icon
                   matTooltip="Vergrößern"
                   matTooltipClass="tooltip-big"
@@ -20,6 +20,6 @@
             keyboard_arrow_right
         </mat-icon>
         <mat-icon *ngIf="menuIsExpanded" mat-list-icon>keyboard_arrow_left</mat-icon>
-        <p mat-line *ngIf="menuIsExpanded">Verkleinern</p>
+        <p mat-line>Verkleinern</p>
     </a>
 </mat-nav-list>

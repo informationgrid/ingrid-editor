@@ -1,4 +1,4 @@
-import {Injectable, NgZone, ViewContainerRef} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ErrorDialogComponent} from '../../dialogs/error/error-dialog.component';
 import {IgeError} from '../../models/ige-error';
@@ -14,7 +14,6 @@ interface DialogContent {
 })
 export class ModalService {
 
-  containerRef: ViewContainerRef = null;
   private dialogRef: MatDialogRef<ErrorDialogComponent, any>;
   errors: IgeError[] = [];
 

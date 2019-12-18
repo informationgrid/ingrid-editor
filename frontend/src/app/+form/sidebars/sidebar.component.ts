@@ -46,7 +46,7 @@ export class SidebarComponent implements OnInit {
     }
 
 
-    const doc = this.treeQuery.getEntity(selectedDocIds[0]);
+    // const doc = this.treeQuery.getEntity(selectedDocIds[0]);
 
     // if a folder was selected then normally do not show the form
     // show folder form only if the edit button was clicked which adds the forceLoad option
@@ -55,7 +55,7 @@ export class SidebarComponent implements OnInit {
     }*/
 
     // this.documentStore.setOpenedDocument(doc);
-    this.router.navigate(['/form', {id: doc.id}]);
+    this.router.navigate(['/form', {id: selectedDocIds[0]}]);
   }
 
   handleSelection(selectedDocsId: string[]) {

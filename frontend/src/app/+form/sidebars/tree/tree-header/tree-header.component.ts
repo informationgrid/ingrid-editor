@@ -4,6 +4,10 @@ import {DocumentAbstract} from '../../../../store/document/document.model';
 import {DocumentService} from '../../../../services/document/document.service';
 import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {FormControl} from '@angular/forms';
+import {DynamicDatabase} from '../dynamic.database';
+import {map} from 'rxjs/operators';
+import {TreeNode} from '../../../../store/tree/tree-node.model';
+import {MatOptionSelectionChange} from '@angular/material/core';
 
 @Component({
   selector: 'ige-tree-header',
@@ -14,13 +18,14 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
   @Input() showReloadButton = true;
 
   @Output() reload = new EventEmitter();
+  @Output() open = new EventEmitter();
 
   @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
 
   searchValue = new FormControl();
-  searchResult = new Subject<DocumentAbstract[]>();
+  searchResult = new Subject<TreeNode[]>();
 
-  constructor(private docService: DocumentService) {
+  constructor(private docService: DocumentService, private db: DynamicDatabase) {
   }
 
   ngOnInit() {
@@ -45,11 +50,16 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
     }
 
     console.log('Search: ', value);
-    this.docService.find(value).subscribe(result => this.searchResult.next(result));
+    this.db.search(value)
+      .pipe(
+        map(docs => this.db.mapDocumentsToTreeNodes(docs, 0))
+      )
+      .subscribe(result => this.searchResult.next(result));
   }
 
-  loadResultDocument(doc: DocumentAbstract) {
+  loadResultDocument(doc: TreeNode) {
     console.log('Loading document', doc);
-    this.searchValue.setValue('xxx');
+    this.searchValue.setValue(doc.title);
+    this.open.next(doc._id);
   }
 }

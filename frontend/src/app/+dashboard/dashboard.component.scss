@@ -1,0 +1,67 @@
+.welcome {
+  background-color: #ffffff;
+  box-shadow: 0 2px 2px -2px #808080;
+  margin-bottom: 36px;
+
+  div {
+    font-size: 24px;
+    padding: 14px 0;
+  }
+}
+
+.search-content, .welcome, .shortcut {
+  text-align: center;
+}
+
+.search-content {
+
+  .search {
+    min-width: 500px;
+  }
+
+  padding-bottom: 24px;
+
+  input {
+    text-align: left;
+  }
+
+  ::ng-deep .mat-form-field-outline {
+    background-color: #ffffff;
+
+    div {
+      border: 0;
+    }
+  }
+
+  ::ng-deep .mat-form-field-suffix {
+    margin-right: -5px;
+  }
+
+  ::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0;
+  }
+
+  ::ng-deep .mat-form-field-infix {
+    padding: 0 0 0.8em;
+  }
+
+  button {
+    height: 44px;
+  }
+}
+
+.shortcut {
+  padding-bottom: 24px;
+}
+
+.info-cards {
+  padding: 0 36px;
+}
+
+.chart {
+  width: 500px;
+}
+
+.content {
+  display: inline-block;
+}

@@ -1,0 +1,121 @@
+<svg>
+  <defs>
+    <svg id="dashboard" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
+      <title>Icon Übersicht</title>
+      <desc>Created with Sketch.</desc>
+      <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Hauptmenü" transform="translate(-352.000000, -110.000000)">
+          <g id="Symbol" transform="translate(312.000000, 51.000000)">
+            <g id="Icon-Übersicht" transform="translate(38.000000, 56.000000)">
+              <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+              <path d="M22,13 L22,21 L2,21 L2,13 L22,13 Z M11,3 L11,11 L2,11 L2,3 L11,3 Z M22,3 L22,11 L13,11 L13,3 L22,3 Z" id="Combined-Shape" fill="#000000"></path>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <svg id="data" width="24px" height="19px" viewBox="0 0 24 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
+      <title>Icon Daten</title>
+      <desc>Created with Sketch.</desc>
+      <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Hauptmenü" transform="translate(-350.000000, -165.000000)">
+          <g id="Symbol" transform="translate(334.000000, 51.000000)">
+            <g id="Icon-Daten" transform="translate(16.000000, 112.000000)">
+              <polygon id="Path-Copy" points="0 0 24 0 24 24 0 24"></polygon>
+              <path d="M24,9 L24,19 C24,20.1045695 23.1045695,21 22,21 L22,21 L2,21 C0.8954305,21 1.3527075e-16,20.1045695 0,19 L0,19 L0,9 L24,9 Z M9,2 C9.55228475,2 10,2.44771525 10,3 L10,4 L23,4 C23.5522847,4 24,4.44771525 24,5 L24,7 L0,7 L0,3 C-6.76353751e-17,2.44771525 0.44771525,2 1,2 L9,2 Z" id="Combined-Shape" fill="#000000"></path>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <svg id="addresses" width="24px" height="18px" viewBox="0 0 24 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
+      <title>Icon Adresse</title>
+      <desc>Created with Sketch.</desc>
+      <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Hauptmenü" transform="translate(-350.000000, -221.000000)">
+          <g id="Symbol" transform="translate(334.000000, 51.000000)">
+            <g id="Icon-Adresse" transform="translate(16.000000, 168.000000)">
+              <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+              <path d="M16.5,11 C18.9964286,11 24,12.2763636 24,14.8181818 L24,14.8181818 L24,20.0001395 L17,20.0001395 L17,14.8181818 C17,12.9146819 15.8763745,11.7208632 14.2635882,11.2413073 C15.0875142,11.0805482 15.8728669,11 16.5,11 Z M16.5058431,9 C18.4457429,9 20,7.43666667 20,5.5 C20,3.56333333 18.4457429,2 16.5058431,2 C14.5659432,2 13,3.56333333 13,5.5 C13,7.43666667 14.5659432,9 16.5058431,9 Z" id="Shape-Copy-2" fill="#000000" fill-rule="nonzero"></path>
+              <path d="M7.5,11 C5.00357143,11 -9.37916411e-13,12.2763636 -9.37916411e-13,14.8181818 L-9.37916411e-13,20.0001395 L15,20.0001395 L15,14.8181818 C15,12.2763636 9.99642857,11 7.5,11 Z M7.50584307,9 C9.4457429,9 11,7.43666667 11,5.5 C11,3.56333333 9.4457429,2 7.50584307,2 C5.56594324,2 4,3.56333333 4,5.5 C4,7.43666667 5.56594324,9 7.50584307,9 Z" id="Shape" fill="#000000" fill-rule="nonzero"></path>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <svg id="research" width="18px" height="23px" viewBox="0 0 18 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
+      <title>Icon Recherche</title>
+      <desc>Created with Sketch.</desc>
+      <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Hauptmenü" transform="translate(-353.000000, -275.000000)">
+          <g id="Symbol" transform="translate(334.000000, 51.000000)">
+            <g id="Icon-Recherche" transform="translate(16.000000, 224.000000)">
+              <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+              <polygon id="Path-7" fill="#000000" points="15 0 15 6 21 6"></polygon>
+              <path d="M14,0 L14,7 L21,7 L21,21.98 L17.0057176,17.8050314 L16.3733562,17.8050314 L16.1492281,17.5889079 C16.9336764,16.6763865 17.4059463,15.4917095 17.4059463,14.2029731 C17.4059463,11.329331 15.0766152,9 12.2029731,9 C9.32933105,9 7,11.329331 7,14.2029731 C7,17.0766152 9.32933105,19.4059463 12.2029731,19.4059463 C13.4917095,19.4059463 14.6763865,18.9336764 15.5889079,18.1492281 L15.8050314,18.3733562 L15.8050314,19.0057176 L19.959,23 L3,23 L3,23 L3,0 L14,0 Z M12.2029731,10.6009148 C14.1961121,10.6009148 15.8050314,12.2098342 15.8050314,14.2029731 C15.8050314,16.1961121 14.1961121,17.8050314 12.2029731,17.8050314 C10.2098342,17.8050314 8.60091481,16.1961121 8.60091481,14.2029731 C8.60091481,12.2098342 10.2098342,10.6009148 12.2029731,10.6009148 Z" id="Combined-Shape" fill="#000000"></path>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <svg id="controlling" width="19px" height="22px" viewBox="0 0 19 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
+      <title>Icon Controlling</title>
+      <desc>Created with Sketch.</desc>
+      <defs>
+        <rect id="path-1" x="0" y="0" width="24" height="24"></rect>
+      </defs>
+      <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Hauptmenü" transform="translate(-353.000000, -332.000000)">
+          <g id="Symbol" transform="translate(334.000000, 51.000000)">
+            <g id="Icon-Controlling" transform="translate(16.000000, 280.000000)">
+              <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+              </mask>
+              <g id="Rectangle"></g>
+              <polygon id="Path-8" fill="#000000" mask="url(#mask-2)" points="3 13 3 23 8 23 8 13"></polygon>
+              <polygon id="Path-8-Copy" fill="#000000" mask="url(#mask-2)" points="10 7 10 23 15 23 15 7"></polygon>
+              <polygon id="Path-8-Copy-2" fill="#000000" mask="url(#mask-2)" points="17 1 17 23 22 23 22 1"></polygon>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <svg id="statistic" width="21px" height="21px" viewBox="0 0 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
+      <title>Icon Statistik</title>
+      <desc>Created with Sketch.</desc>
+      <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Hauptmenü" transform="translate(-352.000000, -388.000000)">
+          <g id="Symbol" transform="translate(334.000000, 51.000000)">
+            <g id="Icon-Statistik" transform="translate(16.000000, 336.000000)">
+              <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+              <path d="M22,12 C22,17.52 17.52,22 12,22 C6.48,22 2,17.52 2,12 C2,6.48 6.48,2 12,2 L12,2 L12,12 Z" id="Combined-Shape" fill="#000000" fill-rule="nonzero"></path>
+              <path d="M13,1 C18.52,1 23,5.48 23,11 L23,11 L13,11 Z" id="Combined-Shape" fill="#000000" fill-rule="nonzero"></path>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <svg id="import_export" width="22px" height="18px" viewBox="0 0 22 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
+      <title>Icon Im-/Export</title>
+      <desc>Created with Sketch.</desc>
+      <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Hauptmenü" transform="translate(-351.000000, -446.000000)">
+          <g id="Symbol" transform="translate(334.000000, 51.000000)">
+            <g id="Icon-Im-/Export" transform="translate(15.995361, 392.000000)">
+              <polygon id="Path-11" points="0 0 0 24 24 24 24 0"></polygon>
+              <polygon id="Path-12" fill="#ffffff" points="17.0011597 3 11.0025635 11 15.0046387 11 15.0046387 21 19.0046387 21 19.0046387 11 22.9997559 11"></polygon>
+              <path d="M5.00463867,3 L5.00463867,13 C2.33487956,13 1,13 1,13 C1,13 3.00089518,15.6666667 7.00268555,21 L13.0053711,13 L9.00463867,13 L9.00463867,3 L5.00463867,3 Z" id="Path-10" fill="#000000"></path>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </defs>
+</svg>

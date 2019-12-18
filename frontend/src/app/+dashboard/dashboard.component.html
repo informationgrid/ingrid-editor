@@ -1,46 +1,54 @@
-<div fxFill style="overflow: auto;">
+<div fxFlex fxLayout="column">
+
+    <div class="welcome">
+        <div>Guten Morgen! Willkommen zurück.</div>
+    </div>
+
+    <div class="search-content">
+        <mat-form-field class="search" appearance="outline">
+            <input matInput placeholder="Daten, Adresse oder ID" aria-label="Search">
+        </mat-form-field>
+        <button mat-flat-button color="primary">
+            <mat-icon>search</mat-icon>
+            Suchen
+        </button>
+    </div>
 
     <div class="shortcut">
-        <ige-action-button label="Neues Dokument" (click)="createNewDocument()"></ige-action-button>
-        <ige-action-button label="Neue Adresse" (click)="createNewAddress()"></ige-action-button>
-        <ige-action-button label="Neuen Benutzer anlegen" (click)="createNewUser()"></ige-action-button>
+        <button mat-button (click)="createNewDocument()">
+            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+            Neuer Order
+        </button>
+        <button mat-button (click)="createNewDocument()">
+            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+            Neuer Datensatz
+        </button>
+        <button mat-button (click)="createNewUser()">
+            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+            Datensatz importieren
+        </button>
+        <button mat-button (click)="createNewAddress()">
+            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+            Neue Adresse
+        </button>
     </div>
 
-    <div class="chart pull-left">
-        <!--<p-chart type="pie"
+
+    <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
+        <div class="info-box" fxLayout="row" fxLayoutGap="36px">
+            <mat-card fxFlex>INGRID Datensätze</mat-card>
+            <mat-card fxFlex>Neue Datensätze</mat-card>
+        </div>
+
+        <mat-card fxFlex>Zuletzt bearbeitet im Katalog</mat-card>
+    </div>
+
+    <!--<div class="chart pull-left">
+        &lt;!&ndash;<p-chart type="pie"
                  [data]="data"
-                 (onDataSelect)="chartClicked($event)"></p-chart>-->
-        <!--<x-chartist type="Bar" [data]="data"></x-chartist>-->
+                 (onDataSelect)="chartClicked($event)"></p-chart>&ndash;&gt;
+        &lt;!&ndash;<x-chartist type="Bar" [data]="data"></x-chartist>&ndash;&gt;
         <x-chartist type="Pie" [data]="dataPie"></x-chartist>
-    </div>
-
-    <!--<div class="content">
-        <ul class="nav nav-tabs">
-            <li role="presentation" class="nav-item" [class.active]="sideTab === 'myData'"><a class="nav-link"
-                                                                                              (click)="sideTab = 'myData'">Mein
-                Daten</a></li>
-            <li role="presentation" class="nav-item" [class.active]="sideTab === 'allData'"><a class="nav-link"
-                                                                                               (click)="sideTab = 'allData'">Alle
-                Daten</a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <ul class="tab-pane" [class.active]="sideTab === 'myData'">
-                <li *ngFor="let doc of allDocuments$ | async">
-                    <a [routerLink]="['/form', { id: doc.id }]">{{doc.title}}</a>
-                </li>
-            </ul>
-        </div>
-        <div class="tab-content" [class.active]="sideTab === 'allData'">
-            <p class="tab-pane text-primary" [class.active]="sideTab === 'allData'">Noch nicht umgesetzt.</p>
-        </div>
     </div>-->
 
-    <h2>Letzte Dokumente</h2>
-    <div class="recentDocs">
-        <ige-document-tile *ngFor="let doc of recentDocs$ | async" [document]="doc"></ige-document-tile>
-        <!--<ul>
-            <li *ngFor="let doc of recentDocs$ | async">{{doc.title}}</li>
-        </ul>-->
-    </div>
 </div>

@@ -1,12 +1,13 @@
-import {Component, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ModalService} from './services/modal/modal.service';
 import {BehaviourService} from './services/behavior/behaviour.service';
 import {RoleService} from './services/role/role.service';
-import {MatDialog} from '@angular/material/dialog';
 import {ApiService} from "./services/ApiService";
 import {ConfigService} from './services/config/config.service';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {MatIconRegistry} from '@angular/material/icon';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'ige-root',
@@ -47,15 +48,12 @@ import {map} from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
 
-  @ViewChild('errorModal', {static: true}) errorModal: TemplateRef<any>;
-  @ViewChild('dialogContainer', {read: ViewContainerRef, static: true}) dialogContainerRef: ViewContainerRef;
-
   username: Observable<string>;
 
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
-  constructor(private bsdialog: MatDialog, private behaviourService: BehaviourService, private modalService: ModalService,
-              private apiService: ApiService, private configService: ConfigService,
+  constructor(private behaviourService: BehaviourService, private modalService: ModalService,
+              private apiService: ApiService, private configService: ConfigService, registry: MatIconRegistry, domSanitizer: DomSanitizer,
               private roleService: RoleService) {
 
     // const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
@@ -69,6 +67,8 @@ export class AppComponent implements OnInit {
     this.username = this.configService.$userInfo.pipe(
       map(info => info.name)
     );
+
+    registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-navigation.svg'));
 
   }
 
@@ -84,7 +84,6 @@ export class AppComponent implements OnInit {
           systemBehaviour.register();
         });
     });
-    this.modalService.containerRef = this.dialogContainerRef;
   }
 
   logout() {

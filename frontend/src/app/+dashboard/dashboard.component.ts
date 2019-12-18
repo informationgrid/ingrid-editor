@@ -7,15 +7,7 @@ import {ProfileService} from '../services/profile.service';
 
 @Component({
   templateUrl: './dashboard.component.html',
-  styles: [`
-    .chart {
-      width: 500px;
-    }
-
-    .content {
-      display: inline-block;
-    }
-  `]
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
 

@@ -8,15 +8,32 @@
   display: block;
   background-color: #28225b;
   height: 100%;
-  //width: 100%;
+}
+
+::ng-deep .mat-icon svg path {
+  fill: #ffffff;
 }
 
 .active {
   background: $ige-primary !important;
+  box-shadow: 0 2px 2px -2px #808080;
 }
 
 .mat-nav-list {
   overflow: auto;
+
+  &.collapsed {
+    width: 56px;
+
+    ::ng-deep .mat-list-text {
+      padding-left: 0 !important;
+    }
+
+  }
+
+  ::ng-deep .mat-list-item-content {
+    padding: 0 12px !important;
+  }
 
   .mat-list-item:hover {
     background: #00000018 !important;
@@ -41,5 +58,9 @@
   font-size: 20px;
   margin-left: 10px;
   padding-left: 20px;
-  //background: #b71c1c;
+}
+
+.mat-list-base .mat-list-item.menu-toggle {
+  box-shadow: 0 0 2px #ffffff;
+  height: 46px;
 }

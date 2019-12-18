@@ -1,7 +1,8 @@
+@import "../../../variables";
+
 .mat-toolbar {
   min-height: 56px;
-  background-color: #e2e2e2;
-  border-top: 1px solid #999;
+  background-color: $ige-background-bar;
 }
 
 .mat-toolbar-row, .mat-toolbar-single-row {

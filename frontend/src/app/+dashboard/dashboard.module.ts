@@ -9,6 +9,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DocumentTileComponent} from './document-tile/document-tile.component';
+import {MatInputModule} from '@angular/material/input';
+import {MatCardModule} from '@angular/material/card';
+import {FlexModule} from '@angular/flex-layout';
 
 const routes: Routes = [
   {
@@ -22,7 +25,7 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule,
-    MatButtonModule, MatIconModule
+    MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule
   ],
   declarations: [DashboardComponent, ChartistComponent, ActionButtonComponent, DocumentTileComponent],
   exports: [RouterModule]

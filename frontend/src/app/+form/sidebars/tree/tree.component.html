@@ -1,4 +1,4 @@
-<ige-tree-header *ngIf="showReloadButton" (reload)="reloadTree()"></ige-tree-header>
+<ige-tree-header *ngIf="showReloadButton" (reload)="reloadTree()" (open)="jumpToNode($event)"></ige-tree-header>
 
 <span *ngIf="dataSource.data?.length === 0">Leerer Baum</span>
 

@@ -1,166 +1,13 @@
-import {Component, EventEmitter, Injectable, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../../../store/tree/tree-node.model';
-import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
-import {CollectionViewer, SelectionChange, SelectionModel} from '@angular/cdk/collections';
+import {Observable} from 'rxjs';
+import {SelectionModel} from '@angular/cdk/collections';
 import {map} from 'rxjs/operators';
-import {DocumentService} from '../../../services/document/document.service';
-import {DocumentAbstract} from '../../../store/document/document.model';
-import {TreeQuery} from '../../../store/tree/tree.query';
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {UpdateType} from '../../../models/update-type.enum';
-
-/**
- * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
- * the descendants data from the database.
- */
-@Injectable()
-export class DynamicDatabase {
-
-  treeUpdates = new Subject<UpdateDatasetInfo>();
-
-  constructor(private docService: DocumentService, private treeQuery: TreeQuery) {
-    this.docService.datasetsChanged.subscribe(docs => this.treeUpdates.next(docs));
-  }
-
-  /** Initial data from database */
-  initialData(forceFromServer?: boolean): Observable<DocumentAbstract[]> {
-    return this.getChildren(null, forceFromServer);
-  }
-
-  getChildren(node: string, forceFromServer?: boolean): Observable<DocumentAbstract[]> {
-    const children = forceFromServer ? [] : this.treeQuery.getChildren(node);
-
-    if (children.length > 0) {
-      return of(children);
-    }
-    return this.docService.getChildren(node);
-  }
-
-  isExpandable(node: string): boolean {
-    return true; // this.dataMap.has(node);
-  }
-}
-
-/**
- * File database, it can build a tree structured Json object from string.
- * Each node in Json object represents a file or a directory. For a file, it has filename and type.
- * For a directory, it has filename and children (a list of files or directories).
- * The input will be a json object string, and the output is a list of `FileNode` with nested
- * structure.
- */
-@Injectable()
-export class DynamicDataSource {
-
-  dataChange = new BehaviorSubject<TreeNode[]>(null);
-
-  get data(): TreeNode[] {
-    return this.dataChange.value;
-  }
-
-  set data(value: TreeNode[]) {
-    this._treeControl.dataNodes = value;
-    this.dataChange.next(value);
-  }
-
-  constructor(private _treeControl: FlatTreeControl<TreeNode>,
-              private _database: DynamicDatabase) {
-  }
-
-  connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
-    this._treeControl.expansionModel.changed.subscribe(change => {
-      if ((change as SelectionChange<TreeNode>).added ||
-        (change as SelectionChange<TreeNode>).removed) {
-        this.handleTreeControl(change as SelectionChange<TreeNode>);
-      }
-    });
-
-    return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
-  }
-
-  /** Handle expand/collapse behaviors */
-  handleTreeControl(change: SelectionChange<TreeNode>) {
-    if (change.added) {
-      change.added.forEach(node => this.toggleNode(node, true));
-    }
-    if (change.removed) {
-      change.removed.slice().reverse().forEach(node => this.toggleNode(node, false));
-    }
-  }
-
-  /**
-   * Toggle the node, remove from display list
-   */
-  toggleNode(node: TreeNode, expand: boolean) {
-    const index = this.data.indexOf(node);
-    if (index === -1) {
-      console.warn('Node not found');
-      return;
-    }
-    if (expand && !node.isExpanded) {
-      this._database.getChildren(node._id)
-        .pipe(
-          map(docs => this.mapDocumentsToTreeNodes(docs, node.level + 1))
-        ).subscribe(children => {
-        if (!children || index < 0) { // If no children, or cannot find the node, no op
-          return;
-        }
-
-        node.isLoading = true;
-
-        // const nodes = children.map(child =>
-        //   new TreeNode(name, node.profile, node.level + 1, this._database.isExpandable(name)));
-        this.data.splice(index + 1, 0, ...children);
-        node.isLoading = false;
-        node.isExpanded = true;
-        // notify the change
-        this.dataChange.next(this.data);
-      });
-    } else if (!expand && node.isExpanded) {
-      let count = 0;
-      for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {
-      }
-      this.data.splice(index + 1, count);
-      this.dataChange.next(this.data);
-      node.isExpanded = false;
-    }
-  }
-
-  mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
-    return docs.map(doc => new TreeNode(doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren, doc._parent));
-  }
-
-  removeNode(docs: DocumentAbstract[]) {
-    docs.forEach(doc => {
-      const index = this.data.findIndex(node => node._id === doc.id);
-      if (index !== -1) {
-        this.data.splice(index, 1);
-        this.dataChange.next(this.data);
-      }
-    });
-  }
-
-  updateNode(docs: DocumentAbstract[]) {
-    docs.forEach(doc => {
-      const index = this.data.findIndex(node => node._id === doc.id);
-      if (index !== -1) {
-        this.data.splice(index, 1, ...this.mapDocumentsToTreeNodes([doc], this.data[index].level));
-        this.dataChange.next(this.data);
-      }
-    });
-  }
-
-  addNode(parent: string, docs: DocumentAbstract[]) {
-    const index = this.data.findIndex(node => node._id === parent);
-    let childLevel = 0;
-    if (parent) {
-      childLevel = this.data[index].level + 1;
-    }
-    this.data.splice(index + 1, 0, ...this.mapDocumentsToTreeNodes(docs, childLevel));
-    this.dataChange.next(this.data);
-  }
-}
-
+import {DynamicDataSource} from './dynamic.datasource';
+import {DynamicDatabase} from './dynamic.database';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -297,15 +144,10 @@ export class TreeComponent implements OnInit {
     return null;
   }
 
-  shouldRender(node: TreeNode) {
-    const parent = this.getParentNode(node);
-    return !parent || parent.isExpanded;
-  }
-
   reloadTree() {
     this.database.initialData(true)
       .pipe(
-        map(docs => this.dataSource.mapDocumentsToTreeNodes(docs, 0))
+        map(docs => this.database.mapDocumentsToTreeNodes(docs, 0))
       )
       .subscribe(rootElements => this.dataSource.data = rootElements);
   }
@@ -315,9 +157,9 @@ export class TreeComponent implements OnInit {
    * @param index
    * @param item
    */
-  trackByNodeId(index, item: TreeNode) {
+  /*trackByNodeId(index, item: TreeNode) {
     return item._id;
-  }
+  }*/
 
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
     switch (updateInfo.type) {
@@ -387,5 +229,13 @@ export class TreeComponent implements OnInit {
         console.error('State is not supported: ' + node.state, node);
         throw new Error('State is not supported: ' + node.state);
     }
+  }
+
+  jumpToNode(id: string) {
+    this.database.getPath(id).then( (path) => {
+      this.activeNodeId = path.pop();
+      this.handleExpandNodes(path)
+      this.activate.next([id]);
+    });
   }
 }
