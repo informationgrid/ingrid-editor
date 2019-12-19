@@ -3,6 +3,10 @@
 .mat-toolbar {
   min-height: 56px;
   background-color: $ige-background-bar;
+
+  ::ng-deep .mat-icon svg path {
+    fill: #000000;
+  }
 }
 
 .mat-toolbar-row, .mat-toolbar-single-row {
@@ -16,25 +20,26 @@
 
 .btn {
   background-color: transparent;
+
+  &.fa {
+    font-size: 16px;
+  }
+
+  &:hover {
+    border: #d8d8d8 1px solid;
+    border-radius: 4px;
+  }
+
+  &:focus {
+    outline-color: transparent;
+  }
+
+  &:disabled:hover {
+    border: transparent 1px solid;
+    color: #777;
+  }
 }
 
-.btn.fa {
-  font-size: 16px;
-}
-
-.btn:hover {
-  border: #d8d8d8 1px solid;
-  border-radius: 4px;
-}
-
-.btn:focus {
-  outline-color: transparent;
-}
-
-.btn:disabled:hover {
-  border: transparent 1px solid;
-  color: #777;
-}
 
 .btn-toolbar {
   margin-left: 0;

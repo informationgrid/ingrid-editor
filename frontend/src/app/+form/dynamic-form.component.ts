@@ -69,11 +69,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
     this.formUtils = new FormUtils();
 
-    // handle toolbar events
-    this.formToolbarService.toolbarEvent$
-      .pipe(untilDestroyed(this))
-      .subscribe(eventId => this.formularService.handleToolbarEvents(eventId, this.form));
-
     // react on document selection
     this.treeQuery.openedDocument$
       .pipe(untilDestroyed(this))
@@ -137,7 +132,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
     // load dataset when one was updated
-    this.documentService.datasetsChanged
+    this.documentService.datasetsChanged$
       .pipe(untilDestroyed(this))
       .subscribe((msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
@@ -160,7 +155,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener('window: keydown', ['$event'])
   hotkeys(event: KeyboardEvent) {
-    this.formUtils.addHotkeys(event, this.formularService, this.form);
+    this.formUtils.addHotkeys(event, this.documentService, this.form);
   }
 
   @HostListener('window:scroll', ['$event']) // for window scroll events
@@ -215,6 +210,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.model = {...data};
       this.form.markAsPristine();
+      this.form.markAsUntouched();
 
     } catch (ex) {
       console.error(ex);

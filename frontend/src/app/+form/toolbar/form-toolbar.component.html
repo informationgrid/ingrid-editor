@@ -22,7 +22,7 @@
                     (click)="sendEvent(button.eventId)"
                     [disabled]="!button.active">
                 <!--aria-label="{{button.tooltip}}"-->
-                <mat-icon class="material-icons-outlined">{{button.matIconVariable}}</mat-icon>
+                <mat-icon class="material-icons-outlined" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
             </button>
 
             <ng-container *ngIf="!button.isSeparator && button.menu">

@@ -1,9 +1,11 @@
 import {Injectable} from '@angular/core';
-import {FormMessageType} from './form-message.component';
+import {FormMessageType} from '../+form/form-info/form-message/form-message.component';
 import {Subject} from 'rxjs';
 
-@Injectable()
-export class FormMessageService {
+@Injectable({
+  providedIn: 'root'
+})
+export class MessageService {
 
   message$ = new Subject<FormMessageType>();
 

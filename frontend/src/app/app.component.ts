@@ -12,39 +12,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 @Component({
   selector: 'ige-root',
   templateUrl: './app.component.html',
-  styles: [`
-      :host {
-          display: block;
-          width: 100%;
-          height: 100%;
-      }
-
-      .logout {
-        padding-right: 0;
-      }
-
-      .wrapper {
-          display: flex;
-          flex-direction: column;
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 100%;
-      }
-
-      /deep/ mat-drawer-content.mat-drawer-content {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-      }
-
-      .mat-toolbar-row, .mat-toolbar-single-row, .mat-toolbar-multiple-rows {
-          height: 44px;
-          min-height: 44px;
-      }
-  `]
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
 
@@ -69,6 +37,7 @@ export class AppComponent implements OnInit {
     );
 
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-navigation.svg'));
+    registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-form.svg'));
 
   }
 

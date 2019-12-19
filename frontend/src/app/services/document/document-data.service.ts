@@ -26,13 +26,12 @@ export class DocumentDataService {
 
   find(query: string): Observable<IgeDocument[]> {
     return this.http.get<IgeDocument[]>(
-      this.configuration.backendUrl + 'datasets?query=' + query + '&sort=title&fields=_id,_profile,_state,' + this.titleFields);
+      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&fields=_id,_profile,_state,title`);
   }
 
   getChildren(parentId: string): Observable<any[]> {
-    const idQuery = parentId === null ? '' : '&parentId=' + parentId;
-
-    return this.http.get<any[]>(this.configuration.backendUrl + 'datasets?children=true' + idQuery)
+    const url = `${this.configuration.backendUrl}tree/children` + (parentId ? `?parentId=${parentId}` : '');
+    return this.http.get<any[]>(url)
       .pipe(
         // catchError( (err) => this.errorService.handle( err ) )
       );

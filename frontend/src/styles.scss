@@ -358,3 +358,8 @@ tree-node:hover .folder {
   background-image: url("/assets/more_vert-24px.svg") !important;
   opacity: 0.5;
 }
+
+/* Disabled material icon SVG */
+.mat-icon-button[disabled] .mat-icon {
+  opacity: 0.2;
+}

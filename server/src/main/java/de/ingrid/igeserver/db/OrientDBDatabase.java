@@ -2,6 +2,7 @@ package de.ingrid.igeserver.db;
 
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.*;
+import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
 import com.orientechnologies.orient.core.record.OElement;
@@ -28,6 +29,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.*;
+
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
 
 @Service
 public class OrientDBDatabase implements DBApi {
@@ -163,11 +166,33 @@ public class OrientDBDatabase implements DBApi {
                     }
                 }
             }
-            queryString = "SELECT * FROM " + type + " WHERE (" + String.join(" or ", where) + ")";
+
+            if (!type.equals("*")) {
+                queryString = "SELECT * FROM " + type + " WHERE (" + String.join(" or ", where) + ")";
+            } else {
+                queryString = "SELECT FROM (SELECT EXPAND( $c ) LET $a = ( SELECT FROM AddressDoc ), $b = ( SELECT FROM mCloudDoc ), $c = UNIONALL( $a, $b )) WHERE (" + String.join(" or ", where) + ")";
+            }
+            log.debug("Query-String: " + queryString);
         }
 
 
         OResultSet docs = getDBFromThread().query(queryString);
+
+        // find references (document wrapper)
+        if (type.equals("*")) {
+            List<String> wrapperList = new ArrayList<>();
+            while (docs.hasNext()) {
+                ORID identity = docs.next().getRecord().get().getIdentity();
+                OResultSet wrapperResults = getDBFromThread().query("FIND REFERENCES " + identity + " [" + DOCUMENT_WRAPPER + "]");
+                while (wrapperResults.hasNext()) {
+                    ORID wrapperId = wrapperResults.next().getProperty("referredBy");
+                    String wrapperAsString = getDBFromThread().load(wrapperId).toJSON("rid,class,fetchPlan:*:-1");
+                    wrapperList.add(wrapperAsString);
+                }
+            }
+            return wrapperList;
+        }
+
         return mapODocumentsToJSON(docs, resolveReferences);
     }
 

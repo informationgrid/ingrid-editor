@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DocumentAbstract} from '../store/document/document.model';
 import {Profile} from '../services/formular/profile';
-import {HttpErrorResponse} from '@angular/common/http';
 import {ProfileService} from '../services/profile.service';
 import {DocumentService} from '../services/document/document.service';
 import {TreeQuery} from '../store/tree/tree.query';
@@ -10,20 +9,10 @@ import {TreeStore} from '../store/tree/tree.store';
 import {SessionStore} from '../store/session.store';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {IFieldBase} from './controls';
-import {FormGroup} from '@angular/forms';
-import {CreateDocOptions, NewDocumentComponent} from './dialogs/new-document/new-document.component';
-import {IgeDocument} from '../models/ige-document';
-import {FormMessageService} from './form-info/form-message/form-message.service';
+import {MessageService} from '../services/message.service';
 
 @Injectable()
 export class FormularService {
-
-  // choice of doc types to be shown when creating new document
-  newDocOptions: any = {
-    docTypes: [],
-    selectedDataset: {},
-    rootOption: true
-  };
 
   data = {};
 
@@ -34,7 +23,7 @@ export class FormularService {
   constructor(private dialog: MatDialog,
               private profiles: ProfileService,
               private documentService: DocumentService,
-              private formMessageService: FormMessageService,
+              private formMessageService: MessageService,
               private treeQuery: TreeQuery,
               private treeStore: TreeStore,
               private sessionStore: SessionStore) {
@@ -78,86 +67,6 @@ export class FormularService {
     }
   }
 
-  handleToolbarEvents(eventId: string, form: FormGroup) {
-    console.log('generic toolbar handler', eventId);
-    if (eventId === 'SAVE') {
-      this.save(form);
-    } else if (eventId === 'NEW_DOC') {
-      this.newDoc();
-    }
-  }
-
-  save(form: FormGroup) {
-    this.documentService.publishState$.next(false);
-
-    form.markAsPristine();
-
-    this.saveForm(form.value);
-  }
-
-  private saveForm(data: IgeDocument, isNewDoc= false) {
-    this.documentService.save(data, isNewDoc).then(() => {
-      this.formMessageService.sendInfo('Ihre Eingabe wurde gespeichert');
-    }, (err: HttpErrorResponse) => {
-      throw err;
-    });
-  }
-
-  newDoc() {
-    // let options = {
-    //   availableTypes: this.formularService.docTypes,
-    //   rootOption: true
-    // };
-    const selectedDocs = this.treeQuery.getActive();
-    this.newDocOptions.docTypes = this.getDocTypes()
-      .filter(type => type.id !== 'FOLDER')
-      .sort((a, b) => a.label.localeCompare(b.label));
-
-    this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
-
-    const dlg = this.dialog.open(NewDocumentComponent, {
-      data:
-        {
-          docTypes: this.newDocOptions.docTypes,
-          rootOption: this.newDocOptions.rootOption,
-          parent: this.newDocOptions.selectedDataset,
-          choice: null
-        }
-    });
-    dlg.afterClosed().subscribe((result: CreateDocOptions) => {
-      if (result) {
-        this.prepareNewDoc(result.choice, result.addBelowDoc);
-      }
-    })
-  }
-
-  /**
-   * Create a new document and save it in the backend.
-   * @param type
-   * @param addBelowDoc
-   */
-  prepareNewDoc(type: string, addBelowDoc: boolean) {
-
-    let parent = null;
-    if (addBelowDoc) {
-      parent = this.treeQuery.getActive()[0].id;
-    }
-
-    const newDoc = new IgeDocument(type, parent);
-
-    this.saveForm(newDoc, true);
-
-  }
-
-
-  /**
-   *
-   * @Deprecated
-   */
-  getTitle(profile: string, doc: IgeDocument) {
-    return doc.title;
-  }
-
   getIconClass(profile: string): string {
     const profileVal = this.getProfile(profile);
     return profileVal ? profileVal.treeIconClass : 'xxx';
@@ -171,10 +80,6 @@ export class FormularService {
     return this.treeQuery.getActive();
     // return this.treeQuery.selectedDocuments;
     // return this.selectedDocs;
-  }
-
-  getDocTypes(): { id: string, label: string }[] {
-    return this.profileDefinitions.map(profile => ({id: profile.id, label: profile.label}));
   }
 
   updateSidebarWidth(size: number) {

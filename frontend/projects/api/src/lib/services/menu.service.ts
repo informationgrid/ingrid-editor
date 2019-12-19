@@ -13,8 +13,7 @@ interface MenuItem {
 })
 export class MenuService {
 
-  menu: Subject<void> = new Subject<void>();
-  menu$ = this.menu.asObservable();
+  menu$: Subject<void> = new Subject<void>();
 
   _menuItems: MenuItem[] = [
     {name: 'Dashboard', path: '/dashboard'},
@@ -47,7 +46,7 @@ export class MenuService {
     this._menuItems.push(
       {name: label, path: '/' + path}
     );
-    this.menu.next( null );
+    this.menu$.next( null );
   }
 
   removeMenuItem(path: string) {
@@ -57,7 +56,7 @@ export class MenuService {
     indexToRemove = this._menuItems.findIndex( (item: any) => item.path === '/' + path );
     this._menuItems.splice( indexToRemove, 1 );
 
-    this.menu.next( null );
+    this.menu$.next( null );
   }
 
 }

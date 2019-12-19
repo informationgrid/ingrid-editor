@@ -5,7 +5,7 @@ import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../../+behaviours/plugin';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
-import {FormMessageService} from '../../form-info/form-message/form-message.service';
+import {MessageService} from '../../../services/message.service';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -24,7 +24,7 @@ export class PublishPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private modalService: ModalService,
-              private messageService: FormMessageService,
+              private messageService: MessageService,
               private treeQuery: TreeQuery,
               private formsManager: AkitaNgFormsManager,
               private storageService: DocumentService) {

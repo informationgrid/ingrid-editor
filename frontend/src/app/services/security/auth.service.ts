@@ -20,8 +20,7 @@ export class AuthService {
 
   tokenName = 'id_token';
 
-  public loginStatusChange = new Subject<boolean>();
-  public loginStatusChange$ = this.loginStatusChange.asObservable();
+  public loginStatusChange$ = new Subject<boolean>();
   private config: Configuration;
 
   // TODO: handle refresh token: https://github.com/auth0/angular2-jwt/issues/197

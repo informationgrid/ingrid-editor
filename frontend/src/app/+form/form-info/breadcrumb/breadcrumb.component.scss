@@ -1,7 +1,8 @@
 @import "../../../../variables";
 
 :host {
-  line-height: 50px;
+  display: block;
+  padding: 15px 0;
   font-size: 14px;
   color: $ige-secondary;
 }

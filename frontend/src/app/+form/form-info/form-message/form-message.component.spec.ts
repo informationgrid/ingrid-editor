@@ -3,7 +3,7 @@ import {createComponentFactory, Spectator, SpyObject} from '@ngneat/spectator';
 import {DynamicDatabase} from '../../sidebars/tree/tree.component';
 import {MatIconModule} from '@angular/material/icon';
 import {fakeAsync, tick} from '@angular/core/testing';
-import {FormMessageService} from './form-message.service';
+import {MessageService} from '../../../services/message.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatButtonModule} from '@angular/material/button';
 
@@ -41,7 +41,7 @@ describe('FormMessageComponent', () => {
   });
 
   it('should show info message', () => {
-    const service = spectator.get(FormMessageService);
+    const service = spectator.get(MessageService);
     service.message$.next(INFO_MESSAGE);
 
     spectator.detectChanges();
@@ -53,7 +53,7 @@ describe('FormMessageComponent', () => {
   });
 
   it('should hide an info message after 3s', fakeAsync(() => {
-    const service = spectator.get(FormMessageService);
+    const service = spectator.get(MessageService);
     service.message$.next(INFO_MESSAGE);
 
     spectator.detectChanges();
@@ -65,7 +65,7 @@ describe('FormMessageComponent', () => {
   }));
 
   fit('should show an error message', () => {
-    const service = spectator.get(FormMessageService);
+    const service = spectator.get(MessageService);
     service.message$.next(ERROR_MESSAGE);
 
     spectator.detectChanges();
@@ -77,7 +77,7 @@ describe('FormMessageComponent', () => {
   });
 
   it('should not hide an error message after 3s', fakeAsync(() => {
-    const service = spectator.get(FormMessageService);
+    const service = spectator.get(MessageService);
     service.message$.next(ERROR_MESSAGE);
 
     spectator.detectChanges();

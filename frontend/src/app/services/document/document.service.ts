@@ -12,28 +12,24 @@ import {TreeStore} from '../../store/tree/tree.store';
 import {ProfileQuery} from '../../store/profile/profile.query';
 import {DocumentUtils} from './document.utils';
 import {arrayAdd, arrayRemove} from '@datorama/akita';
+import {MessageService} from '../message.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
 
-  beforeSave: Subject<any> = new Subject<any>();
-  afterSave: Subject<any> = new Subject<any>();
-  afterLoadAndSet: Subject<any> = new Subject<any>();
-  afterProfileSwitch: Subject<any> = new Subject<any>();
-  datasetsChanged: Subject<UpdateDatasetInfo> = new Subject<UpdateDatasetInfo>();
-
-  beforeLoad = new Subject<void>();
-
-  afterLoadAndSet$ = this.afterLoadAndSet.asObservable();
-  afterProfileSwitch$ = this.afterProfileSwitch.asObservable();
-  beforeSave$ = this.beforeSave.asObservable();
-
+  // TODO: check usefulness
+  beforeSave$ = new Subject<any>();
+  afterSave$ = new Subject<any>();
+  afterLoadAndSet$ = new Subject<any>();
+  afterProfileSwitch$ = new Subject<any>();
+  datasetsChanged$ = new Subject<UpdateDatasetInfo>();
   publishState$ = new BehaviorSubject<boolean>(false);
 
   constructor(private modalService: ModalService,
               private dataService: DocumentDataService,
+              private messageService: MessageService,
               private profileQuery: ProfileQuery,
               private treeStore: TreeStore) {
     if (KeycloakService.auth.loggedIn) {
@@ -126,8 +122,10 @@ export class DocumentService {
         .subscribe(json => {
           const info = DocumentUtils.createDocumentAbstract(json);
 
-          this.afterSave.next(data);
-          this.datasetsChanged.next({
+          this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
+
+          this.afterSave$.next(data);
+          this.datasetsChanged$.next({
             type: isNewDoc ? UpdateType.New : UpdateType.Update,
             data: [info],
             parent: info._parent
@@ -148,7 +146,7 @@ export class DocumentService {
 
       // this.handleTitle(data);
 
-      this.beforeSave.next(errors);
+      this.beforeSave$.next(errors);
       console.log('After validation:', data);
       const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
       if (formInvalid && formInvalid.invalid) {
@@ -160,8 +158,8 @@ export class DocumentService {
         .subscribe(json => {
             const info = DocumentUtils.createDocumentAbstract(json);
 
-            this.afterSave.next(data);
-            this.datasetsChanged.next({
+            this.afterSave$.next(data);
+            this.datasetsChanged$.next({
               type: UpdateType.Update,
               data: [info]
             });
@@ -181,7 +179,7 @@ export class DocumentService {
           return {id: id};
         });
         // @ts-ignore
-        this.datasetsChanged.next({type: UpdateType.Delete, data: data});
+        this.datasetsChanged$.next({type: UpdateType.Delete, data: data});
         this.treeStore.remove(ids);
       });
   }
@@ -189,7 +187,7 @@ export class DocumentService {
   revert(id: string): Observable<any> {
     return this.dataService.revert(id)
       .pipe(
-        tap((json: any) => this.datasetsChanged.next({type: UpdateType.Update, data: [json]}))
+        tap((json: any) => this.datasetsChanged$.next({type: UpdateType.Update, data: [json]}))
         // catchError( err => this.errorService.handle( err ) )
       );
   }

@@ -16,7 +16,7 @@ export class DynamicDatabase {
   treeUpdates = new Subject<UpdateDatasetInfo>();
 
   constructor(private docService: DocumentService, private treeQuery: TreeQuery) {
-    this.docService.datasetsChanged.subscribe(docs => this.treeUpdates.next(docs));
+    this.docService.datasetsChanged$.subscribe(docs => this.treeUpdates.next(docs));
   }
 
   /** Initial data from database */

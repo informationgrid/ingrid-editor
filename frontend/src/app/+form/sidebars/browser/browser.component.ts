@@ -34,7 +34,7 @@ export class BrowserComponent implements OnInit, OnDestroy {
       this.selectedId = params['id'];
     });
 
-    this.subscription = this.storageService.datasetsChanged.subscribe( (event) => {
+    this.subscription = this.storageService.datasetsChanged$.subscribe( (event) => {
       if (event.type === UpdateType.Update) {
         this.query();
       }

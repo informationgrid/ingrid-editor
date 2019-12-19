@@ -14,9 +14,8 @@ export class ClickAndChangeTitleBehaviour extends BaseBehaviour implements Behav
   defaultActive = true;
   forProfile = 'UVP';
 
-  constructor(@Inject(DocumentService) private storageService: DocumentService) {
+  constructor(@Inject(DocumentService) private documentService: DocumentService) {
     super();
-    console.log('behaviour constructor storageService:', storageService);
   }
 
   register(form: FormGroup, eventManager: EventManager) {
@@ -29,7 +28,7 @@ export class ClickAndChangeTitleBehaviour extends BaseBehaviour implements Behav
     );
 
     this.addSubscriber(
-      this.storageService.beforeSave.asObservable().subscribe((message: any) => {
+      this.documentService.beforeSave$.subscribe((message: any) => {
         message.errors.push({id: 'taskId', error: 'I don\'t like this ID'});
         console.log('in observer');
       })

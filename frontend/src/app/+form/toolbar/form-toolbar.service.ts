@@ -10,6 +10,7 @@ export interface DefaultToolbarItem {
 export interface ToolbarItem extends DefaultToolbarItem {
   tooltip: string;
   matIconVariable?: string;
+  matSvgVariable?: string;
   cssClasses?: string;
   eventId: string;
   active?: boolean;
@@ -31,19 +32,7 @@ export class FormToolbarService {
   // events coming from a toolbar button
   toolbarEvent$ = new Subject<string>();
 
-  _buttons: Array<ToolbarItem | Separator> = [
-    {id: 'toolBtnNew', tooltip: 'New', matIconVariable: 'add', eventId: 'NEW_DOC', pos: 10, active: true},
-    {
-      id: 'toolBtnSave',
-      tooltip: 'Save',
-      label: 'Speichern',
-      matIconVariable: 'save',
-      eventId: 'SAVE',
-      pos: 20,
-      active: false,
-      align: 'right'
-    }
-  ];
+  _buttons: Array<ToolbarItem | Separator> = [];
 
   constructor() {
   }

@@ -73,17 +73,23 @@ public interface DatasetsApi {
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
             @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException, IOException;
 
-    @ApiOperation(value = "Get datasets by a query or as child documents", notes = "Get all datasets or those which match a given query. You can define the fields where the search should be, in case the documents have different attributes for their title. The results can also be sorted.", response = Void.class, tags = {
+    @ApiOperation(value = "Get child datasets of a given parent document/folder", notes = "", response = Void.class, tags = {
+            "Datasets",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Child Datasets found", response = Void.class)})
+    @RequestMapping(value = "/tree/children", produces = {"application/json"}, method = RequestMethod.GET)
+    ResponseEntity<String> getChildren(
+            Principal principal,
+            @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId) throws Exception;
+
+    @ApiOperation(value = "Get datasets by a query", notes = "Get all datasets or those which match a given query. The results can also be sorted.", response = Void.class, tags = {
             "Datasets", })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Datasets found", response = Void.class) })
     @RequestMapping(value = "/datasets", produces = { "application/json" }, method = RequestMethod.GET)
     ResponseEntity<String> find(
     		Principal principal,
-//            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String[] fields,
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
-            @ApiParam(value = "Get all children of a dataset. The parameter 'parentId' is also needed for this request.") @RequestParam(value = "children", required = false) Boolean children,
-            @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId,
             @ApiParam(value = "Sort by a given field.") @RequestParam(value = "sort", required = false) String sort,
             @ApiParam(value = "Reverse sort.") @RequestParam(value = "reverse", required = false) String reverse) throws Exception;
 

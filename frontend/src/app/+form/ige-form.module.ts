@@ -47,7 +47,6 @@ import {IsoViewComponent} from './dialogs/isoView/iso-view.component';
 import {FormDashboardComponent} from './form-dashboard/form-dashboard.component';
 import {HeaderMoreComponent} from './form-info/header-more/header-more.component';
 import {FormMessageComponent} from './form-info/form-message/form-message.component';
-import {FormMessageService} from './form-info/form-message/form-message.service';
 import {IsoViewPlugin} from './dialogs/isoView/iso-view.plugin';
 import {FormularService} from './formular.service';
 import {FormPluginsService} from './form-plugins.service';
@@ -57,6 +56,8 @@ import {PrintViewPlugin} from './dialogs/print-view/print-view.plugin';
 import {DeleteDocsPlugin} from './dialogs/delete-docs/delete-docs.plugin';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.component';
+import {NewDocumentPlugin} from './dialogs/new-doc/new-doc.plugin';
+import {SavePlugin} from './dialogs/save/save.plugin';
 
 @NgModule({
   imports: [
@@ -69,7 +70,8 @@ import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.c
     FlexLayoutModule,
     FormlyModule,
     IgeFormlyModule,
-    FormFieldsModule],
+    FormFieldsModule
+  ],
   declarations: [
     FormToolbarComponent,
     BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
@@ -77,7 +79,7 @@ import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.c
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
     FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent, HeaderMoreComponent, FormMessageComponent],
-  providers: [FormularService, FormToolbarService, FormPluginsService, NominatimService, FolderPlugin, DeleteDocsPlugin, IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormMessageService],
+  providers: [FormularService, FormToolbarService, FormPluginsService, NominatimService, FolderPlugin, DeleteDocsPlugin, IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, NewDocumentPlugin, SavePlugin],
   exports: [FormsModule, ScrollToDirective],
   entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
 })

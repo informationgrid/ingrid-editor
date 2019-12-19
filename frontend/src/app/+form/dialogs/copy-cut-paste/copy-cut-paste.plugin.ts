@@ -84,7 +84,7 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private handleEvent(type: UpdateType) {
-    this.storageService.datasetsChanged.next({
+    this.storageService.datasetsChanged$.next({
       type: type,
       data: null
     });

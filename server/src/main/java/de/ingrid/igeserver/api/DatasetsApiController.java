@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.OffsetDateTime;
@@ -343,14 +342,48 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
+    public ResponseEntity<String> getChildren(
+            Principal principal,
+            String parentId
+    ) throws ApiException {
+        List<String> docs = null;
+        List<String> mappedDocs = new ArrayList<>();
+
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        try (ODatabaseSession session = dbService.acquire(dbId)) {
+
+            Map<String, String> queryMap = new HashMap<>();
+            queryMap.put("_parent", parentId);
+            docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.exact, true);
+
+            String childDocs = docs.stream()
+                    .map(doc -> {
+                        try {
+                            return getJsonMap(doc);
+                        } catch (Exception e) {
+                            log.error(e);
+                            return null;
+                        }
+                    })
+                    .map(doc -> {
+                        ObjectNode node = (ObjectNode) getLatestDocument(doc);
+                        node.put(FIELD_STATE, this.documentService.determineState(doc));
+                        return node;
+                    })
+                    .map(doc -> doc.toString())
+                    .collect(Collectors.joining(","));
+
+            return ResponseEntity.ok("[" + childDocs + "]");
+        }
+    }
+
     public ResponseEntity<String> find(
             Principal principal,
-//            @NotNull @ApiParam(value = "", required = true) @RequestParam(value = "fields", required = true) String[] fields,
-            @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
-            @ApiParam(value = "Get all children of a dataset. The parameter 'parentId' is also needed for this request.") @RequestParam(value = "children", defaultValue = "false", required = false) Boolean children,
-            @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId,
-            @ApiParam(value = "Sort by a given field.") @RequestParam(value = "sort", required = false) String sort,
-            @ApiParam(value = "Reverse sort.") @RequestParam(value = "reverse", required = false) String reverse) throws Exception {
+            @RequestParam(value = "query", required = false) String query,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "reverse", required = false) String reverse) throws Exception {
 
         List<String> docs = null;
         List<String> mappedDocs = new ArrayList<>();
@@ -359,19 +392,11 @@ public class DatasetsApiController implements DatasetsApi {
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
-            if (children) {
-                Map<String, String> queryMap = new HashMap<>();
-                queryMap.put("_parent", parentId);
-                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.like, true);
-            } else {
-                Map<String, String> queryMap = new HashMap<>();
-                /*for (String field : fields) {
-                    queryMap.put(field, query);
-                }*/
-                docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.like, true); // fields );
-            }
+            Map<String, String> queryMap = new HashMap<>();
+            queryMap.put("title", query);
+            docs = this.dbService.findAll("*", queryMap, QueryType.like, true);
 
-            String childDocs = docs.stream()
+            String preparedDocs = docs.stream()
                     .map(doc -> {
                         try {
                             return getJsonMap(doc);
@@ -392,7 +417,7 @@ public class DatasetsApiController implements DatasetsApi {
                 mappedDocs.add(this.dbUtils.toJsonString(this.documentService.prepareDocumentFromDB(doc, null, fields)));
             }*/
 
-            return ResponseEntity.ok("[" + childDocs + "]");
+            return ResponseEntity.ok("[" + preparedDocs + "]");
 
         }
     }

@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {BehaviorSubject} from 'rxjs';
 import {SessionStore} from '../store/session.store';
-import {getValue} from '@datorama/akita';
 
 export interface MenuItem {
   name: string;
@@ -27,8 +26,7 @@ export class MenuService {
     // {name: 'Demo', path: '/demo'}
   ];
 
-  menu: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this._menuItems);
-  menu$ = this.menu.asObservable();
+  menu$ = new BehaviorSubject<MenuItem[]>(this._menuItems);
 
   constructor(private router: Router, private sessionStore: SessionStore) {}
 
@@ -50,7 +48,7 @@ export class MenuService {
     this._menuItems.push(
       {name: label, path: '/' + path}
     );
-    this.menu.next( null );
+    this.menu$.next( null );
   }
 
   removeMenuItem(path: string) {
@@ -60,7 +58,7 @@ export class MenuService {
     indexToRemove = this._menuItems.findIndex( (item: any) => item.path === '/' + path );
     this._menuItems.splice( indexToRemove, 1 );
 
-    this.menu.next( null );
+    this.menu$.next( null );
   }
 
   toggleSidebar(setExpanded: boolean) {

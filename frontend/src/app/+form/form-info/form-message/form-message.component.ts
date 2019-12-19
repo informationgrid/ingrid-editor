@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormMessageService} from './form-message.service';
+import {MessageService} from '../../../services/message.service';
 import {untilDestroyed} from 'ngx-take-until-destroy';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 
@@ -34,7 +34,7 @@ export class FormMessageComponent implements OnInit, OnDestroy {
 
   private defaultDuration = 3000;
 
-  constructor(private messageService: FormMessageService) { }
+  constructor(private messageService: MessageService) { }
 
   ngOnInit() {
     this.messageService.message$

@@ -14,6 +14,7 @@
         <mat-icon matSuffix>search</mat-icon>
         <mat-autocomplete #searchAuto="matAutocomplete">
             <mat-option *ngFor="let doc of searchResult | async" (onSelectionChange)="loadResultDocument(doc)" [value]="doc._id">
+                <mat-icon svgIcon="data"></mat-icon>
                 <span>{{doc.title}}</span>
                 <!-- <small>Population: {{state.population}}</small>-->
             </mat-option>

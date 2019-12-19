@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {Plugin} from '../../../+behaviours/plugin';
-import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {FormToolbarService, Separator, ToolbarItem} from '../../toolbar/form-toolbar.service';
 import {PrintViewDialogComponent} from './print-view-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {untilDestroyed} from 'ngx-take-until-destroy';
@@ -29,9 +29,9 @@ export class PrintViewPlugin extends Plugin implements OnDestroy{
     super.register();
 
     // add button to toolbar
-    const buttons = [
+    const buttons: Array<ToolbarItem | Separator> = [
       { id: 'toolBtnCopyCutSeparator', pos: 60, isSeparator: true },
-      { id: 'toolBtnPrint', tooltip: 'Print', matIconVariable: 'print', eventId: 'PRINT', pos: 70, active: false }
+      { id: 'toolBtnPrint', tooltip: 'Print', matSvgVariable: 'preview', eventId: 'PRINT', pos: 70, active: false }
     ];
     buttons.forEach((button, index) => this.toolbarService.addButton(button));
 

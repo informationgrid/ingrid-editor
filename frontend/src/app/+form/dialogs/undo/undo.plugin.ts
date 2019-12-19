@@ -68,7 +68,7 @@ export class UndoPlugin extends Plugin {
       }
     });
 
-    this.storageService.afterLoadAndSet.subscribe((data) => {
+    this.storageService.afterLoadAndSet$.subscribe((data) => {
       if (data) {
         this.history = [];
         this.redoHistory = [];
