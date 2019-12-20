@@ -1,15 +1,11 @@
-// Needed for the new modules
-import {Compiler, Injectable, Injector, NgModuleFactory} from '@angular/core';
-import {environment} from '../../environments/environment';
+import {Injectable} from '@angular/core';
 import {ConfigService, Configuration} from './config/config.service';
 import {Profile} from './formular/profile';
 import {DocumentService} from './document/document.service';
 import {CodelistService} from './codelist/codelist.service';
 import {HttpClient} from "@angular/common/http";
 import {ProfileStore} from "../store/profile/profile.store";
-
-declare const $script: any;
-declare const webpackJsonp: any;
+import {icon} from 'leaflet';
 
 @Injectable({
   providedIn: 'root'
@@ -21,10 +17,9 @@ export class ProfileService {
 
   initialized: Promise<Profile[]>;
 
-  constructor(public injector: Injector,
-              private profileStore: ProfileStore,
+  constructor(private profileStore: ProfileStore,
               private http: HttpClient, configService: ConfigService,
-              storageService: DocumentService, codelistService: CodelistService, private compiler: Compiler) {
+              storageService: DocumentService, codelistService: CodelistService) {
     this.configuration = configService.getConfiguration();
 
     this.initialized = new Promise((resolve, reject) => {
@@ -61,10 +56,10 @@ export class ProfileService {
             ).subscribe();
           */
 
-          if (environment.profileFromServer) {
+          /*if (environment.profileFromServer) {
             // window['theProfile'].forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
             // resolve(this.profiles);
-            // /*console.log('Requesting URL: ' + this.configuration.backendUrl + 'profiles');
+            // /!*console.log('Requesting URL: ' + this.configuration.backendUrl + 'profiles');
             //$script(this.configuration.backendUrl + 'profiles', () => {
             $script('assets/pack-bkg.bundle.js', () => {
               try {
@@ -76,41 +71,49 @@ export class ProfileService {
               resolve(this.profiles);
               this.profileStore.update({isInitialized: true});
             });
-          } else {
-            // import( '../../profiles/pack-bkg' ).then(module => {
+          } else {*/
             import( '../../profiles/pack-mcloud' ).then(module => {
               console.log('Loaded module: ', module);
               // TODO: use map instead of multiple parameters in case we want to add another dependency
               module.profiles.forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
 
               this.profileStore.update({isInitialized: true});
+              resolve(this.profiles);
+
               let profilesAbstract = this.profiles.map(p => {
                 return {
                   id: p.id,
-                  fields: p.getFields()
+                  iconClass: p.iconClass
                 }
               });
-
-  /*            setTimeout(() => {
-                // @ts-ignore
-                this.profileStore.add(profilesAbstract);
-              }, 1000);*/
-              resolve(this.profiles);
+              this.profileStore.set(profilesAbstract);
             });
-          }
+          // }
         }
       });
     });
     configService.setProfilePackagePromise(this.initialized);
   }
 
-  private getEntryComponent(moduleFactory: NgModuleFactory<any>) {
+  /*private getEntryComponent(moduleFactory: NgModuleFactory<any>) {
     // search (<any>moduleFactory.moduleType).decorators[0].type.prototype.ngMetadataName === NgModule
     return (<any>moduleFactory.moduleType).decorators[0].args[0].entryComponents[0];
-  }
+  }*/
 
   getProfiles(): Profile[] {
     return this.profiles;
+  }
+
+  getProfileIcon(profileId: string): string {
+    const iconClass = this.profiles
+      .filter(profile => profile.id === profileId)
+      .map(profile => profile.iconClass);
+
+    if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
+      throw Error('Unknown profile or iconClass');
+    }
+
+    return iconClass[0];
   }
 
 }

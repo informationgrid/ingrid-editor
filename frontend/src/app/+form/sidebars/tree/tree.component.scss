@@ -13,6 +13,9 @@ mat-tree-node {
   min-height: 20px;
   padding: 0.2em 0;
 
+  ::ng-deep svg path {
+    fill: #000000;
+  }
 
   &:first-child {
     border-top: 1px solid $ige-background-bar;
@@ -45,14 +48,12 @@ mat-tree-node {
 
   .label {
     margin-top: 0.5em;
-    margin-bottom: 0.5em;
     user-select: none;
 
     .mat-icon {
-      height: 0;
       line-height: 0;
       vertical-align: sub;
-      margin-right: 3px;
+      margin-right: 12px;
       font-size: 20px;
     }
   }
@@ -85,11 +86,13 @@ mat-tree-node {
   }
 
   .mat-icon {
-    &.working {
-      color: $state-working-color;
+    //&.working {
+    &.working ::ng-deep svg path {
+      //color: $state-working-color;
+      fill: $state-working-color;
     }
 
-    &.workingWithPublished {
+    /*&.workingWithPublished {
       background: -moz-linear-gradient(270deg, $state-working-color 50%, #333333 50%);
       background: -webkit-linear-gradient(270deg, $state-working-color 50%, #333333 50%);
       background: linear-gradient(270deg, $state-working-color 50%, #333333 50%);
@@ -98,7 +101,7 @@ mat-tree-node {
       background-clip: text;
       -webkit-text-fill-color: transparent;
       display: inline;
-    }
+    }*/
 
     /*.published {
     }*/

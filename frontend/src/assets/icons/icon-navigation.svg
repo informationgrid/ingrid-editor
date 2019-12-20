@@ -1,8 +1,7 @@
 <svg>
   <defs>
-    <svg id="dashboard" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <svg id="dashboard" width="24px" height="24px" viewBox="-2 -3 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
-      <title>Icon Übersicht</title>
       <desc>Created with Sketch.</desc>
       <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Hauptmenü" transform="translate(-352.000000, -110.000000)">
@@ -17,7 +16,6 @@
     </svg>
     <svg id="data" width="24px" height="19px" viewBox="0 0 24 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
-      <title>Icon Daten</title>
       <desc>Created with Sketch.</desc>
       <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Hauptmenü" transform="translate(-350.000000, -165.000000)">
@@ -32,7 +30,6 @@
     </svg>
     <svg id="addresses" width="24px" height="18px" viewBox="0 0 24 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
-      <title>Icon Adresse</title>
       <desc>Created with Sketch.</desc>
       <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Hauptmenü" transform="translate(-350.000000, -221.000000)">
@@ -48,7 +45,6 @@
     </svg>
     <svg id="research" width="18px" height="23px" viewBox="0 0 18 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
-      <title>Icon Recherche</title>
       <desc>Created with Sketch.</desc>
       <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Hauptmenü" transform="translate(-353.000000, -275.000000)">
@@ -64,7 +60,6 @@
     </svg>
     <svg id="controlling" width="19px" height="22px" viewBox="0 0 19 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
-      <title>Icon Controlling</title>
       <desc>Created with Sketch.</desc>
       <defs>
         <rect id="path-1" x="0" y="0" width="24" height="24"></rect>
@@ -87,7 +82,6 @@
     </svg>
     <svg id="statistic" width="21px" height="21px" viewBox="0 0 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
-      <title>Icon Statistik</title>
       <desc>Created with Sketch.</desc>
       <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Hauptmenü" transform="translate(-352.000000, -388.000000)">
@@ -103,7 +97,6 @@
     </svg>
     <svg id="import_export" width="22px" height="18px" viewBox="0 0 22 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <!-- Generator: Sketch 61 (89581) - https://sketch.com -->
-      <title>Icon Im-/Export</title>
       <desc>Created with Sketch.</desc>
       <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Hauptmenü" transform="translate(-351.000000, -446.000000)">

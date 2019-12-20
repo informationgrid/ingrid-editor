@@ -6,13 +6,15 @@ export interface TreeState extends EntityState<DocumentAbstract>, MultiActiveSta
   // TODO: what is this used for?
   openedNodes: DocumentAbstract[],
   openedDocument: DocumentAbstract,
-  expandedNodes: string[]
+  expandedNodes: string[],
+  activePathTitles: string[]
 }
 
 const initialState = {
   active: [],
   openedDocument: null,
-  expandedNodes: []
+  expandedNodes: [],
+  activePathTitles: []
 };
 
 @Injectable({providedIn: 'root'})

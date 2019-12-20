@@ -29,6 +29,7 @@ export class ClickAndChangeTitleBehaviour extends BaseBehaviour implements Behav
 
     this.addSubscriber(
       this.documentService.beforeSave$.subscribe((message: any) => {
+
         message.errors.push({id: 'taskId', error: 'I don\'t like this ID'});
         console.log('in observer');
       })

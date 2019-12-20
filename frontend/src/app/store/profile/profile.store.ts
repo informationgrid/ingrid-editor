@@ -1,20 +1,20 @@
 import {Injectable} from '@angular/core';
 import {EntityState, EntityStore, StoreConfig} from '@datorama/akita';
-import {Profile} from '../../services/formular/profile';
+import {ProfileAbstract} from './profile.model';
 
-export interface ProfileState extends EntityState<Profile> {
+export interface ProfileState extends EntityState<ProfileAbstract> {
   isInitialized: boolean
 }
 
-export function createProfile(params: Partial<Profile>) {
-  return <Partial<Profile>>{
+export function createProfile(params: Partial<ProfileAbstract>) {
+  return <Partial<ProfileAbstract>>{
     isInitialized: false
-  } as Profile;
+  } as ProfileAbstract;
 }
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'profile' })
-export class ProfileStore extends EntityStore<ProfileState, Profile> {
+export class ProfileStore extends EntityStore<ProfileState, ProfileAbstract> {
 
   constructor() {
     super(createProfile(null));

@@ -16,7 +16,7 @@ export class UVPProfile extends BaseProfile {
 
   codelistService = null;
 
-  treeIconClass = 'fa fa-file-o'; // TODO: make icons same size for better presentation in tree/browser
+  iconClass = 'fa fa-file-o'; // TODO: make icons same size for better presentation in tree/browser
 
   constructor(storageService: DocumentService, codelistService: CodelistService) {
     super();

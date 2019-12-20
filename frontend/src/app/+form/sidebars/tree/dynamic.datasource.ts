@@ -120,4 +120,8 @@ export class DynamicDataSource {
     this.data.splice(index + 1, 0, ...this._database.mapDocumentsToTreeNodes(docs, childLevel));
     this.dataChange.next(this.data);
   }
+
+  getNode(nodeId: string): TreeNode {
+    return this.data.find(node => node._id === nodeId);
+  }
 }

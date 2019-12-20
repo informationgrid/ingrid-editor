@@ -69,7 +69,7 @@ export class FormularService {
 
   getIconClass(profile: string): string {
     const profileVal = this.getProfile(profile);
-    return profileVal ? profileVal.treeIconClass : 'xxx';
+    return profileVal ? profileVal.iconClass : 'xxx';
   }
 
   setSelectedDocuments(docs: DocumentAbstract[]) {

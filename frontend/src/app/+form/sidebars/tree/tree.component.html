@@ -14,8 +14,8 @@
                    [class.rootNode]="node.level === 0"
                    [class.disabled]="disabledCondition(node)">
         <div class="label">
-            <mat-icon [ngClass]="getStateClass(node)">insert_drive_file</mat-icon>
-            {{node.title}}
+            <mat-icon [svgIcon]="node.iconClass" [ngClass]="getStateClass(node)"></mat-icon>
+            <span>{{node.title}}</span>
         </div>
     </mat-tree-node>
 

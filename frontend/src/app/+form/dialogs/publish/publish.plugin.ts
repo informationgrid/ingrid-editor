@@ -46,7 +46,7 @@ export class PublishPlugin extends Plugin {
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
-      id: 'toolBtnRevert', tooltip: 'Revert', matIconVariable: 'backspace', eventId: this.eventRevertId, pos: 110, active: false
+      id: 'toolBtnRevert', tooltip: 'Revert', matSvgVariable: 'discard-changes', eventId: this.eventRevertId, pos: 90, active: false
     });
 
     // add event handler for revert

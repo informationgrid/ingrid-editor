@@ -20,7 +20,8 @@
     "wba": "webpack-bundle-analyzer dist/stats.json",
     "sme": "source-map-explorer",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "generate-icons": "svg-to-ts -s icons/toolbar -o icons -f toolbar-icons -p toolbar -t tb -i ToolbarIcons"
   },
   "private": true,
   "dependencies": {
@@ -92,6 +93,7 @@
     "protractor": "~5.4.2",
     "raw-loader": "3.1.0",
     "source-map-explorer": "^1.6.0",
+    "svg-to-ts": "^2.1.0",
     "ts-node": "~7.0.1",
     "tsickle": "^0.37.0",
     "tslib": "^1.10.0",

@@ -5,6 +5,7 @@ import {DocumentService} from '../../../services/document/document.service';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {TreeNode} from '../../../store/tree/tree-node.model';
+import {TreeStore} from '../../../store/tree/tree.store';
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -15,7 +16,7 @@ export class DynamicDatabase {
 
   treeUpdates = new Subject<UpdateDatasetInfo>();
 
-  constructor(private docService: DocumentService, private treeQuery: TreeQuery) {
+  constructor(private docService: DocumentService, private treeQuery: TreeQuery, private treeStore: TreeStore) {
     this.docService.datasetsChanged$.subscribe(docs => this.treeUpdates.next(docs));
   }
 
@@ -41,7 +42,13 @@ export class DynamicDatabase {
     return this.docService.getPath(id).toPromise();
   }
 
+  updatePath(titles: string[]) {
+    this.treeStore.update({
+      activePathTitles: titles
+    })
+  }
+
   mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
-    return docs.map(doc => new TreeNode(doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren, doc._parent));
+    return docs.map(doc => new TreeNode(doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren, doc._parent, doc.icon));
   }
 }

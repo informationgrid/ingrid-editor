@@ -1,7 +1,6 @@
 import {DocumentState} from '../../models/ige-document';
 
 export class TreeNode {
-  iconClass?: string;
   isExpanded?: boolean;
 
   constructor(public _id: string,
@@ -11,6 +10,7 @@ export class TreeNode {
               public level = 1,
               public hasChildren = false,
               public parent: string = null,
+              public iconClass: string = 'Fachaufgabe',
               public isLoading = false) {
   }
 }

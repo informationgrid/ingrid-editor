@@ -21,16 +21,13 @@ export interface Profile {
   /**
    * The field definitions for the formular, which also contains the layout classes and the validation.
    */
-  // fields: FormlyFieldConfig[];
-
   getFields(): FormlyFieldConfig[];
-
 
   /**
    * The css-image-class for the profile document. This will be shown in a tree and other places where necessary.
    * TODO: do not use 'tree' in variable name
    */
-  treeIconClass?: string;
+  iconClass?: string;
 
 
   behaviours?: any[];
@@ -38,4 +35,3 @@ export interface Profile {
   applyValidations?: any;
 }
 
-export const PROFILES = new InjectionToken<Profile>( 'profiles' );

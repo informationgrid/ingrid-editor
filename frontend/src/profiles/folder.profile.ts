@@ -7,7 +7,7 @@ export class ProfileFolder extends BaseProfile {
 
   label = 'Ordner';
 
-  treeIconClass = 'fa fa-folder-o';
+  iconClass = 'fa fa-folder-o';
 
   constructor(storageService: DocumentService, codelistService: CodelistService) {
     super();

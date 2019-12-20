@@ -124,6 +124,16 @@ export class TreeComponent implements OnInit {
       this.selectionModel.select(node);
       this.activeNodeId = this.selectionModel.selected[0]._id;
       this.activate.next([this.activeNodeId]);
+
+      // TODO: set path in tree for bread crumb (extract to method)
+      let path = [node.title];
+      let parent = node.parent;
+      while (parent !== null && parent !== undefined) {
+        let parentNode = this.dataSource.getNode(parent);
+        parent = parentNode.parent;
+        path.push(parentNode.title);
+      }
+      this.database.updatePath(path.reverse());
     }
 
     if (node.hasChildren) {

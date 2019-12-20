@@ -13,7 +13,7 @@ export class ProfileAddress extends BaseProfile {
 
   label = 'Adresse';
 
-  treeIconClass = 'fa fa-address-card-o';
+  iconClass = 'Freie-Adresse';
 
   profileFields = <FormlyFieldConfig[]>[
     {

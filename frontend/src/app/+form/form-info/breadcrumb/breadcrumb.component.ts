@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {TreeQuery} from '../../../store/tree/tree.query';
 
 @Component({
   selector: 'ige-breadcrumb',
@@ -7,7 +8,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BreadcrumbComponent implements OnInit {
 
-  constructor() { }
+  crumb = this.treeQuery.pathTitles$;
+
+  constructor(private treeQuery: TreeQuery) { }
 
   ngOnInit() {
   }

@@ -11,7 +11,7 @@ export class McloudFormly extends BaseProfile {
 
   label = 'mCLOUD';
 
-  treeIconClass = 'fa fa-address-card-o';
+  iconClass = 'Fachaufgabe';
 
   profileFields = <FormlyFieldConfig[]>[
     {

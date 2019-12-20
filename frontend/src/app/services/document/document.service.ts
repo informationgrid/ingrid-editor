@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {ModalService} from '../modal/modal.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
-import {KeycloakService} from '../../security/keycloak/keycloak.service';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/internal/operators';
 import {IgeDocument} from '../../models/ige-document';
@@ -13,6 +12,7 @@ import {ProfileQuery} from '../../store/profile/profile.query';
 import {DocumentUtils} from './document.utils';
 import {arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
+import {ProfileService} from '../profile.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,9 +32,6 @@ export class DocumentService {
               private messageService: MessageService,
               private profileQuery: ProfileQuery,
               private treeStore: TreeStore) {
-    if (KeycloakService.auth.loggedIn) {
-      // TODO: this.titleFields = this.formularService.getFieldsNeededForTitle().join( ',' );
-    }
   }
 
   find(query: string): Observable<DocumentAbstract[]> {
@@ -56,24 +53,6 @@ export class DocumentService {
       ).subscribe();
   }
 
-  private mapToDocuments(docs: any[]): DocumentAbstract[] {
-    return docs.map(doc => this.mapToDocument(doc));
-  }
-
-  private mapToDocument(doc: any): DocumentAbstract {
-    return {
-      id: doc._id,
-      title: doc.title,
-      icon: '',
-      // _id: doc._id,
-      _profile: doc._profile,
-      _state: doc._state,
-      _parent: doc._parent,
-      // _children: doc._children,
-      _hasChildren: doc._hasChildren
-    };
-  }
-
   getChildren(parentId: string): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId)
       .pipe(
@@ -91,20 +70,17 @@ export class DocumentService {
       );
   }
 
-  private mapToDocumentAbstracts(docs: any[], parentId: string) {
+  private mapToDocumentAbstracts(docs: any[], parentId: string): DocumentAbstract[] {
     return docs.map(doc => {
-      const childTreeNode: DocumentAbstract = {
-        // _id: doc._id,
-        icon: null,
+      return {
         id: doc._id,
-        // TODO: get title from document, but circular dependency with formularservice
+        icon: this.profileQuery.getIconClass(doc._profile),
         title: doc.title || '-Ohne Titel-',
         _state: doc._state,
         _hasChildren: doc._hasChildren,
         _parent: parentId,
         _profile: doc._profile
       };
-      return childTreeNode;
     });
   }
 
