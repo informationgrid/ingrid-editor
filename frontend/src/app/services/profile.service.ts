@@ -5,7 +5,6 @@ import {DocumentService} from './document/document.service';
 import {CodelistService} from './codelist/codelist.service';
 import {HttpClient} from "@angular/common/http";
 import {ProfileStore} from "../store/profile/profile.store";
-import {icon} from 'leaflet';
 
 @Injectable({
   providedIn: 'root'
