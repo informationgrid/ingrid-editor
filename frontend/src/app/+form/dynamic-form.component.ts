@@ -42,9 +42,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   isScrolled = false; // new Subject<boolean>();
 
-  form: FormGroup = new FormGroup({
-    // title: new FormControl('Kein Titel')
-  });
+  form: FormGroup = new FormGroup({});
 
   behaviours: Behaviour[];
   error = false;
@@ -100,8 +98,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-
-    this.formsManager.upsert('document', this.form);
 
     /*this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
       }
@@ -206,6 +202,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       if (needsProfileSwitch) {
         this.fields = this.switchProfile(profile);
         this.sections = this.getSectionsFromProfile(this.fields);
+        this.form = new FormGroup({});
+        this.formsManager.upsert('document', this.form);
       }
 
       this.model = {...data};
