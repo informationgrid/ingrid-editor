@@ -103,7 +103,7 @@ jib {
     }
     container {
         useCurrentTimestamp = true
-        jvmFlags = ['-Xmx800m','-Dstorage.diskCache.bufferSize=7200']
+        jvmFlags = ['-Xmx512m','-Dstorage.diskCache.bufferSize=256']
     }
 }
 
