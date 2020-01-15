@@ -19,6 +19,16 @@ export class DynamicDataSource {
 
   dataChange = new BehaviorSubject<TreeNode[]>(null);
 
+  sortNodesByFolderFirst = (a: TreeNode, b: TreeNode) => {
+    if (a.profile === 'FOLDER' && b.profile === 'FOLDER') {
+      return a.title.localeCompare(b.title);
+    } else if (a.profile === 'FOLDER') {
+      return -1;
+    } else if (b.profile === 'FOLDER') {
+      return 1;
+    }
+  };
+
   get data(): TreeNode[] {
     return this.dataChange.value;
   }
@@ -65,7 +75,8 @@ export class DynamicDataSource {
     if (expand && !node.isExpanded) {
       this._database.getChildren(node._id)
         .pipe(
-          map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1))
+          map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
+          map(docs => docs.sort(this.sortNodesByFolderFirst))
         ).subscribe(children => {
         if (!children || index < 0) { // If no children, or cannot find the node, no op
           return;

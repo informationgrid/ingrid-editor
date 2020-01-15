@@ -46,7 +46,6 @@ export class TreeComponent implements OnInit {
 
   dataSource: DynamicDataSource;
 
-
   /**
    * A function to determine if a tree node should be disabled.
    */
@@ -157,7 +156,8 @@ export class TreeComponent implements OnInit {
   reloadTree() {
     this.database.initialData(true)
       .pipe(
-        map(docs => this.database.mapDocumentsToTreeNodes(docs, 0))
+        map(docs => this.database.mapDocumentsToTreeNodes(docs, 0)),
+        map(docs => docs.sort(this.dataSource.sortNodesByFolderFirst))
       )
       .subscribe(rootElements => this.dataSource.data = rootElements);
   }
@@ -167,6 +167,7 @@ export class TreeComponent implements OnInit {
    * @param index
    * @param item
    */
+
   /*trackByNodeId(index, item: TreeNode) {
     return item._id;
   }*/
@@ -242,7 +243,7 @@ export class TreeComponent implements OnInit {
   }
 
   jumpToNode(id: string) {
-    this.database.getPath(id).then( (path) => {
+    this.database.getPath(id).then((path) => {
       this.activeNodeId = path.pop();
       this.handleExpandNodes(path)
       this.activate.next([id]);
