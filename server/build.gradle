@@ -6,7 +6,7 @@ plugins {
     id 'base'
     id 'java'
     id 'idea'
-    id 'org.springframework.boot' version '2.1.7.RELEASE'
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '1.8.0'
@@ -45,7 +45,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
-    compile "io.pebbletemplates:pebble-spring-boot-starter:3.1.0"
+    compile "io.pebbletemplates:pebble-spring-boot-starter:3.1.2"
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation('org.springframework.boot:spring-boot-starter-security') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
@@ -55,21 +55,21 @@ dependencies {
     }
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     compile 'org.springframework.boot:spring-boot-starter-log4j2'
-    compile 'com.auth0:java-jwt:3.2.0'
+    compile 'com.auth0:java-jwt:3.8.3'
     compile('org.springframework.boot:spring-boot-starter-actuator') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
     compile 'io.springfox:springfox-swagger2:2.9.2'
     compile 'io.springfox:springfox-swagger-ui:2.9.2'
-    compile 'com.orientechnologies:orientdb-core:3.0.23'
-    compile 'com.orientechnologies:orientdb-server:3.0.23'
+    compile 'com.orientechnologies:orientdb-core:3.0.26'
+    compile 'com.orientechnologies:orientdb-server:3.0.26'
     compile 'com.github.fge:json-schema-validator:2.2.6'
     compile('de.ingrid:ingrid-codelist-service:5.1.0') {
         exclude group: 'log4j', module: 'log4j'
     }
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.9'
     compile 'javax.validation:validation-api:2.0.1.Final'
-    compile 'org.apache.logging.log4j:log4j-1.2-api:2.12.1'
+    compile 'org.apache.logging.log4j:log4j-1.2-api:2.13.0'
     compile 'org.apache.commons:commons-lang3:3.9'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.28.2'

@@ -16,10 +16,10 @@
     <Logger name="de.ingrid" level="debug" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>
-    <Logger name="org.keycloak" level="debug" additivity="false">
+    <Logger name="org.keycloak" level="info" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>
-    <Logger name="springfox" level="debug" additivity="false">
+    <Logger name="springfox" level="info" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>
     <Root level="info">
