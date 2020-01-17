@@ -18,15 +18,15 @@ export abstract class BaseProfile implements Profile {
     }
   ];
 
+  id: string;
+
+  label: string;
+
   constructor() {
   }
-
-  id: string;
-  label: string;
 
   getFields(): FormlyFieldConfig[] {
     return this.fields;
   }
-
 
 }

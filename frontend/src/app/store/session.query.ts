@@ -6,6 +6,7 @@ import { SessionStore, SessionState } from './session.store';
 export class SessionQuery extends Query<SessionState> {
 
   isLoggedIn$ = this.select(state => state.loggedIn);
+  isProfilesInitialized$ = this.select(state => state.profilesInitialized);
   isSidebarExpanded$ = this.select(state => state.ui.sidebarExpanded);
 
   constructor(protected store: SessionStore) {

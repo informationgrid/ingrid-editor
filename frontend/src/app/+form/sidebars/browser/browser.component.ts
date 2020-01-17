@@ -3,15 +3,15 @@ import {DocumentService} from '../../../services/document/document.service';
 // import {StorageDummyService as StorageService} from '../../../services/storage/storage.dummy.service';
 import {ActivatedRoute} from '@angular/router';
 import {UpdateType} from '../../../models/update-type.enum';
-import {ProfileService} from '../../../services/profile.service';
 import {Subscription} from 'rxjs';
-import {FormularService} from '../../formular.service';
 
-@Component( {
+@Component({
   selector: 'browser',
   templateUrl: './browser.component.html',
   styles: [`
-    li { cursor: pointer; }
+    li {
+      cursor: pointer;
+    }
   `]
 })
 export class BrowserComponent implements OnInit, OnDestroy {
@@ -25,8 +25,7 @@ export class BrowserComponent implements OnInit, OnDestroy {
 
   subscription: Subscription;
 
-  constructor(private storageService: DocumentService, private route: ActivatedRoute,
-              private formularService: FormularService, private profileService: ProfileService) {
+  constructor(private storageService: DocumentService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -34,15 +33,15 @@ export class BrowserComponent implements OnInit, OnDestroy {
       this.selectedId = params['id'];
     });
 
-    this.subscription = this.storageService.datasetsChanged$.subscribe( (event) => {
+    this.subscription = this.storageService.datasetsChanged$.subscribe((event) => {
       if (event.type === UpdateType.Update) {
         this.query();
       }
-    } );
-
-    this.profileService.initialized.then( () => {
-      this.query();
     });
+
+    /*this.profileService.initialized.then( () => {
+      this.query();
+    });*/
   }
 
   ngOnDestroy(): void {
@@ -51,12 +50,12 @@ export class BrowserComponent implements OnInit, OnDestroy {
 
   matchFilter(doc: any): boolean {
     const keys = Object.keys(this.filter);
-    return keys.every( key => doc[key] === this.filter[key] );
+    return keys.every(key => doc[key] === this.filter[key]);
   }
 
   query() {
     // initially show all documents
-    this.storageService.find( this.searchString );
+    this.storageService.find(this.searchString);
     /*TODO: .subscribe( (docs: any[]) => {
       this.entries = docs
         .filter(doc => doc._profile !== undefined)

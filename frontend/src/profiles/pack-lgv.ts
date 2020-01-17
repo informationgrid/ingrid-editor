@@ -21,5 +21,3 @@ export const profiles = [
   IsoTaskProfile,
   UVPProfile
 ];
-
-window['theProfile'] = profiles;

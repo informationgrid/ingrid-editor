@@ -3,6 +3,7 @@ import {Store, StoreConfig} from '@datorama/akita';
 
 export interface SessionState {
   loggedIn: boolean,
+  profilesInitialized: boolean,
   ui: {
     sidebarExpanded?: boolean
     sidebarWidth?: number;
@@ -12,6 +13,7 @@ export interface SessionState {
 export function createInitialState(): SessionState {
   return {
     loggedIn: false,
+    profilesInitialized: false,
     ui: {
       sidebarExpanded: true,
       sidebarWidth: 15

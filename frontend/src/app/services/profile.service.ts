@@ -1,103 +1,35 @@
 import {Injectable} from '@angular/core';
-import {ConfigService, Configuration} from './config/config.service';
+import {ConfigService} from './config/config.service';
 import {Profile} from './formular/profile';
-import {DocumentService} from './document/document.service';
 import {CodelistService} from './codelist/codelist.service';
-import {HttpClient} from "@angular/common/http";
-import {ProfileStore} from "../store/profile/profile.store";
+import {HttpClient} from '@angular/common/http';
+import {SessionStore} from '../store/session.store';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
-  private configuration: Configuration;
 
   private profiles: Profile[] = [];
 
-  initialized: Promise<Profile[]>;
-
-  constructor(private profileStore: ProfileStore,
+  constructor(private sessionStore: SessionStore,
               private http: HttpClient, configService: ConfigService,
-              storageService: DocumentService, codelistService: CodelistService) {
-    this.configuration = configService.getConfiguration();
+              codelistService: CodelistService) {
 
-    this.initialized = new Promise((resolve, reject) => {
+    configService.$userInfo.subscribe(info => {
+      if (info.assignedCatalogs.length > 0) {
 
-      configService.$userInfo.subscribe(info => {
-        if (info.assignedCatalogs.length > 0) {
+        import( '../../profiles/pack-mcloud' ).then(module => {
+          console.log('Loaded module: ', module);
+          this.profiles = module.profiles
+            .map(ProfileClass => new ProfileClass(null, codelistService));
 
-          console.log('loading dynamic bundle');
-          //$script('assets/uvp-profile.umd.js', () => {
-          /*http.get('http://localhost:4300/assets/uvp-profile.umd.js', {responseType: 'text'})
-            .pipe(
-              map(source => {
-                console.log('Loaded UMD project bundle dynamically');
-                const exports = {}; // this will hold module exports
-                const modules = {   // this is the list of modules accessible by plugins
-                  '@angular/core': AngularCore,
-                  '@angular/common': AngularCommon,
-                  'api': IgeApi
-                };
+          this.sessionStore.update({profilesInitialized: true});
 
-                const require: any = (module) => modules[module];
-                eval(source);
-
-                compiler.compileModuleAndAllComponentsAsync(exports['UvpProfileModule']).then(compiled => {
-
-                  const moduleFactory: NgModuleFactory<any> = compiled.ngModuleFactory;
-                  const modRef = moduleFactory.create(this.injector);
-                  const componentFactory = modRef.componentFactoryResolver.resolveComponentFactory(this.getEntryComponent(moduleFactory));
-                  const component = componentFactory.create(modRef.injector);
-                  //const cmpRef = this.viewContainer.createComponent<any>(componentFactory);
-                  return exports;
-                });
-              })
-            ).subscribe();
-          */
-
-          /*if (environment.profileFromServer) {
-            // window['theProfile'].forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
-            // resolve(this.profiles);
-            // /!*console.log('Requesting URL: ' + this.configuration.backendUrl + 'profiles');
-            //$script(this.configuration.backendUrl + 'profiles', () => {
-            $script('assets/pack-bkg.bundle.js', () => {
-              try {
-                // const dynModule: any[] = webpackJsonp([], null, ['_profile_']);
-                window['theProfile'].forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
-              } catch (ex) {
-                console.error('Could not load profiles from backend', ex);
-              }
-              resolve(this.profiles);
-              this.profileStore.update({isInitialized: true});
-            });
-          } else {*/
-            import( '../../profiles/pack-mcloud' ).then(module => {
-              console.log('Loaded module: ', module);
-              // TODO: use map instead of multiple parameters in case we want to add another dependency
-              module.profiles.forEach(ProfileClass => this.profiles.push(new ProfileClass(storageService, codelistService)));
-
-              this.profileStore.update({isInitialized: true});
-              resolve(this.profiles);
-
-              let profilesAbstract = this.profiles.map(p => {
-                return {
-                  id: p.id,
-                  iconClass: p.iconClass
-                }
-              });
-              this.profileStore.set(profilesAbstract);
-            });
-          // }
-        }
-      });
+        });
+      }
     });
-    configService.setProfilePackagePromise(this.initialized);
   }
-
-  /*private getEntryComponent(moduleFactory: NgModuleFactory<any>) {
-    // search (<any>moduleFactory.moduleType).decorators[0].type.prototype.ngMetadataName === NgModule
-    return (<any>moduleFactory.moduleType).decorators[0].args[0].entryComponents[0];
-  }*/
 
   getProfiles(): Profile[] {
     return this.profiles;
@@ -109,7 +41,8 @@ export class ProfileService {
       .map(profile => profile.iconClass);
 
     if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
-      throw Error('Unknown profile or iconClass');
+      console.error('Unknown profile or iconClass');
+      return null;
     }
 
     return iconClass[0];

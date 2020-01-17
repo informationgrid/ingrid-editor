@@ -51,6 +51,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   userRoles: Role[];
 
   private formUtils: FormUtils;
+  private showValidationErrors = false;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
@@ -104,6 +105,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     );*/
 
     this.formularService.currentProfile = null;
+
+    this.documentService.publishState$
+      .pipe(untilDestroyed(this))
+      .subscribe(doPublish => {
+        if (doPublish) {
+          this.showValidationErrors = true;
+          this.form.markAllAsTouched();
+        } else {
+          this.showValidationErrors = false;
+        }
+      });
 
     // this.wizardService.focusElements$.subscribe( fields => this.wizardFocusElement = fields );
 

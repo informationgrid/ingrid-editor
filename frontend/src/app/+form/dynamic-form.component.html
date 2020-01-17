@@ -16,7 +16,7 @@
             <ng-container *ngIf="fields.length !== 0">
                 <ige-form-info [form]="form" [model]="model" [sections]="sections" [class.scrolled]="isScrolled"></ige-form-info>
 
-                <form [formGroup]="form" [class.hide-validation]="!(this.documentService.publishState$ | async)">
+                <form [formGroup]="form" [class.hide-validation]="!showValidationErrors">
                     <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
 
                     <!--<pre>

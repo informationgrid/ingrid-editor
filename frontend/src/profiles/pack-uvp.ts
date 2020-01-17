@@ -1,10 +1,7 @@
 import { UVPProfile } from './uvp/uvp.profile';
-
-
-console.log('I am an external module!');
+import {ProfileFolder} from './folder.profile';
 
 export const profiles = [
+  ProfileFolder,
   UVPProfile
 ];
-
-window['theProfile'] = profiles;

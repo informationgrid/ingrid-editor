@@ -35,7 +35,6 @@
               "src/theme.scss"
             ],
             "scripts": [
-              "node_modules/scriptjs/dist/script.js",
               "node_modules/chartist/dist/chartist.js"
             ]
           },

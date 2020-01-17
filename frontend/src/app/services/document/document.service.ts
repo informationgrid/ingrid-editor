@@ -30,7 +30,7 @@ export class DocumentService {
   constructor(private modalService: ModalService,
               private dataService: DocumentDataService,
               private messageService: MessageService,
-              private profileQuery: ProfileQuery,
+              private profileService: ProfileService,
               private treeStore: TreeStore) {
   }
 
@@ -74,7 +74,7 @@ export class DocumentService {
     return docs.map(doc => {
       return {
         id: doc._id,
-        icon: this.profileQuery.getIconClass(doc._profile),
+        icon: this.profileService.getProfileIcon(doc._profile),
         title: doc.title || '-Ohne Titel-',
         _state: doc._state,
         _hasChildren: doc._hasChildren,

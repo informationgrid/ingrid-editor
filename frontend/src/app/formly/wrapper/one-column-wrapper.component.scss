@@ -77,8 +77,17 @@
     caret-color: initial;
   }
 
+  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline {
+    opacity: 1;
+  }
+
+  .mat-form-field-appearance-outline:not(.mat-form-field-disabled) .mat-form-field-flex:hover .mat-form-field-outline-thick {
+    opacity: 1;
+  }
+
   .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick {
     color: initial;
+    opacity: 0;
   }
 }
 

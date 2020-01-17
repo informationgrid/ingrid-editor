@@ -7,5 +7,3 @@ export const profiles = [
   ProfileAddress,
   ProfileFolder
 ];
-
-window['theProfile'] = profiles;

@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Profile} from "../formular/profile";
-import {ConfigDataService} from "./config-data.service";
+import {ConfigDataService} from './config-data.service';
 import {BehaviorSubject} from 'rxjs';
 
 export class Configuration {
@@ -8,7 +7,7 @@ export class Configuration {
   }
 }
 
-export type UserInfo = {
+export interface UserInfo {
   userId: string;
   name: string;
 
@@ -25,59 +24,42 @@ export class ConfigService {
 
   $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
 
-  private titleFields: string[];
-  promiseProfilePackageLoaded: Promise<Profile[]>;
   private dataService: ConfigDataService;
-  private isAdministrator: boolean = false;
+  private isAdministrator = false;
 
   constructor() {
     this.dataService = new ConfigDataService();
   }
 
   load(url: string): Promise<Configuration> {
-    console.log( '=== ConfigService ===' );
+    console.log('=== ConfigService ===');
 
     return this.dataService.load(url)
-      .then( json => {
+      .then(json => {
         this.config = json;
         this.dataService.config = this.config;
         return this.config;
-      } );
+      });
 
   }
 
   // TODO: refactor to fetchCurrentUserInfo()
   getCurrentUserInfo(): Promise<UserInfo> {
     return this.dataService.getCurrentUserInfo()
-      .then( userInfo => {
+      .then(userInfo => {
         this.$userInfo.next(userInfo);
-        this.isAdministrator = userInfo.roles && userInfo.roles.includes( 'admin');
+        this.isAdministrator = userInfo.roles && userInfo.roles.includes('admin');
         return userInfo;
       })
       .catch(e => {
-        debugger;
         console.error(e);
-        return <UserInfo>{
-
-        };
+        return <UserInfo>{};
       });
   }
 
 
   getConfiguration(): Configuration {
     return this.config;
-  }
-
-  setTitleFields(titleFields: string[]) {
-    this.titleFields = titleFields;
-  }
-
-  getTitleFields(): string[] {
-    return this.titleFields;
-  }
-
-  setProfilePackagePromise(initialized: Promise<Profile[]>) {
-    this.promiseProfilePackageLoaded = initialized;
   }
 
   isAdmin(): boolean {

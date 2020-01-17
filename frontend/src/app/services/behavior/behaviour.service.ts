@@ -6,10 +6,10 @@ import {Plugin} from '../../+behaviours/plugin';
 import {ProfileService} from '../profile.service';
 import {throwError} from 'rxjs';
 import {tap} from 'rxjs/internal/operators';
-import {BehaviorDataService} from "./behavior-data.service";
-import {ProfileQuery} from "../../store/profile/profile.query";
-import {ProfileStore} from "../../store/profile/profile.store";
-import {ConfigService} from "../config/config.service";
+import {BehaviorDataService} from './behavior-data.service';
+import {ProfileQuery} from '../../store/profile/profile.query';
+import {ConfigService} from '../config/config.service';
+import {SessionQuery} from '../../store/session.query';
 
 // the variable containing additional behaviours is global!
 declare const additionalBehaviours: any;
@@ -29,26 +29,20 @@ export class BehaviourService {
               private eventManager: EventManager,
               private profileService: ProfileService,
               private profileQuery: ProfileQuery,
-              private profileStore: ProfileStore,
+              private sessionQuery: SessionQuery,
               private dataService: BehaviorDataService,
               private configService: ConfigService) {
 
     this.behaviours = defaultBehaves.behaviours;
     this.systemBehaviours = defaultBehaves.systemBehaviours;
 
-    // this.initialized = new Promise((resolve, reject) => {
-    // $script( './+behaviours/additionalBehaviours.js', () => {
-    //   console.log( 'loaded additional behaviours', additionalBehaviours );
-
-    // add all additional behaviours to the default ones
-    // this.behaviours.push(...additionalBehaviours);
-
     this.initialized = new Promise(resolve => {
       // do nothing if user has no assigned catalogs
       configService.$userInfo.subscribe(info => {
         if (info.assignedCatalogs.length > 0) {
 
-          this.profileService.initialized.then(profiles => {
+          this.sessionQuery.isProfilesInitialized$.subscribe(() => {
+            const profiles = this.profileService.getProfiles();
             profiles.forEach(p => {
               if (p.behaviours) {
                 p.behaviours.forEach(behaviour => behaviour.forProfile = p.id);
@@ -63,28 +57,6 @@ export class BehaviourService {
 
     });
 
-    // keycloak.getGroupsOfUser('');
-    /*
-
-    // if (this.authService.loggedIn()) {
-      // request stored behaviour states from backend
-      this.loadStoredBehaviours()
-        .then( () => resolve() )
-        .catch( () => reject );
-
-    } else {
-      /*const loginSubscriber = this.authService.loginStatusChange$.subscribe( loggedIn => {
-        // console.log( 'logged in state changed to: ' + loggedIn );
-        if (loggedIn) {
-          loginSubscriber.unsubscribe();
-          this.loadStoredBehaviours()
-            .then( () => resolve() )
-            .catch( () => reject );
-        }
-      });*/
-    // }
-    // } );
-    // });
   }
 
   loadStoredBehaviours(): Promise<any> {
@@ -215,7 +187,7 @@ export class BehaviourService {
 
   unregisterAll() {
     this.behaviours
-    // unregister all active behaviours that do have an unregister function
+      // unregister all active behaviours that do have an unregister function
       .filter(beh => beh.isActive && beh.unregister)
       .forEach(behaviour => behaviour.unregister());
   }
