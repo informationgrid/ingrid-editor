@@ -193,12 +193,14 @@ export class TreeComponent implements OnInit {
   }
 
   private deleteNode(updateInfo: UpdateDatasetInfo) {
-    updateInfo.data
+    const parentNodes = updateInfo["data"]
       .map(doc => this.dataSource.data.find(item => item._id === doc.id))
-      .map(node => this.getParentNode(node))
-      .forEach(parentNode => this.updateChildrenInfo(parentNode));
+      .map(node => this.getParentNode(node));
 
     this.dataSource.removeNode(updateInfo.data);
+
+    // update parent nodes in case they do not have any children anymore
+    parentNodes.forEach(parentNode => this.updateChildrenInfo(parentNode));
   }
 
   private addNewNode(updateInfo: UpdateDatasetInfo) {

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UvpProfileComponent } from './uvp-profile.component';
+import { MainHeaderComponent } from './main-header.component';
 
-describe('UvpProfileComponent', () => {
-  let component: UvpProfileComponent;
-  let fixture: ComponentFixture<UvpProfileComponent>;
+describe('MainHeaderComponent', () => {
+  let component: MainHeaderComponent;
+  let fixture: ComponentFixture<MainHeaderComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UvpProfileComponent ]
+      declarations: [ MainHeaderComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UvpProfileComponent);
+    fixture = TestBed.createComponent(MainHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

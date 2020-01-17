@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {TreeQuery} from '../../../store/tree/tree.query';
 
 @Component({
@@ -10,7 +10,8 @@ export class BreadcrumbComponent implements OnInit {
 
   crumb = this.treeQuery.pathTitles$;
 
-  constructor(private treeQuery: TreeQuery) { }
+  constructor(private treeQuery: TreeQuery) {
+  }
 
   ngOnInit() {
   }

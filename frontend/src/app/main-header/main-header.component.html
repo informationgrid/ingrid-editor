@@ -1,0 +1,10 @@
+<mat-toolbar>
+    <mat-toolbar-row [class.showShadow]="showShadow">
+        <span><strong>INGRID</strong> EDITOR Daten</span>
+        <div fxFlex></div>
+        <button type="button" class="logout" mat-button (click)="logout()">
+            {{username | async}}
+            <mat-icon title="Logout">perm_identity</mat-icon>
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>

@@ -10,6 +10,8 @@ public interface DBApi {
 
     String getRecordId(String dbClass, String docUuid) throws ApiException;
 
+    Map<String, Long> countChildrenFromNode(String id);
+
     public static enum DBClass {Documents, User, Role, Info, Behaviours};
 
     /**

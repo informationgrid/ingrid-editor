@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'ige-header-navigation',
@@ -7,6 +7,7 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class HeaderNavigationComponent implements OnInit {
   @Input() sections: string[] = [];
+  @Output() jumpToSection = new EventEmitter<number>();
 
   constructor() { }
 

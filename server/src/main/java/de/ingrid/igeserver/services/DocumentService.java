@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
 
@@ -43,7 +46,7 @@ public class DocumentService extends MapperService {
     /**
      * Transform a document from the database and map only the relevant data needed for the frontend.
      *
-     * @param map contains all fields for a document in a HashMap
+     * @param map    contains all fields for a document in a HashMap
      * @param fields contains those fields that we want to request, if null then all fields are returned
      * @return a HashMap transformed for frontend usage
      */
@@ -54,7 +57,7 @@ public class DocumentService extends MapperService {
 
         // if fields are defined, then filter only those from the document
         if (fields != null) {
-            currentDoc.keySet().retainAll( Arrays.asList( fields ) );
+            currentDoc.keySet().retainAll(Arrays.asList(fields));
         }
 
         // apply specific fields to document (id, profile, state, ...)
@@ -75,9 +78,10 @@ public class DocumentService extends MapperService {
 
     /**
      * Transform a json string, coming from the frontend, to a HashMap used by the database API.
-     * @param json is the data of the document in json format
+     *
+     * @param json      is the data of the document in json format
      * @param published if true then the document will be prepared as a published document otherwise as working version
-     * @param userId is the ID of the user who performs the action
+     * @param userId    is the ID of the user who performs the action
      * @return a HashMap containing the transformed document ready to be inserted into the database
      */
     public Map mapDocumentToDatabase(String json, boolean published, String userId) throws ApiException {
@@ -89,24 +93,24 @@ public class DocumentService extends MapperService {
         Map<String, Object> currentDoc = getDocOrInitialize(newDocument, format);
 
 
-        newDocument.put( FIELD_MODIFIED_BY, userId );
+        newDocument.put(FIELD_MODIFIED_BY, userId);
 
 
         // remove all referenced data except the ID
         // this data is fetched on each load (TODO: should be cached!)
-        cleanupReferences( newDocument );
+        cleanupReferences(newDocument);
 
         // cleanup document to save
-        newDocument.remove( FIELD_ID );
-        newDocument.remove( FIELD_PROFILE );
-        newDocument.remove( FIELD_STATE );
-        newDocument.remove( FIELD_PARENT );
+        newDocument.remove(FIELD_ID);
+        newDocument.remove(FIELD_PROFILE);
+        newDocument.remove(FIELD_STATE);
+        newDocument.remove(FIELD_PARENT);
 
         if (published) {
-            currentDoc.put( FIELD_PUBLISHED, newDocument );
-            currentDoc.remove( FIELD_DRAFT );
+            currentDoc.put(FIELD_PUBLISHED, newDocument);
+            currentDoc.remove(FIELD_DRAFT);
         } else {
-            currentDoc.put( FIELD_DRAFT, newDocument );
+            currentDoc.put(FIELD_DRAFT, newDocument);
         }
 
         // apply specific fields to document (id, profile, state, ...)
@@ -116,21 +120,21 @@ public class DocumentService extends MapperService {
     }
 
     private Map<String, Object> getDocOrInitialize(Map<String, Object> newDocument, SimpleDateFormat format) throws ApiException {
-        String id = String.valueOf(newDocument.get( FIELD_ID ));
+        String id = String.valueOf(newDocument.get(FIELD_ID));
         // get database id from doc id  or just query for correct document then we also get the rid!
         Map<String, String> query = new HashMap<>();
         query.put("_id", id);
-        List<String> docInDatabase = dbService.findAll( DOCUMENT_WRAPPER, query, QueryType.exact, false);
+        List<String> docInDatabase = dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, false);
 
         Map<String, Object> currentDoc;
 
         if (docInDatabase.size() == 0) {
             currentDoc = new HashMap<>();
-            currentDoc.put( FIELD_PROFILE, newDocument.get( FIELD_PROFILE ));
-            currentDoc.put( FIELD_PARENT, newDocument.get( FIELD_PARENT ));
-            currentDoc.put( FIELD_CREATED, format.format( OffsetDateTime.now() ) );
+            currentDoc.put(FIELD_PROFILE, newDocument.get(FIELD_PROFILE));
+            currentDoc.put(FIELD_PARENT, newDocument.get(FIELD_PARENT));
+            currentDoc.put(FIELD_CREATED, format.format(OffsetDateTime.now()));
 
-        } else if (docInDatabase.size() == 1){
+        } else if (docInDatabase.size() == 1) {
             try {
                 currentDoc = getMapFromObject(docInDatabase.get(0));
             } catch (Exception e) {
@@ -142,21 +146,21 @@ public class DocumentService extends MapperService {
         }
 
         // TODO: should we store modified/create date in wrapper or actual data document?
-        currentDoc.put( FIELD_MODIFIED, format.format( OffsetDateTime.now() ) );
+        currentDoc.put(FIELD_MODIFIED, format.format(OffsetDateTime.now()));
         return currentDoc;
     }
 
     private void cleanupReferences(Map<String, Object> map) {
         // TODO: make dynamic
-        String profile = (String) map.get( MapperService.FIELD_PROFILE );
-        if ("UVP".equals( profile ) ) {
+        String profile = (String) map.get(MapperService.FIELD_PROFILE);
+        if ("UVP".equals(profile)) {
 
             Map publisher = (Map) map.get("publisher");
             if (publisher != null) {
-                String id = (String) publisher.get( MapperService.FIELD_ID );
+                String id = (String) publisher.get(MapperService.FIELD_ID);
                 Map<String, Object> refNode = new HashMap<>();
 
-                map.put( "publisher", refNode.put( MapperService.FIELD_ID, id ) );
+                map.put("publisher", refNode.put(MapperService.FIELD_ID, id));
             }
         }
     }
@@ -181,7 +185,7 @@ public class DocumentService extends MapperService {
     }
 
     public void addReferencedDocsTo(String[] refDocs, Map mapDoc) {
-        for (String ref: refDocs) {
+        for (String ref : refDocs) {
             try {
                 // TODO: mapDoc.set("publisher", prepareDocumentFromDB(ref));
             } catch (Exception e) {
@@ -208,9 +212,18 @@ public class DocumentService extends MapperService {
     public ObjectNode getDocumentWrapper() {
         ObjectNode docWrapper = new ObjectMapper().createObjectNode();
         //docWrapper.put(FIELD_ID, UUID.randomUUID());
-        docWrapper.put(FIELD_DRAFT, (String)null);
-        docWrapper.put(FIELD_PUBLISHED, (String)null);
+        docWrapper.put(FIELD_DRAFT, (String) null);
+        docWrapper.put(FIELD_PUBLISHED, (String) null);
         docWrapper.putArray(FIELD_ARCHIVE);
         return docWrapper;
+    }
+
+    public boolean determineHasChildren(JsonNode doc) {
+        String id = doc.get(FIELD_ID).asText();
+        Map<String, Long> countMap = this.dbService.countChildrenFromNode(id);
+        if (countMap.containsKey(id)) {
+            return countMap.get(id) > 0;
+        }
+        return false;
     }
 }

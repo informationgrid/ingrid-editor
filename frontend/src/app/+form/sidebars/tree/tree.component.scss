@@ -47,14 +47,22 @@ mat-tree-node {
   }
 
   .label {
-    margin-top: 0.5em;
+    margin-top: 0.2em;
+    margin-bottom: 0.3em;
+    line-height: 27px;
     user-select: none;
+    display: flex;
 
     .mat-icon {
       line-height: 0;
       vertical-align: sub;
       margin-right: 12px;
       font-size: 20px;
+    }
+
+    .mat-spinner {
+      margin-left: 12px;
+      margin-top: 3px;
     }
   }
 
@@ -81,7 +89,7 @@ mat-tree-node {
     float: right;
     height: 30px;
     width: 30px;
-    line-height: 30px;
+    line-height: 27px;
     margin-right: 15px;
   }
 

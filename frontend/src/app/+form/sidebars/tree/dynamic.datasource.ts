@@ -72,34 +72,45 @@ export class DynamicDataSource {
       console.warn('Node not found');
       return;
     }
+
     if (expand && !node.isExpanded) {
-      this._database.getChildren(node._id)
-        .pipe(
-          map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
-          map(docs => docs.sort(this.sortNodesByFolderFirst))
-        ).subscribe(children => {
-        if (!children || index < 0) { // If no children, or cannot find the node, no op
-          return;
+
+      this.expandNode(node, index);
+
+    } else if (!expand && node.isExpanded) {
+
+      this.collapseNode(node, index);
+
+    }
+  }
+
+  private expandNode(node: TreeNode, index: number) {
+    node.isLoading = true;
+    this._database.getChildren(node._id)
+      .pipe(
+        map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
+        map(docs => docs.sort(this.sortNodesByFolderFirst))
+      )
+      .subscribe(children => {
+
+        if (children) {
+          this.data.splice(index + 1, 0, ...children);
+          node.isLoading = false;
+          node.isExpanded = true;
+          // notify the change
+          this.dataChange.next(this.data);
         }
 
-        node.isLoading = true;
-
-        // const nodes = children.map(child =>
-        //   new TreeNode(name, node.profile, node.level + 1, this._database.isExpandable(name)));
-        this.data.splice(index + 1, 0, ...children);
-        node.isLoading = false;
-        node.isExpanded = true;
-        // notify the change
-        this.dataChange.next(this.data);
       });
-    } else if (!expand && node.isExpanded) {
-      let count = 0;
-      for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {
-      }
-      this.data.splice(index + 1, count);
-      this.dataChange.next(this.data);
-      node.isExpanded = false;
+  }
+
+  private collapseNode(node: TreeNode, index: number) {
+    let count = 0;
+    for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {
     }
+    this.data.splice(index + 1, count);
+    this.dataChange.next(this.data);
+    node.isExpanded = false;
   }
 
   removeNode(docs: DocumentAbstract[]) {

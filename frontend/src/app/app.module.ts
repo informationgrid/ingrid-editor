@@ -2,7 +2,7 @@ import {AppComponent} from './app.component';
 import {registerLocaleData} from '@angular/common';
 import {appRoutingProviders, routing} from './app.router';
 import {BrowserModule} from '@angular/platform-browser';
-import {APP_INITIALIZER, ErrorHandler, NgModule} from '@angular/core';
+import {APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule} from '@angular/core';
 import {ModalService} from './services/modal/modal.service';
 import {HelpComponent} from './help/help.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -38,6 +38,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {SectionWrapper} from './formly/wrapper/section-wrapper.component';
 import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component';
+import { MainHeaderComponent } from './main-header/main-header.component';
 
 registerLocaleData(de);
 
@@ -78,7 +79,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
     SearchBarComponent, ConfirmDialogComponent,
     OneColumnWrapperComponent, SectionWrapper,
-    SideMenuComponent],
+    SideMenuComponent,
+    MainHeaderComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
@@ -109,6 +111,11 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       useFactory: ConfigLoader,
       deps: [ConfigService, ModalService],
       multi: true
+    },
+    // set locale for dates
+    {
+      provide: LOCALE_ID,
+      useValue: "de-de"
     },
     // add authorization header to all requests
     /*{

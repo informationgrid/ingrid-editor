@@ -40,8 +40,10 @@
             </button>
 
             <div class="label">
-                <mat-icon *ngIf="node.profile !== 'FOLDER'">folder</mat-icon>
-                <span>{{node.title}}</span>
+                {{node.title}}
+                <ng-container *ngIf="node.isLoading">
+                    <mat-spinner diameter="18"></mat-spinner>
+                </ng-container>
             </div>
         </div>
     </mat-tree-node>

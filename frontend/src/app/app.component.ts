@@ -16,8 +16,6 @@ import {DomSanitizer} from '@angular/platform-browser';
 })
 export class AppComponent implements OnInit {
 
-  username: Observable<string>;
-
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
   constructor(private behaviourService: BehaviourService, private modalService: ModalService,
@@ -31,10 +29,6 @@ export class AppComponent implements OnInit {
         console.log('my roles:', role);
         // KeycloakService.auth.roleMapping.push(role);
       });
-
-    this.username = this.configService.$userInfo.pipe(
-      map(info => info.name)
-    );
 
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-navigation.svg'));
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-form.svg'));
@@ -54,13 +48,6 @@ export class AppComponent implements OnInit {
           systemBehaviour.register();
         });
     });
-  }
-
-  logout() {
-    this.apiService.logout().subscribe(() => {
-      debugger;
-      window.location.reload(true);
-    })
   }
 
 }

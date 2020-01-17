@@ -1,15 +1,6 @@
 <div class="wrapper">
 
-    <mat-toolbar>
-        <mat-toolbar-row>
-            <span><strong>INGRID</strong> EDITOR Daten</span>
-            <div fxFlex></div>
-            <button type="button" class="logout" mat-button (click)="logout()">
-                {{username | async}}
-                <mat-icon title="Logout">perm_identity</mat-icon>
-            </button>
-        </mat-toolbar-row>
-    </mat-toolbar>
+    <ige-main-header></ige-main-header>
 
     <mat-drawer-container [autosize]="true" fxFlex>
         <mat-drawer mode="side" [opened]="true">

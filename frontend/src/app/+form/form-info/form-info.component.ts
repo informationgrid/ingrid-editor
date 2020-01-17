@@ -1,7 +1,5 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {Observable} from 'rxjs';
 import {IgeDocument} from '../../models/ige-document';
 
 @Component({
@@ -15,6 +13,7 @@ export class FormInfoComponent implements OnInit {
   @Input() model: IgeDocument;
   @Input() sections: string[] = [];
   // @Input() expanded: Observable<boolean>;
+  @Output() jumpToSection = new EventEmitter<number>();
 
   showDateBar;
   markFavorite;

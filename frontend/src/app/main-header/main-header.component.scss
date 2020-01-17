@@ -1,0 +1,10 @@
+.mat-toolbar-row, .mat-toolbar-single-row, .mat-toolbar-multiple-rows {
+  height: 44px;
+  min-height: 44px;
+  background-color: #ffffff;
+  z-index: 1000;
+}
+
+.showShadow {
+  box-shadow: 0 0 2px 0 #666666;
+}

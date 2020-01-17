@@ -275,4 +275,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('Sizebar width: ', info);
     this.formularService.updateSidebarWidth(info.sizes[0]);
   }
+
+  jumpToSection(index: number) {
+    window.document
+      .querySelectorAll('ige-section-wrapper')
+      .item(index)
+      .scrollIntoView(false);
+  }
 }

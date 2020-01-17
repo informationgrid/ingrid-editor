@@ -82,23 +82,6 @@ public class DatasetsApiController implements DatasetsApi {
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
 
-
-            // TODO: creating a new document inside DB
-            // add document to correct document type class in database
-            /*String documentType = doc.get(FIELD_PROFILE);
-            String documentClass = this.dbService.getClassByDocumentType(documentType);
-            Map result = this.dbService.save(documentClass, null, mapDocument);*/
-
-
-            // add a new document wrapper which stores the document ID in the draft or
-            // published field
-
-
-            // if parentId exists then update hasChildren info even if it already has the value
-            // which makes logic simpler
-
-
-            //Map mapDocument = new HashMap(); //this.documentService.mapDocumentToDatabase(data, publish, userId);
             ObjectNode dataJson = (ObjectNode) getJsonMap(data);
 
             // add generated id to document (_id)
@@ -135,19 +118,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             Map resultWrapper = this.dbService.save(DOCUMENT_WRAPPER, null, documentWrapper.toString());
 
-            // update parent that it has children if needed
-            if (parentId != null) {
-                JsonNode parentDoc = this.documentService.getByDocId(parentId, true);
-                ObjectNode parentDocVersion = (ObjectNode) this.getLatestDocument(parentDoc);
-                if (!parentDocVersion.get(FIELD_HAS_CHILDREN).asBoolean()) {
-                    parentDocVersion.put(FIELD_HAS_CHILDREN, true);
-                    this.dbService.save(
-                            parentDocVersion.get(FIELD_PROFILE).asText(),
-                            parentDocVersion.get(DB_ID).asText(),
-                            parentDocVersion.toString()
-                    );
-                }
-            }
+//            updateParentWithChildInfo(parentId);
 
             Map docResult = this.documentService.prepareDocumentFromDB(result, documentWrapper);
 
@@ -158,6 +129,21 @@ public class DatasetsApiController implements DatasetsApi {
         }
 
     }
+
+    /*private void updateParentWithChildInfo(String parentId) {
+        if (parentId != null) {
+            JsonNode parentDoc = this.documentService.getByDocId(parentId, true);
+            ObjectNode parentDocVersion = (ObjectNode) this.getLatestDocument(parentDoc);
+            if (!parentDocVersion.get(FIELD_HAS_CHILDREN).asBoolean()) {
+                parentDocVersion.put(FIELD_HAS_CHILDREN, true);
+                this.dbService.save(
+                        parentDocVersion.get(FIELD_PROFILE).asText(),
+                        parentDocVersion.get(DB_ID).asText(),
+                        parentDocVersion.toString()
+                );
+            }
+        }
+    }*/
 
     /**
      * Update dataset.
@@ -263,6 +249,11 @@ public class DatasetsApiController implements DatasetsApi {
                 Map dbDoc = this.dbService.find(DOCUMENT_WRAPPER, recordId);
                 // TODO: remove references to document!?
                 this.dbService.remove(DOCUMENT_WRAPPER, id);
+
+                // update parent information about children
+                String parentId = (String) dbDoc.get(PARENT_ID);
+//                this.updateParentWithChildInfo(parentId);
+
             }
             return ResponseEntity.ok().build();
         }
@@ -370,6 +361,7 @@ public class DatasetsApiController implements DatasetsApi {
                     .map(doc -> {
                         ObjectNode node = (ObjectNode) getLatestDocument(doc);
                         node.put(FIELD_STATE, this.documentService.determineState(doc));
+                        node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc));
                         return node;
                     })
                     .map(doc -> doc.toString())

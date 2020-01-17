@@ -15,6 +15,9 @@ export abstract class BaseProfile implements Profile {
     },
     {
       key: '_profile'
+    },
+    {
+      key: '_created'
     }
   ];
 

@@ -19,10 +19,10 @@
 
     <div fxLayout="row">
         <div>Erstellt am</div>
-        <div>{{model._created}}</div>
+        <div>{{model._created | date:'short'}}</div>
     </div>
     <div fxLayout="row">
         <div>Geändert am</div>
-        <div>{{model._modified}}</div>
+        <div>{{model._modified | date:'short'}}</div>
     </div>
 </div>

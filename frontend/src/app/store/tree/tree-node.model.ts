@@ -4,7 +4,7 @@ export class TreeNode {
   isExpanded?: boolean;
 
   constructor(public _id: string,
-              public title: string,
+              public title: string = 'Kein Titel',
               public profile: string,
               public state: DocumentState = null,
               public level = 1,

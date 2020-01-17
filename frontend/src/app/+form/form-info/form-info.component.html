@@ -5,7 +5,7 @@
 
     <ige-header-more [showMore]="showMore" [model]="model"></ige-header-more>
 
-    <ige-header-navigation [sections]="sections"></ige-header-navigation>
+    <ige-header-navigation [sections]="sections" (jumpToSection)="jumpToSection.next($event)"></ige-header-navigation>
 </div>
 
 <ige-form-message></ige-form-message>

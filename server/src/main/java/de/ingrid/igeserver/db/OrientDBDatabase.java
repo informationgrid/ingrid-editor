@@ -3,13 +3,10 @@ package de.ingrid.igeserver.db;
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.*;
 import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
 import com.orientechnologies.orient.core.record.OElement;
-import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.ORecordAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
@@ -19,6 +16,7 @@ import com.orientechnologies.orient.server.plugin.OServerPluginManager;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.documenttypes.DocumentType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
+import de.ingrid.igeserver.services.MapperService;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -211,6 +209,21 @@ public class OrientDBDatabase implements DBApi {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Map<String, Long> countChildrenFromNode(String id) {
+        Map<String, Long> response = new HashMap<>();
+        String query = "select _parent,count(_id) from `DocumentWrapper`" +
+                "where _parent IN ['" + id + "']" +
+                "group by _parent";
+
+        OResultSet countQuery = getDBFromThread().query(query);
+        while (countQuery.hasNext()) {
+            OResult next = countQuery.next();
+            response.put(next.getProperty(MapperService.FIELD_PARENT), next.getProperty("count(_id)"));
+        }
+        return response;
     }
 
     @Override

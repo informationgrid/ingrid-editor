@@ -1,1 +1,5 @@
-<span><span *ngFor="let item of crumb | async">{{item}}<mat-icon>chevron_right</mat-icon></span></span>
+<span *ngIf="( crumb | async) as items">
+    <span *ngFor="let item of items | slice:0:items.length-1">{{item}}
+        <mat-icon>chevron_right</mat-icon>
+    </span>
+</span>

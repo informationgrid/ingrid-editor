@@ -1,6 +1,6 @@
 <div class="anchor-navigation mat-body">
     <ng-container *ngFor="let section of sections; let i = index;">
-        <a mat-button>
+        <a mat-button (click)="jumpToSection.next(i)">
             {{section}}
         </a>
         <ng-container *ngIf="i !== sections.length - 1">|</ng-container>

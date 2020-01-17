@@ -9,10 +9,8 @@ import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
 import {ProfileQuery} from '../../store/profile/profile.query';
-import {DocumentUtils} from './document.utils';
 import {arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
-import {ProfileService} from '../profile.service';
 
 @Injectable({
   providedIn: 'root'
@@ -86,7 +84,9 @@ export class DocumentService {
 
   load(id: string): Observable<IgeDocument> {
     return this.dataService.load(id).pipe(
-      tap(doc => this.treeStore.update({openedDocument: DocumentUtils.createDocumentAbstract(doc)})),
+      tap(doc => this.treeStore.update({
+        openedDocument: this.mapToDocumentAbstracts([doc], doc._parent)[0]
+      })),
       tap(doc => setTimeout(() => this.treeStore.setActive([doc._id]), 0))
     );
   }
@@ -96,7 +96,7 @@ export class DocumentService {
 
       this.dataService.save(data)
         .subscribe(json => {
-          const info = DocumentUtils.createDocumentAbstract(json);
+          const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
           this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 
@@ -132,7 +132,7 @@ export class DocumentService {
 
       this.dataService.publish(data)
         .subscribe(json => {
-            const info = DocumentUtils.createDocumentAbstract(json);
+            const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
             this.afterSave$.next(data);
             this.datasetsChanged$.next({

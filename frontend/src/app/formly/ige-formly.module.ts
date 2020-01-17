@@ -62,8 +62,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
         {name: 'ip', validation: IpValidator}
       ],
       validationMessages: [
-        {name: 'ip', message: 'This is not a valid IP Address'},
-        { name: 'required', message: 'This field is required' }
+        { name: 'required', message: 'Dieses Feld muss ausgefüllt sein' }
       ]/*,
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
