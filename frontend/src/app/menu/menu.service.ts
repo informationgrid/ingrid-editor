@@ -14,10 +14,10 @@ export interface MenuItem {
 })
 export class MenuService {
 
-
   _menuItems: MenuItem[] = [
     {name: 'Dashboard', path: '/dashboard'},
     {name: 'Formular', path: '/form'},
+    {name: 'Address', path: '/address'},
     // {name: 'Plugins', path: '/plugins', onlyAdmin: true},
     // {name: 'Fields', path: '/fields'}
     {name: 'Benutzer', path: '/user', onlyAdmin: true},

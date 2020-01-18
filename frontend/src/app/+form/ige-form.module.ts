@@ -5,8 +5,6 @@ import {FormsModule} from '@angular/forms';
 import {DynamicFormComponent} from './dynamic-form.component';
 import {LeafletComponent} from './leaflet/leaflet.component';
 import {routing} from './ige-form.routing';
-import {BrowserComponent} from './sidebars/browser/browser.component';
-import {LinkDatasetComponent} from './linkDataset/link-dataset.component';
 import {SharedModule} from '../shared/shared.module';
 import {NominatimService} from './leaflet/nominatim.service';
 import {IgeWizardModule} from '../wizard/wizard.module';
@@ -74,7 +72,7 @@ import {SavePlugin} from './dialogs/save/save.plugin';
   ],
   declarations: [
     FormToolbarComponent,
-    BrowserComponent, LinkDatasetComponent, LeafletComponent, DynamicFormComponent,
+    LeafletComponent, DynamicFormComponent,
     NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,

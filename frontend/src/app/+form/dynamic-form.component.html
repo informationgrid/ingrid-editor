@@ -25,7 +25,11 @@
                     </pre>-->
                 </form>
 
-                <div *ngIf="model._profile === 'FOLDER'">
+                <div *ngIf="model._profile === 'FOLDER'" class="folder-content">
+                    <mat-card fxFlex>
+                        <mat-card-subtitle>Ordner-Informationen</mat-card-subtitle>
+                        <mat-card-content>...</mat-card-content>
+                    </mat-card>
                 </div>
             </ng-container>
 

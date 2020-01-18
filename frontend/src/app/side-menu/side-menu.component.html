@@ -6,6 +6,7 @@
                   [matTooltipDisabled]="menuIsExpanded"
                   [svgIcon]="mapRouteToIcon(route.path)"
                   matTooltipClass="tooltip-big">
+            {{mapRouteToMatIcon(route.path)}}
         </mat-icon>
         <p mat-line>{{route.name}}</p>
     </a>
