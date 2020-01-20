@@ -3,9 +3,13 @@ import { DocumentService } from '../../../services/document/document.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {FormularService} from '../../formular.service';
+import {TreeStore} from "../../../store/tree/tree.store";
 
 @Component( {
-  templateUrl: './create-folder.component.html'
+  templateUrl: './create-folder.component.html',
+  styles: [`
+    .mat-dialog-content { padding-bottom: 10px; }
+  `]
 } )
 export class CreateFolderComponent implements OnInit {
 
@@ -25,6 +29,7 @@ export class CreateFolderComponent implements OnInit {
 
   constructor(private formService: FormularService,
               private storageService: DocumentService,
+              private treeStore: TreeStore,
               public dialogRef: MatDialogRef<CreateFolderComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
     this.parent = data.parent;

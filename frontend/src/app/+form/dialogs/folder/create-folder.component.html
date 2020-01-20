@@ -19,6 +19,9 @@
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Abbrechen</button>
+
+    <div fxFlex></div>
+
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-    <button mat-button [disabled]="!name" (click)="handleCreate(name.value)">Erstellen</button>
+    <button mat-button color="primary" [disabled]="!name" (click)="handleCreate(name.value)">Erstellen</button>
 </mat-dialog-actions>

@@ -140,6 +140,7 @@ export class DynamicDataSource {
       childLevel = this.data[index].level + 1;
     }
     this.data.splice(index + 1, 0, ...this._database.mapDocumentsToTreeNodes(docs, childLevel));
+    this.data.sort(this.sortNodesByFolderFirst);
     this.dataChange.next(this.data);
   }
 

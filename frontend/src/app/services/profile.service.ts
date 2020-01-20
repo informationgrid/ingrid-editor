@@ -41,7 +41,7 @@ export class ProfileService {
       .map(profile => profile.iconClass);
 
     if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
-      console.error('Unknown profile or iconClass');
+      console.debug('Unknown profile or iconClass');
       return null;
     }
 

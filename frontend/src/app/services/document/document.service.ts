@@ -68,7 +68,7 @@ export class DocumentService {
       );
   }
 
-  private mapToDocumentAbstracts(docs: any[], parentId: string): DocumentAbstract[] {
+  private mapToDocumentAbstracts(docs: IgeDocument[], parentId: string): DocumentAbstract[] {
     return docs.map(doc => {
       return {
         id: doc._id,
@@ -107,7 +107,7 @@ export class DocumentService {
             parent: info._parent
           });
           this.treeStore.upsert(info.id, info);
-          resolve(data);
+          resolve(json);
         }, err => {
           reject(err);
         });

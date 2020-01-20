@@ -27,7 +27,6 @@ export class TreeAction {
 export class TreeComponent implements OnInit {
 
   @Input() expandNodeIds: Observable<string[]>;
-  @Input() selectedIds: Observable<string[]>;
   @Input() showReloadButton = true;
   @Input() activeNodeId: string = null;
   @Input() update: Observable<any>;
@@ -211,7 +210,8 @@ export class TreeComponent implements OnInit {
 
       this.treeControl.expand(parentNode);
     }
-    return this.dataSource.addNode(updateInfo.parent, updateInfo.data);
+    this.dataSource.addNode(updateInfo.parent, updateInfo.data);
+    this.activeNodeId = updateInfo.data[0].id + '';
   }
 
   private updateChildrenInfo(parentNode: TreeNode) {
