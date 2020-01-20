@@ -8,9 +8,9 @@ import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
-import {ProfileQuery} from '../../store/profile/profile.query';
 import {arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
+import {ProfileService} from "../profile.service";
 
 @Injectable({
   providedIn: 'root'
