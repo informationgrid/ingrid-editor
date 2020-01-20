@@ -363,3 +363,7 @@ tree-node:hover .folder {
 .mat-icon-button[disabled] .mat-icon {
   opacity: 0.2;
 }
+
+ige-root .mat-drawer-container {
+  background-color: $ige-background;
+}
