@@ -23,6 +23,7 @@ mat-tree-node {
 
     &.expanded {
       border-bottom-color: transparent;
+      color: #1C4C81;
     }
   }
 
@@ -31,6 +32,10 @@ mat-tree-node {
     &.folder {
       background-color: $ige-background;
       font-size: 16px;
+    }
+
+    &.folder.active {
+      background-color: $ige-mark-color;
     }
 
     .label {

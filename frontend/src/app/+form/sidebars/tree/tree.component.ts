@@ -208,9 +208,18 @@ export class TreeComponent implements OnInit {
       const parentNode = this.dataSource.data[parentNodeIndex];
       parentNode.hasChildren = true;
 
-      this.treeControl.expand(parentNode);
+      // node will be added automatically when expanded
+      const isExpanded = this.treeControl.isExpanded(parentNode);
+
+      if (isExpanded) {
+        this.dataSource.addNode(updateInfo.parent, updateInfo.data);
+      } else {
+        this.treeControl.expand(parentNode);
+      }
+    } else {
+      this.dataSource.addNode(updateInfo.parent, updateInfo.data);
     }
-    this.dataSource.addNode(updateInfo.parent, updateInfo.data);
+
     this.activeNodeId = updateInfo.data[0].id + '';
   }
 
@@ -221,6 +230,11 @@ export class TreeComponent implements OnInit {
       for (let i = index + 1; i < this.dataSource.data.length && this.dataSource.data[i].level > parentNode.level; i++, count++) {
       }
       parentNode.hasChildren = count !== 0;
+
+      if (!parentNode.hasChildren) {
+        //this.dataSource.toggleNode(parentNode, false);
+        this.treeControl.collapse(parentNode);
+      }
     }
   }
 

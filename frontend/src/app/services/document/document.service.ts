@@ -101,12 +101,14 @@ export class DocumentService {
           this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 
           this.afterSave$.next(data);
+
+          this.treeStore.upsert(info.id, info);
+
           this.datasetsChanged$.next({
             type: isNewDoc ? UpdateType.New : UpdateType.Update,
             data: [info],
             parent: info._parent
           });
-          this.treeStore.upsert(info.id, info);
           resolve(json);
         }, err => {
           reject(err);
