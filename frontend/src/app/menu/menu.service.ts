@@ -28,7 +28,8 @@ export class MenuService {
 
   menu$ = new BehaviorSubject<MenuItem[]>(this._menuItems);
 
-  constructor(private router: Router, private sessionStore: SessionStore) {}
+  constructor(private router: Router, private sessionStore: SessionStore) {
+  }
 
   get menuItems(): MenuItem[] {
     const validPages = []; // this.authService.getAccessiblePages();
@@ -48,24 +49,25 @@ export class MenuService {
     this._menuItems.push(
       {name: label, path: '/' + path}
     );
-    this.menu$.next( null );
+    this.menu$.next(null);
   }
 
   removeMenuItem(path: string) {
-    let indexToRemove = this.router.config.findIndex( (item: any) => item.path === path );
-    this.router.config.splice( indexToRemove, 1 );
+    let indexToRemove = this.router.config.findIndex((item: any) => item.path === path);
+    this.router.config.splice(indexToRemove, 1);
 
-    indexToRemove = this._menuItems.findIndex( (item: any) => item.path === '/' + path );
-    this._menuItems.splice( indexToRemove, 1 );
+    indexToRemove = this._menuItems.findIndex((item: any) => item.path === '/' + path);
+    this._menuItems.splice(indexToRemove, 1);
 
-    this.menu$.next( null );
+    this.menu$.next(null);
   }
 
   toggleSidebar(setExpanded: boolean) {
-    this.sessionStore.update({
+    this.sessionStore.update(state => ({
       ui: {
+        ...state.ui,
         sidebarExpanded: setExpanded
       }
-    });
+    }));
   }
 }
