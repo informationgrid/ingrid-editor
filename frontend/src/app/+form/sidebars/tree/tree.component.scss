@@ -101,19 +101,10 @@ mat-tree-node {
       fill: $state-working-color;
     }
 
-    /*&.workingWithPublished {
-      background: -moz-linear-gradient(270deg, $state-working-color 50%, #333333 50%);
-      background: -webkit-linear-gradient(270deg, $state-working-color 50%, #333333 50%);
-      background: linear-gradient(270deg, $state-working-color 50%, #333333 50%);
-      -webkit-background-clip: text;
-      -moz-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: inline;
-    }*/
+    &.workingWithPublished ::ng-deep svg path{
+      fill: url("#myGradient");
+    }
 
-    /*.published {
-    }*/
   }
 }
 
