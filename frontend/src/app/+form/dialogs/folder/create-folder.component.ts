@@ -1,16 +1,22 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { DocumentService } from '../../../services/document/document.service';
+import {Component, Inject, OnInit} from '@angular/core';
+import {DocumentService} from '../../../services/document/document.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {FormularService} from '../../formular.service';
-import {TreeStore} from "../../../store/tree/tree.store";
+import {TreeStore} from '../../../store/tree/tree.store';
 
-@Component( {
+@Component({
   templateUrl: './create-folder.component.html',
   styles: [`
-    .mat-dialog-content { padding-bottom: 10px; }
+    .mat-dialog-content {
+      padding-bottom: 10px;
+    }
+
+    .mat-form-field {
+      width: 100%;
+    }
   `]
-} )
+})
 export class CreateFolderComponent implements OnInit {
 
   parent: DocumentAbstract = null;
@@ -39,8 +45,8 @@ export class CreateFolderComponent implements OnInit {
   }
 
   handleCreate(value: string) {
-    console.log( 'name:', value );
-    console.log( 'asSub:', this.asSubFolder );
+    console.log('name:', value);
+    console.log('asSub:', this.asSubFolder);
 
     // if a name was entered
     if (value && value.trim().length > 0) {
@@ -66,5 +72,9 @@ export class CreateFolderComponent implements OnInit {
       }
     }
     return parent;
+  }
+
+  setDestination(destination: string) {
+    console.log('Destination: ' + destination);
   }
 }

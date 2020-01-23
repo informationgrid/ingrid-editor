@@ -20,56 +20,58 @@ import java.util.List;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
 @Api(value = "datasets", description = "the datasets API")
-@RequestMapping(path="/api")
+@RequestMapping(path = "/api")
 public interface DatasetsApi {
 
-    @ApiOperation(value = "Create a complete dataset", notes = "xxx", response = Void.class, tags = { "Datasets", })
+    @RequestMapping(
+            value = "/datasets", produces = {"application/json"}, method = RequestMethod.POST
+    )
+    @ApiOperation(value = "Create a complete dataset", notes = "xxx", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The stored dataset, which might contain additional storage information.", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
-    @RequestMapping(value = "/datasets", produces = { "application/json" }, method = RequestMethod.POST)
+            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)})
     ResponseEntity<String> createDataset(
-    		Principal principal,
+            Principal principal,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) throws ApiException;
-    
-    @ApiOperation(value = "Update a complete dataset", notes = "xxx", response = Void.class, tags = { "Datasets", })
+
+    @ApiOperation(value = "Update a complete dataset", notes = "xxx", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The stored dataset, which might contain additional storage information.", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
-    @RequestMapping(value = "/datasets/{id}", produces = { "application/json" }, method = RequestMethod.PUT)
+            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)})
+    @RequestMapping(value = "/datasets/{id}", produces = {"application/json"}, method = RequestMethod.PUT)
     ResponseEntity<String> updateDataset(
-    		Principal principal,
+            Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish,
             @ApiParam(value = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) Boolean revert) throws ApiException;
 
-    
-    @ApiOperation(value = "Copy a dataset or tree under another dataset", notes = "xxx", response = Void.class, tags = { "Datasets", })
+
+    @ApiOperation(value = "Copy a dataset or tree under another dataset", notes = "xxx", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Datasets have been copied successfully.", response = Void.class) })
-    @RequestMapping(value = "/datasets/{ids}/copy", produces = { "application/json" }, method = RequestMethod.POST)
+            @ApiResponse(code = 200, message = "Datasets have been copied successfully.", response = Void.class)})
+    @RequestMapping(value = "/datasets/{ids}/copy", produces = {"application/json"}, method = RequestMethod.POST)
     ResponseEntity<Void> copyDatasets(
-    		Principal principal,
+            Principal principal,
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
             @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data);
 
-    @ApiOperation(value = "Deletes a dataset", notes = "...", response = Void.class, tags = { "Datasets", })
+    @ApiOperation(value = "Deletes a dataset", notes = "...", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
-    @RequestMapping(value = "/datasets/{id}", produces = { "application/json" }, method = RequestMethod.DELETE)
+            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)})
+    @RequestMapping(value = "/datasets/{id}", produces = {"application/json"}, method = RequestMethod.DELETE)
     ResponseEntity<String> deleteById(
-    		Principal principal,
+            Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids) throws ApiException;
 
-    @ApiOperation(value = "Export a dataset to a specific format", notes = "...", response = Void.class, tags = { "Datasets", })
+    @ApiOperation(value = "Export a dataset to a specific format", notes = "...", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Dataset has been exported successfully.", response = Void.class) })
-    @RequestMapping(value = "/datasets/{id}/export/{format}", produces = { "application/json" }, method = RequestMethod.GET)
+            @ApiResponse(code = 200, message = "Dataset has been exported successfully.", response = Void.class)})
+    @RequestMapping(value = "/datasets/{id}/export/{format}", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> exportDataset(
-    		Principal principal,
+            Principal principal,
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
             @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException, IOException;
 
@@ -83,40 +85,40 @@ public interface DatasetsApi {
             @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId) throws Exception;
 
     @ApiOperation(value = "Get datasets by a query", notes = "Get all datasets or those which match a given query. The results can also be sorted.", response = Void.class, tags = {
-            "Datasets", })
+            "Datasets",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Datasets found", response = Void.class) })
-    @RequestMapping(value = "/datasets", produces = { "application/json" }, method = RequestMethod.GET)
+            @ApiResponse(code = 200, message = "Datasets found", response = Void.class)})
+    @RequestMapping(value = "/datasets", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> find(
-    		Principal principal,
+            Principal principal,
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
             @ApiParam(value = "Sort by a given field.") @RequestParam(value = "sort", required = false) String sort,
             @ApiParam(value = "Reverse sort.") @RequestParam(value = "reverse", required = false) String reverse) throws Exception;
 
-    @ApiOperation(value = "A complete dataset", notes = "Retrieve a dataset by a given ID.", response = InlineResponse200.class, tags = { "Datasets", })
+    @ApiOperation(value = "A complete dataset", notes = "Retrieve a dataset by a given ID.", response = InlineResponse200.class, tags = {"Datasets",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The dataset with the given ID.", response = InlineResponse200.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
-    @RequestMapping(value = "/datasets/{id}", produces = { "application/json" }, method = RequestMethod.GET)
+            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)})
+    @RequestMapping(value = "/datasets/{id}", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> getByID(
-    		Principal principal,
+            Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) throws Exception;
 
-    @ApiOperation(value = "Get the hierarchical path of a document", notes = "Retrieve an array of ID of all parents leading to the given dataset ID.", response = Void.class, tags = { "Datasets", })
+    @ApiOperation(value = "Get the hierarchical path of a document", notes = "Retrieve an array of ID of all parents leading to the given dataset ID.", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Array of IDs.", response = Void.class) })
-    @RequestMapping(value = "/datasets/{id}/path", produces = { "application/json" }, method = RequestMethod.GET)
+            @ApiResponse(code = 200, message = "Array of IDs.", response = Void.class)})
+    @RequestMapping(value = "/datasets/{id}/path", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<List<String>> getPath(
-    		Principal principal,
+            Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id) throws ApiException;
 
-    @ApiOperation(value = "Move a dataset or tree under another dataset", notes = "xxx", response = Void.class, tags = { "Datasets", })
+    @ApiOperation(value = "Move a dataset or tree under another dataset", notes = "xxx", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Datasets have been moved successfully.", response = Void.class) })
-    @RequestMapping(value = "/datasets/{ids}/move", produces = { "application/json" }, method = RequestMethod.POST)
+            @ApiResponse(code = 200, message = "Datasets have been moved successfully.", response = Void.class)})
+    @RequestMapping(value = "/datasets/{ids}/move", produces = {"application/json"}, method = RequestMethod.POST)
     ResponseEntity<Void> moveDatasets(
-    		Principal principal,
+            Principal principal,
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
             @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data) throws Exception;
 

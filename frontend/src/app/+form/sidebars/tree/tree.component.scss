@@ -147,10 +147,6 @@ mat-tree-node {
   z-index: 1000
 }
 
-::ng-deep .mat-icon {
-  transition: all .2s linear;
-}
-
 ::ng-deep .expanded .expander {
   transform: rotate(90deg);
 }

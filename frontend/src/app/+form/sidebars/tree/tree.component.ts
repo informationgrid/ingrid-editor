@@ -67,30 +67,46 @@ export class TreeComponent implements OnInit {
 
     // after root nodes are loaded start expansion
     if (this.expandNodeIds) {
-      this.expandNodeIds.subscribe(ids => this.handleExpandNodes(ids));
+      this.expandNodeIds.subscribe(ids => {
+        this.handleExpandNodes(ids)
+          .then(() => {
+            const node = this.dataSource.getNode(this.activeNodeId);
+            const nodePath = this.getTitlesFromNodePath(node);
+            this.database.updatePath(nodePath.reverse());
+          }).catch( () => {});
+      });
     }
 
     this.database.treeUpdates.subscribe(data => this.handleUpdate(data));
 
-    if (this.update) {
-      // this.update.subscribe(data => this.handleUpdate(data));
-    }
   }
 
 
-  private expandOnDataChange(ids: string[]) {
-    const changeObserver = this.dataSource.dataChange.subscribe(data => {
-      if (data === null) return;
+  private expandOnDataChange(ids: string[]): Promise<void> {
+    let resolveNextTime = false;
+    return new Promise(resolve => {
+      const changeObserver = this.dataSource.dataChange.subscribe(data => {
+        console.log('data change', data);
+        console.log('resolve now', resolveNextTime);
+        if (resolveNextTime) {
+          setTimeout(() => changeObserver.unsubscribe(), 0);
+          resolve();
+          return;
+        }
+        if (data === null) {
+          return;
+        }
 
-      if (ids.length > 0) {
-        const nextId = ids.shift();
-        const nodeToExpand = data.filter(node => node._id === nextId)[0];
-        this.treeControl.expand(nodeToExpand);
-      }
-
-      if (ids.length === 0) {
-        setTimeout(() => changeObserver.unsubscribe(), 0);
-      }
+        if (ids.length > 0) {
+          const nextId = ids.shift();
+          const nodeToExpand = data.filter(node => node._id === nextId)[0];
+          this.treeControl.expand(nodeToExpand);
+        }
+        if (ids.length === 0) {
+          console.log('stop subscriber');
+          resolveNextTime = true;
+        }
+      });
     });
   }
 
@@ -123,14 +139,8 @@ export class TreeComponent implements OnInit {
       this.activeNodeId = this.selectionModel.selected[0]._id;
       this.activate.next([this.activeNodeId]);
 
-      // TODO: set path in tree for bread crumb (extract to method)
-      let path = [node.title];
-      let parent = node.parent;
-      while (parent !== null && parent !== undefined) {
-        let parentNode = this.dataSource.getNode(parent);
-        parent = parentNode.parent;
-        path.push(parentNode.title);
-      }
+      // set path in tree for bread crumb (extract to method)
+      const path = this.getTitlesFromNodePath(node);
       this.database.updatePath(path.reverse());
     }
 
@@ -138,6 +148,17 @@ export class TreeComponent implements OnInit {
       this.treeControl.toggle(node);
     }
 
+  }
+
+  private getTitlesFromNodePath(node: TreeNode) {
+    const path = [node.title];
+    let parent = node.parent;
+    while (parent !== null && parent !== undefined) {
+      const parentNode = this.dataSource.getNode(parent);
+      parent = parentNode.parent;
+      path.push(parentNode.title);
+    }
+    return path;
   }
 
   private getParentNode(node: TreeNode) {
@@ -192,7 +213,7 @@ export class TreeComponent implements OnInit {
   }
 
   private deleteNode(updateInfo: UpdateDatasetInfo) {
-    const parentNodes = updateInfo["data"]
+    const parentNodes = updateInfo['data']
       .map(doc => this.dataSource.data.find(item => item._id === doc.id))
       .map(node => this.getParentNode(node));
 
@@ -232,7 +253,7 @@ export class TreeComponent implements OnInit {
       parentNode.hasChildren = count !== 0;
 
       if (!parentNode.hasChildren) {
-        //this.dataSource.toggleNode(parentNode, false);
+        // this.dataSource.toggleNode(parentNode, false);
         this.treeControl.collapse(parentNode);
       }
     }
@@ -240,7 +261,9 @@ export class TreeComponent implements OnInit {
 
   private handleExpandNodes(ids: string[]) {
     if (ids && ids.length > 0) {
-      this.expandOnDataChange(ids);
+      return this.expandOnDataChange(ids);
+    } else {
+      return Promise.reject();
     }
   }
 
@@ -262,7 +285,12 @@ export class TreeComponent implements OnInit {
     this.database.getPath(id).then((path) => {
       this.activeNodeId = path.pop();
       this.handleExpandNodes(path)
-      this.activate.next([id]);
+        .then(() => {
+          const node = this.dataSource.getNode(id);
+          const nodePath = this.getTitlesFromNodePath(node);
+          this.database.updatePath(nodePath.reverse());
+          this.activate.next([id]);
+        });
     });
   }
 }

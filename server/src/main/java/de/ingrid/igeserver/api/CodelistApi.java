@@ -15,15 +15,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
 @Api(value = "codelist", description = "the codelist API")
-@RequestMapping(path="/api")
+@RequestMapping(path = "/api")
 public interface CodelistApi {
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Codelist", })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
+            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)
+    })
+    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Codelist",})
 
-    @RequestMapping(value = "/codelist/{id}", produces = { "application/json" }, method = RequestMethod.GET)
+    @RequestMapping(value = "/codelist/{id}", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> getCodelistById(@ApiParam(value = "The ID of the codelist.", required = true) @PathVariable("id") String id);
 
 }

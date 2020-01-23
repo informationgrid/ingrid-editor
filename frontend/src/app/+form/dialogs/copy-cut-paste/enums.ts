@@ -1,5 +1,8 @@
 export enum CopyMoveEnum {
-  COPY, MOVE, MOVE_TREE
+  CHOOSE,
+  COPY,
+  MOVE,
+  MOVE_TREE
 }
 
 export class MoveMode {

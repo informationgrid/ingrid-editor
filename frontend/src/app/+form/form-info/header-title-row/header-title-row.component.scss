@@ -3,6 +3,7 @@
 .title {
 
   padding-bottom: 10px;
+  align-items: center;
 
   .document-type {
     display: inline-block;
@@ -11,7 +12,6 @@
     height: 24px;
     width: 24px;
     margin-right: 10px;
-    margin-top: 8px;
 
     mat-icon {
       line-height: 32px;
@@ -27,13 +27,13 @@
   }
 
   .more, .menu {
-    width: 25px;
-    height: 25px;
+    width: 26px;
+    height: 26px;
     line-height: 24px;
   }
 
   .menu {
-    margin-left: 15px;
+    margin-left: 5px;
   }
 
   mat-form-field, form {

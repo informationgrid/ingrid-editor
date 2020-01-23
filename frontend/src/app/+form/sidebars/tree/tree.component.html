@@ -34,7 +34,7 @@
                     class="toggle"
                     [disabled]="!node.hasChildren"
                     [attr.aria-label]="'toggle ' + node.title">
-                <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror expander">
+                <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror expander animated">
                     {{isLoading === node ? 'autorenew' : 'chevron_right'}}
                 </mat-icon>
             </button>

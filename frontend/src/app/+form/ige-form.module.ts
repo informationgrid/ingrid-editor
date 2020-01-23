@@ -56,6 +56,7 @@ import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.component';
 import {NewDocumentPlugin} from './dialogs/new-doc/new-doc.plugin';
 import {SavePlugin} from './dialogs/save/save.plugin';
+import { ChooseFolderComponent } from './dialogs/folder/choose-folder/choose-folder.component';
 
 @NgModule({
   imports: [
@@ -76,7 +77,7 @@ import {SavePlugin} from './dialogs/save/save.plugin';
     NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
-    FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent, HeaderMoreComponent, FormMessageComponent],
+    FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent, HeaderMoreComponent, FormMessageComponent, ChooseFolderComponent],
   providers: [FormularService, FormToolbarService, FormPluginsService, NominatimService, FolderPlugin, DeleteDocsPlugin, IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, NewDocumentPlugin, SavePlugin],
   exports: [FormsModule, ScrollToDirective],
   entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]

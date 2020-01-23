@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined");
+//@import url("https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined");
 @import '~@swimlane/ngx-datatable/index.css';
 @import '~@swimlane/ngx-datatable/themes/material.scss';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
@@ -366,4 +366,8 @@ tree-node:hover .folder {
 
 ige-root .mat-drawer-container {
   background-color: $ige-background;
+}
+
+.mat-icon.animated {
+  transition: all .2s linear;
 }
