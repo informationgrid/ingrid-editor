@@ -68,7 +68,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       })
       .catch(err => {
         // remove loading spinner and rethrow error
-        document.getElementsByClassName('app-loading').item(0).remove();
+        document.getElementsByClassName('app-loading').item(0).innerHTML = 'An error occurred';
         throw new IgeError(err);
       });
   }

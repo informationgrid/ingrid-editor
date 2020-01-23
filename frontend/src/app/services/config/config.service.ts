@@ -48,7 +48,7 @@ export class ConfigService {
     return this.dataService.getCurrentUserInfo()
       .then(userInfo => {
         this.$userInfo.next(userInfo);
-        this.isAdministrator = userInfo.roles && userInfo.roles.includes('admin');
+        this.isAdministrator = userInfo.roles && userInfo.roles.indexOf('admin') !== -1;
         return userInfo;
       })
       .catch(e => {
