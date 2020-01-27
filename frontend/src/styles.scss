@@ -371,3 +371,74 @@ ige-root .mat-drawer-container {
 .mat-icon.animated {
   transition: all .2s linear;
 }
+
+#form {
+  .label-wrapper + * {
+    flex: 1;
+  }
+
+  .label-wrapper + formly-wrapper-mat-form-field {
+    display: contents;
+  }
+
+  &.form-content {
+    .mat-form-field-infix {
+      /*border-top: 0.2em solid transparent;*/
+      border-top: 0;
+      // this will be the minimum width for material form fields
+      width: 75px;
+    }
+
+    .mat-form-field-appearance-outline .mat-form-field-infix {
+      padding: 1em 0 0.7em 0;
+    }
+
+    .mat-form-field-appearance-outline .mat-form-field-subscript-wrapper {
+      padding: 0.2em 1em;
+    }
+
+    .mat-form-field-wrapper {
+      padding-bottom: 0.3em;
+    }
+
+    .mat-form-field-invalid .mat-form-field-wrapper {
+      padding-bottom: 0;
+      margin: 0.25em 0 0 0;
+    }
+
+    .mat-form-field-subscript-wrapper {
+      padding-top: 3px;
+    }
+
+    .mat-form-field-label-wrapper {
+      top: -0.64375em;
+    }
+
+    .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+      -webkit-transform: translateY(-1.09375em) scale(.75);
+      transform: translateY(-1.09375em) scale(.75);
+    }
+
+    .mat-select-arrow-wrapper {
+      padding-top: 10px;
+    }
+  }
+
+  /*.mat-button-wrapper {
+    vertical-align: middle;
+  }*/
+
+  /* Multi-line error: https://github.com/angular/material2/issues/4580#issuecomment-340692923 */
+  mat-form-field .mat-form-field-underline {
+    position: static;
+  }
+
+  mat-form-field .mat-form-field-subscript-wrapper {
+    position: static;
+    margin-top: 0.4em;
+  }
+
+  mat-form-field.mat-form-field-invalid .mat-form-field-subscript-wrapper {
+    margin-top: 0;
+  }
+}

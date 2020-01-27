@@ -1313,10 +1313,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@datorama/akita@^4.17.0":
-  version "4.17.0"
-  resolved "https://registry.yarnpkg.com/@datorama/akita/-/akita-4.17.0.tgz#facd1a6b7b8fff918417ad8bcb781bdbf4213c67"
-  integrity sha512-R8OIFw1UmIjgwxFNOFWpnG0cmJmfjAmEa5iCo4XSrdPPAzIJ/pr5G8GaCEE/IUSpSdKJXFmvVvD62Tbaadop7Q==
+"@datorama/akita@^4.18.0":
+  version "4.18.0"
+  resolved "https://registry.yarnpkg.com/@datorama/akita/-/akita-4.18.0.tgz#1745a419fde667f4a5b56ba505cc0077f6b3177b"
+  integrity sha512-Cbou9bjp2S1YBG09x7SPKFU3zN+oq+S5SQQB01ff6GYGF/QyIM28POoI0ZwiHkpbgznuXvPefo3UeNK2qjy+Gg==
   dependencies:
     schematics-utilities "^1.1.1"
     tslib "^1.9.0"
@@ -1493,10 +1493,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@ngneat/spectator@^4.8.0":
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/@ngneat/spectator/-/spectator-4.8.0.tgz#3dfb2fe40195a8af35983c76ae4db255b04f573c"
-  integrity sha512-FX2RvF1fDz8v6Xq2oESCOScBKO377B0OuB7cV3lAkyG4KJehJaY+zupJsWEtBCQ8CzDcfUBPy28jez7DJCGefw==
+"@ngneat/spectator@^4.11.1":
+  version "4.11.1"
+  resolved "https://registry.yarnpkg.com/@ngneat/spectator/-/spectator-4.11.1.tgz#0f2de4c89c29e255396177f9efa6948a2557c977"
+  integrity sha512-zNRTEZpG7GH6f1nRxorO5uumN3A+xA/LFjwUkB5JCRN/fWtt8aE74PWsJ2qeQPMgJCCKZRkkyZ/UksLOxXejNQ==
   dependencies:
     "@testing-library/dom" "6.1.0"
     jquery "3.4.1"
@@ -1515,17 +1515,17 @@
     tree-kill "1.2.1"
     webpack-sources "1.4.3"
 
-"@ngx-formly/core@5.5.6":
-  version "5.5.6"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.5.6.tgz#ef0347a91c4a921bc4ff5d450f7c61f744a3898c"
-  integrity sha512-/V1WH56Hr/84Cej6HTj0Qxp3Sy33o0LDD4zilTwRU1dXfoQkJputUOHVaF3+Ga9r3pTZxZfqPXmKysSamalFkA==
+"@ngx-formly/core@5.5.10":
+  version "5.5.10"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.5.10.tgz#0353b0f4c97f5afe887909d0dc5dd8303e7f0a10"
+  integrity sha512-nKtO8zvztBjB6MMmszXZqb95gmG4xjJIMphzFqRN15PjCxNSXDDlYH/ljm7proGBmt1gMz/liwTP7Hf2TcwydA==
   dependencies:
     tslib "^1.7.1"
 
-"@ngx-formly/material@5.5.6":
-  version "5.5.6"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.5.6.tgz#86e576b51958add6a174541027005cf8ccbbe5cc"
-  integrity sha512-aI5NjZKfjY0XFOdex90jORjmeU9Xlb4ufv1v1zun+w1KbrdMdmInL97huKo4GpbsV5RnuRYpdyZIJd8LaKxqGQ==
+"@ngx-formly/material@5.5.10":
+  version "5.5.10"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.5.10.tgz#95da81e423ad8b3fa95a79e08cf546275fbfb652"
+  integrity sha512-Fxdd1u7YS0eni9y0EUk+bJe5FFUmmeGX2jru15Fwp5NEeYEXGwWzfNqD0ROgKz6x0m/PLt49QKhr5teOWYn/yg==
   dependencies:
     tslib "^1.9.0"
 
@@ -1940,10 +1940,10 @@
     telejson "^2.2.2"
     util-deprecate "^1.0.2"
 
-"@swimlane/ngx-datatable@^16.0.2":
-  version "16.0.2"
-  resolved "https://registry.yarnpkg.com/@swimlane/ngx-datatable/-/ngx-datatable-16.0.2.tgz#4cbee063f1e992b4ba5b0ab6a5485ea7e93e4b25"
-  integrity sha512-+JxVumYGr4wON2YC0dXYt0vWmWNaWcVFWdAfrb6gXL/6iAJco70rX59lFvQ6ubFVgDKCsf+QycBXODvLnHaGUQ==
+"@swimlane/ngx-datatable@^16.0.3":
+  version "16.0.3"
+  resolved "https://registry.yarnpkg.com/@swimlane/ngx-datatable/-/ngx-datatable-16.0.3.tgz#95816dbc944679762d102d4a31b3e17674c67af3"
+  integrity sha512-SuVd89CTFhy+21SF8W+qmGoXGFeB7KB5/VwkrgvDRs0GnBC5m9u1nAyN0ypSXMmqilcem6vPmh4yVhjPL1rseg==
   dependencies:
     tslib "^1.9.0"
 

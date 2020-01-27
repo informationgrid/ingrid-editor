@@ -25,7 +25,9 @@ export class McloudFormly extends BaseProfile {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Beschreibung',
-          rows: 3,
+          autosize: true,
+          autosizeMinRows: 3,
+          autosizeMaxRows: 8,
           appearance: 'outline',
           required: true
         },

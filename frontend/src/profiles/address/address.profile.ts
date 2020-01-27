@@ -124,7 +124,9 @@ export class ProfileAddress extends BaseProfile {
       templateOptions: {
         externalLabel: 'Aufgaben',
         rows: 2,
-        appearance: 'outline'
+        appearance: 'outline',
+        autosize: true,
+        autosizeMaxRows: 5
       }
     }, {
       key: 'serviceTimes',
@@ -132,7 +134,9 @@ export class ProfileAddress extends BaseProfile {
       wrappers: ['panel', 'form-field'],
       templateOptions: {
         externalLabel: 'Servicezeiten',
-        appearance: 'outline'
+        appearance: 'outline',
+        autosize: true,
+        autosizeMaxRows: 5
       }
     }
   ];
