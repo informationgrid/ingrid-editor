@@ -1,24 +1,25 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {NewCatalogDialogComponent} from "./new-catalog/new-catalog-dialog.component";
-import {UploadProfileDialogComponent} from "./upload-profile/upload-profile-dialog.component";
-import {FormsModule} from "@angular/forms";
-import {MatCheckboxModule} from "@angular/material/checkbox";
-import {MatDialogModule} from "@angular/material/dialog";
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatInputModule} from "@angular/material/input";
-import {MatRadioModule} from "@angular/material/radio";
+import {NewCatalogDialogComponent} from './new-catalog/new-catalog-dialog.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {FlexModule} from '@angular/flex-layout';
+import {MatSelectModule} from '@angular/material/select';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatInputModule} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
-import {MatSelectModule} from "@angular/material/select";
-import {FlexModule} from "@angular/flex-layout";
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatRadioModule} from '@angular/material/radio';
+
 
 @NgModule({
-  declarations: [NewCatalogDialogComponent, UploadProfileDialogComponent],
-    imports: [
-        CommonModule, FormsModule,
-        MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatDialogModule, MatInputModule, MatButtonModule, MatSelectModule, FlexModule
-    ],
-  entryComponents: [NewCatalogDialogComponent, UploadProfileDialogComponent]
+  declarations: [NewCatalogDialogComponent],
+  imports: [
+    CommonModule, FormsModule,
+    MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatDialogModule,
+    MatInputModule, MatButtonModule, MatSelectModule, FlexModule
+  ],
+  entryComponents: [NewCatalogDialogComponent]
 })
 export class CatalogDialogsModule {
 }

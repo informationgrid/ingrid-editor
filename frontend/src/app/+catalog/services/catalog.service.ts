@@ -2,36 +2,38 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {ConfigService, Configuration} from '../../services/config/config.service';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/internal/operators';
+import {map, tap} from 'rxjs/internal/operators';
 import {CatalogDataService} from './catalog-data.service';
-import {CatalogSettings} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
 import {HttpClient} from '@angular/common/http';
 import {Catalog} from './catalog.model';
+import {CatalogStore} from '../../store/catalog/catalog.store';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CatalogService {
 
-  private _forcedCatalog: string = null;
   private configuration: Configuration;
 
-  constructor(private router: Router, private dataService: CatalogDataService, private http: HttpClient,
+  constructor(private router: Router,
+              private dataService: CatalogDataService,
+              private http: HttpClient,
+              private catalogStore: CatalogStore,
               configService: ConfigService) {
     this.configuration = configService.getConfiguration();
   }
 
   getCatalogs(): Observable<Catalog[]> {
-    return this.http.get<any[]>( this.configuration.backendUrl + 'catalogs' )
+    return this.http.get<any[]>(this.configuration.backendUrl + 'catalogs')
       .pipe(
         map(catalogs => {
           const result = [];
           catalogs.forEach(cat => result.push(new Catalog(cat)));
           return result;
-        })
+        }),
+        tap(items => this.catalogStore.set(items))
         // catchError( err => this.errorService.handle( err ) )
       );
-    // return of( this.demoCatalogs );
   }
 
   switchCatalog(id: string) {
@@ -39,11 +41,13 @@ export class CatalogService {
   }
 
   createCatalog(catalog: Catalog) {
-    return this.http.post(this.configuration.backendUrl + 'catalogs', catalog);
+    return this.http.post(this.configuration.backendUrl + 'catalogs', catalog)
+      .pipe(tap(() => this.getCatalogs().subscribe()));
   }
 
   updateCatalog(catalog: Catalog) {
-    return this.http.put(this.configuration.backendUrl + 'catalogs/' + catalog.id, catalog.prepareForBackend());
+    return this.http.put(this.configuration.backendUrl + 'catalogs/' + catalog.id, catalog.prepareForBackend())
+      .pipe(tap(() => this.getCatalogs().subscribe()));
   }
 
   setCatalogAdmin(catalogName: string, userIds: string[]) {
@@ -51,7 +55,8 @@ export class CatalogService {
   }
 
   deleteCatalog(catalogId: string) {
-    return this.dataService.deleteCatalog(catalogId);
+    return this.dataService.deleteCatalog(catalogId)
+      .pipe(tap(() => this.getCatalogs().subscribe()));
   }
 
   getCatalog(catalogId: string) {

@@ -2,39 +2,39 @@ import {Component, OnInit} from '@angular/core';
 import {CatalogService} from '../services/catalog.service';
 import {ConfigService} from '../../services/config/config.service';
 import {Router} from '@angular/router';
-import {Observable} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
-import {UploadProfileDialogComponent} from '../../dialogs/catalog/upload-profile/upload-profile-dialog.component';
 import {CatalogDetailComponent, CatalogDetailResponse} from '../catalog-detail/catalog-detail.component';
 import {Catalog} from '../services/catalog.model';
-import {tap} from 'rxjs/operators';
+import {CatalogQuery} from '../../store/catalog/catalog.query';
 
 @Component({
   selector: 'ige-catalog-manager',
   templateUrl: './catalog-manager.component.html',
-  styleUrls: ['./catalog-manager.component.css']
+  styleUrls: ['./catalog-manager.component.scss']
 })
 export class CatalogManagerComponent implements OnInit {
 
-  // _catalog: Catalog[];
-  catalogs: Observable<Catalog[]>;
-  uploadUrl: string;
-  private config: ConfigService;
+  catalogs = this.catalogQuery.selectAll();
+
   noAssignedCatalogs = false;
   showSpinner = false;
+  trackByCatalogId = (index, item: Catalog) => {
+    return item.id;
+  };
 
-  constructor(private router: Router, private catalogService: CatalogService, configService: ConfigService,
+  constructor(private router: Router,
+              private catalogService: CatalogService,
+              private configService: ConfigService,
+              private catalogQuery: CatalogQuery,
               private dialog: MatDialog) {
-    this.config = configService;
   }
 
   ngOnInit() {
-    this.catalogs = this.catalogService.getCatalogs();
+    this.catalogService.getCatalogs().subscribe();
 
-    this.uploadUrl = this.config.getConfiguration().backendUrl + 'profiles';
-
-    this.config.$userInfo.subscribe(info => this.noAssignedCatalogs = info.assignedCatalogs.length === 0);
+    this.configService.$userInfo
+      .subscribe(info => this.noAssignedCatalogs = info.assignedCatalogs.length === 0);
   }
 
   showCreateCatalogDialog() {
@@ -44,19 +44,13 @@ export class CatalogManagerComponent implements OnInit {
         console.log('settings are: ', catalog);
         this.showSpinner = true;
         this.catalogService.createCatalog(catalog).subscribe(() => {
-          this.catalogs = this.catalogService.getCatalogs();
           this.showSpinner = false;
         });
       }
     })
   }
 
-  showUploadProfileDialog() {
-    const uploadProfileModalRef = this.dialog.open(UploadProfileDialogComponent);
-  }
-
-  chooseCatalog(id: string, $event: MouseEvent) {
-    $event.stopImmediatePropagation();
+  chooseCatalog(id: string) {
     this.catalogService.switchCatalog(id).subscribe(() => {
       window.location.reload();
     });
@@ -70,14 +64,9 @@ export class CatalogManagerComponent implements OnInit {
     editCatalogModalRef.afterClosed().subscribe((response: CatalogDetailResponse) => {
       if (response) {
         if (response.deleted) {
-          this.catalogService.deleteCatalog(catalog.id).pipe(
-            tap(() => this.catalogs = this.catalogService.getCatalogs())
-          ).subscribe();
+          this.catalogService.deleteCatalog(catalog.id).subscribe();
         } else {
-          // TODO: use store to manage state
-          this.catalogService.updateCatalog(response.settings).pipe(
-            tap(() => this.catalogs = this.catalogService.getCatalogs())
-          ).subscribe();
+          this.catalogService.updateCatalog(response.settings).subscribe();
         }
       }
     });
