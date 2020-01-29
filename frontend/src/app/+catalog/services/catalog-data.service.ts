@@ -14,7 +14,7 @@ export class CatalogDataService {
     this.configuration = configService.getConfiguration();
   }
 
-  getCatalogs(): Observable<string[]> {
+  getCatalogs(): Observable<any[]> {
     return this.http.get<string[]>( this.configuration.backendUrl + 'catalogs' );
   }
 

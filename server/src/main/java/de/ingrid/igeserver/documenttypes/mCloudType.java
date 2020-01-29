@@ -6,18 +6,18 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 @Service
-public class mCloudType implements DocumentType {
+public class mCloudType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(mCloudType.class);
 
     private static final String M_CLOUD_DOC = "mCloudDoc";
 
-    @Autowired
-    private DocumentTypeService documentTypeService;
+    private String[] profiles = new String[]{"mcloud"};
 
     @Override
     public void initialize(ODatabaseSession session) {
@@ -30,7 +30,11 @@ public class mCloudType implements DocumentType {
             addressClass.createProperty("_parent", OType.STRING);
         }
 
-        // documentTypeService.register("address", ADDRESSES);
-
     }
+
+    @Override
+    String[] activeInProfiles() {
+        return profiles;
+    }
+
 }

@@ -1,12 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {Catalog, CatalogService} from '../services/catalog.service';
-import {ConfigService, Configuration} from '../../services/config/config.service';
+import {CatalogService} from '../services/catalog.service';
+import {ConfigService} from '../../services/config/config.service';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
 import {UploadProfileDialogComponent} from '../../dialogs/catalog/upload-profile/upload-profile-dialog.component';
-import {CatalogDetailComponent} from '../catalog-detail/catalog-detail.component';
+import {CatalogDetailComponent, CatalogDetailResponse} from '../catalog-detail/catalog-detail.component';
+import {Catalog} from '../services/catalog.model';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'ige-catalog-manager',
@@ -32,15 +34,16 @@ export class CatalogManagerComponent implements OnInit {
 
     this.uploadUrl = this.config.getConfiguration().backendUrl + 'profiles';
 
-    this.config.$userInfo.subscribe( info => this.noAssignedCatalogs = info.assignedCatalogs.length === 0);
+    this.config.$userInfo.subscribe(info => this.noAssignedCatalogs = info.assignedCatalogs.length === 0);
   }
 
   showCreateCatalogDialog() {
     const newCatalogModalRef = this.dialog.open(NewCatalogDialogComponent);
-    newCatalogModalRef.afterClosed().subscribe( name => {
-      if (name) {
+    newCatalogModalRef.afterClosed().subscribe((catalog: Catalog) => {
+      if (catalog) {
+        console.log('settings are: ', catalog);
         this.showSpinner = true;
-        this.catalogService.createCatalog(name).subscribe(() => {
+        this.catalogService.createCatalog(catalog).subscribe(() => {
           this.catalogs = this.catalogService.getCatalogs();
           this.showSpinner = false;
         });
@@ -52,32 +55,32 @@ export class CatalogManagerComponent implements OnInit {
     const uploadProfileModalRef = this.dialog.open(UploadProfileDialogComponent);
   }
 
-  chooseCatalog(id: string) {
-    this.catalogService.forceCatalog( id );
+  chooseCatalog(id: string, $event: MouseEvent) {
+    $event.stopImmediatePropagation();
+    this.catalogService.switchCatalog(id).subscribe(() => {
+      window.location.reload();
+    });
   }
 
-  showCatalogDetail(id: string) {
+  showCatalogDetail(catalog: Catalog) {
     const editCatalogModalRef = this.dialog.open(CatalogDetailComponent, {
-      data: id,
+      data: catalog,
       minWidth: 350
     });
-    editCatalogModalRef.afterClosed().subscribe( name => {
-      if (name) {
-        this.catalogs = this.catalogService.getCatalogs();
+    editCatalogModalRef.afterClosed().subscribe((response: CatalogDetailResponse) => {
+      if (response) {
+        if (response.deleted) {
+          this.catalogService.deleteCatalog(catalog.id).pipe(
+            tap(() => this.catalogs = this.catalogService.getCatalogs())
+          ).subscribe();
+        } else {
+          // TODO: use store to manage state
+          this.catalogService.updateCatalog(response.settings).pipe(
+            tap(() => this.catalogs = this.catalogService.getCatalogs())
+          ).subscribe();
+        }
       }
     });
   }
 
-  onUpload(event) {
-    // for (const file of event.files) {
-    //   this.uploadedFiles.push(file);
-    // }
-    //
-    // this.msgs = [];
-    // this.msgs.push({severity: 'info', summary: 'File Uploaded', detail: ''});
-  }
-
-  handleError(event) {
-    // this.errorService.handle(event.xhr);
-  }
 }

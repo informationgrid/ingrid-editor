@@ -4,7 +4,7 @@
     <!--    <mat-divider></mat-divider>-->
 
     <mat-form-field class="full-width">
-        <input matInput placeholder="Titel">
+        <input matInput placeholder="Titel" [(ngModel)]="catalog.label">
     </mat-form-field>
 
     <h4>Administratoren</h4>
@@ -29,5 +29,5 @@
 <mat-dialog-actions>
     <button mat-button color="warn" (click)="deleteCatalog()">Löschen</button>
     <div fxFlex></div>
-    <button mat-button (click)="addUserAsCatAdmin(userList.selectedOptions.selected[0])">Auswählen</button>
+    <button mat-button color="primary" (click)="submit(userList.selectedOptions.selected[0])">Aktualisieren</button>
 </mat-dialog-actions>

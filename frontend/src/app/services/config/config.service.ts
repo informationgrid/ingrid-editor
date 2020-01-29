@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ConfigDataService} from './config-data.service';
 import {BehaviorSubject} from 'rxjs';
+import {Catalog} from '../../+catalog/services/catalog.model';
 
 export class Configuration {
   constructor(public keykloakBaseUrl: string, public backendUrl: string) {
@@ -13,6 +14,7 @@ export interface UserInfo {
 
   assignedCatalogs: any[];
   roles: string[];
+  currentCatalog: Catalog;
 }
 
 @Injectable({

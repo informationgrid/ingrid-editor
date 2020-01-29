@@ -4,6 +4,8 @@ import {Profile} from './formular/profile';
 import {CodelistService} from './codelist/codelist.service';
 import {HttpClient} from '@angular/common/http';
 import {SessionStore} from '../store/session.store';
+import {ErrorService} from './error.service';
+import {ModalService} from './modal/modal.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,18 +16,23 @@ export class ProfileService {
 
   constructor(private sessionStore: SessionStore,
               private http: HttpClient, configService: ConfigService,
+              errorService: ModalService,
               codelistService: CodelistService) {
 
     configService.$userInfo.subscribe(info => {
       if (info.assignedCatalogs.length > 0) {
 
-        import( '../../profiles/pack-mcloud' ).then(module => {
+        const profile = info.currentCatalog.type;
+
+        import( '../../profiles/pack-' + profile ).then(module => {
           console.log('Loaded module: ', module);
           this.profiles = module.profiles
             .map(ProfileClass => new ProfileClass(null, codelistService));
 
           this.sessionStore.update({profilesInitialized: true});
 
+        }).catch(e => {
+          errorService.showJavascriptError(e.message, e.stack);
         });
       }
     });

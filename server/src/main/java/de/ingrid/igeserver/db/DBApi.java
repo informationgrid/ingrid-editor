@@ -2,6 +2,7 @@ package de.ingrid.igeserver.db;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.api.ApiException;
+import de.ingrid.igeserver.model.Catalog;
 
 import java.util.List;
 import java.util.Map;
@@ -67,8 +68,15 @@ public interface DBApi {
 
     /**
      * Create a database with a given name.
+     * @return the generated database name
      */
-    public boolean createDatabase(String name) throws ApiException;
+    public String createDatabase(Catalog settings) throws ApiException;
+
+    /**
+     * Update an existing database, like name property.
+     * @param settings
+     */
+    public void updateDatabase(Catalog settings);
 
     /**
      * Delete a database with a given name.

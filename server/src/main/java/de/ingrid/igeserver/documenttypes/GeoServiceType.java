@@ -4,18 +4,18 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.metadata.sequence.OSequence;
-import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibrary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GeoServiceType implements DocumentType {
+public class GeoServiceType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(GeoServiceType.class);
 
     private static final String GEO_SERVICE_DOC = "GeoServiceDoc";
+
+    private String[] profiles = new String[]{"mcloud"};
 
     @Override
     public void initialize(ODatabaseSession session) {
@@ -40,5 +40,10 @@ public class GeoServiceType implements DocumentType {
             }*/
         }
 
+    }
+
+    @Override
+    String[] activeInProfiles() {
+        return profiles;
     }
 }

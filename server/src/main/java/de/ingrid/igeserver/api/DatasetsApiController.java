@@ -21,7 +21,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -161,8 +160,8 @@ public class DatasetsApiController implements DatasetsApi {
         try (ODatabaseSession session = dbService.acquire(dbId)) {
 
             if (revert) {
+                throw new ApiException("Not implemented");
                 // prepareDocumentFromDB = this.jsonFromService.revertDocument( id );
-                throw new NotImplementedException();
                 // return;
             }
 

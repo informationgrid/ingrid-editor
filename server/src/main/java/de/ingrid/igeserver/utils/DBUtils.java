@@ -102,6 +102,7 @@ public class DBUtils {
             Catalog catalog = new Catalog();
             catalog.id = id;
             catalog.name = (String) catalogInfo.get(0).get("name");
+            catalog.type = (String) catalogInfo.get(0).get("type");
             return catalog;
         } catch (OStorageException ex) {
             // in case catalog has been deleted but reference is still there

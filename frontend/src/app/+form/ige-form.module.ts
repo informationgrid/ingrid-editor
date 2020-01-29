@@ -79,7 +79,7 @@ import { ChooseFolderComponent } from './dialogs/folder/choose-folder/choose-fol
     ScrollToDirective, SidebarComponent,
     FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent, HeaderMoreComponent, FormMessageComponent, ChooseFolderComponent],
   providers: [FormularService, FormToolbarService, FormPluginsService, NominatimService, FolderPlugin, DeleteDocsPlugin, IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, NewDocumentPlugin, SavePlugin],
-  exports: [FormsModule, ScrollToDirective],
+  exports: [RouterModule, FormsModule, ScrollToDirective, SidebarComponent],
   entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
 })
 export class IgeFormModule {

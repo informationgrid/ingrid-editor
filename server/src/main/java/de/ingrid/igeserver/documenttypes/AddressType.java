@@ -10,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AddressType implements DocumentType {
+public class AddressType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(AddressType.class);
 
     private static final String ADDRESSES = "AddressDoc";
 
-    @Autowired
-    private DocumentTypeService documentTypeService;
+    private String[] profiles = new String[]{"mcloud"};
 
     @Override
     public void initialize(ODatabaseSession session) {
@@ -33,4 +32,10 @@ public class AddressType implements DocumentType {
         // documentTypeService.register("address", ADDRESSES);
 
     }
+
+    @Override
+    String[] activeInProfiles() {
+        return profiles;
+    }
+
 }

@@ -9,13 +9,15 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatRadioModule} from "@angular/material/radio";
 import {MatButtonModule} from '@angular/material/button';
+import {MatSelectModule} from "@angular/material/select";
+import {FlexModule} from "@angular/flex-layout";
 
 @NgModule({
   declarations: [NewCatalogDialogComponent, UploadProfileDialogComponent],
-  imports: [
-    CommonModule, FormsModule,
-    MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatDialogModule, MatInputModule, MatButtonModule
-  ],
+    imports: [
+        CommonModule, FormsModule,
+        MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatDialogModule, MatInputModule, MatButtonModule, MatSelectModule, FlexModule
+    ],
   entryComponents: [NewCatalogDialogComponent, UploadProfileDialogComponent]
 })
 export class CatalogDialogsModule {

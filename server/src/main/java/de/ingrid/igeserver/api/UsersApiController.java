@@ -1,9 +1,11 @@
 package de.ingrid.igeserver.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.id.ORecordId;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.OrientDBDatabase;
 import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.model.User;
@@ -129,6 +131,9 @@ public class UsersApiController implements UsersApi {
         userInfo.assignedCatalogs = assignedCatalogs;
         userInfo.name = keycloakService.getName((KeycloakAuthenticationToken) principal);
         userInfo.roles = keycloakService.getRoles((KeycloakAuthenticationToken) principal);
+        String currentCatalogForUser = this.dbUtils.getCurrentCatalogForUser(userId);
+        Catalog catalog = this.dbUtils.getCatalogById(currentCatalogForUser);
+        userInfo.currentCatalog = catalog;
 
         return ResponseEntity.ok(userInfo);
     }
@@ -202,6 +207,30 @@ public class UsersApiController implements UsersApi {
         }
 
         return ResponseEntity.ok(result);
+    }
+
+    public ResponseEntity<Void> switchCatalog(Principal principal, String catalogId) throws ApiException {
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+
+        try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
+            Map<String, String> query = new HashMap<>();
+            query.put("userId", userId);
+            List<String> info = dbService.findAll("Info", query, QueryType.exact, false);
+            if (info.size() != 1) {
+                String message = "User is not defined or more than once in IgeUsers-table: " + info.size();
+                log.error(message);
+                throw new ApiException(message);
+            }
+
+            ObjectNode map = (ObjectNode) MapperService.getJsonMap(info.get(0));
+            map.put("currentCatalogId", catalogId);
+            this.dbService.save("Info", map.get(OrientDBDatabase.DB_ID).asText(), map.toString());
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            log.error(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }

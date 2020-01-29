@@ -1,9 +1,10 @@
 <mat-toolbar>
     <mat-toolbar-row [class.showShadow]="showShadow">
         <span><strong>INGRID</strong> EDITOR Daten</span>
+        <span class="catalog-title">{{(userInfo|async).currentCatalog.label}}</span>
         <div fxFlex></div>
         <button type="button" class="logout" mat-button (click)="logout()">
-            {{username | async}}
+            {{(userInfo | async).name}}
             <mat-icon title="Logout">perm_identity</mat-icon>
         </button>
     </mat-toolbar-row>

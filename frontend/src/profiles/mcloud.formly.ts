@@ -1,8 +1,8 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {DocumentService} from '../../services/document/document.service';
-import {CodelistService} from '../../services/codelist/codelist.service';
+import {DocumentService} from '../app/services/document/document.service';
+import {CodelistService} from '../app/services/codelist/codelist.service';
 import {from} from 'rxjs';
-import {BaseProfile} from '../../../profiles/base.profile';
+import {BaseProfile} from './base.profile';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 export class McloudFormly extends BaseProfile {

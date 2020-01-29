@@ -3,7 +3,7 @@
     <ul>
         <li *ngFor="let d of error">
             {{d.message}}
-            <ul>
+            <ul *ngIf="d.detail || d.stacktrace">
                 <li>
                     {{d.detail}}
                     <pre *ngIf="d.stacktrace">{{d.stacktrace}}</pre>

@@ -7,19 +7,43 @@ import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {DatepickerField} from '../../app/+form/controls/field-datepicker';
 import {DocumentService} from '../../app/services/document/document.service';
 import {BaseProfile} from '../base.profile';
+import {FormlyFieldConfig} from '@ngx-formly/core';
 
 export class UVPProfile extends BaseProfile {
 
-  id = 'UVP';
+  id = 'UvpDoc';
 
   label = 'UVP-Verfahren';
 
   codelistService = null;
 
-  iconClass = 'fa fa-file-o'; // TODO: make icons same size for better presentation in tree/browser
+  iconClass = 'Projekt'; // TODO: make icons same size for better presentation in tree/browser
+
+  profileFields = <FormlyFieldConfig[]>[
+    {
+      wrappers: ['section'],
+      templateOptions: {
+        label: 'Allgemeines'
+      },
+      fieldGroup: [{
+        key: 'description',
+        type: 'textarea',
+        wrappers: ['panel', 'form-field'],
+        templateOptions: {
+          externalLabel: 'Beschreibung',
+          autosize: true,
+          autosizeMinRows: 3,
+          autosizeMaxRows: 8,
+          appearance: 'outline',
+          required: true
+        }
+      }]
+    }];
 
   constructor(storageService: DocumentService, codelistService: CodelistService) {
     super();
+
+    this.fields.push(...this.profileFields);
 
     this.codelistService = codelistService;
     const uvpNumberSelect = new DropdownField( {
@@ -374,15 +398,4 @@ export class UVPProfile extends BaseProfile {
     ]*/;
   }
 
-  getTitle(doc: any): string {
-    return doc.title ? doc.title : '???';
-  }
-
-  getTitleFields(): string[] {
-    return ['title'];
-  }
-
-  applyValidations(form) {
-    console.log('UVP Form validation !?', form);
-  };
 }

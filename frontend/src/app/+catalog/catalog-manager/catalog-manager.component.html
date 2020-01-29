@@ -9,21 +9,17 @@
 
 <div fxLayout="row wrap">
     <mat-spinner *ngIf="showSpinner" diameter="50"></mat-spinner>
-    <div *ngFor="let cat of catalogs | async" fxFlex="25">
-        <div style="padding: 10px;">
-            <mat-card (click)="showCatalogDetail(cat.id)">
-                    <mat-card-header>
-                        <mat-card-title>{{cat.label}}</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <!--<h4 class="card-title">Light card title</h4>-->
-                        <p class="card-text">...</p>
-                    </mat-card-content>
-                    <mat-card-actions>
-                        <div fxFlex></div>
-                        <button mat-button (click)="chooseCatalog(cat.id)">Verwenden</button>
-                    </mat-card-actions>
-            </mat-card>
-        </div>
+    <div *ngFor="let cat of catalogs | async" fxFlex="25" style="padding: 10px;">
+        <mat-card (click)="showCatalogDetail(cat)">
+                <mat-card-title>{{cat.label}}</mat-card-title>
+                <mat-card-content>
+                    Profil: {{cat.type}}
+                    <!--<h4 class="card-title">Light card title</h4>-->
+                </mat-card-content>
+                <mat-card-actions>
+                    <div fxFlex></div>
+                    <button mat-button (click)="chooseCatalog(cat.id, $event)">Verwenden</button>
+                </mat-card-actions>
+        </mat-card>
     </div>
 </div>

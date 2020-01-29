@@ -1,9 +1,14 @@
 package de.ingrid.igeserver.db;
 
 import com.orientechnologies.orient.core.Orient;
-import com.orientechnologies.orient.core.db.*;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.db.ODatabaseType;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
 import com.orientechnologies.orient.core.record.ORecordAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -16,6 +21,7 @@ import com.orientechnologies.orient.server.plugin.OServerPluginManager;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.documenttypes.DocumentType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
+import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.services.MapperService;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
@@ -62,7 +68,10 @@ public class OrientDBDatabase implements DBApi {
 
             try (ODatabaseSession session = acquire("IgeUsers")) {
                 // after creation the database is already connected to and can be used
-                session.getMetadata().getSchema().createClass("Info");
+                OClass info = session.getMetadata().getSchema().createClass("Info");
+                info.createProperty("userId", OType.STRING);
+                info.createProperty("currentCatalogId", OType.STRING);
+                info.createProperty("catalogIds", OType.STRING);
                 session.commit();
             }
 
@@ -71,7 +80,7 @@ public class OrientDBDatabase implements DBApi {
             // openOrientDB();
         }
 
-        initDocumentTypes(getDatabases());
+        // initDocumentTypes(getCatalogSettings());
     }
 
     /**
@@ -81,11 +90,13 @@ public class OrientDBDatabase implements DBApi {
      * <p>
      * Each document type handles creating a class and its special fields.
      */
-    private void initDocumentTypes(String... databases) {
+    private void initDocumentTypes(Catalog... settings) {
 
-        for (String db : databases) {
-            try (ODatabaseSession session = acquire(db)) {
-                documentTypes.forEach(type -> type.initialize(session));
+        for (Catalog dbSetting : settings) {
+            try (ODatabaseSession session = acquire(dbSetting.id)) {
+                documentTypes.stream()
+                        .filter(docType -> docType.usedInProfile(dbSetting.type))
+                        .forEach(type -> type.initialize(session));
             }
         }
 
@@ -340,22 +351,47 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public boolean createDatabase(String name) {
-        server.createDatabase(name, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
-        try (ODatabaseSession session = acquire(name)) {
+    public String createDatabase(Catalog settings) {
+        settings.id = this.generateDBNameFromLabel(settings.name);
 
-            session.getMetadata().getSchema().createClass("Behaviours");
-            session.getMetadata().getSchema().createClass("Info");
+        server.createDatabase(settings.id, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
+        try (ODatabaseSession session = acquire(settings.id)) {
 
-            Map<String, Object> catInfo = new HashMap<>();
-            catInfo.put("name", "New Catalog");
+            initNewDatabase(settings, session);
+            Map<String, Object> catInfo = getMapFromCatalogSettings(settings);
             this.save(DBClass.Info.name(), null, catInfo);
-
         }
 
-        initDocumentTypes(name);
+        initDocumentTypes(settings);
 
-        return true;
+        return settings.id;
+    }
+
+    public void updateDatabase(Catalog settings) {
+        try (ODatabaseSession ignored = acquire(settings.id)) {
+
+            List<Map> list = this.findAll(DBClass.Info);
+            Map<String, Object> map = list.get(0);
+            map.put("name", settings.name);
+            this.save(DBClass.Info.name(), map.get(DB_ID).toString(), map);
+        }
+    }
+
+    private Map<String, Object> getMapFromCatalogSettings(Catalog settings) {
+        Map<String, Object> catInfo = new HashMap<>();
+        catInfo.put("id", settings.id);
+        catInfo.put("name", settings.name);
+        catInfo.put("type", settings.type);
+        return catInfo;
+    }
+
+    private void initNewDatabase(Catalog settings, ODatabaseSession session) {
+        session.getMetadata().getSchema().createClass("Behaviours");
+        session.getMetadata().getSchema().createClass("Info");
+    }
+
+    private String generateDBNameFromLabel(String name) {
+        return name.toLowerCase().replaceAll(" ", "_");
     }
 
     @Override

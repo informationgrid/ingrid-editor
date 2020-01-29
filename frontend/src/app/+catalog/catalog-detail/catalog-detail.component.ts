@@ -7,6 +7,12 @@ import {ConfigService} from '../../services/config/config.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
 import {map, share} from 'rxjs/operators';
+import {Catalog} from '../services/catalog.model';
+
+export interface CatalogDetailResponse {
+  deleted?: boolean;
+  settings?: Catalog
+}
 
 @Component({
   selector: 'ige-catalog-detail',
@@ -21,19 +27,17 @@ export class CatalogDetailComponent implements OnInit {
   catAdmins: Observable<User[]>;
   otherUsers: Observable<User[]>;
 
-  private catalogId: string;
   selectedUsers: string[] = [];
 
   constructor(public dialogRef: MatDialogRef<NewCatalogDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any,
+              @Inject(MAT_DIALOG_DATA) public catalog: Catalog,
               private userService: UserService, private catalogService: CatalogService,
               private configService: ConfigService) {
-    this.catalogId = data;
   }
 
   ngOnInit() {
     this.users = this.userService.getUsers().pipe(share());
-    this.userService.getAssignedUsers(this.data).subscribe( result => {
+    this.userService.getAssignedUsers(this.catalog.id).subscribe(result => {
       this.catAdmins = this.users.pipe(
         map(users => users.filter(user => result.indexOf(user.login) !== -1))
       );
@@ -41,24 +45,27 @@ export class CatalogDetailComponent implements OnInit {
         map(users => users.filter(user => result.indexOf(user.login) === -1))
       );
     });
+
+    this.catalogService.getCatalog(this.catalog.id);
   }
 
   showCatAdmins() {
     this.display = true;
   }
 
-  addUserAsCatAdmin(selectedUser) {
+  submit(selectedUser) {
     console.log('TODO', selectedUser);
 
     // get this user again to update internal user info to update webapp
-    this.catalogService.setCatalogAdmin(this.catalogId, this.selectedUsers)
+    this.catalogService.setCatalogAdmin(this.catalog.id, this.selectedUsers)
       .subscribe(() => this.configService.getCurrentUserInfo());
-    this.dialogRef.close('COMMIT');
+    const response: CatalogDetailResponse = {settings: this.catalog};
+    this.dialogRef.close(response);
   }
 
   deleteCatalog() {
-    this.catalogService.deleteCatalog(this.catalogId).subscribe();
-    this.dialogRef.close();
+    const response: CatalogDetailResponse = {deleted: true};
+    this.dialogRef.close(response);
   }
 
 }

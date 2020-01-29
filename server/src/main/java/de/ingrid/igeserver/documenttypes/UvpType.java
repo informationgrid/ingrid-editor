@@ -6,25 +6,24 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FolderType extends DocumentType {
+public class UvpType extends DocumentType {
 
-    private static Logger log = LogManager.getLogger(FolderType.class);
+    private static Logger log = LogManager.getLogger(UvpType.class);
 
-    private static final String FOLDER = "FOLDER";
+    private static final String UVP_DOC = "UvpDoc";
 
-    private String[] profiles = new String[0];
+    private String[] profiles = new String[]{"uvp"};
 
     @Override
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(FOLDER)) {
-            log.debug("Create class " + FOLDER);
-            OClass addressClass = schema.createClass(FOLDER);
+        if (!schema.existsClass(UVP_DOC)) {
+            log.debug("Create class " + UVP_DOC);
+            OClass addressClass = schema.createClass(UVP_DOC);
             addressClass.createProperty("_id", OType.STRING);
             addressClass.createProperty("_parent", OType.STRING);
         }
@@ -35,4 +34,5 @@ public class FolderType extends DocumentType {
     String[] activeInProfiles() {
         return profiles;
     }
+
 }

@@ -29,72 +29,136 @@ import java.util.Map;
 @RequestMapping(path = "/api")
 public interface UsersApi {
 
+    @RequestMapping(
+            value = "/users/{id}",
+            produces = {"application/json"},
+            method = RequestMethod.POST
+    )
     @ApiOperation(
             value = "Create a new user. If the user already exists an error will be returned.",
             notes = "",
             response = Void.class,
-            tags = {"User",})
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "User was successfully updated", response = Void.class),
-                    @ApiResponse(code = 406, message = "A user with the given login does not exist and cannot be updated", response = Void.class)})
-    @RequestMapping(value = "/users/{id}", produces = {"application/json"}, method = RequestMethod.POST)
+            tags = {"User"})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User was successfully updated", response = Void.class),
+            @ApiResponse(code = 406, message = "A user with the given login does not exist and cannot be updated", response = Void.class)
+    })
     ResponseEntity<Void> createUser(
             @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "Save the user data into the database.", required = true) @Valid @RequestBody User1 user);
 
-    @ApiOperation(value = "Deletes a user.", notes = "The user with the given ID is deleted. If user with a given login does not exists an error will be returned.", response = Void.class, tags = {
-            "User",})
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "User was successfully deleted", response = Void.class),
-            @ApiResponse(code = 406, message = "A user with the given login does not exist and cannot be deleted", response = Void.class)})
 
-    @RequestMapping(value = "/users/{id}", produces = {"application/json"}, method = RequestMethod.DELETE)
+    @RequestMapping(
+            value = "/users/{id}",
+            produces = {"application/json"},
+            method = RequestMethod.DELETE
+    )
+    @ApiOperation(
+            value = "Deletes a user.",
+            notes = "The user with the given ID is deleted. If user with a given login does not exists an error will be returned.",
+            response = Void.class,
+            tags = {"User"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User was successfully deleted", response = Void.class),
+            @ApiResponse(code = 406, message = "A user with the given login does not exist and cannot be deleted", response = Void.class)
+    })
     ResponseEntity<Void> deleteUser(
             @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id);
 
-    @ApiOperation(value = "", notes = "Get the user with the given ID.", response = Void.class, tags = {"User",})
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Returns the user", response = Void.class)})
 
-    @RequestMapping(value = "/users/{id}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(
+            value = "/users/{id}",
+            produces = {"application/json"},
+            method = RequestMethod.GET)
+    @ApiOperation(value = "", notes = "Get the user with the given ID.", response = Void.class, tags = {"User",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Returns the user", response = Void.class)
+    })
     ResponseEntity<User> getUser(
             Principal principal,
             @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id) throws IOException;
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"User",})
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Returns the list of users", response = Void.class)})
 
-    @RequestMapping(value = "/users", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(
+            value = "/users",
+            produces = {"application/json"},
+            method = RequestMethod.GET
+    )
+    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"User",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Returns the list of users", response = Void.class)
+    })
     ResponseEntity<List<User>> list(Principal principal, AccessTokenResponse res) throws IOException, NoPermissionException;
 
+
+    @RequestMapping(
+            value = "/users/{id}",
+            produces = {"application/json"},
+            method = RequestMethod.PUT
+    )
     @ApiOperation(value = "Updates an existing user user. If the user does not exist an error will be returned.", notes = "", response = Void.class, tags = {
             "User",})
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "User was successfully created", response = Void.class),
-            @ApiResponse(code = 406, message = "A user already exists with the given login", response = Void.class)})
-
-    @RequestMapping(value = "/users/{id}", produces = {"application/json"}, method = RequestMethod.PUT)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User was successfully created", response = Void.class),
+            @ApiResponse(code = 406, message = "A user already exists with the given login", response = Void.class)
+    })
     ResponseEntity<Void> updateUser(
             @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "Save the user data into the database.", required = true) @Valid @RequestBody User user);
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = {
-            "User",})
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "", response = Void.class),
-            @ApiResponse(code = 406, message = "", response = Void.class)})
 
-    @RequestMapping(value = "/info/currentUser", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(
+            value = "/info/currentUser",
+            produces = {"application/json"},
+            method = RequestMethod.GET
+    )
+    @ApiOperation(value = "", notes = "", response = Void.class, tags = {
+            "User"
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "", response = Void.class),
+            @ApiResponse(code = 406, message = "", response = Void.class)
+    })
     ResponseEntity<UserInfo> currentUserInfo(Principal principal) throws ApiException;
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = {
-            "User",})
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "", response = Void.class),
-            @ApiResponse(code = 406, message = "", response = Void.class)})
 
-    @RequestMapping(value = "/info/setCatalogAdmin", produces = {"application/json"}, method = RequestMethod.POST)
+    @RequestMapping(
+            value = "/info/setCatalogAdmin",
+            produces = {"application/json"},
+            method = RequestMethod.POST
+    )
+    @ApiOperation(value = "", notes = "", response = Void.class, tags = {
+            "User"
+    })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "", response = Void.class),
+            @ApiResponse(code = 406, message = "", response = Void.class)
+    })
     ResponseEntity<UserInfo> setCatalogAdmin(Principal principal,
                                              @ApiParam(value = "Save the user data into the database.", required = true) @Valid @RequestBody Map info) throws ApiException;
 
-    @RequestMapping(value = "/info/assignedUsers/{id}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(
+            value = "/info/assignedUsers/{id}",
+            produces = {"application/json"},
+            method = RequestMethod.GET
+    )
+    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"User"})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "", response = Void.class)
+    })
     ResponseEntity<List<String>> assignedUsers(Principal principal,
-                                           @ApiParam(value = "The database id to query the assigned users from.", required = true) @PathVariable("id") String id) throws ApiException;
+                                               @ApiParam(value = "The database id to query the assigned users from.", required = true) @PathVariable("id") String id) throws ApiException;
 
+    @RequestMapping(
+            value = "/user/catalog/{catalogId}",
+            method = RequestMethod.POST
+    )
+    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"User"})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "", response = Void.class)
+    })
+    public ResponseEntity<Void> switchCatalog(
+            Principal principal,
+            @ApiParam(value = "The id of the catalog to switch to for the current user", required = true) @PathVariable("catalogId") String catalogId) throws ApiException;
 }

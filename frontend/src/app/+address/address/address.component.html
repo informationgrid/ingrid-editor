@@ -1,23 +1,24 @@
 <div fxLayout="column" fxFill>
     <!-- Toolbar -->
-<!--    <form-toolbar></form-toolbar>-->
+    <!--    <form-toolbar></form-toolbar>-->
 
     <as-split [useTransition]="true" (dragEnd)="rememberSizebarWidth($event)" [gutterSize]="12">
 
         <!-- exchangable sidebar -->
         <as-split-area [size]="sidebarWidth" id="sidebar">
-<!--            <ige-sidebar></ige-sidebar>-->
+            <ige-sidebar></ige-sidebar>
         </as-split-area>
 
         <!-- The form -->
         <as-split-area [size]="100-sidebarWidth" id="form" class="form-content">
 
-            <ng-container>
+            ADDRESS!
+            <!--<ng-container>
                 <form [formGroup]="form">
                     <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
                 </form>
 
-            </ng-container>
+            </ng-container>-->
 
         </as-split-area>
 
