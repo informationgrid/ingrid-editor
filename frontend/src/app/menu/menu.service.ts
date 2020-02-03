@@ -15,7 +15,7 @@ export interface MenuItem {
 export class MenuService {
 
   _menuItems: MenuItem[] = [
-    {name: 'Dashboard', path: '/dashboard'},
+    {name: 'Übersicht', path: '/dashboard'},
     {name: 'Formular', path: '/form'},
     {name: 'Address', path: '/address'},
     // {name: 'Plugins', path: '/plugins', onlyAdmin: true},
