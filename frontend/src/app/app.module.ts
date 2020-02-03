@@ -39,6 +39,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {SectionWrapper} from './formly/wrapper/section-wrapper.component';
 import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component';
 import { MainHeaderComponent } from './main-header/main-header.component';
+import { InfoDialogComponent } from './main-header/info-dialog/info-dialog.component';
 
 registerLocaleData(de);
 
@@ -80,7 +81,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     SearchBarComponent, ConfirmDialogComponent,
     OneColumnWrapperComponent, SectionWrapper,
     SideMenuComponent,
-    MainHeaderComponent],
+    MainHeaderComponent,
+    InfoDialogComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
@@ -160,7 +162,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent],
+  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent, InfoDialogComponent],
   exports: []
 })
 

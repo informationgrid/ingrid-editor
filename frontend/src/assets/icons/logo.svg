@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<svg width="62" height="70" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <style>.st0{fill:#999999;} .st1{fill:#28225B;} .st2{fill:#75B641;} .st3{fill:#4EAD46;} .st4{fill:#0F8737;} .st5{fill:#006532;} .st6{fill:#92C049;} .st7{fill:#B8D16A;}</style>
+ <g class="layer">
+  <title>Layer 1</title>
+  <g id="symbol">
+   <path class="st2" d="m29.7,36.8l0,-33.9l23.7,11.2l-23.7,22.7z" id="svg_1"/>
+   <path class="st3" d="m29.7,36.8l27.5,2l-3.9,-24.7l-23.6,22.7z" id="svg_2"/>
+   <path class="st4" d="m29.7,36.8l27.5,2l-11.3,7.8l-16.2,-9.8z" id="svg_3"/>
+   <path class="st5" d="m29.7,36.8l14.8,23.4l1.5,-13.7l-16.3,-9.7z" id="svg_4"/>
+   <path class="st3" d="m29.7,36.8l0,31.1l14.8,-7.7l-14.8,-23.4z" fill="black" id="svg_5"/>
+   <path class="st2" d="m29.7,36.8l0,31.1l-14.8,-7.7l14.8,-23.4z" id="svg_6"/>
+   <path class="st6" d="m29.7,36.8l-24.7,5l9.9,18.4l14.8,-23.4z" id="svg_7"/>
+   <path class="st7" d="m29.7,36.8l-24.7,5l2.9,-19.7l21.8,14.7z" id="svg_8"/>
+   <path class="st6" d="m29.7,36.8l0,-33.9l-21.7,19.2l21.7,14.7z" fill="black" id="svg_9"/>
+  </g>
+ </g>
+</svg>
