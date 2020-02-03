@@ -18,8 +18,24 @@ h1 {
   color: $ige-primary;
 }
 
+.text-card-title {
+  color: $ige-primary;
+  text-align: center;
+  letter-spacing: 0.74px;
+  padding: 4px 0 12px;
+  line-height: 30px;
+}
+
+.upper-case {
+  text-transform: uppercase;
+}
+
 .hide {
   display: none !important;
+}
+
+.width-100 {
+  width: 100%;
 }
 
 .mat-header-row {

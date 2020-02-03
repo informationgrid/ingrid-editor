@@ -4,52 +4,63 @@
         <div>Guten Morgen! Willkommen zurück.</div>
     </div>
 
-    <div class="search-content">
-        <mat-form-field class="search" appearance="outline">
-            <input matInput placeholder="Daten, Adresse oder ID" aria-label="Search">
-        </mat-form-field>
-        <button mat-flat-button color="primary">
-            <mat-icon>search</mat-icon>
-            Suchen
-        </button>
-    </div>
-
-    <div class="shortcut">
-        <button mat-button (click)="createNewDocument()">
-            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-            Neuer Order
-        </button>
-        <button mat-button (click)="createNewDocument()">
-            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-            Neuer Datensatz
-        </button>
-        <button mat-button (click)="createNewUser()">
-            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-            Datensatz importieren
-        </button>
-        <button mat-button (click)="createNewAddress()">
-            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-            Neue Adresse
-        </button>
-    </div>
-
-
-    <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
-        <div class="info-box" fxLayout="row" fxLayoutGap="36px">
-            <mat-card fxFlex>
-                <mat-card-subtitle>INGRID Datensätze</mat-card-subtitle>
-                <mat-card-content>...</mat-card-content>
-            </mat-card>
-            <mat-card fxFlex>
-                <mat-card-subtitle>Neue Datensätze</mat-card-subtitle>
-                <mat-card-content>...</mat-card-content>
-            </mat-card>
+    <div class="dashboard-content">
+        <div class="search-content">
+            <mat-form-field class="search" appearance="outline">
+                <input matInput placeholder="Daten, Adresse oder ID" aria-label="Search">
+            </mat-form-field>
+            <button mat-flat-button color="primary" class="upper-case">
+                <mat-icon>search</mat-icon>
+                Suchen
+            </button>
         </div>
 
-        <mat-card fxFlex>
-            <mat-card-subtitle>Zuletzt bearbeitet im Katalog</mat-card-subtitle>
-            <mat-card-content>...</mat-card-content>
-        </mat-card>
+        <div class="shortcut">
+            <button mat-button (click)="createNewDocument()">
+                <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+                Neuer Order
+            </button>
+            <button mat-button (click)="createNewDocument()">
+                <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+                Neuer Datensatz
+            </button>
+            <button mat-button (click)="createNewUser()">
+                <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+                Datensatz importieren
+            </button>
+            <button mat-button (click)="createNewAddress()">
+                <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+                Neue Adresse
+            </button>
+        </div>
+
+
+        <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
+            <div class="info-box" fxLayout="row" fxLayoutGap="36px">
+                <mat-card fxFlex>
+                    <mat-card-title class="text-card-title">INGRID Datensätze</mat-card-title>
+                    <mat-card-content>
+                        <mat-divider></mat-divider>
+                        ...
+                    </mat-card-content>
+                </mat-card>
+                <mat-card fxFlex>
+                    <mat-card-title class="text-card-title">Neue Datensätze</mat-card-title>
+                    <mat-card-content>
+                        <mat-divider></mat-divider>
+                        ...
+                    </mat-card-content>
+                </mat-card>
+            </div>
+
+            <mat-card fxFlex>
+                <mat-card-title class="text-card-title">Zuletzt bearbeitet im Katalog</mat-card-title>
+                <mat-card-content>
+                    <mat-divider></mat-divider>
+                    ...
+                </mat-card-content>
+            </mat-card>
+        </div>
     </div>
 
     <!--<div class="chart pull-left">

@@ -1,7 +1,11 @@
+@import "../../variables";
+
 .welcome {
   background-color: #ffffff;
   box-shadow: 0 2px 2px -2px #808080;
-  margin-bottom: 36px;
+  margin-bottom: 32px;
+  color: $ige-primary;
+  letter-spacing: 0.74px;
 
   div {
     font-size: 24px;
@@ -15,11 +19,11 @@
 
 .search-content {
 
+  padding-bottom: 24px;
+
   .search {
     min-width: 500px;
   }
-
-  padding-bottom: 24px;
 
   input {
     text-align: left;
@@ -43,19 +47,36 @@
 
   ::ng-deep .mat-form-field-infix {
     padding: 0 0 0.8em;
+    margin: 0.1em 0 0.1em;
   }
 
   button {
     height: 44px;
+
+    ::ng-deep .mat-button-wrapper {
+      letter-spacing: 1.25px;
+    }
   }
 }
 
 .shortcut {
   padding-bottom: 24px;
+  color: $ige-secondary;
+
+  ::ng-deep .mat-button-wrapper {
+    letter-spacing: 1.25px;
+    text-transform: uppercase;
+
+    .mat-icon {
+      vertical-align: text-bottom;
+    }
+  }
 }
 
 .info-cards {
   padding: 0 36px;
+  max-width: 1024px;
+  margin: 0 auto;
 }
 
 .chart {

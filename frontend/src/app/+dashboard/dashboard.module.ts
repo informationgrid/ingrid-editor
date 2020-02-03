@@ -12,6 +12,7 @@ import {DocumentTileComponent} from './document-tile/document-tile.component';
 import {MatInputModule} from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
 import {FlexModule} from '@angular/flex-layout';
+import {MatDividerModule} from '@angular/material/divider';
 
 const routes: Routes = [
   {
@@ -23,10 +24,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule,
-    MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule
-  ],
+    imports: [
+        RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule,
+        MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule
+    ],
   declarations: [DashboardComponent, ChartistComponent, ActionButtonComponent, DocumentTileComponent],
   exports: [RouterModule]
 })
