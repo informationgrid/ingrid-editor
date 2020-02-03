@@ -4,10 +4,11 @@ import {User} from '../../+user/user';
 import {Observable} from 'rxjs';
 import {CatalogService} from '../services/catalog.service';
 import {ConfigService} from '../../services/config/config.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
 import {map, share} from 'rxjs/operators';
 import {Catalog} from '../services/catalog.model';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
 
 export interface CatalogDetailResponse {
   deleted?: boolean;
@@ -31,6 +32,7 @@ export class CatalogDetailComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<NewCatalogDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public catalog: Catalog,
+              private dialog: MatDialog,
               private userService: UserService, private catalogService: CatalogService,
               private configService: ConfigService) {
   }
@@ -64,8 +66,19 @@ export class CatalogDetailComponent implements OnInit {
   }
 
   deleteCatalog() {
-    const response: CatalogDetailResponse = {deleted: true};
-    this.dialogRef.close(response);
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Katalog löschen',
+        message: 'Wollen Sie den Katalog wirklich löschen?',
+        confirmText: 'Löschen'
+      } as ConfirmDialogData
+    }).afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        const response: CatalogDetailResponse = {deleted: true};
+        this.dialogRef.close(response);
+      }
+    });
+
   }
 
 }

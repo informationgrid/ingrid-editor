@@ -1,12 +1,23 @@
 <h2 mat-dialog-title>{{data.title}}</h2>
 <mat-dialog-content>
-<!--    <p>Der Datensatz wurde geändert. Wollen Sie die Änderungen verwerfen und einen anderen Datensatz laden?</p>-->
     <p>{{data.message}}</p>
     <ul *ngIf="data.list">
         <li *ngFor="let item of data.list">{{item}}</li>
     </ul>
+    <div *ngIf="data.confirmText">
+        <mat-form-field class="width-100">
+            <input matInput
+                   [placeholder]="'Geben Sie das Wort \'' + data.confirmText + '\' ein'"
+                   [(ngModel)]="textConfirmed">
+        </mat-form-field>
+    </div>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
+<mat-dialog-actions>
     <button mat-button mat-dialog-close>Abbrechen</button>
-    <button mat-button [mat-dialog-close]="true">Ok</button>
+    <div fxFlex></div>
+    <button mat-button color="primary"
+            [mat-dialog-close]="true"
+            [disabled]="data.confirmText && textConfirmed !== data.confirmText">
+        Ok
+    </button>
 </mat-dialog-actions>
