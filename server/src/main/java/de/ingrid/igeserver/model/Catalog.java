@@ -5,5 +5,7 @@ public class Catalog {
 
     public String name;
 
+    public String description;
+
     public String type;
 }

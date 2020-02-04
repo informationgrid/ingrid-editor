@@ -373,6 +373,7 @@ public class OrientDBDatabase implements DBApi {
             List<Map> list = this.findAll(DBClass.Info);
             Map<String, Object> map = list.get(0);
             map.put("name", settings.name);
+            map.put("description", settings.description);
             this.save(DBClass.Info.name(), map.get(DB_ID).toString(), map);
         }
     }
@@ -381,6 +382,7 @@ public class OrientDBDatabase implements DBApi {
         Map<String, Object> catInfo = new HashMap<>();
         catInfo.put("id", settings.id);
         catInfo.put("name", settings.name);
+        catInfo.put("description", settings.description);
         catInfo.put("type", settings.type);
         return catInfo;
     }

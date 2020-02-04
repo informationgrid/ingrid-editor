@@ -52,7 +52,7 @@ public class DBUtils {
 
             Map catInfo = getMapFromObject(catInfoJson);
             String currentCatalogId = (String) catInfo.get("currentCatalogId");
-            if (currentCatalogId == null) {
+            if (currentCatalogId == null || currentCatalogId.trim().equals("")) {
                 ArrayList<String> catalogIds = (ArrayList<String>) catInfo.get("catalogIds");
                 if (catalogIds.size() > 0) {
                     currentCatalogId = catalogIds.get(0);
@@ -102,6 +102,7 @@ public class DBUtils {
             Catalog catalog = new Catalog();
             catalog.id = id;
             catalog.name = (String) catalogInfo.get(0).get("name");
+            catalog.description = (String) catalogInfo.get(0).get("description");
             catalog.type = (String) catalogInfo.get(0).get("type");
             return catalog;
         } catch (OStorageException ex) {

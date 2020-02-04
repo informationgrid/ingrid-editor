@@ -23,7 +23,7 @@ export class BehaviourService {
   behaviours: Behaviour[] = [];
   systemBehaviours: Plugin[] = [];
 
-  initialized: Promise<any>;
+  // initialized: Promise<any>;
 
   constructor(private defaultBehaves: BehavioursDefault,
               private eventManager: EventManager,
@@ -36,7 +36,7 @@ export class BehaviourService {
     this.behaviours = defaultBehaves.behaviours;
     this.systemBehaviours = defaultBehaves.systemBehaviours;
 
-    this.initialized = new Promise(resolve => {
+    /*this.initialized = new Promise(resolve => {
       // do nothing if user has no assigned catalogs
       configService.$userInfo.subscribe(info => {
         if (info.assignedCatalogs.length > 0) {
@@ -49,13 +49,13 @@ export class BehaviourService {
                 this.behaviours.push(...p.behaviours);
               }
             });
-            this.loadStoredBehaviours();
+            // this.loadStoredBehaviours();
             resolve();
           });
         }
       });
 
-    });
+    });*/
 
   }
 

@@ -7,6 +7,7 @@ import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-c
 import {CatalogDetailComponent, CatalogDetailResponse} from '../catalog-detail/catalog-detail.component';
 import {Catalog} from '../services/catalog.model';
 import {CatalogQuery} from '../../store/catalog/catalog.query';
+import {settings} from 'cluster';
 
 @Component({
   selector: 'ige-catalog-manager',
@@ -57,17 +58,26 @@ export class CatalogManagerComponent implements OnInit {
   }
 
   showCatalogDetail(catalog: Catalog) {
-    const editCatalogModalRef = this.dialog.open(CatalogDetailComponent, {
-      data: catalog,
+    this.dialog.open(CatalogDetailComponent, {
+      data: {...catalog},
       minWidth: 350
-    });
-    editCatalogModalRef.afterClosed().subscribe((response: CatalogDetailResponse) => {
+    }).afterClosed().subscribe((response: CatalogDetailResponse) => {
       if (response) {
+
         if (response.deleted) {
+
           this.catalogService.deleteCatalog(catalog.id).subscribe();
+
         } else {
+
+          // get this user again to update internal user info to update webapp
+          this.catalogService.setCatalogAdmin(response.settings.id, response.adminUsers)
+            .subscribe(() => this.configService.getCurrentUserInfo());
+
           this.catalogService.updateCatalog(response.settings).subscribe();
+
         }
+
       }
     });
   }

@@ -59,20 +59,6 @@
   }
 }
 
-.shortcut {
-  padding-bottom: 24px;
-  color: $ige-secondary;
-
-  ::ng-deep .mat-button-wrapper {
-    letter-spacing: 1.25px;
-    text-transform: uppercase;
-
-    .mat-icon {
-      vertical-align: text-bottom;
-    }
-  }
-}
-
 .info-cards {
   padding: 0 36px;
   max-width: 1024px;

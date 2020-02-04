@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
@@ -168,6 +169,8 @@ public class UsersApiController implements UsersApi {
             } else {
 
                 catInfo = getMapFromJson(list.get(0));
+                // make list to hashset
+                catInfo.put("catalogIds", new HashSet<>((List)catInfo.get("catalogIds")));
             }
             catalogIds = (HashSet)catInfo.get("catalogIds");
 
@@ -181,9 +184,9 @@ public class UsersApiController implements UsersApi {
                 recordId = (String) catInfo.get("@rid");
             }
             dbService.save(DBApi.DBClass.Info.name(), recordId, catInfo);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (JsonProcessingException e) {
+            log.error("Error processing JSON", e);
+            throw new ApiException(e.getMessage());
         }
 
         return null;

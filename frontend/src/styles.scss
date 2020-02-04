@@ -30,12 +30,30 @@ h1 {
   text-transform: uppercase;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .hide {
   display: none !important;
 }
 
 .width-100 {
   width: 100%;
+}
+
+.shortcut {
+  padding-bottom: 24px;
+  color: $ige-secondary;
+
+  .mat-button-wrapper {
+    letter-spacing: 1.25px;
+    text-transform: uppercase;
+
+    .mat-icon {
+      vertical-align: text-bottom;
+    }
+  }
 }
 
 .mat-header-row {

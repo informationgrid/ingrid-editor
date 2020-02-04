@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -30,7 +31,7 @@ public class MapperService {
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         return mapper.readTree(json);
     }
-    public static Map getMapFromJson(String json) throws Exception {
+    public static Map getMapFromJson(String json) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);

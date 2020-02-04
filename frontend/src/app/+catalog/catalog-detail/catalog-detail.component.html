@@ -1,32 +1,29 @@
 <h2 mat-dialog-title>Katalog bearbeiten</h2>
 <mat-dialog-content>
-    <h4>Allgemeine Angaben</h4>
-    <!--    <mat-divider></mat-divider>-->
 
-    <mat-form-field class="full-width">
+    <mat-form-field class="width-100">
         <input matInput placeholder="Titel" [(ngModel)]="catalog.label">
     </mat-form-field>
+    <mat-form-field class="width-100">
+        <textarea matInput placeholder="Beschreibung" [(ngModel)]="catalog.description"></textarea>
+    </mat-form-field>
 
-    <h4>Administratoren</h4>
-    <mat-selection-list dense>
-        <mat-list-option *ngFor="let admin of catAdmins | async" [value]="admin.login">
-            {{admin.firstName}} {{admin.lastName}} ({{admin.login}})
-        </mat-list-option>
-        <mat-divider></mat-divider>
-    </mat-selection-list>
+    <mat-list dense>
+        <h3 mat-subheader class="inline">Administratoren</h3>
+        <mat-list-item *ngFor="let admin of catAdmins">
+            <h4 mat-line>{{admin.firstName}} {{admin.lastName}} ({{admin.login}})</h4>
+            <button mat-icon-button (click)="removeCatAdmin(admin.login)">
+                <mat-icon mat-list-icon>delete</mat-icon>
+            </button>
+        </mat-list-item>
+    </mat-list>
 
-    <h4>Benutzer</h4>
-    <mat-selection-list #userList [(ngModel)]="selectedUsers" dense>
-        <mat-list-option *ngFor="let user of otherUsers | async" [value]="user.login">
-            {{user.firstName}} {{user.lastName}} ({{user.login}})
-        </mat-list-option>
-        <mat-divider></mat-divider>
-    </mat-selection-list>
+    <button mat-stroked-button (click)="chooseUserForAdmin()" style="float: right;">Hinzufügen</button>
 
 </mat-dialog-content>
 
 <mat-dialog-actions>
     <button mat-button color="warn" (click)="deleteCatalog()">Löschen</button>
     <div fxFlex></div>
-    <button mat-button color="primary" (click)="submit(userList.selectedOptions.selected[0])">Aktualisieren</button>
+    <button mat-button color="primary" (click)="submit()">Aktualisieren</button>
 </mat-dialog-actions>

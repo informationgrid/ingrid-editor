@@ -46,7 +46,7 @@ export class CatalogService {
   }
 
   updateCatalog(catalog: Catalog) {
-    return this.http.put(this.configuration.backendUrl + 'catalogs/' + catalog.id, catalog.prepareForBackend())
+    return this.http.put(this.configuration.backendUrl + 'catalogs/' + catalog.id, Catalog.prepareForBackend(catalog))
       .pipe(tap(() => this.getCatalogs().subscribe()));
   }
 

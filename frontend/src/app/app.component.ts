@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
 
-    this.behaviourService.initialized.then(() => {
+    // this.behaviourService.initialized.then(() => {
       const systemBehaviours = this.behaviourService.systemBehaviours;
       console.log('got system behaviours:', systemBehaviours);
       systemBehaviours
@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
           console.log('register system behaviour: ' + systemBehaviour.name);
           systemBehaviour.register();
         });
-    });
+    // });
   }
 
 }
