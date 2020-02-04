@@ -23,7 +23,7 @@ export class ConfigDataService {
           userId: json.userId,
           currentCatalog: new Catalog(json.currentCatalog),
           catalogProfile: json.catalogProfile
-        };
+        } as UserInfo;
       })
       .catch((e: string) => {
         if (e.indexOf('Cannot GET /sso/login') !== -1) {

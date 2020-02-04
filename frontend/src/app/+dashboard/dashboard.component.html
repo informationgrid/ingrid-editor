@@ -24,7 +24,7 @@
                 <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
                 Neuer Datensatz
             </button>
-            <button mat-button (click)="createNewUser()">
+            <button *featureFlag="'AP3'" mat-button (click)="createNewUser()">
                 <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
                 Datensatz importieren
             </button>

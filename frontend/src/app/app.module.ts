@@ -1,6 +1,6 @@
 import {AppComponent} from './app.component';
 import {registerLocaleData} from '@angular/common';
-import {appRoutingProviders, routing} from './app.router';
+import {routing} from './app.router';
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule} from '@angular/core';
 import {ModalService} from './services/modal/modal.service';
@@ -38,8 +38,8 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {SectionWrapper} from './formly/wrapper/section-wrapper.component';
 import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component';
-import { MainHeaderComponent } from './main-header/main-header.component';
-import { InfoDialogComponent } from './main-header/info-dialog/info-dialog.component';
+import {MainHeaderComponent} from './main-header/main-header.component';
+import {InfoDialogComponent} from './main-header/info-dialog/info-dialog.component';
 
 registerLocaleData(de);
 
@@ -106,7 +106,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     routing, FormsModule
   ],
   providers: [
-    appRoutingProviders,
+    // appRoutingProviders,
     // make sure we are authenticated by keycloak before bootstrap
     {
       provide: APP_INITIALIZER,
@@ -162,8 +162,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent, InfoDialogComponent],
-  exports: []
+  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent, InfoDialogComponent]
 })
 
 export class AppModule {
