@@ -16,7 +16,7 @@ public class AddressType extends DocumentType {
 
     private static final String ADDRESSES = "AddressDoc";
 
-    private String[] profiles = new String[]{"mcloud"};
+    private String[] profiles = new String[0];
 
     @Override
     public void initialize(ODatabaseSession session) {
