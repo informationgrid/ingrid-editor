@@ -351,20 +351,20 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public String createDatabase(Catalog settings) {
-        settings.id = this.generateDBNameFromLabel(settings.name);
+    public String createDatabase(Catalog catalog) {
+        catalog.id = this.generateDBNameFromLabel(catalog.name);
 
-        server.createDatabase(settings.id, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
-        try (ODatabaseSession session = acquire(settings.id)) {
+        server.createDatabase(catalog.id, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
+        try (ODatabaseSession session = acquire(catalog.id)) {
 
-            initNewDatabase(settings, session);
-            Map<String, Object> catInfo = getMapFromCatalogSettings(settings);
+            initNewDatabase(catalog, session);
+            Map<String, Object> catInfo = getMapFromCatalogSettings(catalog);
             this.save(DBClass.Info.name(), null, catInfo);
         }
 
-        initDocumentTypes(settings);
+        initDocumentTypes(catalog);
 
-        return settings.id;
+        return catalog.id;
     }
 
     public void updateDatabase(Catalog settings) {

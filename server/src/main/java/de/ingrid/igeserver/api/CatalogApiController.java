@@ -32,9 +32,9 @@ public class CatalogApiController implements CatalogApi {
     }
 
     @Override
-    public ResponseEntity<Void> createCatalog(Catalog settings) throws ApiException {
-        this.dbService.createDatabase(settings);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> createCatalog(Catalog settings) throws ApiException {
+        String catalogId = this.dbService.createDatabase(settings);
+        return ResponseEntity.ok().body("{ \"catalogId\": \"" + catalogId + "\"}");
     }
 
     @Override

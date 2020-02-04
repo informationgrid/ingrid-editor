@@ -11,3 +11,13 @@
   bottom: 20px;
   right: 20px;
 }
+
+.active {
+  box-shadow: 0 4px 4px 4px rgba(0,0,0,.2), 0 4px 4px 0 rgba(0,0,0,.14), 0 4px 4px 0 rgba(0,0,0,.12) !important;
+  transform: translate3d(0,0,0);
+  transition: background .4s cubic-bezier(.25,.8,.25,1),box-shadow 280ms cubic-bezier(.4,0,.2,1);
+}
+
+.mat-card {
+  margin: 12px;
+}

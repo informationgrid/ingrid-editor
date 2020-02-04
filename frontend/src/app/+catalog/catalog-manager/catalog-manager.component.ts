@@ -7,7 +7,6 @@ import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-c
 import {CatalogDetailComponent, CatalogDetailResponse} from '../catalog-detail/catalog-detail.component';
 import {Catalog} from '../services/catalog.model';
 import {CatalogQuery} from '../../store/catalog/catalog.query';
-import {settings} from 'cluster';
 
 @Component({
   selector: 'ige-catalog-manager',
@@ -23,6 +22,8 @@ export class CatalogManagerComponent implements OnInit {
   trackByCatalogId = (index, item: Catalog) => {
     return item.id;
   };
+  currentCatalog: string;
+  private currentUserID: string;
 
   constructor(private router: Router,
               private catalogService: CatalogService,
@@ -35,20 +36,27 @@ export class CatalogManagerComponent implements OnInit {
     this.catalogService.getCatalogs().subscribe();
 
     this.configService.$userInfo
-      .subscribe(info => this.noAssignedCatalogs = info.assignedCatalogs.length === 0);
+      .subscribe(info => {
+        this.currentUserID = info.userId;
+        this.noAssignedCatalogs = info.assignedCatalogs.length === 0;
+        this.currentCatalog = info.currentCatalog.id;
+      });
   }
 
   showCreateCatalogDialog() {
-    const newCatalogModalRef = this.dialog.open(NewCatalogDialogComponent);
-    newCatalogModalRef.afterClosed().subscribe((catalog: Catalog) => {
-      if (catalog) {
-        console.log('settings are: ', catalog);
-        this.showSpinner = true;
-        this.catalogService.createCatalog(catalog).subscribe(() => {
-          this.showSpinner = false;
-        });
-      }
-    })
+    this.dialog.open(NewCatalogDialogComponent).afterClosed()
+      .subscribe((catalog: Catalog) => {
+        if (catalog) {
+          this.showSpinner = true;
+          this.catalogService.createCatalog(catalog).subscribe((catResponse: any) => {
+            this.catalogService.setCatalogAdmin(catResponse.catalogId, [this.currentUserID])
+              .subscribe(() => {
+                this.configService.getCurrentUserInfo();
+                this.showSpinner = false;
+              });
+          });
+        }
+      });
   }
 
   chooseCatalog(id: string) {

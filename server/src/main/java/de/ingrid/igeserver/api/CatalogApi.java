@@ -41,7 +41,7 @@ public interface CatalogApi {
             method = RequestMethod.POST
     )
     @ApiOperation(value = "", notes = "", response = String.class, tags = {"Catalog"})
-    public ResponseEntity<Void> createCatalog(
+    public ResponseEntity<String> createCatalog(
             @ApiParam(value = "The settings of the catalog to create.", required = true) @RequestBody Catalog settings
     ) throws ApiException;
 
