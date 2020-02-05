@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DashboardComponent} from './dashboard.component';
-import {ChartistComponent} from './chartist.component';
 import {RouterModule, Routes} from '@angular/router';
 import {AuthGuard} from '../security/auth.guard';
 import {ActionButtonComponent} from './action-button/action-button.component';
@@ -14,6 +13,8 @@ import {MatCardModule} from '@angular/material/card';
 import {FlexModule} from '@angular/flex-layout';
 import {MatDividerModule} from '@angular/material/divider';
 import {FeatureFlagDirective} from '../directives/feature-flag.directive';
+import {ChartComponent} from './chart/chart.component';
+import {SharedModule} from '../shared/shared.module';
 
 const routes: Routes = [
   {
@@ -26,10 +27,13 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule,
-    MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule
+    RouterModule.forChild(routes),
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule, SharedModule
   ],
-  declarations: [DashboardComponent, ChartistComponent, ActionButtonComponent, DocumentTileComponent, FeatureFlagDirective]
+  declarations: [DashboardComponent, ActionButtonComponent, DocumentTileComponent, FeatureFlagDirective, ChartComponent]
 })
 export class DashboardModule {
 }

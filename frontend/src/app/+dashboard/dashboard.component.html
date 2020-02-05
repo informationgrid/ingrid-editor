@@ -37,38 +37,18 @@
 
         <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
             <div class="info-box" fxLayout="row" fxLayoutGap="36px">
-                <mat-card fxFlex>
-                    <mat-card-title class="text-card-title">INGRID Datensätze</mat-card-title>
-                    <mat-card-content>
-                        <mat-divider></mat-divider>
-                        ...
-                    </mat-card-content>
-                </mat-card>
-                <mat-card fxFlex>
-                    <mat-card-title class="text-card-title">Neue Datensätze</mat-card-title>
-                    <mat-card-content>
-                        <mat-divider></mat-divider>
-                        ...
-                    </mat-card-content>
-                </mat-card>
+                <ige-card-box fxFlex title="INGRID Datensätze">
+                    <ige-chart [data]="[5, 32]"></ige-chart>
+                </ige-card-box>
+                <ige-card-box fxFlex title="Neue Datensätze">
+                    ...
+                </ige-card-box>
             </div>
 
-            <mat-card fxFlex>
-                <mat-card-title class="text-card-title">Zuletzt bearbeitet im Katalog</mat-card-title>
-                <mat-card-content>
-                    <mat-divider></mat-divider>
-                    ...
-                </mat-card-content>
-            </mat-card>
+            <ige-card-box fxFlex title="Zuletzt bearbeitet im Katalog">
+                ...
+            </ige-card-box>
         </div>
     </div>
-
-    <!--<div class="chart pull-left">
-        &lt;!&ndash;<p-chart type="pie"
-                 [data]="data"
-                 (onDataSelect)="chartClicked($event)"></p-chart>&ndash;&gt;
-        &lt;!&ndash;<x-chartist type="Bar" [data]="data"></x-chartist>&ndash;&gt;
-        <x-chartist type="Pie" [data]="dataPie"></x-chartist>
-    </div>-->
 
 </div>

@@ -4,6 +4,7 @@ import {DocumentService} from '../services/document/document.service';
 import {DocumentAbstract} from '../store/document/document.model';
 import {Observable} from 'rxjs';
 import {ProfileService} from '../services/profile.service';
+import {IChartistData, IPieChartOptions} from 'chartist';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -11,10 +12,15 @@ import {ProfileService} from '../services/profile.service';
 })
 export class DashboardComponent implements OnInit {
 
-  data: any = {};
-  dataPie = {
+  data: IChartistData = {
     series: [30, 70]
   };
+  chartOptions: IPieChartOptions = {
+    donut: true,
+    donutWidth: 10,
+
+  };
+
   datasets;
 
   private configuration: Configuration;

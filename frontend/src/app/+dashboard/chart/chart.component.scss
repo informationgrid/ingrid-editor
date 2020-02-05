@@ -1,0 +1,51 @@
+@import '../../../variables';
+
+.circular-chart {
+  display: block;
+  margin: 10px auto;
+  max-width: 80%;
+  max-height: 190px;
+}
+
+.circular-chart.orange .circle {
+  stroke: $state-working-color;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #333333;
+  stroke-width: 1.5;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+.percentage {
+  fill: #333333;
+  font-size: 0.8em;
+  text-anchor: middle;
+}
+
+.box {
+  text-align: center;
+  color: #333333;
+  font-size: 16px;
+
+  &.working {
+    color: $state-working-color;
+  }
+
+  .count {
+    font-weight: 500;
+    font-size: 24px;
+  }
+}
+
+.wrapper {
+  padding: 0 15%;
+}
+

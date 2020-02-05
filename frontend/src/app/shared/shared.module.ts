@@ -14,11 +14,14 @@ import {MatInputModule} from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { CardBoxComponent } from './card-box/card-box.component';
+import {MatCardModule} from '@angular/material/card';
+import {MatDividerModule} from '@angular/material/divider';
 
 @NgModule({
-    imports: [CommonModule, MatIconModule, MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule, MatSlideToggleModule, FlexModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule],
-  declarations: [TreeComponent, TreeHeaderComponent],
-  exports: [TreeComponent, MatIconModule, MatButtonModule]
+  imports: [CommonModule, MatIconModule, MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule, MatSlideToggleModule, FlexModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule, MatCardModule, MatDividerModule],
+  declarations: [TreeComponent, TreeHeaderComponent, CardBoxComponent],
+  exports: [TreeComponent, MatIconModule, MatButtonModule, CardBoxComponent]
 })
 export class SharedModule {
 }

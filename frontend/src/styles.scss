@@ -283,22 +283,6 @@ sidebar .list-group-item:hover {
   color: #ffffff;
 }
 
-.label-primary {
-  background-color: #87c2da !important;
-}
-
-.working-label::before {
-  background: #ffc107;
-}
-
-.published-label::before {
-  background: #87c2da;
-}
-
-.published-working-label::before {
-  background: linear-gradient(-90deg, #ffc107 50%, #87c2da 50%);
-}
-
 .list-group-item.active {
   background-color: #5999d0;
   border-color: #5999d0;
