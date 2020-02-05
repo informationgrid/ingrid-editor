@@ -124,7 +124,7 @@ public class DocumentService extends MapperService {
         // get database id from doc id  or just query for correct document then we also get the rid!
         Map<String, String> query = new HashMap<>();
         query.put("_id", id);
-        List<String> docInDatabase = dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, false);
+        List<String> docInDatabase = dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, null, null, false);
 
         Map<String, Object> currentDoc;
 
@@ -200,7 +200,7 @@ public class DocumentService extends MapperService {
 
         Map<String, String> query = new HashMap<>();
         query.put(FIELD_ID, id);
-        List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, withReferences);
+        List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, null, null, withReferences);
         try {
             return docs.size() > 0 ? getJsonMap(docs.get(0)) : null;
         } catch (Exception e) {

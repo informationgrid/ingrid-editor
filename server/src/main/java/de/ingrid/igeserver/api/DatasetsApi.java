@@ -93,7 +93,7 @@ public interface DatasetsApi {
             Principal principal,
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
             @ApiParam(value = "Sort by a given field.") @RequestParam(value = "sort", required = false) String sort,
-            @ApiParam(value = "Reverse sort.") @RequestParam(value = "reverse", required = false) String reverse) throws Exception;
+            @ApiParam(value = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") String sortOrder) throws Exception;
 
     @ApiOperation(value = "A complete dataset", notes = "Retrieve a dataset by a given ID.", response = InlineResponse200.class, tags = {"Datasets",})
     @ApiResponses(value = {

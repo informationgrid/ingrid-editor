@@ -11,6 +11,9 @@ import {TreeStore} from '../../store/tree/tree.store';
 import {arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
 import {ProfileService} from "../profile.service";
+import {SessionStore} from '../../store/session.store';
+import {HttpClient} from '@angular/common/http';
+import {ConfigService, Configuration} from '../config/config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,12 +27,16 @@ export class DocumentService {
   afterProfileSwitch$ = new Subject<any>();
   datasetsChanged$ = new Subject<UpdateDatasetInfo>();
   publishState$ = new BehaviorSubject<boolean>(false);
+  private configuration: Configuration;
 
-  constructor(private modalService: ModalService,
+  constructor(private http: HttpClient, configService: ConfigService,
+              private modalService: ModalService,
               private dataService: DocumentDataService,
               private messageService: MessageService,
               private profileService: ProfileService,
+              private sessionStore: SessionStore,
               private treeStore: TreeStore) {
+    this.configuration = configService.getConfiguration();
   }
 
   find(query: string): Observable<DocumentAbstract[]> {
@@ -43,10 +50,11 @@ export class DocumentService {
   }
 
   findRecent(): void {
-    // TODO: use general sort filter
-    this.dataService.find(null)
+    this.http.get<any[]>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC`)
       .pipe(
-        map(json => json.filter(item => item && item._profile !== 'FOLDER'))
+        map(docs => this.mapToDocumentAbstracts(docs)),
+        map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        tap(docs => this.sessionStore.update({latestDocuments: docs}))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       ).subscribe();
   }
@@ -68,7 +76,7 @@ export class DocumentService {
       );
   }
 
-  private mapToDocumentAbstracts(docs: IgeDocument[], parentId: string): DocumentAbstract[] {
+  private mapToDocumentAbstracts(docs: IgeDocument[], parentId?: string): DocumentAbstract[] {
     return docs.map(doc => {
       return {
         id: doc._id,
@@ -77,7 +85,8 @@ export class DocumentService {
         _state: doc._state,
         _hasChildren: doc._hasChildren,
         _parent: parentId,
-        _profile: doc._profile
+        _profile: doc._profile,
+        _modified: doc._modified
       };
     });
   }

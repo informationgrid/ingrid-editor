@@ -15,6 +15,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {FeatureFlagDirective} from '../directives/feature-flag.directive';
 import {ChartComponent} from './chart/chart.component';
 import {SharedModule} from '../shared/shared.module';
+import {MatListModule} from '@angular/material/list';
 
 const routes: Routes = [
   {
@@ -26,13 +27,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes),
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule, SharedModule
-  ],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule, SharedModule, MatListModule
+    ],
   declarations: [DashboardComponent, ActionButtonComponent, DocumentTileComponent, FeatureFlagDirective, ChartComponent]
 })
 export class DashboardModule {

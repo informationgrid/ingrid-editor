@@ -1,17 +1,15 @@
 <div fxFlex fxLayout="column">
-    <svg viewBox="0 0 36 36" class="circular-chart orange">
-        <path class="circle-bg"
-              d="M18 2.0845
-          a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"
-        />
-        <path class="circle"
-              attr.stroke-dasharray="{{percentage}}, 100"
-              d="M18 2.0845
-          a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"
-        />
-        <text x="18" y="22" class="percentage">{{total}}</text>
+    <svg viewBox="0 0 160 160" class="circular-chart">
+
+        <circle *ngFor="let item of data; let i = index;" cx="80" cy="80"
+                attr.r="{{radius}}"
+                attr.stroke="{{colors[i]}}"
+                attr.stroke-width="{{strokeWidth}}"
+                attr.stroke-dasharray="{{adjustedCircumference()}}"
+                attr.stroke-dashoffset="{{calculateStrokeDashOffset(item)}}"
+                attr.transform="rotate({{returnCircleTransformValue(i)}}, 80, 80)" fill="transparent"></circle>
+
+        <text x="80" y="95" class="percentage">{{total}}</text>
     </svg>
 
     <div class="wrapper" fxFlex fxLayout="row" fxLayoutAlign="space-between">

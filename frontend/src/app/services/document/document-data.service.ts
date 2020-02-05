@@ -3,6 +3,7 @@ import {ConfigService, Configuration} from "../config/config.service";
 import {IgeDocument} from "../../models/ige-document";
 import {Observable} from "rxjs";
 import {Injectable} from "@angular/core";
+import {DocumentAbstract} from '../../store/document/document.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,9 +25,9 @@ export class DocumentDataService {
     });
   }
 
-  find(query: string): Observable<IgeDocument[]> {
-    return this.http.get<IgeDocument[]>(
-      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&fields=_id,_profile,_state,title`);
+  find(query: string): Observable<DocumentAbstract[]> {
+    return this.http.get<DocumentAbstract[]>(
+      `${this.configuration.backendUrl}datasets?query=${query}&sort=title`);
   }
 
   getChildren(parentId: string): Observable<any[]> {

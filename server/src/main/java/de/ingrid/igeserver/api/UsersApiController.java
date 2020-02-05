@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.id.ORecordId;
 import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.OrientDBDatabase;
 import de.ingrid.igeserver.db.QueryType;
@@ -157,7 +156,7 @@ public class UsersApiController implements UsersApi {
             String userId = userIds.get(0);
             Map<String, String> query = new HashMap<>();
             query.put("userId", userId);
-            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, false);
+            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, null, null, false);
             boolean isNewEntry = list.size() == 0;
 
             Set<String> catalogIds;
@@ -199,7 +198,7 @@ public class UsersApiController implements UsersApi {
         try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
             Map<String, String> query = new HashMap<>();
             query.put("catalogIds", id);
-            List<String> infos = this.dbService.findAll("Info", query, QueryType.contains, false);
+            List<String> infos = this.dbService.findAll("Info", query, QueryType.contains, null, null, false);
             for (String entry : infos) {
                 JsonNode map = MapperService.getJsonMap(entry);
                 result.add(map.get("userId").asText());
@@ -218,7 +217,7 @@ public class UsersApiController implements UsersApi {
         try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
             Map<String, String> query = new HashMap<>();
             query.put("userId", userId);
-            List<String> info = dbService.findAll("Info", query, QueryType.exact, false);
+            List<String> info = dbService.findAll("Info", query, QueryType.exact, null, null, false);
             if (info.size() != 1) {
                 String message = "User is not defined or more than once in IgeUsers-table: " + info.size();
                 log.error(message);

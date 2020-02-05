@@ -390,6 +390,10 @@ ige-root .mat-drawer-container {
   transition: all .2s linear;
 }
 
+.mat-icon svg path {
+  fill: #333333;
+}
+
 #form {
   .label-wrapper + * {
     flex: 1;

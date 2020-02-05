@@ -149,7 +149,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public List<String> findAll(String type, Map<String, String> query, QueryType queryType, boolean resolveReferences) {
+    public List<String> findAll(String type, Map<String, String> query, QueryType queryType, String sortField, String sortOrder, boolean resolveReferences) {
         String queryString;
         if (query == null || query.isEmpty()) {
             queryString = "SELECT * FROM " + type;
@@ -180,6 +180,10 @@ public class OrientDBDatabase implements DBApi {
                 queryString = "SELECT * FROM " + type + " WHERE (" + String.join(" or ", where) + ")";
             } else {
                 queryString = "SELECT FROM (SELECT EXPAND( $c ) LET $a = ( SELECT FROM AddressDoc ), $b = ( SELECT FROM mCloudDoc ), $c = UNIONALL( $a, $b )) WHERE (" + String.join(" or ", where) + ")";
+            }
+
+            if (sortField != null) {
+                queryString += "ORDER BY " + sortField + " " + sortOrder;
             }
             log.debug("Query-String: " + queryString);
         }

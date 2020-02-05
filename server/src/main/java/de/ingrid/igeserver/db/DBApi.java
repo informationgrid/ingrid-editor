@@ -29,7 +29,7 @@ public interface DBApi {
      * Get all documents of a certain type that matches a given query.
      * @return
      */
-    public List<String> findAll(String type, Map<String, String> query, QueryType queryType, boolean resolveReferences);
+    public List<String> findAll(String type, Map<String, String> query, QueryType queryType, String sortField, String sortOrder, boolean resolveReferences);
 
     /**
      * Save a document with a given ID.

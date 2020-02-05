@@ -5,6 +5,7 @@ import {DocumentAbstract} from '../store/document/document.model';
 import {Observable} from 'rxjs';
 import {ProfileService} from '../services/profile.service';
 import {IChartistData, IPieChartOptions} from 'chartist';
+import {SessionQuery} from '../store/session.query';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -29,13 +30,14 @@ export class DashboardComponent implements OnInit {
 
   constructor(configService: ConfigService,
               private docService: DocumentService,
+              private sessionQuery: SessionQuery,
               private profileService: ProfileService) {
     this.configuration = configService.getConfiguration();
   }
 
   ngOnInit() {
     // this.allDocuments$ = this.docQuery.selectAll();
-    // this.recentDocs$ = this.docQuery.recentDocuments$;
+    this.recentDocs$ = this.sessionQuery.latestDocuments$;
     this.fetchStatistic();
     this.fetchData();
   }

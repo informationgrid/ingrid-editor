@@ -38,7 +38,7 @@
         <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
             <div class="info-box" fxLayout="row" fxLayoutGap="36px">
                 <ige-card-box fxFlex title="INGRID Datensätze">
-                    <ige-chart [data]="[5, 32]"></ige-chart>
+                    <ige-chart [data]="[5, 32]" [colors]="['#F27100', '#333333']"></ige-chart>
                 </ige-card-box>
                 <ige-card-box fxFlex title="Neue Datensätze">
                     ...
@@ -46,7 +46,18 @@
             </div>
 
             <ige-card-box fxFlex title="Zuletzt bearbeitet im Katalog">
-                ...
+                <mat-list style="padding-top: 0">
+                    <mat-list-item *ngFor="let doc of recentDocs$ | async">
+
+                        <div style="line-height: 48px;">
+                            <mat-icon [svgIcon]="doc.icon" style="padding-top: 12px;"></mat-icon>
+                            <span>{{doc.title}}</span>
+                            <span>({{doc._modified | date}})</span>
+                        </div>
+
+                        <mat-divider></mat-divider>
+                    </mat-list-item>
+                </mat-list>
             </ige-card-box>
         </div>
     </div>

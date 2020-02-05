@@ -38,7 +38,7 @@ public class DBUtils {
 
         // TODO: use cache!
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, false);
+            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, null, null, false);
 
             if (list.size() == 0) {
                 String msg = "The user does not seem to be assigned to any database: " + userId;
@@ -71,7 +71,7 @@ public class DBUtils {
 
         // TODO: use cache!
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, false);
+            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, null, null, false);
 
             if (list.size() == 0) {
                 String msg = "The user does not seem to be assigned to any database: " + userId;
@@ -167,7 +167,7 @@ public class DBUtils {
         query.put("userId", userId);
 
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, false);
+            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, null, null, false);
 
 
             ObjectNode catUserRef = (ObjectNode) MapperService.getJsonMap(list.get(0));

@@ -177,7 +177,7 @@ public class DatasetsApiController implements DatasetsApi {
             String recordId = null;
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
-            List<String> docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, false);
+            List<String> docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, null, null, false);
             if (docWrappers.size() != 1) {
                 log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docWrappers.size() + ")");
                 throw new RuntimeException("No unique document wrapper found");
@@ -346,7 +346,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             Map<String, String> queryMap = new HashMap<>();
             queryMap.put("_parent", parentId);
-            docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.exact, true);
+            docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.exact, null, null, true);
 
             String childDocs = docs.stream()
                     .map(doc -> {
@@ -370,11 +370,7 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
-    public ResponseEntity<String> find(
-            Principal principal,
-            @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "reverse", required = false) String reverse) throws Exception {
+    public ResponseEntity<String> find(Principal principal, String query, String sort, String sortOrder) throws Exception {
 
         List<String> docs = null;
         List<String> mappedDocs = new ArrayList<>();
@@ -385,7 +381,7 @@ public class DatasetsApiController implements DatasetsApi {
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map<String, String> queryMap = new HashMap<>();
             queryMap.put("title", query);
-            docs = this.dbService.findAll("*", queryMap, QueryType.like, true);
+            docs = this.dbService.findAll("*", queryMap, QueryType.like, sort, sortOrder, true);
 
             String preparedDocs = docs.stream()
                     .map(doc -> {
@@ -434,7 +430,7 @@ public class DatasetsApiController implements DatasetsApi {
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
-            List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, true);
+            List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, null, null, true);
 
             if (docs.size() > 0) {
                 Map doc = getMapFromObject(docs.get(0));

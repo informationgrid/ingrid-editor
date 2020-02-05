@@ -9,7 +9,7 @@ export interface DocumentAbstract {
   _profile: string;
   _parent: string;
   _hasChildren: boolean;
-
+  _modified: any;
 }
 
 /**
