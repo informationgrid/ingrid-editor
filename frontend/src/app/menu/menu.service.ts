@@ -2,11 +2,13 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {BehaviorSubject} from 'rxjs';
 import {SessionStore} from '../store/session.store';
+import {ConfigService} from '../services/config/config.service';
 
 export interface MenuItem {
   name: string;
   path: string;
   onlyAdmin?: boolean;
+  featureFlag?: string;
 }
 
 @Injectable({
@@ -20,7 +22,7 @@ export class MenuService {
     {name: 'Address', path: '/address'},
     // {name: 'Plugins', path: '/plugins', onlyAdmin: true},
     // {name: 'Fields', path: '/fields'}
-    {name: 'Benutzer', path: '/user', onlyAdmin: true},
+    {name: 'Benutzer', path: '/user', onlyAdmin: true, featureFlag: 'AP3'},
     {name: 'Im-/Export', path: '/importExport', onlyAdmin: true},
     {name: 'Katalogverwaltung', path: '/catalogs', onlyAdmin: true}
     // {name: 'Demo', path: '/demo'}
@@ -28,17 +30,11 @@ export class MenuService {
 
   menu$ = new BehaviorSubject<MenuItem[]>(this._menuItems);
 
-  constructor(private router: Router, private sessionStore: SessionStore) {
+  constructor(private router: Router, private sessionStore: SessionStore, private config: ConfigService) {
   }
 
   get menuItems(): MenuItem[] {
-    const validPages = []; // this.authService.getAccessiblePages();
-
-    if (validPages.length === 0) {
-      return this._menuItems;
-    } else {
-      return this._menuItems.filter(item => validPages.indexOf(item.path) !== -1);
-    }
+    return this._menuItems.filter(item => !item.featureFlag || this.config.hasFlags(item.featureFlag));
   }
 
   addMenuItem(label: string, path: string, component: any) {

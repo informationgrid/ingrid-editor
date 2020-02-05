@@ -30,13 +30,11 @@
             "styles": [
               "node_modules/material-design-icons-iconfont/dist/material-design-icons.css",
               "node_modules/leaflet/dist/leaflet.css",
-              "node_modules/chartist/dist/chartist.css",
               "src/material.css",
               "src/styles.scss",
               "src/theme.scss"
             ],
             "scripts": [
-              "node_modules/chartist/dist/chartist.js"
             ]
           },
           "configurations": {
