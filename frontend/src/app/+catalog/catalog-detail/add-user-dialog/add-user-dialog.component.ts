@@ -12,7 +12,7 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 })
 export class AddUserDialogComponent implements OnInit {
 
-  private users: Observable<User[]>;
+  users: Observable<User[]>;
 
   constructor(private userService: UserService, @Inject( MAT_DIALOG_DATA ) public data: any) {
 

@@ -46,7 +46,7 @@
             </div>
 
             <ige-card-box fxFlex title="Zuletzt bearbeitet im Katalog">
-                <mat-list style="padding-top: 0">
+                <mat-list style="padding-top: 0" dense>
                     <mat-list-item *ngFor="let doc of recentDocs$ | async">
                         <mat-icon matListIcon [svgIcon]="doc.icon"></mat-icon>
 

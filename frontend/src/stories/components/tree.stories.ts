@@ -55,7 +55,8 @@ store.set([{
   _profile: 'FOLDER',
   id: '1',
   _state: 'W',
-  icon: ''
+  icon: '',
+  _modified: null
 }]);
 
 storiesOf('Tree', module)/*.add('empty', () => ({
