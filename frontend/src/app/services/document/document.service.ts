@@ -52,8 +52,9 @@ export class DocumentService {
   findRecent(): void {
     this.http.get<any[]>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC`)
       .pipe(
-        map(docs => this.mapToDocumentAbstracts(docs)),
         map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        map(json => json.slice(0, 5)),
+        map(docs => this.mapToDocumentAbstracts(docs)),
         tap(docs => this.sessionStore.update({latestDocuments: docs}))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       ).subscribe();

@@ -1,5 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 
+/**
+ * This functionality was much inspired by https://css-tricks.com/building-a-donut-chart-with-vue-and-svg/
+ * and this codepen: https://codepen.io/soluhmin/pen/rqrBWK?editors=1010
+ */
 @Component({
   selector: 'ige-chart',
   templateUrl: './chart.component.html',

@@ -65,3 +65,15 @@
   margin: 0 auto;
 }
 
+// if we have more than 5 datasets to show then we can introduce a scrollbar
+/*mat-list {
+  flex-grow: 1;
+  overflow: auto;
+  max-height: 300px;
+}*/
+
+.mat-list-item .mat-divider-horizontal {
+  left: 10px;
+  right: 10px;
+  width: auto;
+}
