@@ -5,9 +5,11 @@
     "types": ["node"],
     "allowSyntheticDefaultImports": true
   },
-  "exclude": [
-    "test.ts",
-    "**/*.spec.ts",
-    "**/browser.component.ts"
+  "files": [
+    "main.ts",
+    "polyfills.ts",
+    "profiles/pack-lgv.ts",
+    "profiles/pack-mcloud.ts",
+    "profiles/pack-uvp.ts"
   ]
 }

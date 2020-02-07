@@ -20,7 +20,7 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
   @Output() reload = new EventEmitter();
   @Output() open = new EventEmitter();
 
-  @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
 
   searchValue = new FormControl();
   searchResult = new Subject<TreeNode[]>();
