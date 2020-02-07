@@ -114,7 +114,7 @@ export class PublishPlugin extends Plugin {
    */
   private addBehaviour() {
     this.treeQuery.openedDocument$.subscribe(loadedDocument => {
-      this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null);
+      this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null && loadedDocument._profile !== 'FOLDER');
       this.formToolbarService.setButtonState('toolBtnRevert', loadedDocument !== null && loadedDocument._state === 'PW');
     });
 

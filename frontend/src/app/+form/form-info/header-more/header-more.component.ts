@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {DocumentState, IgeDocument} from '../../../models/ige-document';
 import {animate, style, transition, trigger} from '@angular/animations';
 
@@ -17,7 +17,8 @@ import {animate, style, transition, trigger} from '@angular/animations';
         animate('300ms', style({height: 0, opacity: 0}))
       ])
     ])
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderMoreComponent implements OnInit {
 

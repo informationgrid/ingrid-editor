@@ -15,8 +15,6 @@
 
     mat-icon {
       line-height: 32px;
-      margin-left: 4px;
-      margin-top: -4px;
       color: #f27100;
       font-size: 16px;
     }
@@ -24,6 +22,11 @@
 
   .label {
     color: $ige-primary;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.5;
+    }
   }
 
   .more, .menu {
@@ -47,6 +50,16 @@
 
   ::ng-deep .mat-form-field-outline > div {
     background-color: #ffffff;
+  }
+
+  ::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  ::ng-deep .mat-form-field-subscript-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   span {

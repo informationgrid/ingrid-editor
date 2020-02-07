@@ -1,10 +1,22 @@
-import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {FormGroup} from '@angular/forms';
+import {ProfileService} from '../../../services/profile.service';
 
 @Component({
   selector: 'ige-header-title-row',
   templateUrl: './header-title-row.component.html',
-  styleUrls: ['./header-title-row.component.scss']
+  styleUrls: ['./header-title-row.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderTitleRowComponent implements OnInit {
 
@@ -17,7 +29,7 @@ export class HeaderTitleRowComponent implements OnInit {
   showTitleInput = false;
   showMore = false;
 
-  constructor(private cdRef: ChangeDetectorRef) {
+  constructor(private cdRef: ChangeDetectorRef, private profileService: ProfileService) {
   }
 
   ngOnInit() {
@@ -32,5 +44,10 @@ export class HeaderTitleRowComponent implements OnInit {
   toggleMoreInfo() {
     this.showMore = !this.showMore;
     this.toggleMore.next(this.showMore);
+  }
+
+  getIcon() {
+    console.log('.');
+    return this.profileService.getProfileIcon(this.form.get('_profile').value);
   }
 }

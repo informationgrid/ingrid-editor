@@ -1,5 +1,5 @@
 <div *ngIf="showMore" [@slideDown] class="more-info">
-    <div fxLayout="row">
+    <div fxLayout="row" *ngIf="model._profile !== 'FOLDER'">
         <div>Status</div>
         <div>{{getState(model._state)}}</div>
     </div>

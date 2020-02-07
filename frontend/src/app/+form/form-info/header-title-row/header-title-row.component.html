@@ -1,6 +1,6 @@
 <div class="title">
     <div class="document-type">
-        <mat-icon>brightness_5</mat-icon>
+        <mat-icon [svgIcon]="getIcon()"></mat-icon>
     </div>
 
     <span *ngIf="!showTitleInput" class="label" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
