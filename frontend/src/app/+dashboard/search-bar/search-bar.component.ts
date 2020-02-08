@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
-import {Observable} from "rxjs";
-import {FormControl} from "@angular/forms";
+import {Observable} from 'rxjs';
+import {FormControl} from '@angular/forms';
 
 // see: https://medium.com/@uditgogoi1/search-bar-with-autocomplete-using-angular-5-and-angular-material-c5a77a429da7
 @Component({
@@ -31,14 +31,14 @@ export class SearchBarComponent implements OnInit {
   }
 
   private autoCompleteExpenseList(input) {
-    let categoryList = this.filterCategoryList(input)
+    const categoryList = this.filterCategoryList(input)
     this.autoCompleteList = categoryList;
   }
 
   // this is where filtering the data happens according to you typed value
   filterCategoryList(val) {
-    var categoryList = [];
-    if (typeof val != "string") {
+    const categoryList = [];
+    if (typeof val != 'string') {
       return [];
     }
     if (val === '' || val === null) {
@@ -48,7 +48,7 @@ export class SearchBarComponent implements OnInit {
 
   // after you clicked an autosuggest option, this function will show the field you want to show in input
   displayFn(post) {
-    let k = post ? post.title : post;
+    const k = post ? post.title : post;
     return k;
   }
 

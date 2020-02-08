@@ -19,11 +19,11 @@ export class CatalogManagerComponent implements OnInit {
 
   noAssignedCatalogs = false;
   showSpinner = false;
+  currentCatalog: string;
+  private currentUserID: string;
   trackByCatalogId = (index, item: Catalog) => {
     return item.id;
   };
-  currentCatalog: string;
-  private currentUserID: string;
 
   constructor(private router: Router,
               private catalogService: CatalogService,

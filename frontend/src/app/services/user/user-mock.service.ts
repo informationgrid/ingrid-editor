@@ -1,5 +1,5 @@
-import {Observable, of} from "rxjs";
-import {User} from "../../+user/user";
+import {Observable, of} from 'rxjs';
+import {User} from '../../+user/user';
 
 export class UserMockService {
 

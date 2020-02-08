@@ -22,7 +22,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {UpdateType} from '../../../models/update-type.enum';
 import {createDocument, DocumentAbstract} from '../../../store/document/document.model';
 import {delay} from 'rxjs/operators';
-import {DynamicDatabase} from "./dynamic.database";
+import {DynamicDatabase} from './dynamic.database';
 
 describe('TreeComponent', () => {
 

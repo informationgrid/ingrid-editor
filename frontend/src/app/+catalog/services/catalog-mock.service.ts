@@ -1,4 +1,4 @@
-import {Observable, of} from "rxjs";
+import {Observable, of} from 'rxjs';
 import {Catalog} from './catalog.model';
 
 export class CatalogMockService {

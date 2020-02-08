@@ -6,7 +6,7 @@ import {AngularSplitModule} from 'angular-split';
 import {ReactiveFormsModule} from '@angular/forms';
 import {FormlyModule} from '@ngx-formly/core';
 import {FlexModule} from '@angular/flex-layout';
-import {IgeFormModule} from "../+form/ige-form.module";
+import {IgeFormModule} from '../+form/ige-form.module';
 
 @NgModule({
   declarations: [AddressComponent],

@@ -320,14 +320,14 @@ export class ProfileAddress extends BaseProfile {
 
   private getCodelistForSelect(codelistId: number) {
 
-    let codelist = this.codelistService.byId(codelistId + '')
+    const codelist = this.codelistService.byId(codelistId + '')
       .then(codelist => {
-        console.log("codelist:", codelist);
+        console.log('codelist:', codelist);
         return codelist
           .map(cl => {
             return {label: cl.value, value: cl.id}
           })
-          .sort( (a,b) => a.label.localeCompare(b.label));
+          .sort( (a, b) => a.label.localeCompare(b.label));
       });
     return from(codelist);
   }

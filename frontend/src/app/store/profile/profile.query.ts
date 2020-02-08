@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {QueryEntity} from '@datorama/akita';
-import {ProfileState, ProfileStore} from "./profile.store";
+import {ProfileState, ProfileStore} from './profile.store';
 import {ProfileAbstract} from './profile.model';
 
 @Injectable({

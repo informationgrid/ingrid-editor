@@ -1,5 +1,5 @@
-import {Observable, of} from "rxjs";
-import {Role} from "../../models/user-role";
+import {Observable, of} from 'rxjs';
+import {Role} from '../../models/user-role';
 
 export class RoleMockService {
 

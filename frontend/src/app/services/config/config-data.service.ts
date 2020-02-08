@@ -1,4 +1,4 @@
-import {Configuration, UserInfo} from "./config.service";
+import {Configuration, UserInfo} from './config.service';
 import {Catalog} from '../../+catalog/services/catalog.model';
 
 export class ConfigDataService {

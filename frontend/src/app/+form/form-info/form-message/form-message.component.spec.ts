@@ -1,6 +1,5 @@
 import {FormMessageComponent, FormMessageType} from './form-message.component';
-import {createComponentFactory, Spectator, SpyObject} from '@ngneat/spectator';
-import {DynamicDatabase} from '../../sidebars/tree/tree.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {MatIconModule} from '@angular/material/icon';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {MessageService} from '../../../services/message.service';
@@ -20,7 +19,7 @@ describe('FormMessageComponent', () => {
   };
 
   let spectator: Spectator<FormMessageComponent>;
-  let db: SpyObject<DynamicDatabase>;
+  // const db: SpyObject<DynamicDatabase>;
   const createHost = createComponentFactory({
     component: FormMessageComponent,
     imports: [MatIconModule, MatButtonModule, FlexLayoutModule]

@@ -11,7 +11,7 @@ import {MessageService} from '../../../services/message.service';
 import {FormularService} from '../../formular.service';
 
 @Injectable()
-export class NewDocumentPlugin extends Plugin implements OnDestroy{
+export class NewDocumentPlugin extends Plugin implements OnDestroy {
   id = 'plugin.newDoc';
   _name = 'Neues Dokument Plugin';
   defaultActive = true;

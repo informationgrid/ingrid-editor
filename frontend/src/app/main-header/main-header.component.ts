@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from "../services/ApiService";
-import {ConfigService} from "../services/config/config.service";
-import {NavigationEnd, Router} from "@angular/router";
+import {ApiService} from '../services/ApiService';
+import {ConfigService} from '../services/config/config.service';
+import {NavigationEnd, Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {InfoDialogComponent} from './info-dialog/info-dialog.component';
 

@@ -1,5 +1,5 @@
-import {Observable, of} from "rxjs";
-import {Behaviour} from "../../+behaviours/behaviours";
+import {Observable, of} from 'rxjs';
+import {Behaviour} from '../../+behaviours/behaviours';
 
 export class BehaviorMockService {
 

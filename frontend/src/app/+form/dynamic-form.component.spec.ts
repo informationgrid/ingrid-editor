@@ -30,7 +30,7 @@ describe('Dynamic Form', () => {
 
   it('should return the form value on demand', () => {
 
-    let fc = new FormControl('23');
+    const fc = new FormControl('23');
     comp.form = new FormGroup({test: fc});
 
     // expect(fService.requestFormValues()).toBe(1);

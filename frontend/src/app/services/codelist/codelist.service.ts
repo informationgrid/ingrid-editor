@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ErrorService} from '../error.service';
-import {CodelistDataService} from "./codelist-data.service";
+import {CodelistDataService} from './codelist-data.service';
 
 export interface Codelist {
   id: string;

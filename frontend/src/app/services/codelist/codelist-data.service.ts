@@ -1,7 +1,7 @@
-import {Observable} from "rxjs";
-import {HttpClient} from "@angular/common/http";
-import {ConfigService, Configuration} from "../config/config.service";
-import {Injectable} from "@angular/core";
+import {Observable} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {ConfigService, Configuration} from '../config/config.service';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'

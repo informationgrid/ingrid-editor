@@ -55,7 +55,7 @@ export class FormMessageComponent implements OnInit, OnDestroy {
     }
   }
 
-  getIconClass(severity: "info" | "error") {
+  getIconClass(severity: 'info' | 'error') {
     switch (severity) {
       case 'info': return 'done';
       case 'error': return 'warning';

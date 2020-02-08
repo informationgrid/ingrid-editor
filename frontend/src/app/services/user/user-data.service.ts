@@ -1,9 +1,9 @@
-import {Observable} from "rxjs";
-import {User} from "../../+user/user";
-import {map} from "rxjs/operators";
-import {ConfigService, Configuration} from "../config/config.service";
-import {HttpClient} from "@angular/common/http";
-import {Injectable} from "@angular/core";
+import {Observable} from 'rxjs';
+import {User} from '../../+user/user';
+import {map} from 'rxjs/operators';
+import {ConfigService, Configuration} from '../config/config.service';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'

@@ -1,6 +1,4 @@
-import {FormToolbarComponent} from "./form-toolbar.component";
-import {createComponentFactory, Spectator, SpyObject} from '@ngneat/spectator';
-import {DynamicDatabase} from '../sidebars/tree/tree.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -9,10 +7,11 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {FormToolbarService, ToolbarItem} from './form-toolbar.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {FormToolbarComponent} from './form-toolbar.component';
 
 let spectator: Spectator<FormToolbarComponent>;
 let service: FormToolbarService;
-let db: SpyObject<DynamicDatabase>;
+// let db: SpyObject<DynamicDatabase>;
 const createHost = createComponentFactory({
   component: FormToolbarComponent,
   imports: [MatIconModule, MatDividerModule, MatButtonModule, MatMenuModule, MatToolbarModule, FlexLayoutModule, BrowserAnimationsModule]

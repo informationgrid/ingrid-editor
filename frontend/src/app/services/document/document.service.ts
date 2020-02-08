@@ -10,7 +10,7 @@ import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
 import {arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
-import {ProfileService} from "../profile.service";
+import {ProfileService} from '../profile.service';
 import {SessionStore} from '../../store/session.store';
 import {HttpClient} from '@angular/common/http';
 import {ConfigService, Configuration} from '../config/config.service';

@@ -9,8 +9,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTabsModule } from '@angular/material/tabs';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {RouterModule, Routes} from "@angular/router";
-import {FormsModule} from "@angular/forms";
+import {RouterModule, Routes} from '@angular/router';
+import {FormsModule} from '@angular/forms';
 
 const routes: Routes = [
   {

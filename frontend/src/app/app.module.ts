@@ -117,7 +117,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     // set locale for dates
     {
       provide: LOCALE_ID,
-      useValue: "de-de"
+      useValue: 'de-de'
     },
     // add authorization header to all requests
     /*{

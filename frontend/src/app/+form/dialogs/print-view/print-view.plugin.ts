@@ -7,7 +7,7 @@ import {untilDestroyed} from 'ngx-take-until-destroy';
 import {TreeQuery} from '../../../store/tree/tree.query';
 
 @Injectable()
-export class PrintViewPlugin extends Plugin implements OnDestroy{
+export class PrintViewPlugin extends Plugin implements OnDestroy {
   id = 'plugin.printView';
   _name = 'Print View Plugin';
   defaultActive = true;

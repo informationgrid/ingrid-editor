@@ -1,8 +1,8 @@
-import {HttpClient} from "@angular/common/http";
-import {ConfigService, Configuration} from "../config/config.service";
-import {IgeDocument} from "../../models/ige-document";
-import {Observable} from "rxjs";
-import {Injectable} from "@angular/core";
+import {HttpClient} from '@angular/common/http';
+import {ConfigService, Configuration} from '../config/config.service';
+import {IgeDocument} from '../../models/ige-document';
+import {Observable} from 'rxjs';
+import {Injectable} from '@angular/core';
 import {DocumentAbstract} from '../../store/document/document.model';
 
 @Injectable({
