@@ -1,25 +1,48 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { CatalogManagerComponent } from './catalog-manager.component';
+import {CatalogManagerComponent} from './catalog-manager.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatListModule} from '@angular/material/list';
+import {UserService} from '../../services/user/user.service';
+import {CatalogService} from '../services/catalog.service';
+import {ConfigService, UserInfo} from '../../services/config/config.service';
+import {CatalogQuery} from '../../store/catalog/catalog.query';
+import {BehaviorSubject, of} from 'rxjs';
+import {RouterTestingModule} from '@angular/router/testing';
+import {async} from '@angular/core/testing';
 
 describe('CatalogManagerComponent', () => {
-  let component: CatalogManagerComponent;
-  let fixture: ComponentFixture<CatalogManagerComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CatalogManagerComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CatalogManagerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<CatalogManagerComponent>;
+  const createHost = createComponentFactory({
+    component: CatalogManagerComponent,
+    imports: [RouterTestingModule, MatDialogModule, MatFormFieldModule, MatListModule],
+    providers: [
+      {
+        provide: MatDialogRef, useValue: {}
+      },
+      {provide: MAT_DIALOG_DATA, useValue: []}
+    ],
+    componentMocks: [CatalogQuery],
+    mocks: [CatalogService, UserService, ConfigService],
+    detectChanges: false
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  beforeEach(() => {
+    spectator = createHost();
+  });
+
+  fit('should create', () => {
+    spectator.get(CatalogService).getCatalogs.andReturn(of([]));
+    spectator.get(ConfigService).$userInfo = new BehaviorSubject<UserInfo>(<UserInfo>{
+      assignedCatalogs: [],
+      currentCatalog: {id: 'xxx'},
+      name: '',
+      roles: [],
+      userId: ''
+    });
+
+    spectator.detectChanges();
+
+    expect(spectator.component).toBeTruthy();
   });
 });

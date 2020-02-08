@@ -67,7 +67,7 @@ describe('TreeComponent', () => {
     hasNumberOfTreeNodes(0);
   });
 
-  fit('should add a new root node', fakeAsync(() => {
+  it('should add a new root node', fakeAsync(() => {
     spectator.detectChanges();
 
     hasNumberOfTreeNodes(3);

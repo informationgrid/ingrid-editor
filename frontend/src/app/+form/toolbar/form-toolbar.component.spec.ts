@@ -51,7 +51,7 @@ describe('Form-Toolbar', () => {
     expect(buttons.length).toBe(3);
   });
 
-  fit('should add a publish button through the service', () => {
+  it('should add a publish button through the service', () => {
     const item: ToolbarItem = {
       id: 'btnPublish', tooltip: 'TEST_TOOLBAR_ITEM', matIconVariable: 'remove', pos: 100, eventId: 'TEST_EVENT',
       isPrimary: true, label: 'Veröffentlichen', align: 'right'

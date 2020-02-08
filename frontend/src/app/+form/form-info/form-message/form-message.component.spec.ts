@@ -63,7 +63,7 @@ describe('FormMessageComponent', () => {
     expect(wrapper).not.toExist();
   }));
 
-  fit('should show an error message', () => {
+  it('should show an error message', () => {
     const service = spectator.get(MessageService);
     service.message$.next(ERROR_MESSAGE);
 
