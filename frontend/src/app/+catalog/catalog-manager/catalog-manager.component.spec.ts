@@ -31,7 +31,7 @@ describe('CatalogManagerComponent', () => {
     spectator = createHost();
   });
 
-  fit('should create', () => {
+  it('should create', () => {
     spectator.get(CatalogService).getCatalogs.andReturn(of([]));
     spectator.get(ConfigService).$userInfo = new BehaviorSubject<UserInfo>(<UserInfo>{
       assignedCatalogs: [],

@@ -28,7 +28,7 @@ describe('CatalogDetailComponent', () => {
     spectator = createHost();
   }));
 
-  fit('should create', () => {
+  it('should create', () => {
     expect(spectator.component).toBeTruthy();
   });
 });

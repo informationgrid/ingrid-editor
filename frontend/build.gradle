@@ -32,6 +32,10 @@ task bundle(type: YarnTask) {
   args = ['run', 'prod']
 }
 
+task test(type: YarnTask) {
+  args = ['run', 'test-headless']
+}
+
 task packageNpmApp(type: Zip) {
   dependsOn bundle
   baseName 'ige-frontend-app'
