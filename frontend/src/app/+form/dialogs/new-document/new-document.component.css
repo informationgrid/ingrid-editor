@@ -1,4 +1,9 @@
+#doc-type {
+  padding-bottom: 12px;
+  display: block;
+}
+
 mat-radio-button {
   display: block;
-  padding-bottom: 10px;
+  padding-bottom: 16px;
 }

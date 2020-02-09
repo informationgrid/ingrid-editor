@@ -14,16 +14,21 @@ export interface PasteDialogOptions {
     <mat-dialog-content>
       <p>{{data.contentText}}</p>
       <ige-tree (selected)="handleSelected($event)" [disabledCondition]="data.disabledCondition"
+                (currentPath)="path = $event"
                 [showReloadButton]="false"></ige-tree>
     </mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-button [mat-dialog-close]="selection" class="pull-right" [disabled]="!selection">{{data.buttonText}}</button>
+      <div fxFlex></div>
+      <button mat-button [mat-dialog-close]="{selection: selection, path: path}" [disabled]="!selection">
+        {{data.buttonText}}
+      </button>
     </mat-dialog-actions>
   `
 })
 export class PasteDialogComponent implements OnInit {
 
   selection: any[] = null;
+  path: string[];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions) {
   }

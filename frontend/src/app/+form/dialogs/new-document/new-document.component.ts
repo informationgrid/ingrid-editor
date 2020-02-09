@@ -3,7 +3,8 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 export interface CreateDocOptions {
   choice?: string;
-  addBelowDoc?: boolean;
+  title?: string;
+  parent?: string;
 }
 
 @Component({
@@ -22,5 +23,6 @@ export class NewDocumentComponent implements OnInit {
   ngOnInit() {
     // select first/default document type
     this.result.choice = this.data.docTypes[0].id;
+    this.result.parent = this.data.parent;
   }
 }

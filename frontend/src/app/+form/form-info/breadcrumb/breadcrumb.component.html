@@ -1,5 +1,10 @@
-<span *ngIf="( crumb | async) as items">
-    <span *ngFor="let item of items | slice:0:items.length-1">{{item}}
-        <mat-icon>chevron_right</mat-icon>
+<span *ngIf="path">
+    <span *ngIf="path.length === 0">Wurzelverzeichnis</span>
+
+    <span *ngFor="let item of path; let last = last">
+        <ng-container *ngIf="!last || !ignoreLast">
+            {{item}}
+            <mat-icon *ngIf="!last || !hideLastSeparator">chevron_right</mat-icon>
+        </ng-container>
     </span>
 </span>

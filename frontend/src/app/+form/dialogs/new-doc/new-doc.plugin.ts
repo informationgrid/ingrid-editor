@@ -65,34 +65,30 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
     this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
 
     const dlg = this.dialog.open(NewDocumentComponent, {
+      minWidth: 500,
       data:
         {
           docTypes: this.newDocOptions.docTypes,
           rootOption: this.newDocOptions.rootOption,
-          parent: this.newDocOptions.selectedDataset,
+          parent: this.newDocOptions.selectedDataset.id,
           choice: null
         }
     });
     dlg.afterClosed().subscribe((result: CreateDocOptions) => {
       if (result) {
-        this.prepareNewDoc(result.choice, result.addBelowDoc);
+        this.saveNewDocument(result);
       }
     })
   }
 
   /**
    * Create a new document and save it in the backend.
-   * @param type
-   * @param addBelowDoc
+   * @param options
    */
-  prepareNewDoc(type: string, addBelowDoc: boolean) {
+  saveNewDocument(options: CreateDocOptions) {
 
-    let parent = null;
-    if (addBelowDoc) {
-      parent = this.treeQuery.getActive()[0].id;
-    }
-
-    const newDoc = new IgeDocument(type, parent);
+    const newDoc = new IgeDocument(options.choice, options.parent);
+    newDoc.title = options.title;
 
     this.saveForm(newDoc);
 

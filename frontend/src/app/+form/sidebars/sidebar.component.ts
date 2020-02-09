@@ -20,7 +20,9 @@ export class SidebarComponent implements OnInit {
 
   constructor(private router: Router,
               private route: ActivatedRoute,
-              private treeQuery: TreeQuery, private treeStore: TreeStore, private docService: DocumentService) {
+              private treeQuery: TreeQuery,
+              private treeStore: TreeStore,
+              private docService: DocumentService) {
 
   }
 
@@ -64,4 +66,9 @@ export class SidebarComponent implements OnInit {
 
   }
 
+  storePath(path: string[]) {
+    this.treeStore.update({
+      activePathTitles: path
+    })
+  }
 }

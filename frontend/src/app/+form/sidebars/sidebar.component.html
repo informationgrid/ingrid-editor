@@ -2,5 +2,6 @@
           [expandNodeIds]="initialExpandNodes"
           [activeNodeId]="initialActiveNodeId"
           [update]="updateTree"
+          (currentPath)="storePath($event)"
           (activate)="handleLoad($event)"
           (selected)="handleSelection($event)"></ige-tree>

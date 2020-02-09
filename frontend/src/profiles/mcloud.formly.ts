@@ -265,7 +265,6 @@ export class McloudFormly extends BaseProfile {
 
     const codelistPromise = this.codelistService.byId(codelistId + '')
       .then(codelist => {
-        console.log('codelist:', codelist);
         return codelist.map(cl => {
           return {label: cl.value, value: cl.id}
         });

@@ -37,6 +37,7 @@ export class TreeComponent implements OnInit {
     map(data => data.source.selected.map(item => item._id))
   );
   @Output() activate = new EventEmitter<string[]>();
+  @Output() currentPath = new EventEmitter<string[]>();
 
   // signal to show that a tree node is loading
   private isLoading: TreeNode;
@@ -72,7 +73,7 @@ export class TreeComponent implements OnInit {
           .then(() => {
             const node = this.dataSource.getNode(this.activeNodeId);
             const nodePath = this.getTitlesFromNodePath(node);
-            this.database.updatePath(nodePath.reverse());
+            this.currentPath.next(nodePath);
           }).catch( () => {});
       });
     }
@@ -141,7 +142,7 @@ export class TreeComponent implements OnInit {
 
       // set path in tree for bread crumb (extract to method)
       const path = this.getTitlesFromNodePath(node);
-      this.database.updatePath(path.reverse());
+      this.currentPath.next(path);
     }
 
     if (node.hasChildren) {
@@ -158,7 +159,7 @@ export class TreeComponent implements OnInit {
       parent = parentNode.parent;
       path.push(parentNode.title);
     }
-    return path;
+    return path.reverse();
   }
 
   private getParentNode(node: TreeNode) {
@@ -288,7 +289,7 @@ export class TreeComponent implements OnInit {
         .then(() => {
           const node = this.dataSource.getNode(id);
           const nodePath = this.getTitlesFromNodePath(node);
-          this.database.updatePath(nodePath.reverse());
+          this.currentPath.next(nodePath);
           this.activate.next([id]);
         });
     });

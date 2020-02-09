@@ -42,12 +42,6 @@ export class DynamicDatabase {
     return this.docService.getPath(id).toPromise();
   }
 
-  updatePath(titles: string[]) {
-    this.treeStore.update({
-      activePathTitles: titles
-    })
-  }
-
   mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
     return docs.map(doc => new TreeNode(doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren, doc._parent, doc.icon));
   }

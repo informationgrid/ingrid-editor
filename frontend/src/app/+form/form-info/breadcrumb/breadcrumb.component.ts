@@ -1,5 +1,4 @@
-import {Component, OnInit} from '@angular/core';
-import {TreeQuery} from '../../../store/tree/tree.query';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'ige-breadcrumb',
@@ -8,12 +7,24 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 })
 export class BreadcrumbComponent implements OnInit {
 
-  crumb = this.treeQuery.pathTitles$;
+  @Input() path: string[];
+  @Input() ignoreLast = false;
+  @Input() hideLastSeparator = true;
 
-  constructor(private treeQuery: TreeQuery) {
+  constructor() {
   }
 
   ngOnInit() {
+    if (this.path) {
+      this.path = this.handleIgnoreLast(this.path);
+    }
+  }
+
+  private handleIgnoreLast(path) {
+    if (this.ignoreLast) {
+      return path.slice(0, path.length - 1);
+    }
+    return path;
   }
 
 }

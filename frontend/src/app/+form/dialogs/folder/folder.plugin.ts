@@ -67,7 +67,8 @@ export class FolderPlugin extends Plugin {
     const parents = this.treeQuery.getActive();
 
     this.dialog.open(CreateFolderComponent, {
-      data: { parent: parents ? parents[0] : null }
+      minWidth: 500,
+      data: { parent: parents && parents[0] ? parents[0].id : null }
     });
   }
 

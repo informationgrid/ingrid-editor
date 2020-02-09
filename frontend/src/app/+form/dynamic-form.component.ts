@@ -90,7 +90,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    console.log('destroy');
     this.formularService.currentProfile = null;
 
     // reset selected documents if we revisit the page
@@ -157,7 +156,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this))
       .subscribe((message: any) => {
         message.errors.push({invalid: this.form.invalid});
-        console.log('in observer');
       });
   }
 
@@ -189,7 +187,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   updateFormWithData(data) {
-    console.log('loaded data:', data);
 
     if (data === null) {
       return;
@@ -211,11 +208,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     try {
 
       // switch to the right profile depending on the data
+      this.form = new FormGroup({});
+      this.formsManager.upsert('document', this.form);
       if (needsProfileSwitch) {
         this.fields = this.switchProfile(profile);
         this.sections = this.getSectionsFromProfile(this.fields);
-        this.form = new FormGroup({});
-        this.formsManager.upsert('document', this.form);
       }
 
       this.model = {...data};

@@ -24,7 +24,7 @@ export class HeaderTitleRowComponent implements OnInit {
 
   @Output() toggleMore = new EventEmitter();
 
-  @ViewChild('titleInput', {static: true}) titleInput: ElementRef;
+  @ViewChild('titleInput') titleInput: ElementRef;
 
   showTitleInput = false;
   showMore = false;
@@ -47,7 +47,6 @@ export class HeaderTitleRowComponent implements OnInit {
   }
 
   getIcon() {
-    console.log('.');
     return this.profileService.getProfileIcon(this.form.get('_profile').value);
   }
 }

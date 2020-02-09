@@ -1,5 +1,4 @@
 import {FormGroup} from '@angular/forms';
-import {EventManager} from '@angular/platform-browser';
 import {Behaviour} from '../../app/+behaviours/behaviours';
 import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
@@ -257,7 +256,7 @@ export class ProfileAddress extends BaseProfile {
       description: '',
       isProfileBehaviour: true,
       defaultActive: true,
-      register: function (form: FormGroup, eventManager: EventManager) {
+      register: function (form: FormGroup) {
         // this behaviour should be a validator for a field!
         form.get('tasks').validator = function (fc) {
           return fc.value && fc.value.indexOf('work') !== -1 ? null : {
@@ -274,10 +273,9 @@ export class ProfileAddress extends BaseProfile {
       description: '',
       isProfileBehaviour: true,
       defaultActive: true,
-      register: (form: FormGroup, eventManager: EventManager) => {
+      register: (form: FormGroup) => {
         // when using valueChanges, then we only must react after a document has been loaded
         // we only want to react, when the user did any action (click or chose a new item from select box or added a new value
-        const self = this;
         form.get('address.adminArea').valueChanges.subscribe(value => {
 
           // TODO: validations should be attached directly to the field to
@@ -320,16 +318,15 @@ export class ProfileAddress extends BaseProfile {
 
   private getCodelistForSelect(codelistId: number) {
 
-    const codelist = this.codelistService.byId(codelistId + '')
+    const codelistResult = this.codelistService.byId(codelistId + '')
       .then(codelist => {
-        console.log('codelist:', codelist);
         return codelist
           .map(cl => {
             return {label: cl.value, value: cl.id}
           })
-          .sort( (a, b) => a.label.localeCompare(b.label));
+          .sort((a, b) => a.label.localeCompare(b.label));
       });
-    return from(codelist);
+    return from(codelistResult);
   }
 
 }

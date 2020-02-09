@@ -124,7 +124,7 @@ export class BehaviourService {
         if (behaviour.isActive) {
           // we need to run code in this context
           // TODO: add parameters for behaviour
-          behaviour.register(form, this.eventManager);
+          behaviour.register(form);
         }
       });
 
@@ -137,7 +137,7 @@ export class BehaviourService {
           profileClass.behaviours
             .filter(_ => _.isActive)
             .forEach(behaviour => {
-              behaviour.register(form, this.eventManager);
+              behaviour.register(form);
             });
         }
         return true;

@@ -1,14 +1,25 @@
 <h2 mat-dialog-title>Neues Dokument</h2>
 <mat-dialog-content>
-    <mat-radio-group [(ngModel)]="result.choice">
+    <form #myForm>
+    <mat-form-field class="width-100">
+        <input matInput [(ngModel)]="result.title" name="title"
+               placeholder="Titel"
+               required>
+    </mat-form-field>
+
+    <label id="doc-type">Dokumententyp</label>
+    <mat-radio-group aria-labelledby="doc-type" [(ngModel)]="result.choice" name="choice">
         <mat-radio-button
             *ngFor="let type of data.docTypes" [value]="type.id">{{type.label}}
         </mat-radio-button>
     </mat-radio-group>
+
+    <label>Im Verzeichnis</label>
+    <ige-choose-folder (update)="result.parent = $event"></ige-choose-folder>
+    </form>
+
 </mat-dialog-content>
 <mat-dialog-actions>
-    <mat-checkbox [disabled]="!data.rootOption || data.parent?._profile !== 'FOLDER'" [(ngModel)]="result.addBelowDoc">
-        unter ausgewähltem Ordner anlegen
-    </mat-checkbox>
-    <button mat-button color="primary" [mat-dialog-close]="result">Anlegen</button>
+    <div fxFlex></div>
+    <button mat-button color="primary" [disabled]="!myForm.checkValidity()" [mat-dialog-close]="result">Anlegen</button>
 </mat-dialog-actions>
