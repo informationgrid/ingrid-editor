@@ -10,7 +10,10 @@
   },
   "files": [
     "test.ts",
-    "polyfills.ts"
+    "polyfills.ts",
+    "profiles/pack-lgv.ts",
+    "profiles/pack-mcloud.ts",
+    "profiles/pack-uvp.ts"
   ],
   "include": [
     "**/*.spec.ts",

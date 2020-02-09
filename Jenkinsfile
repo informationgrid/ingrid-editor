@@ -25,13 +25,13 @@ pipeline {
             }
         }
 
-        stage ('Frontend-Tests') {
+        /*stage ('Frontend-Tests') {
             steps {
                 nodejs(nodeJSInstallationName: 'nodejs') {
                     sh './gradlew test'
                 }
             }
-        }
+        }*/
 
         // release build if it's the master or the support branch and is not a SNAPSHOT version
         /*stage ('Build-Release') {
