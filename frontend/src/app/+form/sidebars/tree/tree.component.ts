@@ -152,7 +152,7 @@ export class TreeComponent implements OnInit {
   }
 
   private getTitlesFromNodePath(node: TreeNode) {
-    const path = [node.title];
+    const path = [];
     let parent = node.parent;
     while (parent !== null && parent !== undefined) {
       const parentNode = this.dataSource.getNode(parent);
@@ -246,6 +246,9 @@ export class TreeComponent implements OnInit {
 
     // remove selection from previously selected nodes
     this.selectionModel.clear();
+
+    const nodePath = this.getTitlesFromNodePath(this.dataSource.getNode(updateInfo.data[0].id + ''));
+    this.currentPath.next(nodePath);
   }
 
   private updateChildrenInfo(parentNode: TreeNode) {

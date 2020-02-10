@@ -1,10 +1,8 @@
 <span *ngIf="path">
-    <span *ngIf="path.length === 0">Wurzelverzeichnis</span>
+    <span *ngIf="showRoot && path.length === 0">Wurzelverzeichnis</span>
 
     <span *ngFor="let item of path; let last = last">
-        <ng-container *ngIf="!last || !ignoreLast">
-            {{item}}
-            <mat-icon *ngIf="!last || !hideLastSeparator">chevron_right</mat-icon>
-        </ng-container>
+        {{item}}
+        <mat-icon *ngIf="!last || !hideLastSeparator">chevron_right</mat-icon>
     </span>
 </span>

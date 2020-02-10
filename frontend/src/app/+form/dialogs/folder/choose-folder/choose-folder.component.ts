@@ -13,7 +13,7 @@ import {take} from 'rxjs/operators';
 export class ChooseFolderComponent implements OnInit {
 
   @Output() update = new EventEmitter();
-  path: string[];
+  path: string[] = [];
 
   constructor(private dialog: MatDialog, private treeQuery: TreeQuery) {
   }
@@ -23,7 +23,17 @@ export class ChooseFolderComponent implements OnInit {
       .pipe(
         take(1) // TODO: check if correctly unsubsribed
       )
-      .subscribe(path => this.path = path);
+      .subscribe(path => {
+        const active = this.treeQuery.getActive();
+        if (active.length > 0) {
+          const selectedNode = active[active.length - 1];
+          if (selectedNode._profile === 'FOLDER') {
+            this.path = [...path, selectedNode.title];
+          } else {
+            this.path = path;
+          }
+        }
+      });
   }
 
   chooseDirectory() {

@@ -18,7 +18,7 @@ export class FormInfoComponent implements OnInit, OnDestroy {
 
   showDateBar;
   showMore = false;
-  path: string[];
+  path: string[] = [];
 
   constructor(private treeQuery: TreeQuery) {
   }

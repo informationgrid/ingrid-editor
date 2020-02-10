@@ -22,4 +22,8 @@ describe('ChooseFolderComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  xit('should create a folder below a different selected one', () => {
+    // the breadcrumb must change accordingly!
+  });
 });
