@@ -73,14 +73,6 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     }
 
     /**
-     * Use properties in application.properties instead of keycloak.json
-     */
-    @Bean
-    public KeycloakConfigResolver KeycloakConfigResolver() {
-        return new KeycloakSpringBootConfigResolver();
-    }
-
-    /**
      * Do allow semicolons in URL, which are matrix-parameters used by Angular
      * @return the modified firewall
      */

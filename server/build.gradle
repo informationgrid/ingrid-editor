@@ -7,9 +7,9 @@ plugins {
     id 'java'
     id 'idea'
     id 'org.springframework.boot' version '2.2.4.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'maven-publish'
-    id 'com.google.cloud.tools.jib' version '1.8.0'
+    id 'com.google.cloud.tools.jib' version '2.0.0'
 }
 
 repositories {
@@ -50,7 +50,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-security') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
-    compile('org.keycloak:keycloak-spring-boot-2-starter:4.0.0.Final') {
+    compile('org.keycloak:keycloak-spring-boot-starter:8.0.2') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -102,7 +102,7 @@ jib {
         // tags = ['jib'] // additional tags
     }
     container {
-        useCurrentTimestamp = true
+        creationTime = 'USE_CURRENT_TIMESTAMP'
         jvmFlags = ['-Xmx512m','-Dstorage.diskCache.bufferSize=256']
     }
 }

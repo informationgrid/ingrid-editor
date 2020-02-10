@@ -3,8 +3,8 @@ import {ConfigService, Configuration} from '../services/config/config.service';
 import {DocumentService} from '../services/document/document.service';
 import {DocumentAbstract} from '../store/document/document.model';
 import {Observable} from 'rxjs';
-import {ProfileService} from '../services/profile.service';
 import {SessionQuery} from '../store/session.query';
+import {Router} from '@angular/router';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -19,9 +19,9 @@ export class DashboardComponent implements OnInit {
   recentDocs$: Observable<DocumentAbstract[]>;
 
   constructor(configService: ConfigService,
+              private router: Router,
               private docService: DocumentService,
-              private sessionQuery: SessionQuery,
-              private profileService: ProfileService) {
+              private sessionQuery: SessionQuery) {
     this.configuration = configService.getConfiguration();
   }
 
@@ -52,5 +52,9 @@ export class DashboardComponent implements OnInit {
 
   createNewUser() {
 
+  }
+
+  openDocument(id: number | string) {
+    this.router.navigate(['/form', {id: id}]);
   }
 }

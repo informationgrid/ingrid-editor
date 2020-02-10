@@ -47,17 +47,13 @@
 
             <ige-card-box fxFlex title="Zuletzt bearbeitet im Katalog">
                 <mat-list style="padding-top: 0" dense>
-                    <mat-list-item *ngFor="let doc of recentDocs$ | async">
+                    <mat-list-item *ngFor="let doc of recentDocs$ | async" class="clickable" (click)="openDocument(doc.id)">
                         <mat-icon matListIcon [svgIcon]="doc.icon"></mat-icon>
 
                         <h3 matLine>
                             {{doc.title}}
                             <span class="pull-right">{{doc._modified | date}}</span>
                         </h3>
-
-                        <button mat-icon-button>
-                            <mat-icon>more_vert</mat-icon>
-                        </button>
 
                         <mat-divider></mat-divider>
                     </mat-list-item>

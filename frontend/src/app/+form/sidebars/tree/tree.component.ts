@@ -243,6 +243,9 @@ export class TreeComponent implements OnInit {
     }
 
     this.activeNodeId = updateInfo.data[0].id + '';
+
+    // remove selection from previously selected nodes
+    this.selectionModel.clear();
   }
 
   private updateChildrenInfo(parentNode: TreeNode) {

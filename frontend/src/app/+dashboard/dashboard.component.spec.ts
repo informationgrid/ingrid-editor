@@ -64,4 +64,9 @@ describe('DashboardComponent', () => {
   });
 
 
+  xit('should open document when selected from recent documents widget', () => {
+
+  });
+
+
 });

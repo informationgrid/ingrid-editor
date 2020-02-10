@@ -285,6 +285,10 @@ describe('TreeComponent', () => {
 
   }));
 
+  xit('should deselect all nodes when a new one is added (#1722)', fakeAsync(() => {
+
+  }));
+
   /*
    * Utility Functions
    */

@@ -38,6 +38,11 @@ h1 {
   float: right;
 }
 
+.clickable:hover {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.04);
+}
+
 .hide {
   display: none !important;
 }
