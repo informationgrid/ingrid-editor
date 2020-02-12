@@ -31,7 +31,7 @@ export class PrintViewPlugin extends Plugin implements OnDestroy {
     // add button to toolbar
     const buttons: Array<ToolbarItem | Separator> = [
       // { id: 'toolBtnCopyCutSeparator', pos: 60, isSeparator: true },
-      { id: 'toolBtnPrint', tooltip: 'Print', matSvgVariable: 'preview', eventId: 'PRINT', pos: 20, active: false }
+      { id: 'toolBtnPrint', tooltip: 'Print', matSvgVariable: 'Vorschau-Druckansicht', eventId: 'PRINT', pos: 20, active: false }
     ];
     buttons.forEach((button, index) => this.toolbarService.addButton(button));
 

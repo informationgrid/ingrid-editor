@@ -17,19 +17,19 @@
 
         <div class="shortcut">
             <button mat-button (click)="createNewDocument()">
-                <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+                <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
                 Neuer Order
             </button>
             <button mat-button (click)="createNewDocument()">
-                <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+                <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
                 Neuer Datensatz
             </button>
             <button *featureFlag="'AP3'" mat-button (click)="createNewUser()">
-                <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+                <mat-icon class="material-icons-outlined">import_export</mat-icon>
                 Datensatz importieren
             </button>
             <button mat-button (click)="createNewAddress()">
-                <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
+                <mat-icon class="material-icons-outlined" svgIcon="Freie-Adresse"></mat-icon>
                 Neue Adresse
             </button>
         </div>

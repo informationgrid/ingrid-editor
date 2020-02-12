@@ -40,7 +40,7 @@ export class PublishPlugin extends Plugin {
     this.formToolbarService.addButton({id: 'toolBtnPublishSeparator', isSeparator: true, pos: 100});
 
     this.formToolbarService.addButton({
-      id: 'toolBtnPublish', tooltip: 'Publish', label: 'Veröffentlichen', matIconVariable: 'publish',
+      id: 'toolBtnPublish', tooltip: 'Publish', label: 'Veröffentlichen', matSvgVariable: 'Aenderungen-verwerfen',
       eventId: this.eventPublishId, pos: 25, align: 'right', active: false, isPrimary: true
     });
 

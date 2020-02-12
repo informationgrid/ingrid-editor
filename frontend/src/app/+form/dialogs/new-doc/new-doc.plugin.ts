@@ -41,7 +41,7 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
 
   register() {
     this.toolbarService.addButton(
-    {id: 'toolBtnNew', tooltip: 'New', matSvgVariable: 'doc-new', eventId: 'NEW_DOC', pos: 10, active: true}
+    {id: 'toolBtnNew', tooltip: 'New', matSvgVariable: 'Neuer-Datensatz', eventId: 'NEW_DOC', pos: 10, active: true}
     );
 
     // add event handler for revert
