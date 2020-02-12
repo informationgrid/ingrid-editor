@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FormGroup} from '@angular/forms';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'ige-address',
@@ -12,13 +13,29 @@ export class AddressComponent implements OnInit {
   fields: any;
   model: any;
   formOptions: any;
+  updateTree: any;
+  initialActiveNodeId: any;
+  initialExpandNodes: any;
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
   rememberSizebarWidth($event: any) {
+
+  }
+
+  handleSelection($event: string[]) {
+
+  }
+
+  handleLoad(selectedDocIds: string[]) {
+
+    this.router.navigate(['/address', {id: selectedDocIds[0]}]);
+  }
+
+  storePath($event: string[]) {
 
   }
 }

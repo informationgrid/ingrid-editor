@@ -6,7 +6,14 @@
 
         <!-- exchangable sidebar -->
         <as-split-area [size]="sidebarWidth" id="sidebar">
-            <ige-sidebar></ige-sidebar>
+            <ige-tree [showReloadButton]="true"
+                      [expandNodeIds]="initialExpandNodes"
+                      [activeNodeId]="initialActiveNodeId"
+                      [update]="updateTree"
+                      (currentPath)="storePath($event)"
+                      (activate)="handleLoad($event)"
+                      (selected)="handleSelection($event)"></ige-tree>
+
         </as-split-area>
 
         <!-- The form -->

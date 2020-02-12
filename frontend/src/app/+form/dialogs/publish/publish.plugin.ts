@@ -40,13 +40,13 @@ export class PublishPlugin extends Plugin {
     this.formToolbarService.addButton({id: 'toolBtnPublishSeparator', isSeparator: true, pos: 100});
 
     this.formToolbarService.addButton({
-      id: 'toolBtnPublish', tooltip: 'Publish', label: 'Veröffentlichen', matSvgVariable: 'Aenderungen-verwerfen',
+      id: 'toolBtnPublish', tooltip: 'Publish', label: 'Veröffentlichen',
       eventId: this.eventPublishId, pos: 25, align: 'right', active: false, isPrimary: true
     });
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
-      id: 'toolBtnRevert', tooltip: 'Revert', matSvgVariable: 'discard-changes', eventId: this.eventRevertId, pos: 90, active: false
+      id: 'toolBtnRevert', tooltip: 'Revert', matSvgVariable: 'Aenderungen-verwerfen', eventId: this.eventRevertId, pos: 90, active: false
     });
 
     // add event handler for revert

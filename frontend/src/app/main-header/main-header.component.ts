@@ -38,9 +38,10 @@ export class MainHeaderComponent implements OnInit {
   }
 
   private getPageTitleFromRoute(url: string) {
-    switch (url) {
+    const firstPart = url.split(';')[0];
+    switch (firstPart) {
       case('/form'): return 'Daten';
-      case('/address'): return 'Addressen';
+      case('/address'): return 'Adressen';
       default: return '';
     }
   }

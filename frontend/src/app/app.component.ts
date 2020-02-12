@@ -32,7 +32,6 @@ export class AppComponent implements OnInit {
 
     // useful tool for merging SVG files: merge-svg-files via npm
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-navigation.svg'));
-    registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-form.svg'));
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-doc-types.svg'));
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-toolbar.svg'));
 

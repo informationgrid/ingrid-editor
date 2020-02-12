@@ -6,18 +6,20 @@ import {AngularSplitModule} from 'angular-split';
 import {ReactiveFormsModule} from '@angular/forms';
 import {FormlyModule} from '@ngx-formly/core';
 import {FlexModule} from '@angular/flex-layout';
-import {IgeFormModule} from '../+form/ige-form.module';
+import {FormCoreModule} from '../+form/form-core/form-core.module';
+import {SharedModule} from '../shared/shared.module';
 
 @NgModule({
   declarations: [AddressComponent],
   imports: [
-    CommonModule,
     routing,
+    CommonModule,
     AngularSplitModule,
     ReactiveFormsModule,
     FormlyModule,
     FlexModule,
-    IgeFormModule
+    FormCoreModule,
+    SharedModule
   ]
 })
 export class AddressModule {

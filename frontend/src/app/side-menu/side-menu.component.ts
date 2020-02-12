@@ -75,12 +75,12 @@ export class SideMenuComponent implements OnInit {
 
   mapRouteToIcon(path: string) {
     switch (path) {
-      case '/dashboard': return 'dashboard';
-      case '/form': return 'data';
-      case '/address': return 'addresses';
+      case '/dashboard': return 'Uebersicht';
+      case '/form': return 'Daten';
+      case '/address': return 'Adressen';
       // case '/user': return 'addresses';
       // case '/plugins': return 'extension';
-      case '/importExport': return 'import_export';
+      case '/importExport': return 'Im-Export';
       // case '/catalogs': return 'addresses';
       // case '/demo': return 'play_circle_outline';
       default: return null;

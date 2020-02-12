@@ -15,12 +15,11 @@
 
     <a mat-list-item (click)="toggleSidebar(!menuIsExpanded)" *ngIf="showDrawer | async" class="menu-toggle">
         <mat-icon *ngIf="!menuIsExpanded" mat-list-icon
+                  svgIcon="Nav-auf"
                   matTooltip="Vergrößern"
                   matTooltipClass="tooltip-big"
-                  matTooltipPosition="right">
-            keyboard_arrow_right
-        </mat-icon>
-        <mat-icon *ngIf="menuIsExpanded" mat-list-icon>keyboard_arrow_left</mat-icon>
+                  matTooltipPosition="right"></mat-icon>
+        <mat-icon *ngIf="menuIsExpanded" mat-list-icon svgIcon="Nav-zu"></mat-icon>
         <p mat-line>Verkleinern</p>
     </a>
 </mat-nav-list>
