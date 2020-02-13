@@ -13,51 +13,11 @@
   }
 }
 
-.search-content, .welcome, .shortcut {
+ige-quick-search, .welcome, .shortcut {
   text-align: center;
 }
 
-.search-content {
 
-  padding-bottom: 24px;
-
-  .search {
-    min-width: 500px;
-  }
-
-  input {
-    text-align: left;
-  }
-
-  ::ng-deep .mat-form-field-outline {
-    background-color: #ffffff;
-
-    div {
-      border: 0;
-    }
-  }
-
-  ::ng-deep .mat-form-field-suffix {
-    margin-right: -5px;
-  }
-
-  ::ng-deep .mat-form-field-wrapper {
-    padding-bottom: 0;
-  }
-
-  ::ng-deep .mat-form-field-infix {
-    padding: 0 0 0.8em;
-    margin: 0.1em 0 0.1em;
-  }
-
-  button {
-    height: 44px;
-
-    ::ng-deep .mat-button-wrapper {
-      letter-spacing: 1.25px;
-    }
-  }
-}
 
 .info-cards {
   padding: 0 36px 36px;
@@ -72,12 +32,3 @@
   max-height: 300px;
 }*/
 
-.mat-list-item .mat-divider-horizontal {
-  left: 10px;
-  right: 10px;
-  width: auto;
-}
-
-.mat-list-base[dense] .mat-list-item {
-  font-size: 16px;
-}

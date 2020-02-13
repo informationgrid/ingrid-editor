@@ -149,10 +149,12 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public List<String> findAll(String type, Map<String, String> query, QueryType queryType, String sortField, String sortOrder, boolean resolveReferences) {
-        String queryString;
+    public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) {
+        String queryString = null;
+        String countQuery = null;
+
         if (query == null || query.isEmpty()) {
-            queryString = "SELECT * FROM " + type;
+            // queryString = "SELECT * FROM " + type;
         } else {
             // select * from `Documents` where (draft.firstName like "%er%" or draft.lastName like "%es%")
             // TODO: try to use lucene index!
@@ -162,7 +164,7 @@ public class OrientDBDatabase implements DBApi {
                 if (value == null) {
                     where.add(key + ".toLowerCase() IS NULL");
                 } else {
-                    switch (queryType) {
+                    switch (options.queryType) {
                         case like:
                             where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
                             break;
@@ -178,18 +180,24 @@ public class OrientDBDatabase implements DBApi {
 
             if (!type.equals("*")) {
                 queryString = "SELECT * FROM " + type + " WHERE (" + String.join(" or ", where) + ")";
+                countQuery = "SELECT count(*) FROM " + type + " WHERE (" + String.join(" or ", where) + ")";
             } else {
                 queryString = "SELECT FROM (SELECT EXPAND( $c ) LET $a = ( SELECT FROM AddressDoc ), $b = ( SELECT FROM mCloudDoc ), $c = UNIONALL( $a, $b )) WHERE (" + String.join(" or ", where) + ")";
+                countQuery = "SELECT count(*) FROM (SELECT EXPAND( $c ) LET $a = ( SELECT FROM AddressDoc ), $b = ( SELECT FROM mCloudDoc ), $c = UNIONALL( $a, $b )) WHERE (" + String.join(" or ", where) + ")";
             }
 
-            if (sortField != null) {
-                queryString += "ORDER BY " + sortField + " " + sortOrder;
+            if (options.sortField != null) {
+                queryString += "ORDER BY " + options.sortField + " " + options.sortOrder;
+            }
+            if (options.size != null) {
+                queryString += " LIMIT " + options.size;
             }
             log.debug("Query-String: " + queryString);
         }
 
 
         OResultSet docs = getDBFromThread().query(queryString);
+        OResultSet countDocs = getDBFromThread().query(countQuery);
 
         // find references (document wrapper)
         if (type.equals("*")) {
@@ -203,10 +211,19 @@ public class OrientDBDatabase implements DBApi {
                     wrapperList.add(wrapperAsString);
                 }
             }
-            return wrapperList;
+            long count = countDocs.next().getProperty("count(*)");
+            return new DBFindAllResults(count, wrapperList);
         }
 
-        return mapODocumentsToJSON(docs, resolveReferences);
+        return mapFindAllResults(docs, countDocs, options.resolveReferences);
+
+    }
+
+    private DBFindAllResults mapFindAllResults(OResultSet docs, OResultSet countDocs, boolean resolveReferences) {
+
+        List<String> hits = mapODocumentsToJSON(docs, resolveReferences);
+        long count = countDocs.next().getProperty("count(*)");
+        return new DBFindAllResults(count, hits);
     }
 
     @Override
@@ -239,6 +256,11 @@ public class OrientDBDatabase implements DBApi {
             response.put(next.getProperty(MapperService.FIELD_PARENT), next.getProperty("count(_id)"));
         }
         return response;
+    }
+
+    @Override
+    public int count(String type, Map<String, String> query, FindOptions findOptions) {
+        return 0;
     }
 
     @Override

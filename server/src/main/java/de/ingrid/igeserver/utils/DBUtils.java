@@ -7,6 +7,8 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.exception.OStorageException;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.DBFindAllResults;
+import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.documenttypes.DocumentWrapperType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
@@ -38,15 +40,18 @@ public class DBUtils {
 
         // TODO: use cache!
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, null, null, false);
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = false;
+            DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
 
-            if (list.size() == 0) {
+            if (list.totalHits == 0) {
                 String msg = "The user does not seem to be assigned to any database: " + userId;
                 log.error(msg);
             }
 
             // TODO: can this exception be thrown? what about size check above?
-            String catInfoJson = list.stream()
+            String catInfoJson = list.hits.stream()
                     .findFirst()
                     .orElseThrow(() -> new ApiException(500, "No catalog Info found"));
 
@@ -71,20 +76,23 @@ public class DBUtils {
 
         // TODO: use cache!
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, null, null, false);
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = false;
+            DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
 
-            if (list.size() == 0) {
+            if (list.totalHits == 0) {
                 String msg = "The user does not seem to be assigned to any database: " + userId;
                 log.error(msg);
                 // throw new ApiException(500, "User has no assigned catalog");
             }
 
             // return (Set<String>) list.get(0).get("catalogIds");
-            if (list.size() == 0) {
+            if (list.totalHits == 0) {
                 return new HashSet<>();
             } else {
-                Map<String, Object> map = getMapFromObject(list.get(0));
-                return new HashSet<String>((ArrayList)map.get("catalogIds"));
+                Map<String, Object> map = getMapFromObject(list.hits.get(0));
+                return new HashSet<String>((ArrayList) map.get("catalogIds"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -148,7 +156,7 @@ public class DBUtils {
             if (object instanceof String) {
                 return mapper.readValue((String) object, HashMap.class);
             } else {
-                return  mapper.convertValue(object, HashMap.class);
+                return mapper.convertValue(object, HashMap.class);
             }
         } catch (IOException e) {
             log.error(e);
@@ -167,10 +175,13 @@ public class DBUtils {
         query.put("userId", userId);
 
         try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, null, null, false);
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = false;
+            DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
 
 
-            ObjectNode catUserRef = (ObjectNode) MapperService.getJsonMap(list.get(0));
+            ObjectNode catUserRef = (ObjectNode) MapperService.getJsonMap(list.hits.get(0));
             catUserRef.putPOJO("catalogIds", assignedCatalogs);
 
             this.dbService.save("Info", "IGNORE", catUserRef.toString());

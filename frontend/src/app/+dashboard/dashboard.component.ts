@@ -5,6 +5,8 @@ import {DocumentAbstract} from '../store/document/document.model';
 import {Observable} from 'rxjs';
 import {SessionQuery} from '../store/session.query';
 import {Router} from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
+import {NewDocumentPlugin} from '../+form/dialogs/new-doc/new-doc.plugin';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -20,6 +22,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(configService: ConfigService,
               private router: Router,
+              private dialog: MatDialog,
               private docService: DocumentService,
               private sessionQuery: SessionQuery) {
     this.configuration = configService.getConfiguration();

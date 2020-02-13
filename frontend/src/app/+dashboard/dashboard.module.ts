@@ -16,6 +16,8 @@ import {FeatureFlagDirective} from '../directives/feature-flag.directive';
 import {ChartComponent} from './chart/chart.component';
 import {SharedModule} from '../shared/shared.module';
 import {MatListModule} from '@angular/material/list';
+import {QuickSearchComponent} from './quick-search/quick-search.component';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 const routes: Routes = [
   {
@@ -27,14 +29,16 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule, SharedModule, MatListModule
-    ],
-  declarations: [DashboardComponent, ActionButtonComponent, DocumentTileComponent, FeatureFlagDirective, ChartComponent]
+  imports: [
+    RouterModule.forChild(routes),
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule, SharedModule,
+    MatListModule, MatAutocompleteModule
+  ],
+  declarations: [
+    DashboardComponent, ActionButtonComponent, DocumentTileComponent, FeatureFlagDirective, ChartComponent, QuickSearchComponent]
 })
 export class DashboardModule {
 }

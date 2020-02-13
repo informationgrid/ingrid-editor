@@ -1,0 +1,21 @@
+<mat-list *ngIf="docs" style="padding-top: 0" [class.dense]="denseMode">
+    <mat-list-item *ngFor="let doc of docs | async" class="clickable" (click)="select.next(doc)">
+
+        <mat-icon matListIcon [svgIcon]="doc.icon"></mat-icon>
+
+        <h3 matLine>
+            {{doc.title}}
+            <span *ngIf="!hideDate" class="pull-right">{{doc._modified | date}}</span>
+        </h3>
+        <mat-divider></mat-divider>
+    </mat-list-item>
+</mat-list>
+
+<div *ngIf="doc" (click)="select.next(doc)" (keyup.enter)="select.next(doc)">
+    <mat-icon matListIcon [svgIcon]="doc.icon || doc.iconClass"></mat-icon>
+
+    <span matLine>
+        {{doc.title}}
+        <span  *ngIf="!hideDate" class="pull-right">{{doc._modified | date}}</span>
+    </span>
+</div>

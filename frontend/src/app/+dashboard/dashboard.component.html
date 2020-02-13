@@ -5,15 +5,7 @@
     </div>
 
     <div class="dashboard-content">
-        <div class="search-content">
-            <mat-form-field class="search" appearance="outline">
-                <input matInput placeholder="Daten, Adresse oder ID" aria-label="Search">
-            </mat-form-field>
-            <button mat-flat-button color="primary" class="upper-case">
-                <mat-icon>search</mat-icon>
-                Suchen
-            </button>
-        </div>
+        <ige-quick-search (select)="openDocument($event)"></ige-quick-search>
 
         <div class="shortcut">
             <button mat-button (click)="createNewDocument()">
@@ -46,18 +38,7 @@
             </div>
 
             <ige-card-box fxFlex title="Zuletzt bearbeitet im Katalog">
-                <mat-list style="padding-top: 0" dense>
-                    <mat-list-item *ngFor="let doc of recentDocs$ | async" class="clickable" (click)="openDocument(doc.id)">
-                        <mat-icon matListIcon [svgIcon]="doc.icon"></mat-icon>
-
-                        <h3 matLine>
-                            {{doc.title}}
-                            <span class="pull-right">{{doc._modified | date}}</span>
-                        </h3>
-
-                        <mat-divider></mat-divider>
-                    </mat-list-item>
-                </mat-list>
+                <ige-document-list-item [docs]="recentDocs$" [hideDate]="false" (select)="openDocument($event.id)"></ige-document-list-item>
             </ige-card-box>
         </div>
     </div>

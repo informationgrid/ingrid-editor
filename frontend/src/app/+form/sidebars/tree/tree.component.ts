@@ -291,13 +291,17 @@ export class TreeComponent implements OnInit {
   jumpToNode(id: string) {
     this.database.getPath(id).then((path) => {
       this.activeNodeId = path.pop();
-      this.handleExpandNodes(path)
-        .then(() => {
-          const node = this.dataSource.getNode(id);
-          const nodePath = this.getTitlesFromNodePath(node);
-          this.currentPath.next(nodePath);
-          this.activate.next([id]);
-        });
+      if (path.length > 0) {
+        this.handleExpandNodes(path)
+          .then(() => {
+            const node = this.dataSource.getNode(id);
+            const nodePath = this.getTitlesFromNodePath(node);
+            this.currentPath.next(nodePath);
+            this.activate.next([id]);
+          });
+      } else {
+        this.activate.next([id]);
+      }
     });
   }
 }

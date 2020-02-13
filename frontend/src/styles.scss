@@ -473,3 +473,17 @@ ige-root .mat-drawer-container {
     margin-top: 0;
   }
 }
+
+mat-list.mat-list-base.dense, .mat-autocomplete.dense {
+  mat-option, mat-list-item {
+    height: 36px !important;
+    line-height: 36px;
+    font-size: 14px;
+  }
+}
+
+mat-form-field button.field-close {
+  background-color: $ige-background-bar;
+  font-size: 10px !important;
+  color: white;
+}

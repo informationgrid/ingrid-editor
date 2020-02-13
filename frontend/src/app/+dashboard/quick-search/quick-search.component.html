@@ -1,0 +1,40 @@
+<div class="search-content">
+    <mat-form-field class="search" appearance="outline">
+        <input #query matInput placeholder="Daten, Adresse oder ID" aria-label="Search"
+               (keyup)="search(query.value, $event)"
+               [matAutocomplete]="auto">
+        <button *ngIf="query.value.length > 0" mat-icon-button matSuffix class="field-close" (click)="query.value = ''">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field>
+    <mat-autocomplete #auto="matAutocomplete" class="padding" class="dense">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between">
+            <div class="result-header">Suchvorschläge</div>
+            <div>
+                <button mat-button>Erweiterte Suche</button>
+            </div>
+        </div>
+
+        <div class="result-header">Daten ({{numDocs}})</div>
+
+        <mat-option *ngFor="let doc of docs" (onSelectionChange)="select.next(doc.id)">
+            <ige-document-list-item [doc]="doc"></ige-document-list-item>
+        </mat-option>
+
+        <button *ngIf="numDocs > 5" mat-button><mat-icon>keyboard_arrow_right</mat-icon> Alle</button>
+
+        <div class="result-header">Adressen ({{numAddresses}})</div>
+        <mat-option *ngFor="let address of addresses" (onSelectionChange)="select.next(address.id)">
+            <ige-document-list-item [doc]="address"></ige-document-list-item>
+        </mat-option>
+
+        <button *ngIf="numAddresses > 5" mat-button><mat-icon>keyboard_arrow_right</mat-icon> Alle</button>
+
+    </mat-autocomplete>
+
+    <button mat-flat-button color="primary" class="upper-case">
+        <mat-icon>search</mat-icon>
+        Suchen
+    </button>
+
+</div>

@@ -6,7 +6,6 @@ import {AngularSplitModule} from 'angular-split';
 import {ReactiveFormsModule} from '@angular/forms';
 import {FormlyModule} from '@ngx-formly/core';
 import {FlexModule} from '@angular/flex-layout';
-import {FormCoreModule} from '../+form/form-core/form-core.module';
 import {SharedModule} from '../shared/shared.module';
 
 @NgModule({
@@ -18,7 +17,6 @@ import {SharedModule} from '../shared/shared.module';
     ReactiveFormsModule,
     FormlyModule,
     FlexModule,
-    FormCoreModule,
     SharedModule
   ]
 })

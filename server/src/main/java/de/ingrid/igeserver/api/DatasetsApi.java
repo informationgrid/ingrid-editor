@@ -8,6 +8,7 @@ package de.ingrid.igeserver.api;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.model.InlineResponse200;
 import de.ingrid.igeserver.model.InlineResponseDefault;
+import de.ingrid.igeserver.model.SearchResult;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -89,9 +90,10 @@ public interface DatasetsApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Datasets found", response = Void.class)})
     @RequestMapping(value = "/datasets", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<String> find(
+    ResponseEntity<SearchResult> find(
             Principal principal,
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
+            @ApiParam(value = "Define the maximum number of returned documents.") @RequestParam(value = "size", required = false) Integer size,
             @ApiParam(value = "Sort by a given field.") @RequestParam(value = "sort", required = false) String sort,
             @ApiParam(value = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") String sortOrder) throws Exception;
 

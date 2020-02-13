@@ -37,3 +37,12 @@ pre {
 .folder-content {
   padding: 20px;
 }
+
+#sidebar::-webkit-scrollbar {
+  width: 12px;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+  background: #999999;
+  border-radius: 20px;
+}

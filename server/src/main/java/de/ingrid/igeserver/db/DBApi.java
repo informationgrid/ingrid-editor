@@ -13,6 +13,15 @@ public interface DBApi {
 
     Map<String, Long> countChildrenFromNode(String id);
 
+    /**
+     * Count number of documents found with findAll method
+     * @param type
+     * @param query
+     * @param findOptions
+     * @return
+     */
+    int count(String type, Map<String, String> query, FindOptions findOptions);
+
     public static enum DBClass {Documents, User, Role, Info, Behaviours};
 
     /**
@@ -29,7 +38,7 @@ public interface DBApi {
      * Get all documents of a certain type that matches a given query.
      * @return
      */
-    public List<String> findAll(String type, Map<String, String> query, QueryType queryType, String sortField, String sortOrder, boolean resolveReferences);
+    public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options);
 
     /**
      * Save a document with a given ID.

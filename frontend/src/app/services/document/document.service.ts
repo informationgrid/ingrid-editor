@@ -14,6 +14,8 @@ import {ProfileService} from '../profile.service';
 import {SessionStore} from '../../store/session.store';
 import {HttpClient} from '@angular/common/http';
 import {ConfigService, Configuration} from '../config/config.service';
+import {SearchResult} from '../../models/search-result.model';
+import {ServerSearchResult} from '../../models/server-search-result.model';
 
 @Injectable({
   providedIn: 'root'
@@ -39,23 +41,23 @@ export class DocumentService {
     this.configuration = configService.getConfiguration();
   }
 
-  find(query: string): Observable<DocumentAbstract[]> {
+  find(query: string, size = 10): Observable<SearchResult> {
     // TODO: use general sort filter
-    return this.dataService.find(query)
+    return this.http.get<ServerSearchResult>(
+      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}`)
       .pipe(
-        map(json => json.filter(item => item && item._profile !== 'FOLDER')),
-        map(docs => this.mapToDocumentAbstracts(docs, null))
+        // map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        map(result => this.mapSearchResults(result))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       );
   }
 
   findRecent(): void {
-    this.http.get<any[]>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC`)
+    this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC&size=5`)
       .pipe(
-        map(json => json.filter(item => item && item._profile !== 'FOLDER')),
-        map(json => json.slice(0, 5)),
-        map(docs => this.mapToDocumentAbstracts(docs)),
-        tap(docs => this.sessionStore.update({latestDocuments: docs}))
+        // map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        map(result => this.mapSearchResults(result)),
+        tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       ).subscribe();
   }
@@ -220,4 +222,10 @@ export class DocumentService {
     this.treeStore.add(docs);
   }
 
+  private mapSearchResults(result: ServerSearchResult): SearchResult {
+    return {
+      totalHits: result.totalHits,
+      hits: this.mapToDocumentAbstracts(result.hits, null)
+    } as SearchResult;
+  }
 }

@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
-import de.ingrid.igeserver.db.DBApi;
-import de.ingrid.igeserver.db.OrientDBDatabase;
-import de.ingrid.igeserver.db.QueryType;
+import de.ingrid.igeserver.db.*;
 import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.model.User;
 import de.ingrid.igeserver.model.User1;
@@ -156,8 +154,11 @@ public class UsersApiController implements UsersApi {
             String userId = userIds.get(0);
             Map<String, String> query = new HashMap<>();
             query.put("userId", userId);
-            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, null, null, false);
-            boolean isNewEntry = list.size() == 0;
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = false;
+            DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
+            boolean isNewEntry = list.totalHits == 0;
 
             Set<String> catalogIds;
             Map catInfo;
@@ -167,7 +168,7 @@ public class UsersApiController implements UsersApi {
                 catInfo.put("catalogIds", new HashSet<String>());
             } else {
 
-                catInfo = getMapFromJson(list.get(0));
+                catInfo = getMapFromJson(list.hits.get(0));
                 // make list to hashset
                 catInfo.put("catalogIds", new HashSet<>((List)catInfo.get("catalogIds")));
             }
@@ -198,8 +199,11 @@ public class UsersApiController implements UsersApi {
         try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
             Map<String, String> query = new HashMap<>();
             query.put("catalogIds", id);
-            List<String> infos = this.dbService.findAll("Info", query, QueryType.contains, null, null, false);
-            for (String entry : infos) {
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.contains;
+            findOptions.resolveReferences = false;
+            DBFindAllResults infos = this.dbService.findAll("Info", query, findOptions);
+            for (String entry : infos.hits) {
                 JsonNode map = MapperService.getJsonMap(entry);
                 result.add(map.get("userId").asText());
             }
@@ -217,14 +221,17 @@ public class UsersApiController implements UsersApi {
         try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
             Map<String, String> query = new HashMap<>();
             query.put("userId", userId);
-            List<String> info = dbService.findAll("Info", query, QueryType.exact, null, null, false);
-            if (info.size() != 1) {
-                String message = "User is not defined or more than once in IgeUsers-table: " + info.size();
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = false;
+            DBFindAllResults info = dbService.findAll("Info", query, findOptions);
+            if (info.totalHits != 1) {
+                String message = "User is not defined or more than once in IgeUsers-table: " + info.totalHits;
                 log.error(message);
                 throw new ApiException(message);
             }
 
-            ObjectNode map = (ObjectNode) MapperService.getJsonMap(info.get(0));
+            ObjectNode map = (ObjectNode) MapperService.getJsonMap(info.hits.get(0));
             map.put("currentCatalogId", catalogId);
             this.dbService.save("Info", map.get(OrientDBDatabase.DB_ID).asText(), map.toString());
             return ResponseEntity.ok().build();

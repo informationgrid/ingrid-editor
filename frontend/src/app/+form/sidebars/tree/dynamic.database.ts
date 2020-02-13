@@ -43,6 +43,8 @@ export class DynamicDatabase {
   }
 
   mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
-    return docs.map(doc => new TreeNode(doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren, doc._parent, doc.icon));
+    return docs.map(doc => new TreeNode(
+      doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren, doc._parent, doc.icon)
+    );
   }
 }

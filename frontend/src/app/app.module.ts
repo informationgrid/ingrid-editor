@@ -40,6 +40,7 @@ import {SectionWrapper} from './formly/wrapper/section-wrapper.component';
 import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component';
 import {MainHeaderComponent} from './main-header/main-header.component';
 import {InfoDialogComponent} from './main-header/info-dialog/info-dialog.component';
+import {NewDocumentPlugin} from './+form/dialogs/new-doc/new-doc.plugin';
 
 registerLocaleData(de);
 
@@ -129,35 +130,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    }/*
-    {
-      provide: DocumentDataService,
-      useClass: environment.production ? DocumentDataService : DocumentMockService
     },
-    {
-      provide: ConfigDataService,
-      useClass: environment.production ? ConfigDataService : ConfigMockService
-    },
-    {
-      provide: CodelistDataService,
-      useClass: environment.production ? CodelistDataService : CodelistMockService
-    },
-    {
-      provide: RoleDataService,
-      useClass: environment.production ? RoleDataService : RoleMockService
-    },
-    {
-      provide: BehaviorDataService,
-      useClass: environment.production ? BehaviorDataService : BehaviorMockService
-    },
-    {
-      provide: CatalogDataService,
-      useClass: environment.production ? CatalogDataService : CatalogMockService
-    },
-    {
-      provide: UserDataService,
-      useClass: environment.production ? UserDataService : UserMockService
-    }*/
+    NewDocumentPlugin
 
   ], // additional providers
 

@@ -21,7 +21,7 @@ export class ConfigDataService {
           name: json.name,
           roles: json.roles,
           userId: json.userId,
-          currentCatalog: new Catalog(json.currentCatalog),
+          currentCatalog: json.currentCatalog ? new Catalog(json.currentCatalog) : {},
           catalogProfile: json.catalogProfile
         } as UserInfo;
       })

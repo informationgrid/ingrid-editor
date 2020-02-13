@@ -17,15 +17,18 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { CardBoxComponent } from './card-box/card-box.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
+import { DocumentListItemComponent } from './document-list-item/document-list-item.component';
+import {MatLineModule} from '@angular/material/core';
+import {MatListModule} from '@angular/material/list';
 
 @NgModule({
   imports: [
     CommonModule,
     MatIconModule, MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule,
     MatSlideToggleModule, FlexModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
-    MatCardModule, MatDividerModule],
-  declarations: [TreeComponent, TreeHeaderComponent, CardBoxComponent],
-  exports: [TreeComponent, MatIconModule, MatButtonModule, CardBoxComponent]
+    MatCardModule, MatDividerModule, MatLineModule, MatListModule],
+  declarations: [TreeComponent, TreeHeaderComponent, CardBoxComponent, DocumentListItemComponent],
+  exports: [TreeComponent, MatIconModule, MatButtonModule, CardBoxComponent, DocumentListItemComponent]
 })
 export class SharedModule {
 }

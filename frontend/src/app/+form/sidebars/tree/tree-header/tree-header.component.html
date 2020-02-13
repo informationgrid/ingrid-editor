@@ -8,15 +8,17 @@
     </div>
 
     <mat-form-field class="search" appearance="outline">
-        <input matInput placeholder="Suche" aria-label="Search"
-               [formControl]="searchValue"
+        <input #query matInput placeholder="Suche" aria-label="Search"
+               (keyup)="search(query.value, $event)"
                [matAutocomplete]="searchAuto">
-        <mat-icon matSuffix>search</mat-icon>
-        <mat-autocomplete #searchAuto="matAutocomplete">
-            <mat-option *ngFor="let doc of searchResult | async" (onSelectionChange)="loadResultDocument(doc)" [value]="doc._id">
-                <mat-icon svgIcon="data"></mat-icon>
-                <span>{{doc.title}}</span>
-                <!-- <small>Population: {{state.population}}</small>-->
+        <mat-icon *ngIf="query.value.length === 0" matSuffix>search</mat-icon>
+        <button *ngIf="query.value.length > 0" mat-icon-button matSuffix class="field-close" (click)="query.value = ''">
+            <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete #searchAuto="matAutocomplete" class="dense">
+            <mat-option *ngFor="let doc of searchResult | async"
+                        (onSelectionChange)="loadResultDocument(doc)">
+                <ige-document-list-item [doc]="doc"></ige-document-list-item>
             </mat-option>
         </mat-autocomplete>
     </mat-form-field>

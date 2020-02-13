@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.DBFindAllResults;
+import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.model.Data1;
+import de.ingrid.igeserver.model.SearchResult;
 import de.ingrid.igeserver.services.DocumentService;
 import de.ingrid.igeserver.services.ExportService;
 import de.ingrid.igeserver.services.MapperService;
@@ -177,12 +180,15 @@ public class DatasetsApiController implements DatasetsApi {
             String recordId = null;
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
-            List<String> docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, null, null, false);
-            if (docWrappers.size() != 1) {
-                log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docWrappers.size() + ")");
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = false;
+            DBFindAllResults docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, findOptions);
+            if (docWrappers.totalHits != 1) {
+                log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docWrappers.totalHits + ")");
                 throw new RuntimeException("No unique document wrapper found");
             }
-            ObjectNode docWrapper = (ObjectNode) getJsonMap(docWrappers.get(0));
+            ObjectNode docWrapper = (ObjectNode) getJsonMap(docWrappers.hits.get(0));
             Map result;
 
 
@@ -336,7 +342,7 @@ public class DatasetsApiController implements DatasetsApi {
             Principal principal,
             String parentId
     ) throws ApiException {
-        List<String> docs = null;
+        DBFindAllResults docs = null;
         List<String> mappedDocs = new ArrayList<>();
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
@@ -346,9 +352,12 @@ public class DatasetsApiController implements DatasetsApi {
 
             Map<String, String> queryMap = new HashMap<>();
             queryMap.put("_parent", parentId);
-            docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.exact, null, null, true);
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = true;
+            docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, findOptions);
 
-            String childDocs = docs.stream()
+            String childDocs = docs.hits.stream()
                     .map(doc -> {
                         try {
                             return getJsonMap(doc);
@@ -370,9 +379,9 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
-    public ResponseEntity<String> find(Principal principal, String query, String sort, String sortOrder) throws Exception {
+    public ResponseEntity<SearchResult> find(Principal principal, String query, Integer size, String sort, String sortOrder) throws Exception {
 
-        List<String> docs = null;
+        DBFindAllResults docs = null;
         List<String> mappedDocs = new ArrayList<>();
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
@@ -381,9 +390,19 @@ public class DatasetsApiController implements DatasetsApi {
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map<String, String> queryMap = new HashMap<>();
             queryMap.put("title", query);
-            docs = this.dbService.findAll("*", queryMap, QueryType.like, sort, sortOrder, true);
+            FindOptions findOptions = new FindOptions();
+            findOptions.size = size;
+            findOptions.queryType = QueryType.like;
+            findOptions.sortField = sort;
+            findOptions.sortOrder = sortOrder;
+            findOptions.resolveReferences = true;
 
-            String preparedDocs = docs.stream()
+            docs = this.dbService.findAll("*", queryMap, findOptions);
+
+            SearchResult searchResult = new SearchResult();
+            searchResult.totalHits = docs.totalHits;
+
+            List<ObjectNode> preparedDocs = docs.hits.stream()
                     .map(doc -> {
                         try {
                             return getJsonMap(doc);
@@ -397,14 +416,11 @@ public class DatasetsApiController implements DatasetsApi {
                         node.put(FIELD_STATE, this.documentService.determineState(doc));
                         return node;
                     })
-                    .map(doc -> doc.toString())
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.toList());
 
-            /*for (String doc : docs) {
-                mappedDocs.add(this.dbUtils.toJsonString(this.documentService.prepareDocumentFromDB(doc, null, fields)));
-            }*/
+            searchResult.hits = preparedDocs;
 
-            return ResponseEntity.ok("[" + preparedDocs + "]");
+            return ResponseEntity.ok(searchResult);
 
         }
     }
@@ -430,10 +446,13 @@ public class DatasetsApiController implements DatasetsApi {
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
-            List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, null, null, true);
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = true;
+            DBFindAllResults docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, findOptions);
 
-            if (docs.size() > 0) {
-                Map doc = getMapFromObject(docs.get(0));
+            if (docs.totalHits > 0) {
+                Map doc = getMapFromObject(docs.hits.get(0));
                 log.debug("Getting dataset: " + id);
 
                 if (doc == null) {

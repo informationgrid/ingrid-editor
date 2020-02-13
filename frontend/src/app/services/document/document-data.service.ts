@@ -25,9 +25,9 @@ export class DocumentDataService {
     });
   }
 
-  find(query: string): Observable<DocumentAbstract[]> {
+  find(query: string, size: number = 10): Observable<DocumentAbstract[]> {
     return this.http.get<DocumentAbstract[]>(
-      `${this.configuration.backendUrl}datasets?query=${query}&sort=title`);
+      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}`);
   }
 
   getChildren(parentId: string): Observable<any[]> {
