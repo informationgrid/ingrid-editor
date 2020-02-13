@@ -68,6 +68,7 @@ export class CatalogManagerComponent implements OnInit {
   showCatalogDetail(catalog: Catalog) {
     this.dialog.open(CatalogDetailComponent, {
       data: {...catalog},
+      disableClose: true,
       minWidth: 350
     }).afterClosed().subscribe((response: CatalogDetailResponse) => {
       if (response) {
