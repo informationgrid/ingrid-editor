@@ -15,7 +15,7 @@
     </mat-radio-group>
 
     <label>Im Verzeichnis</label>
-    <ige-choose-folder (update)="result.parent = $event"></ige-choose-folder>
+    <ige-choose-folder (update)="result.parent = $event" [forAddress]="data.forAddress"></ige-choose-folder>
     </form>
 
 </mat-dialog-content>

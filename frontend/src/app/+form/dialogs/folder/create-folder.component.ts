@@ -18,6 +18,7 @@ import {FormularService} from '../../formular.service';
 export class CreateFolderComponent implements OnInit {
 
   parent: string = null;
+  private forAddress: boolean;
 
   private static createNewFolderDoc(folderName: string, parent?: string) {
     const data: any = {
@@ -35,6 +36,7 @@ export class CreateFolderComponent implements OnInit {
               public dialogRef: MatDialogRef<CreateFolderComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
     this.parent = data.parent;
+    this.forAddress = data.forAddress;
   }
 
   ngOnInit() {
@@ -49,7 +51,7 @@ export class CreateFolderComponent implements OnInit {
       const folder = CreateFolderComponent.createNewFolderDoc(value, this.parent);
 
       // by saving the folder an update event is sent automatically to notify tree
-      this.storageService.save(folder, true);
+      this.storageService.save(folder, true, this.forAddress);
 
       this.dialogRef.close();
     }

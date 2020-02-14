@@ -29,4 +29,8 @@ export class FormPluginsService implements OnDestroy {
     this.plugins.forEach(p => p.unregister());
   }
 
+  setAddressConfiguration() {
+    this.plugins.forEach(p => p.setForAddress());
+  }
+
 }

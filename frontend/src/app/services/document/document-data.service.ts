@@ -43,12 +43,13 @@ export class DocumentDataService {
     return this.http.get<IgeDocument>(this.configuration.backendUrl + 'datasets/' + id);
   }
 
-  save(data: IgeDocument): Observable<any> {
+  save(data: IgeDocument, isAddress?: boolean): Observable<any> {
+    const params = isAddress ? '?address=true' : '';
     if (data._id) {
-      return this.http.put(this.configuration.backendUrl + 'datasets/' + data._id, data);
+      return this.http.put(this.configuration.backendUrl + 'datasets/' + data._id + params, data);
 
     } else {
-      return this.http.post(this.configuration.backendUrl + 'datasets', data);
+      return this.http.post(this.configuration.backendUrl + 'datasets' + params, data);
 
     }
   }
@@ -63,8 +64,9 @@ export class DocumentDataService {
     }
   }
 
-  delete(ids: string[]): Observable<any> {
-    return this.http.delete(this.configuration.backendUrl + 'datasets/' + ids, {responseType: 'text'});
+    delete(ids: string[], forAddress?: boolean): Observable<any> {
+    const params = forAddress ? '?address=true' : '';
+    return this.http.delete(this.configuration.backendUrl + 'datasets/' + ids + params, {responseType: 'text'});
   }
 
   revert(id: string): Observable<any> {

@@ -16,6 +16,7 @@ import {HttpClient} from '@angular/common/http';
 import {ConfigService, Configuration} from '../config/config.service';
 import {SearchResult} from '../../models/search-result.model';
 import {ServerSearchResult} from '../../models/server-search-result.model';
+import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,8 @@ export class DocumentService {
               private messageService: MessageService,
               private profileService: ProfileService,
               private sessionStore: SessionStore,
-              private treeStore: TreeStore) {
+              private treeStore: TreeStore,
+              private addressTreeStore: AddressTreeStore) {
     this.configuration = configService.getConfiguration();
   }
 
@@ -68,10 +70,11 @@ export class DocumentService {
         map(docs => this.mapToDocumentAbstracts(docs, parentId)),
         map(docs => docs.sort((a, b) => a.title.localeCompare(b.title))),
         tap(docs => {
+          const store = isAddress ? this.addressTreeStore : this.treeStore;
           if (parentId === null) {
-            this.treeStore.set(docs);
+            store.set(docs);
           } else {
-            this.treeStore.add(docs);
+            store.add(docs);
             // this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
           }
           return docs;
@@ -103,10 +106,10 @@ export class DocumentService {
     );
   }
 
-  save(data: IgeDocument, isNewDoc?: boolean): Promise<IgeDocument> {
+  save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean): Promise<IgeDocument> {
     return new Promise((resolve, reject) => {
 
-      this.dataService.save(data)
+      this.dataService.save(data, isAddress)
         .subscribe(json => {
           const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
@@ -161,8 +164,8 @@ export class DocumentService {
     });
   }
 
-  delete(ids: string[]): void {
-    this.dataService.delete(ids)
+  delete(ids: string[], forAddress?: boolean): void {
+    this.dataService.delete(ids, forAddress)
       .subscribe(res => {
         console.log('ok', res);
         const data = ids.map(id => {

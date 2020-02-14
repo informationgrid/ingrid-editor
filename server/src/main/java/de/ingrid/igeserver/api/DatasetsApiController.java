@@ -7,7 +7,6 @@ import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.DBFindAllResults;
 import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
-import de.ingrid.igeserver.documenttypes.AddressWrapperType;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.model.SearchResult;
 import de.ingrid.igeserver.services.DocumentService;
@@ -78,8 +77,9 @@ public class DatasetsApiController implements DatasetsApi {
      */
     public ResponseEntity<String> createDataset(
             Principal principal,
-            @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
-            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish) throws ApiException {
+            String data,
+            boolean address,
+            Boolean publish) throws ApiException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
@@ -103,11 +103,6 @@ public class DatasetsApiController implements DatasetsApi {
             // get document type from document
             String documentType = dataJson.get(FIELD_PROFILE).asText();
 
-            // get
-
-            // db action
-            // String jsonMapped = DBUtils.toJsonString(mapDocument);
-//            Map result = this.dbService.save(documentType, null, mapDocument);
             Map result = this.dbService.save(documentType, null, dataJson.toString());
 
 
@@ -120,9 +115,8 @@ public class DatasetsApiController implements DatasetsApi {
             documentWrapper.put(FIELD_DRAFT, result.get(DB_ID).toString());
             documentWrapper.put(FIELD_PARENT, parentId);
 
-            Map resultWrapper = this.dbService.save(DOCUMENT_WRAPPER, null, documentWrapper.toString());
-
-//            updateParentWithChildInfo(parentId);
+            Map resultWrapper = this.dbService.save(
+                    address ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER, null, documentWrapper.toString());
 
             Map docResult = this.documentService.prepareDocumentFromDB(result, documentWrapper);
 
@@ -133,21 +127,6 @@ public class DatasetsApiController implements DatasetsApi {
         }
 
     }
-
-    /*private void updateParentWithChildInfo(String parentId) {
-        if (parentId != null) {
-            JsonNode parentDoc = this.documentService.getByDocId(parentId, true);
-            ObjectNode parentDocVersion = (ObjectNode) this.getLatestDocument(parentDoc);
-            if (!parentDocVersion.get(FIELD_HAS_CHILDREN).asBoolean()) {
-                parentDocVersion.put(FIELD_HAS_CHILDREN, true);
-                this.dbService.save(
-                        parentDocVersion.get(FIELD_PROFILE).asText(),
-                        parentDocVersion.get(DB_ID).asText(),
-                        parentDocVersion.toString()
-                );
-            }
-        }
-    }*/
 
     /**
      * Update dataset.
@@ -245,17 +224,18 @@ public class DatasetsApiController implements DatasetsApi {
 
     }
 
-    public ResponseEntity<String> deleteById(Principal principal, @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids) throws ApiException {
+    public ResponseEntity<String> deleteById(Principal principal, String[] ids, boolean forAddress) throws ApiException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             for (String id : ids) {
-                String recordId = this.dbService.getRecordId(DOCUMENT_WRAPPER, id);
-                Map dbDoc = this.dbService.find(DOCUMENT_WRAPPER, recordId);
+                String recordId = this.dbService.getRecordId(type, id);
+                Map dbDoc = this.dbService.find(type, recordId);
                 // TODO: remove references to document!?
-                this.dbService.remove(DOCUMENT_WRAPPER, id);
+                this.dbService.remove(type, id);
 
                 // update parent information about children
                 String parentId = (String) dbDoc.get(PARENT_ID);

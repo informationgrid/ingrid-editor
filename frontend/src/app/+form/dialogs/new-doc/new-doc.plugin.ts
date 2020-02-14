@@ -9,6 +9,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {DocumentService} from '../../../services/document/document.service';
 import {MessageService} from '../../../services/message.service';
 import {FormularService} from '../../formular.service';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
 @Injectable()
 export class NewDocumentPlugin extends Plugin implements OnDestroy {
@@ -25,6 +26,7 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
 
   constructor(private toolbarService: FormToolbarService,
               private treeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
               private formularService: FormularService,
               private documentService: DocumentService,
               private messageService: MessageService,
@@ -57,7 +59,7 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
     //   availableTypes: this.formularService.docTypes,
     //   rootOption: true
     // };
-    const selectedDocs = this.treeQuery.getActive();
+    const selectedDocs = this.forAddress ? this.addressTreeQuery.getActive() : this.treeQuery.getActive();
     this.newDocOptions.docTypes = this.getDocTypes()
       .filter(type => type.id !== 'FOLDER')
       .sort((a, b) => a.label.localeCompare(b.label));
@@ -71,7 +73,8 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
           docTypes: this.newDocOptions.docTypes,
           rootOption: this.newDocOptions.rootOption,
           parent: this.newDocOptions.selectedDataset.id,
-          choice: null
+          choice: null,
+          forAddress: this.forAddress
         }
     });
     dlg.afterClosed().subscribe((result: CreateDocOptions) => {
@@ -95,7 +98,7 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
   }
 
   private saveForm(data: IgeDocument) {
-    this.documentService.save(data, true).then(() => {
+    this.documentService.save(data, true, this.forAddress).then(() => {
       this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
     }, (err: HttpErrorResponse) => {
       throw err;

@@ -11,7 +11,6 @@ import {ScrollToDirective} from '../directives/scrollTo.directive';
 import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatDividerModule} from '@angular/material/divider';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -19,7 +18,6 @@ import {MatListModule} from '@angular/material/list';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
-import {FlexLayoutModule} from '@angular/flex-layout';
 import {SidebarComponent} from './sidebars/sidebar.component';
 import {FormInfoComponent} from './form-info/form-info.component';
 import {FormDialogsModule} from './dialogs/tree-select/form-dialogs.module';
@@ -29,29 +27,17 @@ import {RouterModule} from '@angular/router';
 import {FormlyModule} from '@ngx-formly/core';
 import {IgeFormlyModule} from '../formly/ige-formly.module';
 import {HeaderNavigationComponent} from './form-info/header-navigation/header-navigation.component';
-import {BreadcrumbComponent} from './form-info/breadcrumb/breadcrumb.component';
 import {HeaderTitleRowComponent} from './form-info/header-title-row/header-title-row.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
-import {CreateFolderComponent} from './dialogs/folder/create-folder.component';
-import {FolderPlugin} from './dialogs/folder/folder.plugin';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {PasteDialogComponent} from './dialogs/copy-cut-paste/paste-dialog.component';
-import {CopyCutPastePlugin} from './dialogs/copy-cut-paste/copy-cut-paste.plugin';
 import {IsoViewComponent} from './dialogs/isoView/iso-view.component';
 import {FormDashboardComponent} from './form-dashboard/form-dashboard.component';
 import {HeaderMoreComponent} from './form-info/header-more/header-more.component';
 import {FormMessageComponent} from './form-info/form-message/form-message.component';
-import {IsoViewPlugin} from './dialogs/isoView/iso-view.plugin';
-import {FormularService} from './formular.service';
-import {PublishPlugin} from './dialogs/publish/publish.plugin';
-import {UndoPlugin} from './dialogs/undo/undo.plugin';
-import {PrintViewPlugin} from './dialogs/print-view/print-view.plugin';
-import {DeleteDocsPlugin} from './dialogs/delete-docs/delete-docs.plugin';
-import {FormToolbarService} from './form-shared/toolbar/form-toolbar.service';
 import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.component';
-import {ChooseFolderComponent} from './dialogs/folder/choose-folder/choose-folder.component';
 import {FormSharedModule} from './form-shared/form-shared.module';
 
 @NgModule({
@@ -69,16 +55,15 @@ import {FormSharedModule} from './form-shared/form-shared.module';
   ],
   declarations: [
     LeafletComponent, DynamicFormComponent,
-    NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
+    NewDocumentComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
-    FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent,
-    HeaderMoreComponent, FormMessageComponent, ChooseFolderComponent],
+    FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, FormDashboardComponent,
+    HeaderMoreComponent, FormMessageComponent],
   providers: [
-    FormularService, FormToolbarService, NominatimService, FolderPlugin, DeleteDocsPlugin,
-    IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin],
+    NominatimService],
   exports: [RouterModule, FormsModule, ScrollToDirective, SidebarComponent],
-  entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
+  entryComponents: [NewDocumentComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
 })
 export class IgeFormModule {
 }

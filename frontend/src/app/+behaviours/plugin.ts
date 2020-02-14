@@ -17,6 +17,7 @@ export abstract class Plugin {
   isActive: boolean;
   defaultActive: boolean;
   _state?: string;
+  forAddress = false;
 
   register(): void {
     this.isActive = true;
@@ -24,5 +25,9 @@ export abstract class Plugin {
 
   unregister(): void {
     this.isActive = false;
+  }
+
+  setForAddress(): void {
+    this.forAddress = true;
   }
 }

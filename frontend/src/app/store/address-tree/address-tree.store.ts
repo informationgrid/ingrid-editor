@@ -9,7 +9,9 @@ export interface AddressTreeState extends EntityState<DocumentAbstract>, MultiAc
 export class AddressTreeStore extends EntityStore<AddressTreeState> {
 
   constructor() {
-    super();
+    super({
+      activePathTitles: []
+    });
   }
 
 }

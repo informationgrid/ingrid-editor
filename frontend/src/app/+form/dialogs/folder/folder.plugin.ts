@@ -1,6 +1,5 @@
-import {ComponentFactoryResolver, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
-import {ModalService} from '../../../services/modal/modal.service';
 import {Plugin} from '../../../+behaviours/plugin';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
@@ -19,9 +18,7 @@ export class FolderPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private treeQuery: TreeQuery,
-              private modalService: ModalService,
-              private dialog: MatDialog,
-              private _cr: ComponentFactoryResolver) {
+              private dialog: MatDialog) {
     super();
     this.isActive = true;
   }
@@ -63,12 +60,14 @@ export class FolderPlugin extends Plugin {
   createFolder() {
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
-    // const parents = this.formService.getSelectedDocuments();
     const parents = this.treeQuery.getActive();
 
     this.dialog.open(CreateFolderComponent, {
       minWidth: 500,
-      data: { parent: parents && parents[0] ? parents[0].id : null }
+      data: {
+        parent: parents && parents[0] ? parents[0].id : null,
+        forAddress: this.forAddress
+      }
     });
   }
 
