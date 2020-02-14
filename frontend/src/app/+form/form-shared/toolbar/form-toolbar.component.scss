@@ -1,4 +1,4 @@
-@import "../../../variables";
+@import "src/variables";
 
 .mat-toolbar {
   min-height: 56px;
@@ -14,7 +14,8 @@
   padding-right: 12px;
 
   .drop-down {
-    width: 60px;
+    width: 50px;
+    padding-left: 10px;
   }
 }
 

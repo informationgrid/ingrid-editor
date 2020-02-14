@@ -6,6 +6,7 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {TreeNode} from '../../../store/tree/tree-node.model';
 import {TreeStore} from '../../../store/tree/tree.store';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -16,22 +17,32 @@ export class DynamicDatabase {
 
   treeUpdates = new Subject<UpdateDatasetInfo>();
 
-  constructor(private docService: DocumentService, private treeQuery: TreeQuery, private treeStore: TreeStore) {
+  constructor(private docService: DocumentService, private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery) {
     this.docService.datasetsChanged$.subscribe(docs => this.treeUpdates.next(docs));
   }
 
   /** Initial data from database */
-  initialData(forceFromServer?: boolean): Observable<DocumentAbstract[]> {
-    return this.getChildren(null, forceFromServer);
+  initialData(forceFromServer?: boolean, isAddress?: boolean): Observable<DocumentAbstract[]> {
+    return this.getChildren(null, forceFromServer, isAddress);
   }
 
-  getChildren(node: string, forceFromServer?: boolean): Observable<DocumentAbstract[]> {
-    const children = forceFromServer ? [] : this.treeQuery.getChildren(node);
+  getChildren(node: string, forceFromServer?: boolean, isAddress?: boolean): Observable<DocumentAbstract[]> {
+
+    let children;
+    if (forceFromServer) {
+      children = [];
+    } else {
+      if (isAddress) {
+        children = this.addressTreeQuery.getChildren(node);
+      } else {
+        children = this.treeQuery.getChildren(node);
+      }
+    }
 
     if (children.length > 0) {
       return of(children);
     }
-    return this.docService.getChildren(node);
+    return this.docService.getChildren(node, isAddress);
   }
 
   search(value: string) {

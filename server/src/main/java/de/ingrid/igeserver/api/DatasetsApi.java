@@ -83,7 +83,10 @@ public interface DatasetsApi {
     @RequestMapping(value = "/tree/children", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> getChildren(
             Principal principal,
-            @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) String parentId) throws Exception;
+            @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.")
+            @RequestParam(value = "parentId", required = false) String parentId,
+            @ApiParam(value = "Define if we want to have addresses or documents.")
+            @RequestParam(value = "address", required = false) boolean isAddress) throws Exception;
 
     @ApiOperation(value = "Get datasets by a query", notes = "Get all datasets or those which match a given query. The results can also be sorted.", response = Void.class, tags = {
             "Datasets",})

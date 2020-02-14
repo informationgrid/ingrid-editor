@@ -62,8 +62,8 @@ export class DocumentService {
       ).subscribe();
   }
 
-  getChildren(parentId: string): Observable<DocumentAbstract[]> {
-    return this.dataService.getChildren(parentId)
+  getChildren(parentId: string, isAddress?: boolean): Observable<DocumentAbstract[]> {
+    return this.dataService.getChildren(parentId, isAddress)
       .pipe(
         map(docs => this.mapToDocumentAbstracts(docs, parentId)),
         map(docs => docs.sort((a, b) => a.title.localeCompare(b.title))),

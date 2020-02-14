@@ -30,8 +30,9 @@ export class DocumentDataService {
       `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}`);
   }
 
-  getChildren(parentId: string): Observable<any[]> {
-    const url = `${this.configuration.backendUrl}tree/children` + (parentId ? `?parentId=${parentId}` : '');
+  getChildren(parentId: string, isAddress = false): Observable<any[]> {
+    const params = this.createGetChildrenParams(parentId, isAddress);
+    const url = `${this.configuration.backendUrl}tree/children` + params;
     return this.http.get<any[]>(url)
       .pipe(
         // catchError( (err) => this.errorService.handle( err ) )
@@ -90,5 +91,17 @@ export class DocumentDataService {
       destId: dest
     };
     return body;
+  }
+
+  private createGetChildrenParams(parentId: string, isAddress: boolean): string {
+    let params = '';
+    if (parentId) {
+      params += `?parentId=${parentId}`;
+    }
+    if (isAddress) {
+      params += params.length > 0 ? '&' : '?';
+      params += 'address=true';
+    }
+    return params;
   }
 }

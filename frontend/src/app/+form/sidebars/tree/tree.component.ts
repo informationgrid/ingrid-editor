@@ -26,6 +26,7 @@ export class TreeAction {
 })
 export class TreeComponent implements OnInit {
 
+  @Input() forAddresses: boolean;
   @Input() expandNodeIds: Observable<string[]>;
   @Input() showReloadButton = true;
   @Input() activeNodeId: string = null;
@@ -175,7 +176,7 @@ export class TreeComponent implements OnInit {
   }
 
   reloadTree() {
-    this.database.initialData(true)
+    this.database.initialData(true, this.forAddresses)
       .pipe(
         map(docs => this.database.mapDocumentsToTreeNodes(docs, 0)),
         map(docs => docs.sort(this.dataSource.sortNodesByFolderFirst))

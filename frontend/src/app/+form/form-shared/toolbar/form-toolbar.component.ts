@@ -21,6 +21,7 @@ export class FormToolbarComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('init toolbar');
     this.buttons_left = this.formToolbarService.buttons.filter(b => b.align !== 'right');
     this.buttons_right = this.formToolbarService.buttons.filter(b => b.align === 'right');
   }

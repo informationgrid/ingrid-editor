@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {Plugin} from '../../../+behaviours/plugin';
 import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';

@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {Plugin} from '../../../+behaviours/plugin';
-import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {CreateDocOptions, NewDocumentComponent} from '../new-document/new-document.component';

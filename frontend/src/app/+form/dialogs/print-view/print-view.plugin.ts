@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {Plugin} from '../../../+behaviours/plugin';
-import {FormToolbarService, Separator, ToolbarItem} from '../../toolbar/form-toolbar.service';
+import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
 import {PrintViewDialogComponent} from './print-view-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {untilDestroyed} from 'ngx-take-until-destroy';

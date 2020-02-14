@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {Behaviour} from '../+behaviours/behaviours';
-import {FormToolbarService} from './toolbar/form-toolbar.service';
+import {FormToolbarService} from './form-shared/toolbar/form-toolbar.service';
 import {ActivatedRoute} from '@angular/router';
 import {DocumentService} from '../services/document/document.service';
 import {ModalService} from '../services/modal/modal.service';
@@ -19,7 +19,7 @@ import {UpdateType} from '../models/update-type.enum';
 import {SessionQuery} from '../store/session.query';
 import {untilDestroyed} from 'ngx-take-until-destroy';
 import {FormularService} from './formular.service';
-import {FormPluginsService} from './form-plugins.service';
+import {FormPluginsService} from './form-shared/form-plugins.service';
 
 @Component({
   templateUrl: './dynamic-form.component.html',

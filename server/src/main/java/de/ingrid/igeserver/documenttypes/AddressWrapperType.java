@@ -9,11 +9,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DocumentWrapperType extends DocumentType {
+public class AddressWrapperType extends DocumentType {
 
-    private static Logger log = LogManager.getLogger(DocumentWrapperType.class);
+    private static Logger log = LogManager.getLogger(AddressWrapperType.class);
 
-    public static final String DOCUMENT_WRAPPER = "DocumentWrapper";
     public static final String ADDRESS_WRAPPER = "AddressWrapper";
 
     private String[] profiles = new String[0];
@@ -22,9 +21,9 @@ public class DocumentWrapperType extends DocumentType {
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(DOCUMENT_WRAPPER)) {
-            log.debug("Create class " + DOCUMENT_WRAPPER);
-            OClass docClass = schema.createClass(DOCUMENT_WRAPPER);
+        if (!schema.existsClass(ADDRESS_WRAPPER)) {
+            log.debug("Create class " + ADDRESS_WRAPPER);
+            OClass docClass = schema.createClass(ADDRESS_WRAPPER);
 
             // TODO: set more constraints and information for a new catalog (name, email?, ...)
             docClass.createProperty("_id", OType.STRING);

@@ -1,5 +1,5 @@
 import {ComponentFactoryResolver, Injectable} from '@angular/core';
-import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {Plugin} from '../../../+behaviours/plugin';
 import {MatDialog} from '@angular/material/dialog';

@@ -7,6 +7,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {FormlyModule} from '@ngx-formly/core';
 import {FlexModule} from '@angular/flex-layout';
 import {SharedModule} from '../shared/shared.module';
+import {FormSharedModule} from '../+form/form-shared/form-shared.module';
 
 @NgModule({
   declarations: [AddressComponent],
@@ -17,8 +18,10 @@ import {SharedModule} from '../shared/shared.module';
     ReactiveFormsModule,
     FormlyModule,
     FlexModule,
-    SharedModule
-  ]
+    SharedModule,
+    FormSharedModule
+  ],
+  providers: []
 })
 export class AddressModule {
 }

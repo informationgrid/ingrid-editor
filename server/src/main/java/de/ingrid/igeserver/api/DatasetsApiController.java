@@ -7,6 +7,7 @@ import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.DBFindAllResults;
 import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
+import de.ingrid.igeserver.documenttypes.AddressWrapperType;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.model.SearchResult;
 import de.ingrid.igeserver.services.DocumentService;
@@ -33,6 +34,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.ingrid.igeserver.db.OrientDBDatabase.DB_ID;
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.ADDRESS_WRAPPER;
 import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
 import static de.ingrid.igeserver.services.MapperService.*;
 
@@ -340,7 +342,8 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<String> getChildren(
             Principal principal,
-            String parentId
+            String parentId,
+            boolean isAddress
     ) throws ApiException {
         DBFindAllResults docs = null;
         List<String> mappedDocs = new ArrayList<>();
@@ -355,7 +358,7 @@ public class DatasetsApiController implements DatasetsApi {
             FindOptions findOptions = new FindOptions();
             findOptions.queryType = QueryType.exact;
             findOptions.resolveReferences = true;
-            docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, findOptions);
+            docs = this.dbService.findAll(isAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER, queryMap, findOptions);
 
             String childDocs = docs.hits.stream()
                     .map(doc -> {

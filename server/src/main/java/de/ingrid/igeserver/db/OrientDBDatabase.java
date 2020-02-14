@@ -33,6 +33,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
 
@@ -150,44 +151,29 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) {
-        String queryString = null;
-        String countQuery = null;
+        String queryString;
+        String countQuery;
 
         if (query == null || query.isEmpty()) {
-            // queryString = "SELECT * FROM " + type;
+            queryString = "SELECT * FROM " + type;
+            countQuery = "SELECT count(*) FROM " + type;
         } else {
-            // select * from `Documents` where (draft.firstName like "%er%" or draft.lastName like "%es%")
-            // TODO: try to use lucene index!
-            List<String> where = new ArrayList<>();
-            for (String key : query.keySet()) {
-                String value = query.get(key);
-                if (value == null) {
-                    where.add(key + ".toLowerCase() IS NULL");
-                } else {
-                    switch (options.queryType) {
-                        case like:
-                            where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
-                            break;
-                        case exact:
-                            where.add(key + " == '" + value + "'");
-                            break;
-                        case contains:
-                            where.add(key + " contains '" + value + "'");
-                            break;
-                    }
-                }
-            }
+            // TODO: try to use Elasticsearch as an alternative!
+            List<String> where = createWhereClause(query, options);
 
             if (!type.equals("*")) {
-                queryString = "SELECT * FROM " + type + " WHERE (" + String.join(" or ", where) + ")";
-                countQuery = "SELECT count(*) FROM " + type + " WHERE (" + String.join(" or ", where) + ")";
+                String whereString = String.join(" OR ", where);
+                queryString = "SELECT * FROM " + type + " WHERE (" + whereString + ")";
+                countQuery = "SELECT count(*) FROM " + type + " WHERE (" + whereString + ")";
             } else {
-                queryString = "SELECT FROM (SELECT EXPAND( $c ) LET $a = ( SELECT FROM AddressDoc ), $b = ( SELECT FROM mCloudDoc ), $c = UNIONALL( $a, $b )) WHERE (" + String.join(" or ", where) + ")";
-                countQuery = "SELECT count(*) FROM (SELECT EXPAND( $c ) LET $a = ( SELECT FROM AddressDoc ), $b = ( SELECT FROM mCloudDoc ), $c = UNIONALL( $a, $b )) WHERE (" + String.join(" or ", where) + ")";
+                String draftWhere = attachFieldToWhereList(where, "draft.");
+                String publishedWhere = attachFieldToWhereList(where, "published.");
+                queryString = "SELECT FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
+                countQuery = "SELECT count(*) FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
             }
 
             if (options.sortField != null) {
-                queryString += "ORDER BY " + options.sortField + " " + options.sortOrder;
+                queryString += " ORDER BY " + options.sortField + " " + options.sortOrder;
             }
             if (options.size != null) {
                 queryString += " LIMIT " + options.size;
@@ -195,28 +181,40 @@ public class OrientDBDatabase implements DBApi {
             log.debug("Query-String: " + queryString);
         }
 
-
         OResultSet docs = getDBFromThread().query(queryString);
         OResultSet countDocs = getDBFromThread().query(countQuery);
 
-        // find references (document wrapper)
-        if (type.equals("*")) {
-            List<String> wrapperList = new ArrayList<>();
-            while (docs.hasNext()) {
-                ORID identity = docs.next().getRecord().get().getIdentity();
-                OResultSet wrapperResults = getDBFromThread().query("FIND REFERENCES " + identity + " [" + DOCUMENT_WRAPPER + "]");
-                while (wrapperResults.hasNext()) {
-                    ORID wrapperId = wrapperResults.next().getProperty("referredBy");
-                    String wrapperAsString = getDBFromThread().load(wrapperId).toJSON("rid,class,fetchPlan:*:-1");
-                    wrapperList.add(wrapperAsString);
-                }
-            }
-            long count = countDocs.next().getProperty("count(*)");
-            return new DBFindAllResults(count, wrapperList);
-        }
-
         return mapFindAllResults(docs, countDocs, options.resolveReferences);
 
+    }
+
+    private List<String> createWhereClause(Map<String, String> query, FindOptions options) {
+        List<String> where = new ArrayList<>();
+        for (String key : query.keySet()) {
+            String value = query.get(key);
+            if (value == null) {
+                where.add(key + ".toLowerCase() IS NULL");
+            } else {
+                switch (options.queryType) {
+                    case like:
+                        where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
+                        break;
+                    case exact:
+                        where.add(key + " == '" + value + "'");
+                        break;
+                    case contains:
+                        where.add(key + " contains '" + value + "'");
+                        break;
+                }
+            }
+        }
+        return where;
+    }
+
+    private String attachFieldToWhereList(List<String> whereList, String field) {
+        return whereList.stream()
+                .map(item -> field + item)
+                .collect(Collectors.joining(" OR "));
     }
 
     private DBFindAllResults mapFindAllResults(OResultSet docs, OResultSet countDocs, boolean resolveReferences) {
@@ -415,7 +413,11 @@ public class OrientDBDatabase implements DBApi {
 
     private void initNewDatabase(Catalog settings, ODatabaseSession session) {
         session.getMetadata().getSchema().createClass("Behaviours");
-        session.getMetadata().getSchema().createClass("Info");
+        OClass info = session.getMetadata().getSchema().createClass("Info");
+
+        info.createProperty("name", OType.STRING);
+        info.createProperty("type", OType.STRING);
+        info.createProperty("version", OType.STRING);
     }
 
     private String generateDBNameFromLabel(String name) {

@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormToolbarComponent} from './toolbar/form-toolbar.component';
 import {FormsModule} from '@angular/forms';
 import {DynamicFormComponent} from './dynamic-form.component';
 import {LeafletComponent} from './leaflet/leaflet.component';
@@ -20,7 +19,6 @@ import {MatListModule} from '@angular/material/list';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
-import {MatToolbarModule} from '@angular/material/toolbar';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {SidebarComponent} from './sidebars/sidebar.component';
 import {FormInfoComponent} from './form-info/form-info.component';
@@ -47,16 +45,14 @@ import {HeaderMoreComponent} from './form-info/header-more/header-more.component
 import {FormMessageComponent} from './form-info/form-message/form-message.component';
 import {IsoViewPlugin} from './dialogs/isoView/iso-view.plugin';
 import {FormularService} from './formular.service';
-import {FormPluginsService} from './form-plugins.service';
 import {PublishPlugin} from './dialogs/publish/publish.plugin';
 import {UndoPlugin} from './dialogs/undo/undo.plugin';
 import {PrintViewPlugin} from './dialogs/print-view/print-view.plugin';
 import {DeleteDocsPlugin} from './dialogs/delete-docs/delete-docs.plugin';
-import {FormToolbarService} from './toolbar/form-toolbar.service';
+import {FormToolbarService} from './form-shared/toolbar/form-toolbar.service';
 import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.component';
-import {NewDocumentPlugin} from './dialogs/new-doc/new-doc.plugin';
-import {SavePlugin} from './dialogs/save/save.plugin';
 import {ChooseFolderComponent} from './dialogs/folder/choose-folder/choose-folder.component';
+import {FormSharedModule} from './form-shared/form-shared.module';
 
 @NgModule({
   imports: [
@@ -64,15 +60,14 @@ import {ChooseFolderComponent} from './dialogs/folder/choose-folder/choose-folde
     CommonModule,
     AngularSplitModule,
     IgeWizardModule, FormDialogsModule, SharedModule,
-    MatFormFieldModule, MatToolbarModule, MatInputModule, MatTableModule, MatMenuModule, MatButtonToggleModule, MatSlideToggleModule,
-    MatTabsModule, MatDividerModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule, MatCardModule,
-    FlexLayoutModule,
+    MatFormFieldModule, MatInputModule, MatTableModule, MatMenuModule, MatButtonToggleModule, MatSlideToggleModule,
+    MatTabsModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule, MatCardModule,
     FormlyModule,
     IgeFormlyModule,
-    FormFieldsModule
+    FormFieldsModule,
+    FormSharedModule
   ],
   declarations: [
-    FormToolbarComponent,
     LeafletComponent, DynamicFormComponent,
     NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
     // OneColumnWrapperComponent,
@@ -80,8 +75,8 @@ import {ChooseFolderComponent} from './dialogs/folder/choose-folder/choose-folde
     FormInfoComponent, HeaderNavigationComponent, BreadcrumbComponent, HeaderTitleRowComponent, FormDashboardComponent,
     HeaderMoreComponent, FormMessageComponent, ChooseFolderComponent],
   providers: [
-    FormularService, FormToolbarService, FormPluginsService, NominatimService, FolderPlugin, DeleteDocsPlugin,
-    IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, NewDocumentPlugin, SavePlugin],
+    FormularService, FormToolbarService, NominatimService, FolderPlugin, DeleteDocsPlugin,
+    IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin],
   exports: [RouterModule, FormsModule, ScrollToDirective, SidebarComponent],
   entryComponents: [NewDocumentComponent, CreateFolderComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
 })

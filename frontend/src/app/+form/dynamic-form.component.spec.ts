@@ -2,7 +2,7 @@ import {TestBed} from '@angular/core/testing';
 import {DynamicFormComponent} from './dynamic-form.component';
 import {FormControl, FormGroup} from '@angular/forms';
 import {DocumentService} from '../services/document/document.service';
-import {FormToolbarService} from './toolbar/form-toolbar.service';
+import {FormToolbarService} from './form-shared/toolbar/form-toolbar.service';
 import {IgeFormModule} from './ige-form.module';
 import {HttpClientModule} from '@angular/common/http';
 import {FormularService} from './formular.service';
