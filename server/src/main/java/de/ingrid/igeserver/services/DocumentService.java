@@ -200,14 +200,14 @@ public class DocumentService extends MapperService {
 
     }
 
-    public JsonNode getByDocId(String id, boolean withReferences) {
+    public JsonNode getByDocId(String id, String type, boolean withReferences) {
 
         Map<String, String> query = new HashMap<>();
         query.put(FIELD_ID, id);
         FindOptions findOptions = new FindOptions();
         findOptions.queryType = QueryType.exact;
         findOptions.resolveReferences = withReferences;
-        DBFindAllResults docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, findOptions);
+        DBFindAllResults docs = this.dbService.findAll(type, query, findOptions);
         try {
             return docs.totalHits > 0 ? getJsonMap(docs.hits.get(0)) : null;
         } catch (Exception e) {
@@ -225,9 +225,9 @@ public class DocumentService extends MapperService {
         return docWrapper;
     }
 
-    public boolean determineHasChildren(JsonNode doc) {
+    public boolean determineHasChildren(JsonNode doc, String type) {
         String id = doc.get(FIELD_ID).asText();
-        Map<String, Long> countMap = this.dbService.countChildrenFromNode(id);
+        Map<String, Long> countMap = this.dbService.countChildrenFromNode(id, type);
         if (countMap.containsKey(id)) {
             return countMap.get(id) > 0;
         }

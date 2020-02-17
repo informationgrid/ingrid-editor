@@ -97,13 +97,19 @@ export class DocumentService {
     });
   }
 
-  load(id: string): Observable<IgeDocument> {
-    return this.dataService.load(id).pipe(
-      tap(doc => this.treeStore.update({
-        openedDocument: this.mapToDocumentAbstracts([doc], doc._parent)[0]
-      })),
-      tap(doc => setTimeout(() => this.treeStore.setActive([doc._id]), 0))
+  load(id: string, address?: boolean): Observable<IgeDocument> {
+    return this.dataService.load(id, address).pipe(
+      tap(doc => this.updateTreeStore(doc, address))
     );
+  }
+
+  private updateTreeStore(doc: IgeDocument, address: boolean) {
+    const store = address ? this.addressTreeStore : this.treeStore;
+
+    setTimeout(() => store.setActive([doc._id]), 0)
+    return store.update({
+      openedDocument: this.mapToDocumentAbstracts([doc], doc._parent)[0]
+    });
   }
 
   save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean): Promise<IgeDocument> {
@@ -185,8 +191,8 @@ export class DocumentService {
       );
   }
 
-  getPath(id: string): Observable<string[]> {
-    return this.dataService.getPath(id).pipe(
+  getPath(id: string, address?: boolean): Observable<string[]> {
+    return this.dataService.getPath(id, address).pipe(
       // tap( path => this.treeStore.setExpandedNodes(path))
     );
   }

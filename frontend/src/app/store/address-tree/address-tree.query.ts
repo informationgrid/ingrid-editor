@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class AddressTreeQuery extends QueryEntity<AddressTreeState> {
 
+  openedDocument$: Observable<DocumentAbstract> = this.select(state => state.openedDocument);
   pathTitles$: Observable<string[]> = this.select(state => state.activePathTitles);
 
   constructor(protected store: AddressTreeStore) {

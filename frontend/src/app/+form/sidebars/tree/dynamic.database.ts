@@ -5,7 +5,6 @@ import {DocumentService} from '../../../services/document/document.service';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {TreeNode} from '../../../store/tree/tree-node.model';
-import {TreeStore} from '../../../store/tree/tree.store';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
 /**

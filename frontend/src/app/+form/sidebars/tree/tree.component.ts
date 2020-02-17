@@ -65,6 +65,8 @@ export class TreeComponent implements OnInit {
   isExpandable = (node: TreeNode) => node.hasChildren;
 
   ngOnInit(): void {
+    this.dataSource.setForAddress(this.forAddresses);
+
     this.reloadTree();
 
     // after root nodes are loaded start expansion

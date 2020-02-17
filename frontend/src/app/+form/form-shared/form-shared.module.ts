@@ -25,6 +25,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {ChooseFolderComponent} from '../dialogs/folder/choose-folder/choose-folder.component';
 import {BreadcrumbComponent} from '../form-info/breadcrumb/breadcrumb.component';
 import {MatInputModule} from '@angular/material/input';
+import {IgeFormlyModule} from '../../formly/ige-formly.module';
 
 
 @NgModule({
@@ -39,11 +40,12 @@ import {MatInputModule} from '@angular/material/input';
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    IgeFormlyModule
   ],
   providers: [FormToolbarService, FormPluginsService, NewDocumentPlugin, SavePlugin, FolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService],
-  exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, ChooseFolderComponent],
+  exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, ChooseFolderComponent, IgeFormlyModule],
   entryComponents: [CreateFolderComponent]
 })
 export class FormSharedModule {

@@ -68,19 +68,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
     this.formUtils = new FormUtils();
 
-    // react on document selection
-    this.treeQuery.openedDocument$
-      .pipe(untilDestroyed(this))
-      .subscribe((openedDoc) => {
-        this.formToolbarService.setButtonState(
-          'toolBtnSave',
-          openedDoc !== null);
-
-        // do not allow to modify form if multiple nodes have been selected in tree
-        // openedDoc !== null ? this.form.enable() : this.form.disable();
-
-      });
-
     this.route.params.subscribe(params => {
       this.loadDocument(params['id']);
     });
@@ -99,10 +86,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
 
-    /*this.documentQuery.openedDocument$.pipe(takeUntil(this.componentDestroyed)).subscribe(data => {
-      }
-    );*/
-
     this.formularService.currentProfile = null;
 
     this.documentService.publishState$
@@ -115,28 +98,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.showValidationErrors = false;
         }
       });
-
-    // this.wizardService.focusElements$.subscribe( fields => this.wizardFocusElement = fields );
-
-    // register to an publisher in the form/storage service and send the value of this form
-    // this can be used for publish, revert, detail, compare, ...
-    // return current form data on request
-    /*this.formularService.formDataSubject$
-      .pipe(takeUntil(this.componentDestroyed))
-      .subscribe( (container: FormDataContainer) => {
-        container.form = this.form;
-        container.fields = this.fields;
-        container.value = {
-          _id: this.data._id,
-          _profile: this.formularService.currentProfile
-        };
-
-        // if form was already initialized then map values to the response
-        if (this.form) {
-          Object.assign( container.value, this.form.value );
-        }
-      } );*/
-
 
     // load dataset when one was updated
     this.documentService.datasetsChanged$
@@ -191,10 +152,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (data === null) {
       return;
     }
-
-    // this.documentService.beforeLoad.next();
-
-    // if (data._profile === 'FOLDER' && !this.editMode) return;
 
     const profile = data._profile;
 

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
@@ -9,9 +9,12 @@ import {MessageService} from '../../../services/message.service';
 import {IgeDocument} from '../../../models/ige-document';
 import {MatDialog} from '@angular/material/dialog';
 import {HttpErrorResponse} from '@angular/common/http';
+import {untilDestroyed} from 'ngx-take-until-destroy';
+import {merge} from 'rxjs';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
 @Injectable()
-export class SavePlugin extends Plugin {
+export class SavePlugin extends Plugin implements OnDestroy {
   id = 'plugin.publish';
   _name = 'Publish Plugin';
   defaultActive = true;
@@ -24,6 +27,7 @@ export class SavePlugin extends Plugin {
               private modalService: ModalService,
               private messageService: MessageService,
               private treeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
               private dialog: MatDialog,
               private formsManager: AkitaNgFormsManager,
               private documentService: DocumentService) {
@@ -49,18 +53,38 @@ export class SavePlugin extends Plugin {
     // add event handler for revert
     this.formToolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'SAVE') {
-        this.save(this.formsManager.getForm('document').value);
+        let forAddress = false;
+        let form = this.formsManager.getForm('document');
+        if (!form) {
+          form = this.formsManager.getForm('address');
+          forAddress = true;
+        }
+        this.save(form.value, forAddress);
       }
     });
 
+    // react on document selection
+    merge(
+      this.treeQuery.openedDocument$,
+      this.addressTreeQuery.openedDocument$
+    )
+      .pipe(untilDestroyed(this))
+      .subscribe((openedDoc) => {
+        this.formToolbarService.setButtonState(
+          'toolBtnSave',
+          openedDoc !== null);
+
+        // do not allow to modify form if multiple nodes have been selected in tree
+        // openedDoc !== null ? this.form.enable() : this.form.disable();
+
+      });
+
   }
 
-  save(formData: IgeDocument) {
+  save(formData: IgeDocument, forAddress: boolean) {
     this.documentService.publishState$.next(false);
 
-    this.documentService.save(formData)
-      .then(() => {
-      })
+    this.documentService.save(formData, undefined, forAddress)
       .catch((err: HttpErrorResponse) => {
         throw err;
       });
@@ -68,6 +92,9 @@ export class SavePlugin extends Plugin {
 
   unregister() {
     super.unregister();
+  }
+
+  ngOnDestroy(): void {
   }
 
 }

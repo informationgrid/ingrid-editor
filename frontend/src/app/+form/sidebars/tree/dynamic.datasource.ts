@@ -19,6 +19,7 @@ export class DynamicDataSource {
 
   dataChange = new BehaviorSubject<TreeNode[]>(null);
 
+  private forAddress = false;
   sortNodesByFolderFirst = (a: TreeNode, b: TreeNode) => {
     if (a.profile === 'FOLDER' && b.profile === 'FOLDER') {
       return a.title.localeCompare(b.title);
@@ -86,7 +87,7 @@ export class DynamicDataSource {
 
   private expandNode(node: TreeNode, index: number) {
     node.isLoading = true;
-    this._database.getChildren(node._id)
+    this._database.getChildren(node._id, false, this.forAddress)
       .pipe(
         map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
         map(docs => docs.sort(this.sortNodesByFolderFirst))
@@ -146,5 +147,9 @@ export class DynamicDataSource {
 
   getNode(nodeId: string): TreeNode {
     return this.data.find(node => node._id === nodeId);
+  }
+
+  setForAddress(forAddresses: boolean) {
+    this.forAddress = forAddresses;
   }
 }

@@ -46,8 +46,9 @@ public interface DatasetsApi {
             Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
-            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish,
-            @ApiParam(value = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) Boolean revert) throws ApiException;
+            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) boolean publish,
+            @ApiParam(value = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) boolean revert,
+            @ApiParam(value = "Delete an address.") @RequestParam(value = "address", required = false) boolean forAddress) throws ApiException;
 
 
     @ApiOperation(value = "Copy a dataset or tree under another dataset", notes = "xxx", response = Void.class, tags = {"Datasets",})
@@ -110,7 +111,8 @@ public interface DatasetsApi {
     ResponseEntity<String> getByID(
             Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) throws Exception;
+            @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish,
+            @ApiParam(value = "Get an address instead of a document") @RequestParam(value = "address", required = false) boolean forAddress) throws Exception;
 
     @ApiOperation(value = "Get the hierarchical path of a document", notes = "Retrieve an array of ID of all parents leading to the given dataset ID.", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
@@ -118,7 +120,8 @@ public interface DatasetsApi {
     @RequestMapping(value = "/datasets/{id}/path", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<List<String>> getPath(
             Principal principal,
-            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id) throws ApiException;
+            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
+            @ApiParam(value = "The path for addresses") @RequestParam(value = "address", required = false) boolean forAddress) throws ApiException;
 
     @ApiOperation(value = "Move a dataset or tree under another dataset", notes = "xxx", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {

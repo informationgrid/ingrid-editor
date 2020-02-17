@@ -32,7 +32,7 @@ export class SidebarComponent implements OnInit {
       const id = params['id'];
       if (id !== undefined) {
 
-        this.docService.getPath(params['id']).subscribe(path => {
+        this.docService.getPath(id).subscribe(path => {
           this.initialActiveNodeId = path.pop();
           this.initialExpandNodes.next(path);
         });

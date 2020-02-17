@@ -20,13 +20,15 @@
         <!-- The form -->
         <as-split-area [size]="100-sidebarWidth" id="form" class="form-content">
 
-            ADDRESS!
-            <!--<ng-container>
+            <ng-container>
+                <!--<ige-form-info [form]="form" [model]="model" [sections]="sections" [class.scrolled]="isScrolled"
+                               (jumpToSection)="jumpToSection($event)"></ige-form-info>-->
+
                 <form [formGroup]="form">
                     <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
                 </form>
 
-            </ng-container>-->
+            </ng-container>
 
         </as-split-area>
 

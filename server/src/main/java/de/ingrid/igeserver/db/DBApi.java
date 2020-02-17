@@ -11,7 +11,7 @@ public interface DBApi {
 
     String getRecordId(String dbClass, String docUuid) throws ApiException;
 
-    Map<String, Long> countChildrenFromNode(String id);
+    Map<String, Long> countChildrenFromNode(String id, String type);
 
     /**
      * Count number of documents found with findAll method

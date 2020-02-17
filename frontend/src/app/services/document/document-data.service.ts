@@ -39,8 +39,9 @@ export class DocumentDataService {
       );
   }
 
-  load(id: string): Observable<IgeDocument> {
-    return this.http.get<IgeDocument>(this.configuration.backendUrl + 'datasets/' + id);
+  load(id: string, address = false): Observable<IgeDocument> {
+    const params = '?address=' + address;
+    return this.http.get<IgeDocument>(this.configuration.backendUrl + 'datasets/' + id + params);
   }
 
   save(data: IgeDocument, isAddress?: boolean): Observable<any> {
@@ -73,8 +74,9 @@ export class DocumentDataService {
     return this.http.put(this.configuration.backendUrl + 'datasets/' + id + '?revert=true', {});
   }
 
-  getPath(id: string): Observable<string[]> {
-    return this.http.get<string[]>(this.configuration.backendUrl + 'datasets/' + id + '/path');
+  getPath(id: string, address = false): Observable<string[]> {
+    const params = '?address=' + address;
+    return this.http.get<string[]>(this.configuration.backendUrl + 'datasets/' + id + '/path' + params);
   }
 
   copy(srcIDs: string[], dest: string, includeTree: boolean) {

@@ -242,9 +242,9 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public Map<String, Long> countChildrenFromNode(String id) {
+    public Map<String, Long> countChildrenFromNode(String id, String type) {
         Map<String, Long> response = new HashMap<>();
-        String query = "select _parent,count(_id) from `DocumentWrapper`" +
+        String query = "select _parent,count(_id) from " + type + " " +
                 "where _parent IN ['" + id + "']" +
                 "group by _parent";
 

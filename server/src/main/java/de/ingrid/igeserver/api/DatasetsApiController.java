@@ -23,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -132,14 +131,14 @@ public class DatasetsApiController implements DatasetsApi {
      * Update dataset.
      */
     public ResponseEntity<String> updateDataset(
-            Principal principal,
-            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
-            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish,
-            @ApiParam(value = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", defaultValue = "false", required = false) Boolean revert) throws ApiException {
+            Principal principal, String id,
+            String data,
+            boolean publish,
+            boolean revert, boolean forAddress) throws ApiException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
 
@@ -164,7 +163,7 @@ public class DatasetsApiController implements DatasetsApi {
             FindOptions findOptions = new FindOptions();
             findOptions.queryType = QueryType.exact;
             findOptions.resolveReferences = false;
-            DBFindAllResults docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, findOptions);
+            DBFindAllResults docWrappers = dbService.findAll(type, query, findOptions);
             if (docWrappers.totalHits != 1) {
                 log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docWrappers.totalHits + ")");
                 throw new RuntimeException("No unique document wrapper found");
@@ -199,7 +198,7 @@ public class DatasetsApiController implements DatasetsApi {
                 // remove draft version
                 docWrapper.put(FIELD_DRAFT, (String) null);
 
-                this.dbService.save(DOCUMENT_WRAPPER, docWrapper.get(DB_ID).asText(), docWrapper.toString());
+                this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
 
                 //throw new NotImplementedException();
             } else {
@@ -208,7 +207,7 @@ public class DatasetsApiController implements DatasetsApi {
                 if (docWrapper.get(FIELD_DRAFT).isNull()) {
                     // TODO: db_id is ORecord!
                     docWrapper.put(FIELD_DRAFT, result.get(DB_ID).toString());
-                    this.dbService.save(DOCUMENT_WRAPPER, docWrapper.get(DB_ID).asText(), docWrapper.toString());
+                    this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
                 }
             }
 
@@ -330,6 +329,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = isAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
 
@@ -338,7 +338,7 @@ public class DatasetsApiController implements DatasetsApi {
             FindOptions findOptions = new FindOptions();
             findOptions.queryType = QueryType.exact;
             findOptions.resolveReferences = true;
-            docs = this.dbService.findAll(isAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER, queryMap, findOptions);
+            docs = this.dbService.findAll(type, queryMap, findOptions);
 
             String childDocs = docs.hits.stream()
                     .map(doc -> {
@@ -352,7 +352,7 @@ public class DatasetsApiController implements DatasetsApi {
                     .map(doc -> {
                         ObjectNode node = (ObjectNode) getLatestDocument(doc);
                         node.put(FIELD_STATE, this.documentService.determineState(doc));
-                        node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc));
+                        node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc, type));
                         return node;
                     })
                     .map(doc -> doc.toString())
@@ -419,8 +419,10 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<String> getByID(
             Principal principal,
-            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) throws Exception {
+            String id,
+            Boolean publish, boolean address) throws Exception {
+
+        String type = address ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
         long start = System.currentTimeMillis();
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
@@ -432,7 +434,7 @@ public class DatasetsApiController implements DatasetsApi {
             FindOptions findOptions = new FindOptions();
             findOptions.queryType = QueryType.exact;
             findOptions.resolveReferences = true;
-            DBFindAllResults docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, findOptions);
+            DBFindAllResults docs = this.dbService.findAll(type, query, findOptions);
 
             if (docs.totalHits > 0) {
                 Map doc = getMapFromObject(docs.hits.get(0));
@@ -471,20 +473,22 @@ public class DatasetsApiController implements DatasetsApi {
 
     }
 
-    public ResponseEntity<List<String>> getPath(Principal principal, @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id) throws ApiException {
+    public ResponseEntity<List<String>> getPath(
+            Principal principal,
+            String id,
+            boolean forAddress) throws ApiException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        //List<String> result = this.dbService.getPathToDataset( id );
-        //return ResponseEntity.ok( result );
         String destId = id;
         List<String> path = new ArrayList<>();
         path.add(id);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             while (destId != null) {
-                JsonNode doc = this.documentService.getByDocId(destId, false);
+                JsonNode doc = this.documentService.getByDocId(destId, type, false);
                 destId = doc.get("_parent").textValue();
                 path.add(destId);
             }

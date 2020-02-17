@@ -25,7 +25,6 @@ import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {AngularSplitModule} from 'angular-split';
 import {RouterModule} from '@angular/router';
 import {FormlyModule} from '@ngx-formly/core';
-import {IgeFormlyModule} from '../formly/ige-formly.module';
 import {HeaderNavigationComponent} from './form-info/header-navigation/header-navigation.component';
 import {HeaderTitleRowComponent} from './form-info/header-title-row/header-title-row.component';
 import {MatMenuModule} from '@angular/material/menu';
@@ -49,7 +48,6 @@ import {FormSharedModule} from './form-shared/form-shared.module';
     MatFormFieldModule, MatInputModule, MatTableModule, MatMenuModule, MatButtonToggleModule, MatSlideToggleModule,
     MatTabsModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule, MatCardModule,
     FormlyModule,
-    IgeFormlyModule,
     FormFieldsModule,
     FormSharedModule
   ],
