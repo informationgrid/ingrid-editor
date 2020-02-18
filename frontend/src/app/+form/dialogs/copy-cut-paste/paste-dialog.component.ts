@@ -1,12 +1,14 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
+import {AddressTreeQuery} from "../../../store/address-tree/address-tree.query";
 
 export interface PasteDialogOptions {
   buttonText: string;
   titleText: string;
   contentText: string;
   disabledCondition: any;
+  forAddress: boolean;
 }
 
 @Component({
@@ -16,6 +18,7 @@ export interface PasteDialogOptions {
       <p>{{data.contentText}}</p>
       <ige-tree (selected)="handleSelected($event)" [disabledCondition]="data.disabledCondition"
                 (currentPath)="setPath($event)"
+                [forAddresses]="data.forAddress"
                 [showReloadButton]="false"></ige-tree>
     </mat-dialog-content>
     <mat-dialog-actions>
@@ -30,8 +33,10 @@ export class PasteDialogComponent implements OnInit {
 
   selection: any[] = null;
   path: string[];
+  query;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions, private treeQuery: TreeQuery) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions, treeQuery: TreeQuery, addressTreeQuery: AddressTreeQuery) {
+    this.query = data.forAddress ? addressTreeQuery : treeQuery;
   }
 
   ngOnInit() {
@@ -43,7 +48,7 @@ export class PasteDialogComponent implements OnInit {
   }
 
   setPath(path: string[]) {
-    const active = this.treeQuery.getEntity(this.selection);
+    const active = this.query.getEntity(this.selection);
     this.path = [...path, active.title];
   }
 }

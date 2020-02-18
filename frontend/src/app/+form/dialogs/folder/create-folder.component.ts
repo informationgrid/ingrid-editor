@@ -18,7 +18,7 @@ import {FormularService} from '../../formular.service';
 export class CreateFolderComponent implements OnInit {
 
   parent: string = null;
-  private forAddress: boolean;
+  forAddress: boolean;
 
   private static createNewFolderDoc(folderName: string, parent?: string) {
     const data: any = {

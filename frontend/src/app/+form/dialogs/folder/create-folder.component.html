@@ -8,7 +8,7 @@
                required>
     </mat-form-field>
 
-    <ige-choose-folder (update)="setDestination($event)"></ige-choose-folder>
+    <ige-choose-folder [forAddress]="forAddress" (update)="setDestination($event)"></ige-choose-folder>
 
 </mat-dialog-content>
 <mat-dialog-actions>

@@ -17,13 +17,6 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
   _name = 'Neues Dokument Plugin';
   defaultActive = true;
 
-  // choice of doc types to be shown when creating new document
-  newDocOptions: any = {
-    docTypes: [],
-    selectedDataset: {},
-    rootOption: true
-  };
-
   constructor(private toolbarService: FormToolbarService,
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
@@ -55,24 +48,28 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
   };
 
   newDoc() {
-    // let options = {
-    //   availableTypes: this.formularService.docTypes,
-    //   rootOption: true
-    // };
-    const selectedDocs = this.forAddress ? this.addressTreeQuery.getActive() : this.treeQuery.getActive();
-    this.newDocOptions.docTypes = this.getDocTypes()
+    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+    const selectedDocs = query.getActive();
+    let selectedDocId = null;
+    if (selectedDocs && selectedDocs.length === 1) {
+      const folder = query.getFirstParentFolder(selectedDocs[0].id.toString());
+      if (folder !== null) {
+        selectedDocId = folder.id;
+      }
+    }
+
+    const docTypes = this.getDocTypes()
       .filter(type => type.id !== 'FOLDER')
       .sort((a, b) => a.label.localeCompare(b.label));
 
-    this.newDocOptions.selectedDataset = (selectedDocs && selectedDocs.length === 1) ? selectedDocs[0] : {};
 
     const dlg = this.dialog.open(NewDocumentComponent, {
       minWidth: 500,
       data:
         {
-          docTypes: this.newDocOptions.docTypes,
-          rootOption: this.newDocOptions.rootOption,
-          parent: this.newDocOptions.selectedDataset.id,
+          docTypes: docTypes,
+          rootOption: true,
+          parent: selectedDocId,
           choice: null,
           forAddress: this.forAddress
         }
@@ -99,7 +96,7 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
 
   private saveForm(data: IgeDocument) {
     this.documentService.save(data, true, this.forAddress).then(() => {
-      this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
+      // this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
     }, (err: HttpErrorResponse) => {
       throw err;
     });

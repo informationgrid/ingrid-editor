@@ -77,7 +77,8 @@ export class TreeComponent implements OnInit {
             const node = this.dataSource.getNode(this.activeNodeId);
             const nodePath = this.getTitlesFromNodePath(node);
             this.currentPath.next(nodePath);
-          }).catch( () => {});
+          }).catch(() => {
+        });
       });
     }
 
@@ -90,8 +91,6 @@ export class TreeComponent implements OnInit {
     let resolveNextTime = false;
     return new Promise(resolve => {
       const changeObserver = this.dataSource.dataChange.subscribe(data => {
-        console.log('data change', data);
-        console.log('resolve now', resolveNextTime);
         if (resolveNextTime) {
           setTimeout(() => changeObserver.unsubscribe(), 0);
           resolve();
@@ -107,7 +106,6 @@ export class TreeComponent implements OnInit {
           this.treeControl.expand(nodeToExpand);
         }
         if (ids.length === 0) {
-          console.log('stop subscriber');
           resolveNextTime = true;
         }
       });
@@ -227,7 +225,7 @@ export class TreeComponent implements OnInit {
     parentNodes.forEach(parentNode => this.updateChildrenInfo(parentNode));
   }
 
-  private addNewNode(updateInfo: UpdateDatasetInfo) {
+  private async addNewNode(updateInfo: UpdateDatasetInfo) {
     if (updateInfo.parent) {
       const parentNodeIndex = this.dataSource.data.findIndex(item => item._id === updateInfo.parent);
       const parentNode = this.dataSource.data[parentNodeIndex];
@@ -236,13 +234,18 @@ export class TreeComponent implements OnInit {
       // node will be added automatically when expanded
       const isExpanded = this.treeControl.isExpanded(parentNode);
 
-      if (isExpanded) {
-        this.dataSource.addNode(updateInfo.parent, updateInfo.data);
-      } else {
-        this.treeControl.expand(parentNode);
-      }
+      this.database.getChildren(parentNode._id, true, this.forAddresses)
+        .subscribe(() => {
+          if (isExpanded) {
+            this.treeControl.collapse(parentNode);
+          }
+          this.treeControl.expand(parentNode);
+          this.updateNodePath(updateInfo);
+        });
+
     } else {
       this.dataSource.addNode(updateInfo.parent, updateInfo.data);
+      this.updateNodePath(updateInfo);
     }
 
     this.activeNodeId = updateInfo.data[0].id + '';
@@ -250,6 +253,9 @@ export class TreeComponent implements OnInit {
     // remove selection from previously selected nodes
     this.selectionModel.clear();
 
+  }
+
+  private updateNodePath(updateInfo: UpdateDatasetInfo) {
     const nodePath = this.getTitlesFromNodePath(this.dataSource.getNode(updateInfo.data[0].id + ''));
     this.currentPath.next(nodePath);
   }

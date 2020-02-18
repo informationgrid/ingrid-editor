@@ -48,7 +48,8 @@ export class ChooseFolderComponent implements OnInit {
         buttonText: 'Auswählen',
         disabledCondition: (node: TreeNode) => {
           return node.profile !== 'FOLDER';
-        }
+        },
+        forAddress: this.forAddress
       } as PasteDialogOptions
     }).afterClosed().subscribe(result => {
       if (result) {

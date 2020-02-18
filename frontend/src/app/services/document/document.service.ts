@@ -69,17 +69,18 @@ export class DocumentService {
       .pipe(
         map(docs => this.mapToDocumentAbstracts(docs, parentId)),
         map(docs => docs.sort((a, b) => a.title.localeCompare(b.title))),
-        tap(docs => {
-          const store = isAddress ? this.addressTreeStore : this.treeStore;
-          if (parentId === null) {
-            store.set(docs);
-          } else {
-            store.add(docs);
-            // this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
-          }
-          return docs;
-        })
+        tap(docs => this.updateTreeStoreDocs(isAddress, parentId, docs))
       );
+  }
+
+  private updateTreeStoreDocs(isAddress: boolean, parentId: string, docs: DocumentAbstract[]) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+    if (parentId === null) {
+      store.set(docs);
+    } else {
+      store.add(docs);
+      // this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
+    }
   }
 
   private mapToDocumentAbstracts(docs: IgeDocument[], parentId?: string): DocumentAbstract[] {
@@ -106,7 +107,7 @@ export class DocumentService {
   private updateTreeStore(doc: IgeDocument, address: boolean) {
     const store = address ? this.addressTreeStore : this.treeStore;
 
-    setTimeout(() => store.setActive([doc._id]), 0)
+    setTimeout(() => store.setActive([doc._id]), 0);
     return store.update({
       openedDocument: this.mapToDocumentAbstracts([doc], doc._parent)[0]
     });

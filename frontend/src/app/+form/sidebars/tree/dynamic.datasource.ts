@@ -136,12 +136,28 @@ export class DynamicDataSource {
 
   addNode(parent: string, docs: DocumentAbstract[]) {
     const index = this.data.findIndex(node => node._id === parent);
+    // const parentNode = this.data[index];
+
     let childLevel = 0;
     if (parent) {
       childLevel = this.data[index].level + 1;
     }
+    /*
+    let newNodes = this._database.mapDocumentsToTreeNodes(docs, childLevel);
+    newNodes.forEach(newNode => {
+      const insertIndex = this.data.findIndex((node, indexChild) => {
+        if (indexChild > index) {
+          if (node.level === parentNode.level) {
+            return indexChild - 1;
+          } else if (node.level === parentNode.level + 1 && node.title.localeCompare(newNode.title) >= 0) {
+            return indexChild;
+          }
+        }
+      });
+      this.data.splice(insertIndex, 0, newNode);
+    });
+    */
     this.data.splice(index + 1, 0, ...this._database.mapDocumentsToTreeNodes(docs, childLevel));
-    // this.data.sort(this.sortNodesByFolderFirst);
     this.dataChange.next(this.data);
   }
 
