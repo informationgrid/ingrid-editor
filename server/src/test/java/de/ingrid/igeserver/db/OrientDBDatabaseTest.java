@@ -105,9 +105,13 @@ public class OrientDBDatabaseTest {
 
             Map<String, String> query = new HashMap<>();
             query.put("age", "48");
-            List<String> persons = dbService.findAll("User", query, QueryType.like, null, null, false);
+            FindOptions options = new FindOptions();
+            options.queryType = QueryType.like;
+            options.resolveReferences = false;
+            DBFindAllResults persons = dbService.findAll("User", query, options);
 
-            assertEquals(1, persons.size());
+            assertEquals(1, persons.totalHits);
+            assertEquals(1, persons.hits.size());
 
         }
     }
@@ -121,8 +125,11 @@ public class OrientDBDatabaseTest {
         query.put("age", "48");
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            List<String> docToUpdate = dbService.findAll("User", query, QueryType.like, null, null, false);
-            id = (ORecordId)((Map)getJsonMap(docToUpdate.get(0))).get("@rid");
+            FindOptions options = new FindOptions();
+            options.queryType = QueryType.like;
+            options.resolveReferences = false;
+            DBFindAllResults docToUpdate = dbService.findAll("User", query, options);
+            id = (ORecordId)((Map)getJsonMap(docToUpdate.hits.get(0))).get("@rid");
 
             Map<String, Object> data = new HashMap<>();
             data.put("name", "Johann");
@@ -132,7 +139,10 @@ public class OrientDBDatabaseTest {
         }
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            String updatedDocJson = dbService.findAll("User", query, QueryType.like, null, null, false).get(0);
+            FindOptions options = new FindOptions();
+            options.queryType = QueryType.like;
+            options.resolveReferences = false;
+            String updatedDocJson = dbService.findAll("User", query, options).hits.get(0);
             Map updatedDoc = (Map) getJsonMap(updatedDocJson);
 
             assertEquals("Johann", updatedDoc.get("name") );

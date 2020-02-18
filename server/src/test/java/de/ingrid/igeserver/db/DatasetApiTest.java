@@ -71,7 +71,7 @@ public class DatasetApiTest {
 
         //language=JSON
         String data = "{\"title\": \"Document 1\"}";
-        controller.createDataset(null, data, false);
+        controller.createDataset(null, data, false, false);
 
         // ASSERTIONS
         ArgumentCaptor<String> arg = ArgumentCaptor.forClass(String.class);

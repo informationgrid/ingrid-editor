@@ -45,9 +45,7 @@ public class DatasetsApiController implements DatasetsApi {
 
     private static final String COLLECTION = "Documents";
 
-    private enum CopyMoveOperation {COPY, MOVE}
-
-    ;
+    private enum CopyMoveOperation {COPY, MOVE};
 
     private DBApi dbService;
 
