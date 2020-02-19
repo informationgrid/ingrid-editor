@@ -23,6 +23,7 @@ import {UpdateType} from '../../../models/update-type.enum';
 import {createDocument, DocumentAbstract} from '../../../store/document/document.model';
 import {delay} from 'rxjs/operators';
 import {DynamicDatabase} from './dynamic.database';
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 describe('TreeComponent', () => {
 
@@ -30,7 +31,7 @@ describe('TreeComponent', () => {
   let db: SpyObject<DynamicDatabase>;
   const createHost = createComponentFactory({
     component: TreeComponent,
-    imports: [MatTreeModule, MatIconModule, MatDialogModule, MatButtonModule, MatSlideToggleModule, MatFormFieldModule, FormFieldsModule],
+    imports: [MatTreeModule, MatIconModule, MatDialogModule, MatButtonModule, MatSlideToggleModule, MatFormFieldModule, MatAutocompleteModule, FormFieldsModule],
     declarations: [TreeHeaderComponent],
     componentMocks: [DynamicDatabase],
     detectChanges: false
@@ -287,6 +288,10 @@ describe('TreeComponent', () => {
 
   xit('should deselect all nodes when a new one is added (#1722)', fakeAsync(() => {
 
+  }));
+
+  xit('should add a folder under another folder two levels deeper', fakeAsync(() => {
+    // all folders must not be expanded initially
   }));
 
   /*

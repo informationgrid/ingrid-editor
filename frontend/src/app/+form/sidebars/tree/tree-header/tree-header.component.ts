@@ -1,6 +1,5 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Subject} from 'rxjs';
-import {DocumentService} from '../../../../services/document/document.service';
 import {DynamicDatabase} from '../dynamic.database';
 import {map} from 'rxjs/operators';
 import {TreeNode} from '../../../../store/tree/tree-node.model';
@@ -20,7 +19,7 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
 
   searchResult = new Subject<TreeNode[]>();
 
-  constructor(private docService: DocumentService, private db: DynamicDatabase) {
+  constructor(private db: DynamicDatabase) {
   }
 
   ngOnInit() {
@@ -49,7 +48,7 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
     console.log('Search: ', value);
     this.db.search(value)
       .pipe(
-        map(result => this.db.mapDocumentsToTreeNodes(result.hits, 0))
+        map(result => DynamicDatabase.mapDocumentsToTreeNodes(result.hits, 0))
       )
       .subscribe(result => this.searchResult.next(result));
   }

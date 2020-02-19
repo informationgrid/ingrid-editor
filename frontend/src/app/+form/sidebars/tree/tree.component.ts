@@ -178,7 +178,7 @@ export class TreeComponent implements OnInit {
   reloadTree() {
     this.database.initialData(true, this.forAddresses)
       .pipe(
-        map(docs => this.database.mapDocumentsToTreeNodes(docs, 0)),
+        map(docs => DynamicDatabase.mapDocumentsToTreeNodes(docs, 0)),
         map(docs => docs.sort(this.dataSource.sortNodesByFolderFirst))
       )
       .subscribe(rootElements => this.dataSource.data = rootElements);

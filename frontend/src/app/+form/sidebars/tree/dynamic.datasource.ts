@@ -89,7 +89,7 @@ export class DynamicDataSource {
     node.isLoading = true;
     this._database.getChildren(node._id, false, this.forAddress)
       .pipe(
-        map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
+        map(docs => DynamicDatabase.mapDocumentsToTreeNodes(docs, node.level + 1)),
         map(docs => docs.sort(this.sortNodesByFolderFirst))
       )
       .subscribe(children => {
@@ -128,7 +128,7 @@ export class DynamicDataSource {
     docs.forEach(doc => {
       const index = this.data.findIndex(node => node._id === doc.id);
       if (index !== -1) {
-        this.data.splice(index, 1, ...this._database.mapDocumentsToTreeNodes([doc], this.data[index].level));
+        this.data.splice(index, 1, ...DynamicDatabase.mapDocumentsToTreeNodes([doc], this.data[index].level));
         this.dataChange.next(this.data);
       }
     });
@@ -157,7 +157,7 @@ export class DynamicDataSource {
       this.data.splice(insertIndex, 0, newNode);
     });
     */
-    this.data.splice(index + 1, 0, ...this._database.mapDocumentsToTreeNodes(docs, childLevel));
+    this.data.splice(index + 1, 0, ...DynamicDatabase.mapDocumentsToTreeNodes(docs, childLevel));
     this.dataChange.next(this.data);
   }
 
