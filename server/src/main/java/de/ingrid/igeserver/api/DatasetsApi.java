@@ -34,7 +34,7 @@ public interface DatasetsApi {
     ResponseEntity<String> createDataset(
             Principal principal,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
-            @ApiParam(value = "Is this an address document", required = false) @Valid @RequestParam boolean address,
+            @ApiParam(value = "Is this an address document") @Valid @RequestParam(required = false) boolean address,
             @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) throws ApiException;
 
     @ApiOperation(value = "Update a complete dataset", notes = "xxx", response = Void.class, tags = {"Datasets",})
@@ -68,7 +68,7 @@ public interface DatasetsApi {
     ResponseEntity<String> deleteById(
             Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids,
-            @ApiParam(value = "Delete an address document", required = false) @RequestParam("address") boolean forAddress) throws ApiException;
+            @ApiParam(value = "Delete an address document") @RequestParam(required = false) boolean address) throws ApiException;
 
     @ApiOperation(value = "Export a dataset to a specific format", notes = "...", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {

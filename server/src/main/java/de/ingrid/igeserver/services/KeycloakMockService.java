@@ -48,7 +48,7 @@ public class KeycloakMockService implements UserManagementService {
 
     @Override
     public String getName(KeycloakAuthenticationToken principal) {
-        return "Michael Mustermann";
+        return mockedFirstName + " " + mockedLastName;
     }
 
 

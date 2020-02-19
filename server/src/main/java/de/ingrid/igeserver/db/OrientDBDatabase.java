@@ -72,7 +72,7 @@ public class OrientDBDatabase implements DBApi {
                 OClass info = session.getMetadata().getSchema().createClass("Info");
                 info.createProperty("userId", OType.STRING);
                 info.createProperty("currentCatalogId", OType.STRING);
-                info.createProperty("catalogIds", OType.STRING);
+                info.createProperty("catalogIds", OType.EMBEDDEDLIST, OType.STRING);
                 session.commit();
             }
 
