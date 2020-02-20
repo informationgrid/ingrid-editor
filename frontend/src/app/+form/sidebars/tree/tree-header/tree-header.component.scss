@@ -18,14 +18,15 @@
 .search {
   ::ng-deep .mat-form-field-outline {
     background-color: #ffffff;
-
-    div {
-      border: 0;
-    }
   }
 
   ::ng-deep .mat-form-field-suffix {
     margin-right: -5px;
+    top: 9px;
+  }
+
+  ::ng-deep .mat-icon-button.button {
+    width: 1.5em;
   }
 
   ::ng-deep .mat-form-field-wrapper {

@@ -12,8 +12,8 @@
                (keyup)="search(query.value, $event)"
                [matAutocomplete]="searchAuto">
         <mat-icon *ngIf="query.value.length === 0" matSuffix>search</mat-icon>
-        <button *ngIf="query.value.length > 0" mat-icon-button matSuffix class="field-close" (click)="query.value = ''">
-            <mat-icon>close</mat-icon>
+        <button *ngIf="query.value.length > 0" mat-icon-button matSuffix class="button" (click)="query.value = ''">
+            <mat-icon class="passive" svgIcon="Entfernen"></mat-icon>
         </button>
         <mat-autocomplete #searchAuto="matAutocomplete" class="dense">
             <mat-option *ngFor="let doc of searchResult | async"

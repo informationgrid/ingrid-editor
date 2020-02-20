@@ -38,4 +38,7 @@ export class QuickSearchComponent implements OnInit {
       });
   }
 
+  openResearchPage() {
+
+  }
 }

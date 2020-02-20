@@ -1,4 +1,3 @@
-//@import url("https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined");
 @import '~@swimlane/ngx-datatable/index.css';
 @import '~@swimlane/ngx-datatable/themes/material.scss';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
@@ -13,9 +12,24 @@ body {
   font-family: Roboto,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
 }
 
+a {
+  font-size: 14px;
+  font-weight: 500;
+  color: $ige-secondary;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  &:hover {
+  }
+}
+
 h1 {
   font-size: 48px;
   color: $ige-primary;
+}
+
+.wide-spacing {
+  letter-spacing: 1.25px;
 }
 
 .text-card-title {
@@ -399,8 +413,14 @@ ige-root .mat-drawer-container {
   transition: all .2s linear;
 }
 
-.mat-icon svg path {
-  fill: #333333;
+.mat-icon {
+  svg path {
+    fill: #333333;
+  }
+
+  &.passive svg path {
+    fill: $ige-background-bar;
+  }
 }
 
 #form {
@@ -476,14 +496,8 @@ ige-root .mat-drawer-container {
 
 mat-list.mat-list-base.dense, .mat-autocomplete.dense {
   mat-option, mat-list-item {
-    height: 36px !important;
-    line-height: 36px;
-    font-size: 14px;
+    height: 40px !important;
+    line-height: 40px;
+    font-size: 16px;
   }
-}
-
-mat-form-field button.field-close {
-  background-color: $ige-background-bar;
-  font-size: 10px !important;
-  color: white;
 }

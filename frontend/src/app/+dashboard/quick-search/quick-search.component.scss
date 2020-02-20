@@ -1,3 +1,5 @@
+@import "../../../variables";
+
 .search-content {
 
   padding-bottom: 24px;
@@ -12,14 +14,12 @@
 
   ::ng-deep .mat-form-field-outline {
     background-color: #ffffff;
-
-    div {
-      border: 0;
-    }
+    top: 0.45em;
   }
 
   ::ng-deep .mat-form-field-suffix {
     margin-right: -5px;
+    top: 9px;
   }
 
   ::ng-deep .mat-form-field-wrapper {
@@ -28,7 +28,7 @@
 
   ::ng-deep .mat-form-field-infix {
     padding: 0 0 0.8em;
-    margin: 0.1em 0 0.1em;
+    margin: 0.3em 0 0.1em;
   }
 
   button {
@@ -40,18 +40,33 @@
   }
 }
 
+::ng-deep .option-no-padding mat-option {
+  padding-left: 0 !important;
+}
+
 .result-header {
-  line-height: 36px;
-  font-size: 14px;
   font-weight: 500;
-  padding-left: 15px;
+  padding-bottom: 20px;
+}
+
+.result-title {
+  color: $ige-secondary;
+  font-weight: 500;
+  padding-bottom: 18px;
+}
+
+.show-all-link {
+  line-height: 36px;
+  .mat-icon {
+    vertical-align: middle;
+    padding-bottom: 4px;
+  }
 }
 
 ::ng-deep .cdk-overlay-pane {
-  //height: 950px !important;
-
   .mat-autocomplete-panel {
     max-height: unset;
+    padding: 24px;
   }
 }
 
