@@ -9,6 +9,7 @@ import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {Subject} from 'rxjs';
 import {TreeAction} from '../../+form/sidebars/tree/tree.component';
+import {IgeDocument} from "../../models/ige-document";
 
 @Component({
   selector: 'ige-address',
@@ -18,8 +19,8 @@ import {TreeAction} from '../../+form/sidebars/tree/tree.component';
 export class AddressComponent implements OnInit, OnDestroy {
   sidebarWidth = 20;
   form = new FormGroup({});
-  fields: any;
-  model: any;
+  fields: FormlyFieldConfig[] = [];
+  model: IgeDocument | any = {};
   formOptions: any;
   updateTree = new Subject<TreeAction[]>();
   initialActiveNodeId: any;

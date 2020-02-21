@@ -20,7 +20,8 @@
         <!-- The form -->
         <as-split-area [size]="100-sidebarWidth" id="form" class="form-content">
 
-            <ng-container>
+            <ng-container *ngIf="fields.length !== 0">
+                <ige-form-info [form]="form" [model]="model"></ige-form-info>
                 <!--<ige-form-info [form]="form" [model]="model" [sections]="sections" [class.scrolled]="isScrolled"
                                (jumpToSection)="jumpToSection($event)"></ige-form-info>-->
 

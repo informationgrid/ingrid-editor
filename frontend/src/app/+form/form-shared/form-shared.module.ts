@@ -26,10 +26,18 @@ import {ChooseFolderComponent} from '../dialogs/folder/choose-folder/choose-fold
 import {BreadcrumbComponent} from '../form-info/breadcrumb/breadcrumb.component';
 import {MatInputModule} from '@angular/material/input';
 import {IgeFormlyModule} from '../../formly/ige-formly.module';
+import {FormInfoComponent} from "../form-info/form-info.component";
+import {HeaderNavigationComponent} from "../form-info/header-navigation/header-navigation.component";
+import {HeaderTitleRowComponent} from "../form-info/header-title-row/header-title-row.component";
+import {HeaderMoreComponent} from "../form-info/header-more/header-more.component";
+import {FormMessageComponent} from "../form-info/form-message/form-message.component";
 
 
 @NgModule({
-  declarations: [FormToolbarComponent, CreateFolderComponent, ChooseFolderComponent, BreadcrumbComponent],
+  declarations: [
+    FormToolbarComponent, CreateFolderComponent, ChooseFolderComponent, BreadcrumbComponent,
+    FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent,
+    FormMessageComponent],
   imports: [
     CommonModule,
     MatToolbarModule,
@@ -45,7 +53,8 @@ import {IgeFormlyModule} from '../../formly/ige-formly.module';
   ],
   providers: [FormToolbarService, FormPluginsService, NewDocumentPlugin, SavePlugin, FolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService],
-  exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, ChooseFolderComponent, IgeFormlyModule],
+  exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, ChooseFolderComponent, IgeFormlyModule,
+    FormInfoComponent],
   entryComponents: [CreateFolderComponent]
 })
 export class FormSharedModule {

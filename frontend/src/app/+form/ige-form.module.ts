@@ -19,14 +19,11 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {SidebarComponent} from './sidebars/sidebar.component';
-import {FormInfoComponent} from './form-info/form-info.component';
 import {FormDialogsModule} from './dialogs/tree-select/form-dialogs.module';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {AngularSplitModule} from 'angular-split';
 import {RouterModule} from '@angular/router';
 import {FormlyModule} from '@ngx-formly/core';
-import {HeaderNavigationComponent} from './form-info/header-navigation/header-navigation.component';
-import {HeaderTitleRowComponent} from './form-info/header-title-row/header-title-row.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
@@ -34,8 +31,6 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {PasteDialogComponent} from './dialogs/copy-cut-paste/paste-dialog.component';
 import {IsoViewComponent} from './dialogs/isoView/iso-view.component';
 import {FormDashboardComponent} from './form-dashboard/form-dashboard.component';
-import {HeaderMoreComponent} from './form-info/header-more/header-more.component';
-import {FormMessageComponent} from './form-info/form-message/form-message.component';
 import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.component';
 import {FormSharedModule} from './form-shared/form-shared.module';
 
@@ -56,8 +51,7 @@ import {FormSharedModule} from './form-shared/form-shared.module';
     NewDocumentComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
-    FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, FormDashboardComponent,
-    HeaderMoreComponent, FormMessageComponent],
+    FormDashboardComponent],
   providers: [
     NominatimService],
   exports: [RouterModule, FormsModule, ScrollToDirective, SidebarComponent],

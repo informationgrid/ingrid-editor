@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        jdk 'jdk11'
+    }
+
     options {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
     }
@@ -19,8 +23,10 @@ pipeline {
                 }
             }*/
             steps {
-                nodejs(nodeJSInstallationName: 'nodejs') {
-                    sh './gradlew clean build'
+                withEnv(["JAVA_HOME=${ tool 'jdk11' }/jdk-11"]) {
+                    nodejs(nodeJSInstallationName: 'nodejs') {
+                        sh './gradlew clean build'
+                    }
                 }
             }
         }
