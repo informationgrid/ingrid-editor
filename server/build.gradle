@@ -95,10 +95,10 @@ publishing {
 // create docker image
 jib {
     from {
-        image = 'openjdk:8-jre-alpine'
+        image = 'openjdk:11-jre-slim'
     }
     to {
-        image = 'docker-registry.wemove.com/ingrid-ige-ng:gradle'
+        image = 'docker-registry.wemove.com/ingrid-ige-ng'
         // tags = ['jib'] // additional tags
     }
     container {
