@@ -1,6 +1,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {DocumentService} from '../../services/document/document.service';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'ige-quick-search',
@@ -10,13 +11,14 @@ import {DocumentService} from '../../services/document/document.service';
 export class QuickSearchComponent implements OnInit {
 
   @Output() select = new EventEmitter<string>();
+  @Output() selectAddress = new EventEmitter<string>();
 
   docs: DocumentAbstract[];
   addresses: DocumentAbstract[];
   numDocs: number;
   numAddresses: number;
 
-  constructor(private documentService: DocumentService) {
+  constructor(private documentService: DocumentService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -38,7 +40,8 @@ export class QuickSearchComponent implements OnInit {
       });
   }
 
-  openResearchPage() {
-
+  openResearchPage(event: Event) {
+    event.preventDefault();
+    this.router.navigate(['/research']);
   }
 }

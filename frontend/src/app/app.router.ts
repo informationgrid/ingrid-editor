@@ -32,6 +32,10 @@ export const routes: Routes = [
     loadChildren: () => import('./+catalog/catalog.module').then(m => m.CatalogModule)
   },
   {
+    path: 'research',
+    loadChildren: () => import('./+research/research.module').then(m => m.ResearchModule)
+  },
+  {
     path: '',
     redirectTo: '/form',
     pathMatch: 'full'

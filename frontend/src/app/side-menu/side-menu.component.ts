@@ -78,6 +78,7 @@ export class SideMenuComponent implements OnInit {
       case '/dashboard': return 'Uebersicht';
       case '/form': return 'Daten';
       case '/address': return 'Adressen';
+      case '/research': return 'Recherche';
       // case '/user': return 'addresses';
       // case '/plugins': return 'extension';
       case '/importExport': return 'Im-Export';

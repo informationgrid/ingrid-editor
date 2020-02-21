@@ -20,12 +20,10 @@ export class MenuService {
     {name: 'Übersicht', path: '/dashboard'},
     {name: 'Formular', path: '/form'},
     {name: 'Address', path: '/address'},
-    // {name: 'Plugins', path: '/plugins', onlyAdmin: true},
-    // {name: 'Fields', path: '/fields'}
+    {name: 'Research', path: '/research', featureFlag: 'AP3'},
     {name: 'Benutzer', path: '/user', onlyAdmin: true, featureFlag: 'AP3'},
     {name: 'Im-/Export', path: '/importExport', onlyAdmin: true},
     {name: 'Katalogverwaltung', path: '/catalogs', onlyAdmin: true}
-    // {name: 'Demo', path: '/demo'}
   ];
 
   menu$ = new BehaviorSubject<MenuItem[]>(this._menuItems);

@@ -60,4 +60,8 @@ export class DashboardComponent implements OnInit {
   openDocument(id: number | string) {
     this.router.navigate(['/form', {id: id}]);
   }
+
+  openAddress(id: number | string) {
+    this.router.navigate(['/address', {id: id}]);
+  }
 }

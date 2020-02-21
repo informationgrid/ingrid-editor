@@ -1,4 +1,4 @@
-<mat-list *ngIf="docs" style="padding-top: 0" [class.dense]="denseMode">
+<mat-list *ngIf="docs" style="padding-top: 0" class="doc-item" [class.dense]="denseMode">
     <mat-list-item *ngFor="let doc of docs | async" class="clickable" (click)="select.next(doc)">
 
         <mat-icon matListIcon [svgIcon]="doc.icon"></mat-icon>
@@ -11,7 +11,7 @@
     </mat-list-item>
 </mat-list>
 
-<div *ngIf="doc" (click)="select.next(doc)" (keyup.enter)="select.next(doc)">
+<div *ngIf="doc" (click)="select.next(doc)" (keyup.enter)="select.next(doc)" class="doc-item">
     <mat-icon matListIcon [svgIcon]="doc.icon || doc.iconClass"></mat-icon>
 
     <span matLine>

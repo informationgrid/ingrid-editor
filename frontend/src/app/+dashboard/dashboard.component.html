@@ -5,7 +5,7 @@
     </div>
 
     <div class="dashboard-content">
-        <ige-quick-search (select)="openDocument($event)"></ige-quick-search>
+        <ige-quick-search (select)="openDocument($event)" (selectAddress)="openAddress($event)"></ige-quick-search>
 
         <div class="shortcut">
             <button mat-button (click)="createNewDocument()">

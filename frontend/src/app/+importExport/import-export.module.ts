@@ -4,25 +4,17 @@ import {NgModule} from '@angular/core';
 import {ImportExportComponent} from './import/import.component';
 import {ImportExportService} from './import-export-service';
 import {ExportComponent} from './export/export.component';
-import { MatButtonModule } from '@angular/material/button';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatTabsModule } from '@angular/material/tabs';
+import {MatButtonModule} from '@angular/material/button';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatTabsModule} from '@angular/material/tabs';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {RouterModule, Routes} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 
-const routes: Routes = [
-  {
-    path: '',
-    component: ImportExportComponent
-  }
-];
-
 @NgModule({
-  imports: [RouterModule.forChild(routes), CommonModule, routing, FormsModule,
-            MatExpansionModule, MatTabsModule, MatRadioModule, MatButtonModule,
-            FlexLayoutModule
+  imports: [CommonModule, routing, FormsModule,
+    MatExpansionModule, MatTabsModule, MatRadioModule, MatButtonModule,
+    FlexLayoutModule
   ],
   declarations: [ImportExportComponent, ExportComponent],
   providers: [ImportExportService]
