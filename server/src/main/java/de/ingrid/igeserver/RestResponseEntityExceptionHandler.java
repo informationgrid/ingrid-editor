@@ -23,6 +23,7 @@
 package de.ingrid.igeserver;
 
 import de.ingrid.igeserver.api.ApiException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +33,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.naming.NoPermissionException;
 

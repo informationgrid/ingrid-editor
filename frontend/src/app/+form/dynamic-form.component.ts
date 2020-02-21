@@ -138,6 +138,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   loadDocument(id: string) {
 
     if (id === undefined) {
+      this.fields = [];
       return;
     }
 

@@ -68,7 +68,7 @@ public interface DatasetsApi {
     ResponseEntity<String> deleteById(
             Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids,
-            @ApiParam(value = "Delete an address document") @RequestParam(required = false) boolean address) throws ApiException;
+            @ApiParam(value = "Delete an address document") @RequestParam(value = "address", required = false) boolean address) throws ApiException;
 
     @ApiOperation(value = "Export a dataset to a specific format", notes = "...", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
@@ -101,7 +101,8 @@ public interface DatasetsApi {
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
             @ApiParam(value = "Define the maximum number of returned documents.") @RequestParam(value = "size", required = false) Integer size,
             @ApiParam(value = "Sort by a given field.") @RequestParam(value = "sort", required = false) String sort,
-            @ApiParam(value = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") String sortOrder) throws Exception;
+            @ApiParam(value = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") String sortOrder,
+            @ApiParam(value = "Search in addresses.") @RequestParam(value = "address", required = false) boolean forAddress) throws Exception;
 
     @ApiOperation(value = "A complete dataset", notes = "Retrieve a dataset by a given ID.", response = InlineResponse200.class, tags = {"Datasets",})
     @ApiResponses(value = {

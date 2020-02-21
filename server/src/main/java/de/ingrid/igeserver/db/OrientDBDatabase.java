@@ -161,16 +161,16 @@ public class OrientDBDatabase implements DBApi {
             // TODO: try to use Elasticsearch as an alternative!
             List<String> where = createWhereClause(query, options);
 
-            if (!type.equals("*")) {
-                String whereString = String.join(" OR ", where);
-                queryString = "SELECT * FROM " + type + " WHERE (" + whereString + ")";
-                countQuery = "SELECT count(*) FROM " + type + " WHERE (" + whereString + ")";
-            } else {
+//            if (!type.equals("*")) {
+            String whereString = String.join(" OR ", where);
+            queryString = "SELECT * FROM " + type + " WHERE (" + whereString + ")";
+            countQuery = "SELECT count(*) FROM " + type + " WHERE (" + whereString + ")";
+            /*} else {
                 String draftWhere = attachFieldToWhereList(where, "draft.");
                 String publishedWhere = attachFieldToWhereList(where, "published.");
                 queryString = "SELECT FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
                 countQuery = "SELECT count(*) FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
-            }
+            }*/
 
             if (options.sortField != null) {
                 queryString += " ORDER BY " + options.sortField + " " + options.sortOrder;
@@ -348,15 +348,18 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public boolean remove(String type, String id) {
+    public boolean remove(String type, String id) throws ApiException {
         OResultSet result = getDBFromThread().command("select * from " + type + " where _id = '" + id + "'");
 
         OElement record = result.elementStream()
                 .reduce((a, b) -> {
                     throw new IllegalStateException("Multiple elements: " + a + ", " + b);
                 })
-                .get();
+                .orElseGet(null);
 
+        if (record == null) {
+            throw new ApiException("Dockument cannot be deleted, since it wasn't found: " + type + " -> " + id);
+        }
         ORecordAbstract deleteResponse = record.delete();
         return true;
     }

@@ -20,7 +20,6 @@ export interface Profile {
 
   /**
    * The css-image-class for the profile document. This will be shown in a tree and other places where necessary.
-   * TODO: do not use 'tree' in variable name
    */
   iconClass?: string;
 

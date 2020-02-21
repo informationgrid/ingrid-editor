@@ -163,16 +163,16 @@ export class TreeComponent implements OnInit {
     return path.reverse();
   }
 
-  private getParentNode(node: TreeNode) {
+  private getParentNode(node: TreeNode): { node, parent } {
     const nodeIndex = this.dataSource.data.findIndex(item => item._id === node._id);
 
     for (let i = nodeIndex - 1; i >= 0; i--) {
       if (this.dataSource.data[i].level === node.level - 1) {
-        return this.dataSource.data[i];
+        return {node: node, parent: this.dataSource.data[i]};
       }
     }
 
-    return null;
+    return {node: node, parent: null};
   }
 
   reloadTree() {
@@ -202,6 +202,7 @@ export class TreeComponent implements OnInit {
         return this.dataSource.updateNode(updateInfo.data);
       case UpdateType.Delete:
         this.deleteNode(updateInfo);
+
         return;
       case UpdateType.Copy:
         // no marking of nodes
@@ -215,14 +216,18 @@ export class TreeComponent implements OnInit {
   }
 
   private deleteNode(updateInfo: UpdateDatasetInfo) {
-    const parentNodes = updateInfo['data']
+    const parentNodeRelations = updateInfo['data']
       .map(doc => this.dataSource.data.find(item => item._id === doc.id))
       .map(node => this.getParentNode(node));
 
-    this.dataSource.removeNode(updateInfo.data);
-
     // update parent nodes in case they do not have any children anymore
-    parentNodes.forEach(parentNode => this.updateChildrenInfo(parentNode));
+    parentNodeRelations.forEach(parentNode => {
+      // first collapse nodes to be deleted to make sure all sub nodes are removed
+      this.treeControl.collapse(parentNode.node);
+      this.updateChildrenInfo(parentNode.parent)
+    });
+
+    this.dataSource.removeNode(updateInfo.data);
   }
 
   private async addNewNode(updateInfo: UpdateDatasetInfo) {

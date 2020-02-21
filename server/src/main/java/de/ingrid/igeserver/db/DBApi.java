@@ -59,7 +59,7 @@ public interface DBApi {
     /**
      * Delete a document with a given ID.
      */
-    public boolean remove(String type, String id);
+    public boolean remove(String type, String id) throws ApiException;
 
     /**
      * Delete documents that match a given query.

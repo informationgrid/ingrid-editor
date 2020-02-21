@@ -5,7 +5,7 @@
   padding-bottom: 24px;
 
   .search {
-    min-width: 500px;
+    min-width: 564px;
   }
 
   input {
@@ -47,6 +47,15 @@
 .result-header {
   font-weight: 500;
   padding-bottom: 20px;
+
+  .mat-icon {
+    height: 16px;
+    vertical-align: middle;
+
+    ::ng-deep svg path {
+      fill: $ige-secondary;
+    }
+  }
 }
 
 .result-title {

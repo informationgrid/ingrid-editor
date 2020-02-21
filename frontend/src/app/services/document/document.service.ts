@@ -43,10 +43,10 @@ export class DocumentService {
     this.configuration = configService.getConfiguration();
   }
 
-  find(query: string, size = 10): Observable<SearchResult> {
+  find(query: string, size = 10, address = false): Observable<SearchResult> {
     // TODO: use general sort filter
     return this.http.get<ServerSearchResult>(
-      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}`)
+      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}&address=${address}`)
       .pipe(
         // map(json => json.filter(item => item && item._profile !== 'FOLDER')),
         map(result => this.mapSearchResults(result))

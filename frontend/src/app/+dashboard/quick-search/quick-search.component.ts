@@ -31,7 +31,7 @@ export class QuickSearchComponent implements OnInit {
         this.docs = result.hits;
         this.numDocs = result.totalHits;
       });
-    this.documentService.find(value, 5)
+    this.documentService.find(value, 5, true)
       .subscribe( result => {
         this.addresses = result.hits;
         this.numAddresses = result.totalHits;

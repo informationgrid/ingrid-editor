@@ -231,12 +231,11 @@ public class DatasetsApiController implements DatasetsApi {
             for (String id : ids) {
                 String recordId = this.dbService.getRecordId(type, id);
                 Map dbDoc = this.dbService.find(type, recordId);
-                // TODO: remove references to document!?
+
                 this.dbService.remove(type, id);
 
-                // update parent information about children
-                String parentId = (String) dbDoc.get(PARENT_ID);
-//                this.updateParentWithChildInfo(parentId);
+                // TODO: remove references to document!?
+                // TODO: remove all children recursively
 
             }
             return ResponseEntity.ok().build();
@@ -360,17 +359,19 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
-    public ResponseEntity<SearchResult> find(Principal principal, String query, Integer size, String sort, String sortOrder) throws Exception {
+    public ResponseEntity<SearchResult> find(Principal principal, String query, Integer size, String sort, String sortOrder, boolean forAddress) throws Exception {
 
         DBFindAllResults docs = null;
         List<String> mappedDocs = new ArrayList<>();
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             Map<String, String> queryMap = new HashMap<>();
-            queryMap.put("title", query);
+            queryMap.put("draft.title", query);
+            queryMap.put("draft IS NULL AND published.title", query);
             FindOptions findOptions = new FindOptions();
             findOptions.size = size;
             findOptions.queryType = QueryType.like;
@@ -378,7 +379,7 @@ public class DatasetsApiController implements DatasetsApi {
             findOptions.sortOrder = sortOrder;
             findOptions.resolveReferences = true;
 
-            docs = this.dbService.findAll("*", queryMap, findOptions);
+            docs = this.dbService.findAll(type, queryMap, findOptions);
 
             SearchResult searchResult = new SearchResult();
             searchResult.totalHits = docs.totalHits;
