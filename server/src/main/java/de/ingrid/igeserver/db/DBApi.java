@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.db;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.model.Catalog;
@@ -27,34 +28,24 @@ public interface DBApi {
     /**
      * Find a document of a certain type with a given ID.
      */
-    public Map find(String type, String id);
+    public JsonNode find(String type, String id) throws Exception;
 
     /**
      * Get all documents of a certain type.
      */
-    public List<Map> findAll(DBClass type);
+    public List<JsonNode> findAll(DBClass type);
 
     /**
      * Get all documents of a certain type that matches a given query.
      * @return
      */
-    public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options);
-
-    /**
-     * Save a document with a given ID.
-     *
-     * @param type is the database class (table)
-     * @param dbDocId  is the ID of the document given by the database system
-     * @param data contains the data to be stored
-     */
-    @Deprecated
-    Map save(String type, String dbDocId, Map<String, Object> data);
-
+    public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) throws Exception;
 
     /**
      * Save a raw object with a given ID (like file uploads).
+     * @return
      */
-    Map save(String type, String dbDocId, String data);
+    JsonNode save(String type, String dbDocId, String data) throws ApiException;
 
     /**
      * Delete a document with a given ID.
@@ -85,7 +76,7 @@ public interface DBApi {
      * Update an existing database, like name property.
      * @param settings
      */
-    public void updateDatabase(Catalog settings);
+    public void updateDatabase(Catalog settings) throws ApiException;
 
     /**
      * Delete a database with a given name.

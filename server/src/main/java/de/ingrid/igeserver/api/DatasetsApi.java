@@ -5,6 +5,7 @@
  */
 package de.ingrid.igeserver.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.model.InlineResponse200;
@@ -32,7 +33,7 @@ public interface DatasetsApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The stored dataset, which might contain additional storage information.", response = Void.class),
             @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)})
-    ResponseEntity<String> createDataset(
+    ResponseEntity<JsonNode> createDataset(
             Principal principal,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
             @ApiParam(value = "Is this an address document") @Valid @RequestParam(required = false) boolean address,
@@ -43,7 +44,7 @@ public interface DatasetsApi {
             @ApiResponse(code = 200, message = "The stored dataset, which might contain additional storage information.", response = Void.class),
             @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)})
     @RequestMapping(value = "/datasets/{id}", produces = {"application/json"}, method = RequestMethod.PUT)
-    ResponseEntity<String> updateDataset(
+    ResponseEntity<JsonNode> updateDataset(
             Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
@@ -69,7 +70,7 @@ public interface DatasetsApi {
     ResponseEntity<String> deleteById(
             Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids,
-            @ApiParam(value = "Delete an address document") @RequestParam(value = "address", required = false) boolean address) throws ApiException;
+            @ApiParam(value = "Delete an address document") @RequestParam(value = "address", required = false) boolean address) throws Exception;
 
     @ApiOperation(value = "Export a dataset to a specific format", notes = "...", response = Void.class, tags = {"Datasets",})
     @ApiResponses(value = {
@@ -78,7 +79,7 @@ public interface DatasetsApi {
     ResponseEntity<String> exportDataset(
             Principal principal,
             @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException, IOException;
+            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws Exception;
 
     @ApiOperation(value = "Get child datasets of a given parent document/folder", notes = "", response = Void.class, tags = {
             "Datasets",})
@@ -92,25 +93,28 @@ public interface DatasetsApi {
             @ApiParam(value = "Define if we want to have addresses or documents.")
             @RequestParam(value = "address", required = false) boolean isAddress) throws Exception;
 
-    @ApiOperation(value = "Get datasets by a query", notes = "Get all datasets or those which match a given query. The results can also be sorted.", response = Void.class, tags = {
-            "Datasets",})
+    @ApiOperation(
+            value = "Get datasets by a query",
+            notes = "Get all datasets or those which match a given query. The results can also be sorted.",
+            response = Void.class,
+            tags = {"Datasets"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Datasets found", response = Void.class)})
     @RequestMapping(value = "/datasets", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<SearchResult> find(
             Principal principal,
             @ApiParam(value = "Find datasets by a search query.") @RequestParam(value = "query", required = false) String query,
-            @ApiParam(value = "Define the maximum number of returned documents.") @RequestParam(value = "size", required = false) Integer size,
+            @ApiParam(value = "Define the maximum number of returned documents.", allowEmptyValue = true) @RequestParam(value = "size", required = false) int size,
             @ApiParam(value = "Sort by a given field.") @RequestParam(value = "sort", required = false) String sort,
             @ApiParam(value = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") String sortOrder,
             @ApiParam(value = "Search in addresses.") @RequestParam(value = "address", required = false) boolean forAddress) throws Exception;
 
-    @ApiOperation(value = "A complete dataset", notes = "Retrieve a dataset by a given ID.", response = InlineResponse200.class, tags = {"Datasets",})
+    @ApiOperation(value = "A complete dataset", notes = "Retrieve a dataset by a given ID.", response = InlineResponse200.class, tags = {"Datasets"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The dataset with the given ID.", response = InlineResponse200.class),
             @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)})
     @RequestMapping(value = "/datasets/{id}", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<String> getByID(
+    ResponseEntity<JsonNode> getByID(
             Principal principal,
             @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
             @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish,

@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -41,7 +40,9 @@ public class DatasetsApiController implements DatasetsApi {
 
     private static final String COLLECTION = "Documents";
 
-    private enum CopyMoveOperation {COPY, MOVE};
+    private enum CopyMoveOperation {COPY, MOVE}
+
+    ;
 
     private DBApi dbService;
 
@@ -67,8 +68,10 @@ public class DatasetsApiController implements DatasetsApi {
 
     /**
      * Create dataset.
+     *
+     * @return
      */
-    public ResponseEntity<String> createDataset(
+    public ResponseEntity<JsonNode> createDataset(
             Principal principal,
             String data,
             boolean address,
@@ -96,7 +99,7 @@ public class DatasetsApiController implements DatasetsApi {
             // get document type from document
             String documentType = dataJson.get(FIELD_PROFILE).asText();
 
-            Map result = this.dbService.save(documentType, null, dataJson.toString());
+            JsonNode result = this.dbService.save(documentType, null, dataJson.toString());
 
 
             JsonNode nodeParentId = dataJson.get(PARENT_ID);
@@ -108,23 +111,25 @@ public class DatasetsApiController implements DatasetsApi {
             documentWrapper.put(FIELD_DRAFT, result.get(DB_ID).toString());
             documentWrapper.put(FIELD_PARENT, parentId);
 
-            Map resultWrapper = this.dbService.save(
+            JsonNode resultWrapper = this.dbService.save(
                     address ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER, null, documentWrapper.toString());
 
-            Map docResult = this.documentService.prepareDocumentFromDB(result, documentWrapper);
+//            Map docResult = this.documentService.prepareDocumentFromDB(result, documentWrapper);
 
-            return ResponseEntity.ok(dbUtils.toJsonString(docResult));
+            return ResponseEntity.ok(resultWrapper);
         } catch (Exception e) {
             log.error("Error during creation of document", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            throw new ApiException(e.getMessage());
         }
 
     }
 
     /**
      * Update dataset.
+     *
+     * @return
      */
-    public ResponseEntity<String> updateDataset(
+    public ResponseEntity<JsonNode> updateDataset(
             Principal principal, String id,
             String data,
             boolean publish,
@@ -148,7 +153,7 @@ public class DatasetsApiController implements DatasetsApi {
             String docType = mapDocument.get(FIELD_PROFILE).asText();
 
             if (dbId == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The user does not seem to be assigned to any database.");
+                throw new NotFoundException(HttpStatus.NOT_FOUND.value(), "The user does not seem to be assigned to any database.");
             }
 
             String recordId = null;
@@ -162,8 +167,8 @@ public class DatasetsApiController implements DatasetsApi {
                 log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docWrappers.totalHits + ")");
                 throw new RuntimeException("No unique document wrapper found");
             }
-            ObjectNode docWrapper = (ObjectNode) getJsonMap(docWrappers.hits.get(0));
-            Map result;
+            ObjectNode docWrapper = (ObjectNode) docWrappers.hits.get(0);
+            JsonNode result;
 
 
             // just update document by using new data and adding database ID
@@ -206,18 +211,18 @@ public class DatasetsApiController implements DatasetsApi {
             }
 
 
-            Map docResult = this.documentService.prepareDocumentFromDB(result, docWrapper);
+//            Map docResult = this.documentService.prepareDocumentFromDB(result, docWrapper);
 
-            return ResponseEntity.ok(dbUtils.toJsonString(docResult));
+            return ResponseEntity.ok(result);
 
         } catch (Exception e) {
             log.error("Error during updating of document", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            throw new ApiException(e.getMessage());
         }
 
     }
 
-    public ResponseEntity<String> deleteById(Principal principal, String[] ids, boolean forAddress) throws ApiException {
+    public ResponseEntity<String> deleteById(Principal principal, String[] ids, boolean forAddress) throws Exception {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
@@ -226,7 +231,7 @@ public class DatasetsApiController implements DatasetsApi {
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             for (String id : ids) {
                 String recordId = this.dbService.getRecordId(type, id);
-                Map dbDoc = this.dbService.find(type, recordId);
+                JsonNode dbDoc = this.dbService.find(type, recordId);
 
                 this.dbService.remove(type, id);
 
@@ -271,7 +276,7 @@ public class DatasetsApiController implements DatasetsApi {
 
     private void copyOrMove(CopyMoveOperation operation, List<String> ids, String destId) throws Exception {
         for (String id : ids) {
-            Map doc = this.dbService.find(DOCUMENT_WRAPPER, id);
+            JsonNode doc = this.dbService.find(DOCUMENT_WRAPPER, id);
 
             // add new parent to document
             ObjectNode updatedDoc = (ObjectNode) documentService.updateParent(dbUtils.toJsonString(doc), destId);
@@ -295,14 +300,14 @@ public class DatasetsApiController implements DatasetsApi {
     public ResponseEntity<String> exportDataset(
             Principal principal,
             String id,
-            String format) throws ApiException, IOException {
+            String format) throws Exception {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         // TODO: refactor
         try (ODatabaseSession session = dbService.acquire(dbId)) {
-            Map doc = this.dbService.find(DOCUMENT_WRAPPER, id);
+            JsonNode doc = this.dbService.find(DOCUMENT_WRAPPER, id);
 
             JsonNode data = null;
             //data = this.documentService.prepareDocumentFromDB( doc );
@@ -337,14 +342,6 @@ public class DatasetsApiController implements DatasetsApi {
 
             List<ObjectNode> childDocs = docs.hits.stream()
                     .map(doc -> {
-                        try {
-                            return getJsonMap(doc);
-                        } catch (Exception e) {
-                            log.error(e);
-                            return null;
-                        }
-                    })
-                    .map(doc -> {
                         ObjectNode node = getLatestDocument(doc);
                         node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc, type));
                         node.remove("@rid");
@@ -354,10 +351,13 @@ public class DatasetsApiController implements DatasetsApi {
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(childDocs);
+        } catch (Exception e) {
+            log.error(e);
+            throw new ApiException("Error occured getting children: " + e.getMessage());
         }
     }
 
-    public ResponseEntity<SearchResult> find(Principal principal, String query, Integer size, String sort, String sortOrder, boolean forAddress) throws Exception {
+    public ResponseEntity<SearchResult> find(Principal principal, String query, int size, String sort, String sortOrder, boolean forAddress) throws Exception {
 
         DBFindAllResults docs = null;
         List<String> mappedDocs = new ArrayList<>();
@@ -383,14 +383,6 @@ public class DatasetsApiController implements DatasetsApi {
             searchResult.totalHits = docs.totalHits;
 
             List<ObjectNode> preparedDocs = docs.hits.stream()
-                    .map(doc -> {
-                        try {
-                            return getJsonMap(doc);
-                        } catch (Exception e) {
-                            log.error(e);
-                            return null;
-                        }
-                    })
                     .map(doc -> getLatestDocument(doc))
                     .collect(Collectors.toList());
 
@@ -414,7 +406,7 @@ public class DatasetsApiController implements DatasetsApi {
         return docData;
     }
 
-    public ResponseEntity<String> getByID(
+    public ResponseEntity<JsonNode> getByID(
             Principal principal,
             String id,
             Boolean publish, boolean address) throws Exception {
@@ -434,34 +426,11 @@ public class DatasetsApiController implements DatasetsApi {
             DBFindAllResults docs = this.dbService.findAll(type, query, findOptions);
 
             if (docs.totalHits > 0) {
-                Map doc = getMapFromObject(docs.hits.get(0));
-                log.debug("Getting dataset: " + id);
+                ObjectNode doc = getLatestDocument(docs.hits.get(0));
+                doc.remove("@rid");
+                doc.remove("@class");
 
-                if (doc == null) {
-                    throw new ApiException(500, "No document found with the ID: " + id);
-                    // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document with the ID: " + id);
-                }
-
-                Map mapDoc = null;
-                Object theDocument = doc.get(FIELD_DRAFT);
-                if (theDocument == null) {
-                    theDocument = doc.get(FIELD_PUBLISHED);
-                }
-
-                // TODO: is this needed since it's not used anyway?
-                //doc.remove("@rid");
-                //doc.remove("@class");
-
-
-                mapDoc = this.documentService.prepareDocumentFromDB((Map) theDocument, doc);
-
-                //String[] refDocs = dbUtils.getReferencedDocs(mapDoc);
-                //documentService.addReferencedDocsTo(refDocs, mapDoc);
-
-                long end = System.currentTimeMillis();
-                String body = documentService.toJsonString(mapDoc);
-                log.debug("getById took: " + (end - start) + "ms");
-                return ResponseEntity.ok(body);
+                return ResponseEntity.ok(doc);
             } else {
                 throw new NotFoundException(404, "Document not found with id: " + id);
             }
@@ -489,6 +458,8 @@ public class DatasetsApiController implements DatasetsApi {
                 destId = doc.get("_parent").textValue();
                 path.add(destId);
             }
+        } catch (Exception e) {
+            log.error(e);
         }
         // remove last element which is null
         path.remove(path.size() - 1);

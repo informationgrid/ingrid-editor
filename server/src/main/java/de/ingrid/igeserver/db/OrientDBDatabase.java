@@ -1,11 +1,13 @@
 package de.ingrid.igeserver.db;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.ODatabaseType;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
-import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -34,8 +36,6 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
 
 @Service
 public class OrientDBDatabase implements DBApi {
@@ -137,11 +137,11 @@ public class OrientDBDatabase implements DBApi {
      */
 
     @Override
-    public List<Map> findAll(DBClass type) {
-        ORecordIteratorClass<ODocument> oDocuments = null;
+    public List<JsonNode> findAll(DBClass type) {
+        ORecordIteratorClass<ODocument> oDocuments;
         try {
             oDocuments = getDBFromThread().browseClass(type.name());
-            return mapODocumentsToMap(oDocuments);
+            return mapODocumentsToJsonNode(oDocuments);
         } catch (Exception e) {
             // TODO: can this happen? "class Info not found"
             log.error(e);
@@ -150,7 +150,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) {
+    public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) throws Exception {
         String queryString;
         String countQuery;
 
@@ -217,9 +217,9 @@ public class OrientDBDatabase implements DBApi {
                 .collect(Collectors.joining(" OR "));
     }
 
-    private DBFindAllResults mapFindAllResults(OResultSet docs, OResultSet countDocs, boolean resolveReferences) {
+    private DBFindAllResults mapFindAllResults(OResultSet docs, OResultSet countDocs, boolean resolveReferences) throws Exception {
 
-        List<String> hits = mapODocumentsToJSON(docs, resolveReferences);
+        List<JsonNode> hits = mapODocumentsToJSON(docs, resolveReferences);
         long count = countDocs.next().getProperty("count(*)");
         return new DBFindAllResults(count, hits);
     }
@@ -262,12 +262,12 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public Map find(String type, String id) {
+    public JsonNode find(String type, String id) throws Exception {
         String query = "SELECT * FROM " + type + " WHERE @rid = " + id;
 //        String query = "SELECT * FROM " + type + " WHERE _id = " + id;
 
         OResultSet result = getDBFromThread().query(query);
-        List<Map> list = mapODocumentsToMap(result);
+        List<JsonNode> list = mapODocumentsToJSON(result, false);
 
         if (list.size() == 1) {
 
@@ -282,46 +282,6 @@ public class OrientDBDatabase implements DBApi {
         return null;
     }
 
-    @Override
-    @Deprecated
-    public Map save(String type, String dbDocId, Map<String, Object> data) {
-        ODocument docToSave;
-//        ORecordId recId = ((ORecordId) data.get("@rid"));
-
-        /*docToSave = new ODocument(type);
-
-        if (dbDocId != null) {
-            docToSave.field(DB_ID, dbDocId);
-        }*/
-
-
-        if (dbDocId == null) {
-            docToSave = new ODocument(type);
-        } else {
-            Optional<OResult> doc = getById(type, dbDocId);
-            docToSave = (ODocument) doc.get().getRecord().get();
-
-        }
-
-        docToSave.fromMap(data);
-
-        // if it's a new document
-        // docToSave = doc.map(oResult -> (ODocument) oResult.getRecord().get()).orElseGet(() -> new ODocument(type.name()));
-
-        // map data
-        // TODO: can the update be done differently?
-        /*for (String key : data.keySet()) {
-            // ignore @rid since it contains the version which might be obsolete by now
-            // we also do not want to change the dbDocId manually!
-            if ("@rid".equals(key)) continue;
-
-            docToSave.field(key, data.get(key));
-        }*/
-
-        docToSave.save();
-        return docToSave.toMap();
-    }
-
     /**
      * Is this still used? data is not used in function!
      *
@@ -331,10 +291,9 @@ public class OrientDBDatabase implements DBApi {
      * @return
      */
     @Override
-    public Map save(String type, String id, String data) {
+    public JsonNode save(String type, String id, String data) throws ApiException {
         Optional<OResult> doc = getById(type, id);
         ODocument docToSave;
-
 
         // if it's a new document
         docToSave = doc
@@ -344,7 +303,12 @@ public class OrientDBDatabase implements DBApi {
         docToSave.fromJSON(data);
 
         docToSave.save();
-        return docToSave.toMap();
+        try {
+            return MapperService.getJsonMap(docToSave.toJSON());
+        } catch (Exception e) {
+            log.error("Error saving document", e);
+            throw new ApiException("Error saving document" + e.getMessage());
+        }
     }
 
     @Override
@@ -378,15 +342,15 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public String createDatabase(Catalog catalog) {
+    public String createDatabase(Catalog catalog) throws ApiException {
         catalog.id = this.generateDBNameFromLabel(catalog.name);
 
         server.createDatabase(catalog.id, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
         try (ODatabaseSession session = acquire(catalog.id)) {
 
             initNewDatabase(catalog, session);
-            Map<String, Object> catInfo = getMapFromCatalogSettings(catalog);
-            this.save(DBClass.Info.name(), null, catInfo);
+            JsonNode catInfo = getMapFromCatalogSettings(catalog);
+            this.save(DBClass.Info.name(), null, catInfo.toString());
         }
 
         initDocumentTypes(catalog);
@@ -394,19 +358,19 @@ public class OrientDBDatabase implements DBApi {
         return catalog.id;
     }
 
-    public void updateDatabase(Catalog settings) {
+    public void updateDatabase(Catalog settings) throws ApiException {
         try (ODatabaseSession ignored = acquire(settings.id)) {
 
-            List<Map> list = this.findAll(DBClass.Info);
-            Map<String, Object> map = list.get(0);
+            List<JsonNode> list = this.findAll(DBClass.Info);
+            ObjectNode map = (ObjectNode) list.get(0);
             map.put("name", settings.name);
             map.put("description", settings.description);
-            this.save(DBClass.Info.name(), map.get(DB_ID).toString(), map);
+            this.save(DBClass.Info.name(), map.get(DB_ID).toString(), map.toString());
         }
     }
 
-    private Map<String, Object> getMapFromCatalogSettings(Catalog settings) {
-        Map<String, Object> catInfo = new HashMap<>();
+    private JsonNode getMapFromCatalogSettings(Catalog settings) {
+        ObjectNode catInfo = new ObjectMapper().createObjectNode();
         catInfo.put("id", settings.id);
         catInfo.put("name", settings.name);
         catInfo.put("description", settings.description);
@@ -451,35 +415,27 @@ public class OrientDBDatabase implements DBApi {
         return ODatabaseRecordThreadLocal.instance().get();
     }
 
-    private List<Map> mapODocumentsToMap(ORecordIteratorClass<ODocument> oDocsIterator) {
-        List<Map> list = new ArrayList<>();
+    private List<JsonNode> mapODocumentsToJsonNode(ORecordIteratorClass<ODocument> oDocsIterator) throws Exception {
+        List<JsonNode> list = new ArrayList<>();
         while (oDocsIterator.hasNext()) {
             ODocument next = oDocsIterator.next();
-            list.add(next.toMap());
+            list.add(MapperService.getJsonMap(next.toJSON()));
         }
 
         return list;
     }
 
-    private List<Map> mapODocumentsToMap(OResultSet docs) {
-        List<Map> list = new ArrayList<>();
+    private List<JsonNode> mapODocumentsToJSON(OResultSet docs, boolean resolveReferences) throws Exception {
+        List<JsonNode> list = new ArrayList<>();
         while (docs.hasNext()) {
             ODocument oDoc = (ODocument) docs.next().getElement().get();
-            list.add(oDoc.toMap());
-        }
-
-        return list;
-    }
-
-    private List<String> mapODocumentsToJSON(OResultSet docs, boolean resolveReferences) {
-        List<String> list = new ArrayList<>();
-        while (docs.hasNext()) {
-            ODocument oDoc = (ODocument) docs.next().getElement().get();
+            String json;
             if (resolveReferences) {
-                list.add(oDoc.toJSON("rid,class,fetchPlan:*:-1"));
+                json = oDoc.toJSON("rid,class,fetchPlan:*:-1");
             } else {
-                list.add(oDoc.toJSON("rid,class"));
+                json = oDoc.toJSON("rid,class");
             }
+            list.add(MapperService.getJsonMap(json));
         }
 
         return list;

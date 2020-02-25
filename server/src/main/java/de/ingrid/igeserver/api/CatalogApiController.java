@@ -38,7 +38,7 @@ public class CatalogApiController implements CatalogApi {
     }
 
     @Override
-    public ResponseEntity<Void> updateCatalog(String name, Catalog settings) {
+    public ResponseEntity<Void> updateCatalog(String name, Catalog settings) throws ApiException {
         this.dbService.updateDatabase(settings);
         return ResponseEntity.ok().build();
     }

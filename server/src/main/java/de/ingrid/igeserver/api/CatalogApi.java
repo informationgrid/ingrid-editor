@@ -18,7 +18,7 @@ import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
-@Api(value = "catalogs", description = "the catalog API", hidden = true)
+@Api(value = "catalogs", description = "the catalog API")
 @RequestMapping(path = "/api")
 public interface CatalogApi {
 

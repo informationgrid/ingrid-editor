@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.db;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.*;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -113,6 +114,8 @@ public class OrientDBDatabaseTest {
             assertEquals(1, persons.totalHits);
             assertEquals(1, persons.hits.size());
 
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -120,7 +123,7 @@ public class OrientDBDatabaseTest {
     public void updateDocument() throws Exception {
         addTestData();
 
-        ORecordId id;
+        String id;
         Map<String, String> query = new HashMap<>();
         query.put("age", "48");
 
@@ -129,7 +132,7 @@ public class OrientDBDatabaseTest {
             options.queryType = QueryType.like;
             options.resolveReferences = false;
             DBFindAllResults docToUpdate = dbService.findAll("User", query, options);
-            id = (ORecordId)((Map)getJsonMap(docToUpdate.hits.get(0))).get("@rid");
+            id = docToUpdate.hits.get(0).get("@rid").asText();
 
             Map<String, Object> data = new HashMap<>();
             data.put("name", "Johann");
@@ -142,12 +145,11 @@ public class OrientDBDatabaseTest {
             FindOptions options = new FindOptions();
             options.queryType = QueryType.like;
             options.resolveReferences = false;
-            String updatedDocJson = dbService.findAll("User", query, options).hits.get(0);
-            Map updatedDoc = (Map) getJsonMap(updatedDocJson);
+            JsonNode updatedDoc = dbService.findAll("User", query, options).hits.get(0);
 
-            assertEquals("Johann", updatedDoc.get("name") );
-            assertEquals("48", updatedDoc.get("age") );
-            assertEquals(id, updatedDoc.get("@rid") );
+            assertEquals("Johann", updatedDoc.get("name").asText() );
+            assertEquals("48", updatedDoc.get("age").asText() );
+            assertEquals(id, updatedDoc.get("@rid").asText() );
         }
     }
 
