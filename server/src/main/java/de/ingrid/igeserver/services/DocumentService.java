@@ -33,6 +33,7 @@ public class DocumentService extends MapperService {
     @Autowired
     private DBUtils dbUtils;
 
+    @Deprecated
     public Map prepareDocumentFromDB(Map result, Object wrapper) {
         return prepareDocumentFromDB(result, wrapper, null);
     }
@@ -51,6 +52,7 @@ public class DocumentService extends MapperService {
      * @param fields contains those fields that we want to request, if null then all fields are returned
      * @return a HashMap transformed for frontend usage
      */
+    @Deprecated
     public Map prepareDocumentFromDB(Map map, Object wrapperMap, String[] fields) {
         // JsonNode map = getJsonMap( dbDoc );
 

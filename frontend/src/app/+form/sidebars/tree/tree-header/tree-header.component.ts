@@ -11,6 +11,7 @@ import {TreeNode} from '../../../../store/tree/tree-node.model';
 })
 export class TreeHeaderComponent implements OnInit, AfterViewInit {
   @Input() showReloadButton = true;
+  @Input() isAddress = false;
 
   @Output() reload = new EventEmitter();
   @Output() open = new EventEmitter();
@@ -46,7 +47,7 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
     }
 
     console.log('Search: ', value);
-    this.db.search(value)
+    this.db.search(value, this.isAddress)
       .pipe(
         map(result => DynamicDatabase.mapDocumentsToTreeNodes(result.hits, 0))
       )

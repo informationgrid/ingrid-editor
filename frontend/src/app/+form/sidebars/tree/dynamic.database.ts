@@ -51,12 +51,12 @@ export class DynamicDatabase implements OnDestroy {
     return this.docService.getChildren(node, isAddress);
   }
 
-  search(value: string) {
-    return this.docService.find(value);
+  search(value: string, isAddress: boolean) {
+    return this.docService.find(value, 10, isAddress);
   }
 
-  getPath(id: string): Promise<string[]> {
-    return this.docService.getPath(id).toPromise();
+  getPath(id: string, address = false): Promise<string[]> {
+    return this.docService.getPath(id, address).toPromise();
   }
 
   static mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {

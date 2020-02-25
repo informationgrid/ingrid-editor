@@ -5,6 +5,7 @@
  */
 package de.ingrid.igeserver.api;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.model.InlineResponse200;
 import de.ingrid.igeserver.model.InlineResponseDefault;
@@ -84,7 +85,7 @@ public interface DatasetsApi {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Child Datasets found", response = Void.class)})
     @RequestMapping(value = "/tree/children", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<String> getChildren(
+    ResponseEntity<List<ObjectNode>> getChildren(
             Principal principal,
             @ApiParam(value = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.")
             @RequestParam(value = "parentId", required = false) String parentId,

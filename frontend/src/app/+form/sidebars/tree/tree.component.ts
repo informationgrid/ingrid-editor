@@ -88,14 +88,9 @@ export class TreeComponent implements OnInit {
 
 
   private expandOnDataChange(ids: string[]): Promise<void> {
-    let resolveNextTime = false;
+
     return new Promise(resolve => {
       const changeObserver = this.dataSource.dataChange.subscribe(data => {
-        if (resolveNextTime) {
-          setTimeout(() => changeObserver.unsubscribe(), 0);
-          resolve();
-          return;
-        }
         if (data === null) {
           return;
         }
@@ -106,7 +101,8 @@ export class TreeComponent implements OnInit {
           this.treeControl.expand(nodeToExpand);
         }
         if (ids.length === 0) {
-          resolveNextTime = true;
+          setTimeout(() => changeObserver.unsubscribe(), 0);
+          resolve();
         }
       });
     });
@@ -281,11 +277,15 @@ export class TreeComponent implements OnInit {
   }
 
   private handleExpandNodes(ids: string[]) {
+
+    ids = this.skipExpandedNodeIDs(ids);
+
     if (ids && ids.length > 0) {
       return this.expandOnDataChange(ids);
     } else {
-      return Promise.reject();
+      return Promise.resolve();
     }
+
   }
 
   getStateClass(node: TreeNode) {
@@ -303,7 +303,10 @@ export class TreeComponent implements OnInit {
   }
 
   jumpToNode(id: string) {
-    this.database.getPath(id).then((path) => {
+
+    this.selectionModel.clear();
+
+    this.database.getPath(id, this.forAddresses).then((path) => {
       this.activeNodeId = path.pop();
       if (path.length > 0) {
         this.handleExpandNodes(path)
@@ -317,5 +320,23 @@ export class TreeComponent implements OnInit {
         this.activate.next([id]);
       }
     });
+  }
+
+  private skipExpandedNodeIDs(ids: string[]): string[] {
+
+    if (!this.dataSource.data) {
+      return ids;
+    }
+
+    let pos = null;
+    ids.some( (id, index) => {
+      let treeNode = this.dataSource.data.find(item => item._id === id);
+      let isExpanded = this.treeControl.isExpanded(treeNode);
+      if (!isExpanded) {
+        pos = index;
+        return true;
+      }
+    });
+    return pos === null ? [] : ids.slice(pos, ids.length);
   }
 }

@@ -14,17 +14,13 @@ import de.ingrid.igeserver.services.ExportService;
 import de.ingrid.igeserver.services.MapperService;
 import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
-import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.OffsetDateTime;
@@ -244,8 +240,8 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<Void> copyDatasets(
             Principal principal,
-            @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
-            @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data) {
+            List<String> ids,
+            Data1 data) {
 
         try {
 
@@ -258,8 +254,10 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
-    public ResponseEntity<Void> moveDatasets(Principal principal, @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
-                                             @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data) throws Exception {
+    public ResponseEntity<Void> moveDatasets(
+            Principal principal,
+            List<String> ids,
+            Data1 data) throws Exception {
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
@@ -296,8 +294,8 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<String> exportDataset(
             Principal principal,
-            @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException, IOException {
+            String id,
+            String format) throws ApiException, IOException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
@@ -316,7 +314,7 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
-    public ResponseEntity<String> getChildren(
+    public ResponseEntity<List<ObjectNode>> getChildren(
             Principal principal,
             String parentId,
             boolean isAddress
@@ -337,7 +335,7 @@ public class DatasetsApiController implements DatasetsApi {
             findOptions.resolveReferences = true;
             docs = this.dbService.findAll(type, queryMap, findOptions);
 
-            String childDocs = docs.hits.stream()
+            List<ObjectNode> childDocs = docs.hits.stream()
                     .map(doc -> {
                         try {
                             return getJsonMap(doc);
@@ -347,15 +345,15 @@ public class DatasetsApiController implements DatasetsApi {
                         }
                     })
                     .map(doc -> {
-                        ObjectNode node = (ObjectNode) getLatestDocument(doc);
-                        node.put(FIELD_STATE, this.documentService.determineState(doc));
+                        ObjectNode node = getLatestDocument(doc);
                         node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc, type));
+                        node.remove("@rid");
+                        node.remove("@class");
                         return node;
                     })
-                    .map(doc -> doc.toString())
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.toList());
 
-            return ResponseEntity.ok("[" + childDocs + "]");
+            return ResponseEntity.ok(childDocs);
         }
     }
 
@@ -393,11 +391,7 @@ public class DatasetsApiController implements DatasetsApi {
                             return null;
                         }
                     })
-                    .map(doc -> {
-                        ObjectNode node = (ObjectNode) getLatestDocument(doc);
-                        node.put(FIELD_STATE, this.documentService.determineState(doc));
-                        return node;
-                    })
+                    .map(doc -> getLatestDocument(doc))
                     .collect(Collectors.toList());
 
             searchResult.hits = preparedDocs;
@@ -407,13 +401,17 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
-    private JsonNode getLatestDocument(JsonNode doc) {
-        JsonNode draft = doc.get(FIELD_DRAFT);
-        if (draft.isNull()) {
-            return doc.get(FIELD_PUBLISHED);
-        } else {
-            return draft;
+    private ObjectNode getLatestDocument(JsonNode doc) {
+        String state = this.documentService.determineState(doc);
+        ObjectNode docData = (ObjectNode) doc.get(FIELD_DRAFT);
+
+        if (docData.isNull()) {
+            docData = (ObjectNode) doc.get(FIELD_PUBLISHED);
         }
+
+        docData.put(FIELD_STATE, state);
+
+        return docData;
     }
 
     public ResponseEntity<String> getByID(

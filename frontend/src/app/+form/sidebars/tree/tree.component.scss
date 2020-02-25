@@ -7,7 +7,7 @@
 mat-tree-node {
   cursor: pointer;
   min-height: 20px;
-  padding: 0.2em 0;
+  padding: 5px 0;
 
   ::ng-deep svg path {
     fill: #000000;
@@ -18,13 +18,22 @@ mat-tree-node {
   }
 
   &.folder {
-    padding: 7px 0 6px;
+    padding: 9px 0;
     border-bottom: 1px solid $ige-background-bar;
 
     &.expanded {
       border-bottom-color: transparent;
-      color: #1C4C81;
+
+      .toggle {
+        color: #000000de;
+      }
+
+      .expander {
+        transform: rotate(90deg);
+      }
     }
+
+
   }
 
   &.rootNode {
@@ -32,24 +41,24 @@ mat-tree-node {
     &.folder {
       background-color: $ige-background;
       font-size: 16px;
+
+      &:hover {
+        background-color: darken($ige-background, 5%);
+      }
+
+      &.active {
+        background-color: $ige-mark-color;
+
+        &:hover {
+          background-color: darken($ige-mark-color, 5%);
+        }
+      }
     }
 
-    &.folder.active {
-      background-color: $ige-mark-color;
-    }
-
-    .label {
-      padding-left: 24px;
-    }
-  }
-
-  &:hover {
-    background-color: #ededed;
   }
 
   .label {
-    margin-top: 0.2em;
-    margin-bottom: 0.3em;
+    padding-left: 24px;
     line-height: 27px;
     user-select: none;
     display: flex;
@@ -71,14 +80,14 @@ mat-tree-node {
     background-color: #00000033;
   }
 
-  &.selected:hover {
-    background-color: #00000022;
+  &:hover {
+    background-color: darken(#FFFFFF, 5%);
   }
 
   &.active {
     // box-shadow: inset 3px 0 0 0 rgb(40, 34, 91);
     background-color: $ige-mark-color;
-    color: $ige-active-color;
+    //color: $ige-active-color;
   }
 
   &.disabled {
@@ -87,6 +96,7 @@ mat-tree-node {
   }
 
   .toggle {
+    color: $ige-comment-color;
     float: right;
     height: 30px;
     width: 30px;
@@ -136,8 +146,4 @@ mat-tree-node {
   position: absolute;
   right: 0;
   z-index: 1000
-}
-
-::ng-deep .expanded .expander {
-  transform: rotate(90deg);
 }
