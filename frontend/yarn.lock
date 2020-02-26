@@ -1765,10 +1765,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@datorama/akita@^4.19.2":
-  version "4.19.2"
-  resolved "https://registry.yarnpkg.com/@datorama/akita/-/akita-4.19.2.tgz#0b69aadff32a4a7ee384db7a6777e24168868277"
-  integrity sha512-hj9eHcpe5qTYFgrHenpiQAoohJBprkxWU2QZ/HcaaxHVrHr9x7C1xbUTnrAj58jI19Hr4WYowXBSroFBrF/aRA==
+"@datorama/akita@^4.19.4":
+  version "4.19.4"
+  resolved "https://registry.yarnpkg.com/@datorama/akita/-/akita-4.19.4.tgz#22a0c328a9fea5449bce6837a1c65a3adfd1eb0c"
+  integrity sha512-g3CJ3bv2NtONz2lxcRTFvAiR4ccpe/WaSwDGI/KSJ6lLXPACuNghDkS9K1Pk2kwc9hBnKgeml1wkg3Bkv/EriQ==
   dependencies:
     schematics-utilities "^1.1.1"
     tslib "^1.9.0"
@@ -1950,16 +1950,15 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@ngneat/spectator@^4.11.1":
-  version "4.11.1"
-  resolved "https://registry.yarnpkg.com/@ngneat/spectator/-/spectator-4.11.1.tgz#0f2de4c89c29e255396177f9efa6948a2557c977"
-  integrity sha512-zNRTEZpG7GH6f1nRxorO5uumN3A+xA/LFjwUkB5JCRN/fWtt8aE74PWsJ2qeQPMgJCCKZRkkyZ/UksLOxXejNQ==
+"@ngneat/spectator@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@ngneat/spectator/-/spectator-5.1.0.tgz#932224f298477414e0bd94301c7283d17ad61c0d"
+  integrity sha512-oO3XaZF39/Hm+3gIIb7d/Yabb6RLTRCvKM4wmai6wwzMhdWgCP+ZhIvc9psFZTjgwOkbTPEL1hWbDgqaD4gwEA==
   dependencies:
     "@testing-library/dom" "6.1.0"
     jquery "3.4.1"
     replace-in-file "^4.1.3"
     schematics-utilities "^1.1.1"
-    tslib "^1.9.0"
 
 "@ngtools/webpack@9.0.3":
   version "9.0.3"

@@ -49,9 +49,6 @@ public class OrientDBDatabase implements DBApi {
 
     private OServer server = null;
 
-    private OSQLSynchQuery<ODocument> docIdQuery = new OSQLSynchQuery<>(
-            "SELECT FROM Documents WHERE _id = ?"
-    );
 
     /**
      * DB init

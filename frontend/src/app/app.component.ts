@@ -22,12 +22,10 @@ export class AppComponent implements OnInit {
               private apiService: ApiService, private configService: ConfigService, registry: MatIconRegistry, domSanitizer: DomSanitizer,
               private roleService: RoleService) {
 
-    // const roles = KeycloakService.auth.authz.resourceAccess['ige-ng'].roles;
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly
     this.roleService.getRoleMapping('admin')
       .subscribe(role => {
         console.log('my roles:', role);
-        // KeycloakService.auth.roleMapping.push(role);
       });
 
     // useful tool for merging SVG files: merge-svg-files via npm

@@ -9,7 +9,7 @@ import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {Subject} from 'rxjs';
 import {TreeAction} from '../../+form/sidebars/tree/tree.component';
-import {IgeDocument} from "../../models/ige-document";
+import {IgeDocument} from '../../models/ige-document';
 
 @Component({
   selector: 'ige-address',
@@ -29,10 +29,8 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router, private route: ActivatedRoute,
               private formPlugins: FormPluginsService, private formService: FormularService,
-              private formularService: FormularService,
               private formsManager: AkitaNgFormsManager,
-              private addressTreeStore: AddressTreeStore, private documentService: DocumentService,
-              private docService: DocumentService) {
+              private addressTreeStore: AddressTreeStore, private documentService: DocumentService) {
     formPlugins.setAddressConfiguration();
 
     this.route.params.subscribe(params => {
@@ -41,7 +39,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
         this.initialTreeExpand = true;
 
-        this.docService.getPath(id, true).subscribe(path => {
+        this.documentService.getPath(id, true).subscribe(path => {
           this.initialActiveNodeId = path.pop();
           this.initialExpandNodes.next(path);
         });
@@ -102,7 +100,7 @@ export class AddressComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const needsProfileSwitch = this.formularService.currentProfile !== profile;
+    const needsProfileSwitch = this.formService.currentProfile !== profile;
     try {
 
       // switch to the right profile depending on the data
@@ -124,9 +122,9 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   switchProfile(profile: string): FormlyFieldConfig[] {
-    this.formularService.currentProfile = profile;
+    this.formService.currentProfile = profile;
 
-    return this.formularService.getFields(profile);
+    return this.formService.getFields(profile);
   }
 
   ngOnDestroy(): void {

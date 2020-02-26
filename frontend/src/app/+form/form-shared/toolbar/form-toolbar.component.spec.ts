@@ -1,29 +1,35 @@
-import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {createComponentFactory, mockProvider, Spectator, SpyObject} from '@ngneat/spectator';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import {FormToolbarService, ToolbarItem} from './form-toolbar.service';
+import {FormToolbarService, Separator, ToolbarItem} from './form-toolbar.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormToolbarComponent} from './form-toolbar.component';
+import {Subject} from 'rxjs';
+import {DynamicDatabase} from '../../sidebars/tree/dynamic.database';
 
 let spectator: Spectator<FormToolbarComponent>;
-let service: FormToolbarService;
-// let db: SpyObject<DynamicDatabase>;
+let service: SpyObject<FormToolbarService>;
+
 const createHost = createComponentFactory({
   component: FormToolbarComponent,
-  imports: [MatIconModule, MatDividerModule, MatButtonModule, MatMenuModule, MatToolbarModule, FlexLayoutModule, BrowserAnimationsModule]
+  imports: [MatIconModule, MatDividerModule, MatButtonModule, MatMenuModule, MatToolbarModule, FlexLayoutModule, BrowserAnimationsModule],
+  providers: [mockProvider(FormToolbarService, {
+    toolbar$: new Subject(),
+    _buttons: []
+  })],
+  detectChanges: false
 });
 
 describe('Form-Toolbar', () => {
   beforeEach(() => {
     spectator = createHost();
-    service = spectator.get(FormToolbarService);
   });
 
-  it('should show some toolbar items', () => {
+  it('should not show any toolbar items after initialization', () => {
 
     // trigger data binding to update the view
     spectator.detectChanges();
@@ -32,7 +38,7 @@ describe('Form-Toolbar', () => {
     const buttons = spectator.queryAll('button');
 
     // confirm the element's content
-    expect(buttons.length).toBe(2);
+    expect(buttons.length).toBe(0);
 
   });
 

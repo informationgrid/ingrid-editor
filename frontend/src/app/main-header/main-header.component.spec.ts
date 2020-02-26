@@ -1,25 +1,28 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 
-import { MainHeaderComponent } from './main-header.component';
+import {MainHeaderComponent} from './main-header.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {BreadcrumbComponent} from '../+form/form-info/breadcrumb/breadcrumb.component';
+import {ApiService} from '../services/ApiService';
+import {ConfigService} from '../services/config/config.service';
+import {Router} from '@angular/router';
 
 describe('MainHeaderComponent', () => {
-  let component: MainHeaderComponent;
-  let fixture: ComponentFixture<MainHeaderComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ MainHeaderComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(MainHeaderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<MainHeaderComponent>;
+  const createHost = createComponentFactory({
+    component: MainHeaderComponent,
+    imports: [MatDialogModule],
+    declarations: [BreadcrumbComponent],
+    componentMocks: [ApiService, ConfigService, Router, MatDialog],
+    detectChanges: false
   });
 
+  beforeEach(async(() => {
+    spectator = createHost();
+  }))
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 });

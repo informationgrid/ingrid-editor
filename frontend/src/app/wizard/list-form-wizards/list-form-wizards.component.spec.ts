@@ -1,25 +1,25 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 
-import { ListFormWizardsComponent } from './list-form-wizards.component';
+import {ListFormWizardsComponent} from './list-form-wizards.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {MatDialogModule} from '@angular/material/dialog';
+import {BreadcrumbComponent} from '../../+form/form-info/breadcrumb/breadcrumb.component';
 
 describe('ListFormWizardsComponent', () => {
-  let component: ListFormWizardsComponent;
-  let fixture: ComponentFixture<ListFormWizardsComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ListFormWizardsComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ListFormWizardsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<ListFormWizardsComponent>;
+  const createHost = createComponentFactory({
+    component: ListFormWizardsComponent,
+    imports: [],
+    declarations: [],
+    componentMocks: [],
+    detectChanges: false
   });
 
+  beforeEach(async(() => {
+    spectator = createHost();
+  }))
+
   it('should be created', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 });

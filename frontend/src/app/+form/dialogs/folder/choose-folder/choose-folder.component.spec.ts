@@ -1,26 +1,26 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 
-import { ChooseFolderComponent } from './choose-folder.component';
+import {ChooseFolderComponent} from './choose-folder.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {MatDialogModule} from '@angular/material/dialog';
+import {BreadcrumbComponent} from '../../../form-info/breadcrumb/breadcrumb.component';
 
 describe('ChooseFolderComponent', () => {
-  let component: ChooseFolderComponent;
-  let fixture: ComponentFixture<ChooseFolderComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ChooseFolderComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ChooseFolderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<ChooseFolderComponent>;
+  const createHost = createComponentFactory({
+    component: ChooseFolderComponent,
+    imports: [MatDialogModule],
+    declarations: [BreadcrumbComponent],
+    componentMocks: [],
+    detectChanges: false
   });
 
+  beforeEach(async(() => {
+    spectator = createHost();
+  }))
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 
   xit('should create a folder below a different selected one', () => {
