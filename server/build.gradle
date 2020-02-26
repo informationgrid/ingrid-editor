@@ -59,8 +59,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
-    compile 'io.springfox:springfox-swagger2:2.9.2'
-    compile 'io.springfox:springfox-swagger-ui:2.9.2'
+    compile 'org.springdoc:springdoc-openapi-ui:1.2.32'
     compile 'com.orientechnologies:orientdb-core:3.0.27'
     compile 'com.orientechnologies:orientdb-server:3.0.27'
     compile 'com.github.fge:json-schema-validator:2.2.6'

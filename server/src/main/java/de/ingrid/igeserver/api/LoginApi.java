@@ -5,31 +5,27 @@
  */
 package de.ingrid.igeserver.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
-@Api(value = "login", description = "the login API")
-@RequestMapping(path="/api")
+@Tag(name = "Login", description = "the login API")
 public interface LoginApi {
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Security", })
+    @Operation(tags = {"Security"})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Return the JWT", response = Void.class),
-            @ApiResponse(code = 403, message = "Error when user is not accepted.", response = Void.class) })
-    @RequestMapping(value = "/login", produces = { "application/json" }, consumes = { "application/x-www-form-urlencoded" }, method = RequestMethod.POST)
-    ResponseEntity<Void> login(@ApiParam(value = "") @RequestPart(value = "username", required = false) String username,
-            @ApiParam(value = "") @RequestPart(value = "password", required = false) String password);
-    
+            @ApiResponse(responseCode = "200", description = "Return the JWT"),
+            @ApiResponse(responseCode = "403", description = "Error when user is not accepted.")})
+    @RequestMapping(value = "/login", produces = {"application/json"}, consumes = {"application/x-www-form-urlencoded"}, method = RequestMethod.POST)
+    ResponseEntity<Void> login(@Parameter() @RequestPart(value = "username", required = false) String username,
+                               @Parameter() @RequestPart(value = "password", required = false) String password);
+
 //    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Security", })
 //    @ApiResponses(value = {
 //            @ApiResponse(code = 200, message = "Return the JWT", response = Void.class),

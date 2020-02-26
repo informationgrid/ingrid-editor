@@ -6,13 +6,9 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModelProperty;
-
 /**
  * Role1
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
 public class Role1   {
   @JsonProperty("name")
   private String name = null;
@@ -26,7 +22,6 @@ public class Role1   {
    * 
    * @return name
   **/
-  @ApiModelProperty(required = true, value = "")
   @NotNull
 
 

@@ -7,12 +7,14 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
 import de.ingrid.codelists.CodeListService;
 import de.ingrid.codelists.model.CodeList;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Writer;
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/api")
 public class CodelistApiController implements CodelistApi {
 
     private List<CodeList> codelists;

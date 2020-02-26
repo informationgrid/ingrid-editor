@@ -5,12 +5,14 @@ import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.utils.DBUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/api")
 public class CatalogApiController implements CatalogApi {
 
     @Autowired
@@ -43,7 +45,6 @@ public class CatalogApiController implements CatalogApi {
         return ResponseEntity.ok().build();
     }
 
-    @Override
     public ResponseEntity<Void> deleteCatalog(String name) {
         this.dbService.removeDatabase(name);
         return ResponseEntity.ok().build();

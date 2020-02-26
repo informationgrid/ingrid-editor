@@ -19,7 +19,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.time.OffsetDateTime;
@@ -31,9 +32,9 @@ import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.ADDRESS_WRAP
 import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
 import static de.ingrid.igeserver.services.MapperService.*;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
-@Controller
+@RestController
+@RequestMapping(path="/api")
 public class DatasetsApiController implements DatasetsApi {
 
     private static Logger log = LogManager.getLogger(DatasetsApiController.class);

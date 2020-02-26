@@ -6,13 +6,10 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * User1
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
 public class User1   {
   @JsonProperty("login")
   private String login = null;
@@ -32,7 +29,6 @@ public class User1   {
    * 
    * @return login
   **/
-  @ApiModelProperty(required = true, value = "")
   @NotNull
 
 
@@ -53,7 +49,6 @@ public class User1   {
    * 
    * @return firstName
   **/
-  @ApiModelProperty(value = "")
 
 
   public String getFirstName() {
@@ -73,7 +68,6 @@ public class User1   {
    * 
    * @return lastName
   **/
-  @ApiModelProperty(value = "")
 
 
   public String getLastName() {

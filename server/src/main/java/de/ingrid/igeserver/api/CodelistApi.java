@@ -5,26 +5,27 @@
  */
 package de.ingrid.igeserver.api;
 
-import de.ingrid.igeserver.model.InlineResponseDefault;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
-@Api(value = "codelist", description = "the codelist API")
-@RequestMapping(path = "/api")
+@Tag(name = "Codelist", description = "the codelist API")
 public interface CodelistApi {
 
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)
+            @ApiResponse(responseCode = "200", description = ""),
+            @ApiResponse(responseCode = "200", description = "Unexpected error")
     })
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Codelist",})
+    @Operation(tags = {"Codelist",})
 
     @RequestMapping(value = "/codelist/{id}", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<String> getCodelistById(@ApiParam(value = "The ID of the codelist.", required = true) @PathVariable("id") String id);
+    ResponseEntity<String> getCodelistById(@Parameter(description = "The ID of the codelist.", required = true) @PathVariable("id") String id);
 
 }

@@ -4,13 +4,10 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * InlineResponseDefault
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
 public class InlineResponseDefault   {
   @JsonProperty("code")
   private Integer code = null;
@@ -30,7 +27,6 @@ public class InlineResponseDefault   {
    * Get code
    * @return code
   **/
-  @ApiModelProperty(value = "")
 
 
   public Integer getCode() {
@@ -50,7 +46,6 @@ public class InlineResponseDefault   {
    * Get message
    * @return message
   **/
-  @ApiModelProperty(value = "")
 
 
   public String getMessage() {
@@ -70,7 +65,6 @@ public class InlineResponseDefault   {
    * Get fields
    * @return fields
   **/
-  @ApiModelProperty(value = "")
 
 
   public String getFields() {

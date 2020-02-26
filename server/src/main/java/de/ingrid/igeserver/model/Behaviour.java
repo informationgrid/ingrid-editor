@@ -5,13 +5,10 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Behaviour
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
 public class Behaviour   {
   @JsonProperty("_id")
   private String id = null;
@@ -31,7 +28,6 @@ public class Behaviour   {
    * Unique identifier
    * @return id
   **/
-  @ApiModelProperty(value = "Unique identifier")
 
 
   public String getId() {

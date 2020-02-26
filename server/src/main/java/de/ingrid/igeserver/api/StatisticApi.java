@@ -5,27 +5,23 @@
  */
 package de.ingrid.igeserver.api;
 
-import de.ingrid.igeserver.model.InlineResponseDefault;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
-@Api(value = "statistic", description = "the statistic API")
-@RequestMapping(path="/api")
+@Tag(name = "Statistic", description = "the statistic API")
 public interface StatisticApi {
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Statistic", })
+    @Operation(tags = {"Statistic",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
+            @ApiResponse(responseCode = "200", description = ""),
+            @ApiResponse(responseCode = "200", description = "Unexpected error")})
 
-    @RequestMapping(value = "/statistic", produces = { "application/json" }, method = RequestMethod.GET)
+    @RequestMapping(value = "/statistic", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> getStatistic() throws ApiException;
 
 }

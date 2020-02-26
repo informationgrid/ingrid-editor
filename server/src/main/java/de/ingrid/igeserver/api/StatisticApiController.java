@@ -3,11 +3,11 @@ package de.ingrid.igeserver.api;
 import de.ingrid.igeserver.db.DBApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
-@Controller
+@RestController
+@RequestMapping(path = "/api")
 public class StatisticApiController implements StatisticApi {
 
     @Autowired

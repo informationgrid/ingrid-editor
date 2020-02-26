@@ -7,7 +7,10 @@ package de.ingrid.igeserver.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,20 +19,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.Valid;
 import java.security.Principal;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
-@Api(value = "behaviours", description = "the behaviours API")
-@RequestMapping(path="/api")
+@Tag(name = "Behaviours", description = "the behaviours API")
 public interface BehavioursApi {
 
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Behaviours are returned.")})
+            @ApiResponse(responseCode = "200", description = "Behaviours are returned.")})
     @RequestMapping(value = "/behaviours", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<ArrayNode> getBehaviours(Principal principal) throws ApiException;
 
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Behaviours have been set.")})
+            @ApiResponse(responseCode = "200", description = "Behaviours have been set.")})
     @RequestMapping(value = "/behaviours", produces = {"application/json"}, method = RequestMethod.POST)
-    ResponseEntity<JsonNode> setBehaviours(Principal principal, @ApiParam(required = true) @Valid @RequestBody String behaviour) throws Exception;
+    ResponseEntity<JsonNode> setBehaviours(Principal principal, @Parameter(required = true) @Valid @RequestBody String behaviour) throws Exception;
 
 }

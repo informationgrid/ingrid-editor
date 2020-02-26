@@ -4,13 +4,10 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Data1
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
 public class Data1   {
   @JsonProperty("destId")
   private String destId = null;
@@ -24,8 +21,6 @@ public class Data1   {
    * Get destId
    * @return destId
   **/
-  @ApiModelProperty(value = "")
-
 
   public String getDestId() {
     return destId;
