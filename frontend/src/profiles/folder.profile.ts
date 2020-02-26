@@ -6,6 +6,6 @@ export class ProfileFolder extends BaseProfile {
 
   label = 'Ordner';
 
-  iconClass = 'outline-create_new_folder-24px';
+  iconClass = 'Ordner';
 
 }
