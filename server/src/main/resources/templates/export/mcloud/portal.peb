@@ -1,0 +1,38 @@
+{
+  "title": "{{ title }}",
+  "accessRights": "",
+  "accrualPeriodicity": "",
+  "contactPoint": "",
+  "creator": "",
+  "description": "{{ description }}",
+  "distribution": "",
+  "extras": {
+    "all": "",
+    "citation": "",
+    "displayContact": "",
+    "generated_id": "",
+    "groups": "",
+    "harvested_data": "",
+    "license": "",
+    "metadata": {
+      "harvested": "",
+      "harvesting_errors": "",
+      "issued": "",
+      "isValid": "",
+      "modified": "",
+      "source": ""
+    },
+    "mfund_fkz": "",
+    "mfund_project_title": "",
+    "realtime": "",
+    "subgroups": "",
+    "subsection": "",
+    "temporal": ""
+  },
+  "issued": "",
+  "keywords": "",
+  "modified": "",
+  "publisher": "",
+  "originator": "",
+  "theme": ""
+}

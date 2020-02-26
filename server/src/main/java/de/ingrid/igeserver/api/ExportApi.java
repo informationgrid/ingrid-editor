@@ -5,29 +5,30 @@
  */
 package de.ingrid.igeserver.api;
 
-import de.ingrid.igeserver.model.Data5;
-import io.swagger.v3.oas.annotations.Operation;
+import de.ingrid.igeserver.model.ExportRequestParameter;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.security.Principal;
 
 
 @Tag(name = "Export", description = "the export API")
 public interface ExportApi {
 
-    @Operation(tags = {"Export",})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
-            @ApiResponse(responseCode = "500", description = "Unexpected error")})
-
-    @RequestMapping(value = "/export", produces = {"application/json"}, method = RequestMethod.POST)
-    ResponseEntity<Void> exportDataset2(@Parameter(description = "The dataset to be exported.", required = true) @Valid @RequestBody Data5 data);
+            @ApiResponse(responseCode = "500", description = "Unexpected error")}
+    )
+    @PostMapping(value = "/export", produces = {"application/json"})
+    ResponseEntity<String> export(
+            Principal principal,
+            @Parameter(description = "The dataset to be exported.", required = true) @Valid @RequestBody ExportRequestParameter data) throws Exception;
 
 }

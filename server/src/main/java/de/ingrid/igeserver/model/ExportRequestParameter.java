@@ -4,18 +4,14 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
-/**
- * Data5
- */
-public class Data5   {
+public class ExportRequestParameter {
   @JsonProperty("_id")
   private String id = null;
 
   @JsonProperty("_profile")
   private String profile = null;
 
-  public Data5 id(String id) {
+  public ExportRequestParameter id(String id) {
     this.id = id;
     return this;
   }
@@ -33,7 +29,7 @@ public class Data5   {
     this.id = id;
   }
 
-  public Data5 profile(String profile) {
+  public ExportRequestParameter profile(String profile) {
     this.profile = profile;
     return this;
   }
@@ -61,7 +57,7 @@ public class Data5   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Data5 data5 = (Data5) o;
+    ExportRequestParameter data5 = (ExportRequestParameter) o;
     return Objects.equals(this.id, data5.id) &&
         Objects.equals(this.profile, data5.profile);
   }

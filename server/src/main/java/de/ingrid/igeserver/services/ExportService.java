@@ -23,29 +23,28 @@ public class ExportService {
 
 	public String doExport(JsonNode jsonData, String format) throws ApiException, IOException {
 
-		Object exportedDoc = null;
+		Object exportedDoc;
 		
 		IgeExporter exporter = exporterFactory.getExporter(format);
-		
-		switch (format) {
-		case "ISO":
-		    // TODO: provide DB context
-			exportedDoc = exporter.run(jsonData);
-			
-			// run post processors
-			if (postProcessors != null) {
-				for (ExportPostProcessors postProcessor : postProcessors) {
-					if (postProcessor.getType() == TransformationType.ISO) {
-						postProcessor.process(exportedDoc, jsonData);
-					}
-				}
-			}
-			break;
-			
-		default:
+
+		if (exporter == null) {
 			throw new ApiException(500, "Export format not supported: " + format);
 		}
-		
+
+		exportedDoc = exporter.run(jsonData);
+
+		// run post processors
+/*
+		if (postProcessors != null) {
+			for (ExportPostProcessors postProcessor : postProcessors) {
+				if (postProcessor.getType() == TransformationType.ISO) {
+					postProcessor.process(exportedDoc, jsonData);
+				}
+			}
+		}
+*/
+
+
 		if (exportedDoc instanceof String) {
 			return (String) exportedDoc;
 		} else {
