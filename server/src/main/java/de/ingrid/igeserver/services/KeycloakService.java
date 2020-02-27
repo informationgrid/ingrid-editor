@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -128,6 +129,10 @@ public class KeycloakService implements UserManagementService {
     }
 
     public String getName(KeycloakAuthenticationToken principal) {
+        int expiration = principal == null ? -99 : principal.getAccount().getKeycloakSecurityContext().getToken().getExpiration();
+        int issuedAt = principal == null ? -99 : principal.getAccount().getKeycloakSecurityContext().getToken().getIssuedAt();
+        log.info("Expiration in: " + new Date(Long.parseLong(expiration + "000")));
+        log.info("Issued at: " + new Date(Long.parseLong(issuedAt + "000")));
         return principal == null ? null : principal.getAccount().getKeycloakSecurityContext().getIdToken().getName();
     }
 }

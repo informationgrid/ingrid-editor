@@ -100,6 +100,7 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
             http.authorizeRequests()
                     .anyRequest().authenticated()
                     .and()
+                    .anonymous().disable() // force login when keycloak session timeouts because of inactivity
                     .logout()
                     .permitAll();
         }
