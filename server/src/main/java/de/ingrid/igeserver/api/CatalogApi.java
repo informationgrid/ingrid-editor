@@ -39,7 +39,7 @@ public interface CatalogApi {
             produces = {"application/json"},
             method = RequestMethod.POST
     )
-    @Operation(tags = {"Catalog"})
+    @Operation()
     public ResponseEntity<String> createCatalog(
             @Parameter(description = "The settings of the catalog to create.", required = true) @RequestBody Catalog settings
     ) throws ApiException;
@@ -49,7 +49,7 @@ public interface CatalogApi {
             produces = {"application/json"},
             method = RequestMethod.PUT
     )
-    @Operation(tags = {"Catalog"})
+    @Operation()
     public ResponseEntity<Void> updateCatalog(
             @Parameter(description = "The name of the catalog to update.", required = true) @PathVariable("name") String name,
             @Parameter(description = "The settings of the catalog to update.", required = true) @RequestBody Catalog settings
@@ -60,7 +60,7 @@ public interface CatalogApi {
             produces = {"application/json"},
             method = RequestMethod.DELETE
     )
-    @Operation(tags = {"Catalog"})
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "404", description = "Unknown database")
     })

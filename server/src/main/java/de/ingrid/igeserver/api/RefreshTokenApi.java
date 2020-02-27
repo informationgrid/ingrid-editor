@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Tag(name = "RefreshToken", description = "the refreshToken API")
 public interface RefreshTokenApi {
 
-    @Operation(tags = {"Security"})
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Returns a new access token to the requested client")})
 

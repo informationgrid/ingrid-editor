@@ -13,8 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.security.Principal;
+
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.ADDRESS_WRAPPER;
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -39,11 +41,17 @@ public class ExportApiController implements ExportApi {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        // TODO: option to export addresses too?
+        boolean forAddress = false;
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+
         String result;
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
-            JsonNode doc = documentService.getByDocId(data.getId(), "mCloudDoc", true);
-            result = exportService.doExport(doc, data.getProfile());
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
+            JsonNode doc = documentService.getByDocId(data.getId(), type, true);
+
+            result = exportService.doExport(doc, data.getExportFormat());
         }
 
         return ResponseEntity.ok(result);

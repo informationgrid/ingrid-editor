@@ -23,7 +23,7 @@ public interface CodelistApi {
             @ApiResponse(responseCode = "200", description = ""),
             @ApiResponse(responseCode = "200", description = "Unexpected error")
     })
-    @Operation(tags = {"Codelist",})
+    @Operation()
 
     @RequestMapping(value = "/codelist/{id}", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> getCodelistById(@Parameter(description = "The ID of the codelist.", required = true) @PathVariable("id") String id);

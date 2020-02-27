@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Tag(name = "Statistic", description = "the statistic API")
 public interface StatisticApi {
 
-    @Operation(tags = {"Statistic",})
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = ""),
             @ApiResponse(responseCode = "200", description = "Unexpected error")})

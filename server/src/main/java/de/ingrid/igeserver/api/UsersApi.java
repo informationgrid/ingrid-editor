@@ -35,9 +35,7 @@ public interface UsersApi {
             produces = {"application/json"},
             method = RequestMethod.POST
     )
-    @Operation(
-            description = "Create a new user. If the user already exists an error will be returned.",
-            tags = {"User"})
+    @Operation(description = "Create a new user. If the user already exists an error will be returned.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User was successfully updated"),
             @ApiResponse(responseCode = "406", description = "A user with the given login does not exist and cannot be updated")
@@ -52,10 +50,7 @@ public interface UsersApi {
             produces = {"application/json"},
             method = RequestMethod.DELETE
     )
-    @Operation(
-            description = "The user with the given ID is deleted. If user with a given login does not exists an error will be returned.",
-            tags = {"User"}
-    )
+    @Operation(description = "The user with the given ID is deleted. If user with a given login does not exists an error will be returned.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User was successfully deleted"),
             @ApiResponse(responseCode = "406", description = "A user with the given login does not exist and cannot be deleted")
@@ -68,7 +63,7 @@ public interface UsersApi {
             value = "/users/{id}",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    @Operation(description = "Get the user with the given ID.", tags = {"User"})
+    @Operation(description = "Get the user with the given ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Returns the user")
     })
@@ -82,7 +77,7 @@ public interface UsersApi {
             produces = {"application/json"},
             method = RequestMethod.GET
     )
-    @Operation(tags = {"User"})
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Returns the list of users")
     })
@@ -94,8 +89,7 @@ public interface UsersApi {
             produces = {"application/json"},
             method = RequestMethod.PUT
     )
-    @Operation(description = "Updates an existing user user. If the user does not exist an error will be returned.", tags = {
-            "User",})
+    @Operation(description = "Updates an existing user user. If the user does not exist an error will be returned.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User was successfully created"),
             @ApiResponse(responseCode = "406", description = "A user already exists with the given login")
@@ -110,9 +104,7 @@ public interface UsersApi {
             produces = {"application/json"},
             method = RequestMethod.GET
     )
-    @Operation(tags = {
-            "User"
-    })
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = ""),
             @ApiResponse(responseCode = "406", description = "")
@@ -125,9 +117,7 @@ public interface UsersApi {
             produces = {"application/json"},
             method = RequestMethod.POST
     )
-    @Operation(tags = {
-            "User"
-    })
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = ""),
             @ApiResponse(responseCode = "406", description = "")
@@ -140,7 +130,7 @@ public interface UsersApi {
             produces = {"application/json"},
             method = RequestMethod.GET
     )
-    @Operation(tags = {"User"})
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "")
     })
@@ -151,7 +141,7 @@ public interface UsersApi {
             value = "/user/catalog/{catalogId}",
             method = RequestMethod.POST
     )
-    @Operation(tags = {"User"})
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "")
     })

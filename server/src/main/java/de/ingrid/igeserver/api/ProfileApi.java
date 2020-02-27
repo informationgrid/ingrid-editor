@@ -22,12 +22,12 @@ import java.security.Principal;
 @Tag(name = "Behaviours", description = "the behaviours API")
 public interface ProfileApi {
     
-    @Operation(tags = { "Profile"})
+    @Operation()
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "") })
     @RequestMapping(value = "/profiles", produces = { "text/javascript" }, method = RequestMethod.GET)
     public ResponseEntity<String> getProfile(Principal principal) throws IOException, Exception;
     
-    @Operation(tags = { "Profile"})
+    @Operation()
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "") })
     @RequestMapping(value = "/profiles", produces = { "application/json" }, method = RequestMethod.POST)
     public ResponseEntity<String> uploadProfile(Principal principal, @RequestParam("file") MultipartFile file,

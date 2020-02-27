@@ -5,11 +5,11 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ExportRequestParameter {
-  @JsonProperty("_id")
+  @JsonProperty("id")
   private String id = null;
 
-  @JsonProperty("_profile")
-  private String profile = null;
+  @JsonProperty("exportFormat")
+  private String exportFormat = null;
 
   public ExportRequestParameter id(String id) {
     this.id = id;
@@ -29,23 +29,21 @@ public class ExportRequestParameter {
     this.id = id;
   }
 
-  public ExportRequestParameter profile(String profile) {
-    this.profile = profile;
+  public ExportRequestParameter exportFormat(String format) {
+    this.exportFormat = format;
     return this;
   }
 
    /**
    * Description of the dataset.
-   * @return profile
+   * @return exportFormat
   **/
-
-
-  public String getProfile() {
-    return profile;
+  public String getExportFormat() {
+    return exportFormat;
   }
 
-  public void setProfile(String profile) {
-    this.profile = profile;
+  public void setExportFormat(String exportFormat) {
+    this.exportFormat = exportFormat;
   }
 
 
@@ -59,12 +57,12 @@ public class ExportRequestParameter {
     }
     ExportRequestParameter data5 = (ExportRequestParameter) o;
     return Objects.equals(this.id, data5.id) &&
-        Objects.equals(this.profile, data5.profile);
+        Objects.equals(this.exportFormat, data5.exportFormat);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, profile);
+    return Objects.hash(id, exportFormat);
   }
 
   @Override
@@ -73,7 +71,7 @@ public class ExportRequestParameter {
     sb.append("class Data5 {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    profile: ").append(toIndentedString(profile)).append("\n");
+    sb.append("    exportFormat: ").append(toIndentedString(exportFormat)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 @Tag(name = "Login", description = "the login API")
 public interface LoginApi {
 
-    @Operation(tags = {"Security"})
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Return the JWT"),
             @ApiResponse(responseCode = "403", description = "Error when user is not accepted.")})
@@ -26,7 +26,7 @@ public interface LoginApi {
     ResponseEntity<Void> login(@Parameter() @RequestPart(value = "username", required = false) String username,
                                @Parameter() @RequestPart(value = "password", required = false) String password);
 
-//    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Security", })
+//    @ApiOperation(value = "", notes = ""})
 //    @ApiResponses(value = {
 //            @ApiResponse(code = 200, message = "Return the JWT", response = Void.class),
 //            @ApiResponse(code = 403, message = "Error when user is not accepted.", response = Void.class) })

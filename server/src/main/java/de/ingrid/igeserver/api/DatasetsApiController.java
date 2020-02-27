@@ -39,16 +39,9 @@ public class DatasetsApiController implements DatasetsApi {
 
     private static Logger log = LogManager.getLogger(DatasetsApiController.class);
 
-    private static final String COLLECTION = "Documents";
-
     private enum CopyMoveOperation {COPY, MOVE}
 
-    ;
-
     private DBApi dbService;
-
-//    @Autowired
-//    private JsonToDBService jsonFromService;
 
     private DocumentService documentService;
 
@@ -81,7 +74,7 @@ public class DatasetsApiController implements DatasetsApi {
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
             ObjectNode dataJson = (ObjectNode) getJsonMap(data);
 
@@ -140,7 +133,7 @@ public class DatasetsApiController implements DatasetsApi {
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
         String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
             if (revert) {
                 throw new ApiException("Not implemented");
@@ -157,7 +150,7 @@ public class DatasetsApiController implements DatasetsApi {
                 throw new NotFoundException(HttpStatus.NOT_FOUND.value(), "The user does not seem to be assigned to any database.");
             }
 
-            String recordId = null;
+            String recordId;
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
             FindOptions findOptions = new FindOptions();
@@ -229,7 +222,7 @@ public class DatasetsApiController implements DatasetsApi {
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
         String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             for (String id : ids) {
                 String recordId = this.dbService.getRecordId(type, id);
                 JsonNode dbDoc = this.dbService.find(type, recordId);
@@ -252,11 +245,11 @@ public class DatasetsApiController implements DatasetsApi {
         try {
 
             copyOrMove(CopyMoveOperation.COPY, ids, data.getDestId());
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (Exception ex) {
             log.error("Error during copy", ex);
-            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -267,10 +260,10 @@ public class DatasetsApiController implements DatasetsApi {
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
             copyOrMove(CopyMoveOperation.MOVE, ids, data.getDestId());
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
 
         }
     }
@@ -280,7 +273,7 @@ public class DatasetsApiController implements DatasetsApi {
             JsonNode doc = this.dbService.find(DOCUMENT_WRAPPER, id);
 
             // add new parent to document
-            ObjectNode updatedDoc = (ObjectNode) documentService.updateParent(dbUtils.toJsonString(doc), destId);
+            ObjectNode updatedDoc = (ObjectNode) documentService.updateParent(DBUtils.toJsonString(doc), destId);
 
             if (operation == CopyMoveOperation.COPY) {
                 // remove internal dataset Info (TODO: this should be done by the dbService)
@@ -298,41 +291,18 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
-    public ResponseEntity<String> exportDataset(
-            Principal principal,
-            String id,
-            String format) throws Exception {
-
-        String userId = this.authUtils.getUsernameFromPrincipal(principal);
-        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-
-        // TODO: refactor
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
-            JsonNode doc = this.dbService.find(DOCUMENT_WRAPPER, id);
-
-            JsonNode data = null;
-            //data = this.documentService.prepareDocumentFromDB( doc );
-
-            // export doc
-            String exportedDoc = (String) exportService.doExport(data, format);
-
-            return ResponseEntity.ok(exportedDoc);
-        }
-    }
-
     public ResponseEntity<List<ObjectNode>> getChildren(
             Principal principal,
             String parentId,
             boolean isAddress
     ) throws ApiException {
-        DBFindAllResults docs = null;
-        List<String> mappedDocs = new ArrayList<>();
+        DBFindAllResults docs;
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
         String type = isAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
             Map<String, String> queryMap = new HashMap<>();
             queryMap.put("_parent", parentId);
@@ -343,7 +313,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             List<ObjectNode> childDocs = docs.hits.stream()
                     .map(doc -> {
-                        ObjectNode node = getLatestDocument(doc);
+                        ObjectNode node = documentService.getLatestDocument(doc);
                         node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc, type));
                         node.remove("@rid");
                         node.remove("@class");
@@ -360,14 +330,13 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<SearchResult> find(Principal principal, String query, int size, String sort, String sortOrder, boolean forAddress) throws Exception {
 
-        DBFindAllResults docs = null;
-        List<String> mappedDocs = new ArrayList<>();
+        DBFindAllResults docs;
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
         String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             Map<String, String> queryMap = new HashMap<>();
             queryMap.put("draft.title", query);
             queryMap.put("draft IS NULL AND published.title", query);
@@ -383,28 +352,13 @@ public class DatasetsApiController implements DatasetsApi {
             SearchResult searchResult = new SearchResult();
             searchResult.totalHits = docs.totalHits;
 
-            List<ObjectNode> preparedDocs = docs.hits.stream()
-                    .map(doc -> getLatestDocument(doc))
+            searchResult.hits = docs.hits.stream()
+                    .map(doc -> documentService.getLatestDocument(doc))
                     .collect(Collectors.toList());
-
-            searchResult.hits = preparedDocs;
 
             return ResponseEntity.ok(searchResult);
 
         }
-    }
-
-    private ObjectNode getLatestDocument(JsonNode doc) {
-        String state = this.documentService.determineState(doc);
-        ObjectNode docData = (ObjectNode) doc.get(FIELD_DRAFT);
-
-        if (docData.isNull()) {
-            docData = (ObjectNode) doc.get(FIELD_PUBLISHED);
-        }
-
-        docData.put(FIELD_STATE, state);
-
-        return docData;
     }
 
     public ResponseEntity<JsonNode> getByID(
@@ -414,11 +368,10 @@ public class DatasetsApiController implements DatasetsApi {
 
         String type = address ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        long start = System.currentTimeMillis();
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
             FindOptions findOptions = new FindOptions();
@@ -427,7 +380,7 @@ public class DatasetsApiController implements DatasetsApi {
             DBFindAllResults docs = this.dbService.findAll(type, query, findOptions);
 
             if (docs.totalHits > 0) {
-                ObjectNode doc = getLatestDocument(docs.hits.get(0));
+                ObjectNode doc = documentService.getLatestDocument(docs.hits.get(0));
                 doc.remove("@rid");
                 doc.remove("@class");
 
@@ -453,7 +406,7 @@ public class DatasetsApiController implements DatasetsApi {
         List<String> path = new ArrayList<>();
         path.add(id);
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             while (destId != null) {
                 JsonNode doc = this.documentService.getByDocId(destId, type, false);
                 destId = doc.get("_parent").textValue();

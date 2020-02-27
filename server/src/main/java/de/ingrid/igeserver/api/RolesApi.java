@@ -23,8 +23,7 @@ import javax.validation.Valid;
 @Tag(name = "Roles", description = "the roles API")
 public interface RolesApi {
 
-    @Operation(description = "Creates a new role. If role with a given login already exists an error will be returned.", tags = {
-            "Role",})
+    @Operation(description = "Creates a new role. If role with a given login already exists an error will be returned.")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Role was successfully updated"),
             @ApiResponse(responseCode = "406", description = "A role with the given login does not exist and cannot be updated")})
 
@@ -33,8 +32,7 @@ public interface RolesApi {
             @Parameter(description = "The unique id of the user.", required = true) @PathVariable("id") String id,
             @Parameter(description = "Save the role into the database.", required = true) @Valid @RequestBody Role1 role);
 
-    @Operation(description = "Delete a role with a given ID. If role with a given id does not exists an error will be returned.", tags = {
-            "Role",})
+    @Operation(description = "Delete a role with a given ID. If role with a given id does not exists an error will be returned.")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Role was successfully deleted"),
             @ApiResponse(responseCode = "406", description = "A role with the given id does not exist and cannot be deleted")})
 
@@ -42,20 +40,18 @@ public interface RolesApi {
     ResponseEntity<Void> deleteRole(
             @Parameter(description = "The unique id of the role.", required = true) @PathVariable("id") String id);
 
-    @Operation(description = "Get the role with the given ID.", tags = {
-            "Role",})
+    @Operation(description = "Get the role with the given ID.")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Returns the role")})
     @RequestMapping(value = "/roles/{id}", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> getRole(
             @Parameter(description = "The unique id of the role.", required = true) @PathVariable("id") String id);
 
-    @Operation(description = "", tags = {"Role",})
+    @Operation(description = "")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Returns the list of roles")})
     @RequestMapping(value = "/roles", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> listRoles();
 
-    @Operation(description = "Updates a role. If role could not be found an error will be returned.", tags = {
-            "Role",})
+    @Operation(description = "Updates a role. If role could not be found an error will be returned.")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Role was successfully created"),
             @ApiResponse(responseCode = "406", description = "A role already exists with the given login")})
     @RequestMapping(value = "/roles/{id}", produces = {"application/json"}, method = RequestMethod.PUT)

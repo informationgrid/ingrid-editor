@@ -21,7 +21,7 @@ import javax.validation.Valid;
 @Tag(name = "Import", description = "the import API")
 public interface ImportApi {
 
-    @Operation(tags = {"Import"})
+    @Operation()
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
             @ApiResponse(responseCode = "500", description = "Unexpected error")})
