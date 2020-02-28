@@ -94,7 +94,7 @@ publishing {
 // create docker image
 jib {
     from {
-        image = 'openjdk:11-jre-slim'
+        image = 'openjdk:11-jre-slim-buster'
     }
     to {
         image = 'docker-registry.wemove.com/ingrid-ige-ng'
