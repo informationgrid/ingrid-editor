@@ -76,7 +76,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
-            ObjectNode dataJson = (ObjectNode) getJsonMap(data);
+            ObjectNode dataJson = (ObjectNode) getJsonNode(data);
 
             // add generated id to document (_id)
             // this one is different from the internal database id (@rid)
@@ -135,36 +135,20 @@ public class DatasetsApiController implements DatasetsApi {
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
+            if (dbId == null) {
+                throw new NotFoundException(HttpStatus.NOT_FOUND.value(), "The user does not seem to be assigned to any database.");
+            }
+
             if (revert) {
                 throw new ApiException("Not implemented");
                 // prepareDocumentFromDB = this.jsonFromService.revertDocument( id );
                 // return;
             }
 
-            ObjectNode mapDocument = (ObjectNode) getJsonMap(data);
-            mapDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString());
+            ObjectNode docWrapper = (ObjectNode) this.documentService.getByDocId(id, type, false);
 
-            String docType = mapDocument.get(FIELD_PROFILE).asText();
-
-            if (dbId == null) {
-                throw new NotFoundException(HttpStatus.NOT_FOUND.value(), "The user does not seem to be assigned to any database.");
-            }
 
             String recordId;
-            Map<String, String> query = new HashMap<>();
-            query.put("_id", id);
-            FindOptions findOptions = new FindOptions();
-            findOptions.queryType = QueryType.exact;
-            findOptions.resolveReferences = false;
-            DBFindAllResults docWrappers = dbService.findAll(type, query, findOptions);
-            if (docWrappers.totalHits != 1) {
-                log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docWrappers.totalHits + ")");
-                throw new RuntimeException("No unique document wrapper found");
-            }
-            ObjectNode docWrapper = (ObjectNode) docWrappers.hits.get(0);
-            JsonNode result;
-
-
             // just update document by using new data and adding database ID
             if (docWrapper.get(FIELD_DRAFT).isNull()) {
                 // create copy of published document with a new db-id
@@ -177,36 +161,21 @@ public class DatasetsApiController implements DatasetsApi {
             }
 
             // save document with same ID or new one, if no draft version exists
-            result = this.dbService.save(docType, recordId, mapDocument.toString());
+            ObjectNode updatedDocument = (ObjectNode) getJsonNode(data);
+            updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString());
+            String docType = updatedDocument.get(FIELD_PROFILE).asText();
+
+            JsonNode save = this.dbService.save(docType, recordId, updatedDocument.toString());
+            String dbID = save.get(DB_ID).asText();
 
             if (publish) {
-                // add ID from published field to archive
-                if (!docWrapper.get(FIELD_PUBLISHED).isNull()) {
-                    docWrapper.withArray(FIELD_ARCHIVE).add(docWrapper.get(FIELD_PUBLISHED));
-                }
-
-                // add doc to published reference
-                docWrapper.put(FIELD_PUBLISHED, result.get(DB_ID).toString());
-
-                // remove draft version
-                docWrapper.put(FIELD_DRAFT, (String) null);
-
-                this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
-
-                //throw new NotImplementedException();
+                handlePublishingOnWrapper(type, docWrapper, dbID);
             } else {
-
-                // update document wrapper with new draft version
-                if (docWrapper.get(FIELD_DRAFT).isNull()) {
-                    // TODO: db_id is ORecord!
-                    docWrapper.put(FIELD_DRAFT, result.get(DB_ID).toString());
-                    this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
-                }
+                handleSaveOnWrapper(type, docWrapper, dbID);
             }
 
-
-//            Map docResult = this.documentService.prepareDocumentFromDB(result, docWrapper);
-
+            JsonNode savedDoc = documentService.getByDocId(id, type, true);
+            ObjectNode result = documentService.getLatestDocument(savedDoc);
             return ResponseEntity.ok(result);
 
         } catch (Exception e) {
@@ -214,6 +183,30 @@ public class DatasetsApiController implements DatasetsApi {
             throw new ApiException(e.getMessage());
         }
 
+    }
+
+    private void handleSaveOnWrapper(String type, ObjectNode docWrapper, String dbID) throws ApiException {
+        // update document wrapper with new draft version
+        if (docWrapper.get(FIELD_DRAFT).isNull()) {
+            // TODO: db_id is ORecord!
+            docWrapper.put(FIELD_DRAFT, dbID);
+            this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
+        }
+    }
+
+    private void handlePublishingOnWrapper(String type, ObjectNode docWrapper, String dbID) throws ApiException {
+        // add ID from published field to archive
+        if (!docWrapper.get(FIELD_PUBLISHED).isNull()) {
+            docWrapper.withArray(FIELD_ARCHIVE).add(docWrapper.get(FIELD_PUBLISHED));
+        }
+
+        // add doc to published reference
+        docWrapper.put(FIELD_PUBLISHED, dbID);
+
+        // remove draft version
+        docWrapper.put(FIELD_DRAFT, (String) null);
+
+        this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
     }
 
     public ResponseEntity<String> deleteById(Principal principal, String[] ids, boolean forAddress) throws Exception {

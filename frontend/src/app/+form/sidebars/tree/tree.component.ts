@@ -88,9 +88,15 @@ export class TreeComponent implements OnInit {
 
 
   private expandOnDataChange(ids: string[]): Promise<void> {
+    let resolveNextTime = false;
 
     return new Promise(resolve => {
       const changeObserver = this.dataSource.dataChange.subscribe(data => {
+        if (resolveNextTime) {
+          setTimeout(() => changeObserver.unsubscribe(), 0);
+          resolve();
+          return;
+        }
         if (data === null) {
           return;
         }
@@ -101,8 +107,7 @@ export class TreeComponent implements OnInit {
           this.treeControl.expand(nodeToExpand);
         }
         if (ids.length === 0) {
-          setTimeout(() => changeObserver.unsubscribe(), 0);
-          resolve();
+          resolveNextTime = true;
         }
       });
     });

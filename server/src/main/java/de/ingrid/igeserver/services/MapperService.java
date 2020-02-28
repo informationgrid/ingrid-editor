@@ -20,7 +20,7 @@ public class MapperService {
     public static final String FIELD_PUBLISHED = "published";
     public static final String FIELD_ARCHIVE = "archive";
 
-    public static JsonNode getJsonMap(String json) throws Exception {
+    public static JsonNode getJsonNode(String json) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);

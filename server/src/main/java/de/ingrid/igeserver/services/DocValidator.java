@@ -121,7 +121,7 @@ public class DocValidator extends MapperService {
     }
 
     public Set<ConstraintViolation<Object>> run(String json) throws Exception {
-        String profile = getJsonMap( json ).get( "_profile" ).asText();
+        String profile = getJsonNode( json ).get( "_profile" ).asText();
 
         Class<?> validatorBeanClass = null;
         switch (profile) {

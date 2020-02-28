@@ -16,7 +16,6 @@ import com.orientechnologies.orient.core.record.ORecordAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 import com.orientechnologies.orient.server.plugin.OServerPluginManager;
@@ -301,7 +300,7 @@ public class OrientDBDatabase implements DBApi {
 
         docToSave.save();
         try {
-            return MapperService.getJsonMap(docToSave.toJSON());
+            return MapperService.getJsonNode(docToSave.toJSON());
         } catch (Exception e) {
             log.error("Error saving document", e);
             throw new ApiException("Error saving document" + e.getMessage());
@@ -416,7 +415,7 @@ public class OrientDBDatabase implements DBApi {
         List<JsonNode> list = new ArrayList<>();
         while (oDocsIterator.hasNext()) {
             ODocument next = oDocsIterator.next();
-            list.add(MapperService.getJsonMap(next.toJSON()));
+            list.add(MapperService.getJsonNode(next.toJSON()));
         }
 
         return list;
@@ -432,7 +431,7 @@ public class OrientDBDatabase implements DBApi {
             } else {
                 json = oDoc.toJSON("rid,class");
             }
-            list.add(MapperService.getJsonMap(json));
+            list.add(MapperService.getJsonNode(json));
         }
 
         return list;

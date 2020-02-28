@@ -24,22 +24,16 @@ public class DocumentService extends MapperService {
     private DBApi dbService;
 
     public JsonNode updateParent(String dbDoc, String parent) throws Exception {
-        ObjectNode map = (ObjectNode) getJsonMap(dbDoc);
+        ObjectNode map = (ObjectNode) getJsonNode(dbDoc);
         map.put(FIELD_PARENT, parent);
 
         return map;
     }
 
-    public String determineState(Object map) {
-        boolean draft = false;
-        boolean published = false;
-        if (map instanceof Map) {
-            draft = ((Map) map).get(FIELD_DRAFT) != null;
-            published = ((Map) map).get(FIELD_PUBLISHED) != null;
-        } else if (map instanceof JsonNode) {
-            draft = !((JsonNode) map).get(FIELD_DRAFT).isNull();
-            published = !((JsonNode) map).get(FIELD_PUBLISHED).isNull();
-        }
+    public String determineState(JsonNode node) {
+        boolean draft = !node.get(FIELD_DRAFT).isNull();
+        boolean published = !node.get(FIELD_PUBLISHED).isNull();
+
         if (published && draft) {
             return "PW";
         } else if (published) {
@@ -57,8 +51,14 @@ public class DocumentService extends MapperService {
         findOptions.queryType = QueryType.exact;
         findOptions.resolveReferences = withReferences;
         DBFindAllResults docs = this.dbService.findAll(type, query, findOptions);
+
+        if (docs.totalHits != 1) {
+            log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docs.totalHits + ")");
+            throw new RuntimeException("No unique document wrapper found");
+        }
+
         try {
-            return docs.totalHits > 0 ? docs.hits.get(0) : null;
+            return docs.hits.get(0);
         } catch (Exception e) {
             log.error("Error getting document by ID: " + id, e);
             return null;
