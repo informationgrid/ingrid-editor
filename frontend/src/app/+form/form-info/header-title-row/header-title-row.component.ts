@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {ProfileService} from '../../../services/profile.service';
+import {TreeNode} from "../../../store/tree/tree-node.model";
 
 @Component({
   selector: 'ige-header-title-row',
@@ -21,6 +22,7 @@ import {ProfileService} from '../../../services/profile.service';
 export class HeaderTitleRowComponent implements OnInit {
 
   @Input() form: FormGroup;
+  @Input() state: string;
 
   @Output() toggleMore = new EventEmitter();
 
@@ -48,5 +50,20 @@ export class HeaderTitleRowComponent implements OnInit {
 
   getIcon() {
     return this.profileService.getProfileIcon(this.form.get('_profile').value);
+  }
+
+  // TODO: refactor since it's used in tree-component also
+  getStateClass() {
+    switch (this.state) {
+      case 'W':
+        return 'working';
+      case 'PW':
+        return 'workingWithPublished';
+      case 'P':
+        return 'published';
+      default:
+        console.error('State is not supported: ' + this.state);
+        throw new Error('State is not supported: ' + this.state);
+    }
   }
 }

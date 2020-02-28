@@ -104,18 +104,6 @@ mat-tree-node {
     margin-right: 15px;
   }
 
-  .mat-icon {
-    //&.working {
-    &.working ::ng-deep svg path {
-      //color: $state-working-color;
-      fill: $state-working-color;
-    }
-
-    &.workingWithPublished ::ng-deep svg path{
-      fill: url("#myGradient");
-    }
-
-  }
 }
 
 

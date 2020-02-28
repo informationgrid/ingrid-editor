@@ -9,7 +9,7 @@ html, body {
 }
 
 body {
-  font-family: Roboto,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+  font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
 }
 
 a {
@@ -91,6 +91,7 @@ h1 {
 main-menu .mat-toolbar-row {
   height: 50px;
 }
+
 main-menu .mat-toolbar-multiple-rows {
   min-height: 44px;
 }
@@ -148,10 +149,12 @@ div.has-error {
   text-decoration: none;
   border-radius: 2px;
 }
+
 .modal .modal-footer .btn-link:hover {
   background-color: rgba(0, 0, 0, 0.1);
   text-decoration: none;
 }
+
 .modal .modal-footer .btn-link:focus {
   outline: 1px solid #03a9f4;
 }
@@ -328,7 +331,6 @@ tree-node:hover .folder {
 }
 
 
-
 /* ngx-formly layout classes */
 .display-flex {
   display: flex;
@@ -387,12 +389,15 @@ tree-node:hover .folder {
   .datatable-body-cell {
     padding: 0.4rem 1rem !important;
   }
+
   .datatable-checkbox {
     margin-top: -3px !important;
   }
 }
 
-.datatable-row-detail { width: 100vw; }
+.datatable-row-detail {
+  width: 100vw;
+}
 
 /* Split gutter style */
 .as-split-gutter-icon {
@@ -421,6 +426,15 @@ ige-root .mat-drawer-container {
   &.passive svg path {
     fill: $ige-background-bar;
   }
+
+  &.working svg path {
+    fill: $state-working-color;
+  }
+
+  &.workingWithPublished svg path {
+    fill: url("#myGradient");
+  }
+
 }
 
 #form {
