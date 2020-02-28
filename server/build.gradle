@@ -6,10 +6,10 @@ plugins {
     id 'base'
     id 'java'
     id 'idea'
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'org.springframework.boot' version '2.2.5.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'maven-publish'
-    id 'com.google.cloud.tools.jib' version '2.0.0'
+    id 'com.google.cloud.tools.jib' version '2.1.0'
 }
 
 repositories {
@@ -50,7 +50,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-security') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
-    compile('org.keycloak:keycloak-spring-boot-starter:8.0.2') {
+    compile('org.keycloak:keycloak-spring-boot-starter:9.0.0') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -60,13 +60,13 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
     compile 'org.springdoc:springdoc-openapi-ui:1.2.32'
-    compile 'com.orientechnologies:orientdb-core:3.0.27'
-    compile 'com.orientechnologies:orientdb-server:3.0.27'
+    compile 'com.orientechnologies:orientdb-core:3.0.28'
+    compile 'com.orientechnologies:orientdb-server:3.0.28'
     compile 'com.github.fge:json-schema-validator:2.2.6'
-    compile('de.ingrid:ingrid-codelist-service:5.1.0') {
+    compile('de.ingrid:ingrid-codelist-service:5.2.0') {
         exclude group: 'log4j', module: 'log4j'
     }
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.9'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.2'
     compile 'javax.validation:validation-api:2.0.1.Final'
     compile 'org.apache.logging.log4j:log4j-1.2-api:2.13.0'
     compile 'org.apache.commons:commons-lang3:3.9'
