@@ -6,7 +6,7 @@
 
 :host {
   display: block;
-  background-color: #28225b;
+  background-color: $ige-secondary-dark;
   height: 100%;
   letter-spacing: 0.67px;
 
@@ -36,12 +36,19 @@
     padding: 0 12px !important;
   }
 
+  .mat-list-item.light {
+    background-color: $ige-secondary;
+  }
+  .mat-list-item.dark:hover {
+    background-color: lighten($ige-secondary, 8%);
+  }
+
   .mat-list-item:hover {
-    background: #00000018 !important;
+    background: lighten($ige-secondary, 8%) !important;
   }
 
   .mat-list-item.active:hover {
-    background: #ffffff18 !important;
+    background: lighten($ige-primary, 8%) !important;
   }
 }
 

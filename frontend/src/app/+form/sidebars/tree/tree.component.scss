@@ -85,9 +85,7 @@ mat-tree-node {
   }
 
   &.active {
-    // box-shadow: inset 3px 0 0 0 rgb(40, 34, 91);
     background-color: $ige-mark-color;
-    //color: $ige-active-color;
   }
 
   &.disabled {
@@ -106,7 +104,6 @@ mat-tree-node {
 
 }
 
-
 .docType {
   padding-right: 10px;
   padding-left: 15px;
@@ -117,18 +114,6 @@ mat-tree-node {
   padding-right: 10px;
   padding-left: 0;
 }
-
-.clickable {
-  cursor: pointer;
-  text-decoration: none;
-}
-
-/*.folder {
-  position: absolute;
-  right: 5px;
-  margin-top: -15px;
-  display: none;
-}*/
 
 .refresh {
   position: absolute;

@@ -1,5 +1,5 @@
-<mat-list *ngIf="docs" style="padding-top: 0" class="doc-item" [class.dense]="denseMode">
-    <mat-list-item *ngFor="let doc of docs | async" class="clickable" (click)="select.next(doc)">
+<mat-selection-list *ngIf="docs" style="padding-top: 0" class="doc-item" [multiple]="false" [class.dense]="denseMode">
+    <mat-list-option *ngFor="let doc of docs | async" (click)="select.next(doc)">
 
         <mat-icon matListIcon [svgIcon]="doc.icon"></mat-icon>
 
@@ -8,8 +8,8 @@
             <span *ngIf="!hideDate" class="pull-right">{{doc._modified | date}}</span>
         </h3>
         <mat-divider></mat-divider>
-    </mat-list-item>
-</mat-list>
+    </mat-list-option>
+</mat-selection-list>
 
 <div *ngIf="doc" (click)="select.next(doc)" (keyup.enter)="select.next(doc)" class="doc-item">
     <mat-icon matListIcon [svgIcon]="doc.icon || doc.iconClass"></mat-icon>

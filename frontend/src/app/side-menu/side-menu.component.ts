@@ -29,7 +29,7 @@ export class SideMenuComponent implements OnInit {
 
   showDrawer: Observable<boolean>;
 
-  routes: MenuItem[];
+  menuItems: MenuItem[];
 
   menuIsExpanded = true;
 
@@ -57,7 +57,7 @@ export class SideMenuComponent implements OnInit {
 
     this.menuService.menu$.subscribe(() => {
       console.log('menu has changed');
-      this.routes = this.menuService.menuItems;
+      this.menuItems = this.menuService.menuItems;
     });
 
   }
