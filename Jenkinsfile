@@ -25,7 +25,7 @@ pipeline {
             steps {
                 withEnv(["JAVA_HOME=${ tool 'jdk11' }/jdk-11"]) {
                     nodejs(nodeJSInstallationName: 'nodejs') {
-                        sh './gradlew clean build'
+                        sh './gradlew -PbuildProfile=prod clean build'
                     }
                 }
             }
