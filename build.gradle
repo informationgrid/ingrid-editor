@@ -1,3 +1,7 @@
+plugins {
+    id "fr.brouillard.oss.gradle.jgitver" version "0.9.1"
+}
+
 subprojects {
-    version = '1.0'
+    version = 'MANAGED_BY_JGITVER'
 }
