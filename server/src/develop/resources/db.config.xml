@@ -38,7 +38,7 @@
   <properties>
         <!-- <entry name="server.database.path" value="C:/temp/databases" /> -->
     <!-- <entry name="orientdb.www.path" value="./src/main/resources/www" /> -->
-    <entry name="server.security.file" value="./resources/security.json" />
+    <entry name="server.security.file" value="./server/src/main/resources/security.json" />
     <entry name="log.console.level" value="fine" />
     <entry name="log.file.level" value="fine" />
   </properties>

@@ -4,7 +4,7 @@
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%5level [%d{yyyy-MM-dd HH:mm:ss}] .(%40.40F:%L) - %m%n" />
     </Console>
-    <RollingFile name="LogFile" fileName="logs/log.log" filePattern="logs/log.log.%i">
+    <RollingFile name="LogFile" fileName="logs/app.log" filePattern="logs/app.log.%i">
       <PatternLayout pattern="%5level [%d{yyyy-MM-dd HH:mm:ss}] (%F:%L) - %m%n" />
       <Policies>
         <SizeBasedTriggeringPolicy size="10 MB" />
@@ -14,16 +14,16 @@
   </Appenders>
   <Loggers>
     <Logger name="de.ingrid" level="info" additivity="false">
-      <AppenderRef ref="Console" />
+      <AppenderRef ref="LogFile" />
     </Logger>
     <Logger name="org.keycloak" level="info" additivity="false">
-      <AppenderRef ref="Console" />
+      <AppenderRef ref="LogFile" />
     </Logger>
     <Logger name="springfox" level="info" additivity="false">
-      <AppenderRef ref="Console" />
+      <AppenderRef ref="LogFile" />
     </Logger>
     <Root level="info">
-      <AppenderRef ref="Console" />
+      <AppenderRef ref="LogFile" />
     </Root>
   </Loggers>
 </Configuration>
