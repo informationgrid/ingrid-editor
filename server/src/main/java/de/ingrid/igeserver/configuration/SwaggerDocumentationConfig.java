@@ -30,7 +30,7 @@ import java.io.IOException;
                         description = "Local Server"
                 ),
                 @Server(
-                        url = "http://ige-ng.informationgrid.eu/",
+                        url = "https://ige-ng.informationgrid.eu/",
                         description = "Test Server"
                 )
         }

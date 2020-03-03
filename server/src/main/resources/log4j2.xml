@@ -15,15 +15,19 @@
   <Loggers>
     <Logger name="de.ingrid" level="info" additivity="false">
       <AppenderRef ref="LogFile" />
+      <AppenderRef ref="Console" />
     </Logger>
     <Logger name="org.keycloak" level="info" additivity="false">
       <AppenderRef ref="LogFile" />
+      <AppenderRef ref="Console" />
     </Logger>
     <Logger name="springfox" level="info" additivity="false">
       <AppenderRef ref="LogFile" />
+      <AppenderRef ref="Console" />
     </Logger>
     <Root level="info">
       <AppenderRef ref="LogFile" />
+      <AppenderRef ref="Console" />
     </Root>
   </Loggers>
 </Configuration>
