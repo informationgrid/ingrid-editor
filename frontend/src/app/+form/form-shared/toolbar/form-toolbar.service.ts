@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 
 export interface DefaultToolbarItem {
   id: string;
@@ -27,7 +27,7 @@ export interface Separator extends DefaultToolbarItem {
 export class FormToolbarService {
 
   // event when a new button was added
-  toolbar$ = new Subject<Array<ToolbarItem | Separator>>();
+  toolbar$ = new BehaviorSubject<Array<ToolbarItem | Separator>>([]);
 
   // events coming from a toolbar button
   toolbarEvent$ = new Subject<string>();
