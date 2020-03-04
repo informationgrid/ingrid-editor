@@ -14,17 +14,14 @@ export class FormToolbarComponent implements OnInit {
   menu = {};
 
   constructor(private formToolbarService: FormToolbarService) {
-    formToolbarService.toolbar$.subscribe(() => {
-      this.buttons_left = this.formToolbarService.buttons.filter(b => b.align !== 'right');
-      this.buttons_right = this.formToolbarService.buttons.filter(b => b.align === 'right');
+    formToolbarService.toolbar$.subscribe((buttons) => {
+      this.buttons_left = buttons.filter(b => b.align !== 'right');
+      this.buttons_right = buttons.filter(b => b.align === 'right');
     });
+
   }
 
-  ngOnInit() {
-    console.log('init toolbar');
-    this.buttons_left = this.formToolbarService.buttons.filter(b => b.align !== 'right');
-    this.buttons_right = this.formToolbarService.buttons.filter(b => b.align === 'right');
-  }
+  ngOnInit() {}
 
   sendEvent(id: string) {
     this.formToolbarService.sendEvent(id);

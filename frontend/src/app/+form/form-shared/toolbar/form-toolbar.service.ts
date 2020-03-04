@@ -27,12 +27,12 @@ export interface Separator extends DefaultToolbarItem {
 export class FormToolbarService {
 
   // event when a new button was added
-  toolbar$ = new Subject<ToolbarItem | Separator>();
+  toolbar$ = new Subject<Array<ToolbarItem | Separator>>();
 
   // events coming from a toolbar button
   toolbarEvent$ = new Subject<string>();
 
-  _buttons: Array<ToolbarItem | Separator> = [];
+  private _buttons: Array<ToolbarItem | Separator> = [];
 
   constructor() {
   }
@@ -49,7 +49,7 @@ export class FormToolbarService {
     // sort buttons
     this._buttons.sort((a, b) => a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1);
 
-    this.toolbar$.next(button);
+    this.toolbar$.next(this.buttons);
   }
 
   removeButton(id: string): void {
@@ -64,6 +64,8 @@ export class FormToolbarService {
     if (index !== null) {
       this._buttons.splice(index, 1);
     }
+
+    this.toolbar$.next(this.buttons);
   }
 
   sendEvent(eventId: string) {
