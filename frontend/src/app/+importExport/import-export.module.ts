@@ -9,12 +9,17 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTabsModule} from '@angular/material/tabs';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatInputModule} from '@angular/material/input';
+import {SharedModule} from '../shared/shared.module';
 
 @NgModule({
   imports: [CommonModule, routing, FormsModule,
     MatExpansionModule, MatTabsModule, MatRadioModule, MatButtonModule,
-    FlexLayoutModule
+    MatStepperModule,
+    FlexLayoutModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, SharedModule
   ],
   declarations: [ImportExportComponent, ExportComponent],
   providers: [ImportExportService]

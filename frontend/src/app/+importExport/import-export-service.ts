@@ -34,7 +34,8 @@ export class ImportExportService {
   private prepareExportInfo(docId: string, inclSubDocs: boolean): any {
     return {
       id: docId,
-      includeSubDocs: inclSubDocs
+      includeSubDocs: inclSubDocs,
+      exportFormat: 'portal'
     };
   }
 }

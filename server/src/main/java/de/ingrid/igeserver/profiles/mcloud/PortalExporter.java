@@ -6,6 +6,8 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import de.ingrid.igeserver.exports.ExportTypeInfo;
 import de.ingrid.igeserver.exports.IgeExporter;
+import de.ingrid.igeserver.services.DocumentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,9 @@ import java.util.Map;
 @Service
 @Profile("mcloud")
 public class PortalExporter implements IgeExporter {
+
+    @Autowired
+    DocumentService documentService;
 
 
     @Override
@@ -38,7 +43,7 @@ public class PortalExporter implements IgeExporter {
 
         Writer writer = new StringWriter();
 
-        Map<String, Object> map = getMapFromObject(jsonData);
+        Map<String, Object> map = getMapFromObject(documentService.getLatestDocument(jsonData));
         compiledTemplate.evaluate(writer, map);
 
         return writer.toString().replaceAll("\\s+\n", "\n");

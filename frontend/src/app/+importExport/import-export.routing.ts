@@ -4,7 +4,7 @@ import {ImportExportComponent} from './import/import.component';
 
 export const routing = RouterModule.forChild([
   {
-    path: 'importExport',
+    path: '',
     component: ImportExportComponent,
     canActivate: [AuthGuard],
     data: { roles: ['admin'] }

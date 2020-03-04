@@ -13,5 +13,4 @@ public class UserInfo {
 
     // the current selected catalog in case a user can access multiple catalogs
     public Catalog currentCatalog;
-    public String catalogProfile;
 }
