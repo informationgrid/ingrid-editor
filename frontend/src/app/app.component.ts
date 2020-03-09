@@ -4,8 +4,6 @@ import {BehaviourService} from './services/behavior/behaviour.service';
 import {RoleService} from './services/role/role.service';
 import {ApiService} from './services/ApiService';
 import {ConfigService} from './services/config/config.service';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 

@@ -1,12 +1,12 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfigService} from '../services/config/config.service';
 import {MenuItem, MenuService} from '../menu/menu.service';
 import {NavigationEnd, Router} from '@angular/router';
-import {SessionStore} from '../store/session.store';
 import {SessionQuery} from '../store/session.query';
 import {animate, style, transition, trigger} from '@angular/animations';
+import set = Reflect.set;
 
 @Component({
   selector: 'ige-side-menu',
@@ -14,13 +14,13 @@ import {animate, style, transition, trigger} from '@angular/animations';
   styleUrls: ['./side-menu.component.scss'],
   animations: [
     trigger('toggle', [
-      transition(':enter', [
-        style({ height: 0, opacity: 0}),
-        animate('300ms ease-in', style({ height: 48, opacity: 1 }))
+      transition('collapsed => expanded', [
+        style({width: 56}),
+        animate('300ms ease-in', style({width: 300}))
       ]),
-      transition(':leave', [
-        style({ height: 48, opacity: 1 }),
-        animate('300ms ease-out', style({ height: 0, opacity: 0 }))
+      transition('* => collapsed', [
+        style({width: 300}),
+        animate('300ms ease-out', style({width: 56}))
       ])
     ])
   ]
@@ -34,6 +34,7 @@ export class SideMenuComponent implements OnInit {
   menuIsExpanded = true;
 
   currentRoute: string;
+  toggleState = 'collapsed';
 
   constructor(private router: Router, private configService: ConfigService, private menuService: MenuService,
               private session: SessionQuery) {
@@ -64,27 +65,28 @@ export class SideMenuComponent implements OnInit {
 
   toggleSidebar(setExanded: boolean) {
     this.menuService.toggleSidebar(setExanded);
-  }
-
-  mapRouteToMatIcon(path: string) {
-    switch (path) {
-      case '/user': return 'supervised_user_circle';
-      case '/catalogs': return 'library_books';
-    }
+    this.toggleState = setExanded ? 'expanded' : 'collapsed';
   }
 
   mapRouteToIcon(path: string) {
     switch (path) {
-      case '/dashboard': return 'Uebersicht';
-      case '/form': return 'Daten';
-      case '/address': return 'Adressen';
-      case '/research': return 'Recherche';
-      // case '/user': return 'addresses';
+      case '/dashboard':
+        return 'Uebersicht';
+      case '/form':
+        return 'Daten';
+      case '/address':
+        return 'Adressen';
+      case '/research':
+        return 'Recherche';
+      case '/user':
+        return 'Nutzer';
       // case '/plugins': return 'extension';
-      case '/importExport': return 'Im-Export';
-      // case '/catalogs': return 'addresses';
-      // case '/demo': return 'play_circle_outline';
-      default: return null;
+      case '/importExport':
+        return 'Im-Export';
+      case '/catalogs':
+        return 'Katalog';
+      default:
+        return null;
     }
   }
 }
