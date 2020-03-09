@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.id.ORecordId;
 import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.DBFindAllResults;
 import de.ingrid.igeserver.db.FindOptions;
@@ -102,15 +103,14 @@ public class DatasetsApiController implements DatasetsApi {
             // create DocumentWrapper
             ObjectNode documentWrapper = this.documentService.getDocumentWrapper();
             documentWrapper.put(FIELD_ID, uuid.toString());
-            documentWrapper.put(FIELD_DRAFT, result.get(DB_ID).toString());
+            documentWrapper.put(FIELD_DRAFT, result.get(DB_ID).asText());
             documentWrapper.put(FIELD_PARENT, parentId);
 
             JsonNode resultWrapper = this.dbService.save(
                     address ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER, null, documentWrapper.toString());
 
-//            Map docResult = this.documentService.prepareDocumentFromDB(result, documentWrapper);
-
-            return ResponseEntity.ok(resultWrapper);
+            ObjectNode resultDoc = this.documentService.getLatestDocument(resultWrapper);
+            return ResponseEntity.ok(resultDoc);
         } catch (Exception e) {
             log.error("Error during creation of document", e);
             throw new ApiException(e.getMessage());

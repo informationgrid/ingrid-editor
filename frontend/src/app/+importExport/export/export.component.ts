@@ -5,7 +5,7 @@ import {ImportExportService} from '../import-export-service';
 @Component({
   selector: 'ige-export',
   templateUrl: './export.component.html',
-  styleUrls: ['./export.component.css']
+  styleUrls: ['./export.component.scss']
 })
 export class ExportComponent implements OnInit {
 
@@ -15,6 +15,7 @@ export class ExportComponent implements OnInit {
   selectedOption: any;
   datasetSelected = false;
   private selectedIds: string[];
+  exportResult: any;
 
   constructor(private _formBuilder: FormBuilder, private exportService: ImportExportService) {
   }
@@ -40,6 +41,7 @@ export class ExportComponent implements OnInit {
   runExport() {
     this.exportService.export(this.selectedIds[0]).subscribe(response => {
       console.log('Export-Result:', response);
+      this.exportResult = response;
     });
   }
 }

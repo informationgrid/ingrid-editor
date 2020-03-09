@@ -300,7 +300,7 @@ public class OrientDBDatabase implements DBApi {
 
         docToSave.save();
         try {
-            return MapperService.getJsonNode(docToSave.toJSON());
+            return mapODocumentToJson(docToSave, true);
         } catch (Exception e) {
             log.error("Error saving document", e);
             throw new ApiException("Error saving document" + e.getMessage());
@@ -361,7 +361,7 @@ public class OrientDBDatabase implements DBApi {
             ObjectNode map = (ObjectNode) list.get(0);
             map.put("name", settings.name);
             map.put("description", settings.description);
-            this.save(DBClass.Info.name(), map.get(DB_ID).toString(), map.toString());
+            this.save(DBClass.Info.name(), map.get(DB_ID).asText(), map.toString());
         }
     }
 
@@ -425,16 +425,21 @@ public class OrientDBDatabase implements DBApi {
         List<JsonNode> list = new ArrayList<>();
         while (docs.hasNext()) {
             ODocument oDoc = (ODocument) docs.next().getElement().get();
-            String json;
-            if (resolveReferences) {
-                json = oDoc.toJSON("rid,class,fetchPlan:*:-1");
-            } else {
-                json = oDoc.toJSON("rid,class");
-            }
-            list.add(MapperService.getJsonNode(json));
+            JsonNode node = mapODocumentToJson(oDoc, resolveReferences);
+            list.add(node);
         }
 
         return list;
+    }
+
+    private JsonNode mapODocumentToJson(ODocument oDoc, boolean resolveReferences) throws Exception {
+        String json;
+        if (resolveReferences) {
+            json = oDoc.toJSON("rid,class,fetchPlan:*:-1");
+        } else {
+            json = oDoc.toJSON("rid,class");
+        }
+        return MapperService.getJsonNode(json);
     }
 
     /**

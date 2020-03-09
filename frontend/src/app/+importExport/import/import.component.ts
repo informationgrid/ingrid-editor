@@ -7,7 +7,7 @@ import { ErrorService } from '../../services/error.service';
 
 @Component({
   templateUrl: './import.component.html',
-  styleUrls: ['./import.component.css']
+  styleUrls: ['./import.component.scss']
 })
 export class ImportExportComponent implements OnInit {
 

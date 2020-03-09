@@ -2,7 +2,7 @@
     <mat-step [completed]="datasetSelected">
         <ng-template matStepLabel>Datensatz auswählen</ng-template>
         <ige-tree (selected)="selectDatasets($event)"></ige-tree>
-        <div>
+        <div class="wizard-footer">
             <button mat-button matStepperNext>Next</button>
         </div>
     </mat-step>
@@ -14,7 +14,7 @@
                 <mat-radio-button name="exportOption" value="sub">alle untergeordneten</mat-radio-button>
                 <mat-radio-button name="exportOption" value="thisAndSub">dieser und alle untergeordneten</mat-radio-button>
             </mat-radio-group>
-            <div>
+            <div class="wizard-footer">
                 <button mat-button matStepperPrevious>Back</button>
                 <button mat-button matStepperNext>Next</button>
             </div>
@@ -24,7 +24,10 @@
         <ng-template matStepLabel>Exportieren</ng-template>
 
         Format: ???
-
-        <button mat-button (click)="runExport()">Export starten</button>
+        <div class="wizard-footer">
+            <button mat-button (click)="runExport()">Export starten</button>
+        </div>
     </mat-step>
 </mat-horizontal-stepper>
+
+<pre *ngIf="exportResult">{{exportResult | json}}</pre>
