@@ -6,6 +6,7 @@
 package de.ingrid.igeserver.api;
 
 import de.ingrid.igeserver.model.Data4;
+import de.ingrid.igeserver.model.ImportAnalyzeInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,8 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @Tag(name = "Import", description = "the import API")
 public interface ImportApi {
@@ -27,6 +30,6 @@ public interface ImportApi {
             @ApiResponse(responseCode = "500", description = "Unexpected error")})
 
     @RequestMapping(value = "/import", produces = {"application/json"}, method = RequestMethod.POST)
-    ResponseEntity<Void> importDataset(@Parameter(description = "The dataset to be imported.", required = true) @Valid @RequestBody Data4 data);
+    ResponseEntity<ImportAnalyzeInfo> importDataset(@Parameter(description = "The dataset to be imported.", required = true) @Valid @RequestBody MultipartFile file) throws IOException, ApiException;
 
 }
