@@ -9,13 +9,17 @@ import { IgeError } from '../../models/ige-error';
 export class ErrorDialogComponent {
   error: IgeError[];
 
-  constructor(@Inject( MAT_DIALOG_DATA ) data: IgeError|IgeError[]) {
+  constructor(@Inject( MAT_DIALOG_DATA ) data: IgeError|IgeError[], private dlgRef: MatDialogRef<ErrorDialogComponent>) {
     console.log( 'Data:', data );
     if (data instanceof Array) {
       this.error = data;
     } else {
       this.error = [data];
     }
+  }
+
+  close() {
+    this.dlgRef.close();
   }
 
 }

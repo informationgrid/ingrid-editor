@@ -1,96 +1,25 @@
-<mat-tab-group [animationDuration]="'0ms'">
+<mat-horizontal-stepper [linear]="true" labelPosition="bottom" [selectedIndex]="activeStepIndex">
+    <mat-step [completed]="datasetSelected">
+        <ng-template matStepLabel>Datei hochladen</ng-template>
 
-    <mat-tab label="Import">
+        <div class="text-center">
+            <p>Bitte wählen Sie die zu importierende Datei aus</p>
+            <ige-file-upload (complete)="onFileComplete($event)"></ige-file-upload>
 
-            <div fxLayout="row">
-                <div fxFlex="30">
+            <span *ngIf="importFileErrorMessage">{{importFileErrorMessage}}</span>
+        </div>
 
-                    <mat-accordion>
-                        <mat-expansion-panel [expanded]="true">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    1. Datensatz auswählen
-                                </mat-panel-title>
-                            </mat-expansion-panel-header>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup" >
+        <form [formGroup]="secondFormGroup">
+            <ng-template matStepLabel>Analyse</ng-template>
 
-                            <!--<p-fileUpload name="importFiles[]"
-                                          [url]="uploadUrl"
-                                          multiple="multiple"
-                                          accept="image/*"
-                                          (onUpload)="onUpload($event)"
-                                          maxFileSize="1000000">
+            <pre>{{analyzedData | json}}</pre>
 
-                            </p-fileUpload>-->
-
-                            <p class="text-center padding-sm">oder</p>
-
-                            <div>
-                                <label class="custom-file w-100">
-                                    <!--<p-fileUpload mode="basic" name="demo[]" url="./upload.php" accept="image/*" maxFileSize="1000000"></p-fileUpload>-->
-                                </label>
-                            </div>
-                        </mat-expansion-panel>
-
-                        <mat-expansion-panel>
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    2. Analyse
-                                </mat-panel-title>
-                            </mat-expansion-panel-header>
-
-                            <div class="text-center padding">
-                                <!--<span class="text-muted">{{fileInput.value}}</span>-->
-                                <!--<button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Start Import</button>-->
-                            </div>
-                        </mat-expansion-panel>
-                    </mat-accordion>
-                    <!-- TODO: <p-accordion>
-                        <p-accordionTab [selected]="true" header="1. Datensatz auswählen">
-                            <p-fileUpload name="importFiles[]"
-                                          [url]="uploadUrl"
-                                          multiple="multiple"
-                                          accept="image/*"
-                                          (onUpload)="onUpload($event)"
-                                          (onError)="handleError($event)"
-                                          maxFileSize="1000000">
-
-                            </p-fileUpload>
-
-                            <p class="text-center padding-sm">oder</p>
-
-                            <div>
-                                <label class="custom-file w-100">
-                                    <p-fileUpload mode="basic" name="demo[]" url="./upload.php" accept="image/*" maxFileSize="1000000"></p-fileUpload>
-                                </label>
-                            </div>
-                        </p-accordionTab>
-                        <p-accordionTab header="2. Analyse">
-                            <div class="text-center padding">
-                                &lt;!&ndash;<span class="text-muted">{{fileInput.value}}</span>&ndash;&gt;
-                                &lt;!&ndash;<button type="button" class="btn btn-primary" (click)="import(fileInput.files)">Start Import</button>&ndash;&gt;
-                            </div>
-                        </p-accordionTab>
-                        <p-accordionTab disabled="true" header="Start">
-                        </p-accordionTab>
-                    </p-accordion>-->
-
-                </div>
-
-                <div fxFlex="10">
-                    <span class="fa fa-chevron-right text-info" style="font-size: 7rem;"></span>
-                    <p>Vorschau</p>
-                </div>
-
-                <div fxFlex="60">
-                    <!--<div class="h-100 border-dashed">-->
-                        <!--<ige-main-form-tabs [fields]="formFields" [form]="form"></ige-main-form-tabs>-->
-                    <!--</div>-->
-                </div>
+            <div class="wizard-footer">
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button matStepperNext>Importieren</button>
             </div>
-    </mat-tab>
-
-    <mat-tab label="Export">
-        <ige-export></ige-export>
-    </mat-tab>
-
-</mat-tab-group>
+        </form>
+    </mat-step>
+</mat-horizontal-stepper>

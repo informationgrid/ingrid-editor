@@ -11,3 +11,21 @@
 .doc-item .mat-icon {
   margin-right: 6px;
 }
+
+.marker-space {
+  margin-left: 38px;
+}
+
+.hide-bg-selection.mat-list-single-selected-option {
+  background: #00000000;
+}
+
+::ng-deep .marker polygon {
+  fill: limegreen;
+}
+
+.doc-item {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}

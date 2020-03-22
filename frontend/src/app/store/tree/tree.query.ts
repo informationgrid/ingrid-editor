@@ -12,9 +12,14 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
   openedDocument$: Observable<DocumentAbstract> = this.select(state => state.openedDocument);
   expandedNodes$: Observable<string[]> = this.select(state => state.expandedNodes);
   pathTitles$: Observable<string[]> = this.select(state => state.activePathTitles);
+  selectedNodes$: Observable<string[]> = this.select(state => state.selected);
 
   constructor(protected store: TreeStore) {
     super(store);
+  }
+
+  getOpenedDocument(): DocumentAbstract {
+    return this.store.getValue().openedDocument;
   }
 
   getChildren(parent: string): DocumentAbstract[] {

@@ -10,6 +10,8 @@ export class BreadcrumbComponent implements OnInit {
   @Input() path: string[];
   @Input() hideLastSeparator = true;
   @Input() showRoot = true;
+  @Input() rootName = 'Daten';
+  @Input() emphasize = false;
 
   constructor() {
   }

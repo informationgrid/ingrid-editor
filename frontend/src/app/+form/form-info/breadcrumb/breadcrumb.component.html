@@ -1,5 +1,5 @@
-<span *ngIf="path">
-    <span *ngIf="showRoot && path.length === 0">Wurzelverzeichnis</span>
+<span *ngIf="path" [class.emphasize]="emphasize">
+    <span *ngIf="showRoot && path.length === 0">{{rootName}}</span>
 
     <span *ngFor="let item of path; let last = last">
         {{item}}

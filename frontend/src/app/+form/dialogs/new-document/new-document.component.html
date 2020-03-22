@@ -1,25 +1,79 @@
-<h2 mat-dialog-title>Neues Dokument</h2>
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        {{forAddress ? 'Neue Adresse anlegen' : 'Neuen Datensatz anlegen'}}
+    </h2>
+</div>
 <mat-dialog-content>
-    <form #myForm>
-    <mat-form-field class="width-100">
-        <input matInput [(ngModel)]="result.title" name="title"
-               placeholder="Titel"
-               required>
-    </mat-form-field>
+    <mat-tab-group [selectedIndex]="selectedPage">
+        <mat-tab label="Titel">
+            <form #myForm fxFlex fxLayout="column" [formGroup]="formGroup">
+                <ng-container *ngIf="forAddress">
+                    <div fxFlex fxLayout="row" fxLayoutGap="24px">
 
-    <label id="doc-type">Dokumententyp</label>
-    <mat-radio-group aria-labelledby="doc-type" [(ngModel)]="result.choice" name="choice">
-        <mat-radio-button
-            *ngFor="let type of data.docTypes" [value]="type.id">{{type.label}}
-        </mat-radio-button>
-    </mat-radio-group>
+                        <mat-form-field class="width-100">
+                            <input matInput
+                                   formControlName="firstName"
+                                   cdkFocusInitial
+                                   placeholder="Vorname">
+                        </mat-form-field>
+                        <mat-form-field class="width-100">
+                            <input matInput
+                                   placeholder="Nachname"
+                                   formControlName="lastName">
+                        </mat-form-field>
+                    </div>
+                    <mat-form-field>
+                        <input matInput
+                               formControlName="organization"
+                               placeholder="Oder eine Organisation">
+                    </mat-form-field>
 
-    <label>Im Verzeichnis</label>
-    <ige-choose-folder (update)="result.parent = $event" [forAddress]="data.forAddress"></ige-choose-folder>
-    </form>
+                    <div *ngIf="formGroup.errors?.nameOrOrganization && (formGroup.touched || formGroup.dirty)" class="cross-validation-error-message alert alert-danger">
+                        Es müssen Name oder Organisation eingegeben werden.
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="!forAddress">
+                    <mat-form-field class="width-100">
+                        <input matInput
+                               formControlName="title"
+                               cdkFocusInitial
+                               placeholder="Titel"
+                               required>
+                    </mat-form-field>
+
+                    <label id="doc-type">Datensatztyp wählen:</label>
+                    <ige-document-list-item [docs]="documentTypes" showSelection="true" [denseMode]="true" (select)="setDocType($event)"></ige-document-list-item>
+
+                </ng-container>
+
+                <div>
+                    <label>Ort</label>
+                    <ige-breadcrumb [path]="path" emphasize="true"></ige-breadcrumb>
+                </div>
+            </form>
+        </mat-tab>
+        <mat-tab label="Ort auswählen">
+            <ige-destination-selection [forAddress]="forAddress" (choice)="updateParent($event)"></ige-destination-selection>
+        </mat-tab>
+    </mat-tab-group>
 
 </mat-dialog-content>
+
+<div style="flex: 1"></div>
+
 <mat-dialog-actions>
+    <button *ngIf="selectedPage === 1" mat-button (click)="selectedPage = 0">
+        <mat-icon>chevron_left</mat-icon>
+        Zurück
+    </button>
+
     <div fxFlex></div>
-    <button mat-button color="primary" [disabled]="!myForm.checkValidity()" [mat-dialog-close]="result">Anlegen</button>
+
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button *ngIf="selectedPage === 0" mat-button (click)="selectedPage = 1">Ort ändern</button>
+    <button mat-button color="primary" [disabled]="formGroup.invalid" (click)="createDoc()">Anlegen</button>
 </mat-dialog-actions>

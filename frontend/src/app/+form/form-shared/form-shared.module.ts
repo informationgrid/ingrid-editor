@@ -31,30 +31,37 @@ import {HeaderNavigationComponent} from "../form-info/header-navigation/header-n
 import {HeaderTitleRowComponent} from "../form-info/header-title-row/header-title-row.component";
 import {HeaderMoreComponent} from "../form-info/header-more/header-more.component";
 import {FormMessageComponent} from "../form-info/form-message/form-message.component";
+import {MatTabsModule} from "@angular/material/tabs";
+import {SharedModule} from "../../shared/shared.module";
+import {IgeFormModule} from "../ige-form.module";
+import {DestinationSelectionComponent} from "../dialogs/new-document/destination-selection/destination-selection.component";
 
 
 @NgModule({
   declarations: [
     FormToolbarComponent, CreateFolderComponent, ChooseFolderComponent, BreadcrumbComponent,
     FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent,
-    FormMessageComponent],
-  imports: [
-    CommonModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    FlexLayoutModule,
-    IgeFormlyModule
+    FormMessageComponent, DestinationSelectionComponent
   ],
+    imports: [
+        CommonModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatMenuModule,
+        MatDividerModule,
+        MatInputModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        FlexLayoutModule,
+        IgeFormlyModule,
+        MatTabsModule,
+        SharedModule
+    ],
   providers: [FormToolbarService, FormPluginsService, NewDocumentPlugin, SavePlugin, FolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService],
   exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, ChooseFolderComponent, IgeFormlyModule,
-    FormInfoComponent],
+    FormInfoComponent, DestinationSelectionComponent],
   entryComponents: [CreateFolderComponent]
 })
 export class FormSharedModule {

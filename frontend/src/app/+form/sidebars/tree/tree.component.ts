@@ -1,13 +1,14 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../../../store/tree/tree-node.model';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {SelectionModel} from '@angular/cdk/collections';
 import {map} from 'rxjs/operators';
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {UpdateType} from '../../../models/update-type.enum';
 import {DynamicDataSource} from './dynamic.datasource';
 import {DynamicDatabase} from './dynamic.database';
+import {untilDestroyed} from "ngx-take-until-destroy";
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -24,12 +25,14 @@ export class TreeAction {
   styleUrls: ['./tree.component.scss'],
   providers: [DynamicDatabase]
 })
-export class TreeComponent implements OnInit {
+export class TreeComponent implements OnInit, OnDestroy {
 
   @Input() forAddresses: boolean;
   @Input() expandNodeIds: Observable<string[]>;
+  @Input() showHeader = true;
   @Input() showReloadButton = true;
   @Input() activeNodeId: string = null;
+  @Input() setActiveNode: Subject<string>;
   @Input() update: Observable<any>;
 
   /** The selection for checklist */
@@ -67,6 +70,15 @@ export class TreeComponent implements OnInit {
   ngOnInit(): void {
     this.dataSource.setForAddress(this.forAddresses);
 
+    if (this.setActiveNode) {
+      this.setActiveNode
+        .pipe(untilDestroyed(this))
+        .subscribe(id => {
+          this.activeNodeId = id;
+          this.selectionModel.clear();
+        });
+    }
+
     this.reloadTree();
 
     // after root nodes are loaded start expansion
@@ -77,6 +89,7 @@ export class TreeComponent implements OnInit {
             const node = this.dataSource.getNode(this.activeNodeId);
             const nodePath = this.getTitlesFromNodePath(node);
             this.currentPath.next(nodePath);
+            this.selectionModel.select(node);
           }).catch(() => {
         });
       });
@@ -154,7 +167,7 @@ export class TreeComponent implements OnInit {
   }
 
   private getTitlesFromNodePath(node: TreeNode) {
-    const path = [];
+    const path = [node.title];
     let parent = node.parent;
     while (parent !== null && parent !== undefined) {
       const parentNode = this.dataSource.getNode(parent);
@@ -334,7 +347,7 @@ export class TreeComponent implements OnInit {
     }
 
     let pos = null;
-    ids.some( (id, index) => {
+    ids.some((id, index) => {
       let treeNode = this.dataSource.data.find(item => item._id === id);
       let isExpanded = this.treeControl.isExpanded(treeNode);
       if (!isExpanded) {
@@ -343,5 +356,8 @@ export class TreeComponent implements OnInit {
       }
     });
     return pos === null ? [] : ids.slice(pos, ids.length);
+  }
+
+  ngOnDestroy(): void {
   }
 }

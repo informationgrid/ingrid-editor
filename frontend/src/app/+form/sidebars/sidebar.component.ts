@@ -5,6 +5,7 @@ import {TreeStore} from '../../store/tree/tree.store';
 import {DocumentService} from '../../services/document/document.service';
 import {Subject} from 'rxjs';
 import {TreeAction} from './tree/tree.component';
+import {take, takeWhile} from "rxjs/operators";
 
 @Component({
   selector: 'ige-sidebar',

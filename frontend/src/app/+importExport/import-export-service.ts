@@ -3,6 +3,13 @@ import {ConfigService, Configuration} from '../services/config/config.service';
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {catchError} from "rxjs/operators";
+
+export interface ExportOptions {
+  id: string,
+  includeSubDocs: boolean,
+  exportFormat: string
+}
 
 @Injectable({
   providedIn: 'root'
@@ -19,23 +26,22 @@ export class ImportExportService {
   import(file: File): Observable<any> {
     return this.http.post( this.configuration.backendUrl + 'import', file )
       .pipe(
-        /*catchError( err => {
+        catchError( err => {
           this.errorService.handle( err );
           return err;
-        } )*/
+        } )
       );
   }
 
-  export(docId: string, inclSubDocs?: boolean) {
-    const data = this.prepareExportInfo( docId, inclSubDocs );
-    return this.http.post( this.configuration.backendUrl + 'export', data );
+  export(options: ExportOptions) {
+    return this.http.post( this.configuration.backendUrl + 'export', options );
   }
 
-  private prepareExportInfo(docId: string, inclSubDocs: boolean): any {
+  public static prepareExportInfo(docId: string, format: string, inclSubDocs?: boolean): ExportOptions {
     return {
       id: docId,
       includeSubDocs: inclSubDocs,
-      exportFormat: 'portal'
+      exportFormat: format
     };
   }
 }

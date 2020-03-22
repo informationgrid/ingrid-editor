@@ -15,6 +15,10 @@ export class AddressTreeQuery extends QueryEntity<AddressTreeState> {
     super(store);
   }
 
+  getOpenedDocument(): DocumentAbstract {
+    return this.store.getValue().openedDocument;
+  }
+
   getChildren(parent: string): DocumentAbstract[] {
     return this.getAll()
       .filter( doc => doc._parent === parent)

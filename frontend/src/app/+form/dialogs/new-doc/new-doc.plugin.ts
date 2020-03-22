@@ -11,6 +11,8 @@ import {MessageService} from '../../../services/message.service';
 import {FormularService} from '../../formular.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
+export type DocType = { id: string, label: string, icon: string };
+
 @Injectable()
 export class NewDocumentPlugin extends Plugin implements OnDestroy {
   id = 'plugin.newDoc';
@@ -65,6 +67,8 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
 
     const dlg = this.dialog.open(NewDocumentComponent, {
       minWidth: 500,
+      minHeight: 400,
+      disableClose: true,
       data:
         {
           docTypes: docTypes,
@@ -103,8 +107,8 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
   }
 
   // TODO: init once and use value instead of calculation
-  getDocTypes(): { id: string, label: string }[] {
-    return this.formularService.profileDefinitions.map(profile => ({id: profile.id, label: profile.label}));
+  getDocTypes(): DocType[] {
+    return this.formularService.profileDefinitions.map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}));
   }
 
   unregister() {

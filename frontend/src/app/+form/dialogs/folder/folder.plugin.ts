@@ -64,6 +64,8 @@ export class FolderPlugin extends Plugin {
 
     this.dialog.open(CreateFolderComponent, {
       minWidth: 500,
+      minHeight: 400,
+      disableClose: true,
       data: {
         parent: parents && parents[0] ? parents[0].id : null,
         forAddress: this.forAddress

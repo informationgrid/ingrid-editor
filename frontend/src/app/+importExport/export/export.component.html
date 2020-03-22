@@ -1,9 +1,9 @@
-<mat-horizontal-stepper [linear]="true" labelPosition="bottom" #stepper>
+<mat-horizontal-stepper [linear]="true" labelPosition="bottom">
     <mat-step [completed]="datasetSelected">
         <ng-template matStepLabel>Datensatz auswählen</ng-template>
         <ige-tree (selected)="selectDatasets($event)"></ige-tree>
         <div class="wizard-footer">
-            <button mat-button matStepperNext>Next</button>
+            <button mat-button matStepperNext [disabled]="!datasetSelected">Next</button>
         </div>
     </mat-step>
     <mat-step [stepControl]="secondFormGroup">
@@ -23,7 +23,14 @@
     <mat-step [stepControl]="secondFormGroup">
         <ng-template matStepLabel>Exportieren</ng-template>
 
-        Format: ???
+        <mat-form-field>
+            <mat-label>Format</mat-label>
+            <mat-select [(ngModel)]="formatSelection">
+                <mat-option *ngFor="let format of exportFormats" [value]="format.value">
+                    {{format.label}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
         <div class="wizard-footer">
             <button mat-button (click)="runExport()">Export starten</button>
         </div>

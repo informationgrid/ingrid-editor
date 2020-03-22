@@ -1,0 +1,21 @@
+#doc-type {
+  padding-bottom: 12px;
+  display: block;
+}
+
+mat-radio-button {
+  display: block;
+  padding-bottom: 16px;
+}
+
+::ng-deep .mat-tab-header {
+  display: none !important;
+}
+.mat-dialog-content {
+  padding-bottom: 10px;
+}
+
+ige-tree, ige-document-list-item {
+  display: block;
+  padding-bottom: 20px;
+}

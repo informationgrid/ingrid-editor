@@ -1,0 +1,10 @@
+<ige-tree [disabledCondition]="disabledCondition" (selected)="updateParent($event, 'Tree')"
+          [setActiveNode]="activeTreeNode"
+          (currentPath)="updatePath($event)"
+          [forAddresses]="forAddress"
+          [showReloadButton]="false"></ige-tree>
+
+Oder anlegen unter
+<ige-document-list-item [docs]="getRootNode()" showSelection="true"
+                        [setActiveItem]="activeListItem"
+                        (select)="updateParent([null], 'List')"></ige-document-list-item>

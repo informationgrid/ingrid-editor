@@ -2,6 +2,7 @@
 @import '~@swimlane/ngx-datatable/themes/material.scss';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
 @import './variables.scss';
+@import './material.override.scss';
 
 html, body {
   height: 100%;
@@ -61,6 +62,9 @@ h1 {
   display: none !important;
 }
 
+.width-50 {
+  width: 50%;
+}
 .width-100 {
   width: 100%;
 }
@@ -114,49 +118,6 @@ main-menu .mat-toolbar-multiple-rows {
 
 div.has-error {
   position: relative;
-}
-
-.ui-growl {
-  top: initial;
-  bottom: 10px;
-}
-
-.ui-tree {
-  width: auto;
-}
-
-.modal .modal-content {
-  background-color: #03a9f4;
-  color: #fff;
-}
-
-.modal-alert .modal-content {
-  background-color: #f44336;
-}
-
-.modal .modal-header {
-  padding: 23px 26px;
-  border-bottom: 1px solid transparent;
-}
-
-.modal .modal-footer {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-top: 1px solid transparent;
-}
-
-.modal .modal-footer .btn-link {
-  color: #fff;
-  text-decoration: none;
-  border-radius: 2px;
-}
-
-.modal .modal-footer .btn-link:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  text-decoration: none;
-}
-
-.modal .modal-footer .btn-link:focus {
-  outline: 1px solid #03a9f4;
 }
 
 .border-dashed {
@@ -304,11 +265,6 @@ sidebar .list-group-item:hover {
   background-color: #ececec;
 }
 
-.error .modal-header {
-  background-color: #a94442;
-  color: #ffffff;
-}
-
 .list-group-item.active {
   background-color: #5999d0;
   border-color: #5999d0;
@@ -320,14 +276,6 @@ sidebar .list-group-item:hover {
 
 .nav-tabs li {
   cursor: pointer;
-}
-
-.tree {
-  width: 100%;
-}
-
-tree-node:hover .folder {
-  display: block;
 }
 
 
@@ -508,10 +456,9 @@ ige-root .mat-drawer-container {
   }
 }
 
-mat-list.mat-list-base.dense, .mat-autocomplete.dense {
-  mat-option, mat-list-item {
+mat-selection-list.mat-list-base.dense, mat-list.mat-list-base.dense, .mat-autocomplete.dense {
+  mat-option, mat-list-item, mat-list-option {
     height: 40px !important;
-    line-height: 40px;
     font-size: 16px;
   }
 }

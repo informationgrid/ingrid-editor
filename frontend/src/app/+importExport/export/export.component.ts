@@ -10,22 +10,19 @@ import {ImportExportService} from '../import-export-service';
 export class ExportComponent implements OnInit {
 
   selection: any[] = [];
-  firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
-  selectedOption: any;
   datasetSelected = false;
   private selectedIds: string[];
   exportResult: any;
+  exportFormats = [{ value: 'portal', label: 'mCLOUD Portal'}];
+  formatSelection = 'portal';
 
   constructor(private _formBuilder: FormBuilder, private exportService: ImportExportService) {
   }
 
   ngOnInit() {
-    this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required]
-    });
     this.secondFormGroup = this._formBuilder.group({
-      option: ['', Validators.required]
+      option: ['dataset', Validators.required]
     });
   }
 
@@ -39,7 +36,8 @@ export class ExportComponent implements OnInit {
   }
 
   runExport() {
-    this.exportService.export(this.selectedIds[0]).subscribe(response => {
+    let options = ImportExportService.prepareExportInfo(this.selectedIds[0], this.formatSelection);
+    this.exportService.export(options).subscribe(response => {
       console.log('Export-Result:', response);
       this.exportResult = response;
     });

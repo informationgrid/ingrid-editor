@@ -1,21 +1,48 @@
-<h2 mat-dialog-title>Ordner erstellen</h2>
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        Ordner erstellen
+    </h2>
+</div>
 <mat-dialog-content>
 
-    <mat-form-field>
-        <input matInput #name
-               placeholder="Ordnername"
-               (keyup.enter)="handleCreate(name.value)"
-               required>
-    </mat-form-field>
+    <mat-tab-group [selectedIndex]="selectedPage">
+        <mat-tab label="Titel">
+            <mat-form-field>
+                <input matInput #name
+                       cdkFocusInitial
+                       placeholder="Titel"
+                       (keyup.enter)="handleCreate(name.value)"
+                       required>
+            </mat-form-field>
 
-    <ige-choose-folder [forAddress]="forAddress" (update)="setDestination($event)"></ige-choose-folder>
+            Ort
+            <ige-breadcrumb [path]="path" emphasize="true"></ige-breadcrumb>
+        </mat-tab>
+
+        <mat-tab label="Ort auswählen">
+            <ige-destination-selection [forAddress]="forAddress" (choice)="updateParent($event)"></ige-destination-selection>
+        </mat-tab>
+    </mat-tab-group>
+
 
 </mat-dialog-content>
+
+<div style="flex: 1"></div>
+
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close>Abbrechen</button>
+    <button *ngIf="selectedPage === 1" mat-button (click)="selectedPage = 0">
+        <mat-icon>chevron_left</mat-icon>
+        Zurück
+    </button>
 
     <div fxFlex></div>
 
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-    <button mat-button color="primary" [disabled]="!name.checkValidity()" (click)="handleCreate(name.value)">Erstellen</button>
+    <button *ngIf="selectedPage === 0" mat-button (click)="selectedPage = 1">Ort ändern</button>
+    <button mat-stroked-button color="primary" [disabled]="!name.checkValidity()" (click)="handleCreate(name.value)">
+        Anlegen
+    </button>
 </mat-dialog-actions>

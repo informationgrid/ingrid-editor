@@ -51,10 +51,11 @@ import {FormSharedModule} from './form-shared/form-shared.module';
     NewDocumentComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
-    FormDashboardComponent],
+    FormDashboardComponent
+  ],
   providers: [
     NominatimService],
-  exports: [RouterModule, FormsModule, ScrollToDirective, SidebarComponent],
+    exports: [RouterModule, FormsModule, ScrollToDirective, SidebarComponent],
   entryComponents: [NewDocumentComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
 })
 export class IgeFormModule {
