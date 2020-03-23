@@ -8,7 +8,14 @@ import {catchError} from "rxjs/operators";
 export interface ExportOptions {
   id: string,
   includeSubDocs: boolean,
-  exportFormat: string
+  exportFormat: string,
+  useDraft: boolean
+}
+
+export interface ExportTypeInfo {
+  type: string;
+  name: string;
+  description: string;
 }
 
 @Injectable({
@@ -34,14 +41,19 @@ export class ImportExportService {
   }
 
   export(options: ExportOptions) {
-    return this.http.post( this.configuration.backendUrl + 'export', options );
+    return this.http.post( this.configuration.backendUrl + 'export?draft=', options );
+  }
+
+  getExportTypes(): Observable<ExportTypeInfo[]> {
+    return this.http.get<ExportTypeInfo[]>( this.configuration.backendUrl + 'export?source=mcloud' );
   }
 
   public static prepareExportInfo(docId: string, format: string, inclSubDocs?: boolean): ExportOptions {
     return {
       id: docId,
       includeSubDocs: inclSubDocs,
-      exportFormat: format
+      exportFormat: format,
+      useDraft: true
     };
   }
 }

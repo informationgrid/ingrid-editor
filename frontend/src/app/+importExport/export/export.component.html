@@ -26,8 +26,8 @@
         <mat-form-field>
             <mat-label>Format</mat-label>
             <mat-select [(ngModel)]="formatSelection">
-                <mat-option *ngFor="let format of exportFormats" [value]="format.value">
-                    {{format.label}}
+                <mat-option *ngFor="let format of exportFormats | async" [value]="format.type">
+                    {{format.name}}
                 </mat-option>
             </mat-select>
         </mat-form-field>

@@ -11,6 +11,9 @@ public class ExportRequestParameter {
   @JsonProperty("exportFormat")
   private String exportFormat = null;
 
+  @JsonProperty("useDraft")
+  private boolean useDraft = false;
+
   public ExportRequestParameter id(String id) {
     this.id = id;
     return this;
@@ -85,6 +88,14 @@ public class ExportRequestParameter {
       return "null";
     }
     return o.toString().replace("\n", "\n    ");
+  }
+
+  public boolean isUseDraft() {
+    return useDraft;
+  }
+
+  public void setUseDraft(boolean useDraft) {
+    this.useDraft = useDraft;
   }
 }
 

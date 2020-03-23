@@ -12,7 +12,7 @@
     </mat-list-option>
 </mat-selection-list>
 
-<div *ngIf="doc" (keyup.enter)="select.next(doc)" class="doc-item" (click)="makeSelection(doc)">
+<div *ngIf="doc" (keyup.enter)="select.next(doc)" class="doc-item" fxLayout="row" (click)="makeSelection(doc)">
     <mat-icon *ngIf="showSelection && currentSelection === doc" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
     <mat-icon [class.marker-space]="showSelection && currentSelection !== doc" matListIcon [svgIcon]="doc.icon"></mat-icon>
 

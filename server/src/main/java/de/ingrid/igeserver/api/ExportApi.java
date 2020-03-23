@@ -5,17 +5,21 @@
  */
 package de.ingrid.igeserver.api;
 
+import de.ingrid.igeserver.exports.ExportTypeInfo;
 import de.ingrid.igeserver.model.ExportRequestParameter;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 
 @Tag(name = "Export", description = "the export API")
@@ -29,5 +33,14 @@ public interface ExportApi {
     ResponseEntity<String> export(
             Principal principal,
             @Parameter(description = "The dataset to be exported.", required = true) @Valid @RequestBody ExportRequestParameter data) throws Exception;
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The supported types for export."),
+            @ApiResponse(responseCode = "500", description = "Unexpected error")}
+    )
+    @GetMapping(value = "/export", produces = {"application/json"})
+    ResponseEntity<List<ExportTypeInfo>> exportTypes(
+            Principal principal,
+            @Parameter(description = "The source catalog to get the supported export types from.") @RequestParam(value = "source") String sourceCatalogType) throws Exception;
 
 }

@@ -14,7 +14,7 @@ export class ExportComponent implements OnInit {
   datasetSelected = false;
   private selectedIds: string[];
   exportResult: any;
-  exportFormats = [{ value: 'portal', label: 'mCLOUD Portal'}];
+  exportFormats = this.exportService.getExportTypes();
   formatSelection = 'portal';
 
   constructor(private _formBuilder: FormBuilder, private exportService: ImportExportService) {
@@ -24,6 +24,7 @@ export class ExportComponent implements OnInit {
     this.secondFormGroup = this._formBuilder.group({
       option: ['dataset', Validators.required]
     });
+
   }
 
   handleSelected(nodes) {
