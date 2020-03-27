@@ -5,9 +5,14 @@
   z-index: 10;
   top: 0;
   background-color: $ige-background;
+  overflow: hidden;
 
   &.scrolled {
     box-shadow: 0 0 2px 0 #666666;
+
+    ige-breadcrumb, ige-header-title-row {
+      display: none;
+    }
   }
 }
 

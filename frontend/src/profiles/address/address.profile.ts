@@ -14,6 +14,8 @@ export class ProfileAddress extends BaseProfile {
 
   iconClass = 'Freie-Adresse';
 
+  isAddressProfile = true;
+
   profileFields = <FormlyFieldConfig[]>[
     {
       fieldGroupClassName: 'display-flex',

@@ -2,8 +2,10 @@ import { ID } from '@datorama/akita';
 
 export interface ProfileAbstract {
   id: string;
+  label: string;
   isInitialized?: boolean;
   iconClass: string;
+  isAddressProfile?: boolean;
 }
 
 /**

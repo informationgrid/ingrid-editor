@@ -55,6 +55,11 @@ export class ModalService {
     const errorObj = new IgeError();
     errorObj.message = message;
 
+    if (this.dialogRef) {
+      console.log('Dialog already open, just updated error information');
+      return;
+    }
+
     if (moreInfo) {
       errorObj.stacktrace = moreInfo;
     } else if (message && message._body) {
@@ -70,11 +75,15 @@ export class ModalService {
       console.log('The dialog was closed');
     });*/
 
-    // this.ngZone.run( () => {
-    return this.dialog.open(ErrorDialogComponent, {
-      data: errorObj
-    }).afterOpened();
-    // });
+    this.ngZone.run(() => {
+      this.dialogRef = this.dialog.open(ErrorDialogComponent, {
+        data: errorObj
+      });
+      this.dialogRef.afterClosed().subscribe(() => {
+        this.dialogRef = null;
+        this.errors = [];
+      });
+    });
 
   }
 

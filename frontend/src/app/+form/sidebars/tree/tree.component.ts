@@ -359,5 +359,6 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.currentPath.next([]);
   }
 }

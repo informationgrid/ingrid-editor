@@ -15,6 +15,7 @@
 
             <ng-container *ngIf="fields.length !== 0">
                 <ige-form-info [form]="form" [model]="model" [sections]="sections" [class.scrolled]="isScrolled"
+                               [trigger]="isScrolled"
                                (jumpToSection)="jumpToSection($event)"></ige-form-info>
 
                 <form [formGroup]="form" [class.hide-validation]="!showValidationErrors" [class.hide]="model._profile === 'FOLDER'">

@@ -23,6 +23,8 @@ export interface Profile {
    */
   iconClass?: string;
 
+  isAddressProfile?: boolean;
+
 
   behaviours?: any[];
 

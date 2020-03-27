@@ -40,7 +40,10 @@ import {SectionWrapper} from './formly/wrapper/section-wrapper.component';
 import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component';
 import {MainHeaderComponent} from './main-header/main-header.component';
 import {InfoDialogComponent} from './main-header/info-dialog/info-dialog.component';
-import {NewDocumentPlugin} from './+form/dialogs/new-doc/new-doc.plugin';
+import {NewDocumentPlugin} from './+form/dialogs/new-document/new-doc.plugin';
+import {CreateFolderComponent} from "./+form/dialogs/folder/create-folder.component";
+import {MatTabsModule} from "@angular/material/tabs";
+import {FormSharedModule} from "./+form/form-shared/form-shared.module";
 
 registerLocaleData(de);
 
@@ -79,7 +82,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
-    SearchBarComponent, ConfirmDialogComponent,
+    SearchBarComponent, ConfirmDialogComponent, CreateFolderComponent,
     OneColumnWrapperComponent, SectionWrapper,
     SideMenuComponent,
     MainHeaderComponent,
@@ -104,7 +107,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
     // IGE-Modules
     // IgeFormModule, FormFieldsModule,
-    routing, FormsModule
+    routing, FormsModule, MatTabsModule, FormSharedModule
   ],
   providers: [
     // appRoutingProviders,
@@ -136,7 +139,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent, InfoDialogComponent]
+  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent, InfoDialogComponent, CreateFolderComponent]
 })
 
 export class AppModule {

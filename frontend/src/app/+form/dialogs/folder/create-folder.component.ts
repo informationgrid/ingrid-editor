@@ -5,9 +5,7 @@ import {FormularService} from '../../formular.service';
 import {take} from "rxjs/operators";
 import {TreeQuery} from "../../../store/tree/tree.query";
 import {AddressTreeQuery} from "../../../store/address-tree/address-tree.query";
-import {TreeNode} from "../../../store/tree/tree-node.model";
 import {DocumentAbstract} from "../../../store/document/document.model";
-import {of, Subject} from "rxjs";
 
 @Component({
   templateUrl: './create-folder.component.html',
@@ -32,8 +30,7 @@ export class CreateFolderComponent implements OnInit {
     return data;
   }
 
-  constructor(private formService: FormularService,
-              private storageService: DocumentService,
+  constructor(private storageService: DocumentService,
               private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery,
               public dialogRef: MatDialogRef<CreateFolderComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -42,7 +39,8 @@ export class CreateFolderComponent implements OnInit {
   }
 
   ngOnInit() {
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+    this.forAddress = this.data.forAddress;
+    const query = this.data.forAddress ? this.addressTreeQuery : this.treeQuery;
 
     query.pathTitles$
       .pipe(
@@ -59,7 +57,7 @@ export class CreateFolderComponent implements OnInit {
       });
   }
 
-  handleCreate(value: string) {
+  async handleCreate(value: string) {
     console.log('name:', value);
 
     // if a name was entered
@@ -68,9 +66,9 @@ export class CreateFolderComponent implements OnInit {
       const folder = CreateFolderComponent.createNewFolderDoc(value, this.parent);
 
       // by saving the folder an update event is sent automatically to notify tree
-      this.storageService.save(folder, true, this.forAddress);
+      const doc = await this.storageService.save(folder, true, this.forAddress);
 
-      this.dialogRef.close();
+      this.dialogRef.close(doc._id);
     }
   }
 

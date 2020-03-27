@@ -6,7 +6,8 @@ import {Observable} from 'rxjs';
 import {SessionQuery} from '../store/session.query';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
-import {NewDocumentPlugin} from '../+form/dialogs/new-doc/new-doc.plugin';
+import {CreateFolderComponent} from "../+form/dialogs/folder/create-folder.component";
+import {CreateDocOptions, NewDocumentComponent} from "../+form/dialogs/new-document/new-document.component";
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -17,7 +18,6 @@ export class DashboardComponent implements OnInit {
   datasets;
 
   private configuration: Configuration;
-  allDocuments$: Observable<DocumentAbstract[]>;
   recentDocs$: Observable<DocumentAbstract[]>;
 
   constructor(configService: ConfigService,
@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
               private docService: DocumentService,
               private sessionQuery: SessionQuery) {
     this.configuration = configService.getConfiguration();
+
   }
 
   ngOnInit() {
@@ -46,11 +47,43 @@ export class DashboardComponent implements OnInit {
   }
 
   createNewDocument() {
-    console.log('Create new document');
+    const dlg = this.dialog.open(NewDocumentComponent, {
+      minWidth: 500,
+      minHeight: 400,
+      disableClose: true,
+      data:
+        {
+          rootOption: true,
+          parent: null,
+          choice: null,
+          forAddress: false
+        }
+    });
+    dlg.afterClosed().subscribe((result: CreateDocOptions) => {
+      if (result) {
+        this.router.navigate(['/form', {id: result}]);
+      }
+    })
   }
 
   createNewAddress() {
-
+    const dlg = this.dialog.open(NewDocumentComponent, {
+      minWidth: 500,
+      minHeight: 400,
+      disableClose: true,
+      data:
+        {
+          rootOption: true,
+          parent: null,
+          choice: null,
+          forAddress: true
+        }
+    });
+    dlg.afterClosed().subscribe((result: CreateDocOptions) => {
+      if (result) {
+        this.router.navigate(['/address', {id: result}]);
+      }
+    })
   }
 
   createNewUser() {
@@ -63,5 +96,18 @@ export class DashboardComponent implements OnInit {
 
   openAddress(id: number | string) {
     this.router.navigate(['/address', {id: id}]);
+  }
+
+  createNewFolder() {
+    this.dialog.open(CreateFolderComponent, {
+      minWidth: 500,
+      minHeight: 400,
+      disableClose: true,
+      data: {}
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.router.navigate(['/form', {id: result}]);
+      }
+    });
   }
 }

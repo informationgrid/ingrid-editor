@@ -41,7 +41,7 @@ export class ImportExportService {
   }
 
   export(options: ExportOptions) {
-    return this.http.post( this.configuration.backendUrl + 'export?draft=', options );
+    return this.http.post( this.configuration.backendUrl + 'export?draft=', options, {responseType: 'text'} );
   }
 
   getExportTypes(): Observable<ExportTypeInfo[]> {

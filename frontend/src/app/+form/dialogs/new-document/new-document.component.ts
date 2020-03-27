@@ -5,8 +5,13 @@ import {TreeQuery} from "../../../store/tree/tree.query";
 import {AddressTreeQuery} from "../../../store/address-tree/address-tree.query";
 import {DocumentAbstract} from "../../../store/document/document.model";
 import {FormBuilder, FormGroup, ValidationErrors, Validators} from "@angular/forms";
-import {DocType} from "../new-doc/new-doc.plugin";
+import {DocType} from "./new-doc.plugin";
 import {Observable, of} from "rxjs";
+import {ModalService} from "../../../services/modal/modal.service";
+import {ProfileQuery} from "../../../store/profile/profile.query";
+import {IgeDocument} from "../../../models/ige-document";
+import {HttpErrorResponse} from "@angular/common/http";
+import {DocumentService} from "../../../services/document/document.service";
 
 export interface CreateDocOptions {
   choice?: string;
@@ -36,19 +41,24 @@ export class NewDocumentComponent implements OnInit {
   formGroup: FormGroup;
   documentTypes: Observable<DocumentAbstract[]>;
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder,
-    public dialogRef: MatDialogRef<NewDocumentComponent>,
-    private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any,
+              private fb: FormBuilder,
+              private modalService: ModalService,
+              private profileQuery: ProfileQuery,
+              private documentService: DocumentService,
+              public dialogRef: MatDialogRef<NewDocumentComponent>,
+              private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery) {
 
-    this.documentTypes = this.prepareDocumentTypes(data.docTypes);
 
   }
 
   ngOnInit() {
+    /*if (!this.data.docTypes || this.data.docTypes.length === 0) {
+      this.modalService.showJavascriptError('No document types available');
+      return;
+    }
     // select first/default document type
-    this.result.choice = this.data.docTypes[0].id;
+    this.result.choice = this.data.docTypes[0].id;*/
     this.result.parent = this.data.parent;
     this.forAddress = this.data.forAddress;
 
@@ -60,11 +70,27 @@ export class NewDocumentComponent implements OnInit {
       }, {
         validators: this.nameOrOganizationValidator
       });
+      this.profileQuery.addressProfiles
+        .subscribe(result => {
+          const docTypes = result
+            .map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}))
+            .sort((a, b) => a.label.localeCompare(b.label));
+          this.documentTypes = this.prepareDocumentTypes(docTypes);
+          this.result.choice = docTypes[0].id; // 'AddressDoc'
+        });
     } else {
       this.formGroup = this.fb.group({
         title: ['', Validators.required],
         choice: ['', Validators.required]
       });
+      this.profileQuery.documentProfiles
+        .subscribe(result => {
+          const docTypes = result
+            .map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}))
+            .sort((a, b) => a.label.localeCompare(b.label));
+          this.documentTypes = this.prepareDocumentTypes(docTypes);
+          this.result.choice = docTypes[0].id;
+        });
     }
 
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
@@ -111,9 +137,10 @@ export class NewDocumentComponent implements OnInit {
     this.formGroup.get("choice").setValue(docType.id);
   }
 
-  createDoc() {
+  async createDoc() {
     this.updateResultWithFormData();
-    this.dialogRef.close(this.result);
+    const savedDoc = await this.saveNewDocument(this.result);
+    this.dialogRef.close(savedDoc._id);
   }
 
   private updateResultWithFormData() {
@@ -121,11 +148,38 @@ export class NewDocumentComponent implements OnInit {
       (<CreateAddressOptions>this.result).firstName = this.formGroup.get('firstName').value;
       (<CreateAddressOptions>this.result).lastName = this.formGroup.get('lastName').value;
       (<CreateAddressOptions>this.result).organization = this.formGroup.get('organization').value;
-      (<CreateAddressOptions>this.result).choice = this.formGroup.get('choice').value;
+      // (<CreateAddressOptions>this.result).choice = this.formGroup.get('choice').value;
 
     } else {
       (<CreateDocOptions>this.result).title = this.formGroup.get('title').value;
       (<CreateDocOptions>this.result).choice = this.formGroup.get('choice').value;
     }
+  }
+
+  /**
+   * Create a new document and save it in the backend.
+   * @param options
+   */
+  saveNewDocument(options: CreateDocOptions | CreateAddressOptions) {
+    const newDoc = new IgeDocument(options.choice, options.parent);
+
+    if (this.forAddress) {
+      newDoc.firstName = (<CreateAddressOptions>options).firstName;
+      newDoc.lastName = (<CreateAddressOptions>options).lastName;
+      newDoc.organization = (<CreateAddressOptions>options).organization;
+    } else {
+      newDoc.title = (<CreateDocOptions>options).title;
+    }
+
+    return this.saveForm(newDoc);
+
+  }
+
+  private saveForm(data: IgeDocument) {
+    return this.documentService.save(data, true, this.forAddress).then(
+      null,
+      (err: HttpErrorResponse) => {
+        throw err;
+      });
   }
 }

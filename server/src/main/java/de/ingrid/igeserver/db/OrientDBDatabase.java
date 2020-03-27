@@ -168,14 +168,15 @@ public class OrientDBDatabase implements DBApi {
                 countQuery = "SELECT count(*) FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
             }*/
 
-            if (options.sortField != null) {
-                queryString += " ORDER BY " + options.sortField + " " + options.sortOrder;
-            }
-            if (options.size != null) {
-                queryString += " LIMIT " + options.size;
-            }
-            log.debug("Query-String: " + queryString);
         }
+
+        if (options.sortField != null) {
+            queryString += " ORDER BY " + options.sortField + " " + options.sortOrder;
+        }
+        if (options.size != null) {
+            queryString += " LIMIT " + options.size;
+        }
+        log.debug("Query-String: " + queryString);
 
         OResultSet docs = getDBFromThread().query(queryString);
         OResultSet countDocs = getDBFromThread().query(countQuery);

@@ -5,7 +5,7 @@ import {CopyCutPastePlugin} from '../dialogs/copy-cut-paste/copy-cut-paste.plugi
 import {Plugin} from '../../+behaviours/plugin';
 import {PublishPlugin} from '../dialogs/publish/publish.plugin';
 import {PrintViewPlugin} from '../dialogs/print-view/print-view.plugin';
-import {NewDocumentPlugin} from '../dialogs/new-doc/new-doc.plugin';
+import {NewDocumentPlugin} from '../dialogs/new-document/new-doc.plugin';
 import {SavePlugin} from '../dialogs/save/save.plugin';
 
 @Injectable()

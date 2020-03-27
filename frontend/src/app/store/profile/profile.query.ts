@@ -9,6 +9,8 @@ import {ProfileAbstract} from './profile.model';
 export class ProfileQuery extends QueryEntity<ProfileState, ProfileAbstract> {
 
   isInitialized$ = this.select(store => store.isInitialized);
+  documentProfiles = this.selectAll({filterBy: entity => !entity.isAddressProfile && entity.id !== 'FOLDER'});
+  addressProfiles = this.selectAll({filterBy: entity => entity.isAddressProfile && entity.id !== 'FOLDER'});
 
 
   constructor(protected store: ProfileStore) {

@@ -8,7 +8,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatButtonModule} from '@angular/material/button';
 import {FormPluginsService} from './form-plugins.service';
-import {NewDocumentPlugin} from '../dialogs/new-doc/new-doc.plugin';
+import {NewDocumentPlugin} from '../dialogs/new-document/new-doc.plugin';
 import {SavePlugin} from '../dialogs/save/save.plugin';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FolderPlugin} from '../dialogs/folder/folder.plugin';
@@ -19,7 +19,6 @@ import {PublishPlugin} from '../dialogs/publish/publish.plugin';
 import {UndoPlugin} from '../dialogs/undo/undo.plugin';
 import {PrintViewPlugin} from '../dialogs/print-view/print-view.plugin';
 import {FormularService} from '../formular.service';
-import {CreateFolderComponent} from '../dialogs/folder/create-folder.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {ChooseFolderComponent} from '../dialogs/folder/choose-folder/choose-folder.component';
@@ -39,7 +38,7 @@ import {DestinationSelectionComponent} from "../dialogs/new-document/destination
 
 @NgModule({
   declarations: [
-    FormToolbarComponent, CreateFolderComponent, ChooseFolderComponent, BreadcrumbComponent,
+    FormToolbarComponent, ChooseFolderComponent, BreadcrumbComponent,
     FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent,
     FormMessageComponent, DestinationSelectionComponent
   ],
@@ -62,7 +61,7 @@ import {DestinationSelectionComponent} from "../dialogs/new-document/destination
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService],
   exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, ChooseFolderComponent, IgeFormlyModule,
     FormInfoComponent, DestinationSelectionComponent],
-  entryComponents: [CreateFolderComponent]
+  entryComponents: []
 })
 export class FormSharedModule {
 }
