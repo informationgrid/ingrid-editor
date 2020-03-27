@@ -81,3 +81,6 @@
   }
 }
 
+::ng-deep .mat-autocomplete-hidden {
+  display: none !important;
+}
