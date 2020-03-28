@@ -36,7 +36,7 @@ public class AddressWrapperType extends DocumentType {
     }
 
     @Override
-    String[] activeInProfiles() {
+    public String[] activeInProfiles() {
         return profiles;
     }
 }

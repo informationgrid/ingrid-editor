@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.mcloud;
+package de.ingrid.igeserver.profiles.mcloud.exporter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +43,7 @@ public class PortalExporter implements IgeExporter {
 
         Writer writer = new StringWriter();
 
-        Map<String, Object> map = getMapFromObject(documentService.getLatestDocument(jsonData));
+        Map<String, Object> map = getMapFromObject(jsonData);
         compiledTemplate.evaluate(writer, map);
 
         return writer.toString().replaceAll("\\s+\n", "\n");

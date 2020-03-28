@@ -23,7 +23,7 @@ public abstract class DocumentType {
     /**
      * Return a list of profile IDs, where this DocumentType should be used.
      */
-    abstract String[] activeInProfiles();
+    abstract public String[] activeInProfiles();
 
     public boolean usedInProfile(String profileId) {
         String[] activeInProfiles = activeInProfiles();

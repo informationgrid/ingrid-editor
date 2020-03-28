@@ -31,7 +31,7 @@ public class UvpType extends DocumentType {
     }
 
     @Override
-    String[] activeInProfiles() {
+    public String[] activeInProfiles() {
         return profiles;
     }
 

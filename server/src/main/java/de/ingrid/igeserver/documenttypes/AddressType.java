@@ -34,7 +34,7 @@ public class AddressType extends DocumentType {
     }
 
     @Override
-    String[] activeInProfiles() {
+    public String[] activeInProfiles() {
         return profiles;
     }
 

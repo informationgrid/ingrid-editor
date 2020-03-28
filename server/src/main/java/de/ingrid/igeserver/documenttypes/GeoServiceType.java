@@ -43,7 +43,7 @@ public class GeoServiceType extends DocumentType {
     }
 
     @Override
-    String[] activeInProfiles() {
+    public String[] activeInProfiles() {
         return profiles;
     }
 }

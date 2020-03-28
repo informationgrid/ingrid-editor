@@ -6,7 +6,7 @@
         {{forAddress ? 'Neue Adresse anlegen' : 'Neuen Datensatz anlegen'}}
     </h2>
 </div>
-<mat-dialog-content>
+<mat-dialog-content class="hide-tab-header">
     <mat-tab-group [selectedIndex]="selectedPage">
         <mat-tab label="Titel">
             <form #myForm fxFlex fxLayout="column" [formGroup]="formGroup">

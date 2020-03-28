@@ -37,7 +37,7 @@ public class DocumentWrapperType extends DocumentType {
     }
 
     @Override
-    String[] activeInProfiles() {
+    public String[] activeInProfiles() {
         return profiles;
     }
 }

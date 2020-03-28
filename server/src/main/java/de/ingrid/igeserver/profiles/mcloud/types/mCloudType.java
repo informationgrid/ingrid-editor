@@ -1,14 +1,13 @@
-package de.ingrid.igeserver.documenttypes;
+package de.ingrid.igeserver.profiles.mcloud.types;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import de.ingrid.igeserver.documenttypes.DocumentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
 
 @Service
 public class mCloudType extends DocumentType {
@@ -33,7 +32,7 @@ public class mCloudType extends DocumentType {
     }
 
     @Override
-    String[] activeInProfiles() {
+    public String[] activeInProfiles() {
         return profiles;
     }
 
