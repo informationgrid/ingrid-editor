@@ -15,6 +15,7 @@ export class DocumentListItemComponent implements OnInit, OnDestroy {
   @Input() doc: DocumentAbstract | TreeNode;
   @Input() denseMode = false;
   @Input() hideDate = true;
+  @Input() hideDivider = false;
   @Input() showSelection = false;
   @Input() setActiveItem: Subject<DocumentAbstract>;
   @Output() select = new EventEmitter<DocumentAbstract>();

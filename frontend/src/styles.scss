@@ -21,6 +21,7 @@ a {
   text-transform: uppercase;
 
   &:hover {
+    text-decoration: none;
   }
 }
 
@@ -176,10 +177,6 @@ form-toolbar + div {
 
 .has-navbar {
   padding-top: 10px;
-}
-
-a:hover {
-  text-decoration: none;
 }
 
 .half, .full, .quarter, .three-quarter, .third, .two-third {

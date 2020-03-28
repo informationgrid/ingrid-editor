@@ -1,7 +1,5 @@
-.mat-list-item .mat-divider-horizontal {
-  left: 8px;
-  right: 8px;
-  width: auto;
+.hide-divider .mat-divider-horizontal {
+  visibility: hidden;
 }
 
 .mat-list-base[dense] .mat-list-item {
@@ -28,4 +26,5 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  margin: 0 8px;
 }
