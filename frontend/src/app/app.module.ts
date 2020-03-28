@@ -44,6 +44,7 @@ import {NewDocumentPlugin} from './+form/dialogs/new-document/new-doc.plugin';
 import {CreateFolderComponent} from "./+form/dialogs/folder/create-folder.component";
 import {MatTabsModule} from "@angular/material/tabs";
 import {FormSharedModule} from "./+form/form-shared/form-shared.module";
+import {MatMenuModule} from "@angular/material/menu";
 
 registerLocaleData(de);
 
@@ -107,7 +108,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
     // IGE-Modules
     // IgeFormModule, FormFieldsModule,
-    routing, FormsModule, MatTabsModule, FormSharedModule
+    routing, FormsModule, MatTabsModule, FormSharedModule, MatMenuModule
   ],
   providers: [
     // appRoutingProviders,

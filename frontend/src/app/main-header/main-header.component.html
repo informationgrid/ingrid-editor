@@ -12,10 +12,25 @@
             </button>
         </span>
 
-        <span class="catalog-title">{{(userInfo|async).currentCatalog.label}}</span>
-        <button type="button" class="logout" mat-button (click)="logout()">
-            {{(userInfo | async).name}}
-            <mat-icon title="Logout">perm_identity</mat-icon>
+        <!--<span class="catalog-title">{{(userInfo|async).currentCatalog.label}}</span>-->
+        <button type="button" class="user-popup" mat-icon-button [matMenuTriggerFor]="menu">
+            {{getInitials((userInfo | async).name)}}
         </button>
+        <mat-menu #menu="matMenu" class="user-popup-menu">
+            <div class="user-popup-header">
+                Michael Meier
+                <p>Letzte Anmeldung:</p>
+            </div>
+            <span mat-menu-item [disableRipple]="true" (click)="$event.stopPropagation()">
+                Profile verwalten
+            </span>
+            <span mat-menu-item [disableRipple]="true" (click)="$event.stopPropagation()">
+                Konfiguration
+            </span>
+            <div class="user-popup-footer">
+                <button mat-button class="upper-case" (click)="logout()">Abmelden</button>
+            </div>
+        </mat-menu>
+
     </mat-toolbar-row>
 </mat-toolbar>

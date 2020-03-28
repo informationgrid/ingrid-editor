@@ -36,6 +36,29 @@
   font-size: 14px;
 }
 
-.logout {
+.user-popup {
   margin-right: -16px;
+  background-color: $ige-primary;
+  color: #ffffff;
+}
+
+.user-popup-header {
+  color: #ffffff;
+  background-color: $ige-primary;
+  margin-top: -8px;
+  padding: 20px;
+}
+
+.user-popup-footer {
+  border-top: 1px solid $ige-background-bar;
+  margin-bottom: -8px;
+  text-align: center;
+
+  button {
+    width: 100%;
+  }
+}
+
+::ng-deep .user-popup-menu {
+  margin: 12px 0 0;
 }
