@@ -45,6 +45,11 @@ task packageNpmApp(type: Zip) {
     // optional path under which output will be visible in Java classpath, e.g. static resources path
     into 'static'
   }
+  from ('src/assets') {
+    into 'static/assets'
+    include 'config.prod.json'
+    rename { 'config.json' }
+  }
 }
 
 configurations {
