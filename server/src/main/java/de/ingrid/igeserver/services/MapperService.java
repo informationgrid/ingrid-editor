@@ -32,7 +32,7 @@ public class MapperService {
      *
      * @param node
      */
-    public void removeDBManagementFields(ObjectNode node) {
+    public static void removeDBManagementFields(ObjectNode node) {
         node.remove("@rid");
         node.remove("@class");
         node.remove("@type");

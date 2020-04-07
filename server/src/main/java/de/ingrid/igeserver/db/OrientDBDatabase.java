@@ -362,7 +362,9 @@ public class OrientDBDatabase implements DBApi {
             ObjectNode map = (ObjectNode) list.get(0);
             map.put("name", settings.name);
             map.put("description", settings.description);
-            this.save(DBClass.Info.name(), map.get(DB_ID).asText(), map.toString());
+            String id = map.get(DB_ID).asText();
+            MapperService.removeDBManagementFields(map);
+            this.save(DBClass.Info.name(), id, map.toString());
         }
     }
 

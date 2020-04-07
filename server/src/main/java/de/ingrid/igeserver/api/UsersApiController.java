@@ -170,14 +170,16 @@ public class UsersApiController implements UsersApi {
 
             ArrayNode catalogIdsArray = (ArrayNode) catInfo.get("catalogIds");
 
-            for (Iterator<JsonNode> it = catalogIdsArray.iterator(); it.hasNext(); ) {
-                catalogIds.add(it.next().asText());
+            for (JsonNode jsonNode : catalogIdsArray) {
+                catalogIds.add(jsonNode.asText());
             }
 
             // update catadmin in catalog Info
             if (catalogName != null) catalogIds.add(catalogName);
 
-            catInfo.put("catalogIds", objectMapper.createArrayNode().addPOJO(catalogIds));
+            ArrayNode arrayNode = objectMapper.createArrayNode();
+            catalogIds.forEach(arrayNode::add);
+            catInfo.replace("catalogIds", arrayNode);
 
             String recordId = null;
             if (!isNewEntry) {

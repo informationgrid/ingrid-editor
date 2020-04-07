@@ -8,12 +8,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.exception.OStorageException;
 import de.ingrid.igeserver.api.ApiException;
-import de.ingrid.igeserver.db.DBApi;
-import de.ingrid.igeserver.db.DBFindAllResults;
-import de.ingrid.igeserver.db.FindOptions;
-import de.ingrid.igeserver.db.QueryType;
+import de.ingrid.igeserver.db.*;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
 import de.ingrid.igeserver.model.Catalog;
+import de.ingrid.igeserver.services.MapperService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +52,7 @@ public class DBUtils {
                     .findFirst()
                     .orElseThrow(() -> new ApiException(500, "No catalog Info found"));
 
-            String currentCatalogId = catInfo.get("currentCatalogId").asText();
+            String currentCatalogId = catInfo.has("currentCatalogId") ? catInfo.get("currentCatalogId").asText() : null;
             if (currentCatalogId == null || currentCatalogId.trim().equals("")) {
                 ArrayNode catalogIds = (ArrayNode) catInfo.get("catalogIds");
                 if (catalogIds.size() > 0) {
@@ -145,8 +143,10 @@ public class DBUtils {
 
             ObjectNode catUserRef = (ObjectNode) list.hits.get(0);
             catUserRef.putPOJO("catalogIds", assignedCatalogs);
+            String id = catUserRef.get(OrientDBDatabase.DB_ID).asText();
+            MapperService.removeDBManagementFields(catUserRef);
 
-            this.dbService.save("Info", "IGNORE", catUserRef.toString());
+            this.dbService.save("Info", id, catUserRef.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
