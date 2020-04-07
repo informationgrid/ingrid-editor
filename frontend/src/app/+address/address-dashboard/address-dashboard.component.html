@@ -1,4 +1,4 @@
-<h1 class="text-center">Daten</h1>
+<h1 class="text-center">Adressen</h1>
 
 <div class="text-center shortcut">
     <button mat-button>
@@ -7,15 +7,15 @@
     </button>
     <button mat-button>
         <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
-        Neuer Datensatz
+        Neue Adresse
     </button>
     <button mat-button>
         <mat-icon>import_export</mat-icon>
-        Datensatz Import
+        Adressen Import
     </button>
 </div>
 
-<div *ngIf="(treeDocs | async) > 0">
+<!--<div *ngIf="(treeDocs | async) > 0">
     <div class="info-box" fxLayout="row" fxLayoutGap="24px">
         <ige-card-box fxFlex title="Meine Daten">...</ige-card-box>
         <ige-card-box fxFlex title="Neue Datensätze">...</ige-card-box>
@@ -25,13 +25,13 @@
         <ige-card-box fxFlex title="Zuletzt bearbeitet">...</ige-card-box>
         <ige-card-box fxFlex title="Favoriten">...</ige-card-box>
     </div>
-</div>
+</div>-->
 
 <div *ngIf="(treeDocs | async) === 0" class="banner text-center">
     <div class="circle-wrapper">
-        <mat-icon svgIcon="image-banner-dataset"></mat-icon>
+        <mat-icon svgIcon="image-banner-address"></mat-icon>
     </div>
-    <h2>Kein Ordner oder Datensatz vorhanden</h2>
-    <p>Legen Sie einen neuen Ordner oder Datensatz an oder importieren Sie Datensätze.</p>
+    <h2>Kein Ordner oder Adresse vorhanden</h2>
+    <p>Legen Sie einen neuen Ordner oder Adresse an oder importieren Sie Adressen.</p>
     <p>Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in der Werkzeugleiste.</p>
 </div>

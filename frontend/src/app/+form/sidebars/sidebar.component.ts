@@ -14,7 +14,7 @@ import {take, takeWhile} from "rxjs/operators";
 })
 export class SidebarComponent implements OnInit {
 
-  selectedIds = this.treeQuery.selectActiveId();
+  numTreeNodes = this.treeQuery.selectCount();
   initialExpandNodes = new Subject<string[]>();
   initialActiveNodeId: string;
   updateTree = new Subject<TreeAction[]>();

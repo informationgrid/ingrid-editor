@@ -8,9 +8,10 @@ import {FormlyModule} from '@ngx-formly/core';
 import {FlexModule} from '@angular/flex-layout';
 import {SharedModule} from '../shared/shared.module';
 import {FormSharedModule} from '../+form/form-shared/form-shared.module';
+import { AddressDashboardComponent } from './address-dashboard/address-dashboard.component';
 
 @NgModule({
-  declarations: [AddressComponent],
+  declarations: [AddressComponent, AddressDashboardComponent],
   imports: [
     routing,
     CommonModule,

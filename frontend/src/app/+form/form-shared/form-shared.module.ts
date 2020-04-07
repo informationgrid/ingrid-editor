@@ -34,13 +34,14 @@ import {MatTabsModule} from "@angular/material/tabs";
 import {SharedModule} from "../../shared/shared.module";
 import {IgeFormModule} from "../ige-form.module";
 import {DestinationSelectionComponent} from "../dialogs/new-document/destination-selection/destination-selection.component";
+import {EmptyNavigationComponent} from "../sidebars/empty-navigation/empty-navigation.component";
 
 
 @NgModule({
   declarations: [
     FormToolbarComponent, ChooseFolderComponent, BreadcrumbComponent,
     FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent,
-    FormMessageComponent, DestinationSelectionComponent
+    FormMessageComponent, DestinationSelectionComponent, EmptyNavigationComponent
   ],
     imports: [
         CommonModule,
@@ -60,7 +61,7 @@ import {DestinationSelectionComponent} from "../dialogs/new-document/destination
   providers: [FormToolbarService, FormPluginsService, NewDocumentPlugin, SavePlugin, FolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService],
   exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, ChooseFolderComponent, IgeFormlyModule,
-    FormInfoComponent, DestinationSelectionComponent],
+    FormInfoComponent, DestinationSelectionComponent, EmptyNavigationComponent],
   entryComponents: []
 })
 export class FormSharedModule {

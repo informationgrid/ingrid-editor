@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {TreeQuery} from "../../store/tree/tree.query";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'ige-form-dashboard',
@@ -7,9 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FormDashboardComponent implements OnInit {
 
-  constructor() { }
+  treeDocs: Observable<number> = this.treeQuery.selectCount();
+
+  constructor(private treeQuery: TreeQuery) { }
 
   ngOnInit() {
+
   }
 
 }
