@@ -1,11 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {TreeQuery} from '../../store/tree/tree.query';
 import {TreeStore} from '../../store/tree/tree.store';
 import {DocumentService} from '../../services/document/document.service';
 import {Subject} from 'rxjs';
 import {TreeAction} from './tree/tree.component';
-import {take, takeWhile} from "rxjs/operators";
 
 @Component({
   selector: 'ige-sidebar',
@@ -14,14 +12,12 @@ import {take, takeWhile} from "rxjs/operators";
 })
 export class SidebarComponent implements OnInit {
 
-  numTreeNodes = this.treeQuery.selectCount();
   initialExpandNodes = new Subject<string[]>();
   initialActiveNodeId: string;
   updateTree = new Subject<TreeAction[]>();
 
   constructor(private router: Router,
               private route: ActivatedRoute,
-              private treeQuery: TreeQuery,
               private treeStore: TreeStore,
               private docService: DocumentService) {
 

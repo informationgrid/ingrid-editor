@@ -1,15 +1,15 @@
 <h1 class="text-center">Daten</h1>
 
 <div class="text-center shortcut">
-    <button mat-button>
+    <button mat-button (click)="createNewFolder()">
         <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
         Neuer Ordner
     </button>
-    <button mat-button>
+    <button mat-button (click)="createNewDataset()">
         <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
         Neuer Datensatz
     </button>
-    <button mat-button>
+    <button mat-button (click)="importDataset()" disabled>
         <mat-icon>import_export</mat-icon>
         Datensatz Import
     </button>

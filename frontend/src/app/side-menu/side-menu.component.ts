@@ -47,7 +47,7 @@ export class SideMenuComponent implements OnInit {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         // console.log('Event: ', event.url);
-        this.currentRoute = event.url;
+        this.currentRoute = event.url.split(';')[0];
       }
     });
 

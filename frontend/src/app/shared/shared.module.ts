@@ -21,6 +21,7 @@ import { DocumentListItemComponent } from './document-list-item/document-list-it
 import {MatLineModule} from '@angular/material/core';
 import {MatListModule} from '@angular/material/list';
 import {DateAgoPipe} from "../directives/date-ago.pipe";
+import {EmptyNavigationComponent} from "../+form/sidebars/tree/empty-navigation/empty-navigation.component";
 
 @NgModule({
   imports: [
@@ -28,7 +29,7 @@ import {DateAgoPipe} from "../directives/date-ago.pipe";
     MatIconModule, MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule,
     MatSlideToggleModule, FlexModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
     MatCardModule, MatDividerModule, MatLineModule, MatListModule],
-  declarations: [TreeComponent, TreeHeaderComponent, CardBoxComponent, DocumentListItemComponent, DateAgoPipe],
+  declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent, DocumentListItemComponent, DateAgoPipe],
   exports: [TreeComponent, MatIconModule, MatButtonModule, CardBoxComponent, DocumentListItemComponent]
 })
 export class SharedModule {

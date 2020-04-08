@@ -58,7 +58,7 @@ export class FormInfoComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   @HostBinding('@grow') get grow() {
-    console.log('get grow() is called');
+    // console.log('get grow() is called');
     return {value: this.trigger, params: {startHeight: this.startHeight}};
   }
 

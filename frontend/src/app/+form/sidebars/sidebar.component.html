@@ -1,4 +1,4 @@
-<ige-tree *ngIf="(numTreeNodes | async) > 0; else emptyNavigation" [showReloadButton]="true"
+<ige-tree [showReloadButton]="true"
           [expandNodeIds]="initialExpandNodes"
           [activeNodeId]="initialActiveNodeId"
           [update]="updateTree"
@@ -6,6 +6,3 @@
           (activate)="handleLoad($event)"
           (selected)="handleSelection($event)"></ige-tree>
 
-<ng-template #emptyNavigation>
-    <ige-empty-navigation></ige-empty-navigation>
-</ng-template>

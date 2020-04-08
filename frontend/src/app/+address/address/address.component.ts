@@ -10,7 +10,6 @@ import {FormlyFieldConfig} from '@ngx-formly/core';
 import {Subject} from 'rxjs';
 import {TreeAction} from '../../+form/sidebars/tree/tree.component';
 import {IgeDocument} from '../../models/ige-document';
-import {TreeQuery} from "../../store/tree/tree.query";
 
 @Component({
   selector: 'ige-address',
@@ -27,11 +26,9 @@ export class AddressComponent implements OnInit, OnDestroy {
   initialActiveNodeId: any;
   initialExpandNodes = new Subject<string[]>();
   initialTreeExpand = false;
-  numTreeNodes = this.treeQuery.selectCount();
 
   constructor(private router: Router, private route: ActivatedRoute,
               private formPlugins: FormPluginsService, private formService: FormularService,
-              private treeQuery: TreeQuery,
               private formsManager: AkitaNgFormsManager,
               private addressTreeStore: AddressTreeStore, private documentService: DocumentService) {
     formPlugins.setAddressConfiguration();
