@@ -12,6 +12,7 @@ import {ProfileQuery} from "../../../store/profile/profile.query";
 import {IgeDocument} from "../../../models/ige-document";
 import {HttpErrorResponse} from "@angular/common/http";
 import {DocumentService} from "../../../services/document/document.service";
+import {Router} from "@angular/router";
 
 export interface CreateDocOptions {
   choice?: string;
@@ -43,6 +44,7 @@ export class NewDocumentComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder,
+              private router: Router,
               private modalService: ModalService,
               private profileQuery: ProfileQuery,
               private documentService: DocumentService,
@@ -140,6 +142,9 @@ export class NewDocumentComponent implements OnInit {
   async createDoc() {
     this.updateResultWithFormData();
     const savedDoc = await this.saveNewDocument(this.result);
+
+    let page = this.forAddress ? '/address' : '/form';
+    this.router.navigate([page, {id: savedDoc._id}]);
     this.dialogRef.close(savedDoc._id);
   }
 

@@ -1,11 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {DocumentService} from '../../../services/document/document.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormularService} from '../../formular.service';
 import {take} from "rxjs/operators";
 import {TreeQuery} from "../../../store/tree/tree.query";
 import {AddressTreeQuery} from "../../../store/address-tree/address-tree.query";
-import {DocumentAbstract} from "../../../store/document/document.model";
+import {Router} from "@angular/router";
 
 @Component({
   templateUrl: './create-folder.component.html',
@@ -17,7 +16,6 @@ export class CreateFolderComponent implements OnInit {
   forAddress: boolean;
   path: string[] = [];
   selectedPage = 0;
-  rootNode: Partial<DocumentAbstract>;
 
   private static createNewFolderDoc(folderName: string, parent?: string) {
     const data: any = {
@@ -32,6 +30,7 @@ export class CreateFolderComponent implements OnInit {
 
   constructor(private storageService: DocumentService,
               private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery,
+              private router: Router,
               public dialogRef: MatDialogRef<CreateFolderComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
     this.parent = data.parent;
@@ -40,7 +39,7 @@ export class CreateFolderComponent implements OnInit {
 
   ngOnInit() {
     this.forAddress = this.data.forAddress;
-    const query = this.data.forAddress ? this.addressTreeQuery : this.treeQuery;
+    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
     query.pathTitles$
       .pipe(
@@ -69,6 +68,9 @@ export class CreateFolderComponent implements OnInit {
       const doc = await this.storageService.save(folder, true, this.forAddress);
 
       this.dialogRef.close(doc._id);
+
+      let page = this.forAddress ? '/address' : '/form';
+      this.router.navigate([page, {id: doc._id}]);
     }
   }
 

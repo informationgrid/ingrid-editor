@@ -48,10 +48,10 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
 
   newDoc() {
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-    const selectedDocs = query.getActive();
+    const selectedDoc = query.getOpenedDocument();
     let selectedDocId = null;
-    if (selectedDocs && selectedDocs.length === 1) {
-      const folder = query.getFirstParentFolder(selectedDocs[0].id.toString());
+    if (selectedDoc) {
+      const folder = query.getFirstParentFolder(selectedDoc.id.toString());
       if (folder !== null) {
         selectedDocId = folder.id;
       }
@@ -68,7 +68,7 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
           choice: null,
           forAddress: this.forAddress
         }
-    }).afterClosed().subscribe();
+    });
 
   }
 

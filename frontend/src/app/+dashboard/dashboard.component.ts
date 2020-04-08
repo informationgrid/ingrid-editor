@@ -59,11 +59,6 @@ export class DashboardComponent implements OnInit {
           forAddress: false
         }
     });
-    dlg.afterClosed().subscribe((result: CreateDocOptions) => {
-      if (result) {
-        this.router.navigate(['/form', {id: result}]);
-      }
-    })
   }
 
   createNewAddress() {
@@ -79,11 +74,6 @@ export class DashboardComponent implements OnInit {
           forAddress: true
         }
     });
-    dlg.afterClosed().subscribe((result: CreateDocOptions) => {
-      if (result) {
-        this.router.navigate(['/address', {id: result}]);
-      }
-    })
   }
 
   createNewUser() {
@@ -104,10 +94,6 @@ export class DashboardComponent implements OnInit {
       minHeight: 400,
       disableClose: true,
       data: {}
-    }).afterClosed().subscribe(result => {
-      if (result) {
-        this.router.navigate(['/form', {id: result}]);
-      }
     });
   }
 }

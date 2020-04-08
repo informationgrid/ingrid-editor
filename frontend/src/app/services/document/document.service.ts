@@ -114,6 +114,8 @@ export class DocumentService {
   }
 
   save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean): Promise<IgeDocument> {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
     return new Promise((resolve, reject) => {
 
       this.dataService.save(data, isAddress)
@@ -124,7 +126,7 @@ export class DocumentService {
 
           this.afterSave$.next(data);
 
-          this.treeStore.upsert(info.id, info);
+          store.upsert(info.id, info);
 
           this.datasetsChanged$.next({
             type: isNewDoc ? UpdateType.New : UpdateType.Update,

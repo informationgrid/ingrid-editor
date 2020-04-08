@@ -28,9 +28,8 @@ export class ChooseFolderComponent implements OnInit {
         take(1) // TODO: check if correctly unsubsribed
       )
       .subscribe(path => {
-        const active = query.getActive();
-        if (active && active.length > 0) {
-          const selectedNode = active[active.length - 1];
+        const selectedNode = query.getOpenedDocument();
+        if (selectedNode) {
           if (selectedNode._profile === 'FOLDER') {
             this.path = [...path, selectedNode.title];
           } else {

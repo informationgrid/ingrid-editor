@@ -75,12 +75,6 @@ export class FormularService {
     this.treeStore.setActive(docs.map(d => d.id));
   }
 
-  getSelectedDocuments(): DocumentAbstract[] {
-    return this.treeQuery.getActive();
-    // return this.treeQuery.selectedDocuments;
-    // return this.selectedDocs;
-  }
-
   updateSidebarWidth(size: number) {
     this.sessionStore.update(state => ({
       ui: {

@@ -60,14 +60,14 @@ export class FolderPlugin extends Plugin {
   createFolder() {
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
-    const parents = this.treeQuery.getActive();
+    const parent = this.treeQuery.getOpenedDocument();
 
     this.dialog.open(CreateFolderComponent, {
       minWidth: 500,
       minHeight: 400,
       disableClose: true,
       data: {
-        parent: parents && parents[0] ? parents[0].id : null,
+        parent: parent ? parent.id : null,
         forAddress: this.forAddress
       }
     });
