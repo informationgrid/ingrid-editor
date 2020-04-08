@@ -170,10 +170,12 @@ describe('TreeComponent', () => {
   }));
 
   it('should delete a child node', fakeAsync(() => {
+    const newDoc: any = {id: '12345', _profile: 'A', title: 'child node', _state: 'W'};
+    db.getChildren.and.callFake(() => of([newDoc]));
     spectator.detectChanges();
 
-    // add a new document via the storage service
-    const doc = createDocument({id: '12345', _profile: 'A', title: 'child node', _state: 'W'});
+    // add a new document and update it via the storage service
+    const doc = createDocument(newDoc);
     sendTreeEvent(UpdateType.New, [doc], '3');
 
     hasNumberOfTreeNodes(4);
@@ -213,6 +215,14 @@ describe('TreeComponent', () => {
     nodeHasClass(2, 'workingWithPublished');
     nodeHasNotClass(2, 'working');
     nodeHasNotClass(2, 'published');
+
+    expect(nodeAtIndex(0)).toHaveClass('published');
+    expect(nodeAtIndex(0)).not.toHaveClass('working');
+    expect(nodeAtIndex(1)).toHaveClass('working');
+    expect(nodeAtIndex(1)).not.toHaveClass('published');
+    expect(nodeAtIndex(2)).toHaveClass('workingWithPublished');
+    expect(nodeAtIndex(2)).not.toHaveClass('working');
+    expect(nodeAtIndex(2)).not.toHaveClass('published');
   }));
 
   it('should initially expand to a deeply nested node', fakeAsync(() => {
@@ -337,20 +347,25 @@ describe('TreeComponent', () => {
     db.treeUpdates.next({type: type, data: docs, parent: parent});
   }
 
+  const nodeAtIndex = (index) => spectator.queryAll('.mat-tree-node .mat-icon')[index];
+
+
+  const nodeExpectation = (index) => expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]);
+
   function nodeHasClass(index: number, stateClass: string) {
-    expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]).toHaveClass(stateClass);
+    nodeExpectation(index).toHaveClass(stateClass);
   }
 
   function nodeHasNotClass(index: number, stateClass: string) {
-    expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]).not.toHaveClass(stateClass);
+    nodeExpectation(index).not.toHaveClass(stateClass);
   }
 
   function nodeIsExpanded(index: number) {
-    expect(spectator.queryAll('.mat-tree-node')[index]).toHaveClass('expanded');
+    expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]).toHaveClass('expanded');
   }
 
   function nodeIsSelected(index: number) {
-    expect(spectator.queryAll('.mat-tree-node')[index]).toHaveClass('active');
+    nodeExpectation(index).toHaveClass('active');
   }
 
 

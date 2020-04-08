@@ -12,14 +12,13 @@ import {Subject} from 'rxjs';
 import {DynamicDatabase} from '../../sidebars/tree/dynamic.database';
 
 let spectator: Spectator<FormToolbarComponent>;
-let service: SpyObject<FormToolbarService>;
+const buttonSubject = new Subject<Array<ToolbarItem | Separator>>();
 
 const createHost = createComponentFactory({
   component: FormToolbarComponent,
   imports: [MatIconModule, MatDividerModule, MatButtonModule, MatMenuModule, MatToolbarModule, FlexLayoutModule, BrowserAnimationsModule],
   providers: [mockProvider(FormToolbarService, {
-    toolbar$: new Subject(),
-    _buttons: []
+    toolbar$: buttonSubject,
   })],
   detectChanges: false
 });
@@ -46,15 +45,14 @@ describe('Form-Toolbar', () => {
     const item: ToolbarItem = {
       id: 'btnToolbarTest', tooltip: 'TEST_TOOLBAR_ITEM', matIconVariable: 'remove', pos: 1, eventId: 'TEST_EVENT'
     };
-    service.addButton(item);
-
+    buttonSubject.next([item]);
     spectator.detectChanges();
 
     // find the title element in the DOM using a CSS selector
     const buttons = spectator.queryAll('button');
 
     // confirm the element's content
-    expect(buttons.length).toBe(3);
+    expect(buttons.length).toBe(1);
   });
 
   it('should add a publish button through the service', () => {
@@ -62,7 +60,7 @@ describe('Form-Toolbar', () => {
       id: 'btnPublish', tooltip: 'TEST_TOOLBAR_ITEM', matIconVariable: 'remove', pos: 100, eventId: 'TEST_EVENT',
       isPrimary: true, label: 'Veröffentlichen', align: 'right'
     };
-    service.addButton(item);
+    // service.addButton(item);
 
     spectator.detectChanges();
 

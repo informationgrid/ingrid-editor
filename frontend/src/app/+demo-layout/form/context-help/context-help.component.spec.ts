@@ -1,6 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ContextHelpComponent } from './context-help.component';
+import {ContextHelpComponent} from './context-help.component';
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 describe('ContextHelpComponent', () => {
   let component: ContextHelpComponent;
@@ -8,9 +9,14 @@ describe('ContextHelpComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ContextHelpComponent ]
+      declarations: [ContextHelpComponent],
+      providers: [
+        // workaround: why I can't inject MatDialogRef in the unit test? https://github.com/angular/components/issues/8419
+        {provide: MatDialogRef, useValue: {}},
+        {provide: MAT_DIALOG_DATA, useValue: []},
+      ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
