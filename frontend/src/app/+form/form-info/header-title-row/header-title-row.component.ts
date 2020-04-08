@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {ProfileService} from '../../../services/profile.service';
-import {TreeNode} from "../../../store/tree/tree-node.model";
+import {IgeDocument} from "../../../models/ige-document";
 
 @Component({
   selector: 'ige-header-title-row',
@@ -22,9 +22,11 @@ import {TreeNode} from "../../../store/tree/tree-node.model";
 export class HeaderTitleRowComponent implements OnInit {
 
   @Input() form: FormGroup;
-  @Input() state: string;
+  @Input() model: IgeDocument;
+  @Input() sections: string[];
 
   @Output() toggleMore = new EventEmitter();
+  @Output() jumpToSection = new EventEmitter();
 
   @ViewChild('titleInput') titleInput: ElementRef;
 
@@ -54,7 +56,7 @@ export class HeaderTitleRowComponent implements OnInit {
 
   // TODO: refactor since it's used in tree-component also
   getStateClass() {
-    switch (this.state) {
+    switch (this.model._state) {
       case 'W':
         return 'working';
       case 'PW':
@@ -62,8 +64,8 @@ export class HeaderTitleRowComponent implements OnInit {
       case 'P':
         return 'published';
       default:
-        console.error('State is not supported: ' + this.state);
-        throw new Error('State is not supported: ' + this.state);
+        console.error('State is not supported: ' + this.model._state);
+        throw new Error('State is not supported: ' + this.model._state);
     }
   }
 }

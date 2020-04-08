@@ -3,6 +3,8 @@
         <mat-icon [svgIcon]="getIcon()" [ngClass]="getStateClass()"></mat-icon>
     </div>
 
+    <ige-header-navigation class="mini" [sections]="sections" (jumpToSection)="jumpToSection.next($event)"></ige-header-navigation>
+
     <span *ngIf="!showTitleInput" class="label" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
 
     <form [formGroup]="form" [class.hide]="!showTitleInput">
@@ -23,3 +25,7 @@
     </button>
 
 </div>
+
+<ige-header-more [showMore]="showMore" [model]="model"></ige-header-more>
+
+<ige-header-navigation [sections]="sections" (jumpToSection)="jumpToSection.next($event)"></ige-header-navigation>

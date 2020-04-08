@@ -9,20 +9,23 @@
     display: inline-block;
     background-color: white;
     border-radius: 50%;
-    height: 24px;
-    width: 24px;
-    margin-right: 10px;
+    height: 28px;
+    width: 28px;
+    margin-right: 6px;
 
     mat-icon {
       line-height: 32px;
       color: #f27100;
       font-size: 16px;
+      padding-left: 2px;
+      padding-top: 2px;
     }
   }
 
   .label {
     color: $ige-primary;
     cursor: pointer;
+    margin-left: 4px;
 
     &:hover {
       opacity: 0.5;

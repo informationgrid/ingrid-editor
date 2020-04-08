@@ -1,16 +1,19 @@
 @import "../../../../variables";
 
-:host {
-  padding-bottom: 5px;
-}
-
 .anchor-navigation {
   text-align: center;
   padding: 5px 0 2px;
+  margin-left: -24px;
+
+  .mat-button {
+    font-weight: 400;
+    letter-spacing: 0.2px;
+  }
 }
 
 a {
   color: #28225B;
   //font-size: 13px;
   padding: 0 10px;
+  text-transform: none;
 }

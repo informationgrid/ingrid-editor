@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -24,12 +25,13 @@ import {animate, style, transition, trigger} from "@angular/animations";
       transition('void <=> *', []),
       transition('* <=> *', [
         style({height: '{{startHeight}}px', opacity: 0}),
-        animate('.4s ease'),
+        animate('.2s ease'),
       ], {params: {startHeight: 0}})
     ])
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FormInfoComponent implements OnInit, OnDestroy, OnChanges {
+export class FormInfoComponent implements OnInit, OnDestroy {
 
   @Input() form: FormGroup;
   @Input() model: IgeDocument;
@@ -37,7 +39,7 @@ export class FormInfoComponent implements OnInit, OnDestroy, OnChanges {
   @Output() jumpToSection = new EventEmitter<number>();
 
   @Input() trigger: boolean;
-  startHeight: number;
+  startHeight = 48;
 
   showDateBar;
   showMore = false;
@@ -55,20 +57,6 @@ export class FormInfoComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-  }
-
-  @HostBinding('@grow') get grow() {
-    // console.log('get grow() is called');
-    return {value: this.trigger, params: {startHeight: this.startHeight}};
-  }
-
-  setStartHeight(){
-    this.startHeight = this.element.nativeElement.clientHeight;
-  }
-
-  ngOnChanges(){
-    console.log('Change in form info');
-    this.setStartHeight();
   }
 
 }
