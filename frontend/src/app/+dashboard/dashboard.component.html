@@ -10,19 +10,19 @@
         <div class="shortcut">
             <button mat-button (click)="createNewFolder()">
                 <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
-                Neuer Order
+                <span>Neuer Order</span>
             </button>
             <button mat-button (click)="createNewDocument()">
                 <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
-                Neuer Datensatz
+                <span>Neuer Datensatz</span>
             </button>
             <button *featureFlag="'AP3'" mat-button (click)="createNewUser()">
                 <mat-icon class="material-icons-outlined">import_export</mat-icon>
-                Datensatz importieren
+                <span>Datensatz importieren</span>
             </button>
             <button mat-button (click)="createNewAddress()">
                 <mat-icon class="material-icons-outlined" svgIcon="Freie-Adresse"></mat-icon>
-                Neue Adresse
+                <span>Neue Adresse</span>
             </button>
         </div>
 
