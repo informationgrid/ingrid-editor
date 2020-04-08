@@ -54,3 +54,4 @@ server/logs
 /keycloak-db/
 /server/out/
 /api/build/
+frontend/cypress/mochawesome-reports/
