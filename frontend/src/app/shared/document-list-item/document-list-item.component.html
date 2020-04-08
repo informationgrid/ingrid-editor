@@ -6,7 +6,7 @@
 
         <h3 matLine>
             {{doc.title}}
-            <span *ngIf="!hideDate" class="pull-right">{{doc._modified | dateAgo}}</span>
+            <span *ngIf="!hideDate" class="pull-right">{{doc._modified | dateAgo:"DE"}}</span>
         </h3>
         <mat-divider></mat-divider>
     </mat-list-option>
