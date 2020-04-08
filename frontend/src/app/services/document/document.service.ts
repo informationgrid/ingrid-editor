@@ -105,11 +105,15 @@ export class DocumentService {
   }
 
   private updateTreeStore(doc: IgeDocument, address: boolean) {
-    const store = address ? this.addressTreeStore : this.treeStore;
+    const absDoc = this.mapToDocumentAbstracts([doc], doc._parent)[0];
+    return this.updateOpenedDocumentInTreestore(absDoc, address);
+  }
 
-    setTimeout(() => store.setActive([doc._id]), 0);
+  updateOpenedDocumentInTreestore(doc: DocumentAbstract, address: boolean){
+    const store = address ? this.addressTreeStore : this.treeStore;
+    setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
     return store.update({
-      openedDocument: this.mapToDocumentAbstracts([doc], doc._parent)[0]
+      openedDocument: doc
     });
   }
 

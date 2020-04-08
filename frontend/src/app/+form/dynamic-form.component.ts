@@ -139,6 +139,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (id === undefined) {
       this.fields = [];
+      this.documentService.updateOpenedDocumentInTreestore(null, false);
       return;
     }
 

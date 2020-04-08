@@ -78,6 +78,8 @@ export class AddressComponent implements OnInit, OnDestroy {
   loadDocument(id: string) {
 
     if (id === undefined) {
+      this.fields = [];
+      this.documentService.updateOpenedDocumentInTreestore(null, true);
       return;
     }
 
