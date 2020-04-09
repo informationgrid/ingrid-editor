@@ -65,7 +65,8 @@ artifacts {
 }
 
 clean {
-  delete packageNpmApp.archivePath
+  // do nothing to improve speed
+  // delete packageNpmApp.archivePath
 }
 
 assemble.dependsOn packageNpmApp
