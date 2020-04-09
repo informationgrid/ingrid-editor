@@ -14,21 +14,27 @@
 
   ::ng-deep .mat-form-field-outline {
     background-color: #ffffff;
-    top: 0.45em;
+    top: 0.35em;
     border-radius: 4px;
+    height: 44px;
 
-    > div {
+    &:not(.mat-form-field-outline-thick) > div {
       border: none;
     }
   }
 
   ::ng-deep .mat-form-field-suffix {
     margin-right: -5px;
-    top: 9px;
+    top: 10px;
+
+    button {
+      height: 0 !important;
+    }
   }
 
   ::ng-deep .mat-form-field-wrapper {
     padding-bottom: 0;
+    margin: 0;
   }
 
   ::ng-deep .mat-form-field-infix {
@@ -88,4 +94,17 @@
 
 ::ng-deep .mat-autocomplete-hidden {
   display: none !important;
+}
+
+.research-icon ::ng-deep svg {
+  circle {
+    stroke: $ige-secondary;
+  }
+  rect {
+    fill: $ige-secondary;
+  }
+}
+
+.btn-search {
+  margin-left: -6px;
 }

@@ -14,7 +14,7 @@
 
 <div *ngIf="doc" (keyup.enter)="select.next(doc)" class="doc-item single" fxLayout="row" (click)="makeSelection(doc)">
     <mat-icon *ngIf="showSelection && currentSelection === doc" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
-    <mat-icon [class.marker-space]="showSelection && currentSelection !== doc" matListIcon [svgIcon]="doc.icon"></mat-icon>
+    <mat-icon [class.marker-space]="showSelection && currentSelection !== doc" matListIcon [svgIcon]="doc.icon || doc.iconClass"></mat-icon>
 
     <span matLine>
         {{doc.title}}
