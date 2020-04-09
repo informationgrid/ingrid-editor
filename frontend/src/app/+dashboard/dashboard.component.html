@@ -10,7 +10,7 @@
         <div class="shortcut">
             <button mat-button (click)="createNewFolder()">
                 <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
-                <span>Neuer Order</span>
+                <span>Neuer Ordner</span>
             </button>
             <button mat-button (click)="createNewDocument()">
                 <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
@@ -21,7 +21,7 @@
                 <span>Datensatz importieren</span>
             </button>
             <button mat-button (click)="createNewAddress()">
-                <mat-icon class="material-icons-outlined" svgIcon="Freie-Adresse"></mat-icon>
+                <mat-icon class="material-icons-outlined" svgIcon="outline-person_add-24px"></mat-icon>
                 <span>Neue Adresse</span>
             </button>
         </div>
@@ -38,7 +38,9 @@
             </div>
 
             <ige-card-box fxFlex title="Zuletzt bearbeitet im Katalog">
-                <ige-document-list-item [docs]="recentDocs$" [hideDate]="false" (select)="openDocument($event.id)"></ige-document-list-item>
+                <ige-document-list-item [docs]="recentDocs$"
+                                        [hideDate]="false"
+                                        (select)="openDocument($event.id)"></ige-document-list-item>
             </ige-card-box>
         </div>
     </div>

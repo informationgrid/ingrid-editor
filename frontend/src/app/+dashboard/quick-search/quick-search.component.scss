@@ -15,6 +15,11 @@
   ::ng-deep .mat-form-field-outline {
     background-color: #ffffff;
     top: 0.45em;
+    border-radius: 4px;
+
+    > div {
+      border: none;
+    }
   }
 
   ::ng-deep .mat-form-field-suffix {
@@ -62,7 +67,7 @@
 .result-title {
   color: $ige-secondary;
   font-weight: 500;
-  padding-bottom: 18px;
+  padding-bottom: 6px;
   letter-spacing: 0.5px;
 }
 

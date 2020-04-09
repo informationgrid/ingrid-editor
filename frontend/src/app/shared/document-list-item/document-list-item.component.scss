@@ -2,12 +2,24 @@
   visibility: hidden;
 }
 
-.mat-list-base[dense] .mat-list-item {
-  font-size: 16px;
-}
+.doc-item {
 
-.doc-item .mat-icon {
-  margin-right: 6px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 0 8px;
+
+  &.single {
+    margin: 0;
+  }
+
+  ::ng-deep .mat-list-item .mat-list-item-content {
+    padding: 0;
+  }
+
+  .mat-icon {
+    margin-right: 12px;
+  }
 }
 
 .marker-space {
@@ -20,11 +32,4 @@
 
 ::ng-deep .marker polygon {
   fill: limegreen;
-}
-
-.doc-item {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin: 0 8px;
 }

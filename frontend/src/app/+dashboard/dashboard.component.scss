@@ -1,9 +1,13 @@
 @import "../../variables";
 
+:host {
+  overflow: hidden;
+}
+
 .welcome {
   background-color: #ffffff;
   box-shadow: 0 2px 2px -2px #808080;
-  margin-bottom: 32px;
+  margin-bottom: 1px;
   color: $ige-primary;
   letter-spacing: 0.74px;
 
@@ -17,7 +21,10 @@ ige-quick-search, .welcome, .shortcut {
   text-align: center;
 }
 
-
+.dashboard-content {
+  overflow: auto;
+  padding-top: 30px;
+}
 
 .info-cards {
   padding: 0 36px 36px;

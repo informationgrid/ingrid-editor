@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-doc-types.svg'));
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-toolbar.svg'));
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-general.svg'));
+    registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-button.svg'));
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/images/banner.svg'));
 
   }

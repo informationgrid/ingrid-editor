@@ -34,12 +34,13 @@ h1 {
   letter-spacing: 1.25px;
 }
 
-.text-card-title {
+.text-card-title.mat-card-title {
   color: $ige-primary;
   text-align: center;
   letter-spacing: 0.74px;
-  padding: 4px 0 12px;
+  padding: 2px 0 6px;
   line-height: 30px;
+  font-weight: 400;
 }
 
 .upper-case {
@@ -453,9 +454,3 @@ ige-root .mat-drawer-container {
   }
 }
 
-mat-selection-list.mat-list-base.dense, mat-list.mat-list-base.dense, .mat-autocomplete.dense {
-  mat-option, mat-list-item, mat-list-option {
-    height: 40px !important;
-    font-size: 16px;
-  }
-}
