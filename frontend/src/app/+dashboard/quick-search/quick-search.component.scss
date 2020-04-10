@@ -1,5 +1,9 @@
 @import "../../../variables";
 
+.spacing {
+  padding-bottom: 30px;
+}
+
 .search-content {
 
   padding-bottom: 24px;
@@ -51,8 +55,22 @@
   }
 }
 
-::ng-deep .option-no-padding mat-option {
-  padding-left: 0 !important;
+::ng-deep .quicksearch-auto {
+
+  max-height: unset;
+  padding: 24px;
+
+  &.option-no-padding mat-option {
+    padding: 0 !important;
+  }
+
+  &.option-no-padding mat-option, &.option-no-padding .doc-item {
+    height: 40px !important;
+  }
+
+  &.mat-autocomplete-hidden {
+    display: none !important;
+  }
 }
 
 .result-header {
@@ -79,27 +97,18 @@
 
 .show-all-link {
   line-height: 36px;
+
   .mat-icon {
     vertical-align: middle;
     padding-bottom: 4px;
   }
 }
 
-::ng-deep .cdk-overlay-pane {
-  .mat-autocomplete-panel {
-    max-height: unset;
-    padding: 24px;
-  }
-}
-
-::ng-deep .mat-autocomplete-hidden {
-  display: none !important;
-}
-
 .research-icon ::ng-deep svg {
   circle {
     stroke: $ige-secondary;
   }
+
   rect {
     fill: $ige-secondary;
   }

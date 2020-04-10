@@ -11,7 +11,7 @@ import {untilDestroyed} from "ngx-take-until-destroy";
 })
 export class DocumentListItemComponent implements OnInit, OnDestroy {
 
-  @Input() docs: Observable<DocumentAbstract[]>;
+  @Input() docs: Observable<DocumentAbstract[]|TreeNode[]>;
   @Input() doc: DocumentAbstract | TreeNode;
   @Input() denseMode = false;
   @Input() hideDate = true;
@@ -40,5 +40,25 @@ export class DocumentListItemComponent implements OnInit, OnDestroy {
   makeSelection(doc: DocumentAbstract) {
     this.select.next(doc);
     this.currentSelection = doc;
+  }
+
+  /**
+   * TODO: Refactor since this functionality is also in tree.component.ts
+   * @param doc
+   */
+  getStateClass(doc: DocumentAbstract | TreeNode) {
+    const state = (<DocumentAbstract>doc)._state || (<TreeNode>doc).state;
+
+    switch (state) {
+      case 'W':
+        return 'working';
+      case 'PW':
+        return 'workingWithPublished';
+      case 'P':
+        return 'published';
+      default:
+        console.error('State is not supported: ' + state, doc);
+        throw new Error('State is not supported: ' + state);
+    }
   }
 }
