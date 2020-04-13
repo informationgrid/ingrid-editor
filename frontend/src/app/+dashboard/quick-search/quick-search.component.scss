@@ -57,7 +57,7 @@
 
 ::ng-deep .quicksearch-auto {
 
-  max-height: unset;
+  max-height: unset !important;
   padding: 24px;
 
   &.option-no-padding mat-option {
