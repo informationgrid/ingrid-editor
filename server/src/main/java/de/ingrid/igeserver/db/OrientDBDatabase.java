@@ -156,10 +156,15 @@ public class OrientDBDatabase implements DBApi {
         } else {
             // TODO: try to use Elasticsearch as an alternative!
             List<String> where = createWhereClause(query, options);
-
-//            if (!type.equals("*")) {
             String whereString = String.join(" OR ", where);
-            queryString = "SELECT * FROM " + type + " WHERE (" + whereString + ")";
+
+            String fetchPlan = options.resolveReferences ? ",fetchPlan:*:-1" : "";
+
+            if ( options.sortField != null){
+                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " LET $temp = max( draft."+options.sortField+", published."+options.sortField+" ) WHERE (" + whereString + ")";
+            }else{
+                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " WHERE (" + whereString + ")";
+            }
             countQuery = "SELECT count(*) FROM " + type + " WHERE (" + whereString + ")";
             /*} else {
                 String draftWhere = attachFieldToWhereList(where, "draft.");
@@ -171,7 +176,7 @@ public class OrientDBDatabase implements DBApi {
         }
 
         if (options.sortField != null) {
-            queryString += " ORDER BY " + options.sortField + " " + options.sortOrder;
+            queryString += " ORDER BY $temp " + options.sortOrder;
         }
         if (options.size != null) {
             queryString += " LIMIT " + options.size;
@@ -181,7 +186,7 @@ public class OrientDBDatabase implements DBApi {
         OResultSet docs = getDBFromThread().query(queryString);
         OResultSet countDocs = getDBFromThread().query(countQuery);
 
-        return mapFindAllResults(docs, countDocs, options.resolveReferences);
+        return mapFindAllResults(docs, countDocs);
 
     }
 
@@ -214,9 +219,9 @@ public class OrientDBDatabase implements DBApi {
                 .collect(Collectors.joining(" OR "));
     }
 
-    private DBFindAllResults mapFindAllResults(OResultSet docs, OResultSet countDocs, boolean resolveReferences) throws Exception {
+    private DBFindAllResults mapFindAllResults(OResultSet docs, OResultSet countDocs) throws Exception {
 
-        List<JsonNode> hits = mapODocumentsToJSON(docs, resolveReferences);
+        List<JsonNode> hits = mapODocumentsToJSON(docs);
         long count = countDocs.next().getProperty("count(*)");
         return new DBFindAllResults(count, hits);
     }
@@ -260,11 +265,11 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public JsonNode find(String type, String id) throws Exception {
-        String query = "SELECT * FROM " + type + " WHERE @rid = " + id;
+        String query = "SELECT @this.toJSON('rid,class') as jsonDoc FROM " + type + " WHERE @rid = " + id;
 //        String query = "SELECT * FROM " + type + " WHERE _id = " + id;
 
         OResultSet result = getDBFromThread().query(query);
-        List<JsonNode> list = mapODocumentsToJSON(result, false);
+        List<JsonNode> list = mapODocumentsToJSON(result);
 
         if (list.size() == 1) {
 
@@ -424,11 +429,12 @@ public class OrientDBDatabase implements DBApi {
         return list;
     }
 
-    private List<JsonNode> mapODocumentsToJSON(OResultSet docs, boolean resolveReferences) throws Exception {
+    private List<JsonNode> mapODocumentsToJSON(OResultSet docs) throws Exception {
         List<JsonNode> list = new ArrayList<>();
         while (docs.hasNext()) {
-            ODocument oDoc = (ODocument) docs.next().getElement().get();
-            JsonNode node = mapODocumentToJson(oDoc, resolveReferences);
+            OResult doc = docs.next();
+            String json = doc.getProperty( "jsonDoc" );
+            JsonNode node = MapperService.getJsonNode(json);
             list.add(node);
         }
 
