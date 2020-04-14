@@ -10,10 +10,10 @@ import {animate, style, transition, trigger} from '@angular/animations';
     trigger('slideDown', [
       transition(':enter', [
         style({height: 0, opacity: 0}),
-        animate('300ms', style({height: 114, opacity: 1}))
+        animate('300ms', style({height: 134, opacity: 1}))
       ]),
       transition(':leave', [
-        style({height: 114, opacity: 1}),
+        style({height: 134, opacity: 1}),
         animate('300ms', style({height: 0, opacity: 0}))
       ])
     ])

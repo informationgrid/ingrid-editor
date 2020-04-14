@@ -26,6 +26,8 @@
     color: $ige-primary;
     cursor: pointer;
     margin-left: 4px;
+    line-height: 46px;
+    letter-spacing: 0.25px;
 
     &:hover {
       opacity: 0.5;
@@ -48,7 +50,6 @@
   }
 
   form {
-    margin-top: -10px;
     margin-right: 10px;
   }
 
@@ -58,7 +59,7 @@
 
   ::ng-deep .mat-form-field-wrapper {
     padding-bottom: 0 !important;
-    margin-bottom: 0 !important;
+    margin: 0 !important;
   }
 
   ::ng-deep .mat-form-field-subscript-wrapper {

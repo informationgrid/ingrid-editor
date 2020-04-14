@@ -6,8 +6,10 @@
 
 .more-info {
 
-  //padding-bottom: 20px;
+  padding: 10px 0 20px;
   overflow: hidden;
+  line-height: 22px;
+  letter-spacing: 0.5px;
 
   > div > div:nth-child(1) {
     width: 230px;
@@ -20,5 +22,13 @@
 
   .section {
     padding-top: 10px;
+  }
+
+  .state {
+    font-weight: 500;
+
+    &.working {
+      color: $state-working-color;
+    }
   }
 }
