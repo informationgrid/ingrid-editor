@@ -162,8 +162,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const needsProfileSwitch = this.formularService.currentProfile !== profile;
-    // this.data = data;
+    const needsProfileSwitch = this.fields.length === 0 || this.formularService.currentProfile !== profile;
+
     try {
 
       // switch to the right profile depending on the data
