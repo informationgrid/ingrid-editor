@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import {Observable} from "rxjs";
-import {TreeQuery} from "../../store/tree/tree.query";
-import {FormToolbarService} from "../../+form/form-shared/toolbar/form-toolbar.service";
+import {Component, OnInit} from '@angular/core';
+import {Observable} from 'rxjs';
+import {FormToolbarService} from '../../+form/form-shared/toolbar/form-toolbar.service';
+import {AddressTreeQuery} from '../../store/address-tree/address-tree.query';
 
 @Component({
   selector: 'ige-address-dashboard',
@@ -12,7 +12,7 @@ export class AddressDashboardComponent implements OnInit {
 
   treeDocs: Observable<number> = this.treeQuery.selectCount();
 
-  constructor(private treeQuery: TreeQuery,
+  constructor(private treeQuery: AddressTreeQuery,
               private formToolbarService: FormToolbarService) { }
 
   ngOnInit(): void {
