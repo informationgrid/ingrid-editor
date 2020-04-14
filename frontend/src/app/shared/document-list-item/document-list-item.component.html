@@ -3,7 +3,7 @@
 
         <mat-icon [class.marker-space]="showSelection && currentSelection !== doc"
                   matListIcon
-                  [ngClass]="getStateClass(doc)"
+                  [ngClass]="['document-icon',getStateClass(doc)]"
                   [svgIcon]="doc.icon"></mat-icon>
         <mat-icon *ngIf="showSelection && currentSelection === doc" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
 
@@ -19,7 +19,7 @@
     <mat-icon *ngIf="showSelection && currentSelection === doc" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
     <mat-icon [class.marker-space]="showSelection && currentSelection !== doc"
               matListIcon
-              [ngClass]="getStateClass(doc)"
+              [ngClass]="['document-icon',getStateClass(doc)]"
               [svgIcon]="doc.icon || doc.iconClass"></mat-icon>
 
     <span matLine>

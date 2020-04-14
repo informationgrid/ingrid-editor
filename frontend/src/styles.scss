@@ -364,7 +364,11 @@ ige-root .mat-drawer-container {
   transition: all .2s linear;
 }
 
-.mat-icon {
+.mat-icon.document-icon{
+  svg {
+    height: 24px;
+    width: 24px;
+  }
   svg path {
     fill: #333333;
   }

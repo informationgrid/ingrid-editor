@@ -19,7 +19,7 @@
                            [class.rootNode]="node.level === 0"
                            [class.disabled]="disabledCondition(node)">
                 <div class="label">
-                    <mat-icon [svgIcon]="node.iconClass" [ngClass]="getStateClass(node)"></mat-icon>
+                    <mat-icon [svgIcon]="node.iconClass" [ngClass]="['document-icon',getStateClass(node)]"></mat-icon>
                     <span>{{node.title}}</span>
                 </div>
             </mat-tree-node>

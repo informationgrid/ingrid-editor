@@ -1,6 +1,6 @@
 <div class="title">
     <div class="document-type">
-        <mat-icon [svgIcon]="getIcon()" [ngClass]="getStateClass()"></mat-icon>
+        <mat-icon [svgIcon]="getIcon()" [ngClass]="['document-icon',getStateClass()]"></mat-icon>
     </div>
 
     <ige-header-navigation class="mini" [sections]="sections" (jumpToSection)="jumpToSection.next($event)"></ige-header-navigation>
