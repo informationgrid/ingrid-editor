@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormPluginsService} from '../../+form/form-shared/form-plugins.service';
@@ -21,11 +21,13 @@ export class AddressComponent implements OnInit, OnDestroy {
   form = new FormGroup({});
   fields: FormlyFieldConfig[] = [];
   model: IgeDocument | any = {};
+  sections: string[];
   formOptions: any;
   updateTree = new Subject<TreeAction[]>();
   initialActiveNodeId: any;
   initialExpandNodes = new Subject<string[]>();
   initialTreeExpand = false;
+  isScrolled = false;
 
   constructor(private router: Router, private route: ActivatedRoute,
               private formPlugins: FormPluginsService, private formService: FormularService,
@@ -50,6 +52,10 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+  }
+
+  onScroll($event) {
+    this.isScrolled = $event.target.scrollTop > 0;
   }
 
   rememberSizebarWidth($event: any) {
@@ -102,7 +108,7 @@ export class AddressComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const needsProfileSwitch = this.formService.currentProfile !== profile;
+    const needsProfileSwitch = this.fields.length === 0 || this.formService.currentProfile !== profile;
     try {
 
       // switch to the right profile depending on the data
@@ -110,7 +116,7 @@ export class AddressComponent implements OnInit, OnDestroy {
       this.formsManager.upsert('address', this.form);
       if (needsProfileSwitch) {
         this.fields = this.switchProfile(profile);
-        // this.sections = this.getSectionsFromProfile(this.fields);
+        this.sections = this.formService.getSectionsFromProfile(this.fields);
       }
 
       this.model = {...data};
@@ -127,6 +133,13 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.formService.currentProfile = profile;
 
     return this.formService.getFields(profile);
+  }
+
+  jumpToSection(index: number) {
+    window.document
+      .querySelectorAll('ige-section-wrapper')
+      .item(index)
+      .scrollIntoView(false);
   }
 
   ngOnDestroy(): void {

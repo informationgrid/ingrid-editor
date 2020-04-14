@@ -17,19 +17,25 @@
         </as-split-area>
 
         <!-- The form -->
-        <as-split-area [size]="100-sidebarWidth" id="form" class="form-content">
+        <as-split-area [size]="100-sidebarWidth" id="form" class="form-content" (scroll)="onScroll($event)">
 
             <ige-address-dashboard *ngIf="fields.length === 0"></ige-address-dashboard>
 
             <ng-container *ngIf="fields.length !== 0">
-                <ige-form-info [form]="form" [model]="model"></ige-form-info>
-                <!--<ige-form-info [form]="form" [model]="model" [sections]="sections" [class.scrolled]="isScrolled"
-                               (jumpToSection)="jumpToSection($event)"></ige-form-info>-->
+                <ige-form-info [form]="form"
+                               [model]="model"
+                               [sections]="sections"
+                               [class.scrolled]="isScrolled"
+                               [trigger]="isScrolled"
+                               (jumpToSection)="jumpToSection($event)"></ige-form-info>
 
                 <form [formGroup]="form">
                     <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
                 </form>
 
+                <div *ngIf="model._profile === 'FOLDER'" class="folder-content">
+                    <ige-card-box title="Letzte Adressen"></ige-card-box>
+                </div>
             </ng-container>
 
         </as-split-area>

@@ -1,11 +1,13 @@
 <div class="title">
     <div class="document-type">
-        <mat-icon [svgIcon]="getIcon()" [ngClass]="['document-icon',getStateClass()]"></mat-icon>
+        <mat-icon [svgIcon]="getIcon()"
+                  [title]="form.get('title')?.value"
+                  [ngClass]="['document-icon',getStateClass()]"></mat-icon>
     </div>
 
-    <ige-header-navigation class="mini" [sections]="sections" (jumpToSection)="jumpToSection.next($event)"></ige-header-navigation>
+    <ige-header-navigation class="mini" fxFlex [sections]="sections" (jumpToSection)="jumpToSection.next($event)"></ige-header-navigation>
 
-    <span *ngIf="!showTitleInput" class="label" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
+    <span *ngIf="!showTitleInput" fxFlex class="label" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
 
     <form [formGroup]="form" [class.hide]="!showTitleInput">
         <mat-form-field appearance="outline">
@@ -14,8 +16,6 @@
                    (keyup.enter)="showTitleInput = false">
         </mat-form-field>
     </form>
-
-    <div fxFlex></div>
 
     <button mat-icon-button mat-flat-button class="more" [class.expanded]="showMore" (click)="toggleMoreInfo()">
         <mat-icon class="animated">keyboard_arrow_down</mat-icon>

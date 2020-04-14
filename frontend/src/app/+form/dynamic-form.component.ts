@@ -40,7 +40,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sections: string[];
 
-  isScrolled = false; // new Subject<boolean>();
+  isScrolled = false;
 
   form: FormGroup = new FormGroup({});
 
@@ -125,7 +125,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formUtils.addHotkeys(event, this.documentService, this.form);
   }
 
-  @HostListener('window:scroll', ['$event']) // for window scroll events
   onScroll($event) {
     this.isScrolled = $event.target.scrollTop > 0;
   }
@@ -171,7 +170,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.formsManager.upsert('document', this.form);
       if (needsProfileSwitch) {
         this.fields = this.switchProfile(profile);
-        this.sections = this.getSectionsFromProfile(this.fields);
+        this.sections = this.formularService.getSectionsFromProfile(this.fields);
       }
 
       this.model = {...data};
@@ -182,17 +181,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error(ex);
       this.modalService.showJavascriptError(ex);
     }
-  }
-
-  // TODO: move to profile service
-  private getSectionsFromProfile(profile: FormlyFieldConfig[]): string[] {
-    const sections = [];
-    for (const item of profile) {
-      if (item.wrappers && item.wrappers.indexOf('section') !== -1) {
-        sections.push(item.templateOptions.label);
-      }
-    }
-    return sections;
   }
 
   // TODO: extract to permission service class

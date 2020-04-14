@@ -14,7 +14,10 @@
             <ige-form-dashboard *ngIf="fields.length === 0"></ige-form-dashboard>
 
             <ng-container *ngIf="fields.length !== 0">
-                <ige-form-info [form]="form" [model]="model" [sections]="sections" [class.scrolled]="isScrolled"
+                <ige-form-info [form]="form"
+                               [model]="model"
+                               [sections]="sections"
+                               [class.scrolled]="isScrolled"
                                [trigger]="isScrolled"
                                (jumpToSection)="jumpToSection($event)"></ige-form-info>
 
@@ -28,10 +31,7 @@
                 </form>
 
                 <div *ngIf="model._profile === 'FOLDER'" class="folder-content">
-                    <mat-card fxFlex>
-                        <mat-card-subtitle>Ordner-Informationen</mat-card-subtitle>
-                        <mat-card-content>...</mat-card-content>
-                    </mat-card>
+                    <ige-card-box title="Ordner-Informationen"></ige-card-box>
                 </div>
             </ng-container>
 

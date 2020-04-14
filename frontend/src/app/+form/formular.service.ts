@@ -83,4 +83,14 @@ export class FormularService {
       }
     }))
   }
+
+  getSectionsFromProfile(profile: FormlyFieldConfig[]): string[] {
+    const sections = [];
+    for (const item of profile) {
+      if (item.wrappers && item.wrappers.indexOf('section') !== -1) {
+        sections.push(item.templateOptions.label);
+      }
+    }
+    return sections;
+  }
 }
