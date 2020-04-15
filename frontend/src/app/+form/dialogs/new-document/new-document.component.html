@@ -9,7 +9,7 @@
 <mat-dialog-content class="hide-tab-header">
     <mat-tab-group [selectedIndex]="selectedPage">
         <mat-tab label="Titel">
-            <form #myForm fxFlex fxLayout="column" [formGroup]="formGroup">
+            <form fxFlex fxLayout="column" [formGroup]="formGroup">
                 <ng-container *ngIf="forAddress">
                     <div fxFlex fxLayout="row" fxLayoutGap="24px">
 
@@ -45,11 +45,14 @@
                                required>
                     </mat-form-field>
 
-                    <label id="doc-type">Datensatztyp wählen:</label>
-                    <ige-document-list-item [docs]="documentTypes" showSelection="true"
-                                            [denseMode]="true"
-                                            [hideDivider]="true"
-                                            (select)="setDocType($event)"></ige-document-list-item>
+                    <ng-container *ngIf="numDocumentTypes > 1">
+                        <label id="doc-type">Datensatztyp wählen:</label>
+                        <ige-document-list-item [docs]="documentTypes" showSelection="true"
+                                                [denseMode]="true"
+                                                [hideDivider]="true"
+                                                [setActiveItem]="initialActiveDocumentType"
+                                                (select)="setDocType($event)"></ige-document-list-item>
+                    </ng-container>
 
                 </ng-container>
 

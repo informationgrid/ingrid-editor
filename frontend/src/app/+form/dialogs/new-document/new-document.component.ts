@@ -6,7 +6,7 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {DocType} from './new-doc.plugin';
-import {Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {ModalService} from '../../../services/modal/modal.service';
 import {ProfileQuery} from '../../../store/profile/profile.query';
 import {IgeDocument} from '../../../models/ige-document';
@@ -42,6 +42,8 @@ export class NewDocumentComponent implements OnInit {
   formGroup: FormGroup;
   documentTypes: Observable<DocumentAbstract[]>;
   private pathIds: string[];
+  numDocumentTypes: number;
+  initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(null);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder,
@@ -92,7 +94,8 @@ export class NewDocumentComponent implements OnInit {
             .map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}))
             .sort((a, b) => a.label.localeCompare(b.label));
           this.documentTypes = this.prepareDocumentTypes(docTypes);
-          this.result.choice = docTypes[0].id;
+          this.formGroup.get('choice').setValue(docTypes[0].id);
+          this.initialActiveDocumentType.next(docTypes[0]);
         });
     }
 
@@ -128,6 +131,8 @@ export class NewDocumentComponent implements OnInit {
   }
 
   private prepareDocumentTypes(docTypes: DocType[]): Observable<DocumentAbstract[]> {
+    this.numDocumentTypes = docTypes.length;
+
     return of(docTypes.map(dt => {
       return {
         id: dt.id,
