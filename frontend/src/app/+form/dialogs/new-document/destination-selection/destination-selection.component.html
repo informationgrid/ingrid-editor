@@ -6,5 +6,6 @@
 
 Oder anlegen unter
 <ige-document-list-item [docs]="getRootNode()" showSelection="true"
+                        [hideDivider]="true"
                         [setActiveItem]="activeListItem"
                         (select)="updateParent([null], 'List')"></ige-document-list-item>

@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {TreeNode} from "../../../../store/tree/tree-node.model";
-import {of, Subject} from "rxjs";
-import {DocumentAbstract} from "../../../../store/document/document.model";
+import {TreeNode} from '../../../../store/tree/tree-node.model';
+import {of, Subject} from 'rxjs';
+import {DocumentAbstract} from '../../../../store/document/document.model';
 
 @Component({
   selector: 'ige-destination-selection',
@@ -27,13 +27,15 @@ export class DestinationSelectionComponent implements OnInit {
       this.rootNode = {
         id: null,
         title: 'Adressen',
-        icon: 'Ordner'
+        icon: 'Ordner',
+        _state: 'P'
       }
     } else {
       this.rootNode = {
         id: null,
         title: 'Daten',
-        icon: 'Ordner'
+        icon: 'Ordner',
+        _state: 'P'
       }
     }
   }

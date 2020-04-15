@@ -1,7 +1,7 @@
 <ng-container *ngIf="dataSource.data?.length > 0; else emptyNavigation">
 
     <ige-tree-header *ngIf="showHeader"
-                     (reload)="reloadTree()"
+                     (reload)="reloadTree().subscribe()"
                      [isAddress]="forAddresses"
                      (open)="jumpToNode($event)"></ige-tree-header>
 

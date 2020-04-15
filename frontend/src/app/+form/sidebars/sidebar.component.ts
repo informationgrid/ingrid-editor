@@ -4,6 +4,7 @@ import {TreeStore} from '../../store/tree/tree.store';
 import {DocumentService} from '../../services/document/document.service';
 import {Subject} from 'rxjs';
 import {TreeAction} from './tree/tree.component';
+import {filter, take} from 'rxjs/operators';
 
 @Component({
   selector: 'ige-sidebar',
@@ -15,6 +16,7 @@ export class SidebarComponent implements OnInit {
   initialExpandNodes = new Subject<string[]>();
   initialActiveNodeId: string;
   updateTree = new Subject<TreeAction[]>();
+  activeTreeNode = new Subject<string>();
 
   constructor(private router: Router,
               private route: ActivatedRoute,
@@ -24,18 +26,28 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
 
-      const id = params['id'];
-      if (id !== undefined) {
+    // setup tree according to initial parameters when switching to the page
+    this.route.params.pipe(take(1))
+      .subscribe(params => {
+        const id = params['id'];
+        if (id !== undefined) {
 
-        this.docService.getPath(id).subscribe(path => {
-          this.initialActiveNodeId = path.pop();
-          this.initialExpandNodes.next(path);
-        });
+          this.docService.getPath(id).subscribe(path => {
+            this.initialActiveNodeId = path.pop();
+            this.initialExpandNodes.next(path);
+          });
 
-      }
-    }).unsubscribe();
+        }
+      });
+
+    // only react on initial page when clicking on menu button
+    // to reset tree selection
+    this.route.params.pipe(
+      filter(params => params['id'] === undefined)
+    ).subscribe(params => {
+      this.activeTreeNode.next(null);
+    });
   }
 
   handleLoad(selectedDocIds: string[]) { // id: string, profile?: string, forceLoad?: boolean) {

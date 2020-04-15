@@ -1,18 +1,18 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {take} from "rxjs/operators";
-import {TreeQuery} from "../../../store/tree/tree.query";
-import {AddressTreeQuery} from "../../../store/address-tree/address-tree.query";
-import {DocumentAbstract} from "../../../store/document/document.model";
-import {FormBuilder, FormGroup, ValidationErrors, Validators} from "@angular/forms";
-import {DocType} from "./new-doc.plugin";
-import {Observable, of} from "rxjs";
-import {ModalService} from "../../../services/modal/modal.service";
-import {ProfileQuery} from "../../../store/profile/profile.query";
-import {IgeDocument} from "../../../models/ige-document";
-import {HttpErrorResponse} from "@angular/common/http";
-import {DocumentService} from "../../../services/document/document.service";
-import {Router} from "@angular/router";
+import {take} from 'rxjs/operators';
+import {TreeQuery} from '../../../store/tree/tree.query';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {DocumentAbstract} from '../../../store/document/document.model';
+import {FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {DocType} from './new-doc.plugin';
+import {Observable, of} from 'rxjs';
+import {ModalService} from '../../../services/modal/modal.service';
+import {ProfileQuery} from '../../../store/profile/profile.query';
+import {IgeDocument} from '../../../models/ige-document';
+import {HttpErrorResponse} from '@angular/common/http';
+import {DocumentService} from '../../../services/document/document.service';
+import {Router} from '@angular/router';
 
 export interface CreateDocOptions {
   choice?: string;
@@ -130,20 +130,21 @@ export class NewDocumentComponent implements OnInit {
       return {
         id: dt.id,
         title: dt.label,
-        icon: dt.icon
+        icon: dt.icon,
+        _state: 'P'
       } as DocumentAbstract;
     }));
   }
 
   setDocType(docType: DocumentAbstract) {
-    this.formGroup.get("choice").setValue(docType.id);
+    this.formGroup.get('choice').setValue(docType.id);
   }
 
   async createDoc() {
     this.updateResultWithFormData();
     const savedDoc = await this.saveNewDocument(this.result);
 
-    let page = this.forAddress ? '/address' : '/form';
+    const page = this.forAddress ? '/address' : '/form';
     this.router.navigate([page, {id: savedDoc._id}]);
     this.dialogRef.close(savedDoc._id);
   }

@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {DocumentAbstract} from '../../store/document/document.model';
 import {Observable, Subject} from 'rxjs';
 import {TreeNode} from '../../store/tree/tree-node.model';
-import {untilDestroyed} from "ngx-take-until-destroy";
+import {untilDestroyed} from 'ngx-take-until-destroy';
 
 @Component({
   selector: 'ige-document-list-item',
@@ -11,7 +11,7 @@ import {untilDestroyed} from "ngx-take-until-destroy";
 })
 export class DocumentListItemComponent implements OnInit, OnDestroy {
 
-  @Input() docs: Observable<DocumentAbstract[]|TreeNode[]>;
+  @Input() docs: Observable<DocumentAbstract[] | TreeNode[]>;
   @Input() doc: DocumentAbstract | TreeNode;
   @Input() denseMode = false;
   @Input() hideDate = true;
@@ -22,7 +22,8 @@ export class DocumentListItemComponent implements OnInit, OnDestroy {
 
   currentSelection: DocumentAbstract;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
     if (this.setActiveItem) {

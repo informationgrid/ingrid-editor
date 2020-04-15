@@ -1,14 +1,14 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../../../store/tree/tree-node.model';
-import {Observable, Subject} from 'rxjs';
+import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {SelectionModel} from '@angular/cdk/collections';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {UpdateType} from '../../../models/update-type.enum';
 import {DynamicDataSource} from './dynamic.datasource';
 import {DynamicDatabase} from './dynamic.database';
-import {untilDestroyed} from "ngx-take-until-destroy";
+import {untilDestroyed} from 'ngx-take-until-destroy';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -79,26 +79,13 @@ export class TreeComponent implements OnInit, OnDestroy {
         });
     }
 
-    this.reloadTree();
-
-    // after root nodes are loaded start expansion
-    if (this.expandNodeIds) {
-      this.expandNodeIds.subscribe(ids => {
-        this.handleExpandNodes(ids)
-          .then(() => {
-            const node = this.dataSource.getNode(this.activeNodeId);
-            const nodePath = this.getTitlesFromNodePath(node);
-            this.currentPath.next(nodePath);
-            this.selectionModel.select(node);
-          }).catch(() => {
-        });
-      });
-    }
+    // make sure the tree with root nodes is loaded before we start
+    // expanding the path if any
+    this.handleTreeExpandToInitialNode();
 
     this.database.treeUpdates.subscribe(data => this.handleUpdate(data));
 
   }
-
 
   private expandOnDataChange(ids: string[]): Promise<void> {
     let resolveNextTime = false;
@@ -189,13 +176,16 @@ export class TreeComponent implements OnInit, OnDestroy {
     return {node: node, parent: null};
   }
 
-  reloadTree() {
-    this.database.initialData(true, this.forAddresses)
+  reloadTree(): Observable<TreeNode[]> {
+    return this.database.initialData(true, this.forAddresses)
       .pipe(
         map(docs => DynamicDatabase.mapDocumentsToTreeNodes(docs, 0)),
-        map(docs => docs.sort(this.dataSource.sortNodesByFolderFirst))
-      )
-      .subscribe(rootElements => this.dataSource.data = rootElements);
+        map(docs => docs.sort(this.dataSource.sortNodesByFolderFirst)),
+        tap(rootElements => {
+          this.dataSource.data = rootElements;
+          this.selectionModel.clear();
+        })
+      );
   }
 
   /**
@@ -348,8 +338,8 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     let pos = null;
     ids.some((id, index) => {
-      let treeNode = this.dataSource.data.find(item => item._id === id);
-      let isExpanded = this.treeControl.isExpanded(treeNode);
+      const treeNode = this.dataSource.data.find(item => item._id === id);
+      const isExpanded = this.treeControl.isExpanded(treeNode);
       if (!isExpanded) {
         pos = index;
         return true;
@@ -360,5 +350,30 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.currentPath.next([]);
+  }
+
+  private handleTreeExpandToInitialNode() {
+    if (this.expandNodeIds) {
+      combineLatest([
+        this.reloadTree(),
+        this.expandNodeIds
+      ])
+        .pipe(untilDestroyed(this))
+        .subscribe(result => {
+          setTimeout(() => {
+            const ids = result[1];
+            this.handleExpandNodes(ids)
+              .then(() => {
+                const node = this.dataSource.getNode(this.activeNodeId);
+                const nodePath = this.getTitlesFromNodePath(node);
+                this.currentPath.next(nodePath);
+                this.selectionModel.select(node);
+                this.expandNodeIds = null;
+              });
+          });
+        });
+    } else {
+      this.reloadTree().subscribe();
+    }
   }
 }
