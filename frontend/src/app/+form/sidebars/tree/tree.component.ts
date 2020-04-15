@@ -36,7 +36,6 @@ export class TreeComponent implements OnInit, OnDestroy {
   @Input() expandNodeIds: Subject<string[]>;
   @Input() showHeader = true;
   @Input() showReloadButton = true;
-  @Input() activeNodeId: string = null;
   @Input() setActiveNode: Subject<string>;
   @Input() update: Observable<any>;
 
@@ -50,6 +49,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   // signal to show that a tree node is loading
   private isLoading: TreeNode;
+  activeNodeId: string = null;
 
   treeControl: FlatTreeControl<TreeNode>;
 

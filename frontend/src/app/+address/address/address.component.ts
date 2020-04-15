@@ -24,10 +24,10 @@ export class AddressComponent implements OnInit, OnDestroy {
   sections: string[];
   formOptions: any;
   updateTree = new Subject<TreeAction[]>();
-  initialActiveNodeId: any;
   initialExpandNodes = new Subject<string[]>();
   initialTreeExpand = false;
   isScrolled = false;
+  activeTreeNode = new Subject<string>();
 
   constructor(private router: Router, private route: ActivatedRoute,
               private formPlugins: FormPluginsService, private formService: FormularService,
@@ -42,7 +42,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.initialTreeExpand = true;
 
         this.documentService.getPath(id, true).subscribe(path => {
-          this.initialActiveNodeId = path.pop();
+          this.activeTreeNode.next(path.pop());
           this.initialExpandNodes.next(path);
         });
 

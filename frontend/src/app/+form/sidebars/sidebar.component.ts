@@ -15,7 +15,6 @@ import {untilDestroyed} from 'ngx-take-until-destroy';
 export class SidebarComponent implements OnInit, OnDestroy {
 
   initialExpandNodes = new Subject<string[]>();
-  initialActiveNodeId: string;
   updateTree = new Subject<TreeAction[]>();
   activeTreeNode = new Subject<string>();
 
@@ -37,7 +36,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         switchMap(id => this.docService.getPath(id))
       )
       .subscribe(path => {
-        this.initialActiveNodeId = path.pop();
+        this.activeTreeNode.next(path.pop());
         this.initialExpandNodes.next(path);
       });
 
