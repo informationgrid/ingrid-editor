@@ -143,49 +143,11 @@ public class UsersApiController implements UsersApi {
             if (userIds == null || userIds.size() == 0) {
                 throw new ApiException(500, "No user ids set to use as a catalog administrator");
             }
-            // get catalog Info
-            String userId = userIds.get(0);
-            Map<String, String> query = new HashMap<>();
-            query.put("userId", userId);
-            FindOptions findOptions = new FindOptions();
-            findOptions.queryType = QueryType.exact;
-            findOptions.resolveReferences = false;
-            DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
-            boolean isNewEntry = list.totalHits == 0;
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            Set<String> catalogIds = new HashSet<>();
-            ObjectNode catInfo;
-
-            if (isNewEntry) {
-                catInfo = objectMapper.createObjectNode();
-                catInfo.put("userId", userId);
-                catInfo.put("catalogIds", objectMapper.createArrayNode());
-            } else {
-
-                catInfo = (ObjectNode) list.hits.get(0);
-                // make list to hashset
-                catInfo.put("catalogIds", catInfo.get("catalogIds"));
+            for (String userId : userIds) {
+                addOrUpdateCatalogAdmin(catalogName, userId);
             }
 
-            ArrayNode catalogIdsArray = (ArrayNode) catInfo.get("catalogIds");
-
-            for (JsonNode jsonNode : catalogIdsArray) {
-                catalogIds.add(jsonNode.asText());
-            }
-
-            // update catadmin in catalog Info
-            if (catalogName != null) catalogIds.add(catalogName);
-
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            catalogIds.forEach(arrayNode::add);
-            catInfo.replace("catalogIds", arrayNode);
-
-            String recordId = null;
-            if (!isNewEntry) {
-                recordId = catInfo.get("@rid").asText();
-            }
-            dbService.save(DBApi.DBClass.Info.name(), recordId, catInfo.toString());
         } catch (JsonProcessingException e) {
             log.error("Error processing JSON", e);
             throw new ApiException(e.getMessage());
@@ -194,6 +156,50 @@ public class UsersApiController implements UsersApi {
         }
 
         return null;
+    }
+
+    private void addOrUpdateCatalogAdmin(String catalogName, String userId) throws Exception {
+        Map<String, String> query = new HashMap<>();
+        query.put("userId", userId);
+        FindOptions findOptions = new FindOptions();
+        findOptions.queryType = QueryType.exact;
+        findOptions.resolveReferences = false;
+        DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
+        boolean isNewEntry = list.totalHits == 0;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Set<String> catalogIds = new HashSet<>();
+        ObjectNode catInfo;
+
+        if (isNewEntry) {
+            catInfo = objectMapper.createObjectNode();
+            catInfo.put("userId", userId);
+            catInfo.put("catalogIds", objectMapper.createArrayNode());
+        } else {
+
+            catInfo = (ObjectNode) list.hits.get(0);
+            // make list to hashset
+            catInfo.put("catalogIds", catInfo.get("catalogIds"));
+        }
+
+        ArrayNode catalogIdsArray = (ArrayNode) catInfo.get("catalogIds");
+
+        for (JsonNode jsonNode : catalogIdsArray) {
+            catalogIds.add(jsonNode.asText());
+        }
+
+        // update catadmin in catalog Info
+        if (catalogName != null) catalogIds.add(catalogName);
+
+        ArrayNode arrayNode = objectMapper.createArrayNode();
+        catalogIds.forEach(arrayNode::add);
+        catInfo.replace("catalogIds", arrayNode);
+
+        String recordId = null;
+        if (!isNewEntry) {
+            recordId = catInfo.get("@rid").asText();
+        }
+        dbService.save(DBApi.DBClass.Info.name(), recordId, catInfo.toString());
     }
 
     @Override
