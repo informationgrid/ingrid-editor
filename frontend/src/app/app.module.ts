@@ -10,7 +10,7 @@ import {environment} from '../environments/environment';
 import {ConfigService} from './services/config/config.service';
 import {LoginComponent} from './security/login.component';
 import {GlobalErrorHandler} from './error-handler';
-import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
@@ -41,10 +41,11 @@ import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component
 import {MainHeaderComponent} from './main-header/main-header.component';
 import {InfoDialogComponent} from './main-header/info-dialog/info-dialog.component';
 import {NewDocumentPlugin} from './+form/dialogs/new-document/new-doc.plugin';
-import {CreateFolderComponent} from "./+form/dialogs/folder/create-folder.component";
-import {MatTabsModule} from "@angular/material/tabs";
-import {FormSharedModule} from "./+form/form-shared/form-shared.module";
-import {MatMenuModule} from "@angular/material/menu";
+import {CreateFolderComponent} from './+form/dialogs/folder/create-folder.component';
+import {MatTabsModule} from '@angular/material/tabs';
+import {FormSharedModule} from './+form/form-shared/form-shared.module';
+import {MatMenuModule} from '@angular/material/menu';
+import {AuthInterceptor} from './security/keycloak/auth.interceptor';
 
 registerLocaleData(de);
 
@@ -125,11 +126,11 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       useValue: 'de-de'
     },
     // add authorization header to all requests
-    /*{
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true,
-    },*/
+      multi: true
+    },
     // overwrite global error handler
     {
       provide: ErrorHandler,

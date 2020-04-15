@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {KeycloakService} from './keycloak.service';
-import {Observable} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +15,16 @@ export class AuthInterceptor implements HttpInterceptor {
     // send the newly created request
     return next.handle( req )
       .pipe(
-        /*catchError( (error, caught) => {
+        catchError( (error, caught) => {
           // if we have been logged out during a request then redirect to the start page
           // so that the keycloak login screen is shown
           if (error.status === 403) {
             // TODO: redirect
             console.error( 'You do not have permission to this resource or are logged out' );
-          } else if (error.url.indexOf( '/auth/realms/' ) !== -1) {
+          } else if (error.url.indexOf( '/sso/login' ) !== -1) {
             // TODO: redirect
             console.log( 'We have been logged out. Redirecting to login page.' );
+            window.location.reload();
           }
           // intercept the respons error and displace it to the console
           console.log( 'Error Occurred' );
@@ -30,7 +32,7 @@ export class AuthInterceptor implements HttpInterceptor {
           // return the error to the method that called it
           return throwError( error );
           // throw error;
-        } )*/
+        } )
       );
 
   }
