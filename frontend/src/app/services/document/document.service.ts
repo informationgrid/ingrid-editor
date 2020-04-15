@@ -109,7 +109,7 @@ export class DocumentService {
     return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 
-  updateOpenedDocumentInTreestore(doc: DocumentAbstract, address: boolean){
+  updateOpenedDocumentInTreestore(doc: DocumentAbstract, address: boolean) {
     const store = address ? this.addressTreeStore : this.treeStore;
     setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
     return store.update({
@@ -117,64 +117,57 @@ export class DocumentService {
     });
   }
 
-  save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean): Promise<IgeDocument> {
+  save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean, path?: string[]): Promise<IgeDocument> {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
-    return new Promise((resolve, reject) => {
+    return this.dataService.save(data, isAddress)
+      .toPromise().then(json => {
+        const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
-      this.dataService.save(data, isAddress)
-        .subscribe(json => {
-          const info = this.mapToDocumentAbstracts([json], json._parent)[0];
+        this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 
-          this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
+        this.afterSave$.next(data);
 
-          this.afterSave$.next(data);
+        store.upsert(info.id, info);
 
-          store.upsert(info.id, info);
-
-          this.datasetsChanged$.next({
-            type: isNewDoc ? UpdateType.New : UpdateType.Update,
-            data: [info],
-            parent: info._parent
-          });
-          resolve(json);
-        }, err => {
-          reject(err);
+        this.datasetsChanged$.next({
+          type: isNewDoc ? UpdateType.New : UpdateType.Update,
+          data: [info],
+          parent: info._parent,
+          path: path
         });
-    });
+
+        return json;
+      });
   }
 
   // FIXME: this should be added with a plugin
   publish(data: IgeDocument): Promise<void> {
-    return new Promise((resolve, reject) => {
-      console.log('PUBLISHING');
-      const errors: any = {errors: []};
+    console.log('PUBLISHING');
+    const errors: any = {errors: []};
 
-      // this.handleTitle(data);
+    // this.handleTitle(data);
 
-      this.beforeSave$.next(errors);
-      console.log('After validation:', data);
-      const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
-      if (formInvalid && formInvalid.invalid) {
-        this.modalService.showJavascriptError('Der Datensatz kann nicht veröffentlicht werden.');
-        return;
-      }
+    this.beforeSave$.next(errors);
+    console.log('After validation:', data);
+    const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
+    if (formInvalid && formInvalid.invalid) {
+      this.modalService.showJavascriptError('Der Datensatz kann nicht veröffentlicht werden.');
+      return;
+    }
 
-      this.dataService.publish(data)
-        .subscribe(json => {
-            const info = this.mapToDocumentAbstracts([json], json._parent)[0];
+    return this.dataService.publish(data)
+      .toPromise().then(json => {
+          const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
-            this.afterSave$.next(data);
-            this.datasetsChanged$.next({
-              type: UpdateType.Update,
-              data: [info]
-            });
-            this.treeStore.upsert(info.id, info);
-            resolve();
-          }
-          // , err => this.errorService.handle( err )
-        );
-    });
+          this.afterSave$.next(data);
+          this.datasetsChanged$.next({
+            type: UpdateType.Update,
+            data: [info]
+          });
+          this.treeStore.upsert(info.id, info);
+        }
+      );
   }
 
   delete(ids: string[], forAddress?: boolean): void {

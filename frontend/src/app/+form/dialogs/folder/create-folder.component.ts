@@ -1,10 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {DocumentService} from '../../../services/document/document.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {take} from "rxjs/operators";
-import {TreeQuery} from "../../../store/tree/tree.query";
-import {AddressTreeQuery} from "../../../store/address-tree/address-tree.query";
-import {Router} from "@angular/router";
+import {take} from 'rxjs/operators';
+import {TreeQuery} from '../../../store/tree/tree.query';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {Router} from '@angular/router';
 
 @Component({
   templateUrl: './create-folder.component.html',
@@ -16,6 +16,7 @@ export class CreateFolderComponent implements OnInit {
   forAddress: boolean;
   path: string[] = [];
   selectedPage = 0;
+  private pathIds: string[];
 
   private static createNewFolderDoc(folderName: string, parent?: string) {
     const data: any = {
@@ -43,7 +44,7 @@ export class CreateFolderComponent implements OnInit {
 
     query.pathTitles$
       .pipe(
-        take(1) // TODO: check if correctly unsubsribed
+        take(1)
       )
       .subscribe(path => {
         const selectedNode = query.getOpenedDocument();
@@ -65,17 +66,18 @@ export class CreateFolderComponent implements OnInit {
       const folder = CreateFolderComponent.createNewFolderDoc(value, this.parent);
 
       // by saving the folder an update event is sent automatically to notify tree
-      const doc = await this.storageService.save(folder, true, this.forAddress);
+      const doc = await this.storageService.save(folder, true, this.forAddress, this.pathIds);
 
       this.dialogRef.close(doc._id);
 
-      let page = this.forAddress ? '/address' : '/form';
+      const page = this.forAddress ? '/address' : '/form';
       this.router.navigate([page, {id: doc._id}]);
     }
   }
 
   updateParent(parentInfo: any) {
     this.parent = parentInfo.parent;
-    this.path = parentInfo.path;
+    this.path = parentInfo.path.map(node => node.title);
+    this.pathIds = parentInfo.path.map(node => node.id);
   }
 }

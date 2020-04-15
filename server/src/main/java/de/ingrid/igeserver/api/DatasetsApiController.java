@@ -176,6 +176,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             JsonNode savedDoc = documentService.getByDocId(id, type, true);
             ObjectNode result = documentService.getLatestDocument(savedDoc);
+
             return ResponseEntity.ok(result);
 
         } catch (Exception e) {
@@ -308,8 +309,6 @@ public class DatasetsApiController implements DatasetsApi {
                     .map(doc -> {
                         ObjectNode node = documentService.getLatestDocument(doc);
                         node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc, type));
-                        node.remove("@rid");
-                        node.remove("@class");
                         return node;
                     })
                     .collect(Collectors.toList());
@@ -374,8 +373,6 @@ public class DatasetsApiController implements DatasetsApi {
 
             if (docs.totalHits > 0) {
                 ObjectNode doc = documentService.getLatestDocument(docs.hits.get(0));
-                doc.remove("@rid");
-                doc.remove("@class");
 
                 return ResponseEntity.ok(doc);
             } else {

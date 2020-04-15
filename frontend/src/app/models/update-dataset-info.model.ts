@@ -13,4 +13,5 @@ export interface UpdateDatasetInfo {
   type: UpdateType;
   data: DocumentAbstract[];
   parent?: string;
+  path?: string[];
 }

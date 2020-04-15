@@ -1,17 +1,18 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TreeStore} from '../../store/tree/tree.store';
 import {DocumentService} from '../../services/document/document.service';
 import {Subject} from 'rxjs';
-import {TreeAction} from './tree/tree.component';
-import {filter, take} from 'rxjs/operators';
+import {ShortTreeNode, TreeAction} from './tree/tree.component';
+import {filter, map, switchMap, take} from 'rxjs/operators';
+import {untilDestroyed} from 'ngx-take-until-destroy';
 
 @Component({
   selector: 'ige-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
 
   initialExpandNodes = new Subject<string[]>();
   initialActiveNodeId: string;
@@ -28,25 +29,26 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
 
     // setup tree according to initial parameters when switching to the page
-    this.route.params.pipe(take(1))
-      .subscribe(params => {
-        const id = params['id'];
-        if (id !== undefined) {
-
-          this.docService.getPath(id).subscribe(path => {
-            this.initialActiveNodeId = path.pop();
-            this.initialExpandNodes.next(path);
-          });
-
-        }
+    this.route.params
+      .pipe(
+        take(1),
+        filter(params => params['id']),
+        map(params => params['id']),
+        switchMap(id => this.docService.getPath(id))
+      )
+      .subscribe(path => {
+        this.initialActiveNodeId = path.pop();
+        this.initialExpandNodes.next(path);
       });
 
     // only react on initial page when clicking on menu button
     // to reset tree selection
     this.route.params.pipe(
+      untilDestroyed(this),
       filter(params => params['id'] === undefined)
     ).subscribe(params => {
       this.activeTreeNode.next(null);
+      this.storePathTitles([]);
     });
   }
 
@@ -75,9 +77,12 @@ export class SidebarComponent implements OnInit {
 
   }
 
-  storePath(path: string[]) {
+  storePathTitles(path: ShortTreeNode[]) {
     this.treeStore.update({
-      activePathTitles: path
+      activePathTitles: path.map(node => node.title)
     })
+  }
+
+  ngOnDestroy(): void {
   }
 }

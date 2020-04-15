@@ -30,8 +30,6 @@ export class IgeDocument {
 
   constructor(type: string, parent?: string) {
     this._profile = type;
-    if (parent) {
-      this._parent = parent;
-    }
+    this._parent = parent ? parent : null;
   }
 }

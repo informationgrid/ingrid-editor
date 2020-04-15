@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../../../store/tree/tree-node.model';
-import {combineLatest, Observable, of, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {SelectionModel} from '@angular/cdk/collections';
 import {map, tap} from 'rxjs/operators';
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
@@ -19,6 +19,11 @@ export class TreeAction {
   }
 }
 
+export class ShortTreeNode {
+  constructor(public id: string, public title: string) {
+  }
+}
+
 @Component({
   selector: 'ige-tree',
   templateUrl: './tree.component.html',
@@ -28,7 +33,7 @@ export class TreeAction {
 export class TreeComponent implements OnInit, OnDestroy {
 
   @Input() forAddresses: boolean;
-  @Input() expandNodeIds: Observable<string[]>;
+  @Input() expandNodeIds: Subject<string[]>;
   @Input() showHeader = true;
   @Input() showReloadButton = true;
   @Input() activeNodeId: string = null;
@@ -41,7 +46,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     map(data => data.source.selected.map(item => item._id))
   );
   @Output() activate = new EventEmitter<string[]>();
-  @Output() currentPath = new EventEmitter<string[]>();
+  @Output() currentPath = new EventEmitter<ShortTreeNode[]>();
 
   // signal to show that a tree node is loading
   private isLoading: TreeNode;
@@ -153,13 +158,13 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   }
 
-  private getTitlesFromNodePath(node: TreeNode) {
-    const path = [node.title];
+  private getTitlesFromNodePath(node: TreeNode): ShortTreeNode[] {
+    const path = [new ShortTreeNode(node._id, node.title)];
     let parent = node.parent;
     while (parent !== null && parent !== undefined) {
       const parentNode = this.dataSource.getNode(parent);
       parent = parentNode.parent;
-      path.push(parentNode.title);
+      path.push(new ShortTreeNode(parentNode._id, parentNode.title));
     }
     return path.reverse();
   }
@@ -235,8 +240,20 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private async addNewNode(updateInfo: UpdateDatasetInfo) {
+
+    this.activeNodeId = updateInfo.data[0].id + '';
+
     if (updateInfo.parent) {
+
       const parentNodeIndex = this.dataSource.data.findIndex(item => item._id === updateInfo.parent);
+
+      // parent node seems to be nested deeper
+      if (parentNodeIndex === -1) {
+        console.log('Parent not found, using path: ', updateInfo.path);
+        this.expandNodeIds.next(updateInfo.path);
+        return;
+      }
+
       const parentNode = this.dataSource.data[parentNodeIndex];
       parentNode.hasChildren = true;
 
@@ -253,11 +270,9 @@ export class TreeComponent implements OnInit, OnDestroy {
         });
 
     } else {
-      this.dataSource.addNode(updateInfo.parent, updateInfo.data);
+      this.dataSource.addRootNode(updateInfo.data[0]);
       this.updateNodePath(updateInfo);
     }
-
-    this.activeNodeId = updateInfo.data[0].id + '';
 
     // remove selection from previously selected nodes
     this.selectionModel.clear();
@@ -368,7 +383,6 @@ export class TreeComponent implements OnInit, OnDestroy {
                 const nodePath = this.getTitlesFromNodePath(node);
                 this.currentPath.next(nodePath);
                 this.selectionModel.select(node);
-                this.expandNodeIds = null;
               });
           });
         });

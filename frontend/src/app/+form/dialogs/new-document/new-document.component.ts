@@ -41,6 +41,7 @@ export class NewDocumentComponent implements OnInit {
   forAddress: boolean;
   formGroup: FormGroup;
   documentTypes: Observable<DocumentAbstract[]>;
+  private pathIds: string[];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder,
@@ -122,7 +123,8 @@ export class NewDocumentComponent implements OnInit {
 
   updateParent(parentInfo: any) {
     this.result.parent = parentInfo.parent;
-    this.path = parentInfo.path;
+    this.path = parentInfo.path.map(node => node.title);
+    this.pathIds = parentInfo.path.map(node => node.id);
   }
 
   private prepareDocumentTypes(docTypes: DocType[]): Observable<DocumentAbstract[]> {
@@ -182,7 +184,7 @@ export class NewDocumentComponent implements OnInit {
   }
 
   private saveForm(data: IgeDocument) {
-    return this.documentService.save(data, true, this.forAddress).then(
+    return this.documentService.save(data, true, this.forAddress, this.pathIds).then(
       null,
       (err: HttpErrorResponse) => {
         throw err;

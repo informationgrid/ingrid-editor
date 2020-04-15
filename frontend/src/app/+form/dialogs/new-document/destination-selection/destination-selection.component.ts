@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {TreeNode} from '../../../../store/tree/tree-node.model';
 import {of, Subject} from 'rxjs';
 import {DocumentAbstract} from '../../../../store/document/document.model';
+import {ShortTreeNode} from '../../../sidebars/tree/tree.component';
 
 @Component({
   selector: 'ige-destination-selection',
@@ -14,10 +15,11 @@ export class DestinationSelectionComponent implements OnInit {
   @Output() choice = new EventEmitter();
 
   parent: string = null;
-  path: string[] = [];
+  path: ShortTreeNode[] = [];
   rootNode: Partial<DocumentAbstract>;
   activeTreeNode = new Subject<string>();
   activeListItem = new Subject<DocumentAbstract>();
+  private pathIds: string[];
 
   constructor() {
   }
@@ -49,7 +51,7 @@ export class DestinationSelectionComponent implements OnInit {
 
     if (source === 'List') {
       this.activeTreeNode.next(null);
-      this.path = [this.rootNode.title];
+      this.path = [new ShortTreeNode(null, this.rootNode.title)];
     } else {
       this.activeListItem.next(null);
     }
@@ -64,7 +66,7 @@ export class DestinationSelectionComponent implements OnInit {
     return of([this.rootNode]);
   }
 
-  updatePath(path: string[]) {
+  updatePath(path: ShortTreeNode[]) {
     this.path = path;
     this.updateParent([this.parent], 'Tree');
   }

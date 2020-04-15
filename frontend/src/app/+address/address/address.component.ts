@@ -1,4 +1,4 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormPluginsService} from '../../+form/form-shared/form-plugins.service';
@@ -8,7 +8,7 @@ import {DocumentService} from '../../services/document/document.service';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {Subject} from 'rxjs';
-import {TreeAction} from '../../+form/sidebars/tree/tree.component';
+import {ShortTreeNode, TreeAction} from '../../+form/sidebars/tree/tree.component';
 import {IgeDocument} from '../../models/ige-document';
 
 @Component({
@@ -71,9 +71,9 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.router.navigate(['/address', {id: selectedDocIds[0]}]);
   }
 
-  storePath(path: string[]) {
+  storePath(path: ShortTreeNode[]) {
     this.addressTreeStore.update({
-      activePathTitles: path
+      activePathTitles: path.map(node => node.title)
     })
   }
 

@@ -6,7 +6,7 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {TreeNode} from '../../../store/tree/tree-node.model';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {untilDestroyed} from "ngx-take-until-destroy";
+import {untilDestroyed} from 'ngx-take-until-destroy';
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -24,7 +24,7 @@ export class DynamicDatabase implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log("Destroy DynamicDatabase");
+    console.log('Destroy DynamicDatabase');
   }
 
   /** Initial data from database */

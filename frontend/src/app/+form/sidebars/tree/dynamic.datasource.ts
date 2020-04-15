@@ -23,6 +23,8 @@ export class DynamicDataSource {
   sortNodesByFolderFirst = (a: TreeNode, b: TreeNode) => {
     if (a.profile === 'FOLDER' && b.profile === 'FOLDER') {
       return a.title.localeCompare(b.title);
+    } else if (a.profile !== 'FOLDER' && b.profile !== 'FOLDER') {
+      return a.title.localeCompare(b.title);
     } else if (a.profile === 'FOLDER') {
       return -1;
     } else if (b.profile === 'FOLDER') {
@@ -134,31 +136,26 @@ export class DynamicDataSource {
     });
   }
 
-  addNode(parent: string, docs: DocumentAbstract[]) {
-    const index = this.data.findIndex(node => node._id === parent);
-    // const parentNode = this.data[index];
+  addRootNode(doc: DocumentAbstract) {
 
-    let childLevel = 0;
-    if (parent) {
-      childLevel = this.data[index].level + 1;
-    }
-    /*
-    let newNodes = this._database.mapDocumentsToTreeNodes(docs, childLevel);
-    newNodes.forEach(newNode => {
-      const insertIndex = this.data.findIndex((node, indexChild) => {
-        if (indexChild > index) {
-          if (node.level === parentNode.level) {
-            return indexChild - 1;
-          } else if (node.level === parentNode.level + 1 && node.title.localeCompare(newNode.title) >= 0) {
-            return indexChild;
-          }
-        }
-      });
-      this.data.splice(insertIndex, 0, newNode);
-    });
-    */
-    this.data.splice(index + 1, 0, ...DynamicDatabase.mapDocumentsToTreeNodes(docs, childLevel));
+    const docAsTreeNode = DynamicDatabase.mapDocumentsToTreeNodes([doc], 0);
+
+    const indexOfPreviousNodeInTree = this.getIndexToInsertNode(docAsTreeNode, doc);
+
+    this.data.splice(indexOfPreviousNodeInTree, 0, ...docAsTreeNode);
     this.dataChange.next(this.data);
+  }
+
+  private getIndexToInsertNode(docAsTreeNode: TreeNode[], doc: DocumentAbstract): number {
+    // get calculated position with only root nodes (using sort method)
+    const indexOfNewDoc = this.data
+      .filter(document => document.level === 0)
+      .concat(docAsTreeNode)
+      .sort(this.sortNodesByFolderFirst)
+      .findIndex(document => document._id === doc.id);
+
+    // get index of complete tree with eventually expanded nodes
+    return this.data.indexOf(this.data[indexOfNewDoc]);
   }
 
   getNode(nodeId: string): TreeNode {
