@@ -1,7 +1,7 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {MessageService} from '../../../services/message.service';
 import {untilDestroyed} from 'ngx-take-until-destroy';
-import {animate, state, style, transition, trigger} from '@angular/animations';
+import {animate, style, transition, trigger} from '@angular/animations';
 
 export interface FormMessageType {
   severity: 'info' | 'error';
@@ -34,7 +34,7 @@ export class FormMessageComponent implements OnInit, OnDestroy {
 
   private defaultDuration = 3000;
 
-  constructor(private messageService: MessageService) { }
+  constructor(private messageService: MessageService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.messageService.message$
@@ -51,8 +51,13 @@ export class FormMessageComponent implements OnInit, OnDestroy {
     this.type = type;
 
     if (type.severity === 'info') {
-      this.timer = setTimeout(() => this.type = null, type.duration || this.defaultDuration);
+      this.timer = setTimeout(() => this.resetMessage(), type.duration || this.defaultDuration);
     }
+  }
+
+  private resetMessage() {
+    this.type = null;
+    this.cdr.markForCheck();
   }
 
   getIconClass(severity: 'info' | 'error') {

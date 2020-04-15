@@ -1,20 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  EventEmitter,
-  HostBinding,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {IgeDocument} from '../../models/ige-document';
 import {TreeQuery} from '../../store/tree/tree.query';
 import {untilDestroyed} from 'ngx-take-until-destroy';
-import {animate, style, transition, trigger} from "@angular/animations";
+import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'ige-form-info',
@@ -45,7 +34,7 @@ export class FormInfoComponent implements OnInit, OnDestroy {
   showMore = false;
   path: string[] = [];
 
-  constructor(private treeQuery: TreeQuery, private element: ElementRef) {
+  constructor(private treeQuery: TreeQuery, private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -53,7 +42,12 @@ export class FormInfoComponent implements OnInit, OnDestroy {
       .pipe(
         untilDestroyed(this)
       )
-      .subscribe(path => this.path = path.slice(0, path.length - 1));
+      .subscribe(path => this.updatePath(path));
+  }
+
+  private updatePath(path: string[]) {
+    this.path = path.slice(0, path.length - 1);
+    this.cdr.markForCheck();
   }
 
   ngOnDestroy(): void {
