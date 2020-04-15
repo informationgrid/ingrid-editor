@@ -19,7 +19,7 @@ export class MenuService {
   _menuItems: MenuItem[] = [
     {name: 'Übersicht', path: '/dashboard'},
     {name: 'Daten', path: '/form'},
-    {name: 'Addressen', path: '/address'},
+    {name: 'Adressen', path: '/address'},
     {name: 'Research', path: '/research', featureFlag: 'AP3'},
     {name: 'Benutzer', path: '/user', onlyAdmin: true, featureFlag: 'AP3'},
     {name: 'Im-/Export', path: '/importExport', onlyAdmin: true},

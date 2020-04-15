@@ -1,5 +1,9 @@
 @import "../../variables";
 
+::ng-deep .mat-drawer {
+  border: 0;
+}
+
 .mat-list-base {
   padding-top: 0;
 }

@@ -1,6 +1,6 @@
 <div class="search-content">
     <mat-form-field class="search" appearance="outline">
-        <input #query matInput placeholder="Daten, Adresse oder ID" aria-label="Search"
+        <input #query matInput placeholder="Datensatz, Adresse..." aria-label="Search"
                (keyup)="search(query.value, $event)"
                [matAutocomplete]="auto">
         <button *ngIf="query.value.length > 0" mat-icon-button matSuffix class="field-close" (click)="query.value = ''">

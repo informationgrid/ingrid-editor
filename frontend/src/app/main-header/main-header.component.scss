@@ -6,6 +6,7 @@
 
 .header-info {
   font-size: 14px;
+  padding-right: 32px;
 }
 
 .mat-toolbar-row, .mat-toolbar-single-row, .mat-toolbar-multiple-rows {
@@ -39,8 +40,24 @@
 }
 
 .user-popup {
-  background-color: $ige-primary;
-  color: #ffffff;
+  height: 32px;
+  width: 32px;
+  line-height: 32px;
+  background-color: $ige-background;
+  color: $ige-primary;
+
+  &:hover {
+      background-color: darken($ige-background, 5%);
+   }
+
+  &[aria-expanded="true"] {
+    background-color: $ige-primary;
+    color: #ffffff;
+
+    &:hover {
+      background-color: lighten($ige-primary, 8%);
+    }
+  }
 }
 
 .user-popup-header {
