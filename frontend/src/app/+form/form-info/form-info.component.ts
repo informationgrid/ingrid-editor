@@ -34,7 +34,7 @@ export class FormInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('host') host: ElementRef;
 
   path: string[] = [];
-  private scrollHeaderOffsetLeft: number;
+  scrollHeaderOffsetLeft: number;
 
   constructor(private treeQuery: TreeQuery, private cdr: ChangeDetectorRef,
               private sessionQuery: SessionQuery) {
