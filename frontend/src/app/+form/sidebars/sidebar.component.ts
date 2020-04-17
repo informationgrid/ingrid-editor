@@ -1,18 +1,19 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TreeStore} from '../../store/tree/tree.store';
 import {DocumentService} from '../../services/document/document.service';
 import {Subject} from 'rxjs';
 import {ShortTreeNode, TreeAction} from './tree/tree.component';
 import {filter, map, switchMap, take} from 'rxjs/operators';
-import {untilDestroyed} from 'ngx-take-until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit, OnDestroy {
+export class SidebarComponent implements OnInit {
 
   initialExpandNodes = new Subject<string[]>();
   updateTree = new Subject<TreeAction[]>();
@@ -82,6 +83,4 @@ export class SidebarComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnDestroy(): void {
-  }
 }

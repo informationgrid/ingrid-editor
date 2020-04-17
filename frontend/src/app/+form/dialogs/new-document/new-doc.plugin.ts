@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Plugin} from '../../../+behaviours/plugin';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {MatDialog} from '@angular/material/dialog';
@@ -7,11 +7,13 @@ import {NewDocumentComponent} from './new-document.component';
 import {MessageService} from '../../../services/message.service';
 import {FormularService} from '../../formular.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 export type DocType = { id: string, label: string, icon: string };
 
+@UntilDestroy()
 @Injectable()
-export class NewDocumentPlugin extends Plugin implements OnDestroy {
+export class NewDocumentPlugin extends Plugin {
   id = 'plugin.newDoc';
   _name = 'Neues Dokument Plugin';
   defaultActive = true;
@@ -26,9 +28,6 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
 
   }
 
-  ngOnDestroy(): void {
-  }
-
   get name() {
     return this._name;
   }
@@ -39,7 +38,9 @@ export class NewDocumentPlugin extends Plugin implements OnDestroy {
     );
 
     // add event handler for revert
-    this.toolbarService.toolbarEvent$.subscribe(eventId => {
+    this.toolbarService.toolbarEvent$
+      .pipe(untilDestroyed(this))
+      .subscribe(eventId => {
       if (eventId === 'NEW_DOC') {
         this.newDoc();
       }

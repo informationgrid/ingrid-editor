@@ -8,7 +8,7 @@ import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {UpdateType} from '../../../models/update-type.enum';
 import {DynamicDataSource} from './dynamic.datasource';
 import {DynamicDatabase} from './dynamic.database';
-import {untilDestroyed} from 'ngx-take-until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -24,6 +24,7 @@ export class ShortTreeNode {
   }
 }
 
+@UntilDestroy()
 @Component({
   selector: 'ige-tree',
   templateUrl: './tree.component.html',

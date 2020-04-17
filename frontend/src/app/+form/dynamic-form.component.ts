@@ -17,17 +17,18 @@ import {CodelistService} from '../services/codelist/codelist.service';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {UpdateType} from '../models/update-type.enum';
 import {SessionQuery} from '../store/session.query';
-import {untilDestroyed} from 'ngx-take-until-destroy';
 import {FormularService} from './formular.service';
 import {FormPluginsService} from './form-shared/form-plugins.service';
 import {fromEvent} from 'rxjs';
 import {distinctUntilChanged, filter, map, pairwise, share, throttleTime} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 enum Direction {
   Up = 'Up',
   Down = 'Down'
 }
 
+@UntilDestroy()
 @Component({
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss']
@@ -37,7 +38,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('scrollForm') scrollFormEl: ElementRef;
 
-  private readonly HeaderCollapseDiffInPixel = 300;
   private readonly HeaderDiffMinimizedForScrolling = 100;
 
   sidebarWidth = 15;

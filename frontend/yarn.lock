@@ -2156,6 +2156,11 @@
     replace-in-file "^4.1.3"
     schematics-utilities "^1.1.1"
 
+"@ngneat/until-destroy@^7.1.6":
+  version "7.1.6"
+  resolved "https://registry.yarnpkg.com/@ngneat/until-destroy/-/until-destroy-7.1.6.tgz#e38fb56565588af68fd8612b6c5e47e774b5e1c1"
+  integrity sha512-sJDdoz5IEwv1pk4/ystOgPDHX0dK/EIda2yDXQe8DQzE/az88gElNLbGHbjMLUuo6cQgep5LA6Ecl/L6ltIlig==
+
 "@ngtools/webpack@9.1.0":
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-9.1.0.tgz#c082d9e64e5900189e4612f657d68e5b81ae277c"
@@ -10213,13 +10218,6 @@ ng-packagr@^9.0.0:
     stylus "^0.54.7"
     terser "^4.3.8"
     update-notifier "^4.0.0"
-
-ngx-take-until-destroy@^5.4.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/ngx-take-until-destroy/-/ngx-take-until-destroy-5.4.0.tgz#6c8606ee956584dc947e2eb609c48b8f98b09900"
-  integrity sha512-e+VfCrHbLybdKWoQ8prdhmVzWI6vTnedr/9cVGQTkfepMdLz5D++VDk+Wnbs7mru6S9C+kIpNWUlh2YMPl928Q==
-  dependencies:
-    tslib "^1.9.0"
 
 nice-try@^1.0.4:
   version "1.0.5"

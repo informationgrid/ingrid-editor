@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
@@ -9,12 +9,13 @@ import {MessageService} from '../../../services/message.service';
 import {IgeDocument} from '../../../models/ige-document';
 import {MatDialog} from '@angular/material/dialog';
 import {HttpErrorResponse} from '@angular/common/http';
-import {untilDestroyed} from 'ngx-take-until-destroy';
 import {merge} from 'rxjs';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Injectable()
-export class SavePlugin extends Plugin implements OnDestroy {
+export class SavePlugin extends Plugin {
   id = 'plugin.publish';
   _name = 'Publish Plugin';
   defaultActive = true;
@@ -92,9 +93,6 @@ export class SavePlugin extends Plugin implements OnDestroy {
 
   unregister() {
     super.unregister();
-  }
-
-  ngOnDestroy(): void {
   }
 
 }

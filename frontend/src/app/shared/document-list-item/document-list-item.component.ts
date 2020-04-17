@@ -1,15 +1,16 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {Observable, Subject} from 'rxjs';
 import {TreeNode} from '../../store/tree/tree-node.model';
-import {untilDestroyed} from 'ngx-take-until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-document-list-item',
   templateUrl: './document-list-item.component.html',
   styleUrls: ['./document-list-item.component.scss']
 })
-export class DocumentListItemComponent implements OnInit, OnDestroy {
+export class DocumentListItemComponent implements OnInit {
 
   @Input() docs: Observable<DocumentAbstract[] | TreeNode[]>;
   @Input() doc: DocumentAbstract | TreeNode;
@@ -33,9 +34,6 @@ export class DocumentListItemComponent implements OnInit, OnDestroy {
         )
         .subscribe(doc => this.currentSelection = doc);
     }
-  }
-
-  ngOnDestroy(): void {
   }
 
   makeSelection(doc: DocumentAbstract) {

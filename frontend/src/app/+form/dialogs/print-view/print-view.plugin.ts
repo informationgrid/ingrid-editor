@@ -1,13 +1,14 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Plugin} from '../../../+behaviours/plugin';
 import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
 import {PrintViewDialogComponent} from './print-view-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import {untilDestroyed} from 'ngx-take-until-destroy';
 import {TreeQuery} from '../../../store/tree/tree.query';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Injectable()
-export class PrintViewPlugin extends Plugin implements OnDestroy {
+export class PrintViewPlugin extends Plugin {
   id = 'plugin.printView';
   _name = 'Print View Plugin';
   defaultActive = true;
@@ -16,9 +17,6 @@ export class PrintViewPlugin extends Plugin implements OnDestroy {
               private treeQuery: TreeQuery,
               private dialog: MatDialog) {
     super();
-  }
-
-  ngOnDestroy(): void {
   }
 
   get name() {

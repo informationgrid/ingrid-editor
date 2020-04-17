@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable, of, Subject} from 'rxjs';
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {DocumentService} from '../../../services/document/document.service';
@@ -6,14 +6,15 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {TreeNode} from '../../../store/tree/tree-node.model';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {untilDestroyed} from 'ngx-take-until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
  * the descendants data from the database.
  */
+@UntilDestroy()
 @Injectable()
-export class DynamicDatabase implements OnDestroy {
+export class DynamicDatabase {
 
   treeUpdates = new Subject<UpdateDatasetInfo>();
 
@@ -21,10 +22,6 @@ export class DynamicDatabase implements OnDestroy {
     this.docService.datasetsChanged$
       .pipe(untilDestroyed(this))
       .subscribe(docs => this.treeUpdates.next(docs));
-  }
-
-  ngOnDestroy(): void {
-    console.log('Destroy DynamicDatabase');
   }
 
   /** Initial data from database */

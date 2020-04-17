@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormPluginsService} from '../../+form/form-shared/form-plugins.service';
@@ -16,7 +16,7 @@ import {IgeDocument} from '../../models/ige-document';
   templateUrl: './address.component.html',
   styleUrls: ['./address.component.scss']
 })
-export class AddressComponent implements OnInit, OnDestroy {
+export class AddressComponent implements OnInit {
   sidebarWidth = 20;
   form = new FormGroup({});
   fields: FormlyFieldConfig[] = [];
@@ -142,6 +142,4 @@ export class AddressComponent implements OnInit, OnDestroy {
       .scrollIntoView(false);
   }
 
-  ngOnDestroy(): void {
-  }
 }

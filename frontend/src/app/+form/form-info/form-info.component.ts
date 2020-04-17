@@ -6,7 +6,6 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   ViewChild
@@ -14,17 +13,19 @@ import {
 import {FormGroup} from '@angular/forms';
 import {IgeDocument} from '../../models/ige-document';
 import {TreeQuery} from '../../store/tree/tree.query';
-import {untilDestroyed} from 'ngx-take-until-destroy';
-import {fromEvent, merge} from 'rxjs';
+import {combineLatest, fromEvent} from 'rxjs';
 import {SessionQuery} from '../../store/session.query';
+import {startWith} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-form-info',
   templateUrl: './form-info.component.html',
   styleUrls: ['./form-info.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FormInfoComponent implements OnInit, OnDestroy, AfterViewInit {
+export class FormInfoComponent implements OnInit, AfterViewInit {
 
   @Input() form: FormGroup;
   @Input() model: IgeDocument;
@@ -42,15 +43,13 @@ export class FormInfoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.treeQuery.pathTitles$
-      .pipe(
-        untilDestroyed(this)
-      )
+      .pipe(untilDestroyed(this))
       .subscribe(path => this.updatePath(path));
 
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.initResizeBehavior(), 1000);
+    setTimeout(() => this.initResizeBehavior(), 500);
   }
 
   private updatePath(path: string[]) {
@@ -59,24 +58,24 @@ export class FormInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initResizeBehavior() {
-    merge(
+    combineLatest([
       this.sessionQuery.isSidebarExpanded$,
       this.sessionQuery.sidebarWidth$,
-      fromEvent(window, 'resize')
-    ).pipe(
-      untilDestroyed(this)
-    ).subscribe(() => {
-      const offsetLeft = this.host.nativeElement.offsetLeft;
-      const newValue = offsetLeft + 56;
-      if (this.scrollHeaderOffsetLeft !== newValue) {
-        this.scrollHeaderOffsetLeft = newValue;
-        this.cdr.markForCheck();
-      }
-    });
+      fromEvent(window, 'resize').pipe(startWith(0))
+    ]).pipe(untilDestroyed(this))
+      .subscribe((result) => {
+        console.log('resize!', result);
+        setTimeout(() => {
+          const offsetLeft = this.host.nativeElement.offsetLeft;
+          const menuWidth = result[0] ? 300 : 56;
+          const newValue = offsetLeft + menuWidth;
+          if (this.scrollHeaderOffsetLeft !== newValue) {
+            this.scrollHeaderOffsetLeft = newValue;
+            this.cdr.markForCheck();
+          }
+        }, 100);
+      });
 
-  }
-
-  ngOnDestroy(): void {
   }
 
 }

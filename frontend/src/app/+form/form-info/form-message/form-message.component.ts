@@ -1,7 +1,7 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {MessageService} from '../../../services/message.service';
-import {untilDestroyed} from 'ngx-take-until-destroy';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 export interface FormMessageType {
   severity: 'info' | 'error';
@@ -9,6 +9,7 @@ export interface FormMessageType {
   duration?: number;
 }
 
+@UntilDestroy()
 @Component({
   selector: 'ige-form-message',
   templateUrl: './form-message.component.html',
@@ -26,7 +27,7 @@ export interface FormMessageType {
     ])
   ]
 })
-export class FormMessageComponent implements OnInit, OnDestroy {
+export class FormMessageComponent implements OnInit {
 
   type: FormMessageType;
 
@@ -40,9 +41,6 @@ export class FormMessageComponent implements OnInit, OnDestroy {
     this.messageService.message$
       .pipe(untilDestroyed(this))
       .subscribe(type => this.handleMessage(type));
-  }
-
-  ngOnDestroy(): void {
   }
 
   private handleMessage(type: FormMessageType) {
