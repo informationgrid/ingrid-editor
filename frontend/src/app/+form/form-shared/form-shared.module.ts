@@ -25,20 +25,21 @@ import {ChooseFolderComponent} from '../dialogs/folder/choose-folder/choose-fold
 import {BreadcrumbComponent} from '../form-info/breadcrumb/breadcrumb.component';
 import {MatInputModule} from '@angular/material/input';
 import {IgeFormlyModule} from '../../formly/ige-formly.module';
-import {FormInfoComponent} from "../form-info/form-info.component";
-import {HeaderNavigationComponent} from "../form-info/header-navigation/header-navigation.component";
-import {HeaderTitleRowComponent} from "../form-info/header-title-row/header-title-row.component";
-import {HeaderMoreComponent} from "../form-info/header-more/header-more.component";
-import {FormMessageComponent} from "../form-info/form-message/form-message.component";
-import {MatTabsModule} from "@angular/material/tabs";
-import {SharedModule} from "../../shared/shared.module";
-import {DestinationSelectionComponent} from "../dialogs/new-document/destination-selection/destination-selection.component";
+import {FormInfoComponent} from '../form-info/form-info.component';
+import {HeaderNavigationComponent} from '../form-info/header-navigation/header-navigation.component';
+import {HeaderTitleRowComponent} from '../form-info/header-title-row/header-title-row.component';
+import {HeaderMoreComponent} from '../form-info/header-more/header-more.component';
+import {FormMessageComponent} from '../form-info/form-message/form-message.component';
+import {MatTabsModule} from '@angular/material/tabs';
+import {SharedModule} from '../../shared/shared.module';
+import {DestinationSelectionComponent} from '../dialogs/new-document/destination-selection/destination-selection.component';
+import {HeaderTitleRowMinComponent} from '../form-info/header-title-row-min/header-title-row-min.component';
 
 
 @NgModule({
   declarations: [
     FormToolbarComponent, ChooseFolderComponent, BreadcrumbComponent,
-    FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent,
+    FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent, HeaderTitleRowMinComponent,
     FormMessageComponent, DestinationSelectionComponent
   ],
   imports: [

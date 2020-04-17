@@ -1,5 +1,9 @@
 @import "src/variables";
 
+:host {
+  z-index: 10000;
+}
+
 .mat-toolbar {
   min-height: 56px;
   background-color: $ige-background-bar;

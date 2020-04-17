@@ -21,7 +21,7 @@ import {untilDestroyed} from 'ngx-take-until-destroy';
 import {FormularService} from './formular.service';
 import {FormPluginsService} from './form-shared/form-plugins.service';
 import {fromEvent} from 'rxjs';
-import {debounceTime, distinctUntilChanged, filter, map, pairwise, share, tap, throttleTime} from 'rxjs/operators';
+import {distinctUntilChanged, filter, map, pairwise, share, throttleTime} from 'rxjs/operators';
 
 enum Direction {
   Up = 'Up',
@@ -52,7 +52,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sections: string[];
 
-  minimizeFormHeader = false;
+  showScrollHeader = false;
 
   form: FormGroup = new FormGroup({});
 
@@ -64,8 +64,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private formUtils: FormUtils;
   private showValidationErrors = false;
-  private ignoreScrollEvent = false;
-  private lastDirection: Direction;
+  private readonly ScrollPositionToToggleHeader = 90;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
@@ -229,7 +228,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   rememberSizebarWidth(info) {
-    console.log('Sizebar width: ', info);
     this.formularService.updateSidebarWidth(info.sizes[0]);
   }
 
@@ -245,11 +243,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     const scroll$ = fromEvent(element, 'scroll').pipe(
       untilDestroyed(this),
       throttleTime(10), // do not handle all events
-      filter(el => this.scrollbarWontDisappearOnMinimize(element)), // do not minimize if scrollbar would disappear on minimize
+      // filter(el => this.scrollbarWontDisappearOnMinimize(element)), // do not minimize if scrollbar would disappear on minimize
       map(() => element.scrollTop),
       pairwise(), // list previous value
-      map(([y1, y2]): Direction => this.determineHeaderMode(y2, y1)),
-      debounceTime(10), // wait for multiple results and only choose the latest
+      map(([y1, y2]): Direction => this.determineToggleState(y2, y1)),
+      // debounceTime(10), // wait for multiple results and only choose the latest
       distinctUntilChanged(),
       share()
     );
@@ -262,45 +260,19 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       filter(direction => direction === Direction.Down)
     );
 
-    showFullHeader$.subscribe(() => this.minimizeFormHeader = false);
-    showMinimizedHeader$.subscribe(() => this.minimizeFormHeader = true);
+    showFullHeader$.subscribe(() => this.showScrollHeader = true);
+    showMinimizedHeader$.subscribe(() => this.showScrollHeader = false);
+  }
+
+  private determineToggleState(y2, y1) {
+    const conditionScrollUp = y2 < y1 && y2 > this.ScrollPositionToToggleHeader;
+    const conditionScrollDown = y2 > y1 && y2 > this.ScrollPositionToToggleHeader;
+    return (conditionScrollUp || conditionScrollDown) ? Direction.Up : Direction.Down;
   }
 
   private scrollbarWontDisappearOnMinimize(element) {
     const hasScrollbarInMinimizeMode = element.scrollHeight - element.clientHeight > this.HeaderDiffMinimizedForScrolling;
-    return this.minimizeFormHeader || hasScrollbarInMinimizeMode;
+    return this.showScrollHeader || hasScrollbarInMinimizeMode;
   }
 
-  private determineHeaderMode(y2, y1) {
-    let diff = this.ignoreScrollEvent && this.lastDirection === Direction.Up ? this.HeaderCollapseDiffInPixel : 0;
-    diff = this.ignoreScrollEvent && this.lastDirection === Direction.Down ? -this.HeaderCollapseDiffInPixel : diff;
-    const lastIgnoreScrollEvent = this.ignoreScrollEvent;
-    this.ignoreScrollEvent = false;
-
-    if ((y2 - (y1 + diff)) === 0) {
-      return this.lastDirection;
-    }
-
-    const dir = y2 < (y1 + diff) ? Direction.Up : Direction.Down
-    let showFullHeader = false;
-
-    // console.log(`calc compare y1: ${y1 + diff} y2: ${y2} => dir: ${dir}`);
-
-    if (dir === Direction.Down && !this.minimizeFormHeader) {
-      this.ignoreScrollEvent = true;
-    } else if (dir === Direction.Up && y2 < 48) {
-      showFullHeader = true;
-      if (this.minimizeFormHeader) {
-        this.ignoreScrollEvent = true;
-      }
-    } else if (dir === Direction.Up && (lastIgnoreScrollEvent || !this.minimizeFormHeader) && y2 < this.HeaderCollapseDiffInPixel) {
-      showFullHeader = true;
-      if (this.minimizeFormHeader) {
-        this.ignoreScrollEvent = true;
-      }
-    }
-
-    this.lastDirection = showFullHeader ? Direction.Up : Direction.Down;
-    return this.lastDirection;
-  }
 }

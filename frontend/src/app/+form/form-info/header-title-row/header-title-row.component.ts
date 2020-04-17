@@ -25,7 +25,6 @@ export class HeaderTitleRowComponent implements OnInit {
   @Input() model: IgeDocument;
   @Input() sections: string[];
 
-  @Output() toggleMore = new EventEmitter();
   @Output() jumpToSection = new EventEmitter();
 
   @ViewChild('titleInput') titleInput: ElementRef;
@@ -47,7 +46,6 @@ export class HeaderTitleRowComponent implements OnInit {
 
   toggleMoreInfo() {
     this.showMore = !this.showMore;
-    this.toggleMore.next(this.showMore);
   }
 
   getIcon() {

@@ -1,45 +1,28 @@
 @import "../../../variables";
 
 :host {
-  position: sticky;
-  z-index: 10;
-  top: 0;
   background-color: $ige-background;
-  overflow: hidden;
 
-  ::ng-deep ige-header-navigation.mini {
-    display: none;
-  }
-
-  &.scrolled {
-    box-shadow: 0 0 2px 0 #666666;
-
-    .form-info-bar {
-      padding: 1px 10px 1px 16px;
-    }
-
-    ige-breadcrumb {
-      display: none;
-    }
+  .scroll-header {
+    position: fixed;
+    background-color: $ige-background;
+    box-shadow: 0 4px 2px -3px #666666;
+    left: 0;
+    right: 17px;
+    top: 104px;
+    z-index: 1000;
+    transform: translateY(-50px);
+    transition: transform 300ms ease-in-out, -webkit-transform 300ms ease-in-out, -o-transform 300ms ease-in-out;
 
     ::ng-deep .anchor-navigation {
       margin-left: 0;
-      padding: 8px 0 2px;
+      padding: 8px 0 4px;
     }
+  }
 
-    ::ng-deep ige-header-navigation.mini {
-      display: inline-block;
-    }
-
-    ::ng-deep ige-header-navigation, ::ng-deep ige-header-more {
-      display: none;
-    }
-
-    ::ng-deep ige-header-title-row .title {
-      padding-bottom: 0;
-      .label, .more {
-        display: none;
-      }
+  &.scrolled {
+    .scroll-header {
+      transform: translateY(0);
     }
   }
 }

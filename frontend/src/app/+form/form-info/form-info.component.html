@@ -1,13 +1,21 @@
-<div class="form-info-bar" (click)="showDateBar = !showDateBar">
+<div #host class="form-info-bar">
 
     <ige-breadcrumb [path]="path" [hideLastSeparator]="false"></ige-breadcrumb>
 
     <ige-header-title-row [form]="form"
                           [model]="model"
                           [sections]="sections"
-                          (jumpToSection)="jumpToSection.next($event)"
-                          (toggleMore)="showMore = !showMore"></ige-header-title-row>
+                          (jumpToSection)="jumpToSection.next($event)"></ige-header-title-row>
 
 </div>
 
 <ige-form-message></ige-form-message>
+
+<div class="scroll-header" [style.left]="scrollHeaderOffsetLeft + 'px'">
+
+    <ige-header-title-row-min [form]="form"
+                              [model]="model"
+                              [sections]="sections"
+                              (jumpToSection)="jumpToSection.next($event)"></ige-header-title-row-min>
+
+</div>

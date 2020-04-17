@@ -5,8 +5,6 @@
                   [ngClass]="['document-icon',getStateClass()]"></mat-icon>
     </div>
 
-    <ige-header-navigation class="mini" fxFlex [sections]="sections" (jumpToSection)="jumpToSection.next($event)"></ige-header-navigation>
-
     <span *ngIf="!showTitleInput" fxFlex class="label" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
 
     <form [formGroup]="form" [class.hide]="!showTitleInput">
