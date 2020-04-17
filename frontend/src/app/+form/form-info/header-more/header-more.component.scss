@@ -12,8 +12,8 @@
   letter-spacing: 0.5px;
 
   > div > div:nth-child(1) {
-    width: 230px;
-    color: $ige-comment-color;
+    width: 296px;
+    color: #767676;
   }
 
   .padding-below {
@@ -25,7 +25,7 @@
   }
 
   .state {
-    font-weight: 500;
+    font-weight: 400;
 
     &.working {
       color: $state-working-color;

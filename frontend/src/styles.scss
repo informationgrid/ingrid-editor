@@ -57,7 +57,11 @@ h1 {
 
 .clickable:hover {
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.04) !important;
+
+  &.dark {
+    background-color: darken($ige-background-bar, 5%) !important;
+  }
 }
 
 .hide {

@@ -5,7 +5,10 @@
                   [ngClass]="['document-icon',getStateClass()]"></mat-icon>
     </div>
 
-    <span *ngIf="!showTitleInput" fxFlex class="label" (click)="editTitle()">{{form.get('title')?.value || 'Kein Titel'}}</span>
+    <span *ngIf="!showTitleInput" fxFlex class="label" (click)="editTitle()">
+        {{form.get('title')?.value || 'Kein Titel'}}
+        <mat-icon class="pull-right" svgIcon="cursor-edit"></mat-icon>
+    </span>
 
     <form [formGroup]="form" [class.hide]="!showTitleInput">
         <mat-form-field appearance="outline">
@@ -15,10 +18,10 @@
         </mat-form-field>
     </form>
 
-    <button mat-icon-button mat-flat-button class="more" [class.expanded]="showMore" (click)="toggleMoreInfo()">
+    <button mat-icon-button mat-flat-button class="more clickable dark" [class.expanded]="showMore" (click)="toggleMoreInfo()">
         <mat-icon class="animated">keyboard_arrow_down</mat-icon>
     </button>
-    <button mat-icon-button mat-flat-button class="menu">
+    <button mat-icon-button mat-flat-button class="menu clickable dark">
         <mat-icon>more_vert</mat-icon>
     </button>
 
