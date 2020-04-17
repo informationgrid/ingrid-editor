@@ -9,15 +9,6 @@ import {animate, style, transition, trigger} from '@angular/animations';
   selector: 'ige-form-info',
   templateUrl: './form-info.component.html',
   styleUrls: ['./form-info.component.scss'],
-  animations: [
-    trigger('grow', [
-      transition('void <=> *', []),
-      transition('* <=> *', [
-        style({height: '{{startHeight}}px', opacity: 0}),
-        animate('.2s ease'),
-      ], {params: {startHeight: 0}})
-    ])
-  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormInfoComponent implements OnInit, OnDestroy {

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './form-shared/toolbar/form-toolbar.service';
@@ -20,6 +20,13 @@ import {SessionQuery} from '../store/session.query';
 import {untilDestroyed} from 'ngx-take-until-destroy';
 import {FormularService} from './formular.service';
 import {FormPluginsService} from './form-shared/form-plugins.service';
+import {fromEvent} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, map, pairwise, share, tap, throttleTime} from 'rxjs/operators';
+
+enum Direction {
+  Up = 'Up',
+  Down = 'Down'
+}
 
 @Component({
   templateUrl: './dynamic-form.component.html',
@@ -27,6 +34,11 @@ import {FormPluginsService} from './form-shared/form-plugins.service';
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild('scrollForm') scrollFormEl: ElementRef;
+
+  private readonly HeaderCollapseDiffInPixel = 300;
+  private readonly HeaderDiffMinimizedForScrolling = 100;
 
   sidebarWidth = 15;
 
@@ -40,7 +52,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sections: string[];
 
-  isScrolled = false;
+  minimizeFormHeader = false;
 
   form: FormGroup = new FormGroup({});
 
@@ -52,6 +64,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private formUtils: FormUtils;
   private showValidationErrors = false;
+  private ignoreScrollEvent = false;
+  private lastDirection: Direction;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
@@ -108,10 +122,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.loadDocument(id);
         }
       });
+
   }
 
   // noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
+
+    this.initScrollBehavior();
+
     // add form errors check when saving/publishing
     this.documentService.beforeSave$
       .pipe(untilDestroyed(this))
@@ -124,11 +142,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   hotkeys(event: KeyboardEvent) {
     this.formUtils.addHotkeys(event, this.documentService, this.form);
   }
-
-  onScroll($event) {
-    this.isScrolled = $event.target.scrollTop > 0;
-  }
-
 
   /**
    * Load a document and prepare the form for the data.
@@ -225,5 +238,69 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .querySelectorAll('ige-section-wrapper')
       .item(index)
       .scrollIntoView(false);
+  }
+
+  private initScrollBehavior() {
+    const element = this.scrollFormEl.nativeElement;
+    const scroll$ = fromEvent(element, 'scroll').pipe(
+      untilDestroyed(this),
+      throttleTime(10), // do not handle all events
+      filter(el => this.scrollbarWontDisappearOnMinimize(element)), // do not minimize if scrollbar would disappear on minimize
+      map(() => element.scrollTop),
+      pairwise(), // list previous value
+      map(([y1, y2]): Direction => this.determineHeaderMode(y2, y1)),
+      debounceTime(10), // wait for multiple results and only choose the latest
+      distinctUntilChanged(),
+      share()
+    );
+
+    const showFullHeader$ = scroll$.pipe(
+      filter(direction => direction === Direction.Up)
+    );
+
+    const showMinimizedHeader$ = scroll$.pipe(
+      filter(direction => direction === Direction.Down)
+    );
+
+    showFullHeader$.subscribe(() => this.minimizeFormHeader = false);
+    showMinimizedHeader$.subscribe(() => this.minimizeFormHeader = true);
+  }
+
+  private scrollbarWontDisappearOnMinimize(element) {
+    const hasScrollbarInMinimizeMode = element.scrollHeight - element.clientHeight > this.HeaderDiffMinimizedForScrolling;
+    return this.minimizeFormHeader || hasScrollbarInMinimizeMode;
+  }
+
+  private determineHeaderMode(y2, y1) {
+    let diff = this.ignoreScrollEvent && this.lastDirection === Direction.Up ? this.HeaderCollapseDiffInPixel : 0;
+    diff = this.ignoreScrollEvent && this.lastDirection === Direction.Down ? -this.HeaderCollapseDiffInPixel : diff;
+    const lastIgnoreScrollEvent = this.ignoreScrollEvent;
+    this.ignoreScrollEvent = false;
+
+    if ((y2 - (y1 + diff)) === 0) {
+      return this.lastDirection;
+    }
+
+    const dir = y2 < (y1 + diff) ? Direction.Up : Direction.Down
+    let showFullHeader = false;
+
+    // console.log(`calc compare y1: ${y1 + diff} y2: ${y2} => dir: ${dir}`);
+
+    if (dir === Direction.Down && !this.minimizeFormHeader) {
+      this.ignoreScrollEvent = true;
+    } else if (dir === Direction.Up && y2 < 48) {
+      showFullHeader = true;
+      if (this.minimizeFormHeader) {
+        this.ignoreScrollEvent = true;
+      }
+    } else if (dir === Direction.Up && (lastIgnoreScrollEvent || !this.minimizeFormHeader) && y2 < this.HeaderCollapseDiffInPixel) {
+      showFullHeader = true;
+      if (this.minimizeFormHeader) {
+        this.ignoreScrollEvent = true;
+      }
+    }
+
+    this.lastDirection = showFullHeader ? Direction.Up : Direction.Down;
+    return this.lastDirection;
   }
 }
