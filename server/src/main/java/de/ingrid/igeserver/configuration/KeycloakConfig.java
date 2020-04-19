@@ -32,6 +32,9 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Value("${app.enable-cors:false}")
     private boolean corsEnabled;
 
+    @Value("${app.enable-https:false}")
+    private boolean httpsEnabled;
+
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
      */
@@ -81,7 +84,8 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
             log.info("======================================================");
             log.info("================== DEVELOPMENT MODE ==================");
             log.info("======================================================");
-            http.csrf().disable()
+            http
+                    .csrf().disable()
                     .authorizeRequests().anyRequest().permitAll();
         } else {
             if (csrfEnabled) {
@@ -97,9 +101,17 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
                 http = http.cors().disable();
             }
 
-            http.authorizeRequests()
+            if (!httpsEnabled) {
+                http = http.requiresChannel()
+                        .anyRequest()
+                        .requiresSecure()
+                        .and();
+            }
+
+            http
+                    .authorizeRequests()
                     .anyRequest().authenticated()
-                    .and()
+                .and()
                     .anonymous().disable() // force login when keycloak session timeouts because of inactivity
                     .logout()
                     .permitAll();
