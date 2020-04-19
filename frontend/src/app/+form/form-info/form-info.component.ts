@@ -64,7 +64,6 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
       fromEvent(window, 'resize').pipe(startWith(0))
     ]).pipe(untilDestroyed(this))
       .subscribe((result) => {
-        console.log('resize!', result);
         setTimeout(() => {
           const offsetLeft = this.host.nativeElement.offsetLeft;
           const menuWidth = result[0] ? 300 : 56;
