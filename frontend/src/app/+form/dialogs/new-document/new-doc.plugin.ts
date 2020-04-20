@@ -33,9 +33,11 @@ export class NewDocumentPlugin extends Plugin {
   }
 
   register() {
-    this.toolbarService.addButton(
-      {id: 'toolBtnNew', tooltip: 'New', matSvgVariable: 'Neuer-Datensatz', eventId: 'NEW_DOC', pos: 10, active: true}
-    );
+    const buttons = [
+      {id: 'toolBtnNew', tooltip: 'New', matSvgVariable: 'Neuer-Datensatz', eventId: 'NEW_DOC', pos: 10, active: true},
+      {id: 'toolBtnNewSeparator', pos: 15, isSeparator: true}
+    ];
+    buttons.forEach((button) => this.toolbarService.addButton(button));
 
     // add event handler for revert
     this.toolbarService.toolbarEvent$
