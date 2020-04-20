@@ -3,3 +3,9 @@
   right: 24px;
   width: auto;
 }
+
+.no-box-shadow {
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
