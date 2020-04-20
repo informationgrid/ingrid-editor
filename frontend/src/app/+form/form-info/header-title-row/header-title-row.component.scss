@@ -72,6 +72,10 @@
     margin-left: 4px;
     color: $ige-primary;
     font-size: 34px;
+
+    ::ng-deep input {
+      letter-spacing: 0.25px !important;
+    }
   }
 
   ::ng-deep .mat-form-field-outline > div {
@@ -93,7 +97,7 @@
   }
 
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
-    padding: 0 10px;
+    padding: 0 10px 0 9px;
   }
 
   span {
