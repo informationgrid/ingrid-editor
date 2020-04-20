@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {TreeNode} from '../../../../store/tree/tree-node.model';
 import {of, Subject} from 'rxjs';
-import {DocumentAbstract} from '../../../../store/document/document.model';
+import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE, DocumentAbstract} from '../../../../store/document/document.model';
 import {ShortTreeNode} from '../../../sidebars/tree/tree.component';
 
 @Component({
@@ -19,26 +19,15 @@ export class DestinationSelectionComponent implements OnInit {
   rootNode: Partial<DocumentAbstract>;
   activeTreeNode = new Subject<string>();
   activeListItem = new Subject<DocumentAbstract>();
-  private pathIds: string[];
 
   constructor() {
   }
 
   ngOnInit(): void {
     if (this.forAddress) {
-      this.rootNode = {
-        id: null,
-        title: 'Adressen',
-        icon: 'Ordner',
-        _state: 'P'
-      }
+      this.rootNode = ADDRESS_ROOT_NODE;
     } else {
-      this.rootNode = {
-        id: null,
-        title: 'Daten',
-        icon: 'Ordner',
-        _state: 'P'
-      }
+      this.rootNode = DOCUMENT_ROOT_NODE;
     }
   }
 

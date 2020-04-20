@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {take} from 'rxjs/operators';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {DocumentAbstract} from '../../../store/document/document.model';
+import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE, DocumentAbstract} from '../../../store/document/document.model';
 import {FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {DocType} from './new-doc.plugin';
 import {BehaviorSubject, Observable, of} from 'rxjs';
@@ -44,6 +44,7 @@ export class NewDocumentComponent implements OnInit {
   private pathIds: string[];
   numDocumentTypes: number;
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(null);
+  rootTreeName: string;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder,
@@ -68,35 +69,9 @@ export class NewDocumentComponent implements OnInit {
     this.forAddress = this.data.forAddress;
 
     if (this.forAddress) {
-      this.formGroup = this.fb.group({
-        firstName: [''],
-        lastName: [''],
-        organization: ['']
-      }, {
-        validators: this.nameOrOganizationValidator
-      });
-      this.profileQuery.addressProfiles
-        .subscribe(result => {
-          const docTypes = result
-            .map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}))
-            .sort((a, b) => a.label.localeCompare(b.label));
-          this.documentTypes = this.prepareDocumentTypes(docTypes);
-          this.result.choice = docTypes[0].id; // 'AddressDoc'
-        });
+      this.handleForAddresses();
     } else {
-      this.formGroup = this.fb.group({
-        title: ['', Validators.required],
-        choice: ['', Validators.required]
-      });
-      this.profileQuery.documentProfiles
-        .subscribe(result => {
-          const docTypes = result
-            .map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}))
-            .sort((a, b) => a.label.localeCompare(b.label));
-          this.documentTypes = this.prepareDocumentTypes(docTypes);
-          this.formGroup.get('choice').setValue(docTypes[0].id);
-          this.initialActiveDocumentType.next(docTypes[0]);
-        });
+      this.handleForDocuments();
     }
 
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
@@ -114,6 +89,43 @@ export class NewDocumentComponent implements OnInit {
           this.path = path;
         }
       });
+  }
+
+  private handleForDocuments() {
+    this.formGroup = this.fb.group({
+      title: ['', Validators.required],
+      choice: ['', Validators.required]
+    });
+    this.profileQuery.documentProfiles
+      .subscribe(result => {
+        const docTypes = result
+          .map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}))
+          .sort((a, b) => a.label.localeCompare(b.label));
+        this.documentTypes = this.prepareDocumentTypes(docTypes);
+        this.formGroup.get('choice').setValue(docTypes[0].id);
+        this.initialActiveDocumentType.next(docTypes[0]);
+      });
+
+    this.rootTreeName = DOCUMENT_ROOT_NODE.title;
+  }
+
+  private handleForAddresses() {
+    this.formGroup = this.fb.group({
+      firstName: [''],
+      lastName: [''],
+      organization: ['']
+    }, {
+      validators: this.nameOrOganizationValidator
+    });
+    this.profileQuery.addressProfiles
+      .subscribe(result => {
+        const docTypes = result
+          .map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}))
+          .sort((a, b) => a.label.localeCompare(b.label));
+        this.documentTypes = this.prepareDocumentTypes(docTypes);
+        this.result.choice = docTypes[0].id; // 'AddressDoc'
+      });
+    this.rootTreeName = ADDRESS_ROOT_NODE.title;
   }
 
   nameOrOganizationValidator(control: FormGroup): ValidationErrors | null {

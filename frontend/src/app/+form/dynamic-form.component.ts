@@ -81,9 +81,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
     this.formUtils = new FormUtils();
 
-    this.route.params.subscribe(params => {
-      this.loadDocument(params['id']);
-    });
+    this.route.params
+      .pipe(untilDestroyed(this))
+      .subscribe(params => {
+        this.loadDocument(params['id']);
+      });
 
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
 
@@ -113,14 +115,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
     // load dataset when one was updated
-    this.documentService.datasetsChanged$
+    /*this.documentService.datasetsChanged$
       .pipe(untilDestroyed(this))
       .subscribe((msg) => {
         if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
           const id = <string>msg.data[0].id;
           this.loadDocument(id);
         }
-      });
+      });*/
 
   }
 
@@ -155,6 +157,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.documentService.load(id)
+      .pipe(untilDestroyed(this))
       .subscribe(
         doc => this.updateFormWithData(doc),
         error => console.error('Could not load document', error));
@@ -260,8 +263,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       filter(direction => direction === Direction.Down)
     );
 
-    showFullHeader$.subscribe(() => this.showScrollHeader = true);
-    showMinimizedHeader$.subscribe(() => this.showScrollHeader = false);
+    showFullHeader$.pipe(untilDestroyed(this)).subscribe(() => this.showScrollHeader = true);
+    showMinimizedHeader$.pipe(untilDestroyed(this)).subscribe(() => this.showScrollHeader = false);
   }
 
   private determineToggleState(y2, y1) {

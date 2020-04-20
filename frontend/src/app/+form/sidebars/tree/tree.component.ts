@@ -76,21 +76,24 @@ export class TreeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.dataSource.setForAddress(this.forAddresses);
 
-    if (this.setActiveNode) {
-      this.setActiveNode
-        .pipe(untilDestroyed(this))
-        .subscribe(id => {
-          this.activeNodeId = id;
-          this.selectionModel.clear();
-        });
-    }
-
     // make sure the tree with root nodes is loaded before we start
     // expanding the path if any
     this.handleTreeExpandToInitialNode();
 
-    this.database.treeUpdates.subscribe(data => this.handleUpdate(data));
+    this.database.treeUpdates
+      .pipe(untilDestroyed(this))
+      .subscribe(data => this.handleUpdate(data));
 
+  }
+
+  private handleActiveNodeSubscription() {
+    if (this.setActiveNode) {
+      this.setActiveNode
+        .pipe(untilDestroyed(this))
+        .subscribe(id => {
+          this.jumpToNode(id).then(() => this.activeNodeId = id);
+        });
+    }
   }
 
   private expandOnDataChange(ids: string[]): Promise<void> {
@@ -241,6 +244,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private async addNewNode(updateInfo: UpdateDatasetInfo) {
+    console.log('addnewNode');
 
     this.activeNodeId = updateInfo.data[0].id + '';
 
@@ -255,6 +259,8 @@ export class TreeComponent implements OnInit, OnDestroy {
         return;
       }
 
+      // TODO: use function jumpToNode
+
       const parentNode = this.dataSource.data[parentNodeIndex];
       parentNode.hasChildren = true;
 
@@ -268,11 +274,13 @@ export class TreeComponent implements OnInit, OnDestroy {
           }
           this.treeControl.expand(parentNode);
           this.updateNodePath(updateInfo);
+          this.scrollToActiveElement();
         });
 
     } else {
       this.dataSource.addRootNode(updateInfo.data[0]);
       this.updateNodePath(updateInfo);
+      this.scrollToActiveElement();
     }
 
     // remove selection from previously selected nodes
@@ -326,11 +334,11 @@ export class TreeComponent implements OnInit, OnDestroy {
     }
   }
 
-  jumpToNode(id: string) {
+  jumpToNode(id: string): Promise<void> {
 
     this.selectionModel.clear();
 
-    this.database.getPath(id, this.forAddresses).then((path) => {
+    return this.database.getPath(id, this.forAddresses).then((path) => {
       this.activeNodeId = path.pop();
       if (path.length > 0) {
         this.handleExpandNodes(path)
@@ -339,11 +347,23 @@ export class TreeComponent implements OnInit, OnDestroy {
             const nodePath = this.getTitlesFromNodePath(node);
             this.currentPath.next(nodePath);
             this.activate.next([id]);
+            this.scrollToActiveElement();
           });
       } else {
-        this.activate.next([id]);
+        this.activate.next(id ? [id] : []);
+        this.scrollToActiveElement();
       }
     });
+  }
+
+  private scrollToActiveElement() {
+    // TODO: wait till dom node is actually there
+    setTimeout(() => {
+      const element = document.querySelector('.mat-tree-node.active');
+      if (element) {
+        element.scrollIntoView({behavior: 'smooth', block: 'center'});
+      }
+    }, 500);
   }
 
   private skipExpandedNodeIDs(ids: string[]): string[] {
@@ -370,6 +390,8 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   private handleTreeExpandToInitialNode() {
     if (this.expandNodeIds) {
+      // FIXME: this path might not be used anymore, since tree takes care of expanded nodes
+      //        itself, when setting activeNodeId
       combineLatest([
         this.reloadTree(),
         this.expandNodeIds
@@ -388,7 +410,7 @@ export class TreeComponent implements OnInit, OnDestroy {
           });
         });
     } else {
-      this.reloadTree().subscribe();
+      this.reloadTree().subscribe(() => this.handleActiveNodeSubscription());
     }
   }
 }

@@ -5,6 +5,7 @@ import {take} from 'rxjs/operators';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {Router} from '@angular/router';
+import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE} from '../../../store/document/document.model';
 
 @Component({
   templateUrl: './create-folder.component.html',
@@ -17,6 +18,7 @@ export class CreateFolderComponent implements OnInit {
   path: string[] = [];
   selectedPage = 0;
   private pathIds: string[];
+  rootTreeName: string;
 
   private static createNewFolderDoc(folderName: string, parent?: string) {
     const data: any = {
@@ -41,6 +43,7 @@ export class CreateFolderComponent implements OnInit {
   ngOnInit() {
     this.forAddress = this.data.forAddress;
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+    this.rootTreeName = this.forAddress ? ADDRESS_ROOT_NODE.title : DOCUMENT_ROOT_NODE.title;
 
     query.pathTitles$
       .pipe(
@@ -58,8 +61,6 @@ export class CreateFolderComponent implements OnInit {
   }
 
   async handleCreate(value: string) {
-    console.log('name:', value);
-
     // if a name was entered
     if (value && value.trim().length > 0) {
       // store a new folder in the backend by calling storage service

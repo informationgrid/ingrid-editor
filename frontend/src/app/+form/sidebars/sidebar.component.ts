@@ -1,10 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TreeStore} from '../../store/tree/tree.store';
-import {DocumentService} from '../../services/document/document.service';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {ShortTreeNode, TreeAction} from './tree/tree.component';
-import {filter, map, switchMap, take} from 'rxjs/operators';
+import {filter, map, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
@@ -15,14 +14,12 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 })
 export class SidebarComponent implements OnInit {
 
-  initialExpandNodes = new Subject<string[]>();
   updateTree = new Subject<TreeAction[]>();
-  activeTreeNode = new Subject<string>();
+  activeTreeNode = new BehaviorSubject<string>(null);
 
   constructor(private router: Router,
               private route: ActivatedRoute,
-              private treeStore: TreeStore,
-              private docService: DocumentService) {
+              private treeStore: TreeStore) {
 
   }
 
@@ -35,12 +32,10 @@ export class SidebarComponent implements OnInit {
       .pipe(
         take(1),
         filter(params => params['id']),
-        map(params => params['id']),
-        switchMap(id => this.docService.getPath(id))
+        map(params => params['id'])
       )
-      .subscribe(path => {
-        this.activeTreeNode.next(path.pop());
-        this.initialExpandNodes.next(path);
+      .subscribe(id => {
+        this.activeTreeNode.next(id);
       });
 
     // only react on initial page when clicking on menu button

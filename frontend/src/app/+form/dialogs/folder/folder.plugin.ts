@@ -4,6 +4,7 @@ import {Plugin} from '../../../+behaviours/plugin';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {CreateFolderComponent} from './create-folder.component';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
 @Injectable()
 export class FolderPlugin extends Plugin {
@@ -18,6 +19,7 @@ export class FolderPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private treeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
               private dialog: MatDialog) {
     super();
     this.isActive = true;
@@ -60,14 +62,23 @@ export class FolderPlugin extends Plugin {
   createFolder() {
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
-    const parent = this.treeQuery.getOpenedDocument();
+    // TODO: parent node determination is the same as in new-doc plugin
+    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+    const selectedDoc = query.getOpenedDocument();
+    let selectedDocId = null;
+    if (selectedDoc) {
+      const folder = query.getFirstParentFolder(selectedDoc.id.toString());
+      if (folder !== null) {
+        selectedDocId = folder.id;
+      }
+    }
 
     this.dialog.open(CreateFolderComponent, {
       minWidth: 500,
       minHeight: 400,
       disableClose: true,
       data: {
-        parent: parent ? parent.id : null,
+        parent: selectedDocId,
         forAddress: this.forAddress
       }
     });

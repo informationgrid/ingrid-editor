@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {Observable, Subject} from 'rxjs';
 import {TreeNode} from '../../store/tree/tree-node.model';
@@ -23,17 +23,20 @@ export class DocumentListItemComponent implements OnInit {
 
   currentSelection: DocumentAbstract;
 
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     if (this.setActiveItem) {
       this.setActiveItem
-        .pipe(
-          untilDestroyed(this)
-        )
-        .subscribe(doc => this.currentSelection = doc);
+        .pipe(untilDestroyed(this))
+        .subscribe(doc => this.updateSelectionFromExternal(doc));
     }
+  }
+
+  private updateSelectionFromExternal(doc: DocumentAbstract) {
+    return this.currentSelection = doc;
+    this.cdr.markForCheck();
   }
 
   makeSelection(doc: DocumentAbstract) {

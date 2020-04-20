@@ -75,11 +75,11 @@ export class FormToolbarService {
 
   /**
    * Set the state of a toolbar button to enabled or disabled.
-   * @param eventId
+   * @param id
    * @param active
    */
-  setButtonState(eventId: string, active: boolean) {
-    const button = <ToolbarItem>this.getButtonById(eventId);
+  setButtonState(id: string, active: boolean) {
+    const button = <ToolbarItem>this.getButtonById(id);
     if (button) {
       button.active = active;
     }
