@@ -23,6 +23,8 @@
   }
 
   .label {
+    display: flex;
+    justify-content: space-between;
     color: $ige-primary;
     cursor: pointer;
     padding: 7px 10px;
@@ -35,12 +37,13 @@
       border-radius: 4px;
 
       ::ng-deep mat-icon {
-        display: block;
+        visibility: visible;
       }
     }
 
     ::ng-deep mat-icon {
-      display: none;
+      visibility: hidden;
+      padding-left: 10px;
 
       svg {
         width: 20px;

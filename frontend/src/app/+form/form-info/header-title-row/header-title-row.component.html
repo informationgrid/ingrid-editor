@@ -6,8 +6,8 @@
     </div>
 
     <span *ngIf="!showTitleInput" fxFlex class="label" (click)="editTitle()">
-        {{form.get('title')?.value || 'Kein Titel'}}
-        <mat-icon class="pull-right" svgIcon="cursor-edit"></mat-icon>
+        <span>{{form.get('title')?.value || 'Kein Titel'}}</span>
+        <mat-icon svgIcon="cursor-edit"></mat-icon>
     </span>
 
     <form [formGroup]="form" [class.hide]="!showTitleInput">
