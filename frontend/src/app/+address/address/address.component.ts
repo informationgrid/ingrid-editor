@@ -52,6 +52,7 @@ export class AddressComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.clearTreeStore();
   }
 
   onScroll($event) {
@@ -142,4 +143,7 @@ export class AddressComponent implements OnInit {
       .scrollIntoView(false);
   }
 
+  private clearTreeStore() {
+    this.addressTreeStore.set([]);
+  }
 }

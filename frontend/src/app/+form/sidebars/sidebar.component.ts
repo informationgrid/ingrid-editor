@@ -28,6 +28,8 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
 
+    this.clearTreeStore();
+
     // setup tree according to initial parameters when switching to the page
     this.route.params
       .pipe(
@@ -83,4 +85,9 @@ export class SidebarComponent implements OnInit {
     })
   }
 
+  // make sure to reload tree instead of using cached nodes
+  // otherwise adding new node from dashboard would lead to an error
+  private clearTreeStore() {
+    this.treeStore.set([]);
+  }
 }
