@@ -34,6 +34,7 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {SharedModule} from '../../shared/shared.module';
 import {DestinationSelectionComponent} from '../dialogs/new-document/destination-selection/destination-selection.component';
 import {HeaderTitleRowMinComponent} from '../form-info/header-title-row-min/header-title-row-min.component';
+import {HistoryPlugin} from '../dialogs/history/history.plugin';
 
 
 @NgModule({
@@ -58,7 +59,7 @@ import {HeaderTitleRowMinComponent} from '../form-info/header-title-row-min/head
     SharedModule
   ],
   providers: [FormToolbarService, FormPluginsService, NewDocumentPlugin, SavePlugin, FolderPlugin, DeleteDocsPlugin,
-    IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService],
+    IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService, HistoryPlugin],
   exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, ChooseFolderComponent, IgeFormlyModule,
     FormInfoComponent, DestinationSelectionComponent],
   entryComponents: []
