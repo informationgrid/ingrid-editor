@@ -5,6 +5,7 @@ import {PrintViewDialogComponent} from './print-view-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
 @UntilDestroy()
 @Injectable()
@@ -12,9 +13,11 @@ export class PrintViewPlugin extends Plugin {
   id = 'plugin.printView';
   _name = 'Print View Plugin';
   defaultActive = true;
+  private treeQuery: TreeQuery | AddressTreeQuery;
 
   constructor(private toolbarService: FormToolbarService,
-              private treeQuery: TreeQuery,
+              private docTreeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
               private dialog: MatDialog) {
     super();
   }
@@ -33,6 +36,8 @@ export class PrintViewPlugin extends Plugin {
     ];
     buttons.forEach((button, index) => this.toolbarService.addButton(button));
 
+    this.treeQuery = this.forAddress ? this.addressTreeQuery : this.docTreeQuery;
+
     // react on event when button is clicked
     this.toolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'PRINT') {
@@ -46,6 +51,14 @@ export class PrintViewPlugin extends Plugin {
       .subscribe((openedDoc) => {
         this.toolbarService.setButtonState(
           'toolBtnPrint', openedDoc !== null
+        );
+      });
+
+    this.treeQuery.selectActive()
+      .pipe(untilDestroyed(this))
+      .subscribe((selectedDocs) => {
+        this.toolbarService.setButtonState(
+          'toolBtnPrint', selectedDocs.length === 1
         );
       });
   };
