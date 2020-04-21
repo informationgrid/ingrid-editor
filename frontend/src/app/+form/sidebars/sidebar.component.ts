@@ -5,6 +5,7 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {ShortTreeNode, TreeAction} from './tree/tree.component';
 import {filter, map, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TreeQuery} from '../../store/tree/tree.query';
 
 @UntilDestroy()
 @Component({
@@ -19,6 +20,7 @@ export class SidebarComponent implements OnInit {
 
   constructor(private router: Router,
               private route: ActivatedRoute,
+              private treeQuery: TreeQuery,
               private treeStore: TreeStore) {
 
   }
@@ -33,7 +35,13 @@ export class SidebarComponent implements OnInit {
         take(1),
         filter(params => params['id']),
         map(params => params['id'])
-      )
+      ).subscribe(id => {
+      this.treeStore.update({
+        explicitActiveNode: id
+      });
+    });
+
+    this.treeQuery.explicitActiveNode$
       .subscribe(id => {
         this.activeTreeNode.next(id);
       });

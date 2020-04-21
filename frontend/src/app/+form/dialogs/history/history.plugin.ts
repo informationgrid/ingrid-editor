@@ -7,6 +7,7 @@ import {filter} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {Router} from '@angular/router';
+import {TreeStore} from '../../../store/tree/tree.store';
 
 @UntilDestroy()
 @Injectable()
@@ -30,7 +31,9 @@ export class HistoryPlugin extends Plugin {
   // the popup showing the last/next nodes
   popupMenu = null;
 
-  constructor(private formToolbarService: FormToolbarService, private treeQuery: TreeQuery,
+  constructor(private formToolbarService: FormToolbarService,
+              private treeStore: TreeStore,
+              private treeQuery: TreeQuery,
               private router: Router) {
     super();
   }
@@ -94,11 +97,11 @@ export class HistoryPlugin extends Plugin {
       }
     });
 
-/*
-    this.stack$
-      .pipe(untilDestroyed(this))
-      .subscribe(stack => this.handleButtonState(stack));
-*/
+    /*
+        this.stack$
+          .pipe(untilDestroyed(this))
+          .subscribe(stack => this.handleButtonState(stack));
+    */
 
   }
 
@@ -140,7 +143,7 @@ export class HistoryPlugin extends Plugin {
     if (this.hasNext()) {
       this.pointer++;
     }
-    this._callerFunction(node);
+    this.gotoNode(node);
     this.handleButtonState();
   }
 
@@ -156,7 +159,7 @@ export class HistoryPlugin extends Plugin {
     if (this.pointer > 0) {
       this.pointer--;
     }
-    this._callerFunction(node);
+    this.gotoNode(node);
     this.handleButtonState();
   }
 
@@ -168,8 +171,11 @@ export class HistoryPlugin extends Plugin {
     return this.pointer > 0;
   }
 
-  private _callerFunction(item) {
+  private gotoNode(item) {
     this.router.navigate(['/form', {id: item.id}]);
+    this.treeStore.update({
+      explicitActiveNode: item.id
+    });
   }
 
   private handleButtonState() {
