@@ -22,13 +22,14 @@ import {MatLineModule} from '@angular/material/core';
 import {MatListModule} from '@angular/material/list';
 import {DateAgoPipe} from "../directives/date-ago.pipe";
 import {EmptyNavigationComponent} from "../+form/sidebars/tree/empty-navigation/empty-navigation.component";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   imports: [
     CommonModule,
     MatIconModule, MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule,
     MatSlideToggleModule, FlexModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
-    MatCardModule, MatDividerModule, MatLineModule, MatListModule],
+    MatCardModule, MatDividerModule, MatLineModule, MatListModule, MatTooltipModule],
   declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent, DocumentListItemComponent, DateAgoPipe],
   exports: [TreeComponent, MatIconModule, MatButtonModule, CardBoxComponent, DocumentListItemComponent]
 })
