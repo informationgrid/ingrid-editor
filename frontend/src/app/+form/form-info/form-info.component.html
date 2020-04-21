@@ -4,18 +4,34 @@
 
     <ige-header-title-row [form]="form"
                           [model]="model"
-                          [sections]="sections"
-                          (jumpToSection)="jumpToSection.next($event)"></ige-header-title-row>
+                          [sections]="sections"></ige-header-title-row>
 
+
+</div>
+
+<div #sticky_header class="navigation-header"
+     [class.sticky]="showScrollHeader"
+     [style.left]="scrollHeaderOffsetLeft + 'px'">
+
+    <div class="document-type">
+        <mat-icon [svgIcon]="getIcon()"
+                  [title]="form?.get('title')?.value"
+                  [ngClass]="['document-icon',getStateClass()]"></mat-icon>
+    </div>
+
+    <ige-header-navigation fxFlex [sections]="sections"></ige-header-navigation>
+
+    <button mat-icon-button mat-flat-button class="menu clickable dark">
+        <mat-icon>more_vert</mat-icon>
+    </button>
 </div>
 
 <ige-form-message></ige-form-message>
 
-<div class="scroll-header" [style.left]="scrollHeaderOffsetLeft + 'px'">
+<!--<div class="scroll-header" [style.left]="scrollHeaderOffsetLeft + 'px'">
 
     <ige-header-title-row-min [form]="form"
                               [model]="model"
-                              [sections]="sections"
-                              (jumpToSection)="jumpToSection.next($event)"></ige-header-title-row-min>
+                              [sections]="sections"></ige-header-title-row-min>
 
-</div>
+</div>-->

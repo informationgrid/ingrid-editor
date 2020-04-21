@@ -1,17 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {ProfileService} from '../../../services/profile.service';
-import {IgeDocument} from "../../../models/ige-document";
+import {IgeDocument} from '../../../models/ige-document';
 
 @Component({
   selector: 'ige-header-title-row',
@@ -24,8 +14,6 @@ export class HeaderTitleRowComponent implements OnInit {
   @Input() form: FormGroup;
   @Input() model: IgeDocument;
   @Input() sections: string[];
-
-  @Output() jumpToSection = new EventEmitter();
 
   @ViewChild('titleInput') titleInput: ElementRef;
 

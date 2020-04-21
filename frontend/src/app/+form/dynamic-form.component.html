@@ -17,10 +17,13 @@
                 <ige-form-info [form]="form"
                                [model]="model"
                                [sections]="sections"
-                               [class.scrolled]="showScrollHeader"
-                               (jumpToSection)="jumpToSection($event)"></ige-form-info>
+                               [parentContainer]="scrollForm"
+                               (showStickyHeader)="updateContentPadding($event)"></ige-form-info>
 
-                <form [formGroup]="form" [class.hide-validation]="!showValidationErrors" [class.hide]="model._profile === 'FOLDER'">
+                <form [formGroup]="form"
+                      [style.padding-top]="paddingWithHeader"
+                      [class.hide-validation]="!showValidationErrors"
+                      [class.hide]="model._profile === 'FOLDER'">
                     <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
 
                     <!--<pre>

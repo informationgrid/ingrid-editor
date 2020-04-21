@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {Behaviour} from '../+behaviours/behaviours';
 import {FormToolbarService} from './form-shared/toolbar/form-toolbar.service';
@@ -15,18 +15,11 @@ import {TreeQuery} from '../store/tree/tree.query';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {CodelistService} from '../services/codelist/codelist.service';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
-import {UpdateType} from '../models/update-type.enum';
 import {SessionQuery} from '../store/session.query';
 import {FormularService} from './formular.service';
 import {FormPluginsService} from './form-shared/form-plugins.service';
-import {fromEvent} from 'rxjs';
-import {distinctUntilChanged, filter, map, pairwise, share, throttleTime} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-
-enum Direction {
-  Up = 'Up',
-  Down = 'Down'
-}
+import {StickyHeaderInfo} from './form-info/form-info.component';
 
 @UntilDestroy()
 @Component({
@@ -35,10 +28,6 @@ enum Direction {
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
-
-  @ViewChild('scrollForm') scrollFormEl: ElementRef;
-
-  private readonly HeaderDiffMinimizedForScrolling = 100;
 
   sidebarWidth = 15;
 
@@ -52,8 +41,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sections: string[];
 
-  showScrollHeader = false;
-
   form: FormGroup = new FormGroup({});
 
   behaviours: Behaviour[];
@@ -62,9 +49,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   userRoles: Role[];
 
+  paddingWithHeader: string;
+
   private formUtils: FormUtils;
   private showValidationErrors = false;
-  private readonly ScrollPositionToToggleHeader = 90;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
@@ -81,6 +69,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
     this.formUtils = new FormUtils();
 
+    // FIXME: use combineLatest to wait for profiles initialized
+    //        otherwise document cannot be loaded correctly, since profile not yet initialized
+    //        this.session.isProfilesInitialized$
     this.route.params
       .pipe(untilDestroyed(this))
       .subscribe(params => {
@@ -128,8 +119,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
-
-    this.initScrollBehavior();
 
     // add form errors check when saving/publishing
     this.documentService.beforeSave$
@@ -199,6 +188,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // TODO: extract to permission service class
+
   hasPermission(data: any): boolean {
     // TODO: check all roles
     if (this.userRoles.length > 0) {
@@ -234,48 +224,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formularService.updateSidebarWidth(info.sizes[0]);
   }
 
-  jumpToSection(index: number) {
-    window.document
-      .querySelectorAll('ige-section-wrapper')
-      .item(index)
-      .scrollIntoView(false);
+  updateContentPadding(stickyHeaderInfo: StickyHeaderInfo) {
+    this.paddingWithHeader = stickyHeaderInfo.show
+      ? (stickyHeaderInfo.headerHeight + 20) + 'px'
+      : 20 + 'px';
   }
-
-  private initScrollBehavior() {
-    const element = this.scrollFormEl.nativeElement;
-    const scroll$ = fromEvent(element, 'scroll').pipe(
-      untilDestroyed(this),
-      throttleTime(10), // do not handle all events
-      // filter(el => this.scrollbarWontDisappearOnMinimize(element)), // do not minimize if scrollbar would disappear on minimize
-      map(() => element.scrollTop),
-      pairwise(), // list previous value
-      map(([y1, y2]): Direction => this.determineToggleState(y2, y1)),
-      // debounceTime(10), // wait for multiple results and only choose the latest
-      distinctUntilChanged(),
-      share()
-    );
-
-    const showFullHeader$ = scroll$.pipe(
-      filter(direction => direction === Direction.Up)
-    );
-
-    const showMinimizedHeader$ = scroll$.pipe(
-      filter(direction => direction === Direction.Down)
-    );
-
-    showFullHeader$.pipe(untilDestroyed(this)).subscribe(() => this.showScrollHeader = true);
-    showMinimizedHeader$.pipe(untilDestroyed(this)).subscribe(() => this.showScrollHeader = false);
-  }
-
-  private determineToggleState(y2, y1) {
-    const conditionScrollUp = y2 < y1 && y2 > this.ScrollPositionToToggleHeader;
-    const conditionScrollDown = y2 > y1 && y2 > this.ScrollPositionToToggleHeader;
-    return (conditionScrollUp || conditionScrollDown) ? Direction.Up : Direction.Down;
-  }
-
-  private scrollbarWontDisappearOnMinimize(element) {
-    const hasScrollbarInMinimizeMode = element.scrollHeight - element.clientHeight > this.HeaderDiffMinimizedForScrolling;
-    return this.showScrollHeader || hasScrollbarInMinimizeMode;
-  }
-
 }
