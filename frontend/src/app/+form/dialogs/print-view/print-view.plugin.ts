@@ -32,7 +32,7 @@ export class PrintViewPlugin extends Plugin {
     // add button to toolbar
     const buttons: Array<ToolbarItem | Separator> = [
       // { id: 'toolBtnCopyCutSeparator', pos: 60, isSeparator: true },
-      { id: 'toolBtnPrint', tooltip: 'Print', matSvgVariable: 'Vorschau-Druckansicht', eventId: 'PRINT', pos: 20, active: false }
+      {id: 'toolBtnPrint', tooltip: 'Print', matSvgVariable: 'Vorschau-Druckansicht', eventId: 'PRINT', pos: 20, active: false}
     ];
     buttons.forEach((button, index) => this.toolbarService.addButton(button));
 
@@ -54,13 +54,6 @@ export class PrintViewPlugin extends Plugin {
         );
       });
 
-    this.treeQuery.selectActive()
-      .pipe(untilDestroyed(this))
-      .subscribe((selectedDocs) => {
-        this.toolbarService.setButtonState(
-          'toolBtnPrint', selectedDocs.length === 1
-        );
-      });
   };
 
   private showPrintDialog() {
