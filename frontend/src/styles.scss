@@ -462,3 +462,6 @@ ige-root .mat-drawer-container {
   }
 }
 
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: $ige-comment-color;
+}
