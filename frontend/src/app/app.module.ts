@@ -28,7 +28,6 @@ import {FormsModule} from '@angular/forms';
 import de from '@angular/common/locales/de';
 import {AkitaNgDevtools} from '@datorama/akita-ngdevtools';
 import {AngularSplitModule} from 'angular-split';
-import {SearchBarComponent} from './+dashboard/search-bar/search-bar.component';
 import {FormlyModule} from '@ngx-formly/core';
 import {OneColumnWrapperComponent} from './formly/wrapper/one-column-wrapper.component';
 import {FormlyMaterialModule} from '@ngx-formly/material';
@@ -84,7 +83,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
-    SearchBarComponent, ConfirmDialogComponent, CreateFolderComponent,
+    ConfirmDialogComponent, CreateFolderComponent,
     OneColumnWrapperComponent, SectionWrapper,
     SideMenuComponent,
     MainHeaderComponent,
