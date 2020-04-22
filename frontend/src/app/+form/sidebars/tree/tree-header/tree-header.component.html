@@ -1,5 +1,5 @@
 <div class="header" fxLayout="column">
-    <div class="options" fxLayout="row" fxLayoutAlign="space-between">
+    <div *ngIf="showOptions" class="options" fxLayout="row" fxLayoutAlign="space-between">
         <mat-slide-toggle class="show-all" disabled>Alle anzeigen</mat-slide-toggle>
 
         <button *ngIf="showReloadButton" mat-icon-button (click)="reloadTree()">

@@ -39,6 +39,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   @Input() showReloadButton = true;
   @Input() setActiveNode: Subject<string>;
   @Input() update: Observable<any>;
+  @Input() showHeaderOptions = true;
 
   /** The selection for checklist */
   selectionModel = new SelectionModel<TreeNode>(true);

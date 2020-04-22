@@ -12,6 +12,7 @@ import {TreeNode} from '../../../../store/tree/tree-node.model';
 export class TreeHeaderComponent implements OnInit, AfterViewInit {
   @Input() showReloadButton = true;
   @Input() isAddress = false;
+  @Input() showOptions = true;
 
   @Output() reload = new EventEmitter();
   @Output() open = new EventEmitter();

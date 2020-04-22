@@ -1,7 +1,14 @@
 @import "../../../../variables";
 
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 ::ng-deep .mat-tree {
   background-color: #ffffff;
+  overflow: auto;
 }
 
 mat-tree-node {
@@ -40,28 +47,28 @@ mat-tree-node {
 
     background-color: $ige-background;
 
-    &.folder {
-      font-size: 16px;
+    &:hover {
+      background-color: darken($ige-background, 5%);
+    }
+
+    &.selected {
+      background-color: darken($ige-background, 5%);
+    }
+
+    &.selected:hover {
+      background-color: darken($ige-background, 10%);
+    }
+
+    &.active {
+      background-color: $ige-mark-color;
 
       &:hover {
-        background-color: darken($ige-background, 5%);
+        background-color: darken($ige-mark-color, 5%);
       }
+    }
 
-      &.selected {
-        background-color: darken($ige-background, 5%);
-      }
-
-      &.selected:hover {
-        background-color: darken($ige-background, 10%);
-      }
-
-      &.active {
-        background-color: $ige-mark-color;
-
-        &:hover {
-          background-color: darken($ige-mark-color, 5%);
-        }
-      }
+    &.folder {
+      font-size: 16px;
     }
 
   }
@@ -84,7 +91,7 @@ mat-tree-node {
       margin-left: 12px;
       margin-top: 3px;
     }
-    
+
     span {
       padding-top: 5px;
     }
