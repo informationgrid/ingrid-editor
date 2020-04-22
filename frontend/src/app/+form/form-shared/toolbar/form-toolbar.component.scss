@@ -19,7 +19,8 @@
 
   .drop-down {
     width: 50px;
-    padding-left: 10px;
+    padding-left: 8px;
+    margin-right: 8px;
   }
 }
 
@@ -50,8 +51,9 @@
 }
 
 .separator {
-  padding-right: 16px;
-  padding-left: 16px;
+  margin-right: 8px;
+  padding-left: 8px;
+  height: 36px
 }
 
 .save-buttons button {

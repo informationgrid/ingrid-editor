@@ -24,9 +24,7 @@
                     </button>
                 </mat-menu>
             </ng-container>
-            <div *ngIf="button.isSeparator" class="separator">
-                <mat-divider [vertical]="true" style="height: 24px"></mat-divider>
-            </div>
+            <mat-divider *ngIf="button.isSeparator" class="separator" [vertical]="true"></mat-divider>
         </ng-container>
         <div fxFlex></div>
 
