@@ -1,11 +1,15 @@
+<div class="side-padding">Neuen Ort wählen</div>
 <ige-tree [disabledCondition]="disabledCondition" (selected)="updateParent($event, 'Tree')"
           [setActiveNode]="activeTreeNode"
           (currentPath)="updatePath($event)"
           [forAddresses]="forAddress"
+          [showOnlyFolders]="true"
           [showReloadButton]="false"></ige-tree>
 
-Oder anlegen unter
-<ige-document-list-item [docs]="getRootNode()" showSelection="true"
-                        [hideDivider]="true"
-                        [setActiveItem]="activeListItem"
-                        (select)="updateParent([null], 'List')"></ige-document-list-item>
+<div class="side-padding padding-top">
+    Oder anlegen unter
+    <ige-document-list-item [docs]="getRootNode()" showSelection="true"
+                            [hideDivider]="true"
+                            [setActiveItem]="activeListItem"
+                            (select)="updateParent([null], 'List')"></ige-document-list-item>
+</div>

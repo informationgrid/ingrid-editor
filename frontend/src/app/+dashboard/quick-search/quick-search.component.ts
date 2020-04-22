@@ -1,7 +1,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {DocumentService} from '../../services/document/document.service';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'ige-quick-search',
@@ -22,6 +22,8 @@ export class QuickSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // TODO: improve performance by not sending same request again when hitting enter
+    //       and input has not changed
   }
 
   search(value: string, $event: KeyboardEvent) {
@@ -29,12 +31,12 @@ export class QuickSearchComponent implements OnInit {
       return;
     }
     this.documentService.find(value, 5)
-      .subscribe( result => {
+      .subscribe(result => {
         this.docs = result.hits;
         this.numDocs = result.totalHits;
       });
     this.documentService.find(value, 5, true)
-      .subscribe( result => {
+      .subscribe(result => {
         this.addresses = result.hits;
         this.numAddresses = result.totalHits;
       });

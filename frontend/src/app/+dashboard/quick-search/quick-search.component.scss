@@ -44,6 +44,7 @@
   ::ng-deep .mat-form-field-infix {
     padding: 0 0 0.8em;
     margin: 0.3em 0 0.1em;
+    border-top: 0.84375em solid transparent;
   }
 
   button {
@@ -53,6 +54,12 @@
 
     ::ng-deep .mat-button-wrapper {
       letter-spacing: 1.25px;
+    }
+  }
+
+  ::ng-deep mat-form-field {
+    .mat-form-field-subscript-wrapper, .mat-form-field-underline {
+      position: absolute;
     }
   }
 }

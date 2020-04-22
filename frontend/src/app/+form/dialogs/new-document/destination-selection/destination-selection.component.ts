@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {TreeNode} from '../../../../store/tree/tree-node.model';
-import {of, Subject} from 'rxjs';
+import {BehaviorSubject, of} from 'rxjs';
 import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE, DocumentAbstract} from '../../../../store/document/document.model';
 import {ShortTreeNode} from '../../../sidebars/tree/tree.component';
 
@@ -12,13 +12,14 @@ import {ShortTreeNode} from '../../../sidebars/tree/tree.component';
 export class DestinationSelectionComponent implements OnInit {
 
   @Input() forAddress: boolean;
+  @Input() initialSelectedId: string;
   @Output() choice = new EventEmitter();
 
   parent: string = null;
   path: ShortTreeNode[] = [];
   rootNode: Partial<DocumentAbstract>;
-  activeTreeNode = new Subject<string>();
-  activeListItem = new Subject<DocumentAbstract>();
+  activeTreeNode = new BehaviorSubject<string>(null);
+  activeListItem = new BehaviorSubject<Partial<DocumentAbstract>>(undefined);
 
   constructor() {
   }
@@ -28,6 +29,12 @@ export class DestinationSelectionComponent implements OnInit {
       this.rootNode = ADDRESS_ROOT_NODE;
     } else {
       this.rootNode = DOCUMENT_ROOT_NODE;
+    }
+
+    if (this.initialSelectedId) {
+      this.activeTreeNode.next(this.initialSelectedId);
+    } else {
+      this.activeListItem.next(this.rootNode);
     }
   }
 

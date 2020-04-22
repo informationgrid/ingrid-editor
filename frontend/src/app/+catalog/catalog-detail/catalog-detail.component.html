@@ -1,10 +1,12 @@
 <h2 mat-dialog-title>Katalog bearbeiten</h2>
 <mat-dialog-content>
 
-    <mat-form-field class="width-100">
+    <mat-form-field appearance="outline" class="width-100">
+        <mat-label>Titel</mat-label>
         <input matInput placeholder="Titel" [(ngModel)]="catalog.label">
     </mat-form-field>
-    <mat-form-field class="width-100">
+    <mat-form-field appearance="outline" class="width-100">
+        <mat-label>Beschreibung</mat-label>
         <textarea matInput placeholder="Beschreibung" [(ngModel)]="catalog.description"></textarea>
     </mat-form-field>
 

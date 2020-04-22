@@ -1,4 +1,18 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 ige-tree {
-  display: block;
-  padding-bottom: 20px;
+  overflow: auto;
+}
+
+.side-padding {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.padding-top {
+  padding-top: 24px;
 }

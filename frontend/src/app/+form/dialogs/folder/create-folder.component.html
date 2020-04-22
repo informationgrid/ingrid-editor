@@ -3,27 +3,32 @@
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
-        Ordner erstellen
+        <span class="text">Ordner erstellen</span>
     </h2>
 </div>
 <mat-dialog-content class="hide-tab-header">
 
-    <mat-tab-group [selectedIndex]="selectedPage">
+    <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
         <mat-tab label="Titel">
-            <mat-form-field>
-                <input matInput #name
-                       cdkFocusInitial
-                       placeholder="Titel"
-                       (keyup.enter)="handleCreate(name.value)"
-                       required>
-            </mat-form-field>
+            <div class="first-tab-wrapper" fxFlex>
+                <mat-form-field appearance="outline">
+                    <mat-label>Titel</mat-label>
+                    <input matInput #name
+                           cdkFocusInitial
+                           placeholder="Titel des Ordners"
+                           (keyup.enter)="handleCreate(name.value)"
+                           required>
+                </mat-form-field>
 
-            Ort
-            <ige-breadcrumb [path]="path" [rootName]="rootTreeName" emphasize="true"></ige-breadcrumb>
+                Ort
+                <ige-breadcrumb [path]="path" [rootName]="rootTreeName" emphasize="true"></ige-breadcrumb>
+            </div>
         </mat-tab>
 
         <mat-tab label="Ort auswählen">
-            <ige-destination-selection [forAddress]="forAddress" (choice)="updateParent($event)"></ige-destination-selection>
+            <ige-destination-selection [forAddress]="forAddress"
+                                       [initialSelectedId]="parent"
+                                       (choice)="updateParent($event)"></ige-destination-selection>
         </mat-tab>
     </mat-tab-group>
 
@@ -33,7 +38,7 @@
 <div style="flex: 1"></div>
 
 <mat-dialog-actions>
-    <button *ngIf="selectedPage === 1" mat-button (click)="selectedPage = 0">
+    <button *ngIf="selectedPage === 1" color="primary" mat-button (click)="selectedPage = 0">
         <mat-icon>chevron_left</mat-icon>
         Zurück
     </button>
@@ -41,7 +46,7 @@
     <div fxFlex></div>
 
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-    <button *ngIf="selectedPage === 0" mat-button (click)="selectedPage = 1">Ort ändern</button>
+    <button *ngIf="selectedPage === 0" mat-button color="primary" (click)="selectedPage = 1">Ort ändern</button>
     <button mat-stroked-button color="primary" [disabled]="!name.checkValidity()" (click)="handleCreate(name.value)">
         Anlegen
     </button>

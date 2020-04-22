@@ -29,6 +29,11 @@
     .mat-dialog-title {
       margin: 0;
       color: white;
+
+      span.text {
+        vertical-align: middle;
+        padding-left: 20px;
+      }
     }
   }
 

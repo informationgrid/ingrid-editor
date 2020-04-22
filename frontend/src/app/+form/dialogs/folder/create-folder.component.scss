@@ -1,10 +1,28 @@
 .hide-tab-header ::ng-deep .mat-tab-header {
   display: none !important;
 }
-.mat-dialog-content {
-  padding-bottom: 10px;
+
+:host {
+  .mat-dialog-content {
+    padding: 0 0 10px;
+    display: flex;
+
+    .mat-tab-group {
+      flex: 1;
+
+      ::ng-deep .mat-tab-body-content {
+        display: flex;
+      }
+    }
+  }
 }
 
 .mat-form-field {
   width: 100%;
+}
+
+.first-tab-wrapper {
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 1px;
 }
