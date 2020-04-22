@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {Observable, Subject} from 'rxjs';
 import {TreeNode} from '../../store/tree/tree-node.model';
@@ -23,7 +23,7 @@ export class DocumentListItemComponent implements OnInit {
 
   currentSelection: DocumentAbstract;
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor() {
   }
 
   ngOnInit(): void {
@@ -35,8 +35,7 @@ export class DocumentListItemComponent implements OnInit {
   }
 
   private updateSelectionFromExternal(doc: DocumentAbstract) {
-    return this.currentSelection = doc;
-    this.cdr.markForCheck();
+    this.currentSelection = doc;
   }
 
   makeSelection(doc: DocumentAbstract) {
