@@ -49,6 +49,8 @@
   button {
     height: 44px;
     padding-top: 1px;
+    padding-bottom: 1px;
+
     ::ng-deep .mat-button-wrapper {
       letter-spacing: 1.25px;
     }
