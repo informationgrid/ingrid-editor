@@ -16,6 +16,7 @@
                        (click)="!disabledCondition(node) && selectNode(node, $event)"
                        [class.selected]="selectionModel.isSelected(node)"
                        [class.active]="node._id === activeNodeId"
+                       [class.hide]="showOnlyFolders"
                        [class.rootNode]="node.level === 0"
                        [class.disabled]="disabledCondition(node)">
             <div class="label">
