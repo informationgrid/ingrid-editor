@@ -195,6 +195,9 @@ export class TreeComponent implements OnInit, OnDestroy {
         tap(rootElements => {
           this.dataSource.data = rootElements;
           this.selectionModel.clear();
+          if (this.activeNodeId) {
+            this.jumpToNode(this.activeNodeId);
+          }
         })
       );
   }

@@ -93,6 +93,10 @@ public class DocumentService extends MapperService {
 
         docData.put(FIELD_STATE, state);
 
+        if (!docData.has(FIELD_PARENT)) {
+            docData.put(FIELD_PARENT, (String) null);
+        }
+
         MapperService.removeDBManagementFields(docData);
 
         return docData;
