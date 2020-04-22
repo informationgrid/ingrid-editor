@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Plugin} from '../../../+behaviours/plugin';
-import {FormToolbarService, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
+import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/operators';
@@ -106,7 +106,8 @@ export class HistoryPlugin extends Plugin {
   }
 
   private addToolbarButtons() {
-    const buttons: ToolbarItem[] = [
+    const buttons: Array<ToolbarItem | Separator> = [
+      {id: 'toolBtnNewSeparator', pos: 190, isSeparator: true},
       {
         id: 'toolBtnPreviousInHistory',
         tooltip: 'Springe zum letzten Dokument',
