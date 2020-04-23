@@ -22,34 +22,41 @@ repositories {
 if (!hasProperty('buildProfile')) apply from: "profile-dev.gradle"
 
 dependencies {
-    compile project(':api')
+    implementation project(':api')
     runtimeOnly project(':frontend')
+
+    // Spring
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
-    compile "io.pebbletemplates:pebble-spring-boot-starter:3.1.2"
+    implementation "io.pebbletemplates:pebble-spring-boot-starter:3.1.2"
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation('org.springframework.boot:spring-boot-starter-security') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
-    compile('org.keycloak:keycloak-spring-boot-starter:9.0.0') {
+
+    // Keycloak
+    implementation('org.keycloak:keycloak-spring-boot-starter:9.0.0') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
-    compile 'org.springframework.boot:spring-boot-starter-log4j2'
-    compile 'com.auth0:java-jwt:3.10.0'
-    compile 'org.springdoc:springdoc-openapi-ui:1.2.32'
-    compile 'com.orientechnologies:orientdb-core:3.0.28'
-    compile 'com.orientechnologies:orientdb-server:3.0.28'
-    compile 'com.github.fge:json-schema-validator:2.2.6'
-    compile('de.ingrid:ingrid-codelist-service:5.2.0') {
+
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'com.auth0:java-jwt:3.10.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.2.32'
+    implementation 'com.orientechnologies:orientdb-core:3.0.28'
+    implementation 'com.orientechnologies:orientdb-server:3.0.28'
+    implementation 'com.github.fge:json-schema-validator:2.2.6'
+    implementation('de.ingrid:ingrid-codelist-service:5.2.0') {
         exclude group: 'log4j', module: 'log4j'
     }
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.2'
-    compile 'javax.validation:validation-api:2.0.1.Final'
-    compile 'org.apache.logging.log4j:log4j-1.2-api'
-    compile 'org.apache.commons:commons-lang3:3.9'
-    testCompile 'junit:junit'
-    testCompile 'org.mockito:mockito-core'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.2'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+    implementation 'org.apache.logging.log4j:log4j-1.2-api'
+    implementation 'org.apache.commons:commons-lang3:3.9'
+
+    // Test
+    testImplementation 'junit:junit'
+    testImplementation 'org.mockito:mockito-core'
 }
 
 group = 'de.ingrid'
