@@ -6,7 +6,7 @@ import {Component, Input, OnInit} from '@angular/core';
   styleUrls: ['./card-box.component.scss']
 })
 export class CardBoxComponent implements OnInit {
-  @Input() title: string;
+  @Input() label: string;
 
   constructor() { }
 

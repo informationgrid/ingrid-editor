@@ -29,15 +29,15 @@
 
         <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
             <div class="info-box" fxLayout="row" fxLayoutGap="36px">
-                <ige-card-box fxFlex title="INGRID Datensätze">
+                <ige-card-box fxFlex label="INGRID Datensätze">
                     <ige-chart [data]="[5, 32]" [colors]="['#F27100', '#333333']"></ige-chart>
                 </ige-card-box>
-                <ige-card-box fxFlex title="Neue Datensätze">
+                <ige-card-box fxFlex label="Neue Datensätze">
                     ...
                 </ige-card-box>
             </div>
 
-            <ige-card-box fxFlex title="Zuletzt bearbeitet im Katalog">
+            <ige-card-box fxFlex label="Zuletzt bearbeitet im Katalog" data-cy="card-latest-docs">
                 <ige-document-list-item [docs]="recentDocs$"
                                         [hideDate]="false"
                                         (select)="openDocument($event.id)"></ige-document-list-item>
