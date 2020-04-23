@@ -8,7 +8,7 @@
   min-height: 56px;
   background-color: $ige-background-bar;
 
-  ::ng-deep .mat-icon svg path {
+  ::ng-deep .mat-icon svg path, ::ng-deep .coloring {
     fill: #333333;
   }
 }
