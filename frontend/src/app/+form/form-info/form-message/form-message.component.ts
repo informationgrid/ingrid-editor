@@ -51,6 +51,7 @@ export class FormMessageComponent implements OnInit {
     if (type.severity === 'info') {
       this.timer = setTimeout(() => this.resetMessage(), type.duration || this.defaultDuration);
     }
+    this.cdr.markForCheck();
   }
 
   private resetMessage() {
