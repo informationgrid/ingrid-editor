@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://192.168.0.223",
+  "baseUrl": "http://localhost:4300",
   "reporter": "mochawesome",
   "reporterOptions": {
     "reportDir": "cypress/mochawesome-reports",
@@ -10,5 +10,6 @@
   },
   "screenshotsFolder": "cypress/mochawesome-reports/assets",
   "videosFolder": "cypress/mochawesome-reports/assets",
-  "videoUploadOnPasses": false
+  "videoUploadOnPasses": false,
+  "viewportWidth": 1200
 }

@@ -15,14 +15,10 @@
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "e2eDev": "ng e2e --dev-server-target --webdriverUpdate=false",
     "wba": "webpack-bundle-analyzer dist/stats.json",
     "sme": "source-map-explorer",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "cypress": "cypress open",
-    "cy:run": "node scripts/cypress.js"
+    "build-storybook": "build-storybook"
   },
   "private": true,
   "dependencies": {
@@ -88,18 +84,10 @@
     "karma-junit-reporter": "^2.0.1",
     "karma-sourcemap-loader": "^0.3.7",
     "ng-packagr": "^9.0.0",
-    "protractor": "~5.4.2",
     "raw-loader": "3.1.0",
     "source-map-explorer": "^2.3.0",
     "ts-node": "~7.0.1",
     "tslint": "~5.12.1",
     "typescript": "~3.7.5"
-  },
-  "optionalDependencies": {
-    "cypress": "^3.4.1",
-    "mocha": "5.2.0",
-    "mochawesome": "^4.1.0",
-    "mochawesome-merge": "^2.0.1",
-    "mochawesome-report-generator": "^4.0.1"
   }
 }
