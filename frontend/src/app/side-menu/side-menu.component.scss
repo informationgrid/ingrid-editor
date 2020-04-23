@@ -37,26 +37,35 @@
     padding: 0 12px !important;
   }
 
-  .mat-list-item.light {
-    background-color: $ige-secondary;
-  }
-  .mat-list-item.dark:hover {
-    background-color: lighten($ige-secondary, 8%);
+  ::ng-deep .mat-list-item {
+
+    color: #ffffff;
+    height: 56px;
+    font-size: 18px;
+
+    &.menu-toggle {
+      text-transform: none;
+      font-size: 16px;
+      height: 46px;
+    }
+
+    &.light {
+      background-color: $ige-secondary;
+    }
+
+    &.dark:hover {
+      background-color: lighten($ige-secondary, 8%);
+    }
+
+    &:hover {
+      background: lighten($ige-secondary, 8%) !important;
+    }
+
+    &.active:hover {
+      background: lighten($ige-primary, 8%) !important;
+    }
   }
 
-  .mat-list-item:hover {
-    background: lighten($ige-secondary, 8%) !important;
-  }
-
-  .mat-list-item.active:hover {
-    background: lighten($ige-primary, 8%) !important;
-  }
-}
-
-.mat-list-base .mat-list-item {
-  color: #ffffff;
-  height: 56px;
-  font-size: 18px;
 }
 
 .fillVertical {
@@ -69,8 +78,3 @@
   padding-left: 20px;
 }
 
-.mat-list-base .mat-list-item.menu-toggle {
-  text-transform: none;
-  font-size: 16px;
-  height: 46px;
-}
