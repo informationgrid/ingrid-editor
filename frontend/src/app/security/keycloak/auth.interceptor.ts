@@ -13,6 +13,8 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private auth: KeycloakService, private modalService: ModalService) {
   }
 
+  // TODO: https://stackoverflow.com/questions/54925361/how-to-give-session-idle-timeout-in-angular-6
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // send the newly created request
     return next.handle(req)
@@ -24,7 +26,7 @@ export class AuthInterceptor implements HttpInterceptor {
             // TODO: redirect?
             const message = 'You do not have permission to this resource or are logged out';
             this.showError(message);
-          } else if (error.url.indexOf('/auth/realms/') !== -1) {
+          } else if (error.status === 401) {
             const message = 'You have been logged out. Redirecting to login page in 3 seconds.';
             this.showError(message);
             setTimeout(() => window.location.reload(), 3000);
