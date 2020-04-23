@@ -1,3 +1,5 @@
+import xit = Mocha.xit;
+
 describe('Load documents', () => {
 
   it('should load a document from dashboard', function () {
@@ -7,6 +9,13 @@ describe('Load documents', () => {
       cy.url().should('include', '/form;id=');
       cy.get('.form-info-bar .title .label').should('have.text', text);
     });
+  });
+
+  xit('should jump directly to a document specified by URL', function () {
+
+  });
+
+  xit('should open a document from a quick search result', function () {
 
   });
 })

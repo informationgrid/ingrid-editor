@@ -343,22 +343,26 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     this.selectionModel.clear();
 
-    return this.database.getPath(id, this.forAddresses).then((path) => {
-      this.activeNodeId = path.pop();
-      if (path.length > 0) {
-        this.handleExpandNodes(path)
-          .then(() => {
-            const node = this.dataSource.getNode(id);
-            const nodePath = this.getTitlesFromNodePath(node);
-            this.currentPath.next(nodePath);
-            this.activate.next([id]);
-            this.scrollToActiveElement();
-          });
-      } else {
-        this.activate.next(id ? [id] : []);
-        this.scrollToActiveElement();
-      }
-    });
+    if (id !== null) {
+      return this.database.getPath(id, this.forAddresses).then((path) => {
+        this.activeNodeId = path.pop();
+        if (path.length > 0) {
+          this.handleExpandNodes(path)
+            .then(() => {
+              const node = this.dataSource.getNode(id);
+              const nodePath = this.getTitlesFromNodePath(node);
+              this.currentPath.next(nodePath);
+              this.activate.next([id]);
+              this.scrollToActiveElement();
+            });
+        } else {
+          this.activate.next(id ? [id] : []);
+          this.scrollToActiveElement();
+        }
+      });
+    } else {
+      return Promise.resolve();
+    }
   }
 
   private scrollToActiveElement() {
