@@ -1,5 +1,7 @@
 <mat-selection-list *ngIf="docs" class="doc-item" [multiple]="false" [class.dense]="denseMode" [class.hide-divider]="hideDivider">
-    <mat-list-option *ngFor="let doc of docs | async" (click)="makeSelection(doc)" [class.hide-bg-selection]="showSelection">
+    <mat-list-option *ngFor="let doc of docs | async" (click)="makeSelection(doc)"
+                     [class.selected]="currentSelection && (doc.id === currentSelection.id)"
+                     [class.hide-bg-selection]="showSelection">
 
         <mat-icon [class.marker-space]="showSelection && (!currentSelection || currentSelection.id !== doc.id)"
                   matListIcon

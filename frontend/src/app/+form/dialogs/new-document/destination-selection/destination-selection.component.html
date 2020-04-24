@@ -6,9 +6,9 @@
           [showOnlyFolders]="true"
           [showReloadButton]="false"></ige-tree>
 
-<div class="side-padding padding-top">
-    Oder anlegen unter
-    <ige-document-list-item [docs]="getRootNode()" showSelection="true"
+<div class="padding-top">
+    <div class="side-padding">Oder anlegen unter</div>
+    <ige-document-list-item [docs]="getRootNode()"
                             [hideDivider]="true"
                             [setActiveItem]="activeListItem"
                             (select)="updateParent([null], 'List')"></ige-document-list-item>

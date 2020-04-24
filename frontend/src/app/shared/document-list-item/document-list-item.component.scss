@@ -1,3 +1,5 @@
+@import "../../../variables";
+
 .hide-divider .mat-divider-horizontal {
   visibility: hidden;
 }
@@ -7,7 +9,6 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin: 0 8px 8px;
   padding-top: 0;
 
   &.single {
@@ -21,7 +22,16 @@
   .mat-icon {
     margin-right: 12px;
     padding: 0;
+
+    &.marker {
+      padding-left: 12px;
+
+      ::ng-deep polygon {
+        fill: limegreen;
+      }
+    }
   }
+
 
   h3.mat-line {
     display: flex;
@@ -48,6 +58,7 @@
       font-size: 16px;
     }
   }
+
 }
 
 .marker-space {
@@ -56,10 +67,6 @@
 
 .hide-bg-selection.mat-list-single-selected-option {
   background: #00000000;
-}
-
-::ng-deep .marker polygon {
-  fill: limegreen;
 }
 
 ::ng-deep .tooltip-medium {

@@ -3,10 +3,10 @@
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
-        {{forAddress ? 'Neue Adresse anlegen' : 'Neuen Datensatz anlegen'}}
+        <span class="text">{{forAddress ? 'Neue Adresse anlegen' : 'Neuen Datensatz anlegen'}}</span>
     </h2>
 </div>
-<mat-dialog-content class="hide-tab-header">
+<mat-dialog-content class="hide-tab-header create-dlg-content">
     <mat-tab-group [selectedIndex]="selectedPage">
         <mat-tab label="Titel">
             <div class="first-tab-wrapper">
@@ -83,14 +83,14 @@
 <div style="flex: 1"></div>
 
 <mat-dialog-actions>
-    <button *ngIf="selectedPage === 1" mat-button (click)="selectedPage = 0">
+    <button *ngIf="selectedPage === 1" color="primary" mat-button (click)="selectedPage = 0" class="back-button">
         <mat-icon>chevron_left</mat-icon>
-        Zurück
+        <span>Zurück</span>
     </button>
 
     <div fxFlex></div>
 
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-    <button *ngIf="selectedPage === 0" mat-button (click)="selectedPage = 1">Ort ändern</button>
+    <button *ngIf="selectedPage === 0" mat-button color="primary" (click)="selectedPage = 1">Ort ändern</button>
     <button mat-button color="primary" [disabled]="formGroup.invalid" (click)="createDoc()">Anlegen</button>
 </mat-dialog-actions>

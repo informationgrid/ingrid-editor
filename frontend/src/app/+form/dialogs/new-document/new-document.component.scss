@@ -1,3 +1,5 @@
+@import "../../../../variables";
+
 :host {
   .mat-dialog-content {
     padding: 0 0 10px;
@@ -26,9 +28,6 @@ mat-radio-button {
 .hide-tab-header ::ng-deep .mat-tab-header {
   display: none !important;
 }
-.mat-dialog-content {
-  padding-bottom: 10px;
-}
 
 ige-tree, ige-document-list-item {
   display: block;
@@ -44,4 +43,20 @@ ige-tree, ige-document-list-item {
 
 .mat-form-field {
   width: 100%;
+}
+
+.back-button {
+  padding: 0 10px 0 0;
+}
+
+.create-dlg-content ige-destination-selection ::ng-deep .mat-list-option {
+  background-color: $ige-background;
+
+  &:hover {
+    background-color: darken($ige-background, 5%);
+  }
+
+  .mat-list-item-content {
+    padding: 0 24px;
+  }
 }

@@ -4,9 +4,21 @@
   margin-right: -24px;
   padding: 0 10px !important;
 
-  .mat-button-wrapper {
-    text-transform: uppercase;
+}
+
+// all buttons shall be uppercase
+// align text in buttons centered with icon
+.mat-button-wrapper {
+  text-transform: uppercase;
+
+  mat-icon + span {
+    display: inline-block;
+    margin-top: 2px;
   }
+}
+
+.shortcut .mat-button mat-icon + span {
+  padding-left: 5px;
 }
 
 .mat-dialog-container {
@@ -33,6 +45,7 @@
       span.text {
         vertical-align: middle;
         padding-left: 20px;
+        line-height: 40px;
       }
     }
   }
@@ -40,12 +53,6 @@
   .mat-dialog-content {
     margin-top: 40px;
   }
-}
-
-.shortcut .mat-button span {
-  display: inline-block;
-  margin-top: 2px;
-  padding-left: 5px;
 }
 
 ige-root .mat-card {

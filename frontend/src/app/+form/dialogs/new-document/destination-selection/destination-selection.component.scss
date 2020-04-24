@@ -1,7 +1,13 @@
+@import "../../../../../variables";
+
 :host {
   display: flex;
   flex-direction: column;
   flex: 1;
+
+  ::ng-deep .mat-list-option.selected {
+    background-color: $ige-mark-color !important;
+  }
 }
 
 ige-tree {
@@ -16,3 +22,4 @@ ige-tree {
 .padding-top {
   padding-top: 24px;
 }
+

@@ -1,7 +1,10 @@
-.mat-card .mat-divider-horizontal {
-  left: 24px;
-  right: 24px;
-  width: auto;
+.mat-card {
+  padding: 16px 24px 24px;
+  .mat-divider-horizontal {
+    left: 24px;
+    right: 24px;
+    width: auto;
+  }
 }
 
 .no-box-shadow {
