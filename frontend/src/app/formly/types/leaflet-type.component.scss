@@ -1,0 +1,52 @@
+
+:host {
+  position: relative;
+  display: block;
+}
+
+::ng-deep .leaflet-control a {
+  text-transform: none;
+}
+
+.bottom {
+  display: block;
+}
+
+mat-selection-list {
+  flex-grow: 1;
+  margin: 10px 0;
+  overflow: auto;
+}
+
+/*.mat-list .mat-list-item {*/
+/*font-size: 14px;*/
+/*}*/
+
+.nominatimContainer {
+  position: absolute;
+  width: 270px;
+  top: 0;
+  bottom: 0;
+  right: calc(100% + 10px);
+  background-color: #fff;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .leaflet-areaselect-shade {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+::ng-deep .leaflet-areaselect-handle {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #666;
+  -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  width: 14px;
+  height: 14px;
+  cursor: move;
+}

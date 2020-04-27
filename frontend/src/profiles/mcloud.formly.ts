@@ -58,35 +58,13 @@ export class McloudFormly extends BaseProfile {
             {label: 'Start', key: 'start', type: 'date'}
           ]
         }
-        /*fieldArray: {
-          fieldGroup: [
-            {
-              type: 'input',
-              key: 'investmentName',
-              templateOptions: {
-                required: true,
-              },
-            },
-            {
-              type: 'input',
-              key: 'investmentDate',
-              templateOptions: {
-                type: 'date',
-              },
-            },
-            {
-              type: 'input',
-              key: 'stockIdentifier',
-              templateOptions: {
-                addonRight: {
-                  class: 'fa fa-code',
-                  onClick: (to, fieldType, $event) => console.log(to, fieldType, $event),
-                },
-              },
-            },
-          ],
-        }*/
-      }, {
+      }]
+    }, {
+      wrappers: ['section'],
+      templateOptions: {
+        label: 'mCLOUD'
+      },
+      fieldGroup: [{
         key: 'usage',
         type: 'textarea',
         wrappers: ['panel', 'form-field'],
@@ -187,72 +165,81 @@ export class McloudFormly extends BaseProfile {
     }, {
       wrappers: ['section'],
       templateOptions: {
-        label: 'Raum- und Zeitbezüge'
+        label: 'Raumbezüge'
       },
       fieldGroup: [{
-        key: 'geoReference',
-        type: 'input',
-        wrappers: ['panel', 'form-field'],
-        templateOptions: {
-          externalLabel: 'Raumbezug',
-          appearance: 'outline'
-        }
-      }, {
-        key: 'temporalReference',
-        type: 'input',
-        wrappers: ['panel', 'form-field'],
-        templateOptions: {
-          externalLabel: 'Zeitbezug',
-          appearance: 'outline'
-        }
-      }, {
-        fieldGroupClassName: 'display-flex',
+        key: 'geoReferenceVisual',
+        type: 'leaflet',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Zeitspanne'
-        },
-        fieldGroup: [{
-          key: 'rangeType',
-          type: 'select',
-          className: 'flex-1 smallField',
-          wrappers: ['form-field'],
-          templateOptions: {
-            // label: 'Zeitspanne',
-            placeholder: 'wählen',
-            appearance: 'outline',
-            options: [
-              {label: 'am', value: 'at'},
-              {label: 'seit', value: 'since'},
-              {label: 'von - bis', value: 'range'}
-            ]
-          }
-        }, {
-          key: 'rangeFrom',
-          type: 'datepicker',
-          className: 'flex-1',
-          wrappers: ['form-field'],
-          templateOptions: {
-            label: 'am / von',
-            appearance: 'outline'
-          }
-        }, {
-          key: 'rangeTo',
-          type: 'datepicker',
-          className: 'flex-1',
-          wrappers: ['form-field'],
-          templateOptions: {
-            label: 'bis',
-            appearance: 'outline'
-          },
-          hideExpression: (model: any, formState: any, field: FormlyFieldConfig) => {
-            // access to the main model can be through `this.model` or `formState` or `model\n' +
-            if (model && model.rangeType) {
-              return model.rangeType !== 'range';
-            }
-            return true;
-          }
-        }]
+          externalLabel: 'Raumbezug',
+          mapOptions: {},
+          height: 300
+        }
       }]
+    }, {
+      wrappers: ['section'],
+      templateOptions: {
+        label: 'Zeitbezüge'
+      },
+      fieldGroup: [
+        {
+          key: 'temporalReference',
+          type: 'input',
+          wrappers: ['panel', 'form-field'],
+          templateOptions: {
+            externalLabel: 'Zeitbezug',
+            appearance: 'outline'
+          }
+        }, {
+          fieldGroupClassName: 'display-flex',
+          wrappers: ['panel'],
+          templateOptions: {
+            externalLabel: 'Zeitspanne'
+          },
+          fieldGroup: [{
+            key: 'rangeType',
+            type: 'select',
+            className: 'flex-1 smallField',
+            wrappers: ['form-field'],
+            templateOptions: {
+              // label: 'Zeitspanne',
+              placeholder: 'wählen',
+              appearance: 'outline',
+              options: [
+                {label: 'am', value: 'at'},
+                {label: 'seit', value: 'since'},
+                {label: 'von - bis', value: 'range'}
+              ]
+            }
+          }, {
+            key: 'rangeFrom',
+            type: 'datepicker',
+            className: 'flex-1',
+            wrappers: ['form-field'],
+            templateOptions: {
+              label: 'am / von',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'rangeTo',
+            type: 'datepicker',
+            className: 'flex-1',
+            wrappers: ['form-field'],
+            templateOptions: {
+              label: 'bis',
+              appearance: 'outline'
+            },
+            hideExpression: (model: any, formState: any, field: FormlyFieldConfig) => {
+              // access to the main model can be through `this.model` or `formState` or `model\n' +
+              if (model && model.rangeType) {
+                return model.rangeType !== 'range';
+              }
+              return true;
+            }
+          }]
+        }
+      ]
     }
   ];
 
