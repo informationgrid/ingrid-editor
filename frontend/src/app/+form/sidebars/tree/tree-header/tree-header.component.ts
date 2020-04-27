@@ -13,11 +13,10 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
   @Input() showReloadButton = true;
   @Input() isAddress = false;
   @Input() showOptions = true;
+  @Input() showOnlyFolders = false;
 
   @Output() reload = new EventEmitter();
   @Output() open = new EventEmitter();
-
-  // @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
 
   searchResult = new Subject<TreeNode[]>();
 
@@ -28,9 +27,6 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    /*this.trigger.panelClosingActions.subscribe( () => {
-      this.trigger.openPanel();
-    });*/
   }
 
   reloadTree() {
@@ -52,11 +48,17 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
       .pipe(
         map(result => DynamicDatabase.mapDocumentsToTreeNodes(result.hits, 0))
       )
-      .subscribe(result => this.searchResult.next(result));
+      .subscribe(result => this.searchResult.next(this.filterResult(result)));
   }
 
   loadResultDocument(doc: TreeNode) {
     console.log('Loading document', doc);
     this.open.next(doc._id);
+  }
+
+  private filterResult(result: TreeNode[]) {
+    return this.showOnlyFolders
+      ? result.filter(node => node.profile === 'FOLDER')
+      : result;
   }
 }
