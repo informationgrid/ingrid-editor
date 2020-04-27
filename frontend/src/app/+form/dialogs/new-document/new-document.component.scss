@@ -1,6 +1,9 @@
 @import "../../../../variables";
 
 :host {
+
+  flex: 1 1 auto; // IE 11
+
   .mat-dialog-content {
     padding: 0 0 10px;
     display: flex;

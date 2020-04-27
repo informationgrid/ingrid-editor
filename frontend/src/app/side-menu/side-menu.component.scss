@@ -27,6 +27,7 @@
 .mat-nav-list {
   overflow: auto;
   width: 300px;
+  flex-basis: auto !important; // IE 11
 
   &.collapsed {
     width: 56px;

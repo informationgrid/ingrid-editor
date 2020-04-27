@@ -2,6 +2,7 @@
 
 :host {
   overflow: hidden;
+  flex: 1; // IE 11
 }
 
 .welcome {
@@ -25,6 +26,7 @@ ige-quick-search, .welcome, .shortcut {
 .dashboard-content {
   overflow: auto;
   padding-top: 30px;
+  flex: 1;
 }
 
 .info-cards {
