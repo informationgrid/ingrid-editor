@@ -18,6 +18,8 @@ import {SessionQuery} from '../../store/session.query';
 import {distinctUntilChanged, map, startWith, throttleTime} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProfileService} from '../../services/profile.service';
+import {AddressTreeQuery} from '../../store/address-tree/address-tree.query';
+import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE} from '../../store/document/document.model';
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -37,6 +39,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   @Input() model: IgeDocument;
   @Input() sections: string[] = [];
   @Input() parentContainer: HTMLElement;
+  @Input() forAddress = false;
   @Output() showStickyHeader = new EventEmitter<StickyHeaderInfo>();
 
   @ViewChild('host') host: ElementRef;
@@ -46,15 +49,28 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   scrollHeaderOffsetLeft: number;
 
   showScrollHeader = false;
+  rootName: string;
   private initialHeaderOffset: number;
 
-  constructor(private treeQuery: TreeQuery, private cdr: ChangeDetectorRef,
+  constructor(private treeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
+              private cdr: ChangeDetectorRef,
               private sessionQuery: SessionQuery,
               private profileService: ProfileService) {
   }
 
   ngOnInit() {
-    this.treeQuery.pathTitles$
+    let query;
+
+    if (this.forAddress) {
+      this.rootName = ADDRESS_ROOT_NODE.title;
+      query = this.addressTreeQuery;
+    } else {
+      this.rootName = DOCUMENT_ROOT_NODE.title;
+      query = this.treeQuery;
+    }
+
+    query.pathTitles$
       .pipe(untilDestroyed(this))
       .subscribe(path => this.updatePath(path));
 

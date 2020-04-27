@@ -177,8 +177,11 @@ export class DocumentService {
         const data = ids.map(id => {
           return {id: id};
         });
-        // @ts-ignore
-        this.datasetsChanged$.next({type: UpdateType.Delete, data: data});
+        this.datasetsChanged$.next({
+          type: UpdateType.Delete,
+          // @ts-ignore
+          data: data
+        });
         this.treeStore.remove(ids);
       });
   }
@@ -229,6 +232,12 @@ export class DocumentService {
 
   addDocumentToStore(docs: DocumentAbstract[]) {
     this.treeStore.add(docs);
+  }
+
+  updateChildrenInfo(id: string, hasChildren: boolean) {
+    this.treeStore.update(id, {
+      _hasChildren: hasChildren
+    });
   }
 
   private mapSearchResults(result: ServerSearchResult): SearchResult {

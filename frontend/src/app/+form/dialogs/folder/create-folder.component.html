@@ -15,6 +15,7 @@
                     <mat-label>Titel</mat-label>
                     <input matInput #name
                            cdkFocusInitial
+                           autocomplete="off"
                            placeholder="Titel des Ordners"
                            (keyup.enter)="handleCreate(name.value)"
                            required>

@@ -19,11 +19,13 @@
                                 <input matInput
                                        formControlName="firstName"
                                        cdkFocusInitial
+                                       autocomplete="off"
                                        placeholder="Vorname">
                             </mat-form-field>
                             <mat-form-field appearance="outline" class="width-100">
                                 <mat-label>Nachname</mat-label>
                                 <input matInput
+                                       autocomplete="off"
                                        placeholder="Nachname"
                                        formControlName="lastName">
                             </mat-form-field>
@@ -31,6 +33,7 @@
                         <mat-form-field appearance="outline">
                             <mat-label>Organisation</mat-label>
                             <input matInput
+                                   name="organization"
                                    formControlName="organization"
                                    placeholder="Oder eine Organisation">
                         </mat-form-field>
@@ -47,6 +50,7 @@
                             <input matInput
                                    formControlName="title"
                                    cdkFocusInitial
+                                   autocomplete="off"
                                    placeholder="Titel"
                                    required>
                             <mat-error *ngIf="formGroup.get('title').invalid">Dieses Feld muss ausgefüllt sein</mat-error>

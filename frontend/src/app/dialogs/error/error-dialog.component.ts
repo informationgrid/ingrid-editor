@@ -4,7 +4,8 @@ import { IgeError } from '../../models/ige-error';
 
 @Component( {
   selector: 'error-dialog',
-  templateUrl: 'error-dialog.component.html'
+  templateUrl: 'error-dialog.component.html',
+  styleUrls: ['error-dialog.component.scss']
 } )
 export class ErrorDialogComponent {
   error: IgeError[];

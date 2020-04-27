@@ -4,8 +4,9 @@ import {LatLngBounds, Map, Rectangle, TileLayer} from 'leaflet';
 import {ModalService} from '../../services/modal/modal.service';
 import {NominatimService} from '../../+form/leaflet/nominatim.service';
 import {LeafletAreaSelect} from '../../+form/leaflet/leaflet-area-select';
-import {distinctUntilChanged} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {FormControl} from '@angular/forms';
 
 class MyMap extends Map {
   _onResize: () => {};
@@ -30,6 +31,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
   showSearch = false;
 
   nominatimResult: any = [];
+  searchInput = new FormControl();
 
   private static getLatLngBoundsFromBox(bbox: any): LatLngBounds {
     if (!bbox) {
@@ -55,6 +57,13 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       )
       .subscribe(value => this.updateBoundingBox(value));
 
+    this.searchInput.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(500)
+      )
+      .subscribe(query => this.searchLocation(query));
+
     try {
       this.to.mapOptions.layers = [new TileLayer(
         '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -72,13 +81,6 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
 
     this.updateBoundingBox(this.formFieldControl.value);
 
-    /*if (this._bbox) {
-      this.drawBoxAndZoomToBounds();
-      // we need to handle change detection here since object changed meanwhile
-      this._changeDetectionRef.detectChanges();
-    } else {
-      this.zoomToInitialBox();
-    }*/
   }
 
   private updateBoundingBox(value) {
@@ -141,9 +143,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
         {maxZoom: 13});
     }
 
-    // this.model.
     this.formControl.setValue(this._bbox);
-    // this._onChangeCallback(this._bbox);
   }
 
 
@@ -261,6 +261,9 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
   cancelEdit() {
     // this.showSearch = false;
     this._bbox = this._bboxPrevious;
+    if (!this.bbox) {
+      this.removeDrawnBoundingBox();
+    }
     this.areaSelect.remove();
     this.drawBoxAndZoomToBounds();
     this.toggleSearch(false);

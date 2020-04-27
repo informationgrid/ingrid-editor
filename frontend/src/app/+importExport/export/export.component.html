@@ -3,7 +3,7 @@
         <ng-template matStepLabel>Datensatz auswählen</ng-template>
         <ige-tree (selected)="selectDatasets($event)"></ige-tree>
         <div class="wizard-footer">
-            <button mat-button matStepperNext [disabled]="!datasetSelected">Next</button>
+            <button mat-button matStepperNext [disabled]="!datasetSelected">Weiter</button>
         </div>
     </mat-step>
     <mat-step [stepControl]="secondFormGroup">
@@ -15,15 +15,15 @@
                 <mat-radio-button name="exportOption" value="thisAndSub">dieser und alle untergeordneten</mat-radio-button>
             </mat-radio-group>
             <div class="wizard-footer">
-                <button mat-button matStepperPrevious>Back</button>
-                <button mat-button matStepperNext>Next</button>
+                <button mat-button matStepperPrevious>Zurück</button>
+                <button mat-button matStepperNext>Weiter</button>
             </div>
         </form>
     </mat-step>
     <mat-step [stepControl]="secondFormGroup">
         <ng-template matStepLabel>Exportieren</ng-template>
 
-        <mat-form-field>
+        <mat-form-field style="width: 300px">
             <mat-label>Format</mat-label>
             <mat-select [(ngModel)]="formatSelection">
                 <mat-option *ngFor="let format of exportFormats | async" [value]="format.type">

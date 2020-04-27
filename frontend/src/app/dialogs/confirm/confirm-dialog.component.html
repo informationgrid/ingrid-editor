@@ -1,4 +1,11 @@
-<h2 mat-dialog-title>{{data.title}}</h2>
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">{{data.title}}</span>
+    </h2>
+</div>
 <mat-dialog-content>
     <p>{{data.message}}</p>
     <ul *ngIf="data.list">
@@ -13,9 +20,9 @@
     </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close>Abbrechen</button>
+    <button mat-button color="primary" mat-dialog-close cdkFocusInitial>Abbrechen</button>
     <div fxFlex></div>
-    <button mat-button color="primary"
+    <button mat-stroked-button color="primary"
             [mat-dialog-close]="true"
             [disabled]="data.confirmText && textConfirmed !== data.confirmText">
         Ok

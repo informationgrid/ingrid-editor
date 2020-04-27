@@ -103,6 +103,10 @@ export class TreeComponent implements OnInit, OnDestroy {
   private expandOnDataChange(ids: string[]): Promise<void> {
     let resolveNextTime = false;
 
+    // FIXME: if a root node is opened and we want to create a folder and in the dialog we
+    //        search for a sub folder of the opened folder, then root nodes will always be
+    //        triggered by dataChange, which mixes up resolveNextTime timing
+
     return new Promise(resolve => {
       const changeObserver = this.dataSource.dataChange.subscribe(data => {
         if (resolveNextTime) {
@@ -177,7 +181,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     return path.reverse();
   }
 
-  private getParentNode(node: TreeNode): { node, parent } {
+  private getParentNode(node: TreeNode): { node: TreeNode, parent: TreeNode } {
     const nodeIndex = this.dataSource.data.findIndex(item => item._id === node._id);
 
     for (let i = nodeIndex - 1; i >= 0; i--) {
@@ -244,10 +248,10 @@ export class TreeComponent implements OnInit, OnDestroy {
     parentNodeRelations.forEach(parentNode => {
       // first collapse nodes to be deleted to make sure all sub nodes are removed
       this.treeControl.collapse(parentNode.node);
+      this.dataSource.removeNode(parentNode.node);
       this.updateChildrenInfo(parentNode.parent)
     });
 
-    this.dataSource.removeNode(updateInfo.data);
   }
 
   private async addNewNode(updateInfo: UpdateDatasetInfo) {
@@ -262,7 +266,9 @@ export class TreeComponent implements OnInit, OnDestroy {
       // parent node seems to be nested deeper
       if (parentNodeIndex === -1) {
         console.log('Parent not found, using path: ', updateInfo.path);
-        this.expandNodeIds.next(updateInfo.path);
+        if (this.expandNodeIds) {
+          this.expandNodeIds.next(updateInfo.path);
+        }
         return;
       }
 
@@ -355,11 +361,18 @@ export class TreeComponent implements OnInit, OnDestroy {
               const nodePath = this.getTitlesFromNodePath(node);
               this.currentPath.next(nodePath);
               this.activate.next([id]);
+              this.selectionModel.select(node);
               this.scrollToActiveElement();
             });
         } else {
           this.activate.next(id ? [id] : []);
-          this.scrollToActiveElement();
+          if (id) {
+            const node = this.dataSource.getNode(id);
+            const nodePath = this.getTitlesFromNodePath(node);
+            this.currentPath.next(nodePath);
+            this.selectionModel.select(node);
+            this.scrollToActiveElement();
+          }
         }
       });
     } else {

@@ -116,14 +116,14 @@ export class DynamicDataSource {
     node.isExpanded = false;
   }
 
-  removeNode(docs: DocumentAbstract[]) {
-    docs.forEach(doc => {
-      const index = this.data.findIndex(node => node._id === doc.id);
+  removeNode(doc: TreeNode) {
+    // docs.forEach(doc => {
+      const index = this.data.indexOf(doc);
       if (index !== -1) {
         this.data.splice(index, 1);
         this.dataChange.next(this.data);
       }
-    });
+    // });
   }
 
   updateNode(docs: DocumentAbstract[]) {

@@ -8,7 +8,6 @@
         <as-split-area [size]="sidebarWidth" id="sidebar">
             <ige-tree [showReloadButton]="true"
                       [forAddresses]="true"
-                      [expandNodeIds]="initialExpandNodes"
                       [update]="updateTree"
                       [setActiveNode]="activeTreeNode"
                       (currentPath)="storePath($event)"
@@ -17,7 +16,7 @@
         </as-split-area>
 
         <!-- The form -->
-        <as-split-area [size]="100-sidebarWidth" id="form" class="form-content" (scroll)="onScroll($event)">
+        <as-split-area #scrollForm [size]="100-sidebarWidth" id="form" class="form-content" (scroll)="onScroll($event)">
 
             <ige-address-dashboard *ngIf="fields.length === 0"></ige-address-dashboard>
 
@@ -25,8 +24,9 @@
                 <ige-form-info [form]="form"
                                [model]="model"
                                [sections]="sections"
+                               [forAddress]="true"
                                [class.scrolled]="isScrolled"
-                               (jumpToSection)="jumpToSection($event)"></ige-form-info>
+                               [parentContainer]="scrollForm"></ige-form-info>
 
                 <form [formGroup]="form">
                     <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>

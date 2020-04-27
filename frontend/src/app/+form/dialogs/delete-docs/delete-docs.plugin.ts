@@ -75,7 +75,17 @@ export class DeleteDocsPlugin extends Plugin {
 
   deleteDocs(docIdsToDelete: string[]) {
     try {
+
+      // const parents = this.treeQuery.getAll()
+      //   .filter(doc => docIdsToDelete.indexOf(doc.id.toString()) !== -1)
+      //   .map(doc => doc._parent);
+
       this.documentService.delete(docIdsToDelete, this.forAddress);
+
+      // find all parents in store who now have no children anymore
+      // parents
+      //   .filter(id => this.treeQuery.getCount(item => item._parent === id) === 0)
+      //   .forEach( id => this.documentService.updateChildrenInfo(id, false));
 
       const route = this.forAddress ? '/address' : '/form';
       this.router.navigate([route]);
