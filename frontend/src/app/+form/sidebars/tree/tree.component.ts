@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {TreeNode} from '../../../store/tree/tree-node.model';
 import {combineLatest, Observable, Subject} from 'rxjs';
@@ -49,6 +49,8 @@ export class TreeComponent implements OnInit, OnDestroy {
   );
   @Output() activate = new EventEmitter<string[]>();
   @Output() currentPath = new EventEmitter<ShortTreeNode[]>();
+
+  @ViewChild('treeComponent', {read: ElementRef}) treeContainerElement: ElementRef;
 
   // signal to show that a tree node is loading
   private isLoading: TreeNode;
@@ -368,7 +370,8 @@ export class TreeComponent implements OnInit, OnDestroy {
   private scrollToActiveElement() {
     // TODO: wait till dom node is actually there
     setTimeout(() => {
-      const element = document.querySelector('.mat-tree-node.active');
+      const element = this.treeContainerElement.nativeElement
+        .querySelector('.mat-tree-node.active');
       if (element) {
         element.scrollIntoView({behavior: 'smooth', block: 'center'});
       }

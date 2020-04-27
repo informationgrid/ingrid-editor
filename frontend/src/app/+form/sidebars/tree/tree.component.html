@@ -9,7 +9,7 @@
 
 
     <!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+    <mat-tree #treeComponent [dataSource]="dataSource" [treeControl]="treeControl">
 
         <!-- This is the tree node template for leaf nodes -->
         <mat-tree-node *matTreeNodeDef="let node"
