@@ -53,6 +53,9 @@
                 }
               ]
             },
+            "es5": {
+              "tsConfig": "src/tsconfig-es5.app.json"
+            },
             "production": {
               "budgets": [
                 {
@@ -90,6 +93,9 @@
               "hmr": true,
               "hmrWarning": false,
               "browserTarget": "ige-ng:build:hmr"
+            },
+            "es5": {
+              "browserTarget": "ige-ng:build:es5"
             },
             "production": {
               "browserTarget": "ige-ng:build:production"
