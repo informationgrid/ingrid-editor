@@ -7,7 +7,7 @@
 .doc-item {
 
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-direction: column;
   padding-top: 0;
 
@@ -16,10 +16,15 @@
   }
 
   ::ng-deep .mat-list-item .mat-list-item-content {
-    padding: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    min-height: 48px;
   }
 
   .mat-icon {
+    display: flex;
+    align-self: flex-start;
+    height: 24px;
     margin-right: 12px;
     padding: 0;
 
@@ -35,7 +40,7 @@
 
   h3.mat-line {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
   }
 
   .card-title {
@@ -54,7 +59,8 @@
 
   ::ng-deep &.mat-list-base {
     mat-list-option {
-      height: 48px !important;
+      //min-height: 48px;
+      height: auto !important;
       font-size: 16px;
     }
   }
