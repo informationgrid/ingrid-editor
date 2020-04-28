@@ -85,10 +85,13 @@ public class DocumentService extends MapperService {
 
     public ObjectNode getLatestDocument(JsonNode doc) {
         String state = determineState(doc);
-        ObjectNode docData = (ObjectNode) doc.get(FIELD_DRAFT);
+        JsonNode jsonNode = doc.get(FIELD_DRAFT);
+        ObjectNode docData;
 
-        if (docData.isNull()) {
+        if (jsonNode.isNull()) {
             docData = (ObjectNode) doc.get(FIELD_PUBLISHED);
+        } else {
+            docData = (ObjectNode) jsonNode;
         }
 
         docData.put(FIELD_STATE, state);
