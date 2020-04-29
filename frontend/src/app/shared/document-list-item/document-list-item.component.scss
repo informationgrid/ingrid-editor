@@ -13,6 +13,11 @@
 
   &.single {
     margin: 0;
+    align-items: center;
+
+    .mat-icon {
+      align-self: unset;
+    }
   }
 
   ::ng-deep .mat-list-item .mat-list-item-content {
