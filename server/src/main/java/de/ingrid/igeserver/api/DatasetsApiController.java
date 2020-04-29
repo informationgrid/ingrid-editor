@@ -3,7 +3,6 @@ package de.ingrid.igeserver.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.id.ORecordId;
 import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.DBFindAllResults;
 import de.ingrid.igeserver.db.FindOptions;
@@ -11,7 +10,6 @@ import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.model.SearchResult;
 import de.ingrid.igeserver.services.DocumentService;
-import de.ingrid.igeserver.services.ExportService;
 import de.ingrid.igeserver.services.MapperService;
 import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
@@ -35,23 +33,20 @@ import static de.ingrid.igeserver.services.MapperService.*;
 
 
 @RestController
-@RequestMapping(path="/api")
+@RequestMapping(path = "/api")
 public class DatasetsApiController implements DatasetsApi {
 
-    private static Logger log = LogManager.getLogger(DatasetsApiController.class);
+    private static final Logger log = LogManager.getLogger(DatasetsApiController.class);
 
     private enum CopyMoveOperation {COPY, MOVE}
 
-    private DBApi dbService;
+    private final DBApi dbService;
 
-    private DocumentService documentService;
+    private final DocumentService documentService;
 
-    @Autowired
-    private ExportService exportService;
+    private final DBUtils dbUtils;
 
-    private DBUtils dbUtils;
-
-    private AuthUtils authUtils;
+    private final AuthUtils authUtils;
 
     @Autowired
     public DatasetsApiController(AuthUtils authUtils, DBUtils dbUtils, DBApi dbService, DocumentService documentService) {
@@ -63,8 +58,6 @@ public class DatasetsApiController implements DatasetsApi {
 
     /**
      * Create dataset.
-     *
-     * @return
      */
     public ResponseEntity<JsonNode> createDataset(
             Principal principal,
@@ -81,9 +74,6 @@ public class DatasetsApiController implements DatasetsApi {
 
             // add generated id to document (_id)
             // this one is different from the internal database id (@rid)
-            // TODO: refactor getting sequence
-            //OSequence sequence = session.getMetadata().getSequenceLibrary().getSequence("idseq");
-            //mapDocument.put(FIELD_ID, String.valueOf(sequence.next()));
             UUID uuid = UUID.randomUUID();
             dataJson.put(FIELD_ID, uuid.toString());
             dataJson.put(FIELD_HAS_CHILDREN, false);
@@ -120,8 +110,6 @@ public class DatasetsApiController implements DatasetsApi {
 
     /**
      * Update dataset.
-     *
-     * @return
      */
     public ResponseEntity<JsonNode> updateDataset(
             Principal principal, String id,
@@ -218,13 +206,14 @@ public class DatasetsApiController implements DatasetsApi {
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             for (String id : ids) {
-                String recordId = this.dbService.getRecordId(type, id);
-                JsonNode dbDoc = this.dbService.find(type, recordId);
-
-                this.dbService.remove(type, id);
 
                 // TODO: remove references to document!?
                 // TODO: remove all children recursively
+
+                // String recordId = this.dbService.getRecordId(type, id);
+                // JsonNode dbDoc = this.dbService.find(type, recordId);
+
+                this.dbService.remove(type, id);
 
             }
             return ResponseEntity.ok().build();
@@ -271,7 +260,7 @@ public class DatasetsApiController implements DatasetsApi {
 
             if (operation == CopyMoveOperation.COPY) {
                 // remove internal dataset Info (TODO: this should be done by the dbService)
-                documentService.removeDBManagementFields(updatedDoc);
+                removeDBManagementFields(updatedDoc);
 
                 // when we copy the node, then we also have to reset the id
                 updatedDoc.set(MapperService.FIELD_ID, null);
@@ -345,7 +334,7 @@ public class DatasetsApiController implements DatasetsApi {
             searchResult.totalHits = docs.totalHits;
 
             searchResult.hits = docs.hits.stream()
-                    .map(doc -> documentService.getLatestDocument(doc))
+                    .map(documentService::getLatestDocument)
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(searchResult);

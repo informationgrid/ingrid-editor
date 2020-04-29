@@ -53,7 +53,7 @@ export class BehavioursDefault {
               private isoviewPlugin: IsoViewPlugin,
               private createDocRules: CreateDocRulesPlugin,
               private copyCutPastePlugin: CopyCutPastePlugin,
-              private folderPlugin: FolderPlugin,
+              private folderPlugin: CreateFolderPlugin,
               private publishPlugin: PublishPlugin,
               private deletePlugin: DeleteDocsPlugin,
               private undoPlugin: UndoPlugin*/) {

@@ -3,17 +3,21 @@ import {Plugin} from '../../../+behaviours/plugin';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
-import {NewDocumentComponent} from './new-document.component';
 import {MessageService} from '../../../services/message.service';
 import {FormularService} from '../../formular.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {CreateNodeComponent, CreateOptions} from './create-node.component';
 
-export type DocType = { id: string, label: string, icon: string };
+export interface DocType {
+  id: string,
+  label: string,
+  icon: string
+}
 
 @UntilDestroy()
 @Injectable()
-export class NewDocumentPlugin extends Plugin {
+export class CreateDocumentPlugin extends Plugin {
   id = 'plugin.newDoc';
   _name = 'Neues Dokument Plugin';
   defaultActive = true;
@@ -43,10 +47,10 @@ export class NewDocumentPlugin extends Plugin {
     this.toolbarService.toolbarEvent$
       .pipe(untilDestroyed(this))
       .subscribe(eventId => {
-      if (eventId === 'NEW_DOC') {
-        this.newDoc();
-      }
-    });
+        if (eventId === 'NEW_DOC') {
+          this.newDoc();
+        }
+      });
   };
 
   newDoc() {
@@ -60,17 +64,16 @@ export class NewDocumentPlugin extends Plugin {
       }
     }
 
-    this.dialog.open(NewDocumentComponent, {
+    this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       minHeight: 400,
       disableClose: true,
       data:
         {
-          rootOption: true,
           parent: selectedDocId,
-          choice: null,
-          forAddress: this.forAddress
-        }
+          forAddress: this.forAddress,
+          isFolder: false
+        } as CreateOptions
     });
 
   }

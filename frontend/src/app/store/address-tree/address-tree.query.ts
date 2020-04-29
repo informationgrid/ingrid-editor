@@ -3,12 +3,13 @@ import {QueryEntity} from '@datorama/akita';
 import {AddressTreeState, AddressTreeStore} from './address-tree.store';
 import {DocumentAbstract} from '../document/document.model';
 import {Observable} from 'rxjs';
+import {ShortTreeNode} from '../../+form/sidebars/tree/tree.component';
 
 @Injectable({providedIn: 'root'})
 export class AddressTreeQuery extends QueryEntity<AddressTreeState> {
 
   openedDocument$: Observable<DocumentAbstract> = this.select(state => state.openedDocument);
-  pathTitles$: Observable<string[]> = this.select(state => state.activePathTitles);
+  pathTitles$: Observable<ShortTreeNode[]> = this.select(state => state.activePathTitles);
 
   constructor(protected store: AddressTreeStore) {
     super(store);

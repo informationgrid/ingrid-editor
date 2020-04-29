@@ -3,11 +3,11 @@ import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service
 import {Plugin} from '../../../+behaviours/plugin';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
-import {CreateFolderComponent} from './create-folder.component';
+import {CreateNodeComponent, CreateOptions} from './create-node.component';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
 @Injectable()
-export class FolderPlugin extends Plugin {
+export class CreateFolderPlugin extends Plugin {
   id = 'plugin.folder';
   _name = 'Folder Plugin';
 
@@ -73,14 +73,15 @@ export class FolderPlugin extends Plugin {
       }
     }
 
-    this.dialog.open(CreateFolderComponent, {
+    this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       minHeight: 400,
       disableClose: true,
       data: {
         parent: selectedDocId,
-        forAddress: this.forAddress
-      }
+        forAddress: this.forAddress,
+        isFolder: true
+      } as CreateOptions
     });
   }
 

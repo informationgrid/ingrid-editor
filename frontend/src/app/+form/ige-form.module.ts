@@ -26,7 +26,6 @@ import {RouterModule} from '@angular/router';
 import {FormlyModule} from '@ngx-formly/core';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {NewDocumentComponent} from './dialogs/new-document/new-document.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {PasteDialogComponent} from './dialogs/copy-cut-paste/paste-dialog.component';
 import {IsoViewComponent} from './dialogs/isoView/iso-view.component';
@@ -48,7 +47,7 @@ import {FormSharedModule} from './form-shared/form-shared.module';
   ],
   declarations: [
     LeafletComponent, DynamicFormComponent,
-    NewDocumentComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
+    PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
     // OneColumnWrapperComponent,
     ScrollToDirective, SidebarComponent,
     FormDashboardComponent
@@ -56,7 +55,7 @@ import {FormSharedModule} from './form-shared/form-shared.module';
   providers: [
     NominatimService],
   exports: [RouterModule, FormsModule, ScrollToDirective, SidebarComponent],
-  entryComponents: [NewDocumentComponent, PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
+  entryComponents: [PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
 })
 export class IgeFormModule {
 }

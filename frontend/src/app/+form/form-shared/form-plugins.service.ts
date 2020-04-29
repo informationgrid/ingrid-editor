@@ -1,11 +1,11 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {DeleteDocsPlugin} from '../dialogs/delete-docs/delete-docs.plugin';
-import {FolderPlugin} from '../dialogs/folder/folder.plugin';
+import {CreateFolderPlugin} from '../dialogs/create/create-folder.plugin';
 import {CopyCutPastePlugin} from '../dialogs/copy-cut-paste/copy-cut-paste.plugin';
 import {Plugin} from '../../+behaviours/plugin';
 import {PublishPlugin} from '../dialogs/publish/publish.plugin';
 import {PrintViewPlugin} from '../dialogs/print-view/print-view.plugin';
-import {NewDocumentPlugin} from '../dialogs/new-document/new-doc.plugin';
+import {CreateDocumentPlugin} from '../dialogs/create/create-doc.plugin';
 import {SavePlugin} from '../dialogs/save/save.plugin';
 import {HistoryPlugin} from '../dialogs/history/history.plugin';
 
@@ -15,9 +15,9 @@ export class FormPluginsService implements OnDestroy {
   private plugins: Plugin[] = [];
 
   constructor(publishPlugin: PublishPlugin,
-              newDoc: NewDocumentPlugin,
+              newDoc: CreateDocumentPlugin,
               saveDoc: SavePlugin,
-              folderPlugin: FolderPlugin,
+              folderPlugin: CreateFolderPlugin,
               copyCutPastePlugin: CopyCutPastePlugin,
               printPlugin: PrintViewPlugin,
               deletePlugin: DeleteDocsPlugin,

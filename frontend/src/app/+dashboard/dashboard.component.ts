@@ -6,8 +6,7 @@ import {Observable} from 'rxjs';
 import {SessionQuery} from '../store/session.query';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
-import {CreateFolderComponent} from "../+form/dialogs/folder/create-folder.component";
-import {CreateDocOptions, NewDocumentComponent} from "../+form/dialogs/new-document/new-document.component";
+import {CreateNodeComponent, CreateOptions} from '../+form/dialogs/create/create-node.component';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -47,32 +46,30 @@ export class DashboardComponent implements OnInit {
   }
 
   createNewDocument() {
-    const dlg = this.dialog.open(NewDocumentComponent, {
+    const dlg = this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       minHeight: 400,
       disableClose: true,
       data:
         {
-          rootOption: true,
           parent: null,
-          choice: null,
-          forAddress: false
-        }
+          forAddress: false,
+          isFolder: false
+        } as CreateOptions
     });
   }
 
   createNewAddress() {
-    const dlg = this.dialog.open(NewDocumentComponent, {
+    const dlg = this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       minHeight: 400,
       disableClose: true,
       data:
         {
-          rootOption: true,
           parent: null,
-          choice: null,
-          forAddress: true
-        }
+          forAddress: true,
+          isFolder: false
+        } as CreateOptions
     });
   }
 
@@ -89,11 +86,14 @@ export class DashboardComponent implements OnInit {
   }
 
   createNewFolder() {
-    this.dialog.open(CreateFolderComponent, {
+    this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       minHeight: 400,
       disableClose: true,
-      data: {}
+      data: {
+        forAddress: false,
+        isFolder: true
+      } as CreateOptions
     });
   }
 }

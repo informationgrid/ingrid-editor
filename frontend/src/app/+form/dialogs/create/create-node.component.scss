@@ -1,5 +1,9 @@
 @import "../../../../variables";
 
+.hide-tab-header ::ng-deep .mat-tab-header {
+  display: none !important;
+}
+
 :host {
 
   flex: 1 1 auto; // IE 11
@@ -18,6 +22,10 @@
   }
 }
 
+.mat-form-field {
+  width: 100%;
+}
+
 #doc-type {
   padding-bottom: 12px;
   display: block;
@@ -28,24 +36,11 @@ mat-radio-button {
   padding-bottom: 16px;
 }
 
-.hide-tab-header ::ng-deep .mat-tab-header {
-  display: none !important;
-}
-
-ige-tree, ige-document-list-item {
-  display: block;
-  padding-bottom: 20px;
-}
-
 .first-tab-wrapper {
   flex: 1;
   padding-left: 24px;
   padding-right: 24px;
   padding-top: 1px;
-}
-
-.mat-form-field {
-  width: 100%;
 }
 
 .back-button {
@@ -60,6 +55,7 @@ ige-tree, ige-document-list-item {
   }
 
   .mat-list-item-content {
-    padding: 0 24px;
+    padding-left: 24px;
+    padding-right: 24px;
   }
 }

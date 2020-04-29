@@ -39,8 +39,7 @@ import {SectionWrapper} from './formly/wrapper/section-wrapper.component';
 import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component';
 import {MainHeaderComponent} from './main-header/main-header.component';
 import {InfoDialogComponent} from './main-header/info-dialog/info-dialog.component';
-import {NewDocumentPlugin} from './+form/dialogs/new-document/new-doc.plugin';
-import {CreateFolderComponent} from './+form/dialogs/folder/create-folder.component';
+import {CreateNodeComponent} from './+form/dialogs/create/create-node.component';
 import {MatTabsModule} from '@angular/material/tabs';
 import {FormSharedModule} from './+form/form-shared/form-shared.module';
 import {MatMenuModule} from '@angular/material/menu';
@@ -83,7 +82,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
-    ConfirmDialogComponent, CreateFolderComponent,
+    ConfirmDialogComponent, CreateNodeComponent,
     OneColumnWrapperComponent, SectionWrapper,
     SideMenuComponent,
     MainHeaderComponent,
@@ -134,13 +133,12 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    },
-    NewDocumentPlugin
+    }
 
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent, InfoDialogComponent, CreateFolderComponent]
+  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent, InfoDialogComponent, CreateNodeComponent]
 })
 
 export class AppModule {

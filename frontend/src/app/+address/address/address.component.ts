@@ -74,7 +74,7 @@ export class AddressComponent implements OnInit {
 
   storePath(path: ShortTreeNode[]) {
     this.addressTreeStore.update({
-      activePathTitles: path.map(node => node.title)
+      activePathTitles: path
     })
   }
 

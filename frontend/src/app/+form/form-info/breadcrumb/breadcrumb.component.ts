@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ShortTreeNode} from '../../sidebars/tree/tree.component';
 
 @Component({
   selector: 'ige-breadcrumb',
@@ -7,11 +8,13 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class BreadcrumbComponent implements OnInit {
 
-  @Input() path: string[];
+  @Input() path: ShortTreeNode[];
   @Input() hideLastSeparator = true;
   @Input() showRoot = true;
   @Input() rootName = 'Daten';
   @Input() emphasize = false;
+
+  @Output() select = new EventEmitter<string>();
 
   constructor() {
   }
@@ -19,4 +22,7 @@ export class BreadcrumbComponent implements OnInit {
   ngOnInit() {
   }
 
+  onSelect(id: string) {
+    this.select.next(id);
+  }
 }

@@ -84,7 +84,7 @@ export class SidebarComponent implements OnInit {
 
   storePathTitles(path: ShortTreeNode[]) {
     this.treeStore.update({
-      activePathTitles: path.map(node => node.title)
+      activePathTitles: path
     })
   }
 
