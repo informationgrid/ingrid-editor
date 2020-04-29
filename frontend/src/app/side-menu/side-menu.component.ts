@@ -6,7 +6,6 @@ import {MenuItem, MenuService} from '../menu/menu.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {SessionQuery} from '../store/session.query';
 import {animate, style, transition, trigger} from '@angular/animations';
-import set = Reflect.set;
 
 @Component({
   selector: 'ige-side-menu',
@@ -44,12 +43,7 @@ export class SideMenuComponent implements OnInit {
 
     this.session.isSidebarExpanded$.subscribe(expanded => this.menuIsExpanded = expanded);
 
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        // console.log('Event: ', event.url);
-        this.currentRoute = event.url.split(';')[0];
-      }
-    });
+    this.router.events.subscribe(event => this.handleCurrentRoute(event));
 
     // display the drawer if the user has at least one catalog assigned
     this.showDrawer = this.configService.$userInfo.pipe(
@@ -61,6 +55,13 @@ export class SideMenuComponent implements OnInit {
       this.menuItems = this.menuService.menuItems;
     });
 
+  }
+
+  private handleCurrentRoute(event: any) {
+    if (event instanceof NavigationEnd) {
+      const urlPath = event.url.split(';')[0];
+      this.currentRoute = urlPath === '/' ? '/dashboard' : urlPath;
+    }
   }
 
   toggleSidebar(setExanded: boolean) {

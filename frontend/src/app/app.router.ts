@@ -37,7 +37,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/form',
+    redirectTo: '/dashboard',
     pathMatch: 'full'
   }
 ];
