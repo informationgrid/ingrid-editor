@@ -2,7 +2,11 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {DocumentService} from '../../services/document/document.service';
 import {Router} from '@angular/router';
+import {FormControl} from '@angular/forms';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {debounceTime} from 'rxjs/operators';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-quick-search',
   templateUrl: './quick-search.component.html',
@@ -18,18 +22,21 @@ export class QuickSearchComponent implements OnInit {
   numDocs: number;
   numAddresses: number;
 
+  query = new FormControl('');
+
   constructor(private documentService: DocumentService, private router: Router) {
   }
 
   ngOnInit(): void {
-    // TODO: improve performance by not sending same request again when hitting enter
-    //       and input has not changed
+    this.query.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(300)
+      )
+      .subscribe(query => this.search(query));
   }
 
-  search(value: string, $event: KeyboardEvent) {
-    if ($event.key === 'ArrowDown' || $event.key === 'ArrowUp'/* || $event.key === 'Enter'*/) {
-      return;
-    }
+  search(value: string) {
     this.documentService.find(value, 5)
       .subscribe(result => {
         this.docs = result.hits;

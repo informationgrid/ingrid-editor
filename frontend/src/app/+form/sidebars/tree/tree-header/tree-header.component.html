@@ -8,11 +8,11 @@
     </div>
 
     <mat-form-field class="search" appearance="outline">
-        <input #query matInput placeholder="Suche" aria-label="Search"
-               (keyup)="search(query.value, $event)"
+        <input matInput placeholder="Suche" aria-label="Search"
+               [formControl]="query"
                [matAutocomplete]="searchAuto">
-        <mat-icon *ngIf="query.value.length === 0" matSuffix>search</mat-icon>
-        <button *ngIf="query.value.length > 0" mat-icon-button matSuffix class="button" (click)="query.value = ''">
+        <mat-icon *ngIf="query.value?.length === 0" matSuffix>search</mat-icon>
+        <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="button" (click)="query.reset('')">
             <mat-icon class="passive" svgIcon="Entfernen"></mat-icon>
         </button>
         <mat-autocomplete #searchAuto="matAutocomplete" class="quicksearch-auto dense">

@@ -1,15 +1,18 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Subject} from 'rxjs';
 import {DynamicDatabase} from '../dynamic.database';
-import {map} from 'rxjs/operators';
+import {debounceTime, map} from 'rxjs/operators';
 import {TreeNode} from '../../../../store/tree/tree-node.model';
+import {FormControl} from '@angular/forms';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-tree-header',
   templateUrl: './tree-header.component.html',
   styleUrls: ['./tree-header.component.scss']
 })
-export class TreeHeaderComponent implements OnInit, AfterViewInit {
+export class TreeHeaderComponent implements OnInit {
   @Input() showReloadButton = true;
   @Input() isAddress = false;
   @Input() showOptions = true;
@@ -19,31 +22,33 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
   @Output() open = new EventEmitter();
 
   searchResult = new Subject<TreeNode[]>();
+  query = new FormControl('');
 
   constructor(private db: DynamicDatabase) {
   }
 
   ngOnInit() {
-  }
-
-  ngAfterViewInit() {
+    // TODO: refactor search function into service to be also used by quick-search-component
+    this.query.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(300)
+      )
+      .subscribe(query => this.search(query));
   }
 
   reloadTree() {
     this.reload.emit();
   }
 
-  search(value: string, $event: KeyboardEvent) {
-    console.log('getting search input event')
-    if ($event.key === 'ArrowDown' || $event.key === 'ArrowUp'/* || $event.key === 'Enter'*/) {
+  search(value: string) {
+    if (!value) {
       return;
-    }
-    if (value.length === 0) {
+    } else if (value.length === 0) {
       this.searchResult.next([]);
       return;
     }
 
-    console.log('Search: ', value);
     this.db.search(value, this.isAddress)
       .pipe(
         map(result => DynamicDatabase.mapDocumentsToTreeNodes(result.hits, 0))
