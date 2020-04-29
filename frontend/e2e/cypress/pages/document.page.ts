@@ -17,8 +17,8 @@ export class DocumentPage {
   static createDocument(): string {
     const docName = 'Test-Dokument ' + Utils.randomString();
     cy.get(DocumentPage.Toolbar.NewDoc).click();
-    cy.get('[data-cy=new-doc-title]').type(docName);
-    cy.get('[data-cy=new-doc-create]').click();
+    cy.get('[data-cy=create-title]').type(docName);
+    cy.get('[data-cy=create-action]').click();
     return docName;
   }
 

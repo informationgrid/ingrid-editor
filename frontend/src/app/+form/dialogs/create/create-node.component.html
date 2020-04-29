@@ -16,7 +16,7 @@
                         <mat-label>Titel</mat-label>
                         <input matInput
                                formControlName="title"
-                               data-cy="new-folder-title"
+                               data-cy="create-title"
                                cdkFocusInitial
                                autocomplete="off"
                                (keyup.enter)="handleCreate()"
@@ -31,7 +31,7 @@
                         <mat-form-field appearance="outline" class="width-100">
                             <mat-label>Vorname</mat-label>
                             <input matInput
-                                   data-cy="new-doc-firstName"
+                                   data-cy="create-address-firstName"
                                    formControlName="firstName"
                                    cdkFocusInitial
                                    autocomplete="off"
@@ -40,7 +40,7 @@
                         <mat-form-field appearance="outline" class="width-100">
                             <mat-label>Nachname</mat-label>
                             <input matInput
-                                   data-cy="new-doc-lastName"
+                                   data-cy="create-address-lastName"
                                    autocomplete="off"
                                    placeholder="Nachname"
                                    formControlName="lastName">
@@ -49,7 +49,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Organisation</mat-label>
                         <input matInput
-                               data-cy="new-doc-organization"
+                               data-cy="create-address-organization"
                                name="organization"
                                formControlName="organization"
                                placeholder="Oder eine Organisation">
@@ -81,7 +81,7 @@
 
 <mat-dialog-actions>
     <button *ngIf="selectedPage === 1" color="primary" mat-button
-            data-cy="new-folder-back"
+            data-cy="create-back"
             (click)="selectedPage = 0" class="back-button">
         <mat-icon>chevron_left</mat-icon>
         <span>Zurück</span>
@@ -91,18 +91,18 @@
 
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
     <button *ngIf="selectedPage === 0" mat-button color="primary"
-            data-cy="new-folder-changeLocation"
+            data-cy="create-changeLocation"
             (click)="selectedPage = 1">Ort ändern</button>
 
     <button *ngIf="selectedPage === 0" mat-stroked-button color="primary"
-            data-cy="new-folder-create"
+            data-cy="create-action"
             [disabled]="formGroup.invalid"
             (click)="handleCreate()">
         Anlegen
     </button>
 
     <button *ngIf="selectedPage === 1" mat-stroked-button color="primary"
-            data-cy="new-folder-applyLocation"
+            data-cy="create-applyLocation"
             (click)="applyLocation()">
         Übernehmen
     </button>

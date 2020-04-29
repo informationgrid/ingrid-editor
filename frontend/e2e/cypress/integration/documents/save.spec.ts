@@ -19,11 +19,11 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
       cy.get('mat-dialog-container ige-breadcrumb').should('have.text', 'Daten');
-      cy.get('[data-cy=new-doc-create]').should('be.disabled');
+      cy.get('[data-cy=create-action]').should('be.disabled');
 
-      cy.get('[data-cy=new-doc-title]').type(docName);
+      cy.get('[data-cy=create-title]').type(docName);
 
-      cy.get('[data-cy=new-doc-create]')
+      cy.get('[data-cy=create-action]')
         .should('be.enabled')
         .click();
 
@@ -34,7 +34,7 @@ describe('General create documents/folders', () => {
   });
 
   describe('Publish documents', () => {
-    it.only('should show a validation error when a required field is not filled', () => {
+    it('should show a validation error when a required field is not filled', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
 
       DocumentPage.createDocument();
@@ -56,11 +56,11 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
       cy.get('mat-dialog-container ige-breadcrumb').should('have.text', 'Daten');
-      cy.get('[data-cy=new-folder-create]').should('be.disabled');
+      cy.get('[data-cy=create-action]').should('be.disabled');
 
-      cy.get('[data-cy=new-folder-title]').type(folderName);
+      cy.get('[data-cy=create-title]').type(folderName);
 
-      cy.get('[data-cy=new-folder-create]')
+      cy.get('[data-cy=create-action]')
         .should('be.enabled')
         .click();
 
@@ -79,8 +79,8 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
       cy.get('.mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(parentFolder);
-      cy.get('[data-cy=new-folder-title]').type(folderName);
-      cy.get('[data-cy=new-folder-create]').click();
+      cy.get('[data-cy=create-title]').type(folderName);
+      cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 1);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(parentFolder + SEPARATOR);
@@ -94,12 +94,13 @@ describe('General create documents/folders', () => {
       Tree.selectNodeWithTitle(parentFolder);
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
-      cy.get('[data-cy=new-folder-title]').type(folderName);
+      cy.get('[data-cy=create-title]').type(folderName);
 
-      cy.get('[data-cy=new-folder-changeLocation]').click();
+      cy.get('[data-cy=create-changeLocation]').click();
       cy.get('ige-destination-selection mat-list-option').click();
 
-      cy.get('[data-cy=new-folder-create]').click();
+      cy.get('[data-cy=create-applyLocation]').click();
+      cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 0);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText('Daten');
@@ -111,12 +112,13 @@ describe('General create documents/folders', () => {
       const folderName = 'Unterordner ' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
-      cy.get('[data-cy=new-folder-title]').type(folderName);
+      cy.get('[data-cy=create-title]').type(folderName);
 
-      cy.get('[data-cy=new-folder-changeLocation]').click();
+      cy.get('[data-cy=create-changeLocation]').click();
       Tree.selectNodeWithTitle(parentFolder, 'mat-dialog-container');
 
-      cy.get('[data-cy=new-folder-create]').click();
+      cy.get('[data-cy=create-applyLocation]').click();
+      cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 1);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(parentFolder + SEPARATOR);
