@@ -75,6 +75,7 @@
     margin-left: 4px;
     color: $ige-primary;
     font-size: 34px;
+    line-height: 42px;
 
     ::ng-deep input {
       letter-spacing: 0.25px !important;
@@ -96,12 +97,19 @@
   }
 
   ::ng-deep .mat-form-field-infix {
+    margin: -1.5px 0 -2.5px 0;
     padding: 19px 0 7px !important;
+    line-height: 42px;
   }
 
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
     padding: 0 10px 0 9px;
   }
+
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+    margin: 2px 0 -2px 0 !important;
+  }
+
 
   span {
     font-size: 34px;
