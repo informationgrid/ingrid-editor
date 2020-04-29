@@ -22,6 +22,7 @@ export class McloudFormly extends BaseProfile {
       fieldGroup: [{
         key: 'description',
         type: 'textarea',
+        className: 'description',
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Beschreibung',

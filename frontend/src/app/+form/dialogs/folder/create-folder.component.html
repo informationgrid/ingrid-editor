@@ -14,6 +14,7 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Titel</mat-label>
                     <input matInput #name
+                           data-cy="new-folder-title"
                            cdkFocusInitial
                            autocomplete="off"
                            placeholder="Titel des Ordners"
@@ -39,7 +40,9 @@
 <div style="flex: 1"></div>
 
 <mat-dialog-actions>
-    <button *ngIf="selectedPage === 1" color="primary" mat-button (click)="selectedPage = 0" class="back-button">
+    <button *ngIf="selectedPage === 1" color="primary" mat-button
+            data-cy="new-folder-back"
+            (click)="selectedPage = 0" class="back-button">
         <mat-icon>chevron_left</mat-icon>
         <span>Zurück</span>
     </button>
@@ -47,8 +50,13 @@
     <div fxFlex></div>
 
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-    <button *ngIf="selectedPage === 0" mat-button color="primary" (click)="selectedPage = 1">Ort ändern</button>
-    <button mat-stroked-button color="primary" [disabled]="!name.checkValidity()" (click)="handleCreate(name.value)">
+    <button *ngIf="selectedPage === 0" mat-button color="primary"
+            data-cy="new-folder-changeLocation"
+            (click)="selectedPage = 1">Ort ändern</button>
+    <button mat-stroked-button color="primary"
+            data-cy="new-folder-create"
+            [disabled]="!name.checkValidity()"
+            (click)="handleCreate(name.value)">
         Anlegen
     </button>
 </mat-dialog-actions>

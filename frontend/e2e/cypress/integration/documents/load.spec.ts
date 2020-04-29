@@ -1,21 +1,27 @@
-import xit = Mocha.xit;
+import {DashboardPage} from '../../pages/dashboard.page';
+import {DocumentPage} from '../../pages/document.page';
 
 describe('Load documents', () => {
 
   it('should load a document from dashboard', function () {
-    cy.visit('/dashboard');
-    cy.get('[data-cy=card-latest-docs] .mat-selection-list > :nth-child(1) .card-title').invoke('text').then( text => {
-      cy.get('[data-cy=card-latest-docs] .mat-selection-list > :nth-child(1)').click();
+    cy.visit(DashboardPage.url);
+    DashboardPage.getLatestDocTitle(1).then(text => {
+      DashboardPage.clickOnLatestDoc(1);
       cy.url().should('include', '/form;id=');
-      cy.get('.form-info-bar .title .label').should('have.text', text);
+      cy.get(DocumentPage.title).should('have.text', text);
     });
   });
 
-  xit('should jump directly to a document specified by URL', function () {
-
+  it('should jump directly to a document specified by URL', function () {
+    cy.visit('/form;id=da0f1be6-ef4c-4ab3-8d06-7165eca1eb05');
+    cy.get(DocumentPage.title, {timeout: 10000}).should('have.text', 'sub zzz');
   });
 
-  xit('should open a document from a quick search result', function () {
-
+  it('should open a document from a quick search result', function () {
+    DashboardPage.visit();
+    DashboardPage.search('sub zzz');
+    DashboardPage.getSearchResult(1).click();
+    cy.get(DocumentPage.title).should('have.text', 'sub zzz');
   });
+
 })
