@@ -147,6 +147,11 @@ export class DynamicDataSource {
   }
 
   private getIndexToInsertNode(docAsTreeNode: TreeNode[], doc: DocumentAbstract): number {
+    // FIXME: during tests it happened that a new document was created before tree loaded root nodes
+    if (!this.data) {
+      return 0;
+    }
+
     // get calculated position with only root nodes (using sort method)
     const indexOfNewDoc = this.data
       .filter(document => document.level === 0)
