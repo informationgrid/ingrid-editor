@@ -37,6 +37,9 @@
     }
   }
 
+  span.mat-line {
+    line-height: 24px;
+  }
 
   h3.mat-line {
     display: flex;
@@ -46,6 +49,7 @@
   .card-title {
     flex: 1 1 auto;
     white-space: normal;
+    line-height: 24px;
   }
 
   .date {
