@@ -9,7 +9,8 @@
   flex: 1 1 auto; // IE 11
 
   .mat-dialog-content {
-    padding: 0 0 10px;
+    padding: 16px 0 10px;
+    margin-top: 24px;
     display: flex;
 
     .mat-tab-group {

@@ -37,6 +37,7 @@ export class CreateNodeComponent implements OnInit {
   documentTypes: Observable<DocumentAbstract[]>;
   numDocumentTypes: number;
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(null);
+  jumpedTreeNodeId: string = null;
 
   constructor(private storageService: DocumentService,
               private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery,
@@ -187,5 +188,12 @@ export class CreateNodeComponent implements OnInit {
 
     const page = this.forAddress ? '/address' : '/form';
     this.router.navigate([page, {id: id}]);
+  }
+
+  jumpToTree(id: string) {
+    this.selectedPage = 1;
+    if (id !== null) {
+      this.jumpedTreeNodeId = id;
+    }
   }
 }

@@ -13,6 +13,7 @@ export class BreadcrumbComponent implements OnInit {
   @Input() showRoot = true;
   @Input() rootName = 'Daten';
   @Input() emphasize = false;
+  @Input() selectable = false;
 
   @Output() select = new EventEmitter<string>();
 
@@ -23,6 +24,8 @@ export class BreadcrumbComponent implements OnInit {
   }
 
   onSelect(id: string) {
-    this.select.next(id);
+    if (this.selectable) {
+      this.select.next(id);
+    }
   }
 }

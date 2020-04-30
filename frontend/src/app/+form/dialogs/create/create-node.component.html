@@ -21,6 +21,7 @@
                                autocomplete="off"
                                (keyup.enter)="handleCreate()"
                                required>
+                        <mat-error>Bitte geben Sie einen Titel ein</mat-error>
                     </mat-form-field>
                 </ng-container>
 
@@ -56,20 +57,24 @@
                     </mat-form-field>
 
                     <div *ngIf="formGroup.errors?.nameOrOrganization && (formGroup.touched || formGroup.dirty)"
-                         class="cross-validation-error-message alert alert-danger">
+                         class="">
                         Es müssen Name oder Organisation eingegeben werden.
                     </div>
 
                 </ng-template>
 
                 Ort
-                <ige-breadcrumb [path]="path" [rootName]="rootTreeName" emphasize="true"></ige-breadcrumb>
+                <ige-breadcrumb [path]="path"
+                                [rootName]="rootTreeName"
+                                [selectable]="true"
+                                (select)="jumpToTree($event)"
+                                emphasize="true"></ige-breadcrumb>
             </div>
         </mat-tab>
 
         <mat-tab label="Ort auswählen">
             <ige-destination-selection [forAddress]="forAddress"
-                                       [initialSelectedId]="parent"
+                                       [initialSelectedId]="jumpedTreeNodeId"
                                        (choice)="updateParent($event)"></ige-destination-selection>
         </mat-tab>
     </mat-tab-group>
@@ -92,7 +97,7 @@
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
     <button *ngIf="selectedPage === 0" mat-button color="primary"
             data-cy="create-changeLocation"
-            (click)="selectedPage = 1">Ort ändern</button>
+            (click)="jumpToTree(this.parent)">Ort ändern</button>
 
     <button *ngIf="selectedPage === 0" mat-stroked-button color="primary"
             data-cy="create-action"

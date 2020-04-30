@@ -14,6 +14,15 @@
     color: $ige-primary;
   }
 
+  .selectable:hover {
+    color: $ige-secondary;
+    cursor: pointer;
+  }
+
+  .root {
+    line-height: 24px;
+  }
+
 }
 
 mat-icon {
