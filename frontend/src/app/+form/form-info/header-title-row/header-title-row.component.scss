@@ -13,13 +13,14 @@
     height: 28px;
     width: 28px;
     margin-right: 6px;
+    margin-top: 10px;
 
     mat-icon {
       line-height: 32px;
       color: #f27100;
       font-size: 16px;
       padding-left: 2px;
-      margin-top: 12px;
+      padding-top: 2px;
     }
   }
 
@@ -79,6 +80,7 @@
   form {
     margin-right: 10px;
     margin-left: 4px;
+    margin-bottom: -1px;
     color: $ige-primary;
     font-size: 34px;
     line-height: 42px;
