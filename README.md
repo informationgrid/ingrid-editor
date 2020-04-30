@@ -25,6 +25,17 @@ TBD: create an installer instead
 
 > ./gradlew -PbuildProfile=prod clean build
 
+
+### Setup IntelliJ IDEA
+* Open IntelliJ
+* File > import module from existing sources > YOUR_IGE_NG_PATH > Gradle
+* Set prefered spring profile in server/src/main/resources/aplication.properties (see also in section Configure the server)
+* IgeServer is now ready to be started an shoulb be available as a Run Configuration
+* Run > Edit Configurations > + (new configuration) > select npm > set scripts to 'start', if available select 'yarn' as package manager. > Save
+ 
+ You are all set. Start ige-ng by first running IgeServer and then your newly created Run configuration.
+
+
 ### OrientDB Studio
 
 Copy the zip file from the distribution (e.g. https://s3.us-east-2.amazonaws.com/orientdb3/releases/3.0.26/orientdb-3.0.26.zip) and extract the file "plugins/orient-studio-<version>.zip" into the plugins directory.
