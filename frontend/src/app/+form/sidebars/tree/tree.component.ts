@@ -102,6 +102,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   private expandOnDataChange(ids: string[]): Promise<void> {
     let resolveNextTime = false;
+    let nextId = null;
 
     // FIXME: if a root node is opened and we want to create a folder and in the dialog we
     //        search for a sub folder of the opened folder, then root nodes will always be
@@ -119,11 +120,15 @@ export class TreeComponent implements OnInit, OnDestroy {
         }
 
         if (ids.length > 0) {
-          const nextId = ids.shift();
+          nextId = ids.shift();
           const nodeToExpand = data.filter(node => node._id === nextId)[0];
           this.treeControl.expand(nodeToExpand);
         }
         if (ids.length === 0) {
+          const folderAlreadyExpanded = data.find(d => d.parent === nextId) !== undefined;
+          if (folderAlreadyExpanded) {
+            resolve();
+          }
           resolveNextTime = true;
         }
       });
