@@ -5,6 +5,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {CreateNodeComponent, CreateOptions} from './create-node.component';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {filter, take} from 'rxjs/operators';
 
 @Injectable()
 export class CreateFolderPlugin extends Plugin {
@@ -65,24 +66,36 @@ export class CreateFolderPlugin extends Plugin {
     // TODO: parent node determination is the same as in new-doc plugin
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
     const selectedDoc = query.getOpenedDocument();
-    let selectedDocId = null;
-    if (selectedDoc) {
-      const folder = query.getFirstParentFolder(selectedDoc.id.toString());
-      if (folder !== null) {
-        selectedDocId = folder.id;
-      }
-    }
 
-    this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
-      minHeight: 400,
-      disableClose: true,
-      data: {
-        parent: selectedDocId,
-        forAddress: this.forAddress,
-        isFolder: true
-      } as CreateOptions
-    });
+    // wait for entity in store, otherwise it could happen that the tree is being
+    // loaded while we clicked on the create node button. In this case the function
+    // getFirstParentFolder would throw an error
+    query.selectEntity(selectedDoc.id)
+      .pipe(
+        filter(entity => entity !== undefined),
+        take(1)
+      )
+      .subscribe((entity) => {
+        let parentDocId = null;
+        if (selectedDoc) {
+          const folder = query.getFirstParentFolder(selectedDoc.id.toString());
+          if (folder !== null) {
+            parentDocId = folder.id;
+          }
+        }
+
+        this.dialog.open(CreateNodeComponent, {
+          minWidth: 500,
+          minHeight: 400,
+          disableClose: true,
+          data: {
+            parent: parentDocId,
+            forAddress: this.forAddress,
+            isFolder: true
+          } as CreateOptions
+        });
+
+      });
   }
 
   unregister() {

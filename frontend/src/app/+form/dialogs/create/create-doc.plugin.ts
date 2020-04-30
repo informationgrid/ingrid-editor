@@ -8,6 +8,7 @@ import {FormularService} from '../../formular.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {CreateNodeComponent, CreateOptions} from './create-node.component';
+import {filter, take} from 'rxjs/operators';
 
 export interface DocType {
   id: string,
@@ -56,26 +57,34 @@ export class CreateDocumentPlugin extends Plugin {
   newDoc() {
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
     const selectedDoc = query.getOpenedDocument();
-    let selectedDocId = null;
-    if (selectedDoc) {
-      const folder = query.getFirstParentFolder(selectedDoc.id.toString());
-      if (folder !== null) {
-        selectedDocId = folder.id;
-      }
-    }
 
-    this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
-      minHeight: 400,
-      disableClose: true,
-      data:
-        {
-          parent: selectedDocId,
-          forAddress: this.forAddress,
-          isFolder: false
-        } as CreateOptions
-    });
+    query.selectEntity(selectedDoc.id)
+      .pipe(
+        filter(entity => entity !== undefined),
+        take(1)
+      )
+      .subscribe((entity) => {
 
+        let selectedDocId = null;
+        if (selectedDoc) {
+          const folder = query.getFirstParentFolder(selectedDoc.id.toString());
+          if (folder !== null) {
+            selectedDocId = folder.id;
+          }
+        }
+
+        this.dialog.open(CreateNodeComponent, {
+          minWidth: 500,
+          minHeight: 400,
+          disableClose: true,
+          data:
+            {
+              parent: selectedDocId,
+              forAddress: this.forAddress,
+              isFolder: false
+            } as CreateOptions
+        });
+      });
   }
 
   unregister() {
