@@ -5,17 +5,18 @@
   "main": "index.js",
   "scripts": {
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "cypress:runFull": "node scripts/cypress.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cypress": "^4.4.1",
-    "mocha": "^7.0.1",
-    "mochawesome": "^4.1.0",
-    "mochawesome-merge": "^2.0.1",
-    "mochawesome-report-generator": "^4.0.1",
+    "cypress": "^4.5.0",
+    "mocha": "^7.1.2",
+    "mochawesome": "^6.1.1",
+    "mochawesome-merge": "^4.0.3",
+    "mochawesome-report-generator": "^5.1.0",
     "typescript": "^3.8.3"
   },
   "devDependencies": {

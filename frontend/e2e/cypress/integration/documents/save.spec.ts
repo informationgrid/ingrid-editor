@@ -115,7 +115,7 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=create-title]').type(folderName);
 
       cy.get('[data-cy=create-changeLocation]').click();
-      Tree.selectNodeWithTitle(parentFolder, 'mat-dialog-container');
+      Tree.selectNodeWithTitle(parentFolder, true);
 
       cy.get('[data-cy=create-applyLocation]').click();
       cy.get('[data-cy=create-action]').click();

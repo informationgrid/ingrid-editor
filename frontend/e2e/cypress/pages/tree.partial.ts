@@ -14,7 +14,8 @@ export class Tree {
 
   }
 
-  static selectNodeWithTitle(nodeTitle: string, parentContainer: string = '') {
-    cy.contains(`${parentContainer} mat-tree mat-tree-node .label`, nodeTitle).click();
+  static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false) {
+    const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
+    cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, nodeTitle).click();
   }
 }

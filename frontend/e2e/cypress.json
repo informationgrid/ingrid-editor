@@ -2,7 +2,8 @@
   "baseUrl": "http://localhost:4300",
   "reporter": "mochawesome",
   "reporterOptions": {
-    "reportDir": "cypress/mochawesome-reports",
+    "reportDir": "./cypress/mochawesome-reports",
+    "files": ["./cypress/mochawesome-reports"],
     "overwrite": false,
     "html": false,
     "json": true,
