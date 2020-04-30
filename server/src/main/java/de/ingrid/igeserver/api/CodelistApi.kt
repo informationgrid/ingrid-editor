@@ -3,29 +3,22 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
 
 @Tag(name = "Codelist", description = "the codelist API")
-public interface CodelistApi {
-
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = ""),
-            @ApiResponse(responseCode = "200", description = "Unexpected error")
-    })
-    @Operation()
-
-    @RequestMapping(value = "/codelist/{id}", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<String> getCodelistById(@Parameter(description = "The ID of the codelist.", required = true) @PathVariable("id") String id);
-
+interface CodelistApi {
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
+    @Operation
+    @RequestMapping(value = ["/codelist/{id}"], produces = ["application/json"], method = [RequestMethod.GET])
+    fun getCodelistById(@Parameter(description = "The ID of the codelist.", required = true) @PathVariable("id") id: String?): ResponseEntity<String?>?
 }
