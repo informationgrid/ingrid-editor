@@ -1,23 +1,26 @@
-import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormGroup} from '@angular/forms';
+import {ProfileService} from '../../../services/profile.service';
+import {IgeDocument} from '../../../models/ige-document';
 
 @Component({
   selector: 'ige-header-title-row',
   templateUrl: './header-title-row.component.html',
-  styleUrls: ['./header-title-row.component.scss']
+  styleUrls: ['./header-title-row.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderTitleRowComponent implements OnInit {
 
   @Input() form: FormGroup;
+  @Input() model: IgeDocument;
+  @Input() sections: string[];
 
-  @Output() toggleMore = new EventEmitter();
-
-  @ViewChild('titleInput', {static: true}) titleInput: ElementRef;
+  @ViewChild('titleInput') titleInput: ElementRef;
 
   showTitleInput = false;
   showMore = false;
 
-  constructor(private cdRef: ChangeDetectorRef) {
+  constructor(private cdRef: ChangeDetectorRef, private profileService: ProfileService) {
   }
 
   ngOnInit() {
@@ -31,6 +34,24 @@ export class HeaderTitleRowComponent implements OnInit {
 
   toggleMoreInfo() {
     this.showMore = !this.showMore;
-    this.toggleMore.next(this.showMore);
+  }
+
+  getIcon() {
+    return this.profileService.getProfileIcon(this.form.get('_profile').value);
+  }
+
+  // TODO: refactor since it's used in tree-component also
+  getStateClass() {
+    switch (this.model._state) {
+      case 'W':
+        return 'working';
+      case 'PW':
+        return 'workingWithPublished';
+      case 'P':
+        return 'published';
+      default:
+        console.error('State is not supported: ' + this.model._state);
+        throw new Error('State is not supported: ' + this.model._state);
+    }
   }
 }

@@ -1,17 +1,20 @@
 @import "../../../../variables";
 
-::ng-deep .mat-drawer-container {
-  background-color: $ige-background;
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 ::ng-deep .mat-tree {
   background-color: #ffffff;
+  overflow: auto;
 }
 
 mat-tree-node {
   cursor: pointer;
   min-height: 20px;
-  padding: 0.2em 0;
+  padding: 5px 0;
 
   ::ng-deep svg path {
     fill: #000000;
@@ -22,54 +25,88 @@ mat-tree-node {
   }
 
   &.folder {
-    padding: 7px 0 6px;
+    padding: 9px 0;
     border-bottom: 1px solid $ige-background-bar;
 
     &.expanded {
       border-bottom-color: transparent;
+
+      .toggle {
+        color: #000000de;
+      }
+
+      .expander {
+        transform: rotate(90deg);
+      }
     }
+
+
   }
 
   &.rootNode {
 
+    background-color: $ige-background;
+
+    &:hover {
+      background-color: darken($ige-background, 5%);
+    }
+
+    &.selected {
+      background-color: darken($ige-background, 5%);
+    }
+
+    &.selected:hover {
+      background-color: darken($ige-background, 10%);
+    }
+
+    &.active {
+      background-color: $ige-mark-color;
+
+      &:hover {
+        background-color: darken($ige-mark-color, 5%);
+      }
+    }
+
     &.folder {
-      background-color: $ige-background;
       font-size: 16px;
     }
 
-    .label {
-      padding-left: 24px;
-    }
-  }
-
-  &:hover {
-    background-color: #ededed;
   }
 
   .label {
-    margin-top: 0.5em;
+    padding-left: 24px;
+    padding-top: 5px;
+    line-height: 20px;
     user-select: none;
+    display: flex;
 
     .mat-icon {
       line-height: 0;
       vertical-align: sub;
-      margin-right: 12px;
+      margin-right: 6px;
       font-size: 20px;
+    }
+
+    .mat-spinner {
+      margin-left: 12px;
+      margin-top: 3px;
+    }
+
+    span {
+      padding-top: 5px;
     }
   }
 
   &.selected {
-    background-color: #00000033;
+    background-color: darken($ige-background, 5%);
   }
 
-  &.selected:hover {
-    background-color: #00000022;
+  &:hover {
+    background-color: darken(#FFFFFF, 5%);
   }
 
   &.active {
-    // box-shadow: inset 3px 0 0 0 rgb(40, 34, 91);
     background-color: $ige-mark-color;
-    color: $ige-active-color;
   }
 
   &.disabled {
@@ -78,36 +115,15 @@ mat-tree-node {
   }
 
   .toggle {
+    color: $ige-comment-color;
     float: right;
     height: 30px;
     width: 30px;
-    line-height: 30px;
+    line-height: 27px;
     margin-right: 15px;
   }
 
-  .mat-icon {
-    //&.working {
-    &.working ::ng-deep svg path {
-      //color: $state-working-color;
-      fill: $state-working-color;
-    }
-
-    /*&.workingWithPublished {
-      background: -moz-linear-gradient(270deg, $state-working-color 50%, #333333 50%);
-      background: -webkit-linear-gradient(270deg, $state-working-color 50%, #333333 50%);
-      background: linear-gradient(270deg, $state-working-color 50%, #333333 50%);
-      -webkit-background-clip: text;
-      -moz-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: inline;
-    }*/
-
-    /*.published {
-    }*/
-  }
 }
-
 
 .docType {
   padding-right: 10px;
@@ -120,28 +136,8 @@ mat-tree-node {
   padding-left: 0;
 }
 
-.clickable {
-  cursor: pointer;
-  text-decoration: none;
-}
-
-/*.folder {
-  position: absolute;
-  right: 5px;
-  margin-top: -15px;
-  display: none;
-}*/
-
 .refresh {
   position: absolute;
   right: 0;
   z-index: 1000
-}
-
-::ng-deep .mat-icon {
-  transition: all .2s linear;
-}
-
-::ng-deep .expanded .expander {
-  transform: rotate(90deg);
 }

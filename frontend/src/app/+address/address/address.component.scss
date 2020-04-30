@@ -4,3 +4,25 @@
   flex: 1;
   overflow: auto;
 }
+
+.form-content > form {
+  padding: 20px 24px 0 36px;
+  background-color: #ffffff;
+  min-width: 400px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.form-content ige-form-info {
+  display: block;
+  margin-bottom: 0;
+}
+
+#sidebar::-webkit-scrollbar {
+  width: 12px;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+  background: #999999;
+  border-radius: 20px;
+}

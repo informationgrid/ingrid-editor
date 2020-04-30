@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { ImportExportService } from '../import-export-service';
-import { ConfigService } from '../../services/config/config.service';
-import { TextboxField } from '../../+form/controls';
-import { ErrorService } from '../../services/error.service';
+import {Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {ImportExportService} from '../import-export-service';
+import {ConfigService} from '../../services/config/config.service';
+import {TextboxField} from '../../+form/controls';
+import {ErrorService} from '../../services/error.service';
 
 @Component({
+  selector: 'ige-import',
   templateUrl: './import.component.html',
-  styleUrls: ['./import.component.css']
+  styleUrls: ['./import.component.scss']
 })
-export class ImportExportComponent implements OnInit {
+export class ImportComponent implements OnInit {
 
   file: File;
 
@@ -22,6 +23,12 @@ export class ImportExportComponent implements OnInit {
   uploadedFiles: any[] = [];
 
   uploadUrl: string;
+
+  datasetSelected: any;
+  activeStepIndex = 0;
+  secondFormGroup = new FormGroup({});
+  analyzedData: any;
+  importFileErrorMessage: any;
 
   constructor(private importExportService: ImportExportService, config: ConfigService,
               private errorService: ErrorService) {
@@ -52,7 +59,7 @@ export class ImportExportComponent implements OnInit {
     console.log(file);
     this.importExportService.import(file).subscribe(data => {
       console.log('Import result:', data);
-    });
+    }, error => this.importFileErrorMessage = error);
   }
 
   onUpload(event) {
@@ -67,4 +74,11 @@ export class ImportExportComponent implements OnInit {
   /*handleError(event) {
     this.errorService.handle(event.xhr);
   }*/
+
+  onFileComplete(data: any) {
+    console.log(data); // We just print out data bubbled up from event emitter.
+    this.analyzedData = data;
+    this.datasetSelected = true;
+    setTimeout(() => this.activeStepIndex = 1);
+  }
 }

@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.db;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.*;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -16,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.ingrid.igeserver.services.MapperService.getJsonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -65,7 +65,7 @@ public class OrientDBDatabaseTest {
             ODatabaseSession session2 = dbService.acquire("test");
             assertEquals(0, session2.countClass("User"));
 
-            List<Map> persons = dbService.findAll(DBApi.DBClass.User);
+            List<JsonNode> persons = dbService.findAll(DBApi.DBClass.User);
             assertEquals(0, persons.size());
             session2.close();
 
@@ -89,7 +89,7 @@ public class OrientDBDatabaseTest {
 
         try (ODatabaseSession session = dbService.acquire("test")) {
 
-            List<Map> persons = dbService.findAll(DBApi.DBClass.User);
+            List<JsonNode> persons = dbService.findAll(DBApi.DBClass.User);
 
             assertEquals(2, persons.size());
 
@@ -105,10 +105,16 @@ public class OrientDBDatabaseTest {
 
             Map<String, String> query = new HashMap<>();
             query.put("age", "48");
-            List<String> persons = dbService.findAll("User", query, QueryType.like,false);
+            FindOptions options = new FindOptions();
+            options.queryType = QueryType.like;
+            options.resolveReferences = false;
+            DBFindAllResults persons = dbService.findAll("User", query, options);
 
-            assertEquals(1, persons.size());
+            assertEquals(1, persons.totalHits);
+            assertEquals(1, persons.hits.size());
 
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -116,28 +122,31 @@ public class OrientDBDatabaseTest {
     public void updateDocument() throws Exception {
         addTestData();
 
-        ORecordId id;
+        String id;
         Map<String, String> query = new HashMap<>();
         query.put("age", "48");
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            List<String> docToUpdate = dbService.findAll("User", query, QueryType.like, false);
-            id = (ORecordId)((Map)getJsonMap(docToUpdate.get(0))).get("@rid");
+            FindOptions options = new FindOptions();
+            options.queryType = QueryType.like;
+            options.resolveReferences = false;
+            DBFindAllResults docToUpdate = dbService.findAll("User", query, options);
+            id = docToUpdate.hits.get(0).get("@rid").asText();
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("name", "Johann");
-            data.put("@rid", id);
-            Map save = dbService.save("User", null, data);
+            String data = "{\"name\": \"Johann\", \"@rid\": " + id + "}";
+            JsonNode save = dbService.save("User", null, data);
             assertNotNull(save);
         }
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            String updatedDocJson = dbService.findAll("User", query, QueryType.like, false).get(0);
-            Map updatedDoc = (Map) getJsonMap(updatedDocJson);
+            FindOptions options = new FindOptions();
+            options.queryType = QueryType.like;
+            options.resolveReferences = false;
+            JsonNode updatedDoc = dbService.findAll("User", query, options).hits.get(0);
 
-            assertEquals("Johann", updatedDoc.get("name") );
-            assertEquals("48", updatedDoc.get("age") );
-            assertEquals(id, updatedDoc.get("@rid") );
+            assertEquals("Johann", updatedDoc.get("name").asText());
+            assertEquals("48", updatedDoc.get("age").asText());
+            assertEquals(id, updatedDoc.get("@rid").asText());
         }
     }
 
@@ -152,24 +161,21 @@ public class OrientDBDatabaseTest {
             docClass.createProperty("addresses", OType.LINKLIST, docClass);
 
             // add first document
-            Map<String, Object> doc1 = new HashMap<>();
-            doc1.put("title", "my document");
-            Map doc1Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc1);
+            String doc1 = "{\"title\": \"my document\"}";
+            JsonNode doc1Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc1);
 
             // add second document with reference to doc1
-            Map<String, Object> doc2 = new HashMap<>();
-            doc2.put("title", "my other document with reference");
             List<ORecordId> addressReferences = new ArrayList<>();
-            addressReferences.add((ORecordId) doc1Result.get("@rid"));
-            doc2.put("addresses", addressReferences);
-            Map doc2Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc2);
+            addressReferences.add(new ORecordId(doc1Result.get("@rid").asText()));
+            String doc2 = "{\"title\": \"my other document with reference\", \"addresses\": " + addressReferences + "}";
+            JsonNode doc2Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc2);
 
         }
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            List<Map> docs = dbService.findAll(DBApi.DBClass.Documents);
+            List<JsonNode> docs = dbService.findAll(DBApi.DBClass.Documents);
             assertEquals(2, docs.size());
-            assertEquals("my document", ((ODocument)((List)docs.get(1).get("addresses")).get(0)).field("title"));
+            assertEquals("my document", ((ODocument) ((List) docs.get(1).get("addresses")).get(0)).field("title"));
         }
         throw new Exception("Not complete testcase. Links are not maps");
     }
@@ -186,14 +192,10 @@ public class OrientDBDatabaseTest {
     private void addTestData() throws ApiException {
         try (ODatabaseSession session = dbService.acquire("test")) {
 
-            Map<String, Object> person1Map = new HashMap<>();
-            person1Map.put("name", "John");
-            person1Map.put("age", "35");
+            String person1Map = "{ \"name\": \"John\", \"age\": \"35\"}";
             dbService.save("User", null, person1Map);
 
-            Map<String, Object> person2Map = new HashMap<>();
-            person2Map.put("name", "Mike");
-            person2Map.put("age", "48");
+            String person2Map = "{ \"name\": \"Mike\", \"age\": \"48\"}";
             dbService.save("User", null, person2Map);
 
         }

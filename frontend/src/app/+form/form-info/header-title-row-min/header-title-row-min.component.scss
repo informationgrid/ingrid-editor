@@ -1,0 +1,31 @@
+@import "../../../../variables";
+
+:host {
+  //padding-bottom: 2px;
+  align-items: center;
+}
+
+.document-type {
+  display: inline-block;
+  background-color: white;
+  border-radius: 50%;
+  height: 28px;
+  width: 28px;
+  margin-left: 18px;
+
+  mat-icon {
+    line-height: 32px;
+    color: #f27100;
+    font-size: 16px;
+    padding-left: 2px;
+    padding-top: 2px;
+  }
+}
+
+.menu {
+  width: 26px;
+  height: 26px;
+  line-height: 24px;
+  background-color: $ige-background-bar;
+  margin-right: 11px;
+}

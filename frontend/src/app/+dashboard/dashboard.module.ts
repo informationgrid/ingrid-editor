@@ -1,17 +1,23 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DashboardComponent} from './dashboard.component';
-import {ChartistComponent} from './chartist.component';
 import {RouterModule, Routes} from '@angular/router';
 import {AuthGuard} from '../security/auth.guard';
 import {ActionButtonComponent} from './action-button/action-button.component';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DocumentTileComponent} from './document-tile/document-tile.component';
 import {MatInputModule} from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
 import {FlexModule} from '@angular/flex-layout';
+import {MatDividerModule} from '@angular/material/divider';
+import {FeatureFlagDirective} from '../directives/feature-flag.directive';
+import {ChartComponent} from './chart/chart.component';
+import {SharedModule} from '../shared/shared.module';
+import {MatListModule} from '@angular/material/list';
+import {QuickSearchComponent} from './quick-search/quick-search.component';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 const routes: Routes = [
   {
@@ -24,11 +30,15 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule,
-    MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule
+    RouterModule.forChild(routes),
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule, SharedModule,
+    MatListModule, MatAutocompleteModule
   ],
-  declarations: [DashboardComponent, ChartistComponent, ActionButtonComponent, DocumentTileComponent],
-  exports: [RouterModule]
+  declarations: [
+    DashboardComponent, ActionButtonComponent, DocumentTileComponent, FeatureFlagDirective, ChartComponent, QuickSearchComponent]
 })
 export class DashboardModule {
 }

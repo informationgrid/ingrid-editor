@@ -20,13 +20,13 @@ export class Collapse {
   private height: string;
   // classes
   // shown
-  private isExpanded: boolean = true;
+  private isExpanded = true;
   // hidden
-  private isCollapsed: boolean = false;
+  private isCollapsed = false;
   // stale state
-  private isCollapse: boolean = true;
+  private isCollapse = true;
   // animation state
-  private isCollapsing: boolean = false;
+  private isCollapsing = false;
 
   constructor(private el: ElementRef) {
   }

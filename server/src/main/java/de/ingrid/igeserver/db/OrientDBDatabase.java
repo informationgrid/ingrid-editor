@@ -1,24 +1,29 @@
 package de.ingrid.igeserver.db;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.Orient;
-import com.orientechnologies.orient.core.db.*;
-import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.db.ODatabaseType;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
-import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.ORecordAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 import com.orientechnologies.orient.server.plugin.OServerPluginManager;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.documenttypes.DocumentType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
+import de.ingrid.igeserver.model.Catalog;
+import de.ingrid.igeserver.services.MapperService;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,8 +34,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.*;
-
-import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
+import java.util.stream.Collectors;
 
 @Service
 public class OrientDBDatabase implements DBApi {
@@ -44,9 +48,6 @@ public class OrientDBDatabase implements DBApi {
 
     private OServer server = null;
 
-    private OSQLSynchQuery<ODocument> docIdQuery = new OSQLSynchQuery<>(
-            "SELECT FROM Documents WHERE _id = ?"
-    );
 
     /**
      * DB init
@@ -64,7 +65,10 @@ public class OrientDBDatabase implements DBApi {
 
             try (ODatabaseSession session = acquire("IgeUsers")) {
                 // after creation the database is already connected to and can be used
-                session.getMetadata().getSchema().createClass("Info");
+                OClass info = session.getMetadata().getSchema().createClass("Info");
+                info.createProperty("userId", OType.STRING);
+                info.createProperty("currentCatalogId", OType.STRING);
+                info.createProperty("catalogIds", OType.EMBEDDEDLIST, OType.STRING);
                 session.commit();
             }
 
@@ -73,7 +77,7 @@ public class OrientDBDatabase implements DBApi {
             // openOrientDB();
         }
 
-        initDocumentTypes(getDatabases());
+        // initDocumentTypes(getCatalogSettings());
     }
 
     /**
@@ -83,11 +87,13 @@ public class OrientDBDatabase implements DBApi {
      * <p>
      * Each document type handles creating a class and its special fields.
      */
-    private void initDocumentTypes(String... databases) {
+    private void initDocumentTypes(Catalog... settings) {
 
-        for (String db : databases) {
-            try (ODatabaseSession session = acquire(db)) {
-                documentTypes.forEach(type -> type.initialize(session));
+        for (Catalog dbSetting : settings) {
+            try (ODatabaseSession session = acquire(dbSetting.id)) {
+                documentTypes.stream()
+                        .filter(docType -> docType.usedInProfile(dbSetting.type))
+                        .forEach(type -> type.initialize(session));
             }
         }
 
@@ -127,11 +133,11 @@ public class OrientDBDatabase implements DBApi {
      */
 
     @Override
-    public List<Map> findAll(DBClass type) {
-        ORecordIteratorClass<ODocument> oDocuments = null;
+    public List<JsonNode> findAll(DBClass type) {
+        ORecordIteratorClass<ODocument> oDocuments;
         try {
             oDocuments = getDBFromThread().browseClass(type.name());
-            return mapODocumentsToMap(oDocuments);
+            return mapODocumentsToJsonNode(oDocuments);
         } catch (Exception e) {
             // TODO: can this happen? "class Info not found"
             log.error(e);
@@ -140,60 +146,84 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public List<String> findAll(String type, Map<String, String> query, QueryType queryType, boolean resolveReferences) {
+    public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) throws Exception {
         String queryString;
+        String countQuery;
+
         if (query == null || query.isEmpty()) {
             queryString = "SELECT * FROM " + type;
+            countQuery = "SELECT count(*) FROM " + type;
         } else {
-            // select * from `Documents` where (draft.firstName like "%er%" or draft.lastName like "%es%")
-            // TODO: try to use lucene index!
-            List<String> where = new ArrayList<>();
-            for (String key : query.keySet()) {
-                String value = query.get(key);
-                if (value == null) {
-                    where.add(key + ".toLowerCase() IS NULL");
-                } else {
-                    switch (queryType) {
-                        case like:
-                            where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
-                            break;
-                        case exact:
-                            where.add(key + " == '" + value + "'");
-                            break;
-                        case contains:
-                            where.add(key + " contains '" + value + "'");
-                            break;
-                    }
-                }
-            }
+            // TODO: try to use Elasticsearch as an alternative!
+            List<String> where = createWhereClause(query, options);
+            String whereString = String.join(" OR ", where);
 
-            if (!type.equals("*")) {
-                queryString = "SELECT * FROM " + type + " WHERE (" + String.join(" or ", where) + ")";
-            } else {
-                queryString = "SELECT FROM (SELECT EXPAND( $c ) LET $a = ( SELECT FROM AddressDoc ), $b = ( SELECT FROM mCloudDoc ), $c = UNIONALL( $a, $b )) WHERE (" + String.join(" or ", where) + ")";
+            String fetchPlan = options.resolveReferences ? ",fetchPlan:*:-1" : "";
+
+            if ( options.sortField != null){
+                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " LET $temp = max( draft."+options.sortField+", published."+options.sortField+" ) WHERE (" + whereString + ")";
+            }else{
+                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " WHERE (" + whereString + ")";
             }
-            log.debug("Query-String: " + queryString);
+            countQuery = "SELECT count(*) FROM " + type + " WHERE (" + whereString + ")";
+            /*} else {
+                String draftWhere = attachFieldToWhereList(where, "draft.");
+                String publishedWhere = attachFieldToWhereList(where, "published.");
+                queryString = "SELECT FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
+                countQuery = "SELECT count(*) FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
+            }*/
+
         }
 
+        if (options.sortField != null) {
+            queryString += " ORDER BY $temp " + options.sortOrder;
+        }
+        if (options.size != null) {
+            queryString += " LIMIT " + options.size;
+        }
+        log.debug("Query-String: " + queryString);
 
         OResultSet docs = getDBFromThread().query(queryString);
+        OResultSet countDocs = getDBFromThread().query(countQuery);
 
-        // find references (document wrapper)
-        if (type.equals("*")) {
-            List<String> wrapperList = new ArrayList<>();
-            while (docs.hasNext()) {
-                ORID identity = docs.next().getRecord().get().getIdentity();
-                OResultSet wrapperResults = getDBFromThread().query("FIND REFERENCES " + identity + " [" + DOCUMENT_WRAPPER + "]");
-                while (wrapperResults.hasNext()) {
-                    ORID wrapperId = wrapperResults.next().getProperty("referredBy");
-                    String wrapperAsString = getDBFromThread().load(wrapperId).toJSON("rid,class,fetchPlan:*:-1");
-                    wrapperList.add(wrapperAsString);
+        return mapFindAllResults(docs, countDocs);
+
+    }
+
+    private List<String> createWhereClause(Map<String, String> query, FindOptions options) {
+        List<String> where = new ArrayList<>();
+        for (String key : query.keySet()) {
+            String value = query.get(key);
+            if (value == null) {
+                where.add(key + ".toLowerCase() IS NULL");
+            } else {
+                switch (options.queryType) {
+                    case like:
+                        where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
+                        break;
+                    case exact:
+                        where.add(key + " == '" + value + "'");
+                        break;
+                    case contains:
+                        where.add(key + " contains '" + value + "'");
+                        break;
                 }
             }
-            return wrapperList;
         }
+        return where;
+    }
 
-        return mapODocumentsToJSON(docs, resolveReferences);
+    private String attachFieldToWhereList(List<String> whereList, String field) {
+        return whereList.stream()
+                .map(item -> field + item)
+                .collect(Collectors.joining(" OR "));
+    }
+
+    private DBFindAllResults mapFindAllResults(OResultSet docs, OResultSet countDocs) throws Exception {
+
+        List<JsonNode> hits = mapODocumentsToJSON(docs);
+        long count = countDocs.next().getProperty("count(*)");
+        return new DBFindAllResults(count, hits);
     }
 
     @Override
@@ -214,12 +244,32 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public Map find(String type, String id) {
-        String query = "SELECT * FROM " + type + " WHERE @rid = " + id;
+    public Map<String, Long> countChildrenFromNode(String id, String type) {
+        Map<String, Long> response = new HashMap<>();
+        String query = "select _parent,count(_id) from " + type + " " +
+                "where _parent IN ['" + id + "']" +
+                "group by _parent";
+
+        OResultSet countQuery = getDBFromThread().query(query);
+        while (countQuery.hasNext()) {
+            OResult next = countQuery.next();
+            response.put(next.getProperty(MapperService.FIELD_PARENT), next.getProperty("count(_id)"));
+        }
+        return response;
+    }
+
+    @Override
+    public int count(String type, Map<String, String> query, FindOptions findOptions) {
+        return 0;
+    }
+
+    @Override
+    public JsonNode find(String type, String id) throws Exception {
+        String query = "SELECT @this.toJSON('rid,class') as jsonDoc FROM " + type + " WHERE @rid = " + id;
 //        String query = "SELECT * FROM " + type + " WHERE _id = " + id;
 
         OResultSet result = getDBFromThread().query(query);
-        List<Map> list = mapODocumentsToMap(result);
+        List<JsonNode> list = mapODocumentsToJSON(result);
 
         if (list.size() == 1) {
 
@@ -234,46 +284,6 @@ public class OrientDBDatabase implements DBApi {
         return null;
     }
 
-    @Override
-    @Deprecated
-    public Map save(String type, String dbDocId, Map<String, Object> data) {
-        ODocument docToSave;
-//        ORecordId recId = ((ORecordId) data.get("@rid"));
-
-        /*docToSave = new ODocument(type);
-
-        if (dbDocId != null) {
-            docToSave.field(DB_ID, dbDocId);
-        }*/
-
-
-        if (dbDocId == null) {
-            docToSave = new ODocument(type);
-        } else {
-            Optional<OResult> doc = getById(type, dbDocId);
-            docToSave = (ODocument) doc.get().getRecord().get();
-
-        }
-
-        docToSave.fromMap(data);
-
-        // if it's a new document
-        // docToSave = doc.map(oResult -> (ODocument) oResult.getRecord().get()).orElseGet(() -> new ODocument(type.name()));
-
-        // map data
-        // TODO: can the update be done differently?
-        /*for (String key : data.keySet()) {
-            // ignore @rid since it contains the version which might be obsolete by now
-            // we also do not want to change the dbDocId manually!
-            if ("@rid".equals(key)) continue;
-
-            docToSave.field(key, data.get(key));
-        }*/
-
-        docToSave.save();
-        return docToSave.toMap();
-    }
-
     /**
      * Is this still used? data is not used in function!
      *
@@ -283,10 +293,9 @@ public class OrientDBDatabase implements DBApi {
      * @return
      */
     @Override
-    public Map save(String type, String id, String data) {
+    public JsonNode save(String type, String id, String data) throws ApiException {
         Optional<OResult> doc = getById(type, id);
         ODocument docToSave;
-
 
         // if it's a new document
         docToSave = doc
@@ -296,19 +305,27 @@ public class OrientDBDatabase implements DBApi {
         docToSave.fromJSON(data);
 
         docToSave.save();
-        return docToSave.toMap();
+        try {
+            return mapODocumentToJson(docToSave, true);
+        } catch (Exception e) {
+            log.error("Error saving document", e);
+            throw new ApiException("Error saving document" + e.getMessage());
+        }
     }
 
     @Override
-    public boolean remove(String type, String id) {
+    public boolean remove(String type, String id) throws ApiException {
         OResultSet result = getDBFromThread().command("select * from " + type + " where _id = '" + id + "'");
 
         OElement record = result.elementStream()
                 .reduce((a, b) -> {
                     throw new IllegalStateException("Multiple elements: " + a + ", " + b);
                 })
-                .get();
+                .orElseGet(null);
 
+        if (record == null) {
+            throw new ApiException("Dockument cannot be deleted, since it wasn't found: " + type + " -> " + id);
+        }
         ORecordAbstract deleteResponse = record.delete();
         return true;
     }
@@ -327,22 +344,55 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public boolean createDatabase(String name) {
-        server.createDatabase(name, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
-        try (ODatabaseSession session = acquire(name)) {
+    public String createDatabase(Catalog catalog) throws ApiException {
+        catalog.id = this.generateDBNameFromLabel(catalog.name);
 
-            session.getMetadata().getSchema().createClass("Behaviours");
-            session.getMetadata().getSchema().createClass("Info");
+        server.createDatabase(catalog.id, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
+        try (ODatabaseSession session = acquire(catalog.id)) {
 
-            Map<String, Object> catInfo = new HashMap<>();
-            catInfo.put("name", "New Catalog");
-            this.save(DBClass.Info.name(), null, catInfo);
-
+            initNewDatabase(catalog, session);
+            JsonNode catInfo = getMapFromCatalogSettings(catalog);
+            this.save(DBClass.Info.name(), null, catInfo.toString());
         }
 
-        initDocumentTypes(name);
+        initDocumentTypes(catalog);
 
-        return true;
+        return catalog.id;
+    }
+
+    public void updateDatabase(Catalog settings) throws ApiException {
+        try (ODatabaseSession ignored = acquire(settings.id)) {
+
+            List<JsonNode> list = this.findAll(DBClass.Info);
+            ObjectNode map = (ObjectNode) list.get(0);
+            map.put("name", settings.name);
+            map.put("description", settings.description);
+            String id = map.get(DB_ID).asText();
+            MapperService.removeDBManagementFields(map);
+            this.save(DBClass.Info.name(), id, map.toString());
+        }
+    }
+
+    private JsonNode getMapFromCatalogSettings(Catalog settings) {
+        ObjectNode catInfo = new ObjectMapper().createObjectNode();
+        catInfo.put("id", settings.id);
+        catInfo.put("name", settings.name);
+        catInfo.put("description", settings.description);
+        catInfo.put("type", settings.type);
+        return catInfo;
+    }
+
+    private void initNewDatabase(Catalog settings, ODatabaseSession session) {
+        session.getMetadata().getSchema().createClass("Behaviours");
+        OClass info = session.getMetadata().getSchema().createClass("Info");
+
+        info.createProperty("name", OType.STRING);
+        info.createProperty("type", OType.STRING);
+        info.createProperty("version", OType.STRING);
+    }
+
+    private String generateDBNameFromLabel(String name) {
+        return name.toLowerCase().replaceAll(" ", "_");
     }
 
     @Override
@@ -369,38 +419,36 @@ public class OrientDBDatabase implements DBApi {
         return ODatabaseRecordThreadLocal.instance().get();
     }
 
-    private List<Map> mapODocumentsToMap(ORecordIteratorClass<ODocument> oDocsIterator) {
-        List<Map> list = new ArrayList<>();
+    private List<JsonNode> mapODocumentsToJsonNode(ORecordIteratorClass<ODocument> oDocsIterator) throws Exception {
+        List<JsonNode> list = new ArrayList<>();
         while (oDocsIterator.hasNext()) {
             ODocument next = oDocsIterator.next();
-            list.add(next.toMap());
+            list.add(MapperService.getJsonNode(next.toJSON()));
         }
 
         return list;
     }
 
-    private List<Map> mapODocumentsToMap(OResultSet docs) {
-        List<Map> list = new ArrayList<>();
+    private List<JsonNode> mapODocumentsToJSON(OResultSet docs) throws Exception {
+        List<JsonNode> list = new ArrayList<>();
         while (docs.hasNext()) {
-            ODocument oDoc = (ODocument) docs.next().getElement().get();
-            list.add(oDoc.toMap());
+            OResult doc = docs.next();
+            String json = doc.getProperty( "jsonDoc" );
+            JsonNode node = MapperService.getJsonNode(json);
+            list.add(node);
         }
 
         return list;
     }
 
-    private List<String> mapODocumentsToJSON(OResultSet docs, boolean resolveReferences) {
-        List<String> list = new ArrayList<>();
-        while (docs.hasNext()) {
-            ODocument oDoc = (ODocument) docs.next().getElement().get();
-            if (resolveReferences) {
-                list.add(oDoc.toJSON("rid,class,fetchPlan:*:-1"));
-            } else {
-                list.add(oDoc.toJSON("rid,class"));
-            }
+    private JsonNode mapODocumentToJson(ODocument oDoc, boolean resolveReferences) throws Exception {
+        String json;
+        if (resolveReferences) {
+            json = oDoc.toJSON("rid,class,fetchPlan:*:-1");
+        } else {
+            json = oDoc.toJSON("rid,class");
         }
-
-        return list;
+        return MapperService.getJsonNode(json);
     }
 
     /**

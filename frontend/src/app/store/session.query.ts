@@ -8,6 +8,8 @@ export class SessionQuery extends Query<SessionState> {
   isLoggedIn$ = this.select(state => state.loggedIn);
   isProfilesInitialized$ = this.select(state => state.profilesInitialized);
   isSidebarExpanded$ = this.select(state => state.ui.sidebarExpanded);
+  sidebarWidth$ = this.select(state => state.ui.sidebarWidth);
+  latestDocuments$ = this.select(state => state.latestDocuments);
 
   constructor(protected store: SessionStore) {
     super(store);

@@ -4,6 +4,7 @@ import {EventManager} from '@angular/platform-browser';
 import {FormGroup} from '@angular/forms';
 import {DocumentService} from '../../../services/document/document.service';
 import {Inject} from '@angular/core';
+
 /**
  * OpenDataBehaviour
  */
@@ -21,24 +22,26 @@ export class OpenDataBehaviour extends BaseBehaviour implements Behaviour {
   }
 
   register(form: FormGroup, eventManager: EventManager) {
-    console.debug( 'open data behaviour' );
-    this.conformEl = this.getFieldContainer('[for=isConform]');
+    /*
+        console.debug( 'open data behaviour' );
+        this.conformEl = this.getFieldContainer('[for=isConform]');
 
-    this.addSubscriber(
-      this.storageService.afterProfileSwitch$.subscribe( () => {
-        console.debug( 'open data after profile switch' );
-        this.handleState(form.controls['isOpenData'].value);
-      })
-    );
+        this.addSubscriber(
+          this.storageService.afterProfileSwitch$.subscribe( () => {
+            console.debug( 'open data after profile switch' );
+            this.handleState(form.controls['isOpenData'].value);
+          })
+        );
 
-    this.addSubscriber(
-      form.controls['isOpenData'].valueChanges.subscribe( (checked: boolean) => {
-        console.debug( 'open data changed: ', checked );
-        this.handleState(checked);
-      } )
-    );
+        this.addSubscriber(
+          form.controls['isOpenData'].valueChanges.subscribe( (checked: boolean) => {
+            console.debug( 'open data changed: ', checked );
+            this.handleState(checked);
+          } )
+        );
+    */
   }
-
+/*
   getFieldContainer(query: string): HTMLElement {
     let parent = <HTMLElement> document.querySelector(query);
     while (parent && !parent.classList.contains('fieldContainer')) {
@@ -53,5 +56,5 @@ export class OpenDataBehaviour extends BaseBehaviour implements Behaviour {
     } else {
       this.conformEl.classList.add('hide');
     }
-  }
+  }*/
 }

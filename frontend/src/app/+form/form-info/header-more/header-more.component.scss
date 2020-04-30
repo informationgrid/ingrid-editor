@@ -6,15 +6,29 @@
 
 .more-info {
 
-  //padding-bottom: 20px;
+  padding: 10px 0 20px;
   overflow: hidden;
+  line-height: 22px;
+  letter-spacing: 0.5px;
 
   > div > div:nth-child(1) {
-    width: 230px;
-    color: $ige-comment-color;
+    width: 296px;
+    color: #767676;
   }
 
   .padding-below {
-    //padding-bottom: 10px;
+    padding-bottom: 10px;
+  }
+
+  .section {
+    padding-top: 10px;
+  }
+
+  .state {
+    font-weight: 400;
+
+    &.working {
+      color: $state-working-color;
+    }
   }
 }

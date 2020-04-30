@@ -43,7 +43,7 @@ export class PluginsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.behaviourService.initialized.then( () => {
+    // this.behaviourService.initialized.then( () => {
       // this.plugins.push( ...this.statService.getPlugins() );
       this.plugins.push( ...this.behaviourService.systemBehaviours );
       this.plugins.forEach(p => p._state = 'collapsed');
@@ -62,7 +62,7 @@ export class PluginsComponent implements OnInit {
       } );
       this.pluginForm = this.formBuilder.group(pluginFormGroup);
       this.behaviourForm = this.formBuilder.group(behaviourFormGroup);
-    });
+    // });
   }
 
   togglePlugin(plugin: Plugin, isChecked: boolean, event: Event) {

@@ -1,9 +1,11 @@
 import {Injectable} from '@angular/core';
 import {ConfigDataService} from './config-data.service';
 import {BehaviorSubject} from 'rxjs';
+import {Catalog} from '../../+catalog/services/catalog.model';
+import {coerceArray} from '@datorama/akita';
 
 export class Configuration {
-  constructor(public keykloakBaseUrl: string, public backendUrl: string) {
+  constructor(public keykloakBaseUrl: string, public backendUrl: string, public featureFlags: any) {
   }
 }
 
@@ -13,6 +15,7 @@ export interface UserInfo {
 
   assignedCatalogs: any[];
   roles: string[];
+  currentCatalog: Catalog;
 }
 
 @Injectable({
@@ -48,7 +51,7 @@ export class ConfigService {
     return this.dataService.getCurrentUserInfo()
       .then(userInfo => {
         this.$userInfo.next(userInfo);
-        this.isAdministrator = userInfo.roles && userInfo.roles.includes('admin');
+        this.isAdministrator = userInfo.roles && userInfo.roles.indexOf('admin') !== -1;
         return userInfo;
       })
       .catch(e => {
@@ -64,5 +67,10 @@ export class ConfigService {
 
   isAdmin(): boolean {
     return this.isAdministrator;
+  }
+
+  hasFlags(flags: string | string[]) {
+    const userFlags = this.config.featureFlags;
+    return coerceArray(flags).every(current => userFlags[current]);
   }
 }

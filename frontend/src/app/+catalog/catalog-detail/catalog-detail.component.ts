@@ -1,64 +1,92 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
 import {User} from '../../+user/user';
-import {Observable} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {CatalogService} from '../services/catalog.service';
-import {ConfigService} from '../../services/config/config.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
-import {map, share} from 'rxjs/operators';
+import {Catalog} from '../services/catalog.model';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
+import {AddUserDialogComponent} from './add-user-dialog/add-user-dialog.component';
+
+export interface CatalogDetailResponse {
+  deleted?: boolean;
+  settings?: Catalog,
+  adminUsers?: string[]
+}
 
 @Component({
   selector: 'ige-catalog-detail',
   templateUrl: './catalog-detail.component.html',
-  styleUrls: ['./catalog-detail.component.css']
+  styleUrls: ['./catalog-detail.component.scss']
 })
 export class CatalogDetailComponent implements OnInit {
 
-  display = false;
+  users: User[];
+  catAdmins: User[];
 
-  users: Observable<User[]>;
-  catAdmins: Observable<User[]>;
-  otherUsers: Observable<User[]>;
-
-  private catalogId: string;
-  selectedUsers: string[] = [];
+  private assignedUsers: string[] = [];
 
   constructor(public dialogRef: MatDialogRef<NewCatalogDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any,
-              private userService: UserService, private catalogService: CatalogService,
-              private configService: ConfigService) {
-    this.catalogId = data;
+              @Inject(MAT_DIALOG_DATA) public catalog: Catalog,
+              private dialog: MatDialog,
+              private userService: UserService, private catalogService: CatalogService) {
   }
 
   ngOnInit() {
-    this.users = this.userService.getUsers().pipe(share());
-    this.userService.getAssignedUsers(this.data).subscribe( result => {
-      this.catAdmins = this.users.pipe(
-        map(users => users.filter(user => result.indexOf(user.login) !== -1))
-      );
-      this.otherUsers = this.users.pipe(
-        map(users => users.filter(user => result.indexOf(user.login) === -1))
-      );
+    forkJoin([
+      this.userService.getUsers(),
+      this.userService.getAssignedUsers(this.catalog.id)
+    ]).subscribe(([users, assignedUsers]) => {
+      this.users = users;
+      this.assignedUsers = assignedUsers;
+      this.setCatAdminsFromAssignedUsers();
     });
+
+    this.catalogService.getCatalog(this.catalog.id);
   }
 
-  showCatAdmins() {
-    this.display = true;
-  }
-
-  addUserAsCatAdmin(selectedUser) {
-    console.log('TODO', selectedUser);
-
-    // get this user again to update internal user info to update webapp
-    this.catalogService.setCatalogAdmin(this.catalogId, this.selectedUsers)
-      .subscribe(() => this.configService.getCurrentUserInfo());
-    this.dialogRef.close('COMMIT');
+  submit() {
+    const response: CatalogDetailResponse = {
+      settings: this.catalog,
+      adminUsers: this.assignedUsers
+    };
+    this.dialogRef.close(response);
   }
 
   deleteCatalog() {
-    this.catalogService.deleteCatalog(this.catalogId).subscribe();
-    this.dialogRef.close();
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Katalog löschen',
+        message: 'Wollen Sie den Katalog wirklich löschen?',
+        confirmText: 'Löschen'
+      } as ConfirmDialogData
+    }).afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        const response: CatalogDetailResponse = {deleted: true};
+        this.dialogRef.close(response);
+      }
+    });
+
   }
 
+  chooseUserForAdmin() {
+    this.dialog.open(AddUserDialogComponent, {
+      data: {
+        excludeUserIDs: this.assignedUsers
+      }
+    }).afterClosed().subscribe(result => {
+      this.assignedUsers.push(...result);
+      this.setCatAdminsFromAssignedUsers();
+    })
+  }
+
+  private setCatAdminsFromAssignedUsers() {
+    this.catAdmins = this.users.filter(user => this.assignedUsers.indexOf(user.login) !== -1);
+  }
+
+  removeCatAdmin(login: string) {
+    this.assignedUsers = this.assignedUsers.filter(user => user !== login);
+    this.setCatAdminsFromAssignedUsers();
+  }
 }

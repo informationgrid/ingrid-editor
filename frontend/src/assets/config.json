@@ -1,4 +1,6 @@
 {
-  "keykloakBaseUrl": "http://localhost:8999/authxxx/",
-  "backendUrl": "/api/"
+  "backendUrl": "/api/",
+  "featureFlags": {
+    "AP3": true
+  }
 }

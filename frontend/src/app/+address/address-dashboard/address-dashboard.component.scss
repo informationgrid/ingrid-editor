@@ -1,0 +1,52 @@
+:host {
+  display: block;
+  padding: 0 24px 24px;
+}
+
+h1 {
+  font-weight: 400;
+}
+
+.info-box {
+  padding-bottom: 24px;
+}
+
+.banner {
+
+  letter-spacing: 0.5px;
+  margin-top: 72px;
+
+  h2 {
+    font-weight: 400;
+    margin-top: 24px;
+  }
+
+  p {
+    margin: 5px 0;
+  }
+
+  .circle-wrapper {
+    display: inline-block;
+    border-radius: 50%;
+    width: 280px;
+    height: 280px;
+    background-color: #E9E9E9;
+    transition: all 1s linear;
+  }
+
+  .mat-icon {
+
+    width: 334px;
+    height: 254px;
+    margin-top: 13px;
+    margin-left: -27px;
+
+    ::ng-deep svg path {
+      fill: #ffffff;
+    }
+  }
+}
+
+.shortcut {
+  margin-top: -12px;
+}

@@ -1,19 +1,19 @@
 package de.ingrid.igeserver.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.id.ORecordId;
-import de.ingrid.igeserver.db.DBApi;
-import de.ingrid.igeserver.db.QueryType;
+import de.ingrid.igeserver.db.*;
 import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.model.User;
 import de.ingrid.igeserver.model.User1;
 import de.ingrid.igeserver.model.UserInfo;
-import de.ingrid.igeserver.services.MapperService;
 import de.ingrid.igeserver.services.UserManagementService;
 import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
-import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
@@ -22,22 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.naming.NoPermissionException;
-import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 
-import static de.ingrid.igeserver.services.MapperService.getMapFromJson;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
-
-@Controller
+@RestController
+@RequestMapping(path = "/api")
 public class UsersApiController implements UsersApi {
 
     private static Logger log = LogManager.getLogger(UsersApiController.class);
@@ -57,13 +52,12 @@ public class UsersApiController implements UsersApi {
     @Value("#{'${spring.profiles.active:}'.indexOf('dev') != -1}")
     private boolean developmentMode;
 
-    public ResponseEntity<Void> createUser(@ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id,
-                                           @ApiParam(value = "Save the user data into the database.", required = true) @Valid @RequestBody User1 user) {
+    public ResponseEntity<Void> createUser(String id, User1 user) {
         // do some magic!
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Void> deleteUser(@ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id) {
+    public ResponseEntity<Void> deleteUser(String id) {
         // do some magic!
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -73,7 +67,7 @@ public class UsersApiController implements UsersApi {
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<User> getUser(Principal principal, @ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id) throws IOException {
+    public ResponseEntity<User> getUser(Principal principal, String id) throws IOException {
         User user = keycloakService.getUser(principal, id);
 
         return ResponseEntity.ok(user);
@@ -95,8 +89,7 @@ public class UsersApiController implements UsersApi {
         }
     }
 
-    public ResponseEntity<Void> updateUser(@ApiParam(value = "The unique login of the user.", required = true) @PathVariable("id") String id,
-                                           @ApiParam(value = "Save the user data into the database.", required = true) @Valid @RequestBody User user) {
+    public ResponseEntity<Void> updateUser(String id, User user) {
         // do some magic!
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -129,6 +122,9 @@ public class UsersApiController implements UsersApi {
         userInfo.assignedCatalogs = assignedCatalogs;
         userInfo.name = keycloakService.getName((KeycloakAuthenticationToken) principal);
         userInfo.roles = keycloakService.getRoles((KeycloakAuthenticationToken) principal);
+        String currentCatalogForUser = this.dbUtils.getCurrentCatalogForUser(userId);
+        Catalog catalog = this.dbUtils.getCatalogById(currentCatalogForUser);
+        userInfo.currentCatalog = catalog;
 
         return ResponseEntity.ok(userInfo);
     }
@@ -136,7 +132,7 @@ public class UsersApiController implements UsersApi {
     @Override
     public ResponseEntity<UserInfo> setCatalogAdmin(
             Principal principal,
-            @ApiParam(value = "Save the user data into the database.", required = true) @Valid @RequestBody Map info) throws ApiException {
+            Map info) throws ApiException {
 
         try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
 
@@ -147,41 +143,63 @@ public class UsersApiController implements UsersApi {
             if (userIds == null || userIds.size() == 0) {
                 throw new ApiException(500, "No user ids set to use as a catalog administrator");
             }
-            // get catalog Info
-            String userId = userIds.get(0);
-            Map<String, String> query = new HashMap<>();
-            query.put("userId", userId);
-            List<String> list = this.dbService.findAll("Info", query, QueryType.exact, false);
-            boolean isNewEntry = list.size() == 0;
 
-            Set<String> catalogIds;
-            Map catInfo;
-            if (isNewEntry) {
-                catInfo = new HashMap();
-                catInfo.put("userId", userId);
-                catInfo.put("catalogIds", new HashSet<String>());
-            } else {
-
-                catInfo = getMapFromJson(list.get(0));
+            for (String userId : userIds) {
+                addOrUpdateCatalogAdmin(catalogName, userId);
             }
-            catalogIds = (HashSet)catInfo.get("catalogIds");
 
-            // update catadmin in catalog Info
-            if (catalogName != null) catalogIds.add(catalogName);
-
-            catInfo.put("catalogIds", catalogIds);
-
-            String recordId = null;
-            if (!isNewEntry) {
-                recordId = (String) catInfo.get("@rid");
-            }
-            dbService.save(DBApi.DBClass.Info.name(), recordId, catInfo);
+        } catch (JsonProcessingException e) {
+            log.error("Error processing JSON", e);
+            throw new ApiException(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            log.error(e);
         }
 
         return null;
+    }
+
+    private void addOrUpdateCatalogAdmin(String catalogName, String userId) throws Exception {
+        Map<String, String> query = new HashMap<>();
+        query.put("userId", userId);
+        FindOptions findOptions = new FindOptions();
+        findOptions.queryType = QueryType.exact;
+        findOptions.resolveReferences = false;
+        DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
+        boolean isNewEntry = list.totalHits == 0;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Set<String> catalogIds = new HashSet<>();
+        ObjectNode catInfo;
+
+        if (isNewEntry) {
+            catInfo = objectMapper.createObjectNode();
+            catInfo.put("userId", userId);
+            catInfo.put("catalogIds", objectMapper.createArrayNode());
+        } else {
+
+            catInfo = (ObjectNode) list.hits.get(0);
+            // make list to hashset
+            catInfo.put("catalogIds", catInfo.get("catalogIds"));
+        }
+
+        ArrayNode catalogIdsArray = (ArrayNode) catInfo.get("catalogIds");
+
+        for (JsonNode jsonNode : catalogIdsArray) {
+            catalogIds.add(jsonNode.asText());
+        }
+
+        // update catadmin in catalog Info
+        if (catalogName != null) catalogIds.add(catalogName);
+
+        ArrayNode arrayNode = objectMapper.createArrayNode();
+        catalogIds.forEach(arrayNode::add);
+        catInfo.replace("catalogIds", arrayNode);
+
+        String recordId = null;
+        if (!isNewEntry) {
+            recordId = catInfo.get("@rid").asText();
+        }
+        dbService.save(DBApi.DBClass.Info.name(), recordId, catInfo.toString());
     }
 
     @Override
@@ -191,10 +209,12 @@ public class UsersApiController implements UsersApi {
         try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
             Map<String, String> query = new HashMap<>();
             query.put("catalogIds", id);
-            List<String> infos = this.dbService.findAll("Info", query, QueryType.contains, false);
-            for (String entry : infos) {
-                JsonNode map = MapperService.getJsonMap(entry);
-                result.add(map.get("userId").asText());
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.contains;
+            findOptions.resolveReferences = false;
+            DBFindAllResults infos = this.dbService.findAll("Info", query, findOptions);
+            for (JsonNode entry : infos.hits) {
+                result.add(entry.get("userId").asText());
             }
 
         } catch (Exception e) {
@@ -202,6 +222,33 @@ public class UsersApiController implements UsersApi {
         }
 
         return ResponseEntity.ok(result);
+    }
+
+    public ResponseEntity<Void> switchCatalog(Principal principal, String catalogId) throws ApiException {
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+
+        try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
+            Map<String, String> query = new HashMap<>();
+            query.put("userId", userId);
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = false;
+            DBFindAllResults info = dbService.findAll("Info", query, findOptions);
+            if (info.totalHits != 1) {
+                String message = "User is not defined or more than once in IgeUsers-table: " + info.totalHits;
+                log.error(message);
+                throw new ApiException(message);
+            }
+
+            ObjectNode map = (ObjectNode) info.hits.get(0);
+            map.put("currentCatalogId", catalogId);
+            this.dbService.save("Info", map.get(OrientDBDatabase.DB_ID).asText(), map.toString());
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            log.error(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Store, StoreConfig} from '@datorama/akita';
+import {DocumentAbstract} from './document/document.model';
 
 export interface SessionState {
   loggedIn: boolean,
@@ -7,7 +8,8 @@ export interface SessionState {
   ui: {
     sidebarExpanded?: boolean
     sidebarWidth?: number;
-  }
+  },
+  latestDocuments: DocumentAbstract[]
 }
 
 export function createInitialState(): SessionState {
@@ -17,7 +19,8 @@ export function createInitialState(): SessionState {
     ui: {
       sidebarExpanded: true,
       sidebarWidth: 15
-    }
+    },
+    latestDocuments: []
   };
 }
 

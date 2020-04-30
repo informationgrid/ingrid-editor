@@ -1,11 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {TreeQuery} from '../../store/tree/tree.query';
 import {TreeStore} from '../../store/tree/tree.store';
-import {DocumentService} from '../../services/document/document.service';
-import {Subject} from 'rxjs';
-import {TreeAction} from './tree/tree.component';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {ShortTreeNode, TreeAction} from './tree/tree.component';
+import {filter, map, take} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TreeQuery} from '../../store/tree/tree.query';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-sidebar',
   templateUrl: './sidebar.component.html',
@@ -13,30 +15,46 @@ import {TreeAction} from './tree/tree.component';
 })
 export class SidebarComponent implements OnInit {
 
-  selectedIds = this.treeQuery.selectActiveId();
-  initialExpandNodes = new Subject<string[]>();
-  initialActiveNodeId: string;
   updateTree = new Subject<TreeAction[]>();
+  activeTreeNode = new BehaviorSubject<string>(null);
 
   constructor(private router: Router,
               private route: ActivatedRoute,
-              private treeQuery: TreeQuery, private treeStore: TreeStore, private docService: DocumentService) {
+              private treeQuery: TreeQuery,
+              private treeStore: TreeStore) {
 
   }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
 
-      const id = params['id'];
-      if (id !== undefined) {
+    this.clearTreeStore();
 
-        this.docService.getPath(params['id']).subscribe(path => {
-          this.initialActiveNodeId = path.pop();
-          this.initialExpandNodes.next(path);
-        });
+    // setup tree according to initial parameters when switching to the page
+    this.route.params
+      .pipe(
+        take(1),
+        filter(params => params['id']),
+        map(params => params['id'])
+      ).subscribe(id => {
+      this.treeStore.update({
+        explicitActiveNode: id
+      });
+    });
 
-      }
-    }).unsubscribe();
+    this.treeQuery.explicitActiveNode$
+      .subscribe(id => {
+        this.activeTreeNode.next(id);
+      });
+
+    // only react on initial page when clicking on menu button
+    // to reset tree selection
+    this.route.params.pipe(
+      untilDestroyed(this),
+      filter(params => params['id'] === undefined)
+    ).subscribe(params => {
+      this.activeTreeNode.next(null);
+      this.storePathTitles([]);
+    });
   }
 
   handleLoad(selectedDocIds: string[]) { // id: string, profile?: string, forceLoad?: boolean) {
@@ -64,4 +82,15 @@ export class SidebarComponent implements OnInit {
 
   }
 
+  storePathTitles(path: ShortTreeNode[]) {
+    this.treeStore.update({
+      activePathTitles: path
+    })
+  }
+
+  // make sure to reload tree instead of using cached nodes
+  // otherwise adding new node from dashboard would lead to an error
+  private clearTreeStore() {
+    this.treeStore.set([]);
+  }
 }

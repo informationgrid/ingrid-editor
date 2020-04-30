@@ -1,0 +1,31 @@
+@import '../../../variables';
+
+.circular-chart {
+  max-height: 228px;
+}
+
+.percentage {
+  fill: #333333;
+  font-size: 48px;
+  text-anchor: middle;
+}
+
+.box {
+  text-align: center;
+  color: #333333;
+  font-size: 16px;
+
+  &.working {
+    color: $state-working-color;
+  }
+
+  .count {
+    font-weight: 500;
+    font-size: 24px;
+  }
+}
+
+.wrapper {
+  padding: 0 15%;
+}
+

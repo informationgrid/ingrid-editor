@@ -1,0 +1,60 @@
+.mat-dialog-actions {
+  border-top: 1px solid $ige-background-bar;
+  margin-left: -24px;
+  margin-right: -24px;
+  padding: 0 10px !important;
+
+}
+
+// all buttons shall be uppercase
+// align text in buttons centered with icon
+.mat-button-wrapper {
+  text-transform: uppercase;
+
+  mat-icon + span {
+    display: inline-block;
+    margin-top: 2px;
+  }
+}
+
+.shortcut .mat-button mat-icon + span {
+  padding-left: 5px;
+}
+
+.mat-dialog-container {
+
+  display: flex !important;
+  flex-direction: column;
+  flex: 1;
+
+  ng-component, ige-new-document {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .dialog-title-wrapper {
+    margin: -24px -24px;
+    background-color: $ige-secondary;
+    padding: 10px;
+
+    .mat-dialog-title {
+      margin: 0;
+      color: white;
+
+      span.text {
+        vertical-align: middle;
+        padding-left: 20px;
+        line-height: 40px;
+      }
+    }
+  }
+
+  .mat-dialog-content {
+    margin-top: 40px;
+  }
+}
+
+ige-root .mat-card {
+  border-radius: 5px;
+}

@@ -1,3 +1,9 @@
+@import '../../../../../variables';
+
+:host {
+  background-color: $ige-background;
+}
+
 .header {
   padding: 10px 12px 10px 12px;
 
@@ -15,17 +21,32 @@
   }
 }
 
+::ng-deep .quicksearch-auto {
+
+  padding: 12px;
+
+  mat-option {
+    padding: 0 !important;
+  }
+
+  mat-option, ::ng-deep .doc-item {
+    height: 40px !important;
+  }
+}
+
 .search {
   ::ng-deep .mat-form-field-outline {
     background-color: #ffffff;
-
-    div {
-      border: 0;
-    }
+    border-radius: 4px;
   }
 
   ::ng-deep .mat-form-field-suffix {
     margin-right: -5px;
+    top: 9px;
+  }
+
+  ::ng-deep .mat-icon-button.button {
+    width: 1.5em;
   }
 
   ::ng-deep .mat-form-field-wrapper {
@@ -33,6 +54,7 @@
   }
 
   ::ng-deep .mat-form-field-infix {
-    padding: 0.2em 0 0.6em;
+    padding: 0.2em 0 0.7em;
+    border-top: 0.54375em solid transparent;
   }
 }

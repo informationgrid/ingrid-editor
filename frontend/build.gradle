@@ -4,7 +4,7 @@
 
 plugins {
   id 'base'
-  id "com.github.node-gradle.node" version "1.3.0"
+  id "com.github.node-gradle.node" version "2.2.3"
 }
 
 repositories {
@@ -32,6 +32,10 @@ task bundle(type: YarnTask) {
   args = ['run', 'prod']
 }
 
+task test(type: YarnTask) {
+  args = ['run', 'test-headless']
+}
+
 task packageNpmApp(type: Zip) {
   dependsOn bundle
   baseName 'ige-frontend-app'
@@ -40,6 +44,11 @@ task packageNpmApp(type: Zip) {
   from('build/dist') {
     // optional path under which output will be visible in Java classpath, e.g. static resources path
     into 'static'
+  }
+  from ('src/assets') {
+    into 'static/assets'
+    include 'config.prod.json'
+    rename { 'config.json' }
   }
 }
 
@@ -56,7 +65,8 @@ artifacts {
 }
 
 clean {
-  delete packageNpmApp.archivePath
+  // do nothing to improve speed
+  // delete packageNpmApp.archivePath
 }
 
 assemble.dependsOn packageNpmApp

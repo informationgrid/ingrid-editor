@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {Plugin} from '../../../+behaviours/plugin';
 import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
@@ -7,6 +7,7 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 import {ConfirmDialogComponent} from '../../../dialogs/confirm/confirm-dialog.component';
 import {DocumentService} from '../../../services/document/document.service';
 import {Router} from '@angular/router';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
@@ -20,7 +21,8 @@ export class DeleteDocsPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private treeQuery: TreeQuery,
-              private storageService: DocumentService,
+              private addressTreeQuery: AddressTreeQuery,
+              private documentService: DocumentService,
               private router: Router,
               private dialog: MatDialog) {
     super();
@@ -31,7 +33,7 @@ export class DeleteDocsPlugin extends Plugin {
     super.register();
 
     this.formToolbarService.addButton(
-      {id: 'toolBtnRemove', tooltip: 'Remove', matIconVariable: 'delete', eventId: 'DELETE', pos: 100, active: false}
+      {id: 'toolBtnRemove', tooltip: 'Löschen', matSvgVariable: 'outline-delete-24px', eventId: 'DELETE', pos: 100, active: false}
     );
 
     this.subscriptions.push(
@@ -45,12 +47,18 @@ export class DeleteDocsPlugin extends Plugin {
         this.formToolbarService.setButtonState(
           'toolBtnRemove',
           data && data.length > 0);
+      }),
+
+      this.addressTreeQuery.selectActiveId().subscribe(data => {
+        this.formToolbarService.setButtonState(
+          'toolBtnRemove',
+          data && data.length > 0);
       })
     );
   }
 
   showDeleteDialog() {
-    const docs = this.treeQuery.getActive();
+    const docs = this.forAddress ? this.addressTreeQuery.getActive() : this.treeQuery.getActive();
 
     this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -67,9 +75,20 @@ export class DeleteDocsPlugin extends Plugin {
 
   deleteDocs(docIdsToDelete: string[]) {
     try {
-      this.storageService.delete(docIdsToDelete);
 
-      this.router.navigate(['/form']);
+      // const parents = this.treeQuery.getAll()
+      //   .filter(doc => docIdsToDelete.indexOf(doc.id.toString()) !== -1)
+      //   .map(doc => doc._parent);
+
+      this.documentService.delete(docIdsToDelete, this.forAddress);
+
+      // find all parents in store who now have no children anymore
+      // parents
+      //   .filter(id => this.treeQuery.getCount(item => item._parent === id) === 0)
+      //   .forEach( id => this.documentService.updateChildrenInfo(id, false));
+
+      const route = this.forAddress ? '/address' : '/form';
+      this.router.navigate([route]);
     } catch (ex) {
       console.error('Could not delete', ex);
     }

@@ -5,33 +5,42 @@
  */
 package de.ingrid.igeserver.api;
 
-import javax.validation.Valid;
-
+import de.ingrid.igeserver.exports.ExportTypeInfo;
+import de.ingrid.igeserver.model.ExportRequestParameter;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import de.ingrid.igeserver.model.Data5;
-import de.ingrid.igeserver.model.InlineResponseDefault;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
-@Api(value = "export", description = "the export API")
-@RequestMapping(path="/api")
+@Tag(name = "Export", description = "the export API")
 public interface ExportApi {
 
-    @ApiOperation(value = "...", notes = "...", response = Void.class, tags = { "Export", })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The stored dataset, which might contain additional storage information.", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
+            @ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
+            @ApiResponse(responseCode = "500", description = "Unexpected error")}
+    )
+    @PostMapping(value = "/export", produces = {"application/json"})
+    ResponseEntity<String> export(
+            Principal principal,
+            @Parameter(description = "The dataset to be exported.", required = true) @Valid @RequestBody ExportRequestParameter data) throws Exception;
 
-    @RequestMapping(value = "/export", produces = { "application/json" }, method = RequestMethod.POST)
-    ResponseEntity<Void> exportDataset2(@ApiParam(value = "The dataset to be exported.", required = true) @Valid @RequestBody Data5 data);
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The supported types for export."),
+            @ApiResponse(responseCode = "500", description = "Unexpected error")}
+    )
+    @GetMapping(value = "/export", produces = {"application/json"})
+    ResponseEntity<List<ExportTypeInfo>> exportTypes(
+            Principal principal,
+            @Parameter(description = "The source catalog to get the supported export types from.") @RequestParam(value = "source") String sourceCatalogType) throws Exception;
 
 }

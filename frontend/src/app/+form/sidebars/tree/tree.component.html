@@ -1,48 +1,64 @@
-<ige-tree-header *ngIf="showReloadButton" (reload)="reloadTree()" (open)="jumpToNode($event)"></ige-tree-header>
+<ng-container *ngIf="dataSource.data?.length > 0; else emptyNavigation">
 
-<span *ngIf="dataSource.data?.length === 0">Leerer Baum</span>
+    <ige-tree-header *ngIf="showHeader"
+                     (reload)="reloadTree(true).subscribe()"
+                     [isAddress]="forAddresses"
+                     [showOptions]="showHeaderOptions"
+                     [showOnlyFolders]="showOnlyFolders"
+                     (open)="jumpToNode($event)"></ige-tree-header>
 
-<!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
 
-    <!-- This is the tree node template for leaf nodes -->
-    <mat-tree-node *matTreeNodeDef="let node"
-                   matTreeNodePadding matTreeNodePaddingIndent="24"
-                   (click)="!disabledCondition(node) && selectNode(node, $event)"
-                   [class.selected]="selectionModel.isSelected(node)"
-                   [class.active]="node._id === activeNodeId"
-                   [class.rootNode]="node.level === 0"
-                   [class.disabled]="disabledCondition(node)">
-        <div class="label">
-            <mat-icon [svgIcon]="node.iconClass" [ngClass]="getStateClass(node)"></mat-icon>
-            <span>{{node.title}}</span>
-        </div>
-    </mat-tree-node>
+    <!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
+    <mat-tree #treeComponent [dataSource]="dataSource" [treeControl]="treeControl">
 
-    <!-- This is the tree node template for expandable nodes -->
-    <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
-                   matTreeNodePadding matTreeNodePaddingIndent="24"
-                   (click)="!disabledCondition(node) && selectNode(node, $event)"
-                   [class.selected]="selectionModel.isSelected(node)"
-                   [class.active]="node._id === activeNodeId"
-                   [class.expanded]="treeControl.isExpanded(node)"
-                   [class.disabled]="disabledCondition(node)"
-                   [class.rootNode]="node.level === 0"
-                   [class.folder]="node.profile === 'FOLDER'">
-        <div style="width: 100%;">
-            <button mat-icon-button matTreeNodeToggle
-                    class="toggle"
-                    [disabled]="!node.hasChildren"
-                    [attr.aria-label]="'toggle ' + node.title">
-                <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror expander">
-                    {{isLoading === node ? 'autorenew' : 'chevron_right'}}
-                </mat-icon>
-            </button>
-
+        <!-- This is the tree node template for leaf nodes -->
+        <mat-tree-node *matTreeNodeDef="let node"
+                       matTreeNodePadding matTreeNodePaddingIndent="24"
+                       (click)="!disabledCondition(node) && selectNode(node, $event)"
+                       [class.selected]="selectionModel.isSelected(node)"
+                       [class.active]="node._id === activeNodeId"
+                       [class.hide]="showOnlyFolders"
+                       [class.rootNode]="node.level === 0"
+                       [class.disabled]="disabledCondition(node)">
             <div class="label">
-                <mat-icon *ngIf="node.profile !== 'FOLDER'">folder</mat-icon>
+                <mat-icon [svgIcon]="node.iconClass" [ngClass]="['document-icon',getStateClass(node)]"></mat-icon>
                 <span>{{node.title}}</span>
             </div>
-        </div>
-    </mat-tree-node>
-</mat-tree>
+        </mat-tree-node>
+
+        <!-- This is the tree node template for expandable nodes -->
+        <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
+                       matTreeNodePadding matTreeNodePaddingIndent="24"
+                       (click)="!disabledCondition(node) && selectNode(node, $event)"
+                       [class.selected]="selectionModel.isSelected(node)"
+                       [class.active]="node._id === activeNodeId"
+                       [class.expanded]="treeControl.isExpanded(node)"
+                       [class.disabled]="disabledCondition(node)"
+                       [class.rootNode]="node.level === 0"
+                       [class.folder]="node.profile === 'FOLDER'">
+            <div style="width: 100%;">
+                <button mat-icon-button matTreeNodeToggle
+                        class="toggle"
+                        [disabled]="!node.hasChildren"
+                        [attr.aria-label]="'toggle ' + node.title">
+                    <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror expander animated">
+                        {{isLoading === node ? 'autorenew' : 'chevron_right'}}
+                    </mat-icon>
+                </button>
+
+                <div class="label">
+                    {{node.title}}
+                    <ng-container *ngIf="node.isLoading">
+                        <mat-spinner diameter="18"></mat-spinner>
+                    </ng-container>
+                </div>
+            </div>
+        </mat-tree-node>
+    </mat-tree>
+
+
+</ng-container>
+
+<ng-template #emptyNavigation>
+    <ige-empty-navigation></ige-empty-navigation>
+</ng-template>

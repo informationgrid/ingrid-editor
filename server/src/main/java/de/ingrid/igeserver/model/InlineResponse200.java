@@ -6,13 +6,10 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * InlineResponse200
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
 public class InlineResponse200   {
   @JsonProperty("_id")
   private String id = null;
@@ -38,7 +35,6 @@ public class InlineResponse200   {
    * Unique identifier
    * @return id
   **/
-  @ApiModelProperty(value = "Unique identifier")
 
 
   public String getId() {
@@ -58,7 +54,6 @@ public class InlineResponse200   {
    * Description of the dataset.
    * @return profile
   **/
-  @ApiModelProperty(value = "Description of the dataset.")
 
 
   public String getProfile() {
@@ -78,7 +73,6 @@ public class InlineResponse200   {
    * The date the dataset was created.
    * @return created
   **/
-  @ApiModelProperty(required = true, value = "The date the dataset was created.")
   @NotNull
 
 
@@ -99,7 +93,6 @@ public class InlineResponse200   {
    * The date the dataset was last modified.
    * @return modified
   **/
-  @ApiModelProperty(value = "The date the dataset was last modified.")
 
 
   public String getModified() {
@@ -119,7 +112,6 @@ public class InlineResponse200   {
    * The date the dataset was last published.
    * @return published
   **/
-  @ApiModelProperty(value = "The date the dataset was last published.")
 
 
   public String getPublished() {

@@ -1,11 +1,39 @@
-<div class="form-info-bar" (click)="showDateBar = !showDateBar">
-    <ige-breadcrumb></ige-breadcrumb>
+<div #host class="form-info-bar">
 
-    <ige-header-title-row [form]="form" (toggleMore)="showMore = !showMore"></ige-header-title-row>
+    <ige-breadcrumb [path]="path"
+                    [rootName]="rootName"
+                    [hideLastSeparator]="false"></ige-breadcrumb>
 
-    <ige-header-more [showMore]="showMore" [model]="model"></ige-header-more>
+    <ige-header-title-row [form]="form"
+                          [model]="model"
+                          [sections]="sections"></ige-header-title-row>
 
-    <ige-header-navigation [sections]="sections"></ige-header-navigation>
+
+</div>
+
+<div #sticky_header class="navigation-header"
+     [class.sticky]="showScrollHeader"
+     [style.left]="scrollHeaderOffsetLeft + 'px'">
+
+    <div class="document-type">
+        <mat-icon [svgIcon]="getIcon()"
+                  [title]="form?.get('title')?.value"
+                  [ngClass]="['document-icon',getStateClass()]"></mat-icon>
+    </div>
+
+    <ige-header-navigation fxFlex [sections]="sections"></ige-header-navigation>
+
+    <button mat-icon-button mat-flat-button class="menu clickable dark">
+        <mat-icon>more_vert</mat-icon>
+    </button>
 </div>
 
 <ige-form-message></ige-form-message>
+
+<!--<div class="scroll-header" [style.left]="scrollHeaderOffsetLeft + 'px'">
+
+    <ige-header-title-row-min [form]="form"
+                              [model]="model"
+                              [sections]="sections"></ige-header-title-row-min>
+
+</div>-->

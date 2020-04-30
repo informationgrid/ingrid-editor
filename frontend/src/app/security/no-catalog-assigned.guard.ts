@@ -1,8 +1,8 @@
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {Injectable} from '@angular/core';
 import {ModalService} from '../services/modal/modal.service';
-import {ConfigService} from "../services/config/config.service";
-import {IgeError} from "../models/ige-error";
+import {ConfigService} from '../services/config/config.service';
+import {IgeError} from '../models/ige-error';
 
 /*@Injectable({
   providedIn: 'root'

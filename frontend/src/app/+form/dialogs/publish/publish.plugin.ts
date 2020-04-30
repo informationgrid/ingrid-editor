@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
-import {FormToolbarService} from '../../toolbar/form-toolbar.service';
+import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../../+behaviours/plugin';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {MessageService} from '../../../services/message.service';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {merge} from 'rxjs';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -26,6 +28,7 @@ export class PublishPlugin extends Plugin {
               private modalService: ModalService,
               private messageService: MessageService,
               private treeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
               private formsManager: AkitaNgFormsManager,
               private storageService: DocumentService) {
     super();
@@ -40,13 +43,13 @@ export class PublishPlugin extends Plugin {
     this.formToolbarService.addButton({id: 'toolBtnPublishSeparator', isSeparator: true, pos: 100});
 
     this.formToolbarService.addButton({
-      id: 'toolBtnPublish', tooltip: 'Publish', label: 'Veröffentlichen', matIconVariable: 'publish',
+      id: 'toolBtnPublish', label: 'Veröffentlichen',
       eventId: this.eventPublishId, pos: 25, align: 'right', active: false, isPrimary: true
     });
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
-      id: 'toolBtnRevert', tooltip: 'Revert', matSvgVariable: 'discard-changes', eventId: this.eventRevertId, pos: 90, active: false
+      id: 'toolBtnRevert', tooltip: 'Auf letzte Veröffentlichung zurücksetzen', matSvgVariable: 'Aenderungen-verwerfen', eventId: this.eventRevertId, pos: 90, active: false
     });
 
     // add event handler for revert
@@ -113,8 +116,11 @@ export class PublishPlugin extends Plugin {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    this.treeQuery.openedDocument$.subscribe(loadedDocument => {
-      this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null);
+    merge(
+      this.treeQuery.openedDocument$,
+      this.addressTreeQuery.openedDocument$
+    ).subscribe(loadedDocument => {
+      this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null && loadedDocument._profile !== 'FOLDER');
       this.formToolbarService.setButtonState('toolBtnRevert', loadedDocument !== null && loadedDocument._state === 'PW');
     });
 

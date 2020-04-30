@@ -1,0 +1,25 @@
+@import "src/variables";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  ::ng-deep .mat-list-option.selected {
+    background-color: $ige-mark-color !important;
+  }
+}
+
+ige-tree {
+  overflow: auto;
+}
+
+.side-padding {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.padding-top {
+  padding-top: 24px;
+}
+

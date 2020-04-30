@@ -1,0 +1,36 @@
+<mat-toolbar>
+    <mat-toolbar-row class="header-row" [class.showShadow]="showShadow">
+        <img src="assets/icons/logo.svg" height="32">
+        <span class="page-title-general"><strong>INGRID</strong> EDITOR</span>
+        <span class="page-title">{{pageTitle}}</span>
+
+        <div fxFlex></div>
+
+        <span class="header-info">
+            <button type="button" mat-button (click)="showInfo()">
+                Info
+            </button>
+        </span>
+
+        <!--<span class="catalog-title">{{(userInfo|async).currentCatalog.label}}</span>-->
+        <button type="button" class="user-popup" mat-icon-button [matMenuTriggerFor]="menu">
+            {{getInitials((userInfo | async).name)}}
+        </button>
+        <mat-menu #menu="matMenu" class="user-popup-menu">
+            <div class="user-popup-header">
+                Michael Meier
+                <p>Letzte Anmeldung:</p>
+            </div>
+            <span mat-menu-item [disableRipple]="true" (click)="$event.stopPropagation()">
+                Profile verwalten
+            </span>
+            <span mat-menu-item [disableRipple]="true" (click)="$event.stopPropagation()">
+                Konfiguration
+            </span>
+            <div class="user-popup-footer">
+                <button mat-button class="upper-case" (click)="logout()">Abmelden</button>
+            </div>
+        </mat-menu>
+
+    </mat-toolbar-row>
+</mat-toolbar>

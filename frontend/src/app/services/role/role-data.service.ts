@@ -1,9 +1,9 @@
-import {Observable} from "rxjs";
-import {ConfigService, Configuration} from "../config/config.service";
-import {HttpClient} from "@angular/common/http";
-import {Role} from "../../models/user-role";
-import {map} from "rxjs/operators";
-import {Injectable} from "@angular/core";
+import {Observable} from 'rxjs';
+import {ConfigService, Configuration} from '../config/config.service';
+import {HttpClient} from '@angular/common/http';
+import {Role} from '../../models/user-role';
+import {map} from 'rxjs/operators';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'

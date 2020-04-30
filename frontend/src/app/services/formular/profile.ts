@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { IFieldBase } from '../../+form/controls';
-import {IgeDocument} from "../../models/ige-document";
+import {IgeDocument} from '../../models/ige-document';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 
 /**
@@ -19,19 +19,20 @@ export interface Profile {
   label: string;
 
   /**
-   * The field definitions for the formular, which also contains the layout classes and the validation.
-   */
-  getFields(): FormlyFieldConfig[];
-
-  /**
    * The css-image-class for the profile document. This will be shown in a tree and other places where necessary.
-   * TODO: do not use 'tree' in variable name
    */
   iconClass?: string;
+
+  isAddressProfile?: boolean;
 
 
   behaviours?: any[];
 
   applyValidations?: any;
+
+  /**
+   * The field definitions for the formular, which also contains the layout classes and the validation.
+   */
+  getFields(): FormlyFieldConfig[];
 }
 

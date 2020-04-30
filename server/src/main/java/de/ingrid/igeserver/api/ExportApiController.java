@@ -1,22 +1,80 @@
 package de.ingrid.igeserver.api;
 
-import javax.validation.Valid;
-
-import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.exports.ExportTypeInfo;
+import de.ingrid.igeserver.model.ExportRequestParameter;
+import de.ingrid.igeserver.services.DocumentService;
+import de.ingrid.igeserver.services.ExportService;
+import de.ingrid.igeserver.services.MapperService;
+import de.ingrid.igeserver.utils.AuthUtils;
+import de.ingrid.igeserver.utils.DBUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import de.ingrid.igeserver.model.Data5;
-import io.swagger.annotations.ApiParam;
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
+import java.security.Principal;
+import java.util.List;
 
-@Controller
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.ADDRESS_WRAPPER;
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
+
+@RestController
+@RequestMapping(path = "/api")
 public class ExportApiController implements ExportApi {
 
-    public ResponseEntity<Void> exportDataset2(@ApiParam(value = "The dataset to be exported." ,required=true )  @Valid @RequestBody Data5 data) {
-        // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
+    @Autowired
+    ExportService exportService;
+
+    @Autowired
+    DBApi dbService;
+
+    @Autowired
+    DocumentService documentService;
+
+    @Autowired
+    private DBUtils dbUtils;
+
+    @Autowired
+    private AuthUtils authUtils;
+
+    public ResponseEntity<String> export(Principal principal, ExportRequestParameter data) throws Exception {
+
+        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+
+        // TODO: option to export addresses too?
+        boolean forAddress = false;
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+
+        String result;
+
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
+            JsonNode doc = documentService.getByDocId(data.getId(), type, true);
+
+            JsonNode docVersion = null;
+            if (data.isUseDraft()) {
+                docVersion = doc.get(MapperService.FIELD_DRAFT);
+            }
+
+            if (docVersion == null) {
+                docVersion = doc.get(MapperService.FIELD_PUBLISHED);
+            }
+
+            documentService.removeDBManagementFields((ObjectNode) docVersion);
+
+            result = exportService.doExport(docVersion, data.getExportFormat());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @Override
+    public ResponseEntity<List<ExportTypeInfo>> exportTypes(Principal principal, String sourceCatalogType) throws Exception {
+        return ResponseEntity.ok(exportService.getExportTypes());
     }
 
 }

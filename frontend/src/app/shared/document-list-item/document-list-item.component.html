@@ -1,0 +1,30 @@
+<mat-selection-list *ngIf="docs" class="doc-item" [multiple]="false" [class.dense]="denseMode" [class.hide-divider]="hideDivider">
+    <mat-list-option *ngFor="let doc of docs | async" (click)="makeSelection(doc)"
+                     [class.selected]="currentSelection && (doc.id === currentSelection.id)"
+                     [class.hide-bg-selection]="showSelection">
+
+        <mat-icon [class.marker-space]="showSelection && (!currentSelection || currentSelection.id !== doc.id)"
+                  matListIcon
+                  [ngClass]="['document-icon',getStateClass(doc)]"
+                  [svgIcon]="doc.icon"></mat-icon>
+        <mat-icon *ngIf="showSelection && currentSelection && currentSelection.id === doc.id" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
+        <h3 matLine>
+            <span class="card-title">{{doc.title}}</span>
+            <span *ngIf="!hideDate" class="date" matTooltipClass="tooltip-medium" [matTooltip]='doc._modified | date:"dd.LL.yyyy HH:mm"'>{{doc._modified | dateAgo:"DE"}}</span>
+        </h3>
+        <mat-divider></mat-divider>
+    </mat-list-option>
+</mat-selection-list>
+
+<div *ngIf="doc" (keyup.enter)="select.next(doc)" class="doc-item single" fxLayout="row" (click)="makeSelection(doc)">
+    <mat-icon *ngIf="showSelection && currentSelection && currentSelection.id === doc.id" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
+    <mat-icon [class.marker-space]="showSelection && (!currentSelection || currentSelection.id !== doc.id)"
+              matListIcon
+              [ngClass]="['document-icon',getStateClass(doc)]"
+              [svgIcon]="doc.icon || doc.iconClass"></mat-icon>
+
+    <span matLine>
+        {{doc.title}}
+        <span  *ngIf="!hideDate" class="date" matTooltipClass="tooltip-medium" [matTooltip]='doc._modified | date:"dd.LL.yyyy HH:mm"'>{{doc._modified | dateAgo: "DE"}}</span>
+    </span>
+</div>

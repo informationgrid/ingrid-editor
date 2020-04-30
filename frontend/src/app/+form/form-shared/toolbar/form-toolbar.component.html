@@ -1,0 +1,80 @@
+<mat-toolbar>
+    <mat-toolbar-row>
+        <ng-container *ngFor="let button of buttons_left">
+            <button *ngIf="!button.isSeparator && !button.menu" mat-icon-button
+                    [attr.data-cy]="'toolbar_' + button.eventId"
+                    [matTooltip]="button.tooltip"
+                    (click)="sendEvent(button.eventId)"
+                    [disabled]="!button.active">
+                <mat-icon class="material-icons-outlined" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
+            </button>
+
+            <ng-container *ngIf="!button.isSeparator && button.menu">
+                <button mat-icon-button
+                        class="drop-down"
+                        [matMenuTriggerFor]="copyMenu"
+                        [attr.data-cy]="'toolbar_' + button.eventId"
+                        [matTooltip]="button.tooltip"
+                        [disabled]="!button.active"
+                        (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
+                    <mat-icon class="material-icons-outlined" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
+                    <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+                </button>
+                <mat-menu #copyMenu="matMenu">
+                    <button *ngFor="let menuItem of button.menu" mat-menu-item (click)="sendEvent(menuItem.eventId)">
+                        <span>{{menuItem.label}}</span>
+                    </button>
+                </mat-menu>
+            </ng-container>
+            <mat-divider *ngIf="button.isSeparator" class="separator" [vertical]="true"></mat-divider>
+        </ng-container>
+        <div fxFlex></div>
+
+        <span class="save-buttons">
+            <ng-container *ngFor="let button of buttons_right">
+                <button *ngIf="!button.isSeparator && !button.label" mat-icon-button
+                        [matTooltip]="button.tooltip"
+                        [attr.data-cy]="'toolbar_' + button.eventId"
+                        (click)="sendEvent(button.eventId)"
+                        [disabled]="!button.active">
+                    <!--aria-label="{{button.tooltip}}"-->
+                    <mat-icon>{{button.matIconVariable}}</mat-icon>
+                </button>
+                <button *ngIf="button.label && !button.isPrimary" mat-stroked-button
+                        [attr.data-cy]="'toolbar_' + button.eventId"
+                        [matTooltip]="button.tooltip"
+                        [disabled]="!button.active"
+                        (click)="sendEvent(button.eventId)">
+                    {{button.label}}
+                </button>
+                <ng-container *ngIf="button.label && button.isPrimary">
+                    <button class="btnPublish" mat-flat-button color="primary" [matMenuTriggerFor]="publishMenu"
+                            [attr.data-cy]="'toolbar_' + button.eventId"
+                            [matTooltip]="button.tooltip"
+                            [disabled]="!button.active"
+                            (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
+                        {{button.label}}
+                        <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+                    </button>
+
+                    <mat-menu #publishMenu="matMenu">
+                      <button mat-menu-item
+                              (click)="sendEvent(button.eventId)"
+                              [attr.data-cy]="'toolbar_publish_now'">
+                        <span>Jetzt veröffentlichen</span>
+                      </button>
+                      <button mat-menu-item disabled [attr.data-cy]="'toolbar_publish_later'">
+    <!--                    <mat-icon>dialpad</mat-icon>-->
+                        <span>Planen</span>
+                      </button>
+                      <button mat-menu-item disabled [attr.data-cy]="'toolbar_publish_revert'">
+    <!--                    <mat-icon>voicemail</mat-icon>-->
+                        <span>Zurücknehmen</span>
+                      </button>
+                    </mat-menu>
+                </ng-container>
+
+            </ng-container>
+        </span>
+    </mat-toolbar-row>
+</mat-toolbar>

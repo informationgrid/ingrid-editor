@@ -21,7 +21,7 @@ export class IsoBaseProfile extends BaseProfile {
 
   label = 'no-name';
 
-  //fields: Array<FieldBase<any>> = null;
+  // fields: Array<FieldBase<any>> = null;
 
   constructor(storageService: DocumentService, public codelistService: CodelistService) {
     super();

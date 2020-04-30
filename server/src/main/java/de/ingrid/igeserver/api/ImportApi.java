@@ -5,33 +5,31 @@
  */
 package de.ingrid.igeserver.api;
 
-import javax.validation.Valid;
-
+import de.ingrid.igeserver.model.Data4;
+import de.ingrid.igeserver.model.ImportAnalyzeInfo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 
-import de.ingrid.igeserver.model.Data4;
-import de.ingrid.igeserver.model.InlineResponseDefault;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
+import java.io.IOException;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
-@Api(value = "import", description = "the import API")
-@RequestMapping(path="/api")
+@Tag(name = "Import", description = "the import API")
 public interface ImportApi {
 
-    @ApiOperation(value = "...", notes = "...", response = Void.class, tags = { "Import", })
+    @Operation()
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The stored dataset, which might contain additional storage information.", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class) })
+            @ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
+            @ApiResponse(responseCode = "500", description = "Unexpected error")})
 
-    @RequestMapping(value = "/import", produces = { "application/json" }, method = RequestMethod.POST)
-    ResponseEntity<Void> importDataset(@ApiParam(value = "The dataset to be imported.", required = true) @Valid @RequestBody Data4 data);
+    @RequestMapping(value = "/import", produces = {"application/json"}, method = RequestMethod.POST)
+    ResponseEntity<ImportAnalyzeInfo> importDataset(@Parameter(description = "The dataset to be imported.", required = true) @Valid @RequestBody MultipartFile file) throws IOException, ApiException;
 
 }

@@ -1,1 +1,8 @@
-<span><span *ngFor="let item of crumb | async">{{item}}<mat-icon>chevron_right</mat-icon></span></span>
+<span *ngIf="path" [class.emphasize]="emphasize">
+    <span *ngIf="showRoot && path.length === 0" class="root" [class.selectable]="selectable" (click)="onSelect(null)">{{rootName}}</span>
+
+    <span *ngFor="let item of path; let last = last" [class.selectable]="selectable" (click)="onSelect(item.id)">
+        {{item.title}}
+        <mat-icon *ngIf="!last || !hideLastSeparator">chevron_right</mat-icon>
+    </span>
+</span>

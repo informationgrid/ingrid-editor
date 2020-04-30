@@ -10,13 +10,20 @@
         </as-split-area>
 
         <!-- The form -->
-        <as-split-area [size]="100-sidebarWidth" id="form" class="form-content" (scroll)="onScroll($event)">
+        <as-split-area #scrollForm [size]="100-sidebarWidth" id="form" class="form-content">
             <ige-form-dashboard *ngIf="fields.length === 0"></ige-form-dashboard>
 
             <ng-container *ngIf="fields.length !== 0">
-                <ige-form-info [form]="form" [model]="model" [sections]="sections" [class.scrolled]="isScrolled"></ige-form-info>
+                <ige-form-info [form]="form"
+                               [model]="model"
+                               [sections]="sections"
+                               [parentContainer]="scrollForm"
+                               (showStickyHeader)="updateContentPadding($event)"></ige-form-info>
 
-                <form [formGroup]="form" [class.hide-validation]="!showValidationErrors">
+                <form [formGroup]="form"
+                      [style.padding-top]="paddingWithHeader"
+                      [class.hide-validation]="!showValidationErrors"
+                      [class.hide]="model._profile === 'FOLDER'">
                     <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
 
                     <!--<pre>
@@ -26,10 +33,7 @@
                 </form>
 
                 <div *ngIf="model._profile === 'FOLDER'" class="folder-content">
-                    <mat-card fxFlex>
-                        <mat-card-subtitle>Ordner-Informationen</mat-card-subtitle>
-                        <mat-card-content>...</mat-card-content>
-                    </mat-card>
+                    <ige-card-box label="Ordner-Informationen"></ige-card-box>
                 </div>
             </ng-container>
 

@@ -1,0 +1,26 @@
+<div fxFlex fxLayout="column">
+    <svg viewBox="0 0 160 160" class="circular-chart">
+
+        <circle *ngFor="let item of data; let i = index;" cx="80" cy="80"
+                attr.r="{{radius}}"
+                attr.stroke="{{colors[i]}}"
+                attr.stroke-width="{{strokeWidth}}"
+                attr.stroke-dasharray="{{adjustedCircumference()}}"
+                attr.stroke-dashoffset="{{calculateStrokeDashOffset(item)}}"
+                attr.transform="rotate({{returnCircleTransformValue(i)}}, 80, 80)" fill="transparent"></circle>
+
+        <text x="80" y="95" class="percentage">{{total}}</text>
+    </svg>
+
+    <div class="wrapper" fxFlex fxLayout="row" fxLayoutAlign="space-between">
+        <div class="box working">
+            <div class="count">{{data[0]}}</div>
+            <div>In Bearbeitung</div>
+        </div>
+
+        <div class="box">
+            <div class="count">{{data[1]}}</div>
+            <div>Veröffentlicht</div>
+        </div>
+    </div>
+</div>

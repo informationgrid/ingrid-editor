@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../../+behaviours/plugin';
-import {FormToolbarService, Separator, ToolbarItem} from '../../toolbar/form-toolbar.service';
+import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
 import {UpdateType} from '../../../models/update-type.enum';
 import {ModalService} from '../../../services/modal/modal.service';
-import {PasteDialogComponent} from './paste-dialog.component';
+import {PasteDialogComponent, PasteDialogOptions} from './paste-dialog.component';
 import {CopyMoveEnum} from './enums';
 import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
@@ -41,12 +41,14 @@ export class CopyCutPastePlugin extends Plugin {
 
     const buttons: Array<ToolbarItem | Separator> = [
       {id: 'toolBtnCopyCutSeparator', pos: 30, isSeparator: true},
-      {id: 'toolBtnCopy', tooltip: 'Copy', matSvgVariable: 'copy', eventId: 'COPY', pos: 40, active: false, menu: [
+      {
+        id: 'toolBtnCopy', tooltip: 'Kopieren / Verschieben', matSvgVariable: 'Kopieren-Ausschneiden', eventId: 'COPY', pos: 40, active: false, menu: [
           {eventId: 'COPY', label: 'Kopieren'},
           {eventId: 'CUT', label: 'Verschieben'},
           {eventId: 'COPYTREE', label: 'Mit Teilbaum kopieren'},
           {eventId: 'CUTTREE', label: 'Mit Teilbaum verschieben'}
-        ]}
+        ]
+      }
       // {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'content_cut', eventId: 'CUT', pos: 50, active: false}
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
@@ -95,7 +97,10 @@ export class CopyCutPastePlugin extends Plugin {
     // this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
-      data: {mode: CopyMoveEnum.COPY}
+      data: {
+        titleText: 'Kopieren',
+        buttonText: 'Kopieren'
+      } as PasteDialogOptions
     }).afterClosed().subscribe(result => {
       if (result) {
         console.log('result', result);
@@ -109,7 +114,10 @@ export class CopyCutPastePlugin extends Plugin {
     // this.cutDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
-      data: {mode: CopyMoveEnum.MOVE}
+      data: {
+        titleText: 'Verschieben',
+        buttonText: 'Verschieben'
+      } as PasteDialogOptions
     }).afterClosed().subscribe(result => {
       if (result) {
         console.log('result', result);

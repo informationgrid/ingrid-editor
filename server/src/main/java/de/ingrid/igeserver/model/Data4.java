@@ -4,13 +4,10 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Data4
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
 public class Data4   {
   @JsonProperty("_id")
   private String id = null;
@@ -27,7 +24,6 @@ public class Data4   {
    * Unique identifier
    * @return id
   **/
-  @ApiModelProperty(value = "Unique identifier")
 
 
   public String getId() {
@@ -47,8 +43,6 @@ public class Data4   {
    * Description of the dataset.
    * @return profile
   **/
-  @ApiModelProperty(value = "Description of the dataset.")
-
 
   public String getProfile() {
     return profile;

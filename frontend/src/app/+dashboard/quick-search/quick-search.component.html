@@ -1,0 +1,45 @@
+<div class="search-content">
+    <mat-form-field class="search" appearance="outline">
+        <input matInput placeholder="Suchbegriff eingeben" aria-label="Search"
+               [formControl]="query"
+               [matAutocomplete]="auto">
+        <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="field-close" (click)="query.reset('')">
+            <mat-icon class="passive" svgIcon="Entfernen"></mat-icon>
+        </button>
+    </mat-form-field>
+    <mat-autocomplete #auto="matAutocomplete" class="quicksearch-auto dense option-no-padding">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between" class="result-header">
+            <div>Suchvorschläge</div>
+            <div class="wide-spacing">
+                <a href="#" (click)="openResearchPage($event)"><mat-icon svgIcon="Recherche" class="research-icon"></mat-icon> Erweiterte Suche</a>
+            </div>
+        </div>
+
+        <div class="result-title">Daten ({{numDocs}})</div>
+
+        <mat-option *ngFor="let doc of docs" (onSelectionChange)="select.next(doc.id)">
+            <ige-document-list-item [doc]="doc"></ige-document-list-item>
+        </mat-option>
+
+        <div *ngIf="numDocs > 5" class="show-all-link wide-spacing">
+            <a href="#" (click)="openResearchPage($event)"><mat-icon>keyboard_arrow_right</mat-icon> Alle</a>
+        </div>
+        <div class="spacing"></div>
+
+        <div class="result-title">Adressen ({{numAddresses}})</div>
+        <mat-option *ngFor="let address of addresses" (onSelectionChange)="selectAddress.next(address.id)">
+            <ige-document-list-item [doc]="address"></ige-document-list-item>
+        </mat-option>
+
+        <div *ngIf="numAddresses > 5" class="show-all-link wide-spacing">
+            <a href="#" (click)="openResearchPage($event)"><mat-icon>keyboard_arrow_right</mat-icon> Alle</a>
+        </div>
+
+    </mat-autocomplete>
+
+    <button mat-flat-button color="primary" class="btn-search upper-case">
+        <mat-icon>search</mat-icon>
+        Suchen
+    </button>
+
+</div>

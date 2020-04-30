@@ -75,12 +75,6 @@ export class FormularService {
     this.treeStore.setActive(docs.map(d => d.id));
   }
 
-  getSelectedDocuments(): DocumentAbstract[] {
-    return this.treeQuery.getActive();
-    // return this.treeQuery.selectedDocuments;
-    // return this.selectedDocs;
-  }
-
   updateSidebarWidth(size: number) {
     this.sessionStore.update(state => ({
       ui: {
@@ -88,5 +82,15 @@ export class FormularService {
         sidebarWidth: size
       }
     }))
+  }
+
+  getSectionsFromProfile(profile: FormlyFieldConfig[]): string[] {
+    const sections = [];
+    for (const item of profile) {
+      if (item.wrappers && item.wrappers.indexOf('section') !== -1) {
+        sections.push(item.templateOptions.label);
+      }
+    }
+    return sections;
   }
 }

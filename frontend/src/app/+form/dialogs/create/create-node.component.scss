@@ -1,0 +1,62 @@
+@import "../../../../variables";
+
+.hide-tab-header ::ng-deep .mat-tab-header {
+  display: none !important;
+}
+
+:host {
+
+  flex: 1 1 auto; // IE 11
+
+  .mat-dialog-content {
+    padding: 16px 0 10px;
+    margin-top: 24px;
+    display: flex;
+
+    .mat-tab-group {
+      flex: 1;
+
+      ::ng-deep .mat-tab-body-content {
+        display: flex;
+      }
+    }
+  }
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+#doc-type {
+  padding-bottom: 12px;
+  display: block;
+}
+
+mat-radio-button {
+  display: block;
+  padding-bottom: 16px;
+}
+
+.first-tab-wrapper {
+  flex: 1;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 1px;
+}
+
+.back-button {
+  padding: 0 10px 0 0;
+}
+
+.create-dlg-content ige-destination-selection ::ng-deep .mat-list-option {
+  background-color: $ige-background;
+
+  &:hover {
+    background-color: darken($ige-background, 5%);
+  }
+
+  .mat-list-item-content {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}

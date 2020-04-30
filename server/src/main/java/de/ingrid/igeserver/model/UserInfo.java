@@ -10,4 +10,7 @@ public class UserInfo {
 
     public List<Catalog> assignedCatalogs;
     public Set<String> roles;
+
+    // the current selected catalog in case a user can access multiple catalogs
+    public Catalog currentCatalog;
 }

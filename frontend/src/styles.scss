@@ -1,8 +1,9 @@
-@import url("https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined");
 @import '~@swimlane/ngx-datatable/index.css';
 @import '~@swimlane/ngx-datatable/themes/material.scss';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
 @import './variables.scss';
+@import './material.override.scss';
+@import './material-fields.override.scss';
 
 html, body {
   height: 100%;
@@ -10,7 +11,19 @@ html, body {
 }
 
 body {
-  font-family: Roboto,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+  font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+}
+
+a {
+  font-size: 14px;
+  font-weight: 500;
+  color: $ige-secondary;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 h1 {
@@ -18,8 +31,63 @@ h1 {
   color: $ige-primary;
 }
 
+.wide-spacing {
+  letter-spacing: 1.25px;
+}
+
+.text-card-title.mat-card-title {
+  color: $ige-primary;
+  text-align: center;
+  letter-spacing: 0.74px;
+  padding: 2px 0 6px;
+  line-height: 30px;
+  font-weight: 400;
+}
+
+.upper-case {
+  text-transform: uppercase;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.pull-right {
+  float: right;
+}
+
+.clickable:hover {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.04) !important;
+
+  &.dark {
+    background-color: darken($ige-background-bar, 5%) !important;
+  }
+}
+
 .hide {
   display: none !important;
+}
+
+.width-50 {
+  width: 50%;
+}
+.width-100 {
+  width: 100%;
+}
+
+.shortcut {
+  padding-bottom: 24px;
+  color: $ige-secondary;
+
+  .mat-button-wrapper {
+    letter-spacing: 1.25px;
+    text-transform: uppercase;
+
+    /*.mat-icon {
+      vertical-align: text-bottom;
+    }*/
+  }
 }
 
 .mat-header-row {
@@ -34,6 +102,7 @@ h1 {
 main-menu .mat-toolbar-row {
   height: 50px;
 }
+
 main-menu .mat-toolbar-multiple-rows {
   min-height: 44px;
 }
@@ -56,47 +125,6 @@ main-menu .mat-toolbar-multiple-rows {
 
 div.has-error {
   position: relative;
-}
-
-.ui-growl {
-  top: initial;
-  bottom: 10px;
-}
-
-.ui-tree {
-  width: auto;
-}
-
-.modal .modal-content {
-  background-color: #03a9f4;
-  color: #fff;
-}
-
-.modal-alert .modal-content {
-  background-color: #f44336;
-}
-
-.modal .modal-header {
-  padding: 23px 26px;
-  border-bottom: 1px solid transparent;
-}
-
-.modal .modal-footer {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-top: 1px solid transparent;
-}
-
-.modal .modal-footer .btn-link {
-  color: #fff;
-  text-decoration: none;
-  border-radius: 2px;
-}
-.modal .modal-footer .btn-link:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  text-decoration: none;
-}
-.modal .modal-footer .btn-link:focus {
-  outline: 1px solid #03a9f4;
 }
 
 .border-dashed {
@@ -155,10 +183,6 @@ form-toolbar + div {
 
 .has-navbar {
   padding-top: 10px;
-}
-
-a:hover {
-  text-decoration: none;
 }
 
 .half, .full, .quarter, .three-quarter, .third, .two-third {
@@ -244,27 +268,6 @@ sidebar .list-group-item:hover {
   background-color: #ececec;
 }
 
-.error .modal-header {
-  background-color: #a94442;
-  color: #ffffff;
-}
-
-.label-primary {
-  background-color: #87c2da !important;
-}
-
-.working-label::before {
-  background: #ffc107;
-}
-
-.published-label::before {
-  background: #87c2da;
-}
-
-.published-working-label::before {
-  background: linear-gradient(-90deg, #ffc107 50%, #87c2da 50%);
-}
-
 .list-group-item.active {
   background-color: #5999d0;
   border-color: #5999d0;
@@ -277,15 +280,6 @@ sidebar .list-group-item:hover {
 .nav-tabs li {
   cursor: pointer;
 }
-
-.tree {
-  width: 100%;
-}
-
-tree-node:hover .folder {
-  display: block;
-}
-
 
 
 /* ngx-formly layout classes */
@@ -346,12 +340,15 @@ tree-node:hover .folder {
   .datatable-body-cell {
     padding: 0.4rem 1rem !important;
   }
+
   .datatable-checkbox {
     margin-top: -3px !important;
   }
 }
 
-.datatable-row-detail { width: 100vw; }
+.datatable-row-detail {
+  width: 100vw;
+}
 
 /* Split gutter style */
 .as-split-gutter-icon {
@@ -362,4 +359,64 @@ tree-node:hover .folder {
 /* Disabled material icon SVG */
 .mat-icon-button[disabled] .mat-icon {
   opacity: 0.2;
+}
+
+ige-root .mat-drawer-container {
+  background-color: $ige-background;
+}
+
+.mat-icon.animated {
+  transition: all .2s linear;
+}
+
+.mat-icon {
+
+  &.passive svg path {
+    fill: $ige-background-bar;
+  }
+
+  &.document-icon {
+
+    svg {
+      height: 24px;
+      width: 24px;
+    }
+
+    svg path {
+      fill: #333333;
+    }
+
+    &.working svg path {
+      fill: $state-working-color;
+    }
+
+    &.workingWithPublished svg path {
+      fill: url("#myGradient");
+    }
+  }
+
+}
+
+#form {
+  .label-wrapper + * {
+    flex: 1;
+  }
+
+  .label-wrapper + formly-wrapper-mat-form-field {
+    display: contents;
+  }
+
+  &.form-content {
+
+  }
+
+  /*.mat-button-wrapper {
+    vertical-align: middle;
+  }*/
+
+
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  color: $ige-comment-color !important;
 }

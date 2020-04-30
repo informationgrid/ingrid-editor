@@ -1,83 +1,94 @@
 import {Component, OnInit} from '@angular/core';
-import {Catalog, CatalogService} from '../services/catalog.service';
-import {ConfigService, Configuration} from '../../services/config/config.service';
+import {CatalogService} from '../services/catalog.service';
+import {ConfigService} from '../../services/config/config.service';
 import {Router} from '@angular/router';
-import {Observable} from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
-import {UploadProfileDialogComponent} from '../../dialogs/catalog/upload-profile/upload-profile-dialog.component';
-import {CatalogDetailComponent} from '../catalog-detail/catalog-detail.component';
+import {CatalogDetailComponent, CatalogDetailResponse} from '../catalog-detail/catalog-detail.component';
+import {Catalog} from '../services/catalog.model';
+import {CatalogQuery} from '../../store/catalog/catalog.query';
 
 @Component({
   selector: 'ige-catalog-manager',
   templateUrl: './catalog-manager.component.html',
-  styleUrls: ['./catalog-manager.component.css']
+  styleUrls: ['./catalog-manager.component.scss']
 })
 export class CatalogManagerComponent implements OnInit {
 
-  // _catalog: Catalog[];
-  catalogs: Observable<Catalog[]>;
-  uploadUrl: string;
-  private config: ConfigService;
+  catalogs = this.catalogQuery.selectAll();
+
   noAssignedCatalogs = false;
   showSpinner = false;
+  currentCatalog: string;
+  private currentUserID: string;
+  trackByCatalogId = (index, item: Catalog) => {
+    return item.id;
+  };
 
-  constructor(private router: Router, private catalogService: CatalogService, configService: ConfigService,
+  constructor(private router: Router,
+              private catalogService: CatalogService,
+              private configService: ConfigService,
+              private catalogQuery: CatalogQuery,
               private dialog: MatDialog) {
-    this.config = configService;
   }
 
   ngOnInit() {
-    this.catalogs = this.catalogService.getCatalogs();
+    this.catalogService.getCatalogs().subscribe();
 
-    this.uploadUrl = this.config.getConfiguration().backendUrl + 'profiles';
-
-    this.config.$userInfo.subscribe( info => this.noAssignedCatalogs = info.assignedCatalogs.length === 0);
+    this.configService.$userInfo
+      .subscribe(info => {
+        this.currentUserID = info.userId;
+        this.noAssignedCatalogs = info.assignedCatalogs.length === 0;
+        this.currentCatalog = info.currentCatalog.id;
+      });
   }
 
   showCreateCatalogDialog() {
-    const newCatalogModalRef = this.dialog.open(NewCatalogDialogComponent);
-    newCatalogModalRef.afterClosed().subscribe( name => {
-      if (name) {
-        this.showSpinner = true;
-        this.catalogService.createCatalog(name).subscribe(() => {
-          this.catalogs = this.catalogService.getCatalogs();
-          this.showSpinner = false;
-        });
-      }
-    })
-  }
-
-  showUploadProfileDialog() {
-    const uploadProfileModalRef = this.dialog.open(UploadProfileDialogComponent);
+    this.dialog.open(NewCatalogDialogComponent).afterClosed()
+      .subscribe((catalog: Catalog) => {
+        if (catalog) {
+          this.showSpinner = true;
+          this.catalogService.createCatalog(catalog).subscribe((catResponse: any) => {
+            this.catalogService.setCatalogAdmin(catResponse.catalogId, [this.currentUserID])
+              .subscribe(() => {
+                this.configService.getCurrentUserInfo();
+                this.showSpinner = false;
+              });
+          });
+        }
+      });
   }
 
   chooseCatalog(id: string) {
-    this.catalogService.forceCatalog( id );
+    this.catalogService.switchCatalog(id).subscribe(() => {
+      window.location.reload();
+    });
   }
 
-  showCatalogDetail(id: string) {
-    const editCatalogModalRef = this.dialog.open(CatalogDetailComponent, {
-      data: id,
+  showCatalogDetail(catalog: Catalog) {
+    this.dialog.open(CatalogDetailComponent, {
+      data: {...catalog},
+      disableClose: true,
       minWidth: 350
-    });
-    editCatalogModalRef.afterClosed().subscribe( name => {
-      if (name) {
-        this.catalogs = this.catalogService.getCatalogs();
+    }).afterClosed().subscribe((response: CatalogDetailResponse) => {
+      if (response) {
+
+        if (response.deleted) {
+
+          this.catalogService.deleteCatalog(catalog.id).subscribe();
+
+        } else {
+
+          // get this user again to update internal user info to update webapp
+          this.catalogService.setCatalogAdmin(response.settings.id, response.adminUsers)
+            .subscribe(() => this.configService.getCurrentUserInfo());
+
+          this.catalogService.updateCatalog(response.settings).subscribe();
+
+        }
+
       }
     });
   }
 
-  onUpload(event) {
-    // for (const file of event.files) {
-    //   this.uploadedFiles.push(file);
-    // }
-    //
-    // this.msgs = [];
-    // this.msgs.push({severity: 'info', summary: 'File Uploaded', detail: ''});
-  }
-
-  handleError(event) {
-    // this.errorService.handle(event.xhr);
-  }
 }

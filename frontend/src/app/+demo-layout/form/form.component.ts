@@ -1,8 +1,8 @@
 import {Component, ElementRef, OnInit} from '@angular/core';
-import {FormControl, Validators} from "@angular/forms";
-import {ContextHelpComponent} from "./context-help/context-help.component";
-import {MatDialog} from "@angular/material/dialog";
-import {Overlay} from "@angular/cdk/overlay";
+import {FormControl, Validators} from '@angular/forms';
+import {ContextHelpComponent} from './context-help/context-help.component';
+import {MatDialog} from '@angular/material/dialog';
+import {Overlay} from '@angular/cdk/overlay';
 
 @Component({
   selector: 'ige-form',
@@ -22,18 +22,18 @@ export class FormComponent implements OnInit {
 
     const target = new ElementRef(evt.currentTarget);
     this.overlay.position().flexibleConnectedTo(target).positionChanges.subscribe( posChange => {
-      console.log("Position changed", posChange);
+      console.log('Position changed', posChange);
     });
-    let dialogRef = this.dialog.open(ContextHelpComponent, {
+    const dialogRef = this.dialog.open(ContextHelpComponent, {
       hasBackdrop: false,
       closeOnNavigation: true,
 
-      //data: { dialogRef: dialogRef }
+      // data: { dialogRef: dialogRef }
       position: {
         // @ts-ignore
-        left: `${target.nativeElement.getBoundingClientRect().left-20}px`,
+        left: `${target.nativeElement.getBoundingClientRect().left - 20}px`,
         // @ts-ignore
-        top: `${target.nativeElement.getBoundingClientRect().top-10}px`
+        top: `${target.nativeElement.getBoundingClientRect().top - 10}px`
       },
       /*scrollStrategy: this.overlay.scrollStrategies.reposition({
         autoClose: true

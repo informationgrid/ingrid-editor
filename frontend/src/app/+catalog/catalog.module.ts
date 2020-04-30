@@ -14,21 +14,24 @@ import {CatalogDialogsModule} from '../dialogs/catalog/catalog-dialogs.module';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatInputModule} from '@angular/material/input';
+import {MatIconModule} from '@angular/material/icon';
+import { AddUserDialogComponent } from './catalog-detail/add-user-dialog/add-user-dialog.component';
 
 @NgModule( {
-  imports: [
-    CommonModule,
-    FormsModule,
-    FlexLayoutModule,
-    MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-    CatalogDialogsModule,
-    routing
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        FlexLayoutModule,
+        MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
+        CatalogDialogsModule,
+        routing, MatIconModule
+    ],
   providers: [
     CatalogService
   ],
-  declarations: [CatalogManagerComponent, CatalogDetailComponent],
-  exports: [RouterModule]
+  declarations: [CatalogManagerComponent, CatalogDetailComponent, AddUserDialogComponent],
+  exports: [RouterModule],
+  entryComponents: [AddUserDialogComponent]
 } )
 export class CatalogModule {
 }

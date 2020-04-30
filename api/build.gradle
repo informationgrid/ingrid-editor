@@ -10,12 +10,12 @@ plugins {
 repositories {
     mavenLocal()
     maven {
-        url = 'http://repo.maven.apache.org/maven2'
+        url = 'https://nexus.informationgrid.eu/repository/maven-public'
     }
 }
 
 dependencies {
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.6'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.2'
     compile 'org.apache.logging.log4j:log4j-api:2.1'
     compile 'org.apache.logging.log4j:log4j-core:2.1'
 }

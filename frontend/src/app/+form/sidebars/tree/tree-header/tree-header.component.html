@@ -1,5 +1,5 @@
 <div class="header" fxLayout="column">
-    <div class="options" fxLayout="row" fxLayoutAlign="space-between">
+    <div *ngIf="showOptions" class="options" fxLayout="row" fxLayoutAlign="space-between">
         <mat-slide-toggle class="show-all" disabled>Alle anzeigen</mat-slide-toggle>
 
         <button *ngIf="showReloadButton" mat-icon-button (click)="reloadTree()">
@@ -9,14 +9,16 @@
 
     <mat-form-field class="search" appearance="outline">
         <input matInput placeholder="Suche" aria-label="Search"
-               [formControl]="searchValue"
+               [formControl]="query"
                [matAutocomplete]="searchAuto">
-        <mat-icon matSuffix>search</mat-icon>
-        <mat-autocomplete #searchAuto="matAutocomplete">
-            <mat-option *ngFor="let doc of searchResult | async" (onSelectionChange)="loadResultDocument(doc)" [value]="doc._id">
-                <mat-icon svgIcon="data"></mat-icon>
-                <span>{{doc.title}}</span>
-                <!-- <small>Population: {{state.population}}</small>-->
+        <mat-icon *ngIf="query.value?.length === 0" matSuffix>search</mat-icon>
+        <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="button" (click)="query.reset('')">
+            <mat-icon class="passive" svgIcon="Entfernen"></mat-icon>
+        </button>
+        <mat-autocomplete #searchAuto="matAutocomplete" class="quicksearch-auto dense">
+            <mat-option *ngFor="let doc of searchResult | async"
+                        (onSelectionChange)="loadResultDocument(doc)">
+                <ige-document-list-item [doc]="doc" [denseMode]="true"></ige-document-list-item>
             </mat-option>
         </mat-autocomplete>
     </mat-form-field>

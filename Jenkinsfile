@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        jdk 'jdk11'
+    }
+
     options {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
     }
@@ -19,11 +23,26 @@ pipeline {
                 }
             }*/
             steps {
-                nodejs(nodeJSInstallationName: 'nodejs') {
-                    sh './gradlew clean build'
+                withEnv(["JAVA_HOME=${ tool 'jdk11' }/jdk-11"]) {
+                    nodejs(nodeJSInstallationName: 'nodejs') {
+                        sh './gradlew -PbuildProfile=prod clean build'
+                    }
                 }
             }
         }
+
+        /*stage ('Frontend-Tests') {
+            steps {
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    script {
+                        try {
+                            sh './gradlew test'
+                        } catch(error) {}
+                    }
+                }
+            }
+        }*/
+
         // release build if it's the master or the support branch and is not a SNAPSHOT version
         /*stage ('Build-Release') {
             when {

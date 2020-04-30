@@ -12,7 +12,7 @@ export class GlobalErrorHandler implements ErrorHandler {
   }
 
   handleError(error) {
-    console.log("HANDLE ERROR", error);
+    console.log('HANDLE ERROR', error);
 
     if (error instanceof IgeError) {
       this.modalService.showIgeError( error );

@@ -1,7 +1,7 @@
-import {Observable} from "rxjs";
-import {ConfigService, Configuration} from "../../services/config/config.service";
-import {HttpClient} from "@angular/common/http";
-import {Injectable} from "@angular/core";
+import {Observable} from 'rxjs';
+import {ConfigService, Configuration} from '../../services/config/config.service';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class CatalogDataService {
     this.configuration = configService.getConfiguration();
   }
 
-  getCatalogs(): Observable<string[]> {
+  getCatalogs(): Observable<any[]> {
     return this.http.get<string[]>( this.configuration.backendUrl + 'catalogs' );
   }
 

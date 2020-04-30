@@ -1,0 +1,37 @@
+<h1 class="text-center">Adressen</h1>
+
+<div class="text-center shortcut">
+    <button mat-button (click)="createNewFolder()">
+        <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
+        <span>Neuer Ordner</span>
+    </button>
+    <button mat-button (click)="createNewAddress()">
+        <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
+        <span>Neue Adresse</span>
+    </button>
+    <button mat-button disabled>
+        <mat-icon>import_export</mat-icon>
+        <span>Adressen Import</span>
+    </button>
+</div>
+
+<!--<div *ngIf="(treeDocs | async) > 0">
+    <div class="info-box" fxLayout="row" fxLayoutGap="24px">
+        <ige-card-box fxFlex label="Meine Daten">...</ige-card-box>
+        <ige-card-box fxFlex label="Neue Datensätze">...</ige-card-box>
+    </div>
+
+    <div class="info-box" fxLayout="row" fxLayoutGap="24px">
+        <ige-card-box fxFlex label="Zuletzt bearbeitet">...</ige-card-box>
+        <ige-card-box fxFlex label="Favoriten">...</ige-card-box>
+    </div>
+</div>-->
+
+<div *ngIf="(treeDocs | async) === 0" class="banner text-center">
+    <div class="circle-wrapper">
+        <mat-icon svgIcon="image-banner-address"></mat-icon>
+    </div>
+    <h2>Kein Ordner oder Adresse vorhanden</h2>
+    <p>Legen Sie einen neuen Ordner oder Adresse an oder importieren Sie Adressen.</p>
+    <p>Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in der Werkzeugleiste.</p>
+</div>

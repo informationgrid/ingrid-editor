@@ -1,42 +1,40 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Subject} from 'rxjs';
-import {DocumentAbstract} from '../../../../store/document/document.model';
-import {DocumentService} from '../../../../services/document/document.service';
-import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
-import {FormControl} from '@angular/forms';
 import {DynamicDatabase} from '../dynamic.database';
-import {map} from 'rxjs/operators';
+import {debounceTime, map} from 'rxjs/operators';
 import {TreeNode} from '../../../../store/tree/tree-node.model';
-import {MatOptionSelectionChange} from '@angular/material/core';
+import {FormControl} from '@angular/forms';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-tree-header',
   templateUrl: './tree-header.component.html',
   styleUrls: ['./tree-header.component.scss']
 })
-export class TreeHeaderComponent implements OnInit, AfterViewInit {
+export class TreeHeaderComponent implements OnInit {
   @Input() showReloadButton = true;
+  @Input() isAddress = false;
+  @Input() showOptions = true;
+  @Input() showOnlyFolders = false;
 
   @Output() reload = new EventEmitter();
   @Output() open = new EventEmitter();
 
-  @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
-
-  searchValue = new FormControl();
   searchResult = new Subject<TreeNode[]>();
+  query = new FormControl('');
 
-  constructor(private docService: DocumentService, private db: DynamicDatabase) {
+  constructor(private db: DynamicDatabase) {
   }
 
   ngOnInit() {
-    this.searchValue.valueChanges.subscribe(value => this.search(value));
-  }
-
-  ngAfterViewInit() {
-    this.trigger.panelClosingActions.subscribe( () => {
-      console.log('Search panel closed');
-      this.trigger.openPanel();
-    });
+    // TODO: refactor search function into service to be also used by quick-search-component
+    this.query.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(300)
+      )
+      .subscribe(query => this.search(query));
   }
 
   reloadTree() {
@@ -44,22 +42,28 @@ export class TreeHeaderComponent implements OnInit, AfterViewInit {
   }
 
   search(value: string) {
-    if (value.length === 0) {
+    if (!value) {
+      return;
+    } else if (value.length === 0) {
       this.searchResult.next([]);
       return;
     }
 
-    console.log('Search: ', value);
-    this.db.search(value)
+    this.db.search(value, this.isAddress)
       .pipe(
-        map(docs => this.db.mapDocumentsToTreeNodes(docs, 0))
+        map(result => DynamicDatabase.mapDocumentsToTreeNodes(result.hits, 0))
       )
-      .subscribe(result => this.searchResult.next(result));
+      .subscribe(result => this.searchResult.next(this.filterResult(result)));
   }
 
   loadResultDocument(doc: TreeNode) {
     console.log('Loading document', doc);
-    this.searchValue.setValue(doc.title);
     this.open.next(doc._id);
+  }
+
+  private filterResult(result: TreeNode[]) {
+    return this.showOnlyFolders
+      ? result.filter(node => node.profile === 'FOLDER')
+      : result;
   }
 }

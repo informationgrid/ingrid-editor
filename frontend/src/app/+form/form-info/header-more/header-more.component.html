@@ -1,16 +1,16 @@
 <div *ngIf="showMore" [@slideDown] class="more-info">
-    <div fxLayout="row">
+    <div fxLayout="row" *ngIf="model._profile !== 'FOLDER'">
         <div>Status</div>
-        <div>{{getState(model._state)}}</div>
+        <div class="state" [class.working]="model._state === 'W'">{{getState(model._state)}}</div>
     </div>
 
     <div fxLayout="row">
         <div>Verantwortlich</div>
-        <div></div>
+        <div>???</div>
     </div>
     <div fxLayout="row">
         <div>Typ</div>
-        <div></div>
+        <div>{{model._profile}}</div>
     </div>
     <div fxLayout="row" class="padding-below">
         <div>ID</div>
@@ -19,10 +19,10 @@
 
     <div fxLayout="row">
         <div>Erstellt am</div>
-        <div>{{model._created}}</div>
+        <div><span [title]="model._created | date:'long'">{{model._created | date:'dd.MM.yyyy'}}</span> von ???</div>
     </div>
     <div fxLayout="row">
         <div>Geändert am</div>
-        <div>{{model._modified}}</div>
+        <div><span [title]="model._modified | date:'long'">{{model._modified | date:'dd.MM.yyyy'}} von ???</span></div>
     </div>
 </div>

@@ -10,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FolderType implements DocumentType {
+public class FolderType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(FolderType.class);
 
     private static final String FOLDER = "FOLDER";
 
-    @Autowired
-    private DocumentTypeService documentTypeService;
+    private String[] profiles = new String[0];
 
     @Override
     public void initialize(ODatabaseSession session) {
@@ -30,5 +29,10 @@ public class FolderType implements DocumentType {
             addressClass.createProperty("_parent", OType.STRING);
         }
 
+    }
+
+    @Override
+    public String[] activeInProfiles() {
+        return profiles;
     }
 }

@@ -19,8 +19,11 @@ export class DynamicDataSource {
 
   dataChange = new BehaviorSubject<TreeNode[]>(null);
 
+  private forAddress = false;
   sortNodesByFolderFirst = (a: TreeNode, b: TreeNode) => {
     if (a.profile === 'FOLDER' && b.profile === 'FOLDER') {
+      return a.title.localeCompare(b.title);
+    } else if (a.profile !== 'FOLDER' && b.profile !== 'FOLDER') {
       return a.title.localeCompare(b.title);
     } else if (a.profile === 'FOLDER') {
       return -1;
@@ -72,67 +75,99 @@ export class DynamicDataSource {
       console.warn('Node not found');
       return;
     }
+
     if (expand && !node.isExpanded) {
-      this._database.getChildren(node._id)
-        .pipe(
-          map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
-          map(docs => docs.sort(this.sortNodesByFolderFirst))
-        ).subscribe(children => {
-        if (!children || index < 0) { // If no children, or cannot find the node, no op
-          return;
-        }
 
-        node.isLoading = true;
+      this.expandNode(node, index);
 
-        // const nodes = children.map(child =>
-        //   new TreeNode(name, node.profile, node.level + 1, this._database.isExpandable(name)));
-        this.data.splice(index + 1, 0, ...children);
-        node.isLoading = false;
-        node.isExpanded = true;
-        // notify the change
-        this.dataChange.next(this.data);
-      });
     } else if (!expand && node.isExpanded) {
-      let count = 0;
-      for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {
-      }
-      this.data.splice(index + 1, count);
-      this.dataChange.next(this.data);
-      node.isExpanded = false;
+
+      this.collapseNode(node, index);
+
     }
   }
 
-  removeNode(docs: DocumentAbstract[]) {
-    docs.forEach(doc => {
-      const index = this.data.findIndex(node => node._id === doc.id);
+  private expandNode(node: TreeNode, index: number) {
+    node.isLoading = true;
+    this._database.getChildren(node._id, false, this.forAddress)
+      .pipe(
+        map(docs => DynamicDatabase.mapDocumentsToTreeNodes(docs, node.level + 1)),
+        map(docs => docs.sort(this.sortNodesByFolderFirst))
+      )
+      .subscribe(children => {
+
+        if (children) {
+          this.data.splice(index + 1, 0, ...children);
+          node.isLoading = false;
+          node.isExpanded = true;
+          // notify the change
+          this.dataChange.next(this.data);
+        }
+
+      });
+  }
+
+  private collapseNode(node: TreeNode, index: number) {
+    let count = 0;
+    for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {
+    }
+    this.data.splice(index + 1, count);
+    this.dataChange.next(this.data);
+    node.isExpanded = false;
+  }
+
+  removeNode(doc: TreeNode) {
+    // docs.forEach(doc => {
+      const index = this.data.indexOf(doc);
       if (index !== -1) {
         this.data.splice(index, 1);
         this.dataChange.next(this.data);
       }
-    });
+    // });
   }
 
   updateNode(docs: DocumentAbstract[]) {
     docs.forEach(doc => {
       const index = this.data.findIndex(node => node._id === doc.id);
       if (index !== -1) {
-        this.data.splice(index, 1, ...this._database.mapDocumentsToTreeNodes([doc], this.data[index].level));
+        this.data.splice(index, 1, ...DynamicDatabase.mapDocumentsToTreeNodes([doc], this.data[index].level));
         this.dataChange.next(this.data);
       }
     });
   }
 
-  addNode(parent: string, docs: DocumentAbstract[]) {
-    const index = this.data.findIndex(node => node._id === parent);
-    let childLevel = 0;
-    if (parent) {
-      childLevel = this.data[index].level + 1;
-    }
-    this.data.splice(index + 1, 0, ...this._database.mapDocumentsToTreeNodes(docs, childLevel));
+  addRootNode(doc: DocumentAbstract) {
+
+    const docAsTreeNode = DynamicDatabase.mapDocumentsToTreeNodes([doc], 0);
+
+    const indexOfPreviousNodeInTree = this.getIndexToInsertNode(docAsTreeNode, doc);
+
+    this.data.splice(indexOfPreviousNodeInTree, 0, ...docAsTreeNode);
     this.dataChange.next(this.data);
+  }
+
+  private getIndexToInsertNode(docAsTreeNode: TreeNode[], doc: DocumentAbstract): number {
+    // FIXME: during tests it happened that a new document was created before tree loaded root nodes
+    if (!this.data) {
+      return 0;
+    }
+
+    // get calculated position with only root nodes (using sort method)
+    const indexOfNewDoc = this.data
+      .filter(document => document.level === 0)
+      .concat(docAsTreeNode)
+      .sort(this.sortNodesByFolderFirst)
+      .findIndex(document => document._id === doc.id);
+
+    // get index of complete tree with eventually expanded nodes
+    return this.data.indexOf(this.data[indexOfNewDoc]);
   }
 
   getNode(nodeId: string): TreeNode {
     return this.data.find(node => node._id === nodeId);
+  }
+
+  setForAddress(forAddresses: boolean) {
+    this.forAddress = forAddresses;
   }
 }

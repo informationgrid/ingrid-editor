@@ -4,7 +4,7 @@ import {ErrorService} from '../error.service';
 import {User} from '../../+user/user';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {UserDataService} from "./user-data.service";
+import {UserDataService} from './user-data.service';
 
 @Injectable({
   providedIn: 'root'

@@ -1,16 +1,88 @@
 @import "../../../variables";
 
 :host {
-  position: sticky;
-  z-index: 10;
-  top: 0;
   background-color: $ige-background;
 
-  &.scrolled {
-    box-shadow: 0 0 2px 0 #666666;
+  .sticky {
+    position: fixed;
+    background-color: $ige-background;
+    box-shadow: 0 2px 2px -2px #666666;
+    left: 0;
+    right: 17px;
+    top: 104px;
+    z-index: 1000;
+
+    ::ng-deep .anchor-navigation {
+      margin-left: 0;
+      padding: 8px 0 4px;
+    }
+
+    .document-type {
+      opacity: 1;
+    }
+
+    .anchor-navigation {
+      text-align: center;
+      padding: 10px 0 0;
+      line-height: 36px;
+
+      .mat-button {
+        font-weight: 400;
+        letter-spacing: 0.25px;
+      }
+    }
+
+    a {
+      color: #28225B;
+      //font-size: 13px;
+      padding: 0 10px;
+      text-transform: none;
+    }
+
+    .menu {
+      opacity: 1;
+    }
+
+  }
+
+  ::ng-deep .anchor-navigation {
+    transition: padding .2s linear;
+  }
+
+  .document-type, .menu {
+    opacity: 0;
+    transition: opacity .2s linear;
+  }
+  .menu {
+    width: 26px;
+    height: 26px;
+    line-height: 24px;
+    background-color: $ige-background-bar;
+    margin-right: 11px;
+  }
+  .document-type {
+    display: inline-block;
+    background-color: white;
+    border-radius: 50%;
+    height: 28px;
+    width: 28px;
+    margin-left: 18px;
+
+    mat-icon {
+      line-height: 32px;
+      color: #f27100;
+      font-size: 16px;
+      padding-left: 2px;
+      padding-top: 2px;
+    }
   }
 }
 
 .form-info-bar {
-  padding: 0 10px 4px 36px;
+  padding: 0 10px 2px 36px;
+  // transition: all .2s ease;
+}
+
+.navigation-header {
+  align-items: center;
 }

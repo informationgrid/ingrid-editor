@@ -1,24 +1,25 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Plugin} from '../../../+behaviours/plugin';
-import {FormToolbarService, Separator, ToolbarItem} from '../../toolbar/form-toolbar.service';
+import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
 import {PrintViewDialogComponent} from './print-view-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import {untilDestroyed} from 'ngx-take-until-destroy';
 import {TreeQuery} from '../../../store/tree/tree.query';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
+@UntilDestroy()
 @Injectable()
-export class PrintViewPlugin extends Plugin implements OnDestroy{
+export class PrintViewPlugin extends Plugin {
   id = 'plugin.printView';
   _name = 'Print View Plugin';
   defaultActive = true;
+  private treeQuery: TreeQuery | AddressTreeQuery;
 
   constructor(private toolbarService: FormToolbarService,
-              private treeQuery: TreeQuery,
+              private docTreeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
               private dialog: MatDialog) {
     super();
-  }
-
-  ngOnDestroy(): void {
   }
 
   get name() {
@@ -31,9 +32,11 @@ export class PrintViewPlugin extends Plugin implements OnDestroy{
     // add button to toolbar
     const buttons: Array<ToolbarItem | Separator> = [
       // { id: 'toolBtnCopyCutSeparator', pos: 60, isSeparator: true },
-      { id: 'toolBtnPrint', tooltip: 'Print', matSvgVariable: 'preview', eventId: 'PRINT', pos: 20, active: false }
+      {id: 'toolBtnPrint', tooltip: 'Vorschau', matSvgVariable: 'Vorschau-Druckansicht', eventId: 'PRINT', pos: 20, active: false}
     ];
     buttons.forEach((button, index) => this.toolbarService.addButton(button));
+
+    this.treeQuery = this.forAddress ? this.addressTreeQuery : this.docTreeQuery;
 
     // react on event when button is clicked
     this.toolbarService.toolbarEvent$.subscribe(eventId => {
@@ -50,6 +53,7 @@ export class PrintViewPlugin extends Plugin implements OnDestroy{
           'toolBtnPrint', openedDoc !== null
         );
       });
+
   };
 
   private showPrintDialog() {

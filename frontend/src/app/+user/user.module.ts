@@ -13,8 +13,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatTabsModule } from '@angular/material/tabs';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {RouterModule, Routes} from "@angular/router";
-import {AngularSplitModule} from "angular-split";
+import {RouterModule, Routes} from '@angular/router';
+import {AngularSplitModule} from 'angular-split';
 
 const routes: Routes = [
   {

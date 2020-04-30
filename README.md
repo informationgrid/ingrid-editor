@@ -4,15 +4,49 @@ Spring Boot Server
 
 ## Development
 
-Run IgeServer.java as Java Application.
+### Configure the server
+
+The server uses several spring profiles to be configured for different environments.
+
+* dev => used for development, which disables keycloak authentication
+* default => also used for development and is set up in `src/develop/resources`
+* mcloud, ... => profile for customer implementation (import, export, fields, ...)
+
+The profiles can be set in the startup configuration or in the application.properties under `src/main/resources`.
+We suggest to use the startup configuration to prevent accidentally commit of development changes. 
+
+### Start the client and server
+Run IgeServer.java as Java Application in the server directory.
+
+For the client just run `npm start` in the frontend directory.
 
 With the following command a jar is generated, which contains the whole server: 
 TBD: create an installer instead
 
-> mvn clean package
+> ./gradlew -PbuildProfile=prod clean build
 
-If you want to use the OrientDB-Studio, then copy the zip-File "orientdb-studio-\<version\>.zip" into the plugins-directory. Afterwards it is available under the port 2480.
 
+### Setup IntelliJ IDEA
+* Open IntelliJ
+* File > import module from existing sources > YOUR_IGE_NG_PATH > Gradle
+* Set prefered spring profile in server/src/main/resources/aplication.properties (see also in section Configure the server)
+* IgeServer is now ready to be started an shoulb be available as a Run Configuration
+* Run > Edit Configurations > + (new configuration) > select npm > set scripts to 'start', if available select 'yarn' as package manager. > Save
+ 
+ You are all set. Start ige-ng by first running IgeServer and then your newly created Run configuration.
+
+
+### OrientDB Studio
+
+Copy the zip file from the distribution (e.g. https://s3.us-east-2.amazonaws.com/orientdb3/releases/3.0.26/orientdb-3.0.26.zip) and extract the file "plugins/orient-studio-<version>.zip" into the plugins directory.
+After a restart of the server the Studio should be available under http://10.0.75.1:2480/studio/index.html.
+
+When starting the application, the studio will be available under the IP and Port found in the logs.
+
+If this does not work, check the logs for a correct link. Otherwise unpack the zip-file into "src/site" (everything under www).
+It's possible that the database cannot be found because there're wrong api calls. Open main.js file and search for "/api/" and replace it with "/".
+
+## Apache Configuration
 For the apache configuration use the following settings:
 
 ```
@@ -34,16 +68,6 @@ location /orientdb-studio/ {
 ```
 
 To get the swagger-api json documentation go to http://localhost:8550/api-docs. The UI version can be accessed with http://localhost:8550/swagger-ui.html, where you also can test the API.
-
-### OrientDB Studio
-
-Copy the zip file from the distribution (e.g. https://s3.us-east-2.amazonaws.com/orientdb3/releases/3.0.26/orientdb-3.0.26.zip) and extract the file "plugins/orient-studio-<version>.zip" into the plugins directory.
-After a restart of the server the Studio should be available under http://10.0.75.1:2480/studio/index.html.
-
-When starting the application, the studio will be available under the IP and Port found in the logs.
-
-If this does not work, check the logs for a correct link. Otherwise unpack the zip-file into "src/site" (everything under www).
-It's possible that the database cannot be found because there're wrong api calls. Open main.js file and search for "/api/" and replace it with "/".
 
 # FAQ
 

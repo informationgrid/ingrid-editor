@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl5
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@
 package de.ingrid.igeserver;
 
 import de.ingrid.igeserver.api.ApiException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -32,8 +33,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.web.util.NestedServletException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.naming.NoPermissionException;
 
@@ -47,7 +46,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = {NoPermissionException.class})
     protected ResponseEntity<Object> handleNoPermissionErrors(NoPermissionException ex, WebRequest request) {
-            log.error("No Permission handled:", ex);
+        log.error("No Permission handled:", ex);
         String bodyOfResponse = ex.getMessage();
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
@@ -59,9 +58,21 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
-    @ExceptionHandler(value = {Exception.class, ApiException.class, NotImplementedException.class})
+    @ExceptionHandler(value = {ApiException.class})
+    protected ResponseEntity<Object> handleApiExceptions(ApiException ex, WebRequest request) {
+        if (ex.isHideStacktrace()) {
+            log.error("ApiException happened: " + ex.getMessage());
+        } else {
+            log.error("ApiException happened:", ex);
+        }
+        // String bodyOfResponse = ex.getMessage();
+        Object bodyOfResponse = new Error(ex.getMessage());
+        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    @ExceptionHandler(value = {Exception.class, NotImplementedException.class})
     protected ResponseEntity<Object> handleOtherErrors(RuntimeException ex, WebRequest request) {
-            log.error("Exception happened:", ex);
+        log.error("Exception happened:", ex);
         String bodyOfResponse = ex.getMessage();
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }

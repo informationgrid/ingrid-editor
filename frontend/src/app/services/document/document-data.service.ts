@@ -1,8 +1,9 @@
-import {HttpClient} from "@angular/common/http";
-import {ConfigService, Configuration} from "../config/config.service";
-import {IgeDocument} from "../../models/ige-document";
-import {Observable} from "rxjs";
-import {Injectable} from "@angular/core";
+import {HttpClient} from '@angular/common/http';
+import {ConfigService, Configuration} from '../config/config.service';
+import {IgeDocument} from '../../models/ige-document';
+import {Observable} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {DocumentAbstract} from '../../store/document/document.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,29 +25,32 @@ export class DocumentDataService {
     });
   }
 
-  find(query: string): Observable<IgeDocument[]> {
-    return this.http.get<IgeDocument[]>(
-      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&fields=_id,_profile,_state,title`);
+  find(query: string, size: number = 10): Observable<DocumentAbstract[]> {
+    return this.http.get<DocumentAbstract[]>(
+      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}`);
   }
 
-  getChildren(parentId: string): Observable<any[]> {
-    const url = `${this.configuration.backendUrl}tree/children` + (parentId ? `?parentId=${parentId}` : '');
+  getChildren(parentId: string, isAddress = false): Observable<any[]> {
+    const params = this.createGetChildrenParams(parentId, isAddress);
+    const url = `${this.configuration.backendUrl}tree/children` + params;
     return this.http.get<any[]>(url)
       .pipe(
         // catchError( (err) => this.errorService.handle( err ) )
       );
   }
 
-  load(id: string): Observable<IgeDocument> {
-    return this.http.get<IgeDocument>(this.configuration.backendUrl + 'datasets/' + id);
+  load(id: string, address = false): Observable<IgeDocument> {
+    const params = '?address=' + address;
+    return this.http.get<IgeDocument>(this.configuration.backendUrl + 'datasets/' + id + params);
   }
 
-  save(data: IgeDocument): Observable<any> {
+  save(data: IgeDocument, isAddress?: boolean): Observable<any> {
+    const params = isAddress ? '?address=true' : '';
     if (data._id) {
-      return this.http.put(this.configuration.backendUrl + 'datasets/' + data._id, data);
+      return this.http.put(this.configuration.backendUrl + 'datasets/' + data._id + params, data);
 
     } else {
-      return this.http.post(this.configuration.backendUrl + 'datasets', data);
+      return this.http.post(this.configuration.backendUrl + 'datasets' + params, data);
 
     }
   }
@@ -61,16 +65,18 @@ export class DocumentDataService {
     }
   }
 
-  delete(ids: string[]): Observable<any> {
-    return this.http.delete(this.configuration.backendUrl + 'datasets/' + ids, {responseType: 'text'});
+    delete(ids: string[], forAddress?: boolean): Observable<any> {
+    const params = forAddress ? '?address=true' : '';
+    return this.http.delete(this.configuration.backendUrl + 'datasets/' + ids + params, {responseType: 'text'});
   }
 
   revert(id: string): Observable<any> {
     return this.http.put(this.configuration.backendUrl + 'datasets/' + id + '?revert=true', {});
   }
 
-  getPath(id: string): Observable<string[]> {
-    return this.http.get<string[]>(this.configuration.backendUrl + 'datasets/' + id + '/path');
+  getPath(id: string, address = false): Observable<string[]> {
+    const params = '?address=' + address;
+    return this.http.get<string[]>(this.configuration.backendUrl + 'datasets/' + id + '/path' + params);
   }
 
   copy(srcIDs: string[], dest: string, includeTree: boolean) {
@@ -89,5 +95,17 @@ export class DocumentDataService {
       destId: dest
     };
     return body;
+  }
+
+  private createGetChildrenParams(parentId: string, isAddress: boolean): string {
+    let params = '';
+    if (parentId) {
+      params += `?parentId=${parentId}`;
+    }
+    if (isAddress) {
+      params += params.length > 0 ? '&' : '?';
+      params += 'address=true';
+    }
+    return params;
   }
 }

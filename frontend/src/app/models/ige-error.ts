@@ -7,7 +7,7 @@ export class IgeError {
 
   constructor(error?) {
     // TODO: if (error instanceof Error)
-    if (!error) return;
+    if (!error) { return; }
 
     this.message = error.message;
     this.detail = error.error ? error.error.message : null;

@@ -1,7 +1,17 @@
+@import "../../variables";
+
+:host {
+  overflow: hidden;
+  flex: 1; // IE 11
+}
+
 .welcome {
   background-color: #ffffff;
   box-shadow: 0 2px 2px -2px #808080;
-  margin-bottom: 36px;
+  margin-bottom: 1px;
+  color: $ige-primary;
+  letter-spacing: 0.74px;
+  z-index: 1000;
 
   div {
     font-size: 24px;
@@ -9,59 +19,26 @@
   }
 }
 
-.search-content, .welcome, .shortcut {
+ige-quick-search, .welcome, .shortcut {
   text-align: center;
 }
 
-.search-content {
-
-  .search {
-    min-width: 500px;
-  }
-
-  padding-bottom: 24px;
-
-  input {
-    text-align: left;
-  }
-
-  ::ng-deep .mat-form-field-outline {
-    background-color: #ffffff;
-
-    div {
-      border: 0;
-    }
-  }
-
-  ::ng-deep .mat-form-field-suffix {
-    margin-right: -5px;
-  }
-
-  ::ng-deep .mat-form-field-wrapper {
-    padding-bottom: 0;
-  }
-
-  ::ng-deep .mat-form-field-infix {
-    padding: 0 0 0.8em;
-  }
-
-  button {
-    height: 44px;
-  }
-}
-
-.shortcut {
-  padding-bottom: 24px;
+.dashboard-content {
+  overflow: auto;
+  padding-top: 30px;
+  flex: 1;
 }
 
 .info-cards {
-  padding: 0 36px;
+  padding: 0 36px 36px;
+  max-width: 1024px;
+  margin: 0 auto;
 }
 
-.chart {
-  width: 500px;
-}
+// if we have more than 5 datasets to show then we can introduce a scrollbar
+/*mat-list {
+  flex-grow: 1;
+  overflow: auto;
+  max-height: 300px;
+}*/
 
-.content {
-  display: inline-block;
-}

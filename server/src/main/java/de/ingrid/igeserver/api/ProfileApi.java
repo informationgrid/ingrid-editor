@@ -5,10 +5,10 @@
  */
 package de.ingrid.igeserver.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,19 +19,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.security.Principal;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
-@Api(value = "behaviours", description = "the behaviours API")
-@RequestMapping(path="/api")
+@Tag(name = "Behaviours", description = "the behaviours API")
 public interface ProfileApi {
     
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Profile", })
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class) })
+    @Operation()
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "") })
     @RequestMapping(value = "/profiles", produces = { "text/javascript" }, method = RequestMethod.GET)
     public ResponseEntity<String> getProfile(Principal principal) throws IOException, Exception;
     
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Profile", })
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class) })
+    @Operation()
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "") })
     @RequestMapping(value = "/profiles", produces = { "application/json" }, method = RequestMethod.POST)
     public ResponseEntity<String> uploadProfile(Principal principal, @RequestParam("file") MultipartFile file,
             RedirectAttributes redirectAttributes) throws IOException, ApiException;

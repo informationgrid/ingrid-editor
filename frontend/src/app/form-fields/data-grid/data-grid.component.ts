@@ -100,7 +100,7 @@ export class DataGridComponent implements ControlValueAccessor, OnInit {
 
   handleChange() {
     console.log( 'table changed' );
-    let updateValue = this._value.map( val => Object.assign({}, val));
+    const updateValue = this._value.map( val => Object.assign({}, val));
     updateValue.forEach( val => delete val.__id);
     this._onChangeCallback( updateValue );
   }

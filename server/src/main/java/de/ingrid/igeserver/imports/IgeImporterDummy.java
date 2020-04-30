@@ -10,4 +10,14 @@ public class IgeImporterDummy implements IgeImporter {
     public JsonNode run(Object data) {
         return null;
     }
+
+    @Override
+    public boolean canHandleImportFile(String contentType, String fileContent) {
+        return false;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
 }

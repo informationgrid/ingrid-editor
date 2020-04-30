@@ -1,0 +1,89 @@
+@import "../../../variables";
+
+.hide-divider .mat-divider-horizontal {
+  visibility: hidden;
+}
+
+.doc-item {
+
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  padding-top: 0;
+
+  &.single {
+    margin: 0;
+    align-items: center;
+
+    .mat-icon {
+      align-self: unset;
+    }
+  }
+
+  ::ng-deep .mat-list-item .mat-list-item-content {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    min-height: 48px;
+  }
+
+  .mat-icon {
+    display: flex;
+    align-self: flex-start;
+    height: 24px;
+    margin-right: 12px;
+    padding: 0;
+
+    &.marker {
+      padding-left: 12px;
+
+      ::ng-deep polygon {
+        fill: limegreen;
+      }
+    }
+  }
+
+  span.mat-line {
+    line-height: 24px;
+  }
+
+  h3.mat-line {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .card-title {
+    flex: 1 1 auto;
+    white-space: normal;
+    line-height: 24px;
+  }
+
+  .date {
+    padding: 0 12px;
+  }
+
+  ::ng-deep .mat-list-text {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  ::ng-deep &.mat-list-base {
+    mat-list-option {
+      //min-height: 48px;
+      height: auto !important;
+      font-size: 16px;
+    }
+  }
+
+}
+
+.marker-space {
+  margin-left: 36px;
+}
+
+.hide-bg-selection.mat-list-single-selected-option {
+  background: #00000000;
+}
+
+::ng-deep .tooltip-medium {
+  font-size: 16px;
+}

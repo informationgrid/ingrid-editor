@@ -1,25 +1,23 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { AddressComponent } from './address.component';
+import {AddressComponent} from './address.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {Router} from '@angular/router';
+import {FormPluginsService} from '../../+form/form-shared/form-plugins.service';
+import {FormularService} from '../../+form/formular.service';
 
 describe('AddressComponent', () => {
-  let component: AddressComponent;
-  let fixture: ComponentFixture<AddressComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AddressComponent ]
-    })
-    .compileComponents();
-  }));
+  let spectator: Spectator<AddressComponent>;
+  const createComponent = createComponentFactory({
+      component: AddressComponent,
+      imports: [],
+      providers: [],
+      componentMocks: [Router, FormPluginsService, FormularService]
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddressComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 });

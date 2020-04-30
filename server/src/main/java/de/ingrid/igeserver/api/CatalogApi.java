@@ -5,36 +5,67 @@
  */
 package de.ingrid.igeserver.api;
 
+import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.model.InlineResponseDefault;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
+import java.util.List;
 
-@Api(value = "catalogs", description = "the catalog API")
-@RequestMapping(path = "/api")
+@Tag(name = "Catalogs", description = "Handle catalog requests")
 public interface CatalogApi {
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Catalog"})
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "", response = Void.class),
-            @ApiResponse(code = 200, message = "Unexpected error", response = InlineResponseDefault.class)})
-
-    @RequestMapping(value = "/catalogs", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<String[]> getCatalogs();
+    @GetMapping(
+            value = "/catalogs",
+            produces = {"application/json"}
+    )
+    @Operation(responses = {@ApiResponse(content = @Content(schema = @Schema(implementation = String.class)))}, summary = "Get all catalogs")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = ""),
+            @ApiResponse(responseCode = "200", description = "Unexpected error", content = @Content(schema = @Schema(implementation = InlineResponseDefault.class)))
+    })
+    ResponseEntity<List<Catalog>> getCatalogs();
 
     // @PreAuthorize("hasRole('admin')")
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Catalog"})
-    @RequestMapping(value = "/catalogs/{name}", produces = {"application/json"}, method = RequestMethod.POST)
+    @RequestMapping(
+            value = "/catalogs",
+            produces = {"application/json"},
+            method = RequestMethod.POST
+    )
+    @Operation()
     public ResponseEntity<String> createCatalog(
-            @ApiParam(value = "The name of the catalog to create.", required = true) @PathVariable("name") String name) throws ApiException;
+            @Parameter(description = "The settings of the catalog to create.", required = true) @RequestBody Catalog settings
+    ) throws ApiException;
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = {"Catalog"})
-    @RequestMapping(value = "/catalogs/{name}", produces = {"application/json"}, method = RequestMethod.DELETE)
-    public ResponseEntity<String> deleteCatalog(
-            @ApiParam(value = "The name of the catalog to delete.", required = true) @PathVariable("name") String name) throws ApiException;
+    @RequestMapping(
+            value = "/catalogs/{name}",
+            produces = {"application/json"},
+            method = RequestMethod.PUT
+    )
+    @Operation()
+    public ResponseEntity<Void> updateCatalog(
+            @Parameter(description = "The name of the catalog to update.", required = true) @PathVariable("name") String name,
+            @Parameter(description = "The settings of the catalog to update.", required = true) @RequestBody Catalog settings
+    ) throws ApiException;
+
+    @RequestMapping(
+            value = "/catalogs/{name}",
+            produces = {"application/json"},
+            method = RequestMethod.DELETE
+    )
+    @Operation()
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "Unknown database")
+    })
+    public ResponseEntity<Void> deleteCatalog(
+            @Parameter(description = "The name of the catalog to delete.", required = true) @PathVariable("name") String name
+    ) throws ApiException;
 
 }

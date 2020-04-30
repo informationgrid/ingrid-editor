@@ -1,22 +1,51 @@
 package de.ingrid.igeserver.api;
 
-import javax.validation.Valid;
-
-import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.databind.JsonNode;
+import de.ingrid.ige.api.IgeImporter;
+import de.ingrid.igeserver.imports.ImportService;
+import de.ingrid.igeserver.imports.ImporterFactory;
+import de.ingrid.igeserver.model.ImportAnalyzeInfo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import de.ingrid.igeserver.model.Data4;
-import io.swagger.annotations.ApiParam;
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
+import java.io.IOException;
+import java.nio.charset.Charset;
 
-@Controller
+@RestController
+@RequestMapping(path = "/api")
 public class ImportApiController implements ImportApi {
 
-    public ResponseEntity<Void> importDataset(@ApiParam(value = "The dataset to be imported." ,required=true )  @Valid @RequestBody Data4 data) {
-        // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.OK);
+    private static Logger log = LogManager.getLogger(ImportApiController.class);
+
+    private final ImportService importService;
+
+    @Autowired
+    ImporterFactory factory;
+
+    @Autowired
+    public ImportApiController(ImportService importService) {
+        this.importService = importService;
+    }
+
+    public ResponseEntity<ImportAnalyzeInfo> importDataset(MultipartFile file) throws IOException, ApiException {
+
+        String type = file.getContentType();
+
+        String fileContent = new String(file.getBytes(), Charset.defaultCharset());
+
+        IgeImporter importer = factory.getImporter(type, fileContent);
+        JsonNode result = importer.run(fileContent);
+
+        ImportAnalyzeInfo info = new ImportAnalyzeInfo();
+        info.setImportType(importer.getName());
+        info.setNumDocuments(1);
+        info.setResult(result);
+        return ResponseEntity.ok(info);
     }
 
 }

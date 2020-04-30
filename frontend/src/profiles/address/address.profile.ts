@@ -1,5 +1,4 @@
 import {FormGroup} from '@angular/forms';
-import {EventManager} from '@angular/platform-browser';
 import {Behaviour} from '../../app/+behaviours/behaviours';
 import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
@@ -15,127 +14,140 @@ export class ProfileAddress extends BaseProfile {
 
   iconClass = 'Freie-Adresse';
 
+  isAddressProfile = true;
+
   profileFields = <FormlyFieldConfig[]>[
     {
-      fieldGroupClassName: 'display-flex',
-      wrappers: ['panel'],
+      wrappers: ['section'],
       templateOptions: {
-        externalLabel: 'Name'
+        label: 'Allgemeines'
       },
-      fieldGroup: [{
-        key: 'firstName',
-        className: 'flex-1',
-        type: 'input',
-        wrappers: ['form-field'],
-        templateOptions: {
-          label: 'Vorname',
-          appearance: 'outline'
-        }
-      }, {
-        key: 'lastName',
-        className: 'flex-1',
-        type: 'input',
-        wrappers: ['form-field'],
-        templateOptions: {
-          label: 'Nachname',
-          appearance: 'outline'
-        }
-      }]
-    }, {
-      key: 'contact',
-      type: 'ngx-table',
-      wrappers: ['panel'],
-      templateOptions: {
-        externalLabel: 'Kommunikation',
-        columns: [
-          {key: 'name', editable: true, label: 'Name'},
-          {key: 'type', editable: false, label: 'Art'}
-        ]
-      }
-    }, {
-      key: 'contact-link',
-      type: 'doc-reference',
-      wrappers: ['panel'],
-      templateOptions: {
-        externalLabel: 'Kommunikation-Link',
-        filter: {
-          docType: 'ADDRESS'
-        }
-      }
-    }, {
-      key: 'address',
-      wrappers: ['panel'],
-      templateOptions: {
-        externalLabel: 'Adresse'
-      },
-      fieldGroup: [{
-        fieldGroupClassName: 'display-flex',
-        fieldGroup: [{
-          key: 'street',
-          className: 'flex-1',
-          type: 'input',
+      fieldGroup: [
+        {
+          fieldGroupClassName: 'display-flex',
+          wrappers: ['panel'],
           templateOptions: {
-            label: 'Strasse',
-            appearance: 'outline'
+            externalLabel: 'Name'
+          },
+          fieldGroup: [{
+            key: 'firstName',
+            className: 'flex-1 firstName',
+            type: 'input',
+            wrappers: ['form-field'],
+            templateOptions: {
+              label: 'Vorname',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'lastName',
+            className: 'flex-1 lastName',
+            type: 'input',
+            wrappers: ['form-field'],
+            templateOptions: {
+              label: 'Nachname',
+              appearance: 'outline'
+            }
+          }]
+        }, {
+          key: 'contact',
+          type: 'ngx-table',
+          wrappers: ['panel'],
+          templateOptions: {
+            externalLabel: 'Kommunikation',
+            columns: [
+              {key: 'name', editable: true, label: 'Name'},
+              {key: 'type', editable: false, label: 'Art'}
+            ]
           }
         }, {
-          key: 'number',
-          className: 'flex-1',
-          type: 'input',
+          key: 'contact-link',
+          type: 'doc-reference',
+          wrappers: ['panel'],
           templateOptions: {
-            label: 'Hausnummer',
-            appearance: 'outline'
-          }
-        }]
-      }, {
-        fieldGroupClassName: 'display-flex',
-        fieldGroup: [{
-          key: 'PO',
-          className: 'flex-1',
-          type: 'input',
-          templateOptions: {
-            label: 'PLZ',
-            appearance: 'outline'
+            externalLabel: 'Kommunikation-Link',
+            filter: {
+              docType: 'ADDRESS'
+            }
           }
         }, {
-          key: 'city',
-          className: 'flex-3',
-          type: 'input',
+          key: 'address',
+          wrappers: ['panel'],
           templateOptions: {
-            label: 'Stadt',
-            appearance: 'outline'
-          }
+            externalLabel: 'Adresse'
+          },
+          fieldGroup: [{
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'street',
+              className: 'flex-1',
+              type: 'input',
+              templateOptions: {
+                label: 'Strasse',
+                appearance: 'outline'
+              }
+            }, {
+              key: 'number',
+              className: 'flex-1',
+              type: 'input',
+              templateOptions: {
+                label: 'Hausnummer',
+                appearance: 'outline'
+              }
+            }]
+          }, {
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'PO',
+              className: 'flex-1',
+              type: 'input',
+              templateOptions: {
+                label: 'PLZ',
+                appearance: 'outline'
+              }
+            }, {
+              key: 'city',
+              className: 'flex-3',
+              type: 'input',
+              templateOptions: {
+                label: 'Stadt',
+                appearance: 'outline'
+              }
+            }, {
+              key: 'country',
+              className: 'flex-3',
+              type: 'select',
+              templateOptions: {
+                label: 'Land',
+                appearance: 'outline',
+                placeholder: 'Bitte wählen',
+                options: this.getCodelistForSelect(6200)
+              }
+            }]
+          }]
         }, {
-          key: 'country',
-          className: 'flex-3',
-          type: 'select',
+          key: 'tasks',
+          type: 'textarea',
+          wrappers: ['panel', 'form-field'],
           templateOptions: {
-            label: 'Land',
+            externalLabel: 'Aufgaben',
+            rows: 2,
             appearance: 'outline',
-            placeholder: 'Bitte wählen',
-            options: this.getCodelistForSelect(6200)
+            autosize: true,
+            autosizeMaxRows: 5
           }
-        }]
-      }]
-    }, {
-      key: 'tasks',
-      type: 'textarea',
-      wrappers: ['panel', 'form-field'],
-      templateOptions: {
-        externalLabel: 'Aufgaben',
-        rows: 2,
-        appearance: 'outline'
-      }
-    }, {
-      key: 'serviceTimes',
-      type: 'input',
-      wrappers: ['panel', 'form-field'],
-      templateOptions: {
-        externalLabel: 'Servicezeiten',
-        appearance: 'outline'
-      }
-    }
-  ];
+        }, {
+          key: 'serviceTimes',
+          type: 'input',
+          wrappers: ['panel', 'form-field'],
+          templateOptions: {
+            externalLabel: 'Servicezeiten',
+            appearance: 'outline',
+            autosize: true,
+            autosizeMaxRows: 5
+          }
+        }
+      ]
+    }];
 
   /*new TextboxField({
     key: 'firstName',
@@ -253,7 +265,7 @@ export class ProfileAddress extends BaseProfile {
       description: '',
       isProfileBehaviour: true,
       defaultActive: true,
-      register: function (form: FormGroup, eventManager: EventManager) {
+      register: function (form: FormGroup) {
         // this behaviour should be a validator for a field!
         form.get('tasks').validator = function (fc) {
           return fc.value && fc.value.indexOf('work') !== -1 ? null : {
@@ -270,10 +282,9 @@ export class ProfileAddress extends BaseProfile {
       description: '',
       isProfileBehaviour: true,
       defaultActive: true,
-      register: (form: FormGroup, eventManager: EventManager) => {
+      register: (form: FormGroup) => {
         // when using valueChanges, then we only must react after a document has been loaded
         // we only want to react, when the user did any action (click or chose a new item from select box or added a new value
-        const self = this;
         form.get('address.adminArea').valueChanges.subscribe(value => {
 
           // TODO: validations should be attached directly to the field to
@@ -316,16 +327,15 @@ export class ProfileAddress extends BaseProfile {
 
   private getCodelistForSelect(codelistId: number) {
 
-    let codelist = this.codelistService.byId(codelistId + '')
+    const codelistResult = this.codelistService.byId(codelistId + '')
       .then(codelist => {
-        console.log("codelist:", codelist);
         return codelist
           .map(cl => {
             return {label: cl.value, value: cl.id}
           })
-          .sort( (a,b) => a.label.localeCompare(b.label));
+          .sort((a, b) => a.label.localeCompare(b.label));
       });
-    return from(codelist);
+    return from(codelistResult);
   }
 
 }

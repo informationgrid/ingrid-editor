@@ -15,41 +15,14 @@ export class ShowDateInSectionBehaviour extends BaseBehaviour implements Behavio
   defaultActive = true;
   forProfile = 'UVP';
 
-  constructor(@Inject(DocumentService) private storageService: DocumentService) {
-    super();
-  }
-
-  register(form: FormGroup, eventManager: EventManager) {
-    this.addSubscriber(
-      this.storageService.afterLoadAndSet$.subscribe( () => {
-        setTimeout( () => {
-          let taskEl = ShowDateInSectionBehaviour._getAllDateFields();
-          for (let i = 0; i < taskEl.length; i++) {
-            ShowDateInSectionBehaviour._updateDOM(taskEl[i]);
-          }
-        }, 0);
-      })
-    );
-
-    let taskEl = ShowDateInSectionBehaviour._getAllDateFields();
-    for (let i = 0; i < taskEl.length; i++) {
-      this.addListener(
-        eventManager.addEventListener(taskEl[i], 'change', () => {
-          console.log('Date has changed');
-          ShowDateInSectionBehaviour._updateDOM(taskEl[i]);
-        })
-      );
-    }
-  }
-
   static _getAllDateFields() {
     return <NodeListOf<HTMLInputElement>> document.querySelectorAll('input[type=date]');
   }
 
   static _updateDOM(dateField: HTMLInputElement) {
-    let title = ShowDateInSectionBehaviour._findTitleElementFrom(dateField);
-    if (title.children.length > 0) title.children[0].remove();
-    let dateElement = document.createElement('span');
+    const title = ShowDateInSectionBehaviour._findTitleElementFrom(dateField);
+    if (title.children.length > 0) { title.children[0].remove(); }
+    const dateElement = document.createElement('span');
     dateElement.textContent = ' (' + dateField.value + ')';
 
     title.appendChild(dateElement);
@@ -64,5 +37,32 @@ export class ShowDateInSectionBehaviour extends BaseBehaviour implements Behavio
       return <HTMLElement>parent.querySelector('.title');
     }
     return parent;
+  }
+
+  constructor(@Inject(DocumentService) private storageService: DocumentService) {
+    super();
+  }
+
+  register(form: FormGroup, eventManager: EventManager) {
+    this.addSubscriber(
+      this.storageService.afterLoadAndSet$.subscribe( () => {
+        setTimeout( () => {
+          const taskEl = ShowDateInSectionBehaviour._getAllDateFields();
+          for (let i = 0; i < taskEl.length; i++) {
+            ShowDateInSectionBehaviour._updateDOM(taskEl[i]);
+          }
+        }, 0);
+      })
+    );
+
+    const taskEl = ShowDateInSectionBehaviour._getAllDateFields();
+    for (let i = 0; i < taskEl.length; i++) {
+      this.addListener(
+        eventManager.addEventListener(taskEl[i], 'change', () => {
+          console.log('Date has changed');
+          ShowDateInSectionBehaviour._updateDOM(taskEl[i]);
+        })
+      );
+    }
   }
 }

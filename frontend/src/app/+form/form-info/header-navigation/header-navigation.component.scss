@@ -1,16 +1,39 @@
 @import "../../../../variables";
 
 :host {
-  padding-bottom: 5px;
+  display: block;
 }
+
+/*:host-context(.sticky) {
+  position: fixed;
+  background-color: $ige-background;
+  box-shadow: 0 2px 2px -2px #666666;
+  left: 0;
+  right: 17px;
+  top: 104px;
+  z-index: 1000;
+
+  ::ng-deep .anchor-navigation {
+    margin-left: 0;
+    padding: 8px 0 4px;
+  }
+}*/
 
 .anchor-navigation {
   text-align: center;
-  padding: 5px 0 2px;
+  padding: 10px 0 0;
+  line-height: 36px;
+  transition: all .1s linear;
+
+  .mat-button {
+    font-weight: 400;
+    letter-spacing: 0.25px;
+  }
 }
 
 a {
   color: #28225B;
   //font-size: 13px;
   padding: 0 10px;
+  text-transform: none;
 }

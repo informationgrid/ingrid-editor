@@ -24,7 +24,7 @@ import {TreeSelectDialog} from '../../+form/dialogs/tree-select/tree-select.dial
       </mat-list-item>
     </mat-list>
 
-    <button mat-flat-button (click)="showTree()">Add</button>
+    <button mat-flat-button type="button" (click)="showTree()">Add</button>
   `,
   styles: [`
     .action-button {

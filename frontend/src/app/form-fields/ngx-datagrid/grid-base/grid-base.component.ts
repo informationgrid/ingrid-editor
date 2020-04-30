@@ -5,7 +5,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 })
 export class GridBaseComponent implements OnInit {
 
-  @Input() value: any; //string | Date | { value: string | number, label: string };
+  @Input() value: any; // string | Date | { value: string | number, label: string };
   @Output() update = new EventEmitter();
   @Output() tabkey = new EventEmitter();
 

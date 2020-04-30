@@ -1,0 +1,114 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">{{title}}</span>
+    </h2>
+</div>
+<mat-dialog-content class="hide-tab-header create-dlg-content">
+
+    <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
+        <mat-tab label="Titel">
+            <div class="first-tab-wrapper" fxFlex fxLayout="column" [formGroup]="formGroup">
+                <ng-container *ngIf="isFolder || !forAddress; else addressForm">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Titel</mat-label>
+                        <input matInput
+                               formControlName="title"
+                               data-cy="create-title"
+                               cdkFocusInitial
+                               autocomplete="off"
+                               (keyup.enter)="handleCreate()"
+                               required>
+                        <mat-error>Bitte geben Sie einen Titel ein</mat-error>
+                    </mat-form-field>
+                </ng-container>
+
+                <ng-template #addressForm>
+
+                    <div fxFlex fxLayout="row" fxLayoutGap="24px">
+
+                        <mat-form-field appearance="outline" class="width-100">
+                            <mat-label>Vorname</mat-label>
+                            <input matInput
+                                   data-cy="create-address-firstName"
+                                   formControlName="firstName"
+                                   cdkFocusInitial
+                                   autocomplete="off"
+                                   placeholder="Vorname">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="width-100">
+                            <mat-label>Nachname</mat-label>
+                            <input matInput
+                                   data-cy="create-address-lastName"
+                                   autocomplete="off"
+                                   placeholder="Nachname"
+                                   formControlName="lastName">
+                        </mat-form-field>
+                    </div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Organisation</mat-label>
+                        <input matInput
+                               data-cy="create-address-organization"
+                               name="organization"
+                               formControlName="organization"
+                               placeholder="Oder eine Organisation">
+                    </mat-form-field>
+
+                    <div *ngIf="formGroup.errors?.nameOrOrganization && (formGroup.touched || formGroup.dirty)"
+                         class="">
+                        Es müssen Name oder Organisation eingegeben werden.
+                    </div>
+
+                </ng-template>
+
+                Ort
+                <ige-breadcrumb [path]="path"
+                                [rootName]="rootTreeName"
+                                [selectable]="true"
+                                (select)="jumpToTree($event)"
+                                emphasize="true"></ige-breadcrumb>
+            </div>
+        </mat-tab>
+
+        <mat-tab label="Ort auswählen">
+            <ige-destination-selection [forAddress]="forAddress"
+                                       [initialSelectedId]="jumpedTreeNodeId"
+                                       (choice)="updateParent($event)"></ige-destination-selection>
+        </mat-tab>
+    </mat-tab-group>
+
+
+</mat-dialog-content>
+
+<div style="flex: 1"></div>
+
+<mat-dialog-actions>
+    <button *ngIf="selectedPage === 1" color="primary" mat-button
+            data-cy="create-back"
+            (click)="selectedPage = 0" class="back-button">
+        <mat-icon>chevron_left</mat-icon>
+        <span>Zurück</span>
+    </button>
+
+    <div fxFlex></div>
+
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button *ngIf="selectedPage === 0" mat-button color="primary"
+            data-cy="create-changeLocation"
+            (click)="jumpToTree(this.parent)">Ort ändern</button>
+
+    <button *ngIf="selectedPage === 0" mat-stroked-button color="primary"
+            data-cy="create-action"
+            [disabled]="formGroup.invalid"
+            (click)="handleCreate()">
+        Anlegen
+    </button>
+
+    <button *ngIf="selectedPage === 1" mat-stroked-button color="primary"
+            data-cy="create-applyLocation"
+            (click)="applyLocation()">
+        Übernehmen
+    </button>
+</mat-dialog-actions>

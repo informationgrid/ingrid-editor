@@ -8,13 +8,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.ingrid.igeserver.annotations.PublishedLink;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Data
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DocUVP {
 
@@ -45,7 +42,6 @@ public class DocUVP {
      * 
      * @return id
      **/
-    @ApiModelProperty(value = "Unique identifier")
     public String getId() {
         return id;
     }
@@ -64,7 +60,6 @@ public class DocUVP {
      * 
      * @return profile
      **/
-    @ApiModelProperty(value = "Description of the dataset.")
 
     public String getProfile() {
         return profile;

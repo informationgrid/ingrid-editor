@@ -1,0 +1,128 @@
+@import "../../../variables";
+
+.spacing {
+  padding-bottom: 30px;
+}
+
+.search-content {
+
+  padding-bottom: 24px;
+
+  .search {
+    min-width: 564px;
+  }
+
+  input {
+    text-align: left;
+  }
+
+  ::ng-deep .mat-form-field-outline {
+    background-color: #ffffff;
+    top: 0.35em;
+    border-radius: 4px;
+    height: 44px;
+
+    &:not(.mat-form-field-outline-thick) > div {
+      border: none;
+    }
+  }
+
+  ::ng-deep .mat-form-field-suffix {
+    margin-right: -5px;
+    top: 10px;
+
+    button {
+      height: 0 !important;
+    }
+  }
+
+  ::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0;
+    margin: 0;
+  }
+
+  ::ng-deep .mat-form-field-infix {
+    padding: 0 0 0.8em;
+    margin: 0.3em 0 0.1em;
+    border-top: 0.84375em solid transparent;
+  }
+
+  button {
+    height: 44px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+
+    ::ng-deep .mat-button-wrapper {
+      letter-spacing: 1.25px;
+    }
+  }
+
+  ::ng-deep mat-form-field {
+    .mat-form-field-subscript-wrapper, .mat-form-field-underline {
+      position: absolute;
+    }
+  }
+}
+
+::ng-deep .quicksearch-auto {
+
+  max-height: unset !important;
+  padding: 24px;
+
+  &.option-no-padding mat-option {
+    padding: 0 !important;
+  }
+
+  &.option-no-padding mat-option, &.option-no-padding .doc-item {
+    height: 40px !important;
+  }
+
+  &.mat-autocomplete-hidden {
+    display: none !important;
+  }
+}
+
+.result-header {
+  font-weight: 500;
+  padding-bottom: 20px;
+  letter-spacing: 0.5px;
+
+  .mat-icon {
+    height: 16px;
+    vertical-align: middle;
+
+    ::ng-deep svg path {
+      fill: $ige-secondary;
+    }
+  }
+}
+
+.result-title {
+  color: $ige-secondary;
+  font-weight: 500;
+  padding-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.show-all-link {
+  line-height: 36px;
+
+  .mat-icon {
+    vertical-align: middle;
+    padding-bottom: 4px;
+  }
+}
+
+.research-icon ::ng-deep svg {
+  circle {
+    stroke: $ige-secondary;
+  }
+
+  rect {
+    fill: $ige-secondary;
+  }
+}
+
+.btn-search {
+  margin-left: -6px;
+}

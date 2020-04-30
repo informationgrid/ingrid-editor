@@ -4,60 +4,45 @@
         <div>Guten Morgen! Willkommen zurück.</div>
     </div>
 
-    <div class="search-content">
-        <mat-form-field class="search" appearance="outline">
-            <input matInput placeholder="Daten, Adresse oder ID" aria-label="Search">
-        </mat-form-field>
-        <button mat-flat-button color="primary">
-            <mat-icon>search</mat-icon>
-            Suchen
-        </button>
-    </div>
+    <div class="dashboard-content">
+        <ige-quick-search (select)="openDocument($event)" (selectAddress)="openAddress($event)"></ige-quick-search>
 
-    <div class="shortcut">
-        <button mat-button (click)="createNewDocument()">
-            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-            Neuer Order
-        </button>
-        <button mat-button (click)="createNewDocument()">
-            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-            Neuer Datensatz
-        </button>
-        <button mat-button (click)="createNewUser()">
-            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-            Datensatz importieren
-        </button>
-        <button mat-button (click)="createNewAddress()">
-            <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-            Neue Adresse
-        </button>
-    </div>
-
-
-    <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
-        <div class="info-box" fxLayout="row" fxLayoutGap="36px">
-            <mat-card fxFlex>
-                <mat-card-subtitle>INGRID Datensätze</mat-card-subtitle>
-                <mat-card-content>...</mat-card-content>
-            </mat-card>
-            <mat-card fxFlex>
-                <mat-card-subtitle>Neue Datensätze</mat-card-subtitle>
-                <mat-card-content>...</mat-card-content>
-            </mat-card>
+        <div class="shortcut">
+            <button mat-button (click)="createNewFolder()">
+                <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
+                <span>Neuer Ordner</span>
+            </button>
+            <button mat-button (click)="createNewDocument()">
+                <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
+                <span>Neuer Datensatz</span>
+            </button>
+            <button *featureFlag="'AP3'" mat-button (click)="createNewUser()">
+                <mat-icon class="material-icons-outlined">import_export</mat-icon>
+                <span>Datensatz importieren</span>
+            </button>
+            <button mat-button (click)="createNewAddress()">
+                <mat-icon class="material-icons-outlined" svgIcon="outline-person_add-24px"></mat-icon>
+                <span>Neue Adresse</span>
+            </button>
         </div>
 
-        <mat-card fxFlex>
-            <mat-card-subtitle>Zuletzt bearbeitet im Katalog</mat-card-subtitle>
-            <mat-card-content>...</mat-card-content>
-        </mat-card>
-    </div>
 
-    <!--<div class="chart pull-left">
-        &lt;!&ndash;<p-chart type="pie"
-                 [data]="data"
-                 (onDataSelect)="chartClicked($event)"></p-chart>&ndash;&gt;
-        &lt;!&ndash;<x-chartist type="Bar" [data]="data"></x-chartist>&ndash;&gt;
-        <x-chartist type="Pie" [data]="dataPie"></x-chartist>
-    </div>-->
+        <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
+            <div class="info-box" fxLayout="row" fxLayoutGap="36px">
+                <ige-card-box fxFlex label="INGRID Datensätze">
+                    <ige-chart [data]="[5, 32]" [colors]="['#F27100', '#333333']"></ige-chart>
+                </ige-card-box>
+                <ige-card-box fxFlex label="Neue Datensätze">
+                    ...
+                </ige-card-box>
+            </div>
+
+            <ige-card-box fxFlex label="Zuletzt bearbeitet im Katalog" data-cy="card-latest-docs">
+                <ige-document-list-item [docs]="recentDocs$"
+                                        [hideDate]="false"
+                                        (select)="openDocument($event.id)"></ige-document-list-item>
+            </ige-card-box>
+        </div>
+    </div>
 
 </div>

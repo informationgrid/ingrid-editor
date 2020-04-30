@@ -1,4 +1,4 @@
-import {McloudFormly} from '../app/formly/profiles/mcloud.formly';
+import {McloudFormly} from './mcloud.formly';
 import {ProfileAddress} from './address/address.profile';
 import {ProfileFolder} from './folder.profile';
 

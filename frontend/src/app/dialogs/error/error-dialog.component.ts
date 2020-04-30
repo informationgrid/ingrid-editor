@@ -4,18 +4,23 @@ import { IgeError } from '../../models/ige-error';
 
 @Component( {
   selector: 'error-dialog',
-  templateUrl: 'error-dialog.component.html'
+  templateUrl: 'error-dialog.component.html',
+  styleUrls: ['error-dialog.component.scss']
 } )
 export class ErrorDialogComponent {
   error: IgeError[];
 
-  constructor(@Inject( MAT_DIALOG_DATA ) data: IgeError|IgeError[]) {
+  constructor(@Inject( MAT_DIALOG_DATA ) data: IgeError|IgeError[], private dlgRef: MatDialogRef<ErrorDialogComponent>) {
     console.log( 'Data:', data );
     if (data instanceof Array) {
       this.error = data;
     } else {
       this.error = [data];
     }
+  }
+
+  close() {
+    this.dlgRef.close();
   }
 
 }

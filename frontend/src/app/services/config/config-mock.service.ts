@@ -1,5 +1,5 @@
-import {Configuration} from "./config.service";
-import {of} from "rxjs";
+import {Configuration} from './config.service';
+import {of} from 'rxjs';
 
 export class ConfigMockService {
 

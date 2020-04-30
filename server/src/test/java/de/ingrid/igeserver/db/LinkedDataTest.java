@@ -10,6 +10,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import de.ingrid.igeserver.api.ApiException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -77,7 +78,7 @@ public class LinkedDataTest {
 
 
     @Test
-    public void updateLink() {
+    public void updateLink() throws ApiException {
         ODocument address = new ODocument("Addresses");
         address.field("name", "André");
         address.field("city", "Frankfurt");
@@ -99,7 +100,7 @@ public class LinkedDataTest {
 
         map.put("address.city", "Berlin");
 
-        dbService.save(DBApi.DBClass.Documents.name(), null, map);
+        dbService.save(DBApi.DBClass.Documents.name(), null, "{\"address\": { \"city\": \"Berlin\"}}");
 
         //docFromDb.field("address.city", "Berlin");
         //docFromDb.save();

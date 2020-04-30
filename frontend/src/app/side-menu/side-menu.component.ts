@@ -1,10 +1,9 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfigService} from '../services/config/config.service';
 import {MenuItem, MenuService} from '../menu/menu.service';
 import {NavigationEnd, Router} from '@angular/router';
-import {SessionStore} from '../store/session.store';
 import {SessionQuery} from '../store/session.query';
 import {animate, style, transition, trigger} from '@angular/animations';
 
@@ -14,13 +13,13 @@ import {animate, style, transition, trigger} from '@angular/animations';
   styleUrls: ['./side-menu.component.scss'],
   animations: [
     trigger('toggle', [
-      transition(':enter', [
-        style({ height: 0, opacity: 0}),
-        animate('300ms ease-in', style({ height: 48, opacity: 1 }))
+      transition('collapsed => expanded', [
+        style({width: 56}),
+        animate('300ms ease-in', style({width: 300}))
       ]),
-      transition(':leave', [
-        style({ height: 48, opacity: 1 }),
-        animate('300ms ease-out', style({ height: 0, opacity: 0 }))
+      transition('* => collapsed', [
+        style({width: 300}),
+        animate('300ms ease-out', style({width: 56}))
       ])
     ])
   ]
@@ -29,11 +28,12 @@ export class SideMenuComponent implements OnInit {
 
   showDrawer: Observable<boolean>;
 
-  routes: MenuItem[];
+  menuItems: MenuItem[];
 
   menuIsExpanded = true;
 
   currentRoute: string;
+  toggleState = 'collapsed';
 
   constructor(private router: Router, private configService: ConfigService, private menuService: MenuService,
               private session: SessionQuery) {
@@ -43,12 +43,7 @@ export class SideMenuComponent implements OnInit {
 
     this.session.isSidebarExpanded$.subscribe(expanded => this.menuIsExpanded = expanded);
 
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        // console.log('Event: ', event.url);
-        this.currentRoute = event.url;
-      }
-    });
+    this.router.events.subscribe(event => this.handleCurrentRoute(event));
 
     // display the drawer if the user has at least one catalog assigned
     this.showDrawer = this.configService.$userInfo.pipe(
@@ -57,33 +52,42 @@ export class SideMenuComponent implements OnInit {
 
     this.menuService.menu$.subscribe(() => {
       console.log('menu has changed');
-      this.routes = this.menuService.menuItems;
+      this.menuItems = this.menuService.menuItems;
     });
 
   }
 
-  toggleSidebar(setExanded: boolean) {
-    this.menuService.toggleSidebar(setExanded);
+  private handleCurrentRoute(event: any) {
+    if (event instanceof NavigationEnd) {
+      const urlPath = event.url.split(';')[0];
+      this.currentRoute = urlPath === '/' ? '/dashboard' : urlPath;
+    }
   }
 
-  mapRouteToMatIcon(path: string) {
-    switch (path) {
-      case '/user': return 'supervised_user_circle';
-      case '/catalogs': return 'library_books';
-    }
+  toggleSidebar(setExanded: boolean) {
+    this.menuService.toggleSidebar(setExanded);
+    this.toggleState = setExanded ? 'expanded' : 'collapsed';
   }
 
   mapRouteToIcon(path: string) {
     switch (path) {
-      case '/dashboard': return 'dashboard';
-      case '/form': return 'data';
-      case '/address': return 'addresses';
-      // case '/user': return 'addresses';
+      case '/dashboard':
+        return 'Uebersicht';
+      case '/form':
+        return 'Daten';
+      case '/address':
+        return 'Adressen';
+      case '/research':
+        return 'Recherche';
+      case '/user':
+        return 'Nutzer';
       // case '/plugins': return 'extension';
-      case '/importExport': return 'import_export';
-      // case '/catalogs': return 'addresses';
-      // case '/demo': return 'play_circle_outline';
-      default: return null;
+      case '/importExport':
+        return 'Im-Export';
+      case '/catalogs':
+        return 'Katalog';
+      default:
+        return null;
     }
   }
 }

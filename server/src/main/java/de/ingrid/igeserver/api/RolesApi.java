@@ -7,7 +7,11 @@ package de.ingrid.igeserver.api;
 
 import de.ingrid.igeserver.model.Role;
 import de.ingrid.igeserver.model.Role1;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,50 +20,43 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
-@Api(value = "roles", description = "the roles API")
-@RequestMapping(path = "/api")
+@Tag(name = "Roles", description = "the roles API")
 public interface RolesApi {
 
-	@ApiOperation(value = "Creates a new role. If role with a given login already exists an error will be returned.", notes = "", response = Void.class, tags = {
-			"Role", })
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Role was successfully updated", response = Void.class),
-			@ApiResponse(code = 406, message = "A role with the given login does not exist and cannot be updated", response = Void.class) })
+    @Operation(description = "Creates a new role. If role with a given login already exists an error will be returned.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Role was successfully updated"),
+            @ApiResponse(responseCode = "406", description = "A role with the given login does not exist and cannot be updated")})
 
-	@RequestMapping(value = "/roles/{id}", produces = { "application/json" }, method = RequestMethod.POST)
-	ResponseEntity<Void> createRole(
-			@ApiParam(value = "The unique id of the user.", required = true) @PathVariable("id") String id,
-			@ApiParam(value = "Save the role into the database.", required = true) @Valid @RequestBody Role1 role);
+    @RequestMapping(value = "/roles/{id}", produces = {"application/json"}, method = RequestMethod.POST)
+    ResponseEntity<Void> createRole(
+            @Parameter(description = "The unique id of the user.", required = true) @PathVariable("id") String id,
+            @Parameter(description = "Save the role into the database.", required = true) @Valid @RequestBody Role1 role);
 
-	@ApiOperation(value = "Deletes a role.", notes = "Delete a role with a given ID. If role with a given id does not exists an error will be returned.", response = Void.class, tags = {
-			"Role", })
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Role was successfully deleted", response = Void.class),
-			@ApiResponse(code = 406, message = "A role with the given id does not exist and cannot be deleted", response = Void.class) })
+    @Operation(description = "Delete a role with a given ID. If role with a given id does not exists an error will be returned.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Role was successfully deleted"),
+            @ApiResponse(responseCode = "406", description = "A role with the given id does not exist and cannot be deleted")})
 
-	@RequestMapping(value = "/roles/{id}", produces = { "application/json" }, method = RequestMethod.DELETE)
-	ResponseEntity<Void> deleteRole(
-			@ApiParam(value = "The unique id of the role.", required = true) @PathVariable("id") String id);
+    @RequestMapping(value = "/roles/{id}", produces = {"application/json"}, method = RequestMethod.DELETE)
+    ResponseEntity<Void> deleteRole(
+            @Parameter(description = "The unique id of the role.", required = true) @PathVariable("id") String id);
 
-	@ApiOperation(value = "Get a role", notes = "Get the role with the given ID.", response = Void.class, tags = {
-			"Role", })
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Returns the role", response = Void.class) })
-	@RequestMapping(value = "/roles/{id}", produces = { "application/json" }, method = RequestMethod.GET)
-	ResponseEntity<String> getRole(
-			@ApiParam(value = "The unique id of the role.", required = true) @PathVariable("id") String id);
+    @Operation(description = "Get the role with the given ID.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Returns the role")})
+    @RequestMapping(value = "/roles/{id}", produces = {"application/json"}, method = RequestMethod.GET)
+    ResponseEntity<String> getRole(
+            @Parameter(description = "The unique id of the role.", required = true) @PathVariable("id") String id);
 
-	@ApiOperation(value = "", notes = "", response = Void.class, tags = { "Role", })
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Returns the list of roles", response = Void.class) })
-	@RequestMapping(value = "/roles", produces = { "application/json" }, method = RequestMethod.GET)
-	ResponseEntity<String> listRoles();
+    @Operation(description = "")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Returns the list of roles")})
+    @RequestMapping(value = "/roles", produces = {"application/json"}, method = RequestMethod.GET)
+    ResponseEntity<String> listRoles();
 
-	@ApiOperation(value = "Updates a role. If role could not be found an error will be returned.", notes = "", response = Void.class, tags = {
-			"Role", })
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Role was successfully created", response = Void.class),
-			@ApiResponse(code = 406, message = "A role already exists with the given login", response = Void.class) })
-	@RequestMapping(value = "/roles/{id}", produces = { "application/json" }, method = RequestMethod.PUT)
-	ResponseEntity<Void> updateRole(
-			@ApiParam(value = "The unique id of the role.", required = true) @PathVariable("id") String id,
-			@ApiParam(value = "Save the role into the database.", required = true) @Valid @RequestBody Role role);
+    @Operation(description = "Updates a role. If role could not be found an error will be returned.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Role was successfully created"),
+            @ApiResponse(responseCode = "406", description = "A role already exists with the given login")})
+    @RequestMapping(value = "/roles/{id}", produces = {"application/json"}, method = RequestMethod.PUT)
+    ResponseEntity<Void> updateRole(
+            @Parameter(description = "The unique id of the role.", required = true) @PathVariable("id") String id,
+            @Parameter(description = "Save the role into the database.", required = true) @Valid @RequestBody Role role);
 
 }

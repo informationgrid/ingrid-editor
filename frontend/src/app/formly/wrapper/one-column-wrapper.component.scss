@@ -1,70 +1,5 @@
 
 
-.label-wrapper + ::ng-deep * {
-  flex: 1;
-}
-
-.label-wrapper + ::ng-deep formly-wrapper-mat-form-field {
-  display: contents;
-}
-
-::ng-deep .form-content .mat-form-field-infix {
-  /*border-top: 0.2em solid transparent;*/
-  border-top: 0;
-}
-
-::ng-deep .form-content .mat-form-field-appearance-outline .mat-form-field-infix {
-  padding: 1em 0 0.7em 0;
-}
-
-::ng-deep .form-content .mat-form-field-appearance-outline .mat-form-field-subscript-wrapper {
-  padding: 0.2em 1em;
-}
-
-::ng-deep .form-content .mat-form-field-wrapper {
-  padding-bottom: 0.3em;
-}
-
-::ng-deep .form-content .mat-form-field-invalid .mat-form-field-wrapper {
-  padding-bottom: 0;
-  margin: 0.25em 0 0 0;
-}
-
-::ng-deep .form-content .mat-form-field-subscript-wrapper {
-  padding-top: 3px;
-}
-
-::ng-deep .form-content .mat-form-field-label-wrapper {
-  top: -0.64375em;
-}
-
-::ng-deep .form-content .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
-  -webkit-transform: translateY(-1.09375em) scale(.75);
-  transform: translateY(-1.09375em) scale(.75);
-}
-
-::ng-deep .form-content .mat-select-arrow-wrapper {
-  padding-top: 10px;
-}
-
-::ng-deep .mat-button-wrapper {
-  vertical-align: middle;
-}
-
-/* Multi-line error: https://github.com/angular/material2/issues/4580#issuecomment-340692923 */
-::ng-deep mat-form-field .mat-form-field-underline {
-  position: static;
-}
-
-::ng-deep mat-form-field .mat-form-field-subscript-wrapper {
-  position: static;
-  margin-top: 0.4em;
-}
-
-::ng-deep mat-form-field.mat-form-field-invalid .mat-form-field-subscript-wrapper {
-  margin-top: 0;
-}
-
 /* validation error hide conditionally */
 
 ::ng-deep .hide-validation {
@@ -122,13 +57,13 @@
   padding-right: 20px;
 }
 
-.form-content {
+/*.form-content {
   min-width: 400px;
   max-width: 1200px;
   width: 100%;
   padding-top: 15px;
   padding-left: 40px;
-}
+}*/
 
 .example-margin {
   margin: 0 40px 0 0;

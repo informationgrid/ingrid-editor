@@ -1,7 +1,7 @@
 <ige-tree [showReloadButton]="true"
-          [expandNodeIds]="initialExpandNodes"
-          [activeNodeId]="initialActiveNodeId"
-          [selectedIds]="selectedIds"
           [update]="updateTree"
+          [setActiveNode]="activeTreeNode"
+          (currentPath)="storePathTitles($event)"
           (activate)="handleLoad($event)"
           (selected)="handleSelection($event)"></ige-tree>
+

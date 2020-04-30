@@ -27,6 +27,6 @@ public class HomeController {
 
     @GetMapping(value = "/swagger")
     public RedirectView swagger() {
-        return new RedirectView( "swagger-ui.html" );
+        return new RedirectView( "swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config" );
     }
 }

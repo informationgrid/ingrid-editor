@@ -1,39 +1,37 @@
-<h1>Daten</h1>
+<h1 class="text-center">Daten</h1>
 
-<div class="button-bar">
-    <button mat-button>
-        <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-        Neuer Ordner
+<div class="text-center shortcut">
+    <button mat-button (click)="createNewFolder()">
+        <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
+        <span>Neuer Ordner</span>
     </button>
-    <button mat-button>
-        <mat-icon class="material-icons-outlined">create_new_folder</mat-icon>
-        Neuer Datensatz
+    <button mat-button (click)="createNewDataset()">
+        <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
+        <span>Neuer Datensatz</span>
     </button>
-    <button mat-button>
+    <button mat-button (click)="importDataset()" disabled>
         <mat-icon>import_export</mat-icon>
-        Datensatz Import
+        <span>Datensatz Import</span>
     </button>
 </div>
 
-<div class="info-box" fxLayout="row" fxLayoutGap="24px">
-    <mat-card fxFlex>
-        <mat-card-subtitle>Meine Daten</mat-card-subtitle>
-        <mat-card-content>...</mat-card-content>
-    </mat-card>
-    <mat-card fxFlex>
-        <mat-card-subtitle>Neue Datensätze</mat-card-subtitle>
-        <mat-card-content>...</mat-card-content>
-    </mat-card>
+<div *ngIf="(treeDocs | async) > 0">
+    <div class="info-box" fxLayout="row" fxLayoutGap="24px">
+        <ige-card-box fxFlex label="Meine Daten">...</ige-card-box>
+        <ige-card-box fxFlex label="Neue Datensätze">...</ige-card-box>
+    </div>
+
+    <div class="info-box" fxLayout="row" fxLayoutGap="24px">
+        <ige-card-box fxFlex label="Zuletzt bearbeitet">...</ige-card-box>
+        <ige-card-box fxFlex label="Favoriten">...</ige-card-box>
+    </div>
 </div>
 
-<div class="info-box" fxLayout="row" fxLayoutGap="24px">
-    <mat-card fxFlex>
-        <mat-card-subtitle>Zuletzt bearbeitet</mat-card-subtitle>
-        <mat-card-content>...</mat-card-content>
-    </mat-card>
-    <mat-card fxFlex>
-        <mat-card-subtitle>Favoriten</mat-card-subtitle>
-        <mat-card-content>...</mat-card-content>
-    </mat-card>
+<div *ngIf="(treeDocs | async) === 0" class="banner text-center">
+    <div class="circle-wrapper">
+        <mat-icon svgIcon="image-banner-dataset"></mat-icon>
+    </div>
+    <h2>Kein Ordner oder Datensatz vorhanden</h2>
+    <p>Legen Sie einen neuen Ordner oder Datensatz an oder importieren Sie Datensätze.</p>
+    <p>Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in der Werkzeugleiste.</p>
 </div>
-

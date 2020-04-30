@@ -1,11 +1,23 @@
-<form (ngSubmit)="dialogRef.close(newCatalogName.value)">
-    <h2 mat-dialog-title>Neuen Katalog anlegen</h2>
-    <mat-dialog-content>
+<h2 mat-dialog-title>Neuen Katalog anlegen</h2>
+<mat-dialog-content>
+    <form #catForm="ngForm" fxFlex fxLayout="column">
         <mat-form-field>
-            <input matInput placeholder="Katalogname" #newCatalogName>
+            <input matInput placeholder="Katalogname" [(ngModel)]="model.name" name="name" required>
         </mat-form-field>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-        <button mat-button type="submit" [mat-dialog-close]="newCatalogName.value">Anlegen</button>
-    </mat-dialog-actions>
-</form>
+        <mat-form-field>
+            <mat-label>Typ</mat-label>
+            <mat-select [(ngModel)]="model.type" name="type" required>
+                <mat-option *ngFor="let type of types" [value]="type.id">
+                    {{type.label}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button type="submit" color="primary"
+            [mat-dialog-close]="model"
+            [disabled]="catForm.form.invalid">
+        Anlegen
+    </button>
+</mat-dialog-actions>

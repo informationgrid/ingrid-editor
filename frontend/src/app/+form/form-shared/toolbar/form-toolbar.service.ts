@@ -1,0 +1,91 @@
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Subject} from 'rxjs';
+
+export interface DefaultToolbarItem {
+  id: string;
+  pos: number;
+  align?: 'right' | 'left';
+}
+
+export interface ToolbarItem extends DefaultToolbarItem {
+  tooltip?: string;
+  matIconVariable?: string;
+  matSvgVariable?: string;
+  cssClasses?: string;
+  eventId: string;
+  active?: boolean;
+  label?: string;
+  isPrimary?: boolean;
+  menu?: any
+}
+
+export interface Separator extends DefaultToolbarItem {
+  isSeparator: boolean;
+}
+
+@Injectable()
+export class FormToolbarService {
+
+  // event when a new button was added
+  toolbar$ = new BehaviorSubject<Array<ToolbarItem | Separator>>([]);
+
+  // events coming from a toolbar button
+  toolbarEvent$ = new Subject<string>();
+
+  private _buttons: Array<ToolbarItem | Separator> = [];
+
+  constructor() {
+  }
+
+  get buttons(): Array<ToolbarItem | Separator> {
+    return this._buttons;
+  }
+
+  addButton(button: ToolbarItem | Separator) {
+    const pos = this._buttons.length;
+
+    this._buttons.splice(pos, 0, button);
+
+    // sort buttons
+    this._buttons.sort((a, b) => a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1);
+
+    this.toolbar$.next(this.buttons);
+  }
+
+  removeButton(id: string): void {
+    let index = null;
+    this._buttons.some((b, i) => {
+      if (b.id === id) {
+        index = i;
+        return true;
+      }
+    });
+
+    if (index !== null) {
+      this._buttons.splice(index, 1);
+    }
+
+    this.toolbar$.next(this.buttons);
+  }
+
+  sendEvent(eventId: string) {
+    this.toolbarEvent$.next(eventId);
+  }
+
+
+  /**
+   * Set the state of a toolbar button to enabled or disabled.
+   * @param id
+   * @param active
+   */
+  setButtonState(id: string, active: boolean) {
+    const button = <ToolbarItem>this.getButtonById(id);
+    if (button) {
+      button.active = active;
+    }
+  }
+
+  private getButtonById(id: string): DefaultToolbarItem {
+    return this._buttons.find((b) => b.id === id);
+  }
+}

@@ -1,35 +1,71 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { CopyMoveEnum } from './enums';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {TreeQuery} from '../../../store/tree/tree.query';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {ShortTreeNode} from '../../sidebars/tree/tree.component';
+
+export interface PasteDialogOptions {
+  buttonText: string;
+  titleText: string;
+  contentText: string;
+  disabledCondition: any;
+  forAddress: boolean;
+}
 
 @Component({
   template: `
-    <h2 mat-dialog-title>Einfügen</h2>
+    <div class="dialog-title-wrapper">
+      <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+          <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">{{data.titleText}}</span>
+      </h2>
+    </div>
     <mat-dialog-content>
-      <p>Wohin wollen Sie die ausgewählten Datensätze kopieren?</p>
-      <ige-tree (selected)="handleSelected($event)" [showReloadButton]="false"></ige-tree>
+      <p>{{data.contentText}}</p>
+      <ige-tree (selected)="handleSelected($event)"
+                [disabledCondition]="disabledCondition"
+                (currentPath)="setPath($event)"
+                [forAddresses]="data.forAddress"
+                [showReloadButton]="false"></ige-tree>
     </mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-button [mat-dialog-close]="selection" class="pull-right" [disabled]="!selection">{{copyOrMoveText}}</button>
+      <div fxFlex></div>
+      <button mat-button [mat-dialog-close]="{selection: selection, path: path}" [disabled]="!selection">
+        {{data.buttonText}}
+      </button>
     </mat-dialog-actions>
   `
 })
 export class PasteDialogComponent implements OnInit {
 
   selection: any[] = null;
+  path: string[];
+  query;
+  disabledCondition = () => {
+    return false;
+  };
 
-  copyOrMoveText: string;
-
-  constructor(@Inject( MAT_DIALOG_DATA ) public data: any) {
-    // TODO: also show button for document or tree copy/cut
+  constructor(@Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions, treeQuery: TreeQuery, addressTreeQuery: AddressTreeQuery) {
+    this.query = data.forAddress ? addressTreeQuery : treeQuery;
+    if (data.disabledCondition) {
+      this.disabledCondition = data.disabledCondition;
+    }
   }
 
   ngOnInit() {
-    this.copyOrMoveText = this.data.mode === CopyMoveEnum.COPY ? 'Kopieren' : 'Verschieben';
+
   }
 
   handleSelected(evt: any) {
     this.selection = evt;
   }
 
+  setPath(path: ShortTreeNode[]) {
+    if (path.length > 0) {
+      const active = this.query.getEntity(this.selection);
+      this.path = [...path.map(node => node.title), active.title];
+    }
+  }
 }

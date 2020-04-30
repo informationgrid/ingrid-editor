@@ -1,17 +1,22 @@
 @import "../../variables";
 
+::ng-deep .mat-drawer {
+  border: 0;
+}
+
 .mat-list-base {
   padding-top: 0;
 }
 
 :host {
   display: block;
-  background-color: #28225b;
+  background-color: $ige-secondary-dark;
   height: 100%;
-}
+  letter-spacing: 0.67px;
 
-::ng-deep .mat-icon svg path {
-  fill: #ffffff;
+  ::ng-deep .mat-icon svg path {
+    fill: #ffffff;
+  }
 }
 
 .active {
@@ -21,33 +26,47 @@
 
 .mat-nav-list {
   overflow: auto;
+  width: 300px;
+  flex-basis: auto !important; // IE 11
 
   &.collapsed {
     width: 56px;
-
-    ::ng-deep .mat-list-text {
-      padding-left: 0 !important;
-    }
-
+    overflow: hidden;
   }
 
   ::ng-deep .mat-list-item-content {
     padding: 0 12px !important;
   }
 
-  .mat-list-item:hover {
-    background: #00000018 !important;
+  ::ng-deep .mat-list-item {
+
+    color: #ffffff;
+    height: 56px;
+    font-size: 18px;
+
+    &.menu-toggle {
+      text-transform: none;
+      font-size: 16px;
+      height: 46px;
+    }
+
+    &.light {
+      background-color: $ige-secondary;
+    }
+
+    &.dark:hover {
+      background-color: lighten($ige-secondary, 8%);
+    }
+
+    &:hover {
+      background: lighten($ige-secondary, 8%) !important;
+    }
+
+    &.active:hover {
+      background: lighten($ige-primary, 8%) !important;
+    }
   }
 
-  .mat-list-item.active:hover {
-    background: #ffffff18 !important;
-  }
-}
-
-.mat-list-base .mat-list-item {
-  color: #ffffff;
-  height: 56px;
-  font-size: 18px;
 }
 
 .fillVertical {
@@ -60,7 +79,3 @@
   padding-left: 20px;
 }
 
-.mat-list-base .mat-list-item.menu-toggle {
-  box-shadow: 0 0 2px #ffffff;
-  height: 46px;
-}

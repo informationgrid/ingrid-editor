@@ -1,7 +1,6 @@
 import {DashboardComponent} from './dashboard.component';
 
 import {RouterTestingModule} from '@angular/router/testing';
-import {ChartistModule} from 'ng-chartist';
 import {ConfigService} from '../services/config/config.service';
 import {of} from 'rxjs';
 import {recentDocuments} from '../_test-data/documents';
@@ -15,7 +14,7 @@ describe('DashboardComponent', () => {
   let spectator: Spectator<DashboardComponent>;
   const createComponent = createComponentFactory({
     component: DashboardComponent,
-    imports: [ChartistModule, RouterTestingModule],
+    imports: [RouterTestingModule],
     mocks: [ConfigService, DocumentDataService, FormularService, ModalService],
     detectChanges: false
   });
@@ -27,23 +26,20 @@ describe('DashboardComponent', () => {
   });
 
   it('should show last recent documents', () => {
-    let dataService = spectator.get<DocumentDataService>(DocumentDataService);
+    const dataService = spectator.get<DocumentDataService>(DocumentDataService);
     dataService.find.and.returnValue(of(recentDocuments));
-    let formService = spectator.get<FormularService>(FormularService);
-    formService.getTitle.and.callFake((profile, item) => {
-      return item.title;
-    });
+    const formService = spectator.get<FormularService>(FormularService);
 
     spectator.detectChanges();
 
-    let recentDocs = spectator.queryAll('.recentDocs li');
+    const recentDocs = spectator.queryAll('.recentDocs li');
     expect(recentDocs[0].textContent.trim()).toEqual('Test Document 1');
     expect(recentDocs[1].textContent.trim()).toEqual('Test Document 2');
     expect(recentDocs[2].textContent.trim()).toEqual('Test Document 3');
   });
 
   xit('should show number of published documents', () => {
-    let numPublishedDocs = spectator.query('.numPublishedDocs');
+    const numPublishedDocs = spectator.query('.numPublishedDocs');
     expect(numPublishedDocs.textContent).toEqual('2');
   });
 
@@ -64,6 +60,11 @@ describe('DashboardComponent', () => {
   });
 
   xit('should show documents marked as favorite', () => {
+
+  });
+
+
+  xit('should open document when selected from recent documents widget', () => {
 
   });
 

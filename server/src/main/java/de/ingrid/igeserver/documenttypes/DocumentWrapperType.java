@@ -9,11 +9,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DocumentWrapperType implements DocumentType {
+public class DocumentWrapperType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(DocumentWrapperType.class);
 
     public static final String DOCUMENT_WRAPPER = "DocumentWrapper";
+    public static final String ADDRESS_WRAPPER = "AddressWrapper";
+
+    private String[] profiles = new String[0];
 
     @Override
     public void initialize(ODatabaseSession session) {
@@ -31,5 +34,10 @@ public class DocumentWrapperType implements DocumentType {
             docClass.createProperty("archive", OType.LINKLIST);
         }
 
+    }
+
+    @Override
+    public String[] activeInProfiles() {
+        return profiles;
     }
 }

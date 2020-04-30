@@ -17,12 +17,12 @@ const imports = [
   FormFieldsModule, ReactiveFormsModule
 ];
 
-let data = new BehaviorSubject([
+const data = new BehaviorSubject([
   {title: 'node 1', profile: 'AddressDoc', _id: '1', parent: null},
   {title: 'folder', profile: 'FOLDER', _id: '2', parent: null, hasChildren: true},
   {title: 'node 1.1', profile: 'AddressDoc', _id: '3', parent: '2'}
 ]);
-let dataRoot = new BehaviorSubject([
+const dataRoot = new BehaviorSubject([
   {title: 'root node 1', profile: 'AddressDoc', _id: '1', parent: null},
   {title: 'root folder 2', profile: 'FOLDER', _id: '2', parent: null, hasChildren: true},
   {title: 'root node 3', profile: 'AddressDoc', _id: '3', parent: null}
@@ -55,7 +55,8 @@ store.set([{
   _profile: 'FOLDER',
   id: '1',
   _state: 'W',
-  icon: ''
+  icon: '',
+  _modified: null
 }]);
 
 storiesOf('Tree', module)/*.add('empty', () => ({

@@ -8,11 +8,15 @@ import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
-import {ProfileQuery} from '../../store/profile/profile.query';
-import {DocumentUtils} from './document.utils';
 import {arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
 import {ProfileService} from '../profile.service';
+import {SessionStore} from '../../store/session.store';
+import {HttpClient} from '@angular/common/http';
+import {ConfigService, Configuration} from '../config/config.service';
+import {SearchResult} from '../../models/search-result.model';
+import {ServerSearchResult} from '../../models/server-search-result.model';
+import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 
 @Injectable({
   providedIn: 'root'
@@ -26,51 +30,60 @@ export class DocumentService {
   afterProfileSwitch$ = new Subject<any>();
   datasetsChanged$ = new Subject<UpdateDatasetInfo>();
   publishState$ = new BehaviorSubject<boolean>(false);
+  private configuration: Configuration;
 
-  constructor(private modalService: ModalService,
+  constructor(private http: HttpClient, configService: ConfigService,
+              private modalService: ModalService,
               private dataService: DocumentDataService,
               private messageService: MessageService,
               private profileService: ProfileService,
-              private treeStore: TreeStore) {
+              private sessionStore: SessionStore,
+              private treeStore: TreeStore,
+              private addressTreeStore: AddressTreeStore) {
+    this.configuration = configService.getConfiguration();
   }
 
-  find(query: string): Observable<DocumentAbstract[]> {
+  find(query: string, size = 10, address = false): Observable<SearchResult> {
     // TODO: use general sort filter
-    return this.dataService.find(query)
+    return this.http.get<ServerSearchResult>(
+      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}&address=${address}`)
       .pipe(
-        map(json => json.filter(item => item && item._profile !== 'FOLDER')),
-        map(docs => this.mapToDocumentAbstracts(docs, null))
+        // map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        map(result => this.mapSearchResults(result))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       );
   }
 
   findRecent(): void {
-    // TODO: use general sort filter
-    this.dataService.find(null)
+    this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC&size=5`)
       .pipe(
-        map(json => json.filter(item => item && item._profile !== 'FOLDER'))
+        // map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        map(result => this.mapSearchResults(result)),
+        tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       ).subscribe();
   }
 
-  getChildren(parentId: string): Observable<DocumentAbstract[]> {
-    return this.dataService.getChildren(parentId)
+  getChildren(parentId: string, isAddress?: boolean): Observable<DocumentAbstract[]> {
+    return this.dataService.getChildren(parentId, isAddress)
       .pipe(
         map(docs => this.mapToDocumentAbstracts(docs, parentId)),
         map(docs => docs.sort((a, b) => a.title.localeCompare(b.title))),
-        tap(docs => {
-          if (parentId === null) {
-            this.treeStore.set(docs);
-          } else {
-            this.treeStore.add(docs);
-            // this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
-          }
-          return docs;
-        })
+        tap(docs => this.updateTreeStoreDocs(isAddress, parentId, docs))
       );
   }
 
-  private mapToDocumentAbstracts(docs: any[], parentId: string): DocumentAbstract[] {
+  private updateTreeStoreDocs(isAddress: boolean, parentId: string, docs: DocumentAbstract[]) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+    if (parentId === null) {
+      store.set(docs);
+    } else {
+      store.add(docs);
+      // this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
+    }
+  }
+
+  private mapToDocumentAbstracts(docs: IgeDocument[], parentId?: string): DocumentAbstract[] {
     return docs.map(doc => {
       return {
         id: doc._id,
@@ -79,83 +92,96 @@ export class DocumentService {
         _state: doc._state,
         _hasChildren: doc._hasChildren,
         _parent: parentId,
-        _profile: doc._profile
+        _profile: doc._profile,
+        _modified: doc._modified
       };
     });
   }
 
-  load(id: string): Observable<IgeDocument> {
-    return this.dataService.load(id).pipe(
-      tap(doc => this.treeStore.update({openedDocument: DocumentUtils.createDocumentAbstract(doc)})),
-      tap(doc => setTimeout(() => this.treeStore.setActive([doc._id]), 0))
+  load(id: string, address?: boolean): Observable<IgeDocument> {
+    return this.dataService.load(id, address).pipe(
+      tap(doc => this.updateTreeStore(doc, address))
     );
   }
 
-  save(data: IgeDocument, isNewDoc?: boolean): Promise<IgeDocument> {
-    return new Promise((resolve, reject) => {
+  private updateTreeStore(doc: IgeDocument, address: boolean) {
+    const absDoc = this.mapToDocumentAbstracts([doc], doc._parent)[0];
+    return this.updateOpenedDocumentInTreestore(absDoc, address);
+  }
 
-      this.dataService.save(data)
-        .subscribe(json => {
-          const info = DocumentUtils.createDocumentAbstract(json);
-
-          this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
-
-          this.afterSave$.next(data);
-          this.datasetsChanged$.next({
-            type: isNewDoc ? UpdateType.New : UpdateType.Update,
-            data: [info],
-            parent: info._parent
-          });
-          this.treeStore.upsert(info.id, info);
-          resolve(data);
-        }, err => {
-          reject(err);
-        });
+  updateOpenedDocumentInTreestore(doc: DocumentAbstract, address: boolean) {
+    const store = address ? this.addressTreeStore : this.treeStore;
+    setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
+    return store.update({
+      openedDocument: doc
     });
+  }
+
+  save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean, path?: string[]): Promise<IgeDocument> {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    return this.dataService.save(data, isAddress)
+      .toPromise().then(json => {
+        const info = this.mapToDocumentAbstracts([json], json._parent)[0];
+
+        this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
+
+        this.afterSave$.next(data);
+
+        store.upsert(info.id, info);
+
+        this.datasetsChanged$.next({
+          type: isNewDoc ? UpdateType.New : UpdateType.Update,
+          data: [info],
+          parent: info._parent,
+          path: path
+        });
+
+        return json;
+      });
   }
 
   // FIXME: this should be added with a plugin
   publish(data: IgeDocument): Promise<void> {
-    return new Promise((resolve, reject) => {
-      console.log('PUBLISHING');
-      const errors: any = {errors: []};
+    console.log('PUBLISHING');
+    const errors: any = {errors: []};
 
-      // this.handleTitle(data);
+    // this.handleTitle(data);
 
-      this.beforeSave$.next(errors);
-      console.log('After validation:', data);
-      const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
-      if (formInvalid && formInvalid.invalid) {
-        this.modalService.showJavascriptError('Der Datensatz kann nicht veröffentlicht werden.');
-        return;
-      }
+    this.beforeSave$.next(errors);
+    console.log('After validation:', data);
+    const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
+    if (formInvalid && formInvalid.invalid) {
+      this.modalService.showJavascriptError('Der Datensatz kann nicht veröffentlicht werden.');
+      return;
+    }
 
-      this.dataService.publish(data)
-        .subscribe(json => {
-            const info = DocumentUtils.createDocumentAbstract(json);
+    return this.dataService.publish(data)
+      .toPromise().then(json => {
+          const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
-            this.afterSave$.next(data);
-            this.datasetsChanged$.next({
-              type: UpdateType.Update,
-              data: [info]
-            });
-            this.treeStore.upsert(info.id, info);
-            resolve();
-          }
-          // , err => this.errorService.handle( err )
-        );
-    });
+          this.afterSave$.next(data);
+          this.datasetsChanged$.next({
+            type: UpdateType.Update,
+            data: [info]
+          });
+          this.treeStore.upsert(info.id, info);
+        }
+      );
   }
 
-  delete(ids: string[]): void {
-    this.dataService.delete(ids)
+  delete(ids: string[], forAddress?: boolean): void {
+    this.dataService.delete(ids, forAddress)
       .subscribe(res => {
         console.log('ok', res);
         const data = ids.map(id => {
           return {id: id};
         });
-        // @ts-ignore
-        this.datasetsChanged$.next({type: UpdateType.Delete, data: data});
+        this.datasetsChanged$.next({
+          type: UpdateType.Delete,
+          // @ts-ignore
+          data: data
+        });
         this.treeStore.remove(ids);
       });
   }
@@ -168,8 +194,8 @@ export class DocumentService {
       );
   }
 
-  getPath(id: string): Observable<string[]> {
-    return this.dataService.getPath(id).pipe(
+  getPath(id: string, address?: boolean): Observable<string[]> {
+    return this.dataService.getPath(id, address).pipe(
       // tap( path => this.treeStore.setExpandedNodes(path))
     );
   }
@@ -208,4 +234,16 @@ export class DocumentService {
     this.treeStore.add(docs);
   }
 
+  updateChildrenInfo(id: string, hasChildren: boolean) {
+    this.treeStore.update(id, {
+      _hasChildren: hasChildren
+    });
+  }
+
+  private mapSearchResults(result: ServerSearchResult): SearchResult {
+    return {
+      totalHits: result.totalHits,
+      hits: this.mapToDocumentAbstracts(result.hits, null)
+    } as SearchResult;
+  }
 }

@@ -33,6 +33,19 @@ public class IsoImporter implements IgeImporter {
 		return null;
 	}
 
+	@Override
+	public boolean canHandleImportFile(String contentType, String fileContent) {
+		if ("text/xml".equals(contentType)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		return "ISO";
+	}
+
 	private JsonNode mapToJson(Metadata md) {
 
 		ObjectMapper mapper = new ObjectMapper();

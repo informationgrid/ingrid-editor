@@ -5,26 +5,22 @@
  */
 package de.ingrid.igeserver.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
-
-@Api(value = "refreshToken", description = "the refreshToken API")
-@RequestMapping(path="/api")
+@Tag(name = "RefreshToken", description = "the refreshToken API")
 public interface RefreshTokenApi {
 
-    @ApiOperation(value = "", notes = "", response = Void.class, tags = { "Security", })
+    @Operation()
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Returns a new access token to the requested client", response = Void.class) })
+            @ApiResponse(responseCode = "200", description = "Returns a new access token to the requested client")})
 
-    @RequestMapping(value = "/refreshToken", produces = { "application/json" }, method = RequestMethod.GET)
+    @RequestMapping(value = "/refreshToken", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<Void> refreshToken();
 
 }

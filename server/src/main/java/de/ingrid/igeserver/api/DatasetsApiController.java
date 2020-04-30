@@ -4,62 +4,49 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.DBFindAllResults;
+import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.model.Data1;
+import de.ingrid.igeserver.model.SearchResult;
 import de.ingrid.igeserver.services.DocumentService;
-import de.ingrid.igeserver.services.ExportService;
 import de.ingrid.igeserver.services.MapperService;
 import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
-import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.io.IOException;
 import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.ingrid.igeserver.db.OrientDBDatabase.DB_ID;
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.ADDRESS_WRAPPER;
 import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
 import static de.ingrid.igeserver.services.MapperService.*;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-08-21T10:21:42.666Z")
 
-@Controller
+@RestController
+@RequestMapping(path = "/api")
 public class DatasetsApiController implements DatasetsApi {
 
-    private static Logger log = LogManager.getLogger(DatasetsApiController.class);
-
-    private static final String COLLECTION = "Documents";
+    private static final Logger log = LogManager.getLogger(DatasetsApiController.class);
 
     private enum CopyMoveOperation {COPY, MOVE}
 
-    ;
+    private final DBApi dbService;
 
-    private DBApi dbService;
+    private final DocumentService documentService;
 
-//    @Autowired
-//    private JsonToDBService jsonFromService;
+    private final DBUtils dbUtils;
 
-    private DocumentService documentService;
-
-    @Autowired
-    private ExportService exportService;
-
-    private DBUtils dbUtils;
-
-    private AuthUtils authUtils;
+    private final AuthUtils authUtils;
 
     @Autowired
     public DatasetsApiController(AuthUtils authUtils, DBUtils dbUtils, DBApi dbService, DocumentService documentService) {
@@ -72,40 +59,21 @@ public class DatasetsApiController implements DatasetsApi {
     /**
      * Create dataset.
      */
-    public ResponseEntity<String> createDataset(
+    public ResponseEntity<JsonNode> createDataset(
             Principal principal,
-            @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
-            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish) throws ApiException {
+            String data,
+            boolean address,
+            Boolean publish) throws ApiException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
-
-            // TODO: creating a new document inside DB
-            // add document to correct document type class in database
-            /*String documentType = doc.get(FIELD_PROFILE);
-            String documentClass = this.dbService.getClassByDocumentType(documentType);
-            Map result = this.dbService.save(documentClass, null, mapDocument);*/
-
-
-            // add a new document wrapper which stores the document ID in the draft or
-            // published field
-
-
-            // if parentId exists then update hasChildren info even if it already has the value
-            // which makes logic simpler
-
-
-            //Map mapDocument = new HashMap(); //this.documentService.mapDocumentToDatabase(data, publish, userId);
-            ObjectNode dataJson = (ObjectNode) getJsonMap(data);
+            ObjectNode dataJson = (ObjectNode) getJsonNode(data);
 
             // add generated id to document (_id)
             // this one is different from the internal database id (@rid)
-            // TODO: refactor getting sequence
-            //OSequence sequence = session.getMetadata().getSequenceLibrary().getSequence("idseq");
-            //mapDocument.put(FIELD_ID, String.valueOf(sequence.next()));
             UUID uuid = UUID.randomUUID();
             dataJson.put(FIELD_ID, uuid.toString());
             dataJson.put(FIELD_HAS_CHILDREN, false);
@@ -116,12 +84,7 @@ public class DatasetsApiController implements DatasetsApi {
             // get document type from document
             String documentType = dataJson.get(FIELD_PROFILE).asText();
 
-            // get
-
-            // db action
-            // String jsonMapped = DBUtils.toJsonString(mapDocument);
-//            Map result = this.dbService.save(documentType, null, mapDocument);
-            Map result = this.dbService.save(documentType, null, dataJson.toString());
+            JsonNode result = this.dbService.save(documentType, null, dataJson.toString());
 
 
             JsonNode nodeParentId = dataJson.get(PARENT_ID);
@@ -130,31 +93,17 @@ public class DatasetsApiController implements DatasetsApi {
             // create DocumentWrapper
             ObjectNode documentWrapper = this.documentService.getDocumentWrapper();
             documentWrapper.put(FIELD_ID, uuid.toString());
-            documentWrapper.put(FIELD_DRAFT, result.get(DB_ID).toString());
+            documentWrapper.put(FIELD_DRAFT, result.get(DB_ID).asText());
             documentWrapper.put(FIELD_PARENT, parentId);
 
-            Map resultWrapper = this.dbService.save(DOCUMENT_WRAPPER, null, documentWrapper.toString());
+            JsonNode resultWrapper = this.dbService.save(
+                    address ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER, null, documentWrapper.toString());
 
-            // update parent that it has children if needed
-            if (parentId != null) {
-                JsonNode parentDoc = this.documentService.getByDocId(parentId, true);
-                ObjectNode parentDocVersion = (ObjectNode) this.getLatestDocument(parentDoc);
-                if (!parentDocVersion.get(FIELD_HAS_CHILDREN).asBoolean()) {
-                    parentDocVersion.put(FIELD_HAS_CHILDREN, true);
-                    this.dbService.save(
-                            parentDocVersion.get(FIELD_PROFILE).asText(),
-                            parentDocVersion.get(DB_ID).asText(),
-                            parentDocVersion.toString()
-                    );
-                }
-            }
-
-            Map docResult = this.documentService.prepareDocumentFromDB(result, documentWrapper);
-
-            return ResponseEntity.ok(dbUtils.toJsonString(docResult));
+            ObjectNode resultDoc = this.documentService.getLatestDocument(resultWrapper);
+            return ResponseEntity.ok(resultDoc);
         } catch (Exception e) {
             log.error("Error during creation of document", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            throw new ApiException(e.getMessage());
         }
 
     }
@@ -162,45 +111,32 @@ public class DatasetsApiController implements DatasetsApi {
     /**
      * Update dataset.
      */
-    public ResponseEntity<String> updateDataset(
-            Principal principal,
-            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "The dataset to be stored.", required = true) @Valid @RequestBody String data,
-            @ApiParam(value = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", defaultValue = "false", required = false) Boolean publish,
-            @ApiParam(value = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", defaultValue = "false", required = false) Boolean revert) throws ApiException {
+    public ResponseEntity<JsonNode> updateDataset(
+            Principal principal, String id,
+            String data,
+            boolean publish,
+            boolean revert, boolean forAddress) throws ApiException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
+
+            if (dbId == null) {
+                throw new NotFoundException(HttpStatus.NOT_FOUND.value(), "The user does not seem to be assigned to any database.");
+            }
 
             if (revert) {
+                throw new ApiException("Not implemented");
                 // prepareDocumentFromDB = this.jsonFromService.revertDocument( id );
-                throw new NotImplementedException();
                 // return;
             }
 
-            ObjectNode mapDocument = (ObjectNode) getJsonMap(data);
-            mapDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString());
-
-            String docType = mapDocument.get(FIELD_PROFILE).asText();
-
-            if (dbId == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The user does not seem to be assigned to any database.");
-            }
-
-            String recordId = null;
-            Map<String, String> query = new HashMap<>();
-            query.put("_id", id);
-            List<String> docWrappers = dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, false);
-            if (docWrappers.size() != 1) {
-                log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docWrappers.size() + ")");
-                throw new RuntimeException("No unique document wrapper found");
-            }
-            ObjectNode docWrapper = (ObjectNode) getJsonMap(docWrappers.get(0));
-            Map result;
+            ObjectNode docWrapper = (ObjectNode) this.documentService.getByDocId(id, type, false);
 
 
+            String recordId;
             // just update document by using new data and adding database ID
             if (docWrapper.get(FIELD_DRAFT).isNull()) {
                 // create copy of published document with a new db-id
@@ -213,56 +149,72 @@ public class DatasetsApiController implements DatasetsApi {
             }
 
             // save document with same ID or new one, if no draft version exists
-            result = this.dbService.save(docType, recordId, mapDocument.toString());
+            ObjectNode updatedDocument = (ObjectNode) getJsonNode(data);
+            updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString());
+            String docType = updatedDocument.get(FIELD_PROFILE).asText();
+
+            JsonNode save = this.dbService.save(docType, recordId, updatedDocument.toString());
+            String dbID = save.get(DB_ID).asText();
 
             if (publish) {
-                // add ID from published field to archive
-                if (!docWrapper.get(FIELD_PUBLISHED).isNull()) {
-                    docWrapper.withArray(FIELD_ARCHIVE).add(docWrapper.get(FIELD_PUBLISHED));
-                }
-
-                // add doc to published reference
-                docWrapper.put(FIELD_PUBLISHED, result.get(DB_ID).toString());
-
-                // remove draft version
-                docWrapper.put(FIELD_DRAFT, (String) null);
-
-                this.dbService.save(DOCUMENT_WRAPPER, docWrapper.get(DB_ID).asText(), docWrapper.toString());
-
-                //throw new NotImplementedException();
+                handlePublishingOnWrapper(type, docWrapper, dbID);
             } else {
-
-                // update document wrapper with new draft version
-                if (docWrapper.get(FIELD_DRAFT).isNull()) {
-                    // TODO: db_id is ORecord!
-                    docWrapper.put(FIELD_DRAFT, result.get(DB_ID).toString());
-                    this.dbService.save(DOCUMENT_WRAPPER, docWrapper.get(DB_ID).asText(), docWrapper.toString());
-                }
+                handleSaveOnWrapper(type, docWrapper, dbID);
             }
 
+            JsonNode savedDoc = documentService.getByDocId(id, type, true);
+            ObjectNode result = documentService.getLatestDocument(savedDoc);
 
-            Map docResult = this.documentService.prepareDocumentFromDB(result, docWrapper);
-
-            return ResponseEntity.ok(dbUtils.toJsonString(docResult));
+            return ResponseEntity.ok(result);
 
         } catch (Exception e) {
             log.error("Error during updating of document", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            throw new ApiException(e.getMessage());
         }
 
     }
 
-    public ResponseEntity<String> deleteById(Principal principal, @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String[] ids) throws ApiException {
+    private void handleSaveOnWrapper(String type, ObjectNode docWrapper, String dbID) throws ApiException {
+        // update document wrapper with new draft version
+        if (docWrapper.get(FIELD_DRAFT).isNull()) {
+            // TODO: db_id is ORecord!
+            docWrapper.put(FIELD_DRAFT, dbID);
+            this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
+        }
+    }
+
+    private void handlePublishingOnWrapper(String type, ObjectNode docWrapper, String dbID) throws ApiException {
+        // add ID from published field to archive
+        if (!docWrapper.get(FIELD_PUBLISHED).isNull()) {
+            docWrapper.withArray(FIELD_ARCHIVE).add(docWrapper.get(FIELD_PUBLISHED));
+        }
+
+        // add doc to published reference
+        docWrapper.put(FIELD_PUBLISHED, dbID);
+
+        // remove draft version
+        docWrapper.put(FIELD_DRAFT, (String) null);
+
+        this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
+    }
+
+    public ResponseEntity<String> deleteById(Principal principal, String[] ids, boolean forAddress) throws Exception {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             for (String id : ids) {
-                String recordId = this.dbService.getRecordId(DOCUMENT_WRAPPER, id);
-                Map dbDoc = this.dbService.find(DOCUMENT_WRAPPER, recordId);
+
                 // TODO: remove references to document!?
-                this.dbService.remove(DOCUMENT_WRAPPER, id);
+                // TODO: remove all children recursively
+
+                // String recordId = this.dbService.getRecordId(type, id);
+                // JsonNode dbDoc = this.dbService.find(type, recordId);
+
+                this.dbService.remove(type, id);
+
             }
             return ResponseEntity.ok().build();
         }
@@ -270,43 +222,45 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<Void> copyDatasets(
             Principal principal,
-            @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
-            @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data) {
+            List<String> ids,
+            Data1 data) {
 
         try {
 
             copyOrMove(CopyMoveOperation.COPY, ids, data.getDestId());
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (Exception ex) {
             log.error("Error during copy", ex);
-            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public ResponseEntity<Void> moveDatasets(Principal principal, @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("ids") List<String> ids,
-                                             @ApiParam(value = "...", required = true) @Valid @RequestBody Data1 data) throws Exception {
+    public ResponseEntity<Void> moveDatasets(
+            Principal principal,
+            List<String> ids,
+            Data1 data) throws Exception {
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
             copyOrMove(CopyMoveOperation.MOVE, ids, data.getDestId());
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
 
         }
     }
 
     private void copyOrMove(CopyMoveOperation operation, List<String> ids, String destId) throws Exception {
         for (String id : ids) {
-            Map doc = this.dbService.find(DOCUMENT_WRAPPER, id);
+            JsonNode doc = this.dbService.find(DOCUMENT_WRAPPER, id);
 
             // add new parent to document
-            ObjectNode updatedDoc = (ObjectNode) documentService.updateParent(dbUtils.toJsonString(doc), destId);
+            ObjectNode updatedDoc = (ObjectNode) documentService.updateParent(DBUtils.toJsonString(doc), destId);
 
             if (operation == CopyMoveOperation.COPY) {
                 // remove internal dataset Info (TODO: this should be done by the dbService)
-                documentService.removeDBManagementFields(updatedDoc);
+                removeDBManagementFields(updatedDoc);
 
                 // when we copy the node, then we also have to reset the id
                 updatedDoc.set(MapperService.FIELD_ID, null);
@@ -320,160 +274,96 @@ public class DatasetsApiController implements DatasetsApi {
         }
     }
 
-    public ResponseEntity<String> exportDataset(
+    public ResponseEntity<List<ObjectNode>> getChildren(
             Principal principal,
-            @ApiParam(value = "IDs of the copied datasets", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "e.g. ISO", required = true) @PathVariable("format") String format) throws ApiException, IOException {
-
-        String userId = this.authUtils.getUsernameFromPrincipal(principal);
-        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-
-        // TODO: refactor
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
-            Map doc = this.dbService.find(DOCUMENT_WRAPPER, id);
-
-            JsonNode data = null;
-            //data = this.documentService.prepareDocumentFromDB( doc );
-
-            // export doc
-            String exportedDoc = (String) exportService.doExport(data, format);
-
-            return ResponseEntity.ok(exportedDoc);
-        }
-    }
-
-    public ResponseEntity<String> getChildren(
-            Principal principal,
-            String parentId
+            String parentId,
+            boolean isAddress
     ) throws ApiException {
-        List<String> docs = null;
-        List<String> mappedDocs = new ArrayList<>();
+        DBFindAllResults docs;
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = isAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
             Map<String, String> queryMap = new HashMap<>();
             queryMap.put("_parent", parentId);
-            docs = this.dbService.findAll(DOCUMENT_WRAPPER, queryMap, QueryType.exact, true);
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = true;
+            docs = this.dbService.findAll(type, queryMap, findOptions);
 
-            String childDocs = docs.stream()
+            List<ObjectNode> childDocs = docs.hits.stream()
                     .map(doc -> {
-                        try {
-                            return getJsonMap(doc);
-                        } catch (Exception e) {
-                            log.error(e);
-                            return null;
-                        }
-                    })
-                    .map(doc -> {
-                        ObjectNode node = (ObjectNode) getLatestDocument(doc);
-                        node.put(FIELD_STATE, this.documentService.determineState(doc));
+                        ObjectNode node = documentService.getLatestDocument(doc);
+                        node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc, type));
                         return node;
                     })
-                    .map(doc -> doc.toString())
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.toList());
 
-            return ResponseEntity.ok("[" + childDocs + "]");
+            return ResponseEntity.ok(childDocs);
+        } catch (Exception e) {
+            log.error(e);
+            throw new ApiException("Error occured getting children: " + e.getMessage());
         }
     }
 
-    public ResponseEntity<String> find(
-            Principal principal,
-            @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "reverse", required = false) String reverse) throws Exception {
+    public ResponseEntity<SearchResult> find(Principal principal, String query, int size, String sort, String sortOrder, boolean forAddress) throws Exception {
 
-        List<String> docs = null;
-        List<String> mappedDocs = new ArrayList<>();
+        DBFindAllResults docs;
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             Map<String, String> queryMap = new HashMap<>();
-            queryMap.put("title", query);
-            docs = this.dbService.findAll("*", queryMap, QueryType.like, true);
+            queryMap.put("draft.title", query);
+            queryMap.put("draft IS NULL AND published.title", query);
+            FindOptions findOptions = new FindOptions();
+            findOptions.size = size;
+            findOptions.queryType = QueryType.like;
+            findOptions.sortField = sort;
+            findOptions.sortOrder = sortOrder;
+            findOptions.resolveReferences = true;
 
-            String preparedDocs = docs.stream()
-                    .map(doc -> {
-                        try {
-                            return getJsonMap(doc);
-                        } catch (Exception e) {
-                            log.error(e);
-                            return null;
-                        }
-                    })
-                    .map(doc -> {
-                        ObjectNode node = (ObjectNode) getLatestDocument(doc);
-                        node.put(FIELD_STATE, this.documentService.determineState(doc));
-                        return node;
-                    })
-                    .map(doc -> doc.toString())
-                    .collect(Collectors.joining(","));
+            docs = this.dbService.findAll(type, queryMap, findOptions);
 
-            /*for (String doc : docs) {
-                mappedDocs.add(this.dbUtils.toJsonString(this.documentService.prepareDocumentFromDB(doc, null, fields)));
-            }*/
+            SearchResult searchResult = new SearchResult();
+            searchResult.totalHits = docs.totalHits;
 
-            return ResponseEntity.ok("[" + preparedDocs + "]");
+            searchResult.hits = docs.hits.stream()
+                    .map(documentService::getLatestDocument)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(searchResult);
 
         }
     }
 
-    private JsonNode getLatestDocument(JsonNode doc) {
-        JsonNode draft = doc.get(FIELD_DRAFT);
-        if (draft.isNull()) {
-            return doc.get(FIELD_PUBLISHED);
-        } else {
-            return draft;
-        }
-    }
-
-    public ResponseEntity<String> getByID(
+    public ResponseEntity<JsonNode> getByID(
             Principal principal,
-            @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id,
-            @ApiParam(value = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) Boolean publish) throws Exception {
+            String id,
+            Boolean publish, boolean address) throws Exception {
 
-        long start = System.currentTimeMillis();
+        String type = address ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             Map<String, String> query = new HashMap<>();
             query.put("_id", id);
-            List<String> docs = this.dbService.findAll(DOCUMENT_WRAPPER, query, QueryType.exact, true);
+            FindOptions findOptions = new FindOptions();
+            findOptions.queryType = QueryType.exact;
+            findOptions.resolveReferences = true;
+            DBFindAllResults docs = this.dbService.findAll(type, query, findOptions);
 
-            if (docs.size() > 0) {
-                Map doc = getMapFromObject(docs.get(0));
-                log.debug("Getting dataset: " + id);
+            if (docs.totalHits > 0) {
+                ObjectNode doc = documentService.getLatestDocument(docs.hits.get(0));
 
-                if (doc == null) {
-                    throw new ApiException(500, "No document found with the ID: " + id);
-                    // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document with the ID: " + id);
-                }
-
-                Map mapDoc = null;
-                Object theDocument = doc.get(FIELD_DRAFT);
-                if (theDocument == null) {
-                    theDocument = doc.get(FIELD_PUBLISHED);
-                }
-
-                // TODO: is this needed since it's not used anyway?
-                //doc.remove("@rid");
-                //doc.remove("@class");
-
-
-                mapDoc = this.documentService.prepareDocumentFromDB((Map) theDocument, doc);
-
-                //String[] refDocs = dbUtils.getReferencedDocs(mapDoc);
-                //documentService.addReferencedDocsTo(refDocs, mapDoc);
-
-                long end = System.currentTimeMillis();
-                String body = documentService.toJsonString(mapDoc);
-                log.debug("getById took: " + (end - start) + "ms");
-                return ResponseEntity.ok(body);
+                return ResponseEntity.ok(doc);
             } else {
                 throw new NotFoundException(404, "Document not found with id: " + id);
             }
@@ -482,23 +372,27 @@ public class DatasetsApiController implements DatasetsApi {
 
     }
 
-    public ResponseEntity<List<String>> getPath(Principal principal, @ApiParam(value = "The ID of the dataset.", required = true) @PathVariable("id") String id) throws ApiException {
+    public ResponseEntity<List<String>> getPath(
+            Principal principal,
+            String id,
+            boolean forAddress) throws ApiException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
 
-        //List<String> result = this.dbService.getPathToDataset( id );
-        //return ResponseEntity.ok( result );
         String destId = id;
         List<String> path = new ArrayList<>();
         path.add(id);
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             while (destId != null) {
-                JsonNode doc = this.documentService.getByDocId(destId, false);
+                JsonNode doc = this.documentService.getByDocId(destId, type, false);
                 destId = doc.get("_parent").textValue();
                 path.add(destId);
             }
+        } catch (Exception e) {
+            log.error(e);
         }
         // remove last element which is null
         path.remove(path.size() - 1);

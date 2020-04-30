@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {TreeQuery} from '../../../store/tree/tree.query';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ShortTreeNode} from '../../sidebars/tree/tree.component';
 
 @Component({
   selector: 'ige-breadcrumb',
@@ -8,11 +8,24 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 })
 export class BreadcrumbComponent implements OnInit {
 
-  crumb = this.treeQuery.pathTitles$;
+  @Input() path: ShortTreeNode[];
+  @Input() hideLastSeparator = true;
+  @Input() showRoot = true;
+  @Input() rootName = 'Daten';
+  @Input() emphasize = false;
+  @Input() selectable = false;
 
-  constructor(private treeQuery: TreeQuery) { }
+  @Output() select = new EventEmitter<string>();
+
+  constructor() {
+  }
 
   ngOnInit() {
   }
 
+  onSelect(id: string) {
+    if (this.selectable) {
+      this.select.next(id);
+    }
+  }
 }

@@ -1,0 +1,85 @@
+@import '../../variables';
+
+.header-row {
+  color: $ige-secondary;
+}
+
+.header-info {
+  font-size: 14px;
+  padding-right: 32px;
+}
+
+.mat-toolbar-row {
+  padding-right: 12px;
+}
+
+.mat-toolbar-row, .mat-toolbar-single-row, .mat-toolbar-multiple-rows {
+  height: 48px;
+  min-height: 48px;
+  background-color: #ffffff;
+  z-index: 1000;
+}
+
+.showShadow {
+  box-shadow: 0 0 2px 0 #666666;
+}
+
+.page-title-general {
+  font-weight: normal;
+  padding-left: 10px;
+  letter-spacing: 0.25px;
+}
+
+.page-title {
+  font-weight: normal;
+  color: $ige-primary;
+  padding-left: 20px;
+  letter-spacing: 0.25px;
+}
+
+.catalog-title {
+  padding-left: 20px;
+  font-size: 14px;
+}
+
+.user-popup {
+  height: 32px;
+  width: 32px;
+  line-height: 32px;
+  background-color: $ige-background;
+  color: $ige-primary;
+
+  &:hover {
+      background-color: darken($ige-background, 5%);
+   }
+
+  &[aria-expanded="true"] {
+    background-color: $ige-primary;
+    color: #ffffff;
+
+    &:hover {
+      background-color: lighten($ige-primary, 8%);
+    }
+  }
+}
+
+.user-popup-header {
+  color: #ffffff;
+  background-color: $ige-primary;
+  margin-top: -8px;
+  padding: 20px;
+}
+
+.user-popup-footer {
+  border-top: 1px solid $ige-background-bar;
+  margin-bottom: -8px;
+  text-align: center;
+
+  button {
+    width: 100%;
+  }
+}
+
+::ng-deep .user-popup-menu {
+  margin: 12px 0 0;
+}
