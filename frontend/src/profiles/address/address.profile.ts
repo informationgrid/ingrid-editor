@@ -31,7 +31,7 @@ export class ProfileAddress extends BaseProfile {
           },
           fieldGroup: [{
             key: 'firstName',
-            className: 'flex-1',
+            className: 'flex-1 firstName',
             type: 'input',
             wrappers: ['form-field'],
             templateOptions: {
@@ -40,7 +40,7 @@ export class ProfileAddress extends BaseProfile {
             }
           }, {
             key: 'lastName',
-            className: 'flex-1',
+            className: 'flex-1 lastName',
             type: 'input',
             wrappers: ['form-field'],
             templateOptions: {

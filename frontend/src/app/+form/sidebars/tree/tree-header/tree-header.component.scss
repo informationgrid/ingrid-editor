@@ -1,3 +1,9 @@
+@import '../../../../../variables';
+
+:host {
+  background-color: $ige-background;
+}
+
 .header {
   padding: 10px 12px 10px 12px;
 

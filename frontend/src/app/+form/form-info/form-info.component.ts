@@ -20,6 +20,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProfileService} from '../../services/profile.service';
 import {AddressTreeQuery} from '../../store/address-tree/address-tree.query';
 import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE} from '../../store/document/document.model';
+import {ShortTreeNode} from '../sidebars/tree/tree.component';
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -45,7 +46,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   @ViewChild('host') host: ElementRef;
   @ViewChild('sticky_header', {read: ElementRef}) stickyHeader: ElementRef;
 
-  path: string[] = [];
+  path: ShortTreeNode[] = [];
   scrollHeaderOffsetLeft: number;
 
   showScrollHeader = false;
@@ -82,7 +83,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     this.initScrollBehavior();
   }
 
-  private updatePath(path: string[]) {
+  private updatePath(path: ShortTreeNode[]) {
     this.path = path.slice(0, path.length - 1);
     this.cdr.markForCheck();
   }
