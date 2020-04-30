@@ -3,10 +3,10 @@
         <ng-container *ngFor="let button of buttons_left">
             <button *ngIf="!button.isSeparator && !button.menu" mat-icon-button
                     [attr.data-cy]="'toolbar_' + button.eventId"
-                    [title]="button.tooltip"
+                    [matTooltip]="button.tooltip"
                     (click)="sendEvent(button.eventId)"
                     [disabled]="!button.active">
-                <mat-icon class="material-icons-outlined" [title]="button.tooltip" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
+                <mat-icon class="material-icons-outlined" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
             </button>
 
             <ng-container *ngIf="!button.isSeparator && button.menu">
@@ -14,10 +14,10 @@
                         class="drop-down"
                         [matMenuTriggerFor]="copyMenu"
                         [attr.data-cy]="'toolbar_' + button.eventId"
-                        [title]="button.tooltip"
+                        [matTooltip]="button.tooltip"
                         [disabled]="!button.active"
                         (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
-                    <mat-icon class="material-icons-outlined" [title]="button.tooltip" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
+                    <mat-icon class="material-icons-outlined" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
                     <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
                 </button>
                 <mat-menu #copyMenu="matMenu">
@@ -33,7 +33,7 @@
         <span class="save-buttons">
             <ng-container *ngFor="let button of buttons_right">
                 <button *ngIf="!button.isSeparator && !button.label" mat-icon-button
-                        [title]="button.tooltip"
+                        [matTooltip]="button.tooltip"
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         (click)="sendEvent(button.eventId)"
                         [disabled]="!button.active">
@@ -42,6 +42,7 @@
                 </button>
                 <button *ngIf="button.label && !button.isPrimary" mat-stroked-button
                         [attr.data-cy]="'toolbar_' + button.eventId"
+                        [matTooltip]="button.tooltip"
                         [disabled]="!button.active"
                         (click)="sendEvent(button.eventId)">
                     {{button.label}}
@@ -49,6 +50,7 @@
                 <ng-container *ngIf="button.label && button.isPrimary">
                     <button class="btnPublish" mat-flat-button color="primary" [matMenuTriggerFor]="publishMenu"
                             [attr.data-cy]="'toolbar_' + button.eventId"
+                            [matTooltip]="button.tooltip"
                             [disabled]="!button.active"
                             (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
                         {{button.label}}

@@ -32,7 +32,7 @@ export class CreateFolderPlugin extends Plugin {
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
       id: 'toolBtnFolder',
-      tooltip: 'Create Folder',
+      tooltip: 'Ordner erstellen',
       matSvgVariable: 'outline-create_new_folder-24px',
       eventId: this.eventCreateFolderId,
       pos: 1,

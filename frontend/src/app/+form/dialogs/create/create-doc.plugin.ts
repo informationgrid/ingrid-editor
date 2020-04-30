@@ -38,7 +38,7 @@ export class CreateDocumentPlugin extends Plugin {
 
   register() {
     const buttons = [
-      {id: 'toolBtnNew', tooltip: 'New', matSvgVariable: 'Neuer-Datensatz', eventId: 'NEW_DOC', pos: 10, active: true},
+      {id: 'toolBtnNew', tooltip: 'Neuen Datensatz erstellen', matSvgVariable: 'Neuer-Datensatz', eventId: 'NEW_DOC', pos: 10, active: true},
       {id: 'toolBtnNewSeparator', pos: 15, isSeparator: true}
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));

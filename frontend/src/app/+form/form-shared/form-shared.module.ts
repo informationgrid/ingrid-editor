@@ -34,6 +34,7 @@ import {SharedModule} from '../../shared/shared.module';
 import {DestinationSelectionComponent} from '../dialogs/create/destination-selection/destination-selection.component';
 import {HeaderTitleRowMinComponent} from '../form-info/header-title-row-min/header-title-row-min.component';
 import {HistoryPlugin} from '../dialogs/history/history.plugin';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 @NgModule({
@@ -55,7 +56,8 @@ import {HistoryPlugin} from '../dialogs/history/history.plugin';
     FlexLayoutModule,
     IgeFormlyModule,
     MatTabsModule,
-    SharedModule
+    SharedModule,
+    MatTooltipModule
   ],
   providers: [FormToolbarService, FormPluginsService, CreateDocumentPlugin, SavePlugin, CreateFolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService, HistoryPlugin],

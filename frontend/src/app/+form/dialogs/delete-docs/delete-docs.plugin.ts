@@ -33,7 +33,7 @@ export class DeleteDocsPlugin extends Plugin {
     super.register();
 
     this.formToolbarService.addButton(
-      {id: 'toolBtnRemove', tooltip: 'Remove', matSvgVariable: 'outline-delete-24px', eventId: 'DELETE', pos: 100, active: false}
+      {id: 'toolBtnRemove', tooltip: 'Löschen', matSvgVariable: 'outline-delete-24px', eventId: 'DELETE', pos: 100, active: false}
     );
 
     this.subscriptions.push(

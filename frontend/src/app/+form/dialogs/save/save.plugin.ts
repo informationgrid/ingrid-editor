@@ -42,7 +42,6 @@ export class SavePlugin extends Plugin {
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
       id: 'toolBtnSave',
-      tooltip: 'Save',
       label: 'Speichern',
       matIconVariable: 'save',
       eventId: 'SAVE',

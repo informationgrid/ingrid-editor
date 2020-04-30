@@ -8,7 +8,7 @@ export interface DefaultToolbarItem {
 }
 
 export interface ToolbarItem extends DefaultToolbarItem {
-  tooltip: string;
+  tooltip?: string;
   matIconVariable?: string;
   matSvgVariable?: string;
   cssClasses?: string;
