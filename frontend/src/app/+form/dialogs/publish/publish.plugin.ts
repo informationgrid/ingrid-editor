@@ -6,6 +6,8 @@ import {Plugin} from '../../../+behaviours/plugin';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {MessageService} from '../../../services/message.service';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {merge} from 'rxjs';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -26,6 +28,7 @@ export class PublishPlugin extends Plugin {
               private modalService: ModalService,
               private messageService: MessageService,
               private treeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
               private formsManager: AkitaNgFormsManager,
               private storageService: DocumentService) {
     super();
@@ -113,7 +116,10 @@ export class PublishPlugin extends Plugin {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour() {
-    this.treeQuery.openedDocument$.subscribe(loadedDocument => {
+    merge(
+      this.treeQuery.openedDocument$,
+      this.addressTreeQuery.openedDocument$
+    ).subscribe(loadedDocument => {
       this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null && loadedDocument._profile !== 'FOLDER');
       this.formToolbarService.setButtonState('toolBtnRevert', loadedDocument !== null && loadedDocument._state === 'PW');
     });
