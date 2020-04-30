@@ -39,7 +39,14 @@ export class CreateDocumentPlugin extends Plugin {
 
   register() {
     const buttons = [
-      {id: 'toolBtnNew', tooltip: 'Neuen Datensatz erstellen', matSvgVariable: 'Neuer-Datensatz', eventId: 'NEW_DOC', pos: 10, active: true},
+      {
+        id: 'toolBtnNew',
+        tooltip: 'Neuen Datensatz erstellen',
+        matSvgVariable: 'Neuer-Datensatz',
+        eventId: 'NEW_DOC',
+        pos: 10,
+        active: true
+      },
       {id: 'toolBtnNewSeparator', pos: 15, isSeparator: true}
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
@@ -58,33 +65,38 @@ export class CreateDocumentPlugin extends Plugin {
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
     const selectedDoc = query.getOpenedDocument();
 
-    query.selectEntity(selectedDoc.id)
-      .pipe(
-        filter(entity => entity !== undefined),
-        take(1)
-      )
-      .subscribe((entity) => {
-
-        let selectedDocId = null;
-        if (selectedDoc) {
+    if (selectedDoc) {
+      query.selectEntity(selectedDoc.id)
+        .pipe(
+          filter(entity => entity !== undefined),
+          take(1)
+        )
+        .subscribe((entity) => {
+          let selectedDocId = null;
           const folder = query.getFirstParentFolder(selectedDoc.id.toString());
           if (folder !== null) {
             selectedDocId = folder.id;
           }
-        }
-
-        this.dialog.open(CreateNodeComponent, {
-          minWidth: 500,
-          minHeight: 400,
-          disableClose: true,
-          data:
-            {
-              parent: selectedDocId,
-              forAddress: this.forAddress,
-              isFolder: false
-            } as CreateOptions
+          this.showDialog(selectedDocId);
         });
-      });
+    } else {
+      this.showDialog(null);
+    }
+
+  }
+
+  showDialog(parentDocId: string) {
+    this.dialog.open(CreateNodeComponent, {
+      minWidth: 500,
+      minHeight: 400,
+      disableClose: true,
+      data:
+        {
+          parent: parentDocId,
+          forAddress: this.forAddress,
+          isFolder: false
+        } as CreateOptions
+    });
   }
 
   unregister() {
