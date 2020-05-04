@@ -84,10 +84,7 @@ export class SavePlugin extends Plugin {
   save(formData: IgeDocument, forAddress: boolean) {
     this.documentService.publishState$.next(false);
 
-    this.documentService.save(formData, undefined, forAddress)
-      .catch((err: HttpErrorResponse) => {
-        throw err;
-      });
+    this.documentService.save(formData, false, forAddress);
   }
 
   unregister() {

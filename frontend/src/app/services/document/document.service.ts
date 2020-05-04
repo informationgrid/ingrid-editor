@@ -24,7 +24,7 @@ import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 export class DocumentService {
 
   // TODO: check usefulness
-  beforeSave$ = new Subject<any>();
+  beforePublish$ = new Subject<any>();
   afterSave$ = new Subject<any>();
   afterLoadAndSet$ = new Subject<any>();
   afterProfileSwitch$ = new Subject<any>();
@@ -148,7 +148,7 @@ export class DocumentService {
 
     // this.handleTitle(data);
 
-    this.beforeSave$.next(errors);
+    this.beforePublish$.next(errors);
     console.log('After validation:', data);
     const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
     if (formInvalid && formInvalid.invalid) {

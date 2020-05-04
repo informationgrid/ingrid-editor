@@ -52,7 +52,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   paddingWithHeader: string;
 
   private formUtils: FormUtils;
-  private showValidationErrors = false;
+  showValidationErrors = false;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
@@ -121,11 +121,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): any {
 
     // add form errors check when saving/publishing
-    this.documentService.beforeSave$
+    this.documentService.beforePublish$
       .pipe(untilDestroyed(this))
       .subscribe((message: any) => {
         message.errors.push({invalid: this.form.invalid});
       });
+
+    // reset dirty flag after save
+    this.documentService.afterSave$
+      .pipe(untilDestroyed(this))
+      .subscribe((message: any) => this.resetForm());
   }
 
   @HostListener('window: keydown', ['$event'])
@@ -178,8 +183,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.model = {...data};
-      this.form.markAsPristine();
-      this.form.markAsUntouched();
+      this.resetForm();
 
     } catch (ex) {
       console.error(ex);
@@ -229,4 +233,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       ? (stickyHeaderInfo.headerHeight + 20) + 'px'
       : 20 + 'px';
   }
+
+  private resetForm() {
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+  }
+
 }
