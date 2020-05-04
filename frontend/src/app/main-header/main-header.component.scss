@@ -9,6 +9,10 @@
   padding-right: 32px;
 }
 
+.link-button ::ng-deep .mat-button-wrapper {
+  text-transform: none;
+}
+
 .mat-toolbar-row {
   padding-right: 12px;
 }

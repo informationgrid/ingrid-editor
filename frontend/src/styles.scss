@@ -29,9 +29,19 @@ a {
 h1 {
   font-size: 48px;
   color: $ige-primary;
+  font-weight: normal;
 }
 
-.wide-spacing {
+.small-spacing {
+  letter-spacing: 0.25px;
+}
+.medium-spacing {
+  letter-spacing: 0.5px;
+}
+.large-spacing {
+  letter-spacing: 0.75px;
+}
+.extra-large-spacing {
   letter-spacing: 1.25px;
 }
 
@@ -74,6 +84,15 @@ h1 {
 }
 .width-100 {
   width: 100%;
+}
+
+.mat-button.link-button {
+  font-weight: normal;
+  letter-spacing: 0.25px;
+
+  color: #28225B;
+  padding: 0 10px;
+  text-transform: none;
 }
 
 .shortcut {

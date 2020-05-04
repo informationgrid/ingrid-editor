@@ -10,7 +10,7 @@
     <mat-autocomplete #auto="matAutocomplete" class="quicksearch-auto dense option-no-padding">
         <div fxFlex fxLayout="row" fxLayoutAlign="space-between" class="result-header">
             <div>Suchvorschläge</div>
-            <div class="wide-spacing">
+            <div class="extra-large-spacing">
                 <a href="#" (click)="openResearchPage($event)"><mat-icon svgIcon="Recherche" class="research-icon"></mat-icon> Erweiterte Suche</a>
             </div>
         </div>
@@ -21,7 +21,7 @@
             <ige-document-list-item [doc]="doc"></ige-document-list-item>
         </mat-option>
 
-        <div *ngIf="numDocs > 5" class="show-all-link wide-spacing">
+        <div *ngIf="numDocs > 5" class="show-all-link extra-large-spacing">
             <a href="#" (click)="openResearchPage($event)"><mat-icon>keyboard_arrow_right</mat-icon> Alle</a>
         </div>
         <div class="spacing"></div>
@@ -31,7 +31,7 @@
             <ige-document-list-item [doc]="address"></ige-document-list-item>
         </mat-option>
 
-        <div *ngIf="numAddresses > 5" class="show-all-link wide-spacing">
+        <div *ngIf="numAddresses > 5" class="show-all-link extra-large-spacing">
             <a href="#" (click)="openResearchPage($event)"><mat-icon>keyboard_arrow_right</mat-icon> Alle</a>
         </div>
 
