@@ -32,8 +32,9 @@ public interface DBApi {
 
     /**
      * Get all documents of a certain type.
+     * @param type
      */
-    public List<JsonNode> findAll(DBClass type);
+    public List<JsonNode> findAll(String type);
 
     /**
      * Get all documents of a certain type that matches a given query.

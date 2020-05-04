@@ -130,13 +130,14 @@ public class OrientDBDatabase implements DBApi {
 
     /**
      * DB Actions
+     * @param type
      */
 
     @Override
-    public List<JsonNode> findAll(DBClass type) {
+    public List<JsonNode> findAll(String type) {
         ORecordIteratorClass<ODocument> oDocuments;
         try {
-            oDocuments = getDBFromThread().browseClass(type.name());
+            oDocuments = getDBFromThread().browseClass(type);
             return mapODocumentsToJsonNode(oDocuments);
         } catch (Exception e) {
             // TODO: can this happen? "class Info not found"
@@ -363,7 +364,7 @@ public class OrientDBDatabase implements DBApi {
     public void updateDatabase(Catalog settings) throws ApiException {
         try (ODatabaseSession ignored = acquire(settings.id)) {
 
-            List<JsonNode> list = this.findAll(DBClass.Info);
+            List<JsonNode> list = this.findAll(DBClass.Info.name());
             ObjectNode map = (ObjectNode) list.get(0);
             map.put("name", settings.name);
             map.put("description", settings.description);

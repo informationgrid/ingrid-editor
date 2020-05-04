@@ -102,7 +102,7 @@ public class DBUtils {
 
     public Catalog getCatalogById(String id) {
         try (ODatabaseSession ignored = this.dbService.acquire(id)) {
-            List<JsonNode> catalogInfo = this.dbService.findAll(DBApi.DBClass.Info);
+            List<JsonNode> catalogInfo = this.dbService.findAll(DBApi.DBClass.Info.name());
 
             // TODO: can this happen?
             if (catalogInfo == null || catalogInfo.size() == 0) return null;

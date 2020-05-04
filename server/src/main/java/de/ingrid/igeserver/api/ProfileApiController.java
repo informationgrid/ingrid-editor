@@ -46,7 +46,7 @@ public class ProfileApiController implements ProfileApi {
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
-            List<JsonNode> allFrom = dbService.findAll(DBApi.DBClass.Info);
+            List<JsonNode> allFrom = dbService.findAll(DBApi.DBClass.Info.name());
             if (allFrom.size() > 0) {
                 JsonNode map = allFrom.get(0);
                 profile = map.get("profile").asText();
@@ -86,7 +86,7 @@ public class ProfileApiController implements ProfileApi {
         // dbFields.put( "fileContent", fileContent );
         try (ODatabaseSession session = dbService.acquire(dbId)) {
 
-            List<JsonNode> infos = dbService.findAll(DBApi.DBClass.Info);
+            List<JsonNode> infos = dbService.findAll(DBApi.DBClass.Info.name());
             if (infos.size() > 0) {
                 String rid;
                 try {
