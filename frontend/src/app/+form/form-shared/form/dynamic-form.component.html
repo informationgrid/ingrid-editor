@@ -6,12 +6,12 @@
 
         <!-- exchangable sidebar -->
         <as-split-area [size]="sidebarWidth" id="sidebar">
-            <ige-sidebar></ige-sidebar>
+            <ige-sidebar [address]="address"></ige-sidebar>
         </as-split-area>
 
         <!-- The form -->
         <as-split-area #scrollForm [size]="100-sidebarWidth" id="form" class="form-content">
-            <ige-form-dashboard *ngIf="fields.length === 0"></ige-form-dashboard>
+            <ng-content *ngIf="fields.length === 0"></ng-content>
 
             <ng-container *ngIf="fields.length !== 0">
                 <ige-form-info [form]="form"

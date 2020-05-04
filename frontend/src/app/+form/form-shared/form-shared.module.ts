@@ -30,21 +30,28 @@ import {HeaderTitleRowComponent} from '../form-info/header-title-row/header-titl
 import {HeaderMoreComponent} from '../form-info/header-more/header-more.component';
 import {FormMessageComponent} from '../form-info/form-message/form-message.component';
 import {MatTabsModule} from '@angular/material/tabs';
-import {SharedModule} from '../../shared/shared.module';
+import { SharedModule} from '../../shared/shared.module';
 import {DestinationSelectionComponent} from '../dialogs/create/destination-selection/destination-selection.component';
 import {HeaderTitleRowMinComponent} from '../form-info/header-title-row-min/header-title-row-min.component';
 import {HistoryPlugin} from '../dialogs/history/history.plugin';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {DynamicFormComponent} from './form/dynamic-form.component';
+import {SidebarComponent} from '../sidebars/sidebar.component';
+import {FormDashboardComponent} from '../form-dashboard/form-dashboard.component';
+import {AngularSplitModule} from 'angular-split';
+import {FormComponent} from '../form/form.component';
 
 
 @NgModule({
   declarations: [
-    FormToolbarComponent, BreadcrumbComponent,
+    FormToolbarComponent, BreadcrumbComponent, FormComponent,
     FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent, HeaderTitleRowMinComponent,
-    FormMessageComponent, DestinationSelectionComponent
+    FormMessageComponent, DestinationSelectionComponent,
+    DynamicFormComponent, SidebarComponent, FormDashboardComponent
   ],
   imports: [
     CommonModule,
+    AngularSplitModule,
     MatToolbarModule,
     MatIconModule,
     MatMenuModule,
@@ -62,7 +69,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
   providers: [FormToolbarService, FormPluginsService, CreateDocumentPlugin, SavePlugin, CreateFolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService, HistoryPlugin],
   exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, IgeFormlyModule,
-    FormInfoComponent, DestinationSelectionComponent],
+    FormInfoComponent, DestinationSelectionComponent, DynamicFormComponent],
   entryComponents: []
 })
 export class FormSharedModule {

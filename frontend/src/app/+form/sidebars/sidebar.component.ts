@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TreeStore} from '../../store/tree/tree.store';
 import {BehaviorSubject, Subject} from 'rxjs';
@@ -6,6 +6,8 @@ import {ShortTreeNode, TreeAction} from './tree/tree.component';
 import {filter, map, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TreeQuery} from '../../store/tree/tree.query';
+import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
+import {AddressTreeQuery} from '../../store/address-tree/address-tree.query';
 
 @UntilDestroy()
 @Component({
@@ -15,17 +17,31 @@ import {TreeQuery} from '../../store/tree/tree.query';
 })
 export class SidebarComponent implements OnInit {
 
+  @Input() address = false;
+
   updateTree = new Subject<TreeAction[]>();
   activeTreeNode = new BehaviorSubject<string>(null);
+  treeStore: AddressTreeStore | TreeStore;
+  treeQuery: AddressTreeQuery | TreeQuery;
 
   constructor(private router: Router,
               private route: ActivatedRoute,
-              private treeQuery: TreeQuery,
-              private treeStore: TreeStore) {
+              private addressTreeStore: AddressTreeStore,
+              private addressTreeQuery: AddressTreeQuery,
+              private docTreeQuery: TreeQuery,
+              private docTreeStore: TreeStore) {
 
   }
 
   ngOnInit() {
+
+    if (this.address) {
+      this.treeQuery = this.addressTreeQuery;
+      this.treeStore = this.addressTreeStore;
+    } else {
+      this.treeQuery = this.docTreeQuery;
+      this.treeStore = this.docTreeStore;
+    }
 
     this.clearTreeStore();
 
@@ -42,6 +58,7 @@ export class SidebarComponent implements OnInit {
     });
 
     this.treeQuery.explicitActiveNode$
+      .pipe(untilDestroyed(this))
       .subscribe(id => {
         this.activeTreeNode.next(id);
       });
@@ -73,7 +90,8 @@ export class SidebarComponent implements OnInit {
     }*/
 
     // this.documentStore.setOpenedDocument(doc);
-    this.router.navigate(['/form', {id: selectedDocIds[0]}]);
+    const path = this.address ? '/address' : '/form';
+    this.router.navigate([path, {id: selectedDocIds[0]}]);
   }
 
   handleSelection(selectedDocsId: string[]) {

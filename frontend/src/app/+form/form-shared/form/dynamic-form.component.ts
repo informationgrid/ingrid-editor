@@ -1,33 +1,36 @@
-import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {Behaviour} from '../+behaviours/behaviours';
-import {FormToolbarService} from './form-shared/toolbar/form-toolbar.service';
+import {Behaviour} from '../../../+behaviours/behaviours';
+import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {ActivatedRoute} from '@angular/router';
-import {DocumentService} from '../services/document/document.service';
-import {ModalService} from '../services/modal/modal.service';
-import {ErrorService} from '../services/error.service';
-import {Role} from '../models/user-role';
-import {RoleService} from '../services/role/role.service';
+import {DocumentService} from '../../../services/document/document.service';
+import {ModalService} from '../../../services/modal/modal.service';
+import {ErrorService} from '../../../services/error.service';
+import {Role} from '../../../models/user-role';
+import {RoleService} from '../../../services/role/role.service';
 import {MatDialog} from '@angular/material/dialog';
-import {IgeDocument} from '../models/ige-document';
-import {FormUtils} from './form.utils';
-import {TreeQuery} from '../store/tree/tree.query';
+import {IgeDocument} from '../../../models/ige-document';
+import {FormUtils} from '../../form.utils';
+import {TreeQuery} from '../../../store/tree/tree.query';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
-import {CodelistService} from '../services/codelist/codelist.service';
+import {CodelistService} from '../../../services/codelist/codelist.service';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
-import {SessionQuery} from '../store/session.query';
-import {FormularService} from './formular.service';
-import {FormPluginsService} from './form-shared/form-plugins.service';
+import {SessionQuery} from '../../../store/session.query';
+import {FormularService} from '../../formular.service';
+import {FormPluginsService} from '../form-plugins.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {StickyHeaderInfo} from './form-info/form-info.component';
+import {StickyHeaderInfo} from '../../form-info/form-info.component';
 
 @UntilDestroy()
 @Component({
+  selector: 'ige-form-wrapper',
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss']
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @Input() address = false;
 
   sidebarWidth = 15;
 
@@ -54,6 +57,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private formUtils: FormUtils;
   showValidationErrors = false;
 
+  private formStateName: 'document' | 'address';
+
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
               private documentService: DocumentService, private modalService: ModalService,
@@ -69,15 +74,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
     this.formUtils = new FormUtils();
 
-    // FIXME: use combineLatest to wait for profiles initialized
-    //        otherwise document cannot be loaded correctly, since profile not yet initialized
-    //        this.session.isProfilesInitialized$
-    this.route.params
-      .pipe(untilDestroyed(this))
-      .subscribe(params => {
-        this.loadDocument(params['id']);
-      });
-
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
 
   }
@@ -91,6 +87,22 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+
+    if (this.address) {
+      this.formPlugins.setAddressConfiguration();
+      this.formStateName = 'address';
+    } else {
+      this.formStateName = 'document';
+    }
+
+    // FIXME: use combineLatest to wait for profiles initialized
+    //        otherwise document cannot be loaded correctly, since profile not yet initialized
+    //        this.session.isProfilesInitialized$
+    this.route.params
+      .pipe(untilDestroyed(this))
+      .subscribe(params => {
+        this.loadDocument(params['id']);
+      });
 
     this.formularService.currentProfile = null;
 
@@ -150,11 +162,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.documentService.load(id)
+    this.documentService.load(id, this.address)
       .pipe(untilDestroyed(this))
-      .subscribe(
-        doc => this.updateFormWithData(doc),
-        error => console.error('Could not load document', error));
+      .subscribe(doc => this.updateFormWithData(doc));
   }
 
   updateFormWithData(data) {
@@ -176,7 +186,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // switch to the right profile depending on the data
       this.form = new FormGroup({});
-      this.formsManager.upsert('document', this.form);
+      this.formsManager.upsert(this.formStateName, this.form);
       if (needsProfileSwitch) {
         this.fields = this.switchProfile(profile);
         this.sections = this.formularService.getSectionsFromProfile(this.fields);

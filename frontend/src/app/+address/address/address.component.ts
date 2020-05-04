@@ -33,7 +33,7 @@ export class AddressComponent implements OnInit {
               private formPlugins: FormPluginsService, private formService: FormularService,
               private formsManager: AkitaNgFormsManager,
               private addressTreeStore: AddressTreeStore, private documentService: DocumentService) {
-    formPlugins.setAddressConfiguration();
+    /*formPlugins.setAddressConfiguration();
 
     this.route.params.subscribe(params => {
       const id = params['id'];
@@ -48,14 +48,14 @@ export class AddressComponent implements OnInit {
 
       }
       this.loadDocument(id);
-    });
+    });*/
   }
 
   ngOnInit() {
-    this.clearTreeStore();
+    // this.clearTreeStore();
   }
 
-  onScroll($event) {
+  /*onScroll($event) {
     this.isScrolled = $event.target.scrollTop > 0;
   }
 
@@ -78,10 +78,10 @@ export class AddressComponent implements OnInit {
     })
   }
 
-  /**
+  /!**
    * Load a document and prepare the form for the data.
    * @param {string} id is the ID of document to be loaded
-   */
+   *!/
   loadDocument(id: string) {
 
     if (id === undefined) {
@@ -145,5 +145,5 @@ export class AddressComponent implements OnInit {
 
   private clearTreeStore() {
     this.addressTreeStore.set([]);
-  }
+  }*/
 }

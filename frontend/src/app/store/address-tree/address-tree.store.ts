@@ -9,7 +9,8 @@ const initialState = {
   active: [],
   openedDocument: null,
   expandedNodes: [],
-  activePathTitles: []
+  activePathTitles: [],
+  explicitActiveNode: null
 };
 
 

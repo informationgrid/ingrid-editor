@@ -1,5 +1,5 @@
 import {CanDeactivate} from '@angular/router';
-import {DynamicFormComponent} from '../+form/dynamic-form.component';
+import {DynamicFormComponent} from '../+form/form-shared/form/dynamic-form.component';
 import {Injectable} from '@angular/core';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
 import {MatDialog} from '@angular/material/dialog';

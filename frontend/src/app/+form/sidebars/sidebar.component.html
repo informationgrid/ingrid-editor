@@ -1,6 +1,7 @@
 <ige-tree [showReloadButton]="true"
           [update]="updateTree"
           [setActiveNode]="activeTreeNode"
+          [forAddresses]="address"
           (currentPath)="storePathTitles($event)"
           (activate)="handleLoad($event)"
           (selected)="handleSelection($event)"></ige-tree>

@@ -8,6 +8,7 @@ import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {MessageService} from '../../../services/message.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {merge} from 'rxjs';
+import {IgeDocument} from '../../../models/ige-document';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -78,13 +79,19 @@ export class PublishPlugin extends Plugin {
       const message = 'Wollen Sie diesen Datensatz wirklich veröffentlichen?';
       this.modalService.confirm('Veröffentlichen', message).subscribe(doPublish => {
         if (doPublish) {
-          this.storageService.publish(this.formsManager.getForm('document').value)
+          this.storageService.publish(this.getFormValue())
             .then(() => this.messageService.sendInfo('Das Dokument wurde veröffentlicht.'));
         }
       });
     } else {
       this.modalService.showJavascriptError('Es müssen alle Felder korrekt ausgefüllt werden.');
     }
+  }
+
+  private getFormValue(): IgeDocument {
+    const formDoc = this.forAddress ? 'address' : 'document';
+    const form = this.formsManager.getForm(formDoc);
+    return form.value;
   }
 
   revert() {

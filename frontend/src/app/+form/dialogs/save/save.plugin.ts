@@ -12,6 +12,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {merge} from 'rxjs';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {filter} from 'rxjs/operators';
 
 @UntilDestroy()
 @Injectable()
@@ -51,17 +52,14 @@ export class SavePlugin extends Plugin {
     });
 
     // add event handler for revert
-    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
-      if (eventId === 'SAVE') {
-        let forAddress = false;
-        let form = this.formsManager.getForm('document');
-        if (!form) {
-          form = this.formsManager.getForm('address');
-          forAddress = true;
-        }
-        this.save(form.value, forAddress);
-      }
-    });
+    this.formToolbarService.toolbarEvent$
+      .pipe(
+        filter(eventId => eventId === 'SAVE')
+      )
+      .subscribe(() => {
+        const form = this.getFormValue();
+        this.save(form);
+      });
 
     // react on document selection
     merge(
@@ -81,10 +79,16 @@ export class SavePlugin extends Plugin {
 
   }
 
-  save(formData: IgeDocument, forAddress: boolean) {
+  private getFormValue(): IgeDocument {
+    const formDoc = this.forAddress ? 'address' : 'document';
+    const form = this.formsManager.getForm(formDoc);
+    return form.value;
+  }
+
+  save(formData: IgeDocument) {
     this.documentService.publishState$.next(false);
 
-    this.documentService.save(formData, false, forAddress);
+    this.documentService.save(formData, false, this.forAddress);
   }
 
   unregister() {
