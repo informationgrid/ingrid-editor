@@ -390,8 +390,11 @@ ige-root .mat-drawer-container {
 
 .mat-icon {
 
-  &.passive svg path {
-    fill: $ige-background-bar;
+  &.passive {
+    color: $ige-background-bar;
+    svg path {
+      fill: $ige-background-bar;
+    }
   }
 
   &.document-icon {
@@ -438,4 +441,17 @@ ige-root .mat-drawer-container {
 
 .mat-form-field-appearance-outline .mat-form-field-outline {
   color: $ige-comment-color !important;
+}
+
+// TOOLTIPS
+.mat-tooltip {
+  &.tooltip-medium {
+    font-size: 16px;
+  }
+
+  &.tooltip-big {
+    font-size: 20px;
+    margin-left: 10px;
+    padding-left: 20px;
+  }
 }
