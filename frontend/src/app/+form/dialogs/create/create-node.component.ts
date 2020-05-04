@@ -196,4 +196,8 @@ export class CreateNodeComponent implements OnInit {
       this.jumpedTreeNodeId = id;
     }
   }
+
+  setDocType(docType: DocumentAbstract) {
+    this.formGroup.get('choice').setValue(docType.id);
+  }
 }

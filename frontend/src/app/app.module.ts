@@ -44,6 +44,7 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {FormSharedModule} from './+form/form-shared/form-shared.module';
 import {MatMenuModule} from '@angular/material/menu';
 import {AuthInterceptor} from './security/keycloak/auth.interceptor';
+import {DocumentListItemComponent} from './shared/document-list-item/document-list-item.component';
 
 registerLocaleData(de);
 
@@ -82,7 +83,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
-    ConfirmDialogComponent, CreateNodeComponent,
+    ConfirmDialogComponent, CreateNodeComponent, DocumentListItemComponent,
     OneColumnWrapperComponent, SectionWrapper,
     SideMenuComponent,
     MainHeaderComponent,

@@ -34,8 +34,6 @@
     padding: 0;
 
     &.marker {
-      padding-left: 12px;
-
       ::ng-deep polygon {
         fill: limegreen;
       }

@@ -23,6 +23,15 @@
                                required>
                         <mat-error>Bitte geben Sie einen Titel ein</mat-error>
                     </mat-form-field>
+
+                    <ng-container *ngIf="numDocumentTypes > 1">
+                        <label id="doc-type">Datensatztyp wählen:</label>
+                        <ige-document-list-item [docs]="documentTypes" showSelection="true"
+                                                [denseMode]="true"
+                                                [hideDivider]="true"
+                                                [setActiveItem]="initialActiveDocumentType"
+                                                (select)="setDocType($event)"></ige-document-list-item>
+                    </ng-container>
                 </ng-container>
 
                 <ng-template #addressForm>
