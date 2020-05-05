@@ -38,6 +38,10 @@
   ::ng-deep .mat-form-field-outline {
     background-color: #ffffff;
     border-radius: 4px;
+
+    &:not(.mat-form-field-outline-thick) > div {
+      border: none;
+    }
   }
 
   ::ng-deep .mat-form-field-suffix {
