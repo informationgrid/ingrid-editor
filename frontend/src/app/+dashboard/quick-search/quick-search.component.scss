@@ -85,7 +85,6 @@
 .result-header {
   font-weight: 500;
   padding-bottom: 20px;
-  letter-spacing: 0.5px;
 
   .mat-icon {
     height: 16px;
@@ -101,7 +100,6 @@
   color: $ige-secondary;
   font-weight: 500;
   padding-bottom: 6px;
-  letter-spacing: 0.5px;
 }
 
 .show-all-link {
@@ -125,4 +123,8 @@
 
 .btn-search {
   margin-left: -6px;
+
+  &:hover {
+    background-color: lighten($ige-secondary, 8%);
+  }
 }

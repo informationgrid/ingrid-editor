@@ -12,6 +12,7 @@ html, body {
 
 body {
   font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+  letter-spacing: 0.4px;
 }
 
 a {
@@ -32,14 +33,8 @@ h1 {
   font-weight: normal;
 }
 
-.small-spacing {
-  letter-spacing: 0.25px;
-}
 .medium-spacing {
-  letter-spacing: 0.5px;
-}
-.large-spacing {
-  letter-spacing: 0.75px;
+  letter-spacing: 0.4px;
 }
 .extra-large-spacing {
   letter-spacing: 1.25px;
@@ -75,6 +70,12 @@ h1 {
   }
 }
 
+.link-text {
+  a:hover {
+    color: $ige-primary;
+  }
+}
+
 .hide {
   display: none !important;
 }
@@ -88,7 +89,7 @@ h1 {
 
 .mat-button.link-button {
   font-weight: normal;
-  letter-spacing: 0.25px;
+  letter-spacing: 0.4px;
 
   color: #28225B;
   padding: 0 10px;

@@ -9,7 +9,7 @@ import {Overlay} from '@angular/cdk/overlay';
   selector: 'ige-one-column-wrapper',
   template: `
     <div fxLayout="row">
-      <div class="label-wrapper medium-spacing">
+      <div class="label-wrapper">
         <label (click)="showContextHelp($event)">{{ to.externalLabel }} <span *ngIf="to.required">*</span></label>
       </div>
       <ng-container #fieldComponent></ng-container>
