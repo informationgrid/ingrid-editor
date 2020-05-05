@@ -1,5 +1,8 @@
 <span *ngIf="path" [class.emphasize]="emphasize">
-    <span *ngIf="showRoot && path.length === 0" class="root" [class.selectable]="selectable" (click)="onSelect(null)">{{rootName}}</span>
+    <span *ngIf="showRoot" class="root" [class.selectable]="selectable" (click)="onSelect(null)">
+        {{rootName}}
+        <mat-icon>chevron_right</mat-icon>
+    </span>
 
     <span *ngFor="let item of path; let last = last" [class.selectable]="selectable" (click)="onSelect(item.id)">
         {{item.title}}

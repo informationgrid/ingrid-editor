@@ -19,12 +19,10 @@
     cursor: pointer;
   }
 
-  .root {
-    line-height: 24px;
-  }
-
 }
 
 mat-icon {
   vertical-align: middle;
+  line-height: 18px;
+  height: 18px;
 }
