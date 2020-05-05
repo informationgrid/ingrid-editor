@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {CdkTextareaAutosize} from "@angular/cdk/text-field";
 import {FormGroup} from '@angular/forms';
 import {ProfileService} from '../../../services/profile.service';
 import {IgeDocument} from '../../../models/ige-document';
@@ -16,6 +17,7 @@ export class HeaderTitleRowComponent implements OnInit {
   @Input() sections: string[];
 
   @ViewChild('titleInput') titleInput: ElementRef;
+  @ViewChild('cfcAutosize') contentFCAutosize: CdkTextareaAutosize;
 
   showTitleInput = false;
   showMore = false;
@@ -29,6 +31,7 @@ export class HeaderTitleRowComponent implements OnInit {
   editTitle() {
     this.showTitleInput = !this.showTitleInput;
     this.cdRef.detectChanges();
+    this.contentFCAutosize.resizeToFitContent(true);
     this.titleInput.nativeElement.focus();
   }
 

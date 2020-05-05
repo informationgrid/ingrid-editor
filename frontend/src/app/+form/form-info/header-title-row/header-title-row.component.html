@@ -12,9 +12,14 @@
 
     <form [formGroup]="form" [class.hide]="!showTitleInput">
         <mat-form-field appearance="outline">
-            <input #titleInput matInput formControlName="title"
-                   (blur)="showTitleInput = false"
-                   (keyup.enter)="showTitleInput = false">
+            <textarea #cfcAutosize="cdkTextareaAutosize" #titleInput matInput formControlName="title"
+                      cdkTextareaAutosize
+                      cdkAutosizeMinRows="1"
+                      cdkAutosizeMaxRows="5"
+                      (blur)="showTitleInput = false"
+                      (keyup.enter)="showTitleInput = false"
+                      (keydown.enter)="$event.preventDefault()">
+            </textarea>
         </mat-form-field>
     </form>
 
