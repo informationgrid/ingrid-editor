@@ -9,6 +9,7 @@ import {FormComponent} from '../+form/form/form.component';
 import {TreeStore} from '../store/tree/tree.store';
 import {AddressTreeStore} from '../store/address-tree/address-tree.store';
 import {AddressComponent} from '../+address/address/address.component';
+import {ShortTreeNode} from '../+form/sidebars/tree/tree.component';
 
 @Injectable({
   providedIn: 'root'
@@ -51,10 +52,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     const store = type === 'document' ? this.treeStore : this.addressTreeStore;
 
     store.update({
-      explicitActiveNode: null
-    });
-    store.update({
-      explicitActiveNode: id
+      explicitActiveNode: new ShortTreeNode(id, '?')
     });
   }
 

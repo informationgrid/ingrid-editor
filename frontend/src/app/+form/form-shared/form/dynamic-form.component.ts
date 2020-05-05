@@ -2,7 +2,7 @@ import {AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit} from '
 import {FormGroup} from '@angular/forms';
 import {Behaviour} from '../../../+behaviours/behaviours';
 import {FormToolbarService} from '../toolbar/form-toolbar.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {ErrorService} from '../../../services/error.service';
@@ -20,6 +20,8 @@ import {FormularService} from '../../formular.service';
 import {FormPluginsService} from '../form-plugins.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {StickyHeaderInfo} from '../../form-info/form-info.component';
+import {filter} from 'rxjs/operators';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 
 @UntilDestroy()
 @Component({
@@ -58,6 +60,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   showValidationErrors = false;
 
   private formStateName: 'document' | 'address';
+  activeId: string = null;
+  private query: TreeQuery | AddressTreeQuery;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
@@ -66,9 +70,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private formsManager: AkitaNgFormsManager,
               private roleService: RoleService,
               private treeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
               private session: SessionQuery,
               private codelistService: CodelistService,
-              private errorService: ErrorService, private route: ActivatedRoute) {
+              private errorService: ErrorService,
+              private router: Router,
+              private route: ActivatedRoute) {
 
     // TODO: get roles definiton
     this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
@@ -91,8 +98,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.address) {
       this.formPlugins.setAddressConfiguration();
       this.formStateName = 'address';
+      this.query = this.addressTreeQuery;
     } else {
       this.formStateName = 'document';
+      this.query = this.treeQuery;
     }
 
     // FIXME: use combineLatest to wait for profiles initialized
@@ -117,15 +126,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
 
-    // load dataset when one was updated
-    /*this.documentService.datasetsChanged$
-      .pipe(untilDestroyed(this))
-      .subscribe((msg) => {
-        if (msg.data && msg.data.length === 1 && (msg.type === UpdateType.Update || msg.type === UpdateType.New)) {
-          const id = <string>msg.data[0].id;
-          this.loadDocument(id);
-        }
-      });*/
+    this.query.explicitActiveNode$
+      .pipe(
+        untilDestroyed(this),
+        filter(node => node !== undefined && (node === null || node.id === null))
+      )
+      .subscribe( () => this.router.navigate([this.address ? '/address' : '/form']));
 
   }
 
@@ -158,16 +164,19 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (id === undefined) {
       this.fields = [];
+      this.activeId = null;
       this.documentService.updateOpenedDocumentInTreestore(null, false);
       return;
     }
+
+    this.activeId = id;
 
     this.documentService.load(id, this.address)
       .pipe(untilDestroyed(this))
       .subscribe(doc => this.updateFormWithData(doc));
   }
 
-  updateFormWithData(data) {
+  private updateFormWithData(data) {
 
     if (data === null) {
       return;
@@ -222,13 +231,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    *
    * @param profile
    */
-  switchProfile(profile: string): FormlyFieldConfig[] {
+  private switchProfile(profile: string): FormlyFieldConfig[] {
     this.formularService.currentProfile = profile;
 
     return this.formularService.getFields(profile);
   }
 
-  markFavorite($event: Event) {
+  private markFavorite($event: Event) {
     // TODO: mark favorite
     $event.stopImmediatePropagation();
     console.log('TODO: Mark document as favorite');

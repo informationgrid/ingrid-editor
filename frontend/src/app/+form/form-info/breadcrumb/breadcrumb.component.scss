@@ -12,11 +12,15 @@
     font-size: 16px;
     font-weight: 500;
     color: $ige-primary;
+
+    .selectable:hover {
+      color: $ige-secondary;
+    }
   }
 
   .selectable:hover {
-    color: $ige-secondary;
     cursor: pointer;
+    color: $ige-primary;
   }
 
 }

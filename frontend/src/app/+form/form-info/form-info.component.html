@@ -2,7 +2,9 @@
 
     <ige-breadcrumb [path]="path"
                     [rootName]="rootName"
-                    [hideLastSeparator]="false"></ige-breadcrumb>
+                    [hideLastSeparator]="false"
+                    [selectable]="true"
+                    (select)="scrollToTreeNode($event)"></ige-breadcrumb>
 
     <ige-header-title-row [form]="form"
                           [model]="model"

@@ -1,8 +1,14 @@
 import {Injectable} from '@angular/core';
 import {EntityState, EntityStore, MultiActiveState, StoreConfig} from '@datorama/akita';
 import {DocumentAbstract} from '../document/document.model';
+import {ShortTreeNode} from '../../+form/sidebars/tree/tree.component';
 
 export interface AddressTreeState extends EntityState<DocumentAbstract>, MultiActiveState {
+  openedNodes: DocumentAbstract[],
+  openedDocument: DocumentAbstract,
+  expandedNodes: string[],
+  activePathTitles: ShortTreeNode[],
+  explicitActiveNode: ShortTreeNode
 }
 
 const initialState = {
@@ -10,7 +16,7 @@ const initialState = {
   openedDocument: null,
   expandedNodes: [],
   activePathTitles: [],
-  explicitActiveNode: null
+  explicitActiveNode: undefined
 };
 
 

@@ -53,14 +53,17 @@ export class SidebarComponent implements OnInit {
         map(params => params['id'])
       ).subscribe(id => {
       this.treeStore.update({
-        explicitActiveNode: id
+        explicitActiveNode: new ShortTreeNode(id, '?')
       });
     });
 
     this.treeQuery.explicitActiveNode$
-      .pipe(untilDestroyed(this))
-      .subscribe(id => {
-        this.activeTreeNode.next(id);
+      .pipe(
+        untilDestroyed(this),
+        filter(node => node !== undefined && node !== null)
+      )
+      .subscribe(node => {
+        this.activeTreeNode.next(node.id);
       });
 
     // only react on initial page when clicking on menu button

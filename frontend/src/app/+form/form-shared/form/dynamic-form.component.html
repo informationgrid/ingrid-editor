@@ -11,11 +11,12 @@
 
         <!-- The form -->
         <as-split-area #scrollForm [size]="100-sidebarWidth" id="form" class="form-content">
-            <ng-content *ngIf="fields.length === 0"></ng-content>
+            <ng-content *ngIf="!activeId || fields.length === 0"></ng-content>
 
             <ng-container *ngIf="fields.length !== 0">
                 <ige-form-info [form]="form"
                                [model]="model"
+                               [forAddress]="address"
                                [sections]="sections"
                                [parentContainer]="scrollForm"
                                (showStickyHeader)="updateContentPadding($event)"></ige-form-info>

@@ -21,6 +21,8 @@ import {ProfileService} from '../../services/profile.service';
 import {AddressTreeQuery} from '../../store/address-tree/address-tree.query';
 import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE} from '../../store/document/document.model';
 import {ShortTreeNode} from '../sidebars/tree/tree.component';
+import {TreeStore} from '../../store/tree/tree.store';
+import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -52,26 +54,31 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   showScrollHeader = false;
   rootName: string;
   private initialHeaderOffset: number;
+  private store: AddressTreeStore | TreeStore;
+  private query: AddressTreeQuery | TreeQuery;
 
   constructor(private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
+              private treeStore: TreeStore,
+              private addressTreeStore: AddressTreeStore,
               private cdr: ChangeDetectorRef,
               private sessionQuery: SessionQuery,
               private profileService: ProfileService) {
   }
 
   ngOnInit() {
-    let query;
 
     if (this.forAddress) {
       this.rootName = ADDRESS_ROOT_NODE.title;
-      query = this.addressTreeQuery;
+      this.query = this.addressTreeQuery;
+      this.store = this.addressTreeStore;
     } else {
       this.rootName = DOCUMENT_ROOT_NODE.title;
-      query = this.treeQuery;
+      this.query = this.treeQuery;
+      this.store = this.treeStore;
     }
 
-    query.pathTitles$
+    this.query.pathTitles$
       .pipe(untilDestroyed(this))
       .subscribe(path => this.updatePath(path));
 
@@ -155,4 +162,11 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     }
   }
 
+  scrollToTreeNode(nodeId: string) {
+
+    this.store.update({
+      explicitActiveNode: new ShortTreeNode(nodeId, '?')
+    });
+
+  }
 }
