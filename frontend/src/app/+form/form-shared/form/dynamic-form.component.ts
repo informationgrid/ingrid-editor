@@ -109,9 +109,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     //        this.session.isProfilesInitialized$
     this.route.params
       .pipe(untilDestroyed(this))
-      .subscribe(params => {
-        this.loadDocument(params['id']);
-      });
+      .subscribe(params => this.loadDocument(params['id']));
 
     this.formularService.currentProfile = null;
 
@@ -131,7 +129,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         untilDestroyed(this),
         filter(node => node !== undefined && (node === null || node.id === null))
       )
-      .subscribe( () => this.router.navigate([this.address ? '/address' : '/form']));
+      .subscribe(() => {
+        this.documentService.updateOpenedDocumentInTreestore(null, this.address);
+        this.router.navigate([this.address ? '/address' : '/form']);
+      });
 
   }
 
@@ -165,7 +166,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (id === undefined) {
       this.fields = [];
       this.activeId = null;
-      this.documentService.updateOpenedDocumentInTreestore(null, false);
+      this.documentService.updateOpenedDocumentInTreestore(null, this.address, true);
       return;
     }
 

@@ -72,8 +72,14 @@ export class SidebarComponent implements OnInit {
       untilDestroyed(this),
       filter(params => params['id'] === undefined)
     ).subscribe(params => {
-      this.activeTreeNode.next(null);
-      this.storePathTitles([]);
+      const previousOpenedDoc = this.treeQuery.getValue().openedDocument;
+      if (previousOpenedDoc) {
+        console.log('Opening previous selected node', previousOpenedDoc.id);
+        this.activeTreeNode.next(previousOpenedDoc.id.toString());
+      } else {
+        this.activeTreeNode.next(null);
+        this.storePathTitles([]);
+      }
     });
   }
 

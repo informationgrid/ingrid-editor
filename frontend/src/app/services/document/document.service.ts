@@ -109,12 +109,14 @@ export class DocumentService {
     return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 
-  updateOpenedDocumentInTreestore(doc: DocumentAbstract, address: boolean) {
+  updateOpenedDocumentInTreestore(doc: DocumentAbstract, address: boolean, keepOpenedDocument = false) {
     const store = address ? this.addressTreeStore : this.treeStore;
     setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
-    return store.update({
-      openedDocument: doc
-    });
+    if (!keepOpenedDocument) {
+      return store.update({
+        openedDocument: doc
+      });
+    }
   }
 
   save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean, path?: string[]): Promise<IgeDocument> {
