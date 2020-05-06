@@ -1,16 +1,24 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {Component, ElementRef, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'ige-context-help',
   templateUrl: './context-help.component.html',
-  styleUrls: ['./context-help.component.css']
+  styleUrls: ['./context-help.component.scss']
 })
 export class ContextHelpComponent implements OnInit {
+  title: string;
+  inExpandedView: boolean;
+  @ViewChild('contextContent') contextContent: ElementRef;
 
-  constructor(public dialogRef: MatDialogRef<ContextHelpComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
+
+  constructor(public dialogRef: MatDialogRef<ContextHelpComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+  }
 
   ngOnInit() {
+    this.title = 'Beschreibung';
+    this.inExpandedView = false;
+      // this.dialogRef.updateSize('330px', '420px');
   }
 
   showMore() {
@@ -18,5 +26,7 @@ export class ContextHelpComponent implements OnInit {
     this.dialogRef.updatePosition({
       top: '50px'
     });
+    this.inExpandedView = true;
+    // this.contextContent.
   }
 }

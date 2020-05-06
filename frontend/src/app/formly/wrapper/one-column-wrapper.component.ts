@@ -25,13 +25,14 @@ export class OneColumnWrapperComponent extends FieldWrapper {
   }
 
   showContextHelp(evt: MouseEvent) {
+    const contextDialogHeight = 400;
 
     const target = new ElementRef(evt.currentTarget);
-    this.overlay.position().flexibleConnectedTo(target).positionChanges.subscribe(posChange => {
-      console.log('Position changed', posChange);
-    });
+    // @ts-ignore
+    const enoughSpaceBeneath = (window.innerHeight - target.nativeElement.getBoundingClientRect().top) > contextDialogHeight;
     const dialogRef = this.dialog.open(ContextHelpComponent, {
-      hasBackdrop: false,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+      hasBackdrop: true,
       closeOnNavigation: true,
 
       // data: { dialogRef: dialogRef }
@@ -39,12 +40,14 @@ export class OneColumnWrapperComponent extends FieldWrapper {
         // @ts-ignore
         left: `${target.nativeElement.getBoundingClientRect().left}px`,
         // @ts-ignore
-        top: `${target.nativeElement.getBoundingClientRect().top}px`
+        top: `${enoughSpaceBeneath ? target.nativeElement.getBoundingClientRect().top : target.nativeElement.getBoundingClientRect().top - contextDialogHeight}px`
+        // top: `${target.nativeElement.getBoundingClientRect().top - 400}px`
       },
       /*scrollStrategy: this.overlay.scrollStrategies.reposition({
         autoClose: true
       }),*/
-      // height: '400px',
+      autoFocus: false,
+      height: contextDialogHeight + 'px',
       width: '330px'
     });
   }
