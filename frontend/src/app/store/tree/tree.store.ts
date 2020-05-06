@@ -9,7 +9,8 @@ export interface TreeState extends EntityState<DocumentAbstract>, MultiActiveSta
   openedDocument: DocumentAbstract,
   expandedNodes: string[],
   activePathTitles: ShortTreeNode[],
-  explicitActiveNode: ShortTreeNode
+  explicitActiveNode: ShortTreeNode,
+  scrollPosition: number
 }
 
 const initialState = {
@@ -17,7 +18,8 @@ const initialState = {
   openedDocument: null,
   expandedNodes: [],
   activePathTitles: [],
-  explicitActiveNode: undefined
+  explicitActiveNode: undefined,
+  scrollPosition: 0
 };
 
 @Injectable({providedIn: 'root'})

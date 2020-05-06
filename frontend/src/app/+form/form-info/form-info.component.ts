@@ -139,9 +139,18 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     if (!this.showScrollHeader) {
       this.initialHeaderOffset = this.stickyHeader.nativeElement.offsetTop - 56;
     }
+
+    this.updateScrollPositionInStore(top);
+
     return top > this.initialHeaderOffset;
   }
 
+
+  private updateScrollPositionInStore(top) {
+    this.store.update({
+      scrollPosition: top
+    });
+  }
 
   getIcon() {
     return this.profileService.getProfileIcon(this.form.get('_profile').value);

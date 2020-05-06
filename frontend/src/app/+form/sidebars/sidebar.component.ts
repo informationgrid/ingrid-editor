@@ -18,6 +18,7 @@ import {AddressTreeQuery} from '../../store/address-tree/address-tree.query';
 export class SidebarComponent implements OnInit {
 
   @Input() address = false;
+  @Input() parentContainer: HTMLElement;
 
   updateTree = new Subject<TreeAction[]>();
   activeTreeNode = new BehaviorSubject<string>(null);
@@ -76,6 +77,7 @@ export class SidebarComponent implements OnInit {
       if (previousOpenedDoc) {
         console.log('Opening previous selected node', previousOpenedDoc.id);
         this.activeTreeNode.next(previousOpenedDoc.id.toString());
+        setTimeout( () => this.parentContainer.scrollTop = this.treeQuery.getValue().scrollPosition, 1000);
       } else {
         this.activeTreeNode.next(null);
         this.storePathTitles([]);
