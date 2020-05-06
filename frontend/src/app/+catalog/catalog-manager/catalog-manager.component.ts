@@ -44,7 +44,10 @@ export class CatalogManagerComponent implements OnInit {
   }
 
   showCreateCatalogDialog() {
-    this.dialog.open(NewCatalogDialogComponent).afterClosed()
+    this.dialog.open(NewCatalogDialogComponent, {
+      minWidth: 400,
+      disableClose: true
+    }).afterClosed()
       .subscribe((catalog: Catalog) => {
         if (catalog) {
           this.showSpinner = true;
