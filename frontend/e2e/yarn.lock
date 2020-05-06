@@ -512,6 +512,11 @@ cypress-intellij-reporter@^0.0.4:
   dependencies:
     mocha latest
 
+cypress-keycloak-commands@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/cypress-keycloak-commands/-/cypress-keycloak-commands-1.2.0.tgz#7f241e8e104ebd389f9a844966dcca43694d0645"
+  integrity sha512-j0THu0XMVlWah7YjDoVlFg2bIwSiBSda6g5Pm8HpC/9U2Glk0Hrp4yLggoseft3ThAlrpIkoLaIKMDbmvtgicw==
+
 cypress@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-4.5.0.tgz#01940d085f6429cec3c87d290daa47bb976a7c7b"

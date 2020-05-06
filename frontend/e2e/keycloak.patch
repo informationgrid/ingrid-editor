@@ -1,0 +1,20 @@
+Index: node_modules/cypress-keycloak-commands/dist/kc-login.js
+===================================================================
+--- frontend/e2e/node_modules/cypress-keycloak-commands/dist/kc-login.js	(date 1587028385032)
++++ frontend/e2e/node_modules/cypress-keycloak-commands/dist/kc-login.js	(date 1587028385032)
+@@ -7,6 +7,7 @@
+         var authBaseUrl = Cypress.env("auth_base_url");
+         var realm = Cypress.env("auth_realm");
+         var client_id = Cypress.env("auth_client_id");
++        var client_secret = Cypress.env("auth_client_secret");
+         cy.request({
+             url: authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/auth",
+             followRedirect: false,
+@@ -41,6 +42,7 @@
+                 url: authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/token",
+                 body: {
+                     client_id: client_id,
++                    client_secret: client_secret,
+                     redirect_uri: Cypress.config("baseUrl"),
+                     code: code,
+                     grant_type: "authorization_code"

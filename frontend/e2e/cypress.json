@@ -9,6 +9,12 @@
     "json": true,
     "timestamp": "yyyymmdd_HHMMss"
   },
+  "env": {
+    "auth_base_url": "http://192.168.0.228:8080/auth",
+    "auth_realm": "InGrid",
+    "auth_client_id": "ige-ng-backend",
+    "auth_client_secret": "86b39eba-6623-4c46-9bc3-fcde6a4ddf24"
+  },
   "screenshotsFolder": "cypress/mochawesome-reports/assets",
   "videosFolder": "cypress/mochawesome-reports/assets",
   "videoUploadOnPasses": false,

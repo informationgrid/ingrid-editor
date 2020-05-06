@@ -7,12 +7,13 @@ const SEPARATOR = ' chevron_right';
 describe('General create documents/folders', () => {
 
   beforeEach(() => {
+    cy.kcLogin('user');
     DocumentPage.visit();
   });
 
 
   describe('Create documents', () => {
-    it('should create a root document', function () {
+    it('should create a root document', () => {
 
       const docName = 'Root Test-Dokument ' + Utils.randomString();
 
@@ -49,7 +50,7 @@ describe('General create documents/folders', () => {
   });
 
   describe('Create folders', () => {
-    it('should create a root folder', function () {
+    it('should create a root folder', () => {
 
       const folderName = 'Root Ordner ' + Utils.randomString();
 
@@ -69,9 +70,9 @@ describe('General create documents/folders', () => {
 
     });
 
-    it('should create a folder below a root folder which was selected before', function () {
+    it('should create a folder below a root folder which was selected before', () => {
 
-      const parentFolder = 'neues';
+      const parentFolder = 'Neue Testdokumente';
       const folderName = 'Unterordner ' + Utils.randomString();
 
       Tree.selectNodeWithTitle(parentFolder);
@@ -87,8 +88,8 @@ describe('General create documents/folders', () => {
 
     });
 
-    it('should create a folder by switching location in dialog to \'Daten\' when a root folder was selected initially', function () {
-      const parentFolder = 'neues';
+    it('should create a folder by switching location in dialog to \'Daten\' when a root folder was selected initially', () => {
+      const parentFolder = 'Neue Testdokumente';
       const folderName = 'Root Ordner ' + Utils.randomString();
 
       Tree.selectNodeWithTitle(parentFolder);
@@ -107,8 +108,8 @@ describe('General create documents/folders', () => {
 
     });
 
-    it('should create a folder by switching location in dialog to a sub folder when no node was selected initially', function () {
-      const parentFolder = 'neues';
+    it('should create a folder by switching location in dialog to a sub folder when no node was selected initially', () => {
+      const parentFolder = 'Neue Testdokumente';
       const folderName = 'Unterordner ' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();

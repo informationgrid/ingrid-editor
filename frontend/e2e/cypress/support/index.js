@@ -1,3 +1,5 @@
+import "cypress-keycloak-commands";
+
 Cypress.Commands.add(
   'shouldHaveTrimmedText',
   {

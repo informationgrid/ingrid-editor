@@ -4,6 +4,7 @@ import {Tree} from '../../pages/tree.partial';
 describe('Toolbar behavior', () => {
 
   beforeEach(() => {
+    cy.kcLogin('user');
     cy.visit('/form');
     cy.get('mat-toolbar').should('be.visible');
   });

@@ -5,12 +5,13 @@ import {AddressPage} from '../../pages/address.page';
 describe('General create addresses/folders', () => {
 
   beforeEach(() => {
+    cy.kcLogin('user');
     AddressPage.visit();
   });
 
   describe('Create Addresses', () => {
 
-    it('should create a root address', function () {
+    it('should create a root address', () => {
       const docName = 'Root Test-Adresse ' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
@@ -35,7 +36,7 @@ describe('General create addresses/folders', () => {
   });
 
   describe('Publish addresses', () => {
-    it('should show a validation error when a required field is not filled', () => {
+    xit('should show a validation error when a required field is not filled', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
 
       // AddressPage.createAddress();
