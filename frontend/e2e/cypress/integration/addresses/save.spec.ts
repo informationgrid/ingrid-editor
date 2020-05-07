@@ -2,6 +2,8 @@ import {DocumentPage} from '../../pages/document.page';
 import {Utils} from '../../pages/utils';
 import {AddressPage} from '../../pages/address.page';
 
+const SEPARATOR = ' chevron_right';
+
 describe('General create addresses/folders', () => {
 
   beforeEach(() => {
@@ -16,7 +18,7 @@ describe('General create addresses/folders', () => {
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
-      cy.get('mat-dialog-container ige-breadcrumb').should('have.text', 'Adressen');
+      cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(`Adressen${SEPARATOR}`);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
       // cy.get('[data-cy=create-title]').type(docName);

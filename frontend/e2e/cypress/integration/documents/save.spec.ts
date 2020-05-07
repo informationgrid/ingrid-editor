@@ -3,6 +3,7 @@ import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
 
 const SEPARATOR = ' chevron_right';
+const ROOT = `Daten${SEPARATOR}`;
 
 describe('General create documents/folders', () => {
 
@@ -19,7 +20,7 @@ describe('General create documents/folders', () => {
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
-      cy.get('mat-dialog-container ige-breadcrumb').should('have.text', 'Daten');
+      cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(ROOT);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
       cy.get('[data-cy=create-title]').type(docName);
@@ -56,7 +57,7 @@ describe('General create documents/folders', () => {
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
-      cy.get('mat-dialog-container ige-breadcrumb').should('have.text', 'Daten');
+      cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(ROOT);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
       cy.get('[data-cy=create-title]').type(folderName);
@@ -79,12 +80,12 @@ describe('General create documents/folders', () => {
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
-      cy.get('.mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(parentFolder);
+      cy.get('.mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(ROOT + ' ' + parentFolder);
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 1);
-      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(parentFolder + SEPARATOR);
+      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT + ' ' + parentFolder + SEPARATOR);
 
     });
 
@@ -104,7 +105,7 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 0);
-      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText('Daten');
+      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT);
 
     });
 
@@ -122,7 +123,7 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 1);
-      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(parentFolder + SEPARATOR);
+      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT + ' ' + parentFolder + SEPARATOR);
 
     });
   });
