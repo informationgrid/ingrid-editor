@@ -1,20 +1,15 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ModalService } from '../services/modal/modal.service';
-import { UserService } from '../services/user/user.service';
-import { ErrorService } from '../services/error.service';
-import { User } from './user';
-import { Role } from '../models/user-role';
+import { ModalService } from '../../services/modal/modal.service';
+import { UserService } from '../../services/user/user.service';
+import { ErrorService } from '../../services/error.service';
+import { User } from '../user';
+import { Role } from '../../models/user-role';
 import { Observable } from 'rxjs';
 
 @Component( {
+  selector: 'ige-user-manager',
   templateUrl: './user.component.html',
   styles: [`
-    :host {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-
     ::ng-deep .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
       flex: 1;
     }
@@ -25,7 +20,6 @@ export class UserComponent implements OnInit, AfterViewInit {
   @ViewChild( 'loginRef', {static: true} ) loginRef: ElementRef;
 
   users: User[];
-  roles: Role[];
   currentTab: string;
 
   selectedUser: User = new User();
@@ -55,10 +49,6 @@ export class UserComponent implements OnInit, AfterViewInit {
     setTimeout( () => {
       this.show = true;
     }, 0 );
-  }
-
-  updateRoles(roles: Role[]) {
-    this.roles = roles;
   }
 
   loadUser(userToLoad: User) {

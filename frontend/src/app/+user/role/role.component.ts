@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit } from '@angular/core';
-import {ModalService} from '../services/modal/modal.service';
-import {ErrorService} from '../services/error.service';
-import {RoleService} from '../services/role/role.service';
-import {MenuService} from '../menu/menu.service';
-import {Role, RoleAttribute} from '../models/user-role';
-import {TreeComponent} from '../+form/sidebars/tree/tree.component';
+import {ModalService} from '../../services/modal/modal.service';
+import {ErrorService} from '../../services/error.service';
+import {RoleService} from '../../services/role/role.service';
+import {MenuService} from '../../menu/menu.service';
+import {Role, RoleAttribute} from '../../models/user-role';
+import {TreeComponent} from '../../+form/sidebars/tree/tree.component';
 import { Observable } from 'rxjs';
 
 @Component( {
@@ -35,10 +35,10 @@ export class RoleComponent implements OnInit {
   ngOnInit() {
     this.fetchRoles();
 
-    this.pages = this.menuService.menuItems.map( item => {
+    this.pages = this.menuService.mainRoutes.map( item => {
       return {
         id: item.path,
-        name: item.name
+        name: item.data.title
       };
     } );
     console.log( 'pages: ', this.pages );

@@ -26,7 +26,7 @@ import {SharedDocumentItemModule} from './shared-document-item.module';
     MatCardModule,
     SharedDocumentItemModule],
   declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent],
-  exports: [TreeComponent, MatIconModule, MatButtonModule, CardBoxComponent, SharedDocumentItemModule]
+  exports: [TreeComponent, MatIconModule, MatInputModule, MatButtonModule, CardBoxComponent, SharedDocumentItemModule]
 })
 export class SharedModule {
 }
