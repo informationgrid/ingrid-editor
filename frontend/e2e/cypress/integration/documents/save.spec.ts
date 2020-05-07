@@ -1,9 +1,6 @@
-import {DocumentPage} from '../../pages/document.page';
+import {DocumentPage, ROOT} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
-
-const SEPARATOR = ' chevron_right';
-const ROOT = `Daten${SEPARATOR}`;
 
 describe('General create documents/folders', () => {
 
