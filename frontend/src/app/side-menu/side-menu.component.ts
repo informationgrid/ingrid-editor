@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfigService} from '../services/config/config.service';
-import {MenuItem, MenuService} from '../menu/menu.service';
-import {NavigationEnd, Router} from '@angular/router';
+import {MenuService} from '../menu/menu.service';
+import {NavigationEnd, Route, Router} from '@angular/router';
 import {SessionQuery} from '../store/session.query';
 import {animate, style, transition, trigger} from '@angular/animations';
 
@@ -28,7 +28,7 @@ export class SideMenuComponent implements OnInit {
 
   showDrawer: Observable<boolean>;
 
-  menuItems: MenuItem[];
+  menuItems: BehaviorSubject<Route[]> = this.menuService.menu$;
 
   menuIsExpanded = true;
 
@@ -50,11 +50,6 @@ export class SideMenuComponent implements OnInit {
       map(info => info.assignedCatalogs.length > 0)
     );
 
-    this.menuService.menu$.subscribe(() => {
-      console.log('menu has changed');
-      this.menuItems = this.menuService.menuItems;
-    });
-
   }
 
   private handleCurrentRoute(event: any) {
@@ -69,25 +64,4 @@ export class SideMenuComponent implements OnInit {
     this.toggleState = setExanded ? 'expanded' : 'collapsed';
   }
 
-  mapRouteToIcon(path: string) {
-    switch (path) {
-      case '/dashboard':
-        return 'Uebersicht';
-      case '/form':
-        return 'Daten';
-      case '/address':
-        return 'Adressen';
-      case '/research':
-        return 'Recherche';
-      case '/user':
-        return 'Nutzer';
-      // case '/plugins': return 'extension';
-      case '/importExport':
-        return 'Im-Export';
-      case '/catalogs':
-        return 'Katalog';
-      default:
-        return null;
-    }
-  }
 }

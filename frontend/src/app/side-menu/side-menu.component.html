@@ -1,15 +1,15 @@
 <mat-nav-list fxFlex fxLayout="column" [class.collapsed]="!menuIsExpanded">
-    <a mat-list-item *ngFor="let item of menuItems" [routerLink]="item.path"
-       [matTooltip]="item.name"
+    <a mat-list-item *ngFor="let item of menuItems | async" [routerLink]="item.path"
+       [matTooltip]="item.data?.title"
        matTooltipPosition="right"
        [matTooltipDisabled]="menuIsExpanded"
        matTooltipClass="tooltip-big"
-       [class.light]="!item.onlyAdmin"
+       [class.light]="!item.data?.onlyAdmin"
        [class.active]="item.path === currentRoute">
         <mat-icon mat-list-icon
-                  [svgIcon]="mapRouteToIcon(item.path)">
+                  [svgIcon]="item.data?.icon">
         </mat-icon>
-        <p mat-line>{{item.name}}</p>
+        <p mat-line>{{item.data?.title}}</p>
     </a>
 
     <div class="fillVertical"></div>
