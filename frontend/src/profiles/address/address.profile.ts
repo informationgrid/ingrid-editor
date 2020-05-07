@@ -22,18 +22,17 @@ export class ProfileAddress extends BaseProfile {
       templateOptions: {
         label: 'Allgemeines'
       },
-      fieldGroup: [
-        {
+      fieldGroup: [{
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Name'
+        },
+        fieldGroup: [{
           fieldGroupClassName: 'display-flex',
-          wrappers: ['panel'],
-          templateOptions: {
-            externalLabel: 'Name'
-          },
           fieldGroup: [{
             key: 'firstName',
             className: 'flex-1 firstName',
             type: 'input',
-            wrappers: ['form-field'],
             templateOptions: {
               label: 'Vorname',
               appearance: 'outline'
@@ -42,110 +41,121 @@ export class ProfileAddress extends BaseProfile {
             key: 'lastName',
             className: 'flex-1 lastName',
             type: 'input',
-            wrappers: ['form-field'],
             templateOptions: {
               label: 'Nachname',
               appearance: 'outline'
             }
           }]
         }, {
-          key: 'contact',
-          type: 'ngx-table',
-          wrappers: ['panel'],
-          templateOptions: {
-            externalLabel: 'Kommunikation',
-            columns: [
-              {key: 'name', editable: true, label: 'Name'},
-              {key: 'type', editable: false, label: 'Art'}
-            ]
-          }
-        }, {
-          key: 'contact-link',
-          type: 'doc-reference',
-          wrappers: ['panel'],
-          templateOptions: {
-            externalLabel: 'Kommunikation-Link',
-            filter: {
-              docType: 'ADDRESS'
-            }
-          }
-        }, {
-          key: 'address',
-          wrappers: ['panel'],
-          templateOptions: {
-            externalLabel: 'Adresse'
-          },
+          fieldGroupClassName: 'display-flex',
           fieldGroup: [{
-            fieldGroupClassName: 'display-flex',
-            fieldGroup: [{
-              key: 'street',
-              className: 'flex-1',
-              type: 'input',
-              templateOptions: {
-                label: 'Strasse',
-                appearance: 'outline'
-              }
-            }, {
-              key: 'number',
-              className: 'flex-1',
-              type: 'input',
-              templateOptions: {
-                label: 'Hausnummer',
-                appearance: 'outline'
-              }
-            }]
-          }, {
-            fieldGroupClassName: 'display-flex',
-            fieldGroup: [{
-              key: 'PO',
-              className: 'flex-1',
-              type: 'input',
-              templateOptions: {
-                label: 'PLZ',
-                appearance: 'outline'
-              }
-            }, {
-              key: 'city',
-              className: 'flex-3',
-              type: 'input',
-              templateOptions: {
-                label: 'Stadt',
-                appearance: 'outline'
-              }
-            }, {
-              key: 'country',
-              className: 'flex-3',
-              type: 'select',
-              templateOptions: {
-                label: 'Land',
-                appearance: 'outline',
-                placeholder: 'Bitte wählen',
-                options: this.getCodelistForSelect(6200)
-              }
-            }]
+            key: 'organization',
+            className: 'flex-1 organization',
+            type: 'input',
+            templateOptions: {
+              label: 'Organisation',
+              appearance: 'outline'
+            }
           }]
-        }, {
-          key: 'tasks',
-          type: 'textarea',
-          wrappers: ['panel', 'form-field'],
-          templateOptions: {
-            externalLabel: 'Aufgaben',
-            rows: 2,
-            appearance: 'outline',
-            autosize: true,
-            autosizeMaxRows: 5
-          }
-        }, {
-          key: 'serviceTimes',
-          type: 'input',
-          wrappers: ['panel', 'form-field'],
-          templateOptions: {
-            externalLabel: 'Servicezeiten',
-            appearance: 'outline',
-            autosize: true,
-            autosizeMaxRows: 5
+        }]
+      }, {
+        key: 'contact',
+        type: 'ngx-table',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Kommunikation',
+          columns: [
+            {key: 'name', editable: true, label: 'Name'},
+            {key: 'type', editable: false, label: 'Art'}
+          ]
+        }
+      }, {
+        key: 'contact-link',
+        type: 'doc-reference',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Kommunikation-Link',
+          filter: {
+            docType: 'ADDRESS'
           }
         }
+      }, {
+        key: 'address',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Adresse'
+        },
+        fieldGroup: [{
+          fieldGroupClassName: 'display-flex',
+          fieldGroup: [{
+            key: 'street',
+            className: 'flex-1',
+            type: 'input',
+            templateOptions: {
+              label: 'Strasse',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'number',
+            className: 'flex-1',
+            type: 'input',
+            templateOptions: {
+              label: 'Hausnummer',
+              appearance: 'outline'
+            }
+          }]
+        }, {
+          fieldGroupClassName: 'display-flex',
+          fieldGroup: [{
+            key: 'PO',
+            className: 'flex-1',
+            type: 'input',
+            templateOptions: {
+              label: 'PLZ',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'city',
+            className: 'flex-3',
+            type: 'input',
+            templateOptions: {
+              label: 'Stadt',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'country',
+            className: 'flex-3',
+            type: 'select',
+            templateOptions: {
+              label: 'Land',
+              appearance: 'outline',
+              placeholder: 'Bitte wählen',
+              options: this.getCodelistForSelect(6200)
+            }
+          }]
+        }]
+      }, {
+        key: 'tasks',
+        type: 'textarea',
+        wrappers: ['panel', 'form-field'],
+        templateOptions: {
+          externalLabel: 'Aufgaben',
+          rows: 2,
+          appearance: 'outline',
+          autosize: true,
+          autosizeMaxRows: 5
+        }
+      }, {
+        key: 'serviceTimes',
+        type: 'input',
+        wrappers: ['panel', 'form-field'],
+        templateOptions: {
+          externalLabel: 'Servicezeiten',
+          appearance: 'outline',
+          autosize: true,
+          autosizeMaxRows: 5
+        }
+      }
       ]
     }];
 
