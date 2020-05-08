@@ -43,8 +43,6 @@ export class SortTreeByTypeBehaviour extends Plugin {
 
   unregister() {
     super.unregister();
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.treeService.registerTreeSortFunction(null);
   }
 }

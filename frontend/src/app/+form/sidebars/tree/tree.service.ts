@@ -28,7 +28,7 @@ export class TreeService {
 
   registerTreeSortFunction(treeSortFn: TreeSortFn) {
 
-    if (this.alternativeSortFunction !== null) {
+    if (treeSortFn !== null && this.alternativeSortFunction !== null) {
       console.error('There are multiple sort functions registered for the tree. Will ignore others!');
     } else {
       this.alternativeSortFunction = treeSortFn;
