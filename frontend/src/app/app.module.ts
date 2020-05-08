@@ -45,6 +45,8 @@ import {FormSharedModule} from './+form/form-shared/form-shared.module';
 import {MatMenuModule} from '@angular/material/menu';
 import {AuthInterceptor} from './security/keycloak/auth.interceptor';
 import {SharedDocumentItemModule} from './shared/shared-document-item.module';
+import {SortTreeByTypeBehaviour} from './+behaviours/system/SortTreeByType/sort-tree-by-type.behaviour';
+import {PluginToken} from './tokens/plugin.token';
 
 registerLocaleData(de);
 
@@ -134,7 +136,10 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    }
+    },
+
+    // PLUGINS
+    { provide: PluginToken, useClass: SortTreeByTypeBehaviour, multi: true }
 
   ], // additional providers
 
