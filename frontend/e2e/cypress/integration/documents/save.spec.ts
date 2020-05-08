@@ -1,4 +1,4 @@
-import {DocumentPage, ROOT} from '../../pages/document.page';
+import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
 

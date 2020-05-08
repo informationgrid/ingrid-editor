@@ -3,7 +3,9 @@ import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../plugin';
 import {Subscription} from 'rxjs';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CreateDocRulesPlugin extends Plugin {
   id = 'plugin.create.doc';
   _name = 'Regeln für neues Dokument';
