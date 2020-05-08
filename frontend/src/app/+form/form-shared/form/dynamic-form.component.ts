@@ -1,6 +1,5 @@
 import {AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {Behaviour} from '../../../+behaviours/behaviours';
 import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
@@ -22,6 +21,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {StickyHeaderInfo} from '../../form-info/form-info.component';
 import {filter} from 'rxjs/operators';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {Behaviour} from '../../../services/behavior/behaviour.service';
 
 @UntilDestroy()
 @Component({

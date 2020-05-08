@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {PluginsComponent} from './behaviours.component';
+import {BehavioursComponent} from './behaviours.component';
 import {routing} from './behaviours.routing';
 import {Collapse} from '../directives/collapse.directive';
 import {SharedModule} from '../shared/shared.module';
@@ -14,25 +14,18 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {RouterModule, Routes} from '@angular/router';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {StatisticComponent} from './system/statistic/statistic.component';
-
-const routes: Routes = [
-  {
-    path: '',
-    component: PluginsComponent
-  }
-];
+import {CreateDocRulesPlugin} from './system/CreateRules/create-rules.behaviour';
 
 @NgModule({
   imports: [
-    RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule, SharedModule,
-    routing, MatCardModule, MatTabsModule, MatDialogModule,
+    routing, CommonModule, FormsModule, ReactiveFormsModule, SharedModule,
+    MatCardModule, MatTabsModule, MatDialogModule,
     MatButtonModule, MatInputModule, MatCheckboxModule, FormFieldsModule],
   declarations: [
-    PluginsComponent, Collapse,
+    BehavioursComponent, Collapse,
     StatisticComponent
   ],
-  entryComponents: [],
-  exports: [RouterModule]
+  entryComponents: []
 })
-export class PluginsModule {
+export class BehavioursModule {
 }

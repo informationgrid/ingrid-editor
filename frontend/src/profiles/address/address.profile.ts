@@ -1,10 +1,10 @@
 import {FormGroup} from '@angular/forms';
-import {Behaviour} from '../../app/+behaviours/behaviours';
 import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {from} from 'rxjs';
 import {BaseProfile} from '../base.profile';
+import {Behaviour} from '../../app/services/behavior/behaviour.service';
 
 export class ProfileAddress extends BaseProfile {
   // must be same as DBClass!
