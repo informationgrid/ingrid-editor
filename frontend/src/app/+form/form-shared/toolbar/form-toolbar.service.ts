@@ -23,7 +23,9 @@ export interface Separator extends DefaultToolbarItem {
   isSeparator: boolean;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class FormToolbarService {
 
   // event when a new button was added

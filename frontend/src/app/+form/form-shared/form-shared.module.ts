@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormToolbarComponent} from './toolbar/form-toolbar.component';
-import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
@@ -66,7 +65,7 @@ import {FormComponent} from '../form/form.component';
     SharedModule,
     MatTooltipModule
   ],
-  providers: [FormToolbarService, FormPluginsService, CreateDocumentPlugin, SavePlugin, CreateFolderPlugin, DeleteDocsPlugin,
+  providers: [FormPluginsService, CreateDocumentPlugin, SavePlugin, CreateFolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService, HistoryPlugin],
   exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, IgeFormlyModule,
     FormInfoComponent, DestinationSelectionComponent, DynamicFormComponent],
