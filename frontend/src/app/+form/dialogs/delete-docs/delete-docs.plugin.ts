@@ -1,19 +1,18 @@
 import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {Plugin} from '../../../+behaviours/plugin';
-import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {ConfirmDialogComponent} from '../../../dialogs/confirm/confirm-dialog.component';
 import {DocumentService} from '../../../services/document/document.service';
 import {Router} from '@angular/router';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {EventService, IgeEvent} from '../../../services/event/event.service';
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
   id = 'plugin.deleteDocs';
   _name = 'Delete Docs Plugin';
-  subscriptions: Subscription[] = [];
 
   get name() {
     return this._name;
@@ -24,6 +23,7 @@ export class DeleteDocsPlugin extends Plugin {
               private addressTreeQuery: AddressTreeQuery,
               private documentService: DocumentService,
               private router: Router,
+              private eventService: EventService,
               private dialog: MatDialog) {
     super();
     this.isActive = true;
@@ -39,7 +39,8 @@ export class DeleteDocsPlugin extends Plugin {
     this.subscriptions.push(
       this.formToolbarService.toolbarEvent$.subscribe(eventId => {
         if (eventId === 'DELETE') {
-          this.showDeleteDialog();
+          this.eventService.sendEventAndContinueOnSuccess(IgeEvent.DELETE)
+            .subscribe( () => this.showDeleteDialog());
         }
       }),
 
@@ -96,11 +97,6 @@ export class DeleteDocsPlugin extends Plugin {
 
   unregister() {
     super.unregister();
-
-    if (this.subscriptions.length > 0) {
-      this.subscriptions.forEach(s => s.unsubscribe());
-      this.subscriptions = [];
-    }
 
     this.formToolbarService.removeButton('toolBtnRemove');
   }
