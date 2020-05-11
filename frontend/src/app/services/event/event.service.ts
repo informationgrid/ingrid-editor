@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {filter, switchMap, take, tap} from 'rxjs/operators';
+import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 
 export enum IgeEvent {
   DELETE = 'DELETE'
@@ -15,17 +15,28 @@ export interface EventData {
   data: any;
 }
 
+export type EventResponseHandler = (data: EventData) => void;
+
+/**
+ * This service provides a functionality to send an event and wait for the responses of all
+ * subscribers of this event. If no one is subscribed to the event, the sender of the event
+ * can continue.
+ *
+ * The idea of this event system comes from:
+ * https://stackoverflow.com/questions/44572193/rxjs-request-data-from-all-subscribers-and-complete-after-theyve-all-returned
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
 
-  // records how many components have updated the info
-  observersCount$: { [x: string]: BehaviorSubject<any> } = {};
+  // records how many components have updated the info for an event type
+  private observersCount$: { [x: string]: BehaviorSubject<any> } = {};
 
-  event$: { [x: string]: Subject<any> } = {};
+  // this is the event a consumer can subscribe to
+  private event$: { [x: string]: Subject<any> } = {};
 
-  // see: https://stackoverflow.com/questions/44572193/rxjs-request-data-from-all-subscribers-and-complete-after-theyve-all-returned
+  // this contains the results of an event type
   private result: { [x: string]: EventData[] } = {};
 
   constructor() {
@@ -38,16 +49,37 @@ export class EventService {
     }
   }
 
+  /**
+   * Send a defined event and return a new observable which waits for the results.
+   * @param type defines the Event Type
+   */
   sendEvent(type: IgeEvent): Observable<EventData[]> {
     this.event$[type].next();
     return this.receiveEventResult(type);
   }
 
+  /**
+   * This is a convenience method send an event and only notify the sender if
+   * all responses were tagged successful.
+   *
+   * @param type defines the Event Type
+   */
   sendEventAndContinueOnSuccess(type: IgeEvent): Observable<EventData[]> {
     return this.sendEvent(type)
       .pipe(
         filter(responses => this.allResponsesSuccessful(type, responses))
       );
+  }
+
+  /**
+   * If someone wants to react on an event then it has to subscribe to this function.
+   * On an event it will receive a function where the consumer can send the result.
+   *
+   * @param type defines the Event Type
+   */
+  respondToEvent(type: IgeEvent): Observable<EventResponseHandler> {
+    return this.event$[type].asObservable()
+      .pipe(map(() => (data) => this.updateEventData(type, data)));
   }
 
   private allResponsesSuccessful(type: IgeEvent, responses: EventData[]) {
@@ -58,11 +90,7 @@ export class EventService {
     return isSuccessful;
   }
 
-  respondToEvent(type: IgeEvent): Observable<any> {
-    return this.event$[type].asObservable();
-  }
-
-  updateEventData(type: IgeEvent, data: EventData) {
+  private updateEventData(type: IgeEvent, data: EventData) {
     this.result[type].push(data);
     this.observersCount$[type].next(this.observersCount$[type].value + 1);
   }
