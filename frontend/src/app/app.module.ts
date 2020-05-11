@@ -139,10 +139,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     },
 
     // PLUGINS
-    pluginProvider,
-
-    // FORM-PLUGINS
-    formPluginProvider
+    pluginProvider
 
   ], // additional providers
 
