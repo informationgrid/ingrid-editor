@@ -8,7 +8,6 @@ import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {MessageService} from '../../../services/message.service';
 import {IgeDocument} from '../../../models/ige-document';
 import {MatDialog} from '@angular/material/dialog';
-import {HttpErrorResponse} from '@angular/common/http';
 import {merge} from 'rxjs';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';

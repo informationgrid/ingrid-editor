@@ -10,6 +10,8 @@
 //     - might not be flexible enough, see UVP example!!!
 //     - or should it be realised as a plugin?
 
+import {Subscription} from 'rxjs';
+
 export abstract class Plugin {
   id: string;
   name: string;
@@ -18,13 +20,17 @@ export abstract class Plugin {
   defaultActive: boolean;
   _state?: string;
   forAddress = false;
+  subscriptions: Subscription[] = [];
 
   register(): void {
     this.isActive = true;
   }
 
   unregister(): void {
+    console.log('Unregister: ', name);
     this.isActive = false;
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
   }
 
   setForAddress(): void {
