@@ -27,7 +27,7 @@
                     </mat-form-field>
 
                     <ng-container *ngIf="numDocumentTypes > 1">
-                        <label id="doc-type">Datensatztyp wählen:</label>
+                        <div class="dlg-create-place" id="doc-type">Datensatztyp wählen</div>
                         <ige-document-list-item [docs]="documentTypes" showSelection="true"
                                                 [denseMode]="true"
                                                 [hideDivider]="true"
