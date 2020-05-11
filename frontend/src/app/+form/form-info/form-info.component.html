@@ -2,7 +2,7 @@
 
     <ige-breadcrumb [path]="path"
                     [rootName]="rootName"
-                    [hideLastSeparator]="false"
+                    [hideLastSeparator]="true"
                     [selectable]="true"
                     (select)="scrollToTreeNode($event)"></ige-breadcrumb>
 
@@ -31,11 +31,3 @@
 </div>
 
 <ige-form-message></ige-form-message>
-
-<!--<div class="scroll-header" [style.left]="scrollHeaderOffsetLeft + 'px'">
-
-    <ige-header-title-row-min [form]="form"
-                              [model]="model"
-                              [sections]="sections"></ige-header-title-row-min>
-
-</div>-->

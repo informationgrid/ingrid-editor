@@ -11,12 +11,14 @@
     <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
         <mat-tab label="Titel">
             <div class="first-tab-wrapper" fxFlex fxLayout="column" [formGroup]="formGroup">
+
+                <div class="dlg-create-title">Titel</div>
                 <ng-container *ngIf="isFolder || !forAddress; else addressForm">
                     <mat-form-field appearance="outline">
-                        <mat-label>Titel</mat-label>
                         <input matInput
                                formControlName="title"
                                data-cy="create-title"
+                               placeholder="Ohne Titel"
                                cdkFocusInitial
                                autocomplete="off"
                                (keyup.enter)="handleCreate()"
@@ -72,12 +74,12 @@
 
                 </ng-template>
 
-                Ort
+                <div class="dlg-create-place">Ort</div>
                 <ige-breadcrumb [path]="path"
                                 [rootName]="rootTreeName"
                                 [selectable]="true"
-                                (select)="jumpToTree($event)"
-                                emphasize="true"></ige-breadcrumb>
+                                [hideLastSeparator]="true"
+                                (select)="jumpToTree($event)"></ige-breadcrumb>
             </div>
         </mat-tab>
 
@@ -109,6 +111,7 @@
             (click)="jumpToTree(this.parent)">Ort ändern</button>
 
     <button *ngIf="selectedPage === 0" mat-stroked-button color="primary"
+            class="btn-create"
             data-cy="create-action"
             [disabled]="formGroup.invalid"
             (click)="handleCreate()">

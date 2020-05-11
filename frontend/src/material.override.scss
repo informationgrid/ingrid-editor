@@ -43,9 +43,12 @@
       color: white;
 
       span.text {
-        vertical-align: middle;
+        vertical-align: sub;
         padding-left: 20px;
         line-height: 40px;
+        font-size: 24px;
+        font-weight: 400;
+        letter-spacing: 0.4px;
       }
     }
   }
