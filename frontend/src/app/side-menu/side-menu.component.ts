@@ -54,8 +54,8 @@ export class SideMenuComponent implements OnInit {
 
   private handleCurrentRoute(event: any) {
     if (event instanceof NavigationEnd) {
-      const urlPath = event.url.split(';')[0];
-      this.currentRoute = urlPath === '/' ? '/dashboard' : urlPath;
+      const urlPath = event.url.split(';')[0].substring(1);
+      this.currentRoute = urlPath === '' ? 'dashboard' : urlPath;
     }
   }
 
