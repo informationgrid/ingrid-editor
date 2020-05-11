@@ -6,7 +6,6 @@
 package de.ingrid.igeserver.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 @Tag(name = "Behaviours", description = "the behaviours API")
 public interface BehavioursApi {
@@ -25,7 +25,7 @@ public interface BehavioursApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Behaviours are returned.")})
     @RequestMapping(value = "/behaviours", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<ArrayNode> getBehaviours(Principal principal) throws ApiException;
+    ResponseEntity<List<JsonNode>> getBehaviours(Principal principal) throws ApiException;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Behaviours have been set.")})
