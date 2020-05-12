@@ -17,7 +17,7 @@
 
         <div class="result-title">Daten ({{numDocs}})</div>
 
-        <mat-option *ngFor="let doc of docs" (onSelectionChange)="selectDoc.next(doc.id)">
+        <mat-option class="multiline" *ngFor="let doc of docs" (onSelectionChange)="selectDoc.next(doc.id)">
             <ige-document-list-item [doc]="doc"></ige-document-list-item>
         </mat-option>
 

@@ -75,6 +75,13 @@
 
   &.option-no-padding mat-option, &.option-no-padding .doc-item {
     height: 40px !important;
+    &.multiline{
+      height: auto !important;
+      white-space: normal;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      align-items: flex-start !important;
+    }
   }
 
   &.mat-autocomplete-hidden {
