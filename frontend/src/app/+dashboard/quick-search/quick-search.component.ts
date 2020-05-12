@@ -14,7 +14,7 @@ import {debounceTime} from 'rxjs/operators';
 })
 export class QuickSearchComponent implements OnInit {
 
-  @Output() select = new EventEmitter<string>();
+  @Output() selectDoc = new EventEmitter<string>();
   @Output() selectAddress = new EventEmitter<string>();
 
   docs: DocumentAbstract[];
