@@ -46,7 +46,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sections: string[];
 
-  form: FormGroup = new FormGroup({});
+  form = new FormGroup({});
 
   behaviours: Behaviour[];
   error = false;

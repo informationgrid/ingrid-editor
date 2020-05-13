@@ -39,8 +39,7 @@ export class CreateNodeComponent implements OnInit {
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(null);
   jumpedTreeNodeId: string = null;
 
-  constructor(private storageService: DocumentService,
-              private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery,
+  constructor(private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery,
               private router: Router,
               private fb: FormBuilder,
               private profileQuery: ProfileQuery,
@@ -165,6 +164,8 @@ export class CreateNodeComponent implements OnInit {
     newAddress.firstName = this.formGroup.get('firstName').value;
     newAddress.lastName = this.formGroup.get('lastName').value;
     newAddress.organization = this.formGroup.get('organization').value;
+    newAddress.title = this.documentService.createAddressTitle(newAddress);
+    // newAddress.title = `${newAddress.organization}, ${newAddress.lastName}, ${newAddress.firstName}`;
     const savedDoc = await this.saveForm(newAddress);
 
     this.navigateAfterSave(savedDoc._id);

@@ -1,16 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {BehaviourService} from '../services/behavior/behaviour.service';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {BehaviourQuery} from '../store/behaviour/behaviour.query';
-import {PluginInfo} from '../store/behaviour/behaviour.store';
 import {tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Plugin} from './plugin';
 
 @UntilDestroy()
 @Component({
   templateUrl: './behaviours.component.html',
-  styleUrls: ['./behaviours.component.scss'],
+  styleUrls: ['./behaviours.component.scss']/*,
   animations: [
     trigger('openClose', [
       state('collapsed, void', style({height: '0px', 'padding-top': 0, 'padding-bottom': 0, overflow: 'hidden'})),
@@ -18,26 +17,21 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
       transition('collapsed => expanded', animate('200ms ease-in')),
       transition('expanded => collapsed', animate('300ms ease-out'))
     ])
-  ]
+  ]*/
 })
 export class BehavioursComponent implements OnInit {
 
-  plugins: PluginInfo[];
-  selectedPlugins: string[];
+  plugins: Plugin[];
 
-  // behaviours: any;
-  // behavioursLabel: string[];
+  form: { [x: string]: FormGroup } = {};
 
   behaviourTab: string;
   expanded: any = {};
 
   pluginForm: FormGroup = new FormGroup({});
-  behaviourForm: FormGroup = new FormGroup({});
-  modifiedPluginStates: string[];
 
-  static toggleField(plugin: any) {
-    plugin._state === 'collapsed' ? plugin._state = 'expanded' : plugin._state = 'collapsed';
-  }
+  behaviourFields: any = {};
+
 
   constructor(private formBuilder: FormBuilder,
               private behaviourQuery: BehaviourQuery,
@@ -45,78 +39,67 @@ export class BehavioursComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.behaviourService.initialized.then( () => {
-    // this.plugins.push( ...this.statService.getPlugins() );
-    // this.plugins.push( ...this.behaviourService.systemBehaviours );
-    // this.plugins.forEach(p => p._state = 'collapsed');
-    // this.behaviours = this.prepareFormBehaviours(this.behaviourService.behaviours);
-    // this.behavioursLabel = Object.keys(this.behaviours);
     this.behaviourTab = 'SYSTEM';
 
-    this.behaviourQuery.selectAll()
+    this.behaviourService.theSystemBehaviours$
       .pipe(
         untilDestroyed(this),
-        tap((items: PluginInfo[]) => {
+        tap((items: Plugin[]) => {
           console.log('Item: ', items);
-          const initialForm = items.reduce((acc: any, val: PluginInfo) => {
+          const initialForm = items.reduce((acc: any, val: Plugin) => {
             acc[val.id] = false;
             return acc;
           }, {});
           this.pluginForm = this.formBuilder.group(initialForm);
           console.log(this.pluginForm.controls);
+        }),
+        tap((items: Plugin[]) => {
+
+          this.behaviourFields = items
+            .reduce((acc: any, val: Plugin) => {
+              const formGroup = new FormGroup({});
+              // initially set disabled state for fields
+              if (val.fields.length > 0 && !val.isActive) {
+                setTimeout(() => formGroup.disable());
+              }
+              acc[val.id] = {
+                form: formGroup,
+                active: new FormControl(val.isActive),
+                modified: val.isActive !== val.defaultActive,
+                fields: val.fields,
+                data: val.data ? val.data : {}
+              };
+              return acc;
+            }, {});
         })
       )
-      .subscribe(items => this.plugins = items);
-
-    this.behaviourQuery.selectActiveId()
-      .pipe(
-        untilDestroyed(this),
-      )
-      .subscribe((ids: string[]) => this.updateSelectedIds(ids));
+      .subscribe(plugins => this.plugins = plugins);
 
   }
 
-  private updateSelectedIds(ids: string[]) {
-    this.selectedPlugins = ids;
-    this.modifiedPluginStates = this.plugins.map(plugin => {
-      if (plugin.initialActive && ids.indexOf(plugin.id) === -1) {
-        return plugin.id;
-      } else if (!plugin.initialActive && ids.indexOf(plugin.id) !== -1) {
-        return plugin.id;
-      } else {
-        return null;
-      }
-    }).filter(mapped => mapped);
+  save() {
+
+    // TODO: improve by saving only modified behaviours states
+    const behaviours = this.behaviourService.theSystemBehaviours$.value
+      .map(item => {
+        return {
+          _id: item.id,
+          active: this.behaviourFields[item.id]?.active.value,
+          data: this.behaviourFields[item.id]?.form.value
+        }
+      });
+
+    this.behaviourService.saveBehaviours(behaviours);
+
   }
 
-  togglePlugin(pluginId: string, isSelected: boolean) {
-    if (isSelected) {
-      this.behaviourService.enable(pluginId);
-    } else {
-      this.behaviourService.disable(pluginId);
-    }
+  hasInvalidForm() {
+    return Object.keys(this.behaviourFields)
+      .some(key => this.behaviourFields[key].form.invalid);
   }
 
-  /*toggleBehaviour(value: string, isChecked: boolean) {
-    isChecked ? this.behaviourService.enable(value) : this.behaviourService.disable(value);
-  }*/
-
-  /*private prepareFormBehaviours(behaviours: Behaviour[]) {
-    const mapped = {};
-    behaviours.forEach(behaviour => {
-
-      // set state to collapsed
-      behaviour._state = 'collapsed';
-
-      if (!mapped[behaviour.forProfile]) {
-        mapped[behaviour.forProfile] = [];
-      }
-      mapped[behaviour.forProfile].push(behaviour);
-    });
-    return mapped;
-  }*/
-
-  /*toggleField(plugin: Plugin) {
-    plugin._state === 'expanded' ? plugin._state = 'collapsed' : plugin._state = 'expanded';
-  }*/
+  updateFieldState(plugin: Plugin, checked: boolean) {
+    const form = this.behaviourFields[plugin.id].form;
+    checked ? form.enable() : form.disable();
+  }
 }

@@ -18,6 +18,8 @@ import {SearchResult} from '../../models/search-result.model';
 import {ServerSearchResult} from '../../models/server-search-result.model';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 
+export type AddressTitleFn = (address: IgeDocument) => string;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -31,6 +33,7 @@ export class DocumentService {
   datasetsChanged$ = new Subject<UpdateDatasetInfo>();
   publishState$ = new BehaviorSubject<boolean>(false);
   private configuration: Configuration;
+  private alternateAddressTitle: (IgeDocument) => string = null;
 
   constructor(private http: HttpClient, configService: ConfigService,
               private modalService: ModalService,
@@ -247,5 +250,21 @@ export class DocumentService {
       totalHits: result.totalHits,
       hits: this.mapToDocumentAbstracts(result.hits, null)
     } as SearchResult;
+  }
+
+  createAddressTitle(address: IgeDocument) {
+    return this.alternateAddressTitle
+      ? this.alternateAddressTitle(address)
+      : `${address.organization}, ${address.lastName}, ${address.firstName}`;
+  }
+
+  registerAddressTitleFunction(func: AddressTitleFn) {
+
+    if (func !== null && this.alternateAddressTitle !== null) {
+      console.error('There are multiple sort functions registered for the tree. Will ignore others!');
+    } else {
+      this.alternateAddressTitle = func;
+    }
+
   }
 }

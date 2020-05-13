@@ -11,6 +11,7 @@
 //     - or should it be realised as a plugin?
 
 import {Subscription} from 'rxjs';
+import {FormlyFieldConfig} from '@ngx-formly/core';
 
 export abstract class Plugin {
   id: string;
@@ -21,6 +22,8 @@ export abstract class Plugin {
   _state?: string;
   forAddress = false;
   subscriptions: Subscription[] = [];
+  fields?: FormlyFieldConfig[] = [];
+  data?: any;
 
   register(): void {
     this.isActive = true;

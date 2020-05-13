@@ -6,6 +6,7 @@ export interface PluginInfo {
   title: string;
   description: string;
   initialActive?: boolean;
+  data?: any;
 }
 
 export interface BehaviourState extends EntityState<PluginInfo>, MultiActiveState {}

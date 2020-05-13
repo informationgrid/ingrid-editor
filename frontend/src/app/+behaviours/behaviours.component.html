@@ -1,19 +1,57 @@
 <!-- System behaviours -->
 <mat-tab-group [animationDuration]="'0ms'">
     <mat-tab label="System">
-        <mat-selection-list multiple [ngModel]="selectedPlugins"
-                            (selectionChange)="togglePlugin($event.option.value, $event.option.selected)">
-            <mat-list-option *ngFor="let plugin of plugins"
-                             [value]="plugin.id">
-                <h3 matLine>
-                    {{plugin.title}}
-                    <span *ngIf="modifiedPluginStates.indexOf(plugin.id) !== -1">(modified)</span>
-                </h3>
-                <p matLine>
-                    <span>{{plugin.description}}</span>
-                </p>
-            </mat-list-option>
-        </mat-selection-list>
+        <mat-card *ngFor="let plugin of plugins">
+            <form [formGroup]="behaviourFields[plugin.id].form">
+                <mat-card-title>
+                    <mat-checkbox [formControl]="behaviourFields[plugin.id].active"
+                                  (change)="updateFieldState(plugin, $event.checked)"></mat-checkbox>
+                    <span class="title">
+                        {{plugin.name}}
+                        <span *ngIf="behaviourFields[plugin.id].modified">(modified)</span>
+                    </span>
+                </mat-card-title>
+
+                <mat-card-content>
+                    <div>{{plugin.description}}</div>
+
+                    <ng-container *ngIf="behaviourFields[plugin.id].fields.length > 0">
+                        <formly-form [form]="behaviourFields[plugin.id].form"
+                                     [fields]="behaviourFields[plugin.id].fields"
+                                     [model]="behaviourFields[plugin.id].data"></formly-form>
+                    </ng-container>
+                </mat-card-content>
+            </form>
+        </mat-card>
+
+        <!--<mat-selection-list multiple [(ngModel)]="selectedPlugins">
+
+            <ng-container *ngFor="let plugin of plugins">
+
+                <mat-list-option [value]="plugin.id" [disableRipple]="true">
+                    <h3 matLine>
+                        {{plugin.title}}
+                        <span *ngIf="modifiedPluginStates.indexOf(plugin.id) !== -1">(modified)</span>
+                    </h3>
+                    <p matLine>
+                        <span>{{plugin.description}}</span>
+                    </p>
+                </mat-list-option>
+
+                <ng-container *ngIf="behaviourFields[plugin.id] as field">
+                    <form [formGroup]="field.form" (keyup)="handleKeyUp($event)">
+                        <formly-form [form]="field.form"
+                                     [fields]="field.fields"
+                                     [model]="field.data"></formly-form>
+                    </form>
+                </ng-container>
+
+            </ng-container>
+
+        </mat-selection-list>-->
+        <button mat-stroked-button color="primary" (click)="save()"
+                [disabled]="hasInvalidForm()">Speichern
+        </button>
     </mat-tab>
 
     <!-- Behaviours for each profile -->
