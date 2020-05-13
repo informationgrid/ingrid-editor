@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {BehaviourService} from '../services/behavior/behaviour.service';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
-import {BehaviourQuery} from '../store/behaviour/behaviour.query';
 import {tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Plugin} from './plugin';
@@ -34,7 +33,6 @@ export class BehavioursComponent implements OnInit {
 
 
   constructor(private formBuilder: FormBuilder,
-              private behaviourQuery: BehaviourQuery,
               private behaviourService: BehaviourService) {
   }
 

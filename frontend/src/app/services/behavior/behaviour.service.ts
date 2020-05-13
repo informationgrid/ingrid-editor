@@ -8,7 +8,6 @@ import {tap} from 'rxjs/internal/operators';
 import {BehaviorDataService} from './behavior-data.service';
 import {ProfileQuery} from '../../store/profile/profile.query';
 import {SessionQuery} from '../../store/session.query';
-import {BehaviourStore} from '../../store/behaviour/behaviour.store';
 import {PluginToken} from '../../tokens/plugin.token';
 
 export interface BehaviourFormatBackend {
@@ -45,7 +44,6 @@ export class BehaviourService {
               private profileService: ProfileService,
               private profileQuery: ProfileQuery,
               private sessionQuery: SessionQuery,
-              private behaviourStore: BehaviourStore,
               @Inject(PluginToken) private systemBehaviours: Plugin[],
               private dataService: BehaviorDataService) {
 
