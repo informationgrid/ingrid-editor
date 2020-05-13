@@ -1,5 +1,6 @@
-import {Component, ElementRef, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {BehaviorSubject, Observable} from "rxjs";
 
 @Component({
   selector: 'ige-context-help',
@@ -7,18 +8,19 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
   styleUrls: ['./context-help.component.scss']
 })
 export class ContextHelpComponent implements OnInit {
-  title: string;
-  inExpandedView: boolean;
-  @ViewChild('contextContent') contextContent: ElementRef;
 
+  title: string;
+  description$: Observable<String>;
+
+  inExpandedView: boolean;
 
   constructor(public dialogRef: MatDialogRef<ContextHelpComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   ngOnInit() {
-    this.title = 'Beschreibung';
+    this.title = this.data.title ? this.data.title : 'Kein Titel';
+    this.description$ = this.data.description$ ? this.data.description$ : new BehaviorSubject("Keine Beschreibung");
     this.inExpandedView = false;
-      // this.dialogRef.updateSize('330px', '420px');
   }
 
   showMore() {
@@ -27,6 +29,5 @@ export class ContextHelpComponent implements OnInit {
       top: '50px'
     });
     this.inExpandedView = true;
-    // this.contextContent.
   }
 }

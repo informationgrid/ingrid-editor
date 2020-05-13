@@ -8,34 +8,7 @@
             <mat-icon>close</mat-icon>
         </button>
     </h2>
-<div mat-dialog-content [style.height]="inExpandedView ? 'auto' : '285px'">
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-    <p>
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-    </p>
-    <ul>
-        <li>Ort</li>
-        <li>Zeit</li>
-        <li>Zweckhaftigkeit</li>
-    </ul>
+<div mat-dialog-content [style.height]="inExpandedView ? 'auto' : '285px'" >{{description$ | async}}
 </div>
 <div mat-dialog-actions>
     <button *ngIf="!inExpandedView" mat-icon-button color='primary' (click)="showMore()"><mat-icon>fullscreen</mat-icon><span>grösser</span></button>
