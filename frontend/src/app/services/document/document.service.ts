@@ -8,7 +8,7 @@ import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
-import {arrayAdd, arrayRemove} from '@datorama/akita';
+import {applyTransaction, arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
 import {ProfileService} from '../profile.service';
 import {SessionStore} from '../../store/session.store';
@@ -114,12 +114,15 @@ export class DocumentService {
 
   updateOpenedDocumentInTreestore(doc: DocumentAbstract, address: boolean, keepOpenedDocument = false) {
     const store = address ? this.addressTreeStore : this.treeStore;
-    setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
-    if (!keepOpenedDocument) {
-      return store.update({
-        openedDocument: doc
-      });
-    }
+
+    applyTransaction(() => {
+      setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
+      if (!keepOpenedDocument) {
+        return store.update({
+          openedDocument: doc
+        });
+      }
+    });
   }
 
   save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean, path?: string[]): Promise<IgeDocument> {
@@ -266,5 +269,10 @@ export class DocumentService {
       this.alternateAddressTitle = func;
     }
 
+  }
+
+  setDocLoadingState(isLoading: boolean, address: boolean) {
+    const store = address ? this.addressTreeStore : this.treeStore;
+    store.update({isDocLoading: isLoading});
   }
 }

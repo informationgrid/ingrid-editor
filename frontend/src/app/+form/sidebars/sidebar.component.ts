@@ -64,6 +64,7 @@ export class SidebarComponent implements OnInit {
         filter(node => node !== undefined && node !== null)
       )
       .subscribe(node => {
+        this.treeStore.update({isDocLoading: true});
         this.activeTreeNode.next(node.id);
       });
 
@@ -75,6 +76,7 @@ export class SidebarComponent implements OnInit {
     ).subscribe(params => {
       const previousOpenedDoc = this.treeQuery.getValue().openedDocument;
       if (previousOpenedDoc) {
+        this.treeStore.update({isDocLoading: true});
         console.log('Opening previous selected node', previousOpenedDoc.id);
         this.activeTreeNode.next(previousOpenedDoc.id.toString());
         setTimeout( () => this.parentContainer.scrollTop = this.treeQuery.getValue().scrollPosition, 1000);

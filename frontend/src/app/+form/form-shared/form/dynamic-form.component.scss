@@ -11,6 +11,16 @@
   background-color: $ige-background-bar !important;
 }
 
+.loading {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  div {
+    padding: 24px;
+  }
+}
+
 .form-content > form {
   padding: 20px 24px 0 36px;
   background-color: #ffffff;

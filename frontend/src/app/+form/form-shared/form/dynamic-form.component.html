@@ -11,7 +11,13 @@
 
         <!-- The form -->
         <as-split-area #scrollForm [size]="100-sidebarWidth" id="form" class="form-content">
-            <ng-content *ngIf="!activeId || fields.length === 0"></ng-content>
+
+            <div *ngIf="isLoading" class="loading">
+                <div>Lade Dokument ...</div>
+                <mat-spinner [diameter]="30"></mat-spinner>
+            </div>
+
+            <ng-content *ngIf="!isLoading && (!activeId || fields.length === 0)"></ng-content>
 
             <ng-container *ngIf="fields.length !== 0">
                 <ige-form-info [form]="form"

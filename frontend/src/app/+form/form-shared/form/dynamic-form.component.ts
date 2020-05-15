@@ -62,6 +62,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private formStateName: 'document' | 'address';
   activeId: string = null;
   private query: TreeQuery | AddressTreeQuery;
+  isLoading = true;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
@@ -103,6 +104,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.formStateName = 'document';
       this.query = this.treeQuery;
     }
+
+    this.query.select('isDocLoading')
+      .pipe(untilDestroyed(this))
+      .subscribe(state => this.isLoading = state);
 
     // FIXME: use combineLatest to wait for profiles initialized
     //        otherwise document cannot be loaded correctly, since profile not yet initialized
@@ -204,6 +209,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.model = {...data};
       this.resetForm();
+      this.documentService.setDocLoadingState(false, this.address);
 
     } catch (ex) {
       console.error(ex);
