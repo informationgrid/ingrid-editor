@@ -7,6 +7,7 @@ import {CopyCutPastePlugin} from './+form/dialogs/copy-cut-paste/copy-cut-paste.
 import {PrintViewPlugin} from './+form/dialogs/print-view/print-view.plugin';
 import {DeleteDocsPlugin} from './+form/dialogs/delete-docs/delete-docs.plugin';
 import {HistoryPlugin} from './+form/dialogs/history/history.plugin';
+import {DeleteEmptyFoldersBehaviour} from './+behaviours/system/DeleteEmptyFolders/delete-empty-folders.behaviour';
 
 export const formPluginProvider = [
   {provide: FormPluginToken, useClass: PublishPlugin, multi: true},
@@ -16,5 +17,6 @@ export const formPluginProvider = [
   {provide: FormPluginToken, useClass: CopyCutPastePlugin, multi: true},
   {provide: FormPluginToken, useClass: PrintViewPlugin, multi: true},
   {provide: FormPluginToken, useClass: DeleteDocsPlugin, multi: true},
-  {provide: FormPluginToken, useClass: HistoryPlugin, multi: true}
+  {provide: FormPluginToken, useClass: HistoryPlugin, multi: true},
+  {provide: FormPluginToken, useClass: DeleteEmptyFoldersBehaviour, multi: true}
 ];
