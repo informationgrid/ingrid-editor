@@ -30,6 +30,6 @@ public interface BehavioursApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Behaviours have been set.")})
     @RequestMapping(value = "/behaviours", produces = {"application/json"}, method = RequestMethod.POST)
-    ResponseEntity<JsonNode> setBehaviours(Principal principal, @Parameter(required = true) @Valid @RequestBody String behaviour) throws Exception;
+    ResponseEntity<Void> setBehaviours(Principal principal, @Parameter(required = true) @Valid @RequestBody JsonNode[] behaviour) throws Exception;
 
 }

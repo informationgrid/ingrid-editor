@@ -62,25 +62,20 @@ public class BehavioursApiController implements BehavioursApi {
         }
     }
 
-    public ResponseEntity<JsonNode> setBehaviours(
+    public ResponseEntity<Void> setBehaviours(
             Principal principal,
-            String behavior) throws Exception {
+            JsonNode[] behaviours) throws Exception {
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
-            ObjectNode mappedBehavior = (ObjectNode) MapperService.getJsonNode(behavior);
-
-            String rid = this.dbService.getRecordId("Behaviours", mappedBehavior.get("_id").asText());
-            if (rid != null) {
-                mappedBehavior.put("@rid", rid);
+            for (JsonNode behaviour : behaviours) {
+                String rid = this.dbService.getRecordId("Behaviours", behaviour.get("_id").asText());
+                this.dbService.save("Behaviours", rid, behaviour.toString());
             }
 
-            JsonNode doc = this.dbService.save("Behaviours", rid, mappedBehavior.toString());
-            MapperService.removeDBManagementFields((ObjectNode) doc);
-
-            return ResponseEntity.ok(doc);
+            return ResponseEntity.ok().build();
 
         }
     }
