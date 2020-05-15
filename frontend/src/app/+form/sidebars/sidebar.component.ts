@@ -64,7 +64,10 @@ export class SidebarComponent implements OnInit {
         filter(node => node !== undefined && node !== null)
       )
       .subscribe(node => {
-        this.treeStore.update({isDocLoading: true});
+        // do not show loading indicator when going to dashboard
+        if (node.id) {
+          this.treeStore.update({isDocLoading: true});
+        }
         this.activeTreeNode.next(node.id);
       });
 
