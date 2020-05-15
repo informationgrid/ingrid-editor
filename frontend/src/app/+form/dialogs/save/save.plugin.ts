@@ -56,7 +56,7 @@ export class SavePlugin extends Plugin {
         filter(eventId => eventId === 'SAVE')
       )
       .subscribe(() => {
-        const form = this.getFormValue();
+        const form: IgeDocument = this.getForm().value;
         this.save(form);
       });
 
@@ -78,16 +78,15 @@ export class SavePlugin extends Plugin {
 
   }
 
-  private getFormValue(): IgeDocument {
+  private getForm() {
     const formDoc = this.forAddress ? 'address' : 'document';
-    const form = this.formsManager.getForm(formDoc);
-    return form.value;
+    return this.formsManager.getForm(formDoc);
   }
 
   save(formData: IgeDocument) {
     this.documentService.publishState$.next(false);
 
-    this.documentService.save(formData, false, this.forAddress);
+    return this.documentService.save(formData, false, this.forAddress);
   }
 
   unregister() {

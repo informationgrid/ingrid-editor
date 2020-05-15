@@ -149,7 +149,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset dirty flag after save
     this.documentService.afterSave$
       .pipe(untilDestroyed(this))
-      .subscribe((message: any) => this.resetForm());
+      .subscribe(() => this.resetForm());
   }
 
   @HostListener('window: keydown', ['$event'])
@@ -257,6 +257,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private resetForm() {
     this.form.markAsPristine();
     this.form.markAsUntouched();
+    // FIXME: form does not seem to be updated automatically and we have to force update event
+    this.formsManager.upsert(this.formStateName, this.form, {emitEvent: true});
   }
 
 }
