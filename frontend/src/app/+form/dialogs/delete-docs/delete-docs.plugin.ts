@@ -83,6 +83,8 @@ export class DeleteDocsPlugin extends Plugin {
 
       this.documentService.delete(docIdsToDelete, this.forAddress);
 
+      this.documentService.updateOpenedDocumentInTreestore(null, this.forAddress);
+
       // find all parents in store who now have no children anymore
       // parents
       //   .filter(id => this.treeQuery.getCount(item => item._parent === id) === 0)
