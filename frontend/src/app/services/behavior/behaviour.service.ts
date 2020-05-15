@@ -64,7 +64,7 @@ export class BehaviourService {
           this.systemBehaviours.forEach((behaviour) => {
             const stored = storedBehaviours.filter((sb: any) => sb._id === behaviour.id);
             behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-            behaviour.data = stored[0].data;
+            behaviour.data = stored.length > 0 ? stored[0].data : null;
           });
         })
       );
