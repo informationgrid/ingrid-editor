@@ -35,6 +35,14 @@ describe('General create addresses/folders', () => {
       cy.get('.lastName input').should('have.value', 'Meier');
     });
 
+    xit('should generate a title from create parameters', () => {
+      // only first name and last name
+
+      // only organization
+
+      // all
+    });
+
   });
 
   describe('Publish addresses', () => {

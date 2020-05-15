@@ -256,9 +256,13 @@ export class DocumentService {
   }
 
   createAddressTitle(address: IgeDocument) {
-    return this.alternateAddressTitle
-      ? this.alternateAddressTitle(address)
-      : `${address.organization}, ${address.lastName}, ${address.firstName}`;
+    if (this.alternateAddressTitle) {
+      return this.alternateAddressTitle(address);
+    } else {
+      const fields = [address.organization, address.lastName, address.firstName]
+        .filter(item => item);
+      return fields.join(', ');
+    }
   }
 
   registerAddressTitleFunction(func: AddressTitleFn) {
