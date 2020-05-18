@@ -18,7 +18,7 @@ describe('General create addresses/folders', () => {
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
-      cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(`Adressen${SEPARATOR}`);
+      cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(`Adressen`);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
       // cy.get('[data-cy=create-title]').type(docName);

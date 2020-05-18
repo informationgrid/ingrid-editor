@@ -1,7 +1,7 @@
 import {Utils} from './utils';
 
 export const SEPARATOR = ' chevron_right';
-export const ROOT = `Daten${SEPARATOR}`;
+export const ROOT = `Daten`;
 
 export class DocumentPage {
   static title = '.form-info-bar .title .label';
