@@ -32,7 +32,10 @@ export class CreateNodeComponent implements OnInit {
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
-  private selectedLocation: any;
+  private selectedLocation: any = {
+    parent: null,
+    path: []
+  };
   formGroup: FormGroup;
   documentTypes: Observable<DocumentAbstract[]>;
   numDocumentTypes: number;
@@ -142,7 +145,7 @@ export class CreateNodeComponent implements OnInit {
 
   applyLocation() {
     this.parent = this.selectedLocation.parent;
-    this.path = this.selectedLocation.path;
+    this.path = this.selectedLocation.path.filter(x => x.id);
     this.selectedPage = 0;
   }
 
