@@ -6,15 +6,14 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AddressType extends DocumentType {
+public class OrganizationType extends DocumentType {
 
-    private static Logger log = LogManager.getLogger(AddressType.class);
+    private static Logger log = LogManager.getLogger(OrganizationType.class);
 
-    private static final String ADDRESSES = "AddressDoc";
+    private static final String DOC_ID = "OrganizationDoc";
 
     private String[] profiles = new String[0];
 
@@ -22,11 +21,11 @@ public class AddressType extends DocumentType {
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(ADDRESSES)) {
-            log.debug("Create class " + ADDRESSES);
-            OClass addressClass = schema.createClass(ADDRESSES);
-            addressClass.createProperty("_id", OType.STRING);
-            addressClass.createProperty("_parent", OType.STRING);
+        if (!schema.existsClass(DOC_ID)) {
+            log.debug("Create class " + DOC_ID);
+            OClass myClass = schema.createClass(DOC_ID);
+            myClass.createProperty("_id", OType.STRING);
+            myClass.createProperty("_parent", OType.STRING);
         }
 
     }
