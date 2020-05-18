@@ -56,8 +56,10 @@ export class SavePlugin extends Plugin {
         filter(eventId => eventId === 'SAVE')
       )
       .subscribe(() => {
-        const form: IgeDocument = this.getForm().value;
-        this.save(form);
+        const form: IgeDocument = this.getForm()?.value;
+        if (form) {
+          this.save(form);
+        }
       });
 
     // react on document selection

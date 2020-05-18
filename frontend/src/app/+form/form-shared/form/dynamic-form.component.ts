@@ -161,7 +161,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener('window: keydown', ['$event'])
   hotkeys(event: KeyboardEvent) {
-    this.formUtils.addHotkeys(event, this.documentService, this.form);
+    FormUtils.addHotkeys(event, this.formToolbarService);
   }
 
   /**

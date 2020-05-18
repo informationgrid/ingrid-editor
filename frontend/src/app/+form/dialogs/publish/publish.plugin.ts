@@ -91,7 +91,7 @@ export class PublishPlugin extends Plugin {
   private getFormValue(): IgeDocument {
     const formDoc = this.forAddress ? 'address' : 'document';
     const form = this.formsManager.getForm(formDoc);
-    return form.value;
+    return form?.value;
   }
 
   revert() {
