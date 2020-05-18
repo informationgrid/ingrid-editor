@@ -43,6 +43,18 @@ describe('General create addresses/folders', () => {
       // all
     });
 
+    xit('should apply initially selected item when switching location for a new folder', () => {
+      // #1687
+      // create a new folder/doc/address
+      // switch location
+      // click 'Übernehmen' without changing the location
+      // -> error
+    });
+
+    xit('should create an organization', () => {
+
+    });
+
   });
 
   describe('Publish addresses', () => {
