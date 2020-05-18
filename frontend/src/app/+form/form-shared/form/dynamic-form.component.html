@@ -6,7 +6,7 @@
 
         <!-- exchangable sidebar -->
         <as-split-area [size]="sidebarWidth" id="sidebar">
-            <ige-sidebar [address]="address" [parentContainer]="scrollForm"></ige-sidebar>
+            <ige-sidebar [address]="address" [activeId]="activeId"></ige-sidebar>
         </as-split-area>
 
         <!-- The form -->
@@ -17,7 +17,7 @@
                 <mat-spinner [diameter]="30"></mat-spinner>
             </div>
 
-            <ng-content *ngIf="!isLoading && (!activeId || fields.length === 0)"></ng-content>
+            <ng-content *ngIf="!isLoading && (!(activeId | async) || fields.length === 0)"></ng-content>
 
             <ng-container *ngIf="!isLoading && fields.length !== 0">
                 <ige-form-info [form]="form"

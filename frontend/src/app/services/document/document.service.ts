@@ -132,6 +132,7 @@ export class DocumentService {
       .toPromise().then(json => {
         const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
+        // TODO: this should be controlled by dynamic-form component
         this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 
         this.afterSave$.next(data);
@@ -153,8 +154,6 @@ export class DocumentService {
   publish(data: IgeDocument): Promise<void> {
     console.log('PUBLISHING');
     const errors: any = {errors: []};
-
-    // this.handleTitle(data);
 
     this.beforePublish$.next(errors);
     console.log('After validation:', data);

@@ -1,18 +1,14 @@
-import {AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
 import {ModalService} from '../../../services/modal/modal.service';
-import {ErrorService} from '../../../services/error.service';
 import {Role} from '../../../models/user-role';
-import {RoleService} from '../../../services/role/role.service';
-import {MatDialog} from '@angular/material/dialog';
 import {IgeDocument} from '../../../models/ige-document';
 import {FormUtils} from '../../form.utils';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
-import {CodelistService} from '../../../services/codelist/codelist.service';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {SessionQuery} from '../../../store/session.query';
 import {FormularService} from '../../formular.service';
@@ -22,6 +18,7 @@ import {StickyHeaderInfo} from '../../form-info/form-info.component';
 import {filter} from 'rxjs/operators';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {Behaviour} from '../../../services/behavior/behaviour.service';
+import {BehaviorSubject} from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -34,6 +31,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @Input() address = false;
 
+  @ViewChild('scrollForm', {read: ElementRef}) scrollForm: ElementRef;
+
+  activeId = new BehaviorSubject<string>(null);
   sidebarWidth = 15;
 
   fields: FormlyFieldConfig[] = [];
@@ -56,31 +56,24 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   paddingWithHeader: string;
 
-  private formUtils: FormUtils;
   showValidationErrors = false;
 
   private formStateName: 'document' | 'address';
-  activeId: string = null;
   private query: TreeQuery | AddressTreeQuery;
   isLoading = true;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
               private documentService: DocumentService, private modalService: ModalService,
-              private dialog: MatDialog,
               private formsManager: AkitaNgFormsManager,
-              private roleService: RoleService,
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
               private session: SessionQuery,
-              private codelistService: CodelistService,
-              private errorService: ErrorService,
               private router: Router,
               private route: ActivatedRoute) {
 
     // TODO: get roles definiton
-    this.userRoles = []; // KeycloakService.auth.roleMapping; // authService.rolesDetail;
-    this.formUtils = new FormUtils();
+    this.userRoles = [];
 
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
 
@@ -109,9 +102,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this))
       .subscribe(state => this.isLoading = state);
 
-    // FIXME: use combineLatest to wait for profiles initialized
-    //        otherwise document cannot be loaded correctly, since profile not yet initialized
-    //        this.session.isProfilesInitialized$
     this.route.params
       .pipe(untilDestroyed(this))
       .subscribe(params => this.loadDocument(params['id']));
@@ -129,15 +119,27 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
 
-    this.query.explicitActiveNode$
+    const showFormDashboard$ = this.query.explicitActiveNode$
       .pipe(
         untilDestroyed(this),
         filter(node => node !== undefined && (node === null || node.id === null))
-      )
-      .subscribe(() => {
-        this.documentService.updateOpenedDocumentInTreestore(null, this.address);
-        this.router.navigate([this.address ? '/address' : '/form']);
-      });
+      );
+
+    const externalTreeNodeChange$ = this.query.explicitActiveNode$
+      .pipe(
+        untilDestroyed(this),
+        filter(node => node !== undefined && node !== null)
+      );
+
+    showFormDashboard$.subscribe(() => {
+      this.documentService.updateOpenedDocumentInTreestore(null, this.address);
+      this.router.navigate([this.address ? '/address' : '/form']);
+    });
+
+    // only activate tree node (when rejecting unsaved changes dialog)
+    externalTreeNodeChange$.subscribe(node => {
+      this.activeId.next(node.id);
+    });
 
   }
 
@@ -169,13 +171,23 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   loadDocument(id: string) {
 
     if (id === undefined) {
-      this.fields = [];
-      this.activeId = null;
-      this.documentService.updateOpenedDocumentInTreestore(null, this.address, true);
-      return;
+      const previousOpenedDoc = this.query.getValue().openedDocument;
+      if (previousOpenedDoc) {
+        this.documentService.setDocLoadingState(true, this.address);
+        console.log('Opening previous selected node', previousOpenedDoc.id);
+        id = previousOpenedDoc.id.toString();
+        setTimeout(() => this.scrollForm.nativeElement.scrollTop = this.treeQuery.getValue().scrollPosition, 1000);
+      } else {
+        this.fields = [];
+        // this.form = new FormGroup({});
+        this.formsManager.remove(this.formStateName);
+        this.activeId.next(null);
+        this.documentService.updateOpenedDocumentInTreestore(null, this.address, true);
+        return;
+      }
     }
 
-    this.activeId = id;
+    this.activeId.next(id);
 
     this.documentService.load(id, this.address)
       .pipe(untilDestroyed(this))
