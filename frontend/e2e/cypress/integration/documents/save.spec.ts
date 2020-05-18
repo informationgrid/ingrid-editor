@@ -124,4 +124,25 @@ describe('General create documents/folders', () => {
 
     });
   });
+
+
+  describe('Dirty checks', () => {
+    xit('should show a dialog when a document was modified and another address was clicked', () => {
+
+      // reject dialog
+      // check selected tree node === previous selected node
+
+      // accept dialog
+      // check selected tree node === newly selected node
+
+    });
+
+    xit('should show a dialog when a document was modified and the page was changed', () => {
+
+      // reject -> should stay on page
+
+      // accept -> should load new page
+
+    });
+  });
 })

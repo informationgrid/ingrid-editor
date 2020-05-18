@@ -59,4 +59,24 @@ describe('General create addresses/folders', () => {
       cy.fieldIsInvalid('description', 'Dieses Feld muss ausgefüllt sein');
     });
   });
+
+  describe('Dirty checks', () => {
+    xit('should show a dialog when an address was modified and another address was clicked', () => {
+
+      // reject dialog
+      // check selected tree node === previous selected node
+
+      // accept dialog
+      // check selected tree node === newly selected node
+
+    });
+
+    xit('should show a dialog when an address was modified and the page was changed', () => {
+
+      // reject -> should stay on page
+
+      // accept -> should load new page
+
+    });
+  });
 });

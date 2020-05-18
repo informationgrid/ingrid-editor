@@ -65,7 +65,9 @@ export class SidebarComponent implements OnInit {
       )
       .subscribe(node => {
         // do not show loading indicator when going to dashboard
-        if (node.id) {
+        // or when node already is loaded (cancel dialog for unsaved changes, where we
+        // have to reset the tree node to the loaded document)
+        if (node.id && this.route.snapshot.params.id !== node.id) {
           this.treeStore.update({isDocLoading: true});
         }
         this.activeTreeNode.next(node.id);
