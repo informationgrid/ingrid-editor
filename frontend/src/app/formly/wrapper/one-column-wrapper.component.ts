@@ -1,5 +1,5 @@
 // panel-wrapper.component.ts
-import {Component, ElementRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {FieldWrapper} from '@ngx-formly/core';
 import {ContextHelpComponent} from '../../+demo-layout/form/context-help/context-help.component';
 import {MatDialog} from '@angular/material/dialog';
@@ -7,21 +7,35 @@ import {Overlay} from '@angular/cdk/overlay';
 import {ConfigService} from "../../services/config/config.service";
 import {ContexthelpService} from "../../services/contexthelp.service";
 import {Observable} from "rxjs";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'ige-one-column-wrapper',
   template: `
       <div fxLayout="row">
+          <div *ngIf="hasContexthelp && mouseOnLabel" class="contexthelp">
+              <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
+          </div>
           <div class="label-wrapper">
-              <label (click)="showContextHelp($event)">{{ to.externalLabel }} <span *ngIf="to.required">*</span></label>
+              <label [class.hasContexthelp]="hasContexthelp" (click)="hasContexthelp ? showContextHelp($event) : ''" (mouseover)="mouseOnLabel=true" (mouseout)="mouseOnLabel=false">
+                  {{ to.externalLabel }} <span *ngIf="to.required">*</span>
+              </label>
           </div>
           <ng-container #fieldComponent></ng-container>
       </div>
   `,
   styleUrls: ['./one-column-wrapper.component.scss']
 })
-export class OneColumnWrapperComponent extends FieldWrapper {
+export class OneColumnWrapperComponent extends FieldWrapper implements AfterViewInit {
   @ViewChild('fieldComponent', {read: ViewContainerRef, static: true}) fieldComponent: ViewContainerRef;
+
+  profile: string;
+  docType: string;
+  fieldId: string;
+  hasContexthelp$: Observable<boolean>;
+  hasContexthelp = false;
+  mouseOnLabel = false;
+
 
   constructor(public dialog: MatDialog,
               public configService: ConfigService,
@@ -30,15 +44,18 @@ export class OneColumnWrapperComponent extends FieldWrapper {
     super();
   }
 
-  showContextHelp(evt: MouseEvent) {
-    const profile  = this.configService.$userInfo.getValue().currentCatalog.type;
-    const docType  = this.model._profile;
-    const fieldId  = this.field.key;
-    // this.contexthelpService.getAvailableHelpFieldIds(this.configService.$userInfo.getValue().currentCatalog.type, this.model._profile);
-    // this.contexthelpService.getContexthelpText(profile, docType, fieldId);
-    const helptext = this.contexthelpService.getContexthelpText(profile, docType, fieldId);
+  ngAfterViewInit() {
+    this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
+    this.docType = this.model._profile;
+    this.fieldId = this.field.key;
+    this.hasContexthelp$ = this.contexthelpService.getAvailableHelpFieldIds(this.profile, this.docType).pipe(map(ids => ids.includes(this.fieldId)));
+    this.hasContexthelp$.subscribe(hasContexthelp => this.hasContexthelp = hasContexthelp);
+  }
 
-      const contextDialogHeight = 400;
+  showContextHelp(evt: MouseEvent) {
+    const helptext = this.contexthelpService.getContexthelpText(this.profile, this.docType, this.fieldId);
+
+    const contextDialogHeight = 400;
 
     const target = new ElementRef(evt.currentTarget);
     // @ts-ignore

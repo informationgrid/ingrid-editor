@@ -24,7 +24,7 @@ export class ContextHelpComponent implements OnInit {
   }
 
   showMore() {
-    this.dialogRef.updateSize('1000px', '800px');
+    this.dialogRef.updateSize('600px', 'auto');
     this.dialogRef.updatePosition({
       top: '50px'
     });

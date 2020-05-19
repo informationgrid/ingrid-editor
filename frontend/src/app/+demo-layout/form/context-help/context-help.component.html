@@ -2,14 +2,18 @@
     cdkDrag
     cdkDragRootElement=".cdk-overlay-pane"
     cdkDragHandle>
-        <mat-icon>info_outline</mat-icon>
-        <span class="text">{{title}}</span>
-        <button mat-icon-button mat-dialog-close>
-            <mat-icon>close</mat-icon>
-        </button>
-    </h2>
-<div mat-dialog-content [style.height]="inExpandedView ? 'auto' : '285px'" >{{description$ | async}}
+    <div class="infoIcon">
+        <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
+    </div>
+    <span class="text">{{title}}</span>
+    <button mat-icon-button mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+</h2>
+<div mat-dialog-content [style.height]="inExpandedView ? 'max-content' : '300px'">{{description$ | async}}
 </div>
-<div mat-dialog-actions>
-    <button *ngIf="!inExpandedView" mat-icon-button color='primary' (click)="showMore()"><mat-icon>fullscreen</mat-icon><span>grösser</span></button>
+<div *ngIf="!inExpandedView" mat-dialog-actions>
+    <button mat-icon-button color='primary' (click)="showMore()">
+        <mat-icon svgIcon="Infolayer-gross"></mat-icon>
+        <span>grösser</span></button>
 </div>

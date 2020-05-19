@@ -1,4 +1,4 @@
-
+@import "src/variables";
 
 /* validation error hide conditionally */
 
@@ -79,6 +79,10 @@
   padding-top: 17px;
 }
 
+.hasContexthelp:hover {
+  color: $ige-primary;
+}
+
 .checkbox-row {
   padding-bottom: 25px;
 }
@@ -87,3 +91,17 @@
   padding-top: 2px !important;
 }
 
+.contexthelp {
+  display: inline-block;
+  background-color: $ige-background;
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+  margin-left: -28px;
+  margin-right: 4px;
+  margin-top: 14px;
+
+  ::ng-deep .mat-icon svg rect {
+    fill: $ige-secondary;
+  }
+}
