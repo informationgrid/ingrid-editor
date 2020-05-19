@@ -30,7 +30,7 @@ public class Migration {
 
         for (String database : databases) {
             addTestDocClass(database);
-            addOrganizationClass(database);
+//            addOrganizationClass(database);
         }
 
     }

@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class OrganizationType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(OrganizationType.class);

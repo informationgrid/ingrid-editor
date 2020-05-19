@@ -168,10 +168,6 @@ export class CreateNodeComponent implements OnInit {
     newAddress.lastName = this.formGroup.get('lastName').value;
     newAddress.organization = this.formGroup.get('organization').value;
     newAddress.title = this.documentService.createAddressTitle(newAddress);
-
-    if (!newAddress.firstName && !newAddress.lastName) {
-      newAddress._profile = 'OrganizationDoc';
-    }
     const savedDoc = await this.saveForm(newAddress);
 
     this.navigateAfterSave(savedDoc._id);
