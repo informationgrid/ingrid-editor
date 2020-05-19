@@ -1,23 +1,21 @@
-import {Container, DropdownField, FieldBase, TextareaField, TextboxField} from '../../app/+form/controls';
-import {MapField} from '../../app/+form/controls/field-map';
-import {PartialGeneratorField} from '../../app/+form/controls/field-partial-generator';
-import {OpenTableField} from '../../app/+form/controls/field-opentable';
-import {LinkDatasetField} from '../../app/+form/controls/field-link-dataset';
+import {DropdownField} from '../../app/+form/controls';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
-import {DatepickerField} from '../../app/+form/controls/field-datepicker';
 import {DocumentService} from '../../app/services/document/document.service';
 import {BaseProfile} from '../base.profile';
 import {FormlyFieldConfig} from '@ngx-formly/core';
+import {Injectable} from '@angular/core';
+import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 
+@Injectable({
+  providedIn: 'root'
+})
 export class UVPProfile extends BaseProfile {
 
   id = 'UvpDoc';
 
   label = 'UVP-Verfahren';
 
-  codelistService = null;
-
-  iconClass = 'Projekt'; // TODO: make icons same size for better presentation in tree/browser
+  iconClass = 'Projekt';
 
   profileFields = <FormlyFieldConfig[]>[
     {
@@ -40,12 +38,12 @@ export class UVPProfile extends BaseProfile {
       }]
     }];
 
-  constructor(storageService: DocumentService, codelistService: CodelistService) {
-    super();
+  constructor(storageService: DocumentService, codelistService: CodelistService, codelistQuery: CodelistQuery) {
+    super(codelistService, codelistQuery);
 
     this.fields.push(...this.profileFields);
 
-    this.codelistService = codelistService;
+    /*this.codelistService = codelistService;
     const uvpNumberSelect = new DropdownField( {
       key: 'uvpNumber',
       label: 'UVP Nummer',
@@ -54,7 +52,7 @@ export class UVPProfile extends BaseProfile {
 
     this.codelistService.byId( '9000' ).then( codelist => {
       uvpNumberSelect.options = codelist;
-    } );
+    } );*/
 
 /*    this.fields = [
 

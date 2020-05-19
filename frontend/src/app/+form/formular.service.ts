@@ -10,7 +10,7 @@ import {SessionStore} from '../store/session.store';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {IFieldBase} from './controls';
 import {MessageService} from '../services/message.service';
-import {SessionQuery} from '../store/session.query';
+import {ProfileQuery} from '../store/profile/profile.query';
 
 @Injectable()
 export class FormularService {
@@ -28,12 +28,12 @@ export class FormularService {
               private treeQuery: TreeQuery,
               private treeStore: TreeStore,
               private sessionStore: SessionStore,
-              private sessionQuery: SessionQuery) {
+              private profileQuery: ProfileQuery) {
 
     // create profiles after we have logged in
     console.log('init profiles');
-    this.sessionQuery.isProfilesInitialized$.subscribe(initialized => {
-      if (initialized) {
+    this.profileQuery.selectLoading().subscribe(isLoading => {
+      if (!isLoading) {
         this.profileDefinitions = this.profiles.getProfiles();
       }
     });

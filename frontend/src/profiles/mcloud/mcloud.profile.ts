@@ -3,8 +3,12 @@ import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {BaseProfile} from '../base.profile';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
+import {Injectable} from '@angular/core';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
+@Injectable({
+  providedIn: 'root'
+})
 export class McloudProfile extends BaseProfile {
   // must be same as DBClass!?
   id = 'mCloudDoc';
@@ -250,6 +254,8 @@ export class McloudProfile extends BaseProfile {
 
     super(codelistService, codelistQuery);
     this.fields.push(...this.profileFields);
+
+    console.log('Profile mCLOUD initialized');
 
   }
 

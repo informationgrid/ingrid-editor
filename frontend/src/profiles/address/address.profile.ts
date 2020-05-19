@@ -6,7 +6,11 @@ import {BaseProfile} from '../base.profile';
 import {Behaviour} from '../../app/services/behavior/behaviour.service';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {IgeDocument} from '../../app/models/ige-document';
+import {Injectable} from '@angular/core';
 
+@Injectable({
+  providedIn: 'root'
+})
 export class ProfileAddress extends BaseProfile {
   // must be same as DBClass!
   id = 'AddressDoc';
@@ -37,21 +41,10 @@ export class ProfileAddress extends BaseProfile {
               type: 'input',
               templateOptions: {
                 label: 'Organisation',
-                appearance: 'outline'/*,
-                change: ($event) => {
-                  console.log('change organization', $event);
-                  const value = $event.formControl.value;
-                  const profileField = $event.form.get('_profile');
-
-                  if (value.length > 0) {
-                    profileField.setValue('OrganizationDoc')
-                  } else {
-                    profileField.setValue('AddressDoc')
-                  }
-                }*/
+                appearance: 'outline'
               },
               expressionProperties: {
-                'templateOptions.required': 'model.firstName.length === 0 && model.lastName.length === 0',
+                'templateOptions.required': '(!model.firstName && !model.lastName) || model.firstName.length === 0 && model.lastName?.length === 0',
               },
             }]
           }, {

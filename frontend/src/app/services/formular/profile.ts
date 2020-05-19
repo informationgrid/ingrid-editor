@@ -35,6 +35,6 @@ export interface Profile {
    */
   getFields(): FormlyFieldConfig[];
 
-  getIconClass(doc: IgeDocument): string;
+  getIconClass?(doc: IgeDocument): string;
 }
 

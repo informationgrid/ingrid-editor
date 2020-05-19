@@ -18,7 +18,8 @@ import {StickyHeaderInfo} from '../../form-info/form-info.component';
 import {filter} from 'rxjs/operators';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {Behaviour} from '../../../services/behavior/behaviour.service';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, combineLatest} from 'rxjs';
+import {ProfileQuery} from '../../../store/profile/profile.query';
 
 @UntilDestroy()
 @Component({
@@ -69,6 +70,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
               private session: SessionQuery,
+              private profileQuery: ProfileQuery,
               private router: Router,
               private route: ActivatedRoute) {
 
@@ -102,10 +104,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this))
       .subscribe(state => this.isLoading = state);
 
+    combineLatest([
+      this.profileQuery.selectLoading()
+        .pipe(filter(isLoading => !isLoading)),
+      this.route.params
+    ])
+      .pipe(untilDestroyed(this))
+      .subscribe(params => this.loadDocument(params[1]['id']));
+    /*
     this.route.params
       .pipe(untilDestroyed(this))
       .subscribe(params => this.loadDocument(params['id']));
-
+*/
     this.formularService.currentProfile = null;
 
     this.documentService.publishState$
