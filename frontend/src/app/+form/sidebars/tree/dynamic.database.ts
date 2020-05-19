@@ -18,7 +18,10 @@ export class DynamicDatabase {
 
   treeUpdates = new Subject<UpdateDatasetInfo>();
 
-  constructor(private docService: DocumentService, private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery) {
+  constructor(private docService: DocumentService,
+              private treeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery) {
+
     this.docService.datasetsChanged$
       .pipe(untilDestroyed(this))
       .subscribe(docs => this.treeUpdates.next(docs));
@@ -56,9 +59,11 @@ export class DynamicDatabase {
     return this.docService.getPath(id, address).toPromise();
   }
 
-  static mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
-    return docs.map(doc => new TreeNode(
-      doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren, doc._parent, doc.icon)
+  mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
+    return docs.map(doc =>
+      new TreeNode(
+        doc.id.toString(), doc.title, doc._profile, doc._state, level, doc._hasChildren, doc._parent,
+        doc.icon)
     );
   }
 }

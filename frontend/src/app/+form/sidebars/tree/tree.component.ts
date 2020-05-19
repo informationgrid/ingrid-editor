@@ -203,7 +203,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   reloadTree(forceFromServer = false): Observable<TreeNode[]> {
     return this.database.initialData(forceFromServer, this.forAddresses)
       .pipe(
-        map(docs => DynamicDatabase.mapDocumentsToTreeNodes(docs, 0)),
+        map(docs => this.database.mapDocumentsToTreeNodes(docs, 0)),
         map(docs => docs.sort(this.treeService.getSortTreeNodesFunction())),
         tap(rootElements => {
           this.dataSource.data = rootElements;

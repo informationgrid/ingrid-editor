@@ -1,6 +1,5 @@
-import {BehaviourService} from './behaviour.service';
+import {Behaviour, BehaviourService} from './behaviour.service';
 import {inject, TestBed} from '@angular/core/testing';
-import {Behaviour, BehavioursDefault} from '../../+behaviours/behaviours';
 import {OpenDataBehaviour} from '../../+behaviours/form/OpenData/open-data.behaviour';
 import {AuthService} from '../security/auth.service';
 import {RouterTestingModule} from '@angular/router/testing';
@@ -44,7 +43,7 @@ describe( 'Behaviour', () => {
     TestBed.configureTestingModule({
       // declarations: [BehaviourService],
       imports: [RouterTestingModule.withRoutes(routes)],
-      providers: [BehaviourService, {provide: BehavioursDefault, useClass: BehaviourMock}, AuthService]
+      providers: [BehaviourService, AuthService]
     });
 
     console.log( 'configured test module' );

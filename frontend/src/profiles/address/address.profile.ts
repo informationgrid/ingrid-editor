@@ -5,6 +5,7 @@ import {FormlyFieldConfig} from '@ngx-formly/core';
 import {BaseProfile} from '../base.profile';
 import {Behaviour} from '../../app/services/behavior/behaviour.service';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
+import {IgeDocument} from '../../app/models/ige-document';
 
 export class ProfileAddress extends BaseProfile {
   // must be same as DBClass!
@@ -27,7 +28,33 @@ export class ProfileAddress extends BaseProfile {
         templateOptions: {
           externalLabel: 'Name'
         },
-        fieldGroup: [{
+        fieldGroup: [
+          {
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'organization',
+              className: 'flex-1 organization',
+              type: 'input',
+              templateOptions: {
+                label: 'Organisation',
+                appearance: 'outline'/*,
+                change: ($event) => {
+                  console.log('change organization', $event);
+                  const value = $event.formControl.value;
+                  const profileField = $event.form.get('_profile');
+
+                  if (value.length > 0) {
+                    profileField.setValue('OrganizationDoc')
+                  } else {
+                    profileField.setValue('AddressDoc')
+                  }
+                }*/
+              },
+              expressionProperties: {
+                'templateOptions.required': 'model.firstName.length === 0 && model.lastName.length === 0',
+              },
+            }]
+          }, {
           fieldGroupClassName: 'display-flex',
           fieldGroup: [{
             key: 'firstName',
@@ -43,17 +70,6 @@ export class ProfileAddress extends BaseProfile {
             type: 'input',
             templateOptions: {
               label: 'Nachname',
-              appearance: 'outline'
-            }
-          }]
-        }, {
-          fieldGroupClassName: 'display-flex',
-          fieldGroup: [{
-            key: 'organization',
-            className: 'flex-1 organization',
-            type: 'input',
-            templateOptions: {
-              label: 'Organisation',
               appearance: 'outline'
             }
           }]
@@ -333,4 +349,7 @@ export class ProfileAddress extends BaseProfile {
 
   };
 
+  getIconClass(doc: IgeDocument): string {
+    return doc.organization?.length > 0 ? 'Institution' : 'Freie-Adresse';
+  }
 }

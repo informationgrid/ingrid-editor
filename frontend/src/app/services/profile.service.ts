@@ -8,6 +8,7 @@ import {ModalService} from './modal/modal.service';
 import {ProfileStore} from '../store/profile/profile.store';
 import {ProfileAbstract} from '../store/profile/profile.model';
 import {CodelistQuery} from '../store/codelist/codelist.query';
+import {IgeDocument} from '../models/ige-document';
 
 @Injectable({
   providedIn: 'root'
@@ -47,13 +48,13 @@ export class ProfileService {
     return this.profiles;
   }
 
-  getProfileIcon(profileId: string): string {
+  getProfileIcon(doc: IgeDocument): string {
     const iconClass = this.profiles
-      .filter(profile => profile.id === profileId)
-      .map(profile => profile.iconClass);
+      .filter(profile => profile.id === doc._profile)
+      .map(profile => (profile.getIconClass && profile.getIconClass(doc)) || profile.iconClass);
 
     if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
-      console.debug('Unknown profile or iconClass');
+      console.log('Unknown profile or iconClass');
       return null;
     }
 

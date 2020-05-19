@@ -90,7 +90,7 @@ export class DocumentService {
     return docs.map(doc => {
       return {
         id: doc._id,
-        icon: this.profileService.getProfileIcon(doc._profile),
+        icon: this.profileService.getProfileIcon(doc),
         title: doc.title || '-Ohne Titel-',
         _state: doc._state,
         _hasChildren: doc._hasChildren,
@@ -277,5 +277,9 @@ export class DocumentService {
   setDocLoadingState(isLoading: boolean, address: boolean) {
     const store = address ? this.addressTreeStore : this.treeStore;
     store.update({isDocLoading: isLoading});
+  }
+
+  getDocumentIcon(doc: IgeDocument): string {
+    return this.profileService.getProfileIcon(doc);
   }
 }

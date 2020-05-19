@@ -40,7 +40,7 @@ export class HeaderTitleRowComponent implements OnInit {
   }
 
   getIcon() {
-    return this.profileService.getProfileIcon(this.form.get('_profile').value);
+    return this.profileService.getProfileIcon(this.form.value);
   }
 
   // TODO: refactor since it's used in tree-component also

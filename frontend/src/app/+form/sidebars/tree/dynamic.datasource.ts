@@ -82,7 +82,7 @@ export class DynamicDataSource {
     node.isLoading = true;
     this._database.getChildren(node._id, false, this.forAddress)
       .pipe(
-        map(docs => DynamicDatabase.mapDocumentsToTreeNodes(docs, node.level + 1)),
+        map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
         map(docs => docs.sort(this.treeService.getSortTreeNodesFunction()))
       )
       .subscribe(children => {
@@ -121,7 +121,7 @@ export class DynamicDataSource {
     docs.forEach(doc => {
       const index = this.data.findIndex(node => node._id === doc.id);
       if (index !== -1) {
-        this.data.splice(index, 1, ...DynamicDatabase.mapDocumentsToTreeNodes([doc], this.data[index].level));
+        this.data.splice(index, 1, ...this._database.mapDocumentsToTreeNodes([doc], this.data[index].level));
         this.dataChange.next(this.data);
       }
     });
@@ -129,7 +129,7 @@ export class DynamicDataSource {
 
   addRootNode(doc: DocumentAbstract) {
 
-    const docAsTreeNode = DynamicDatabase.mapDocumentsToTreeNodes([doc], 0);
+    const docAsTreeNode = this._database.mapDocumentsToTreeNodes([doc], 0);
 
     const indexOfPreviousNodeInTree = this.getIndexToInsertNode(docAsTreeNode, doc);
 
