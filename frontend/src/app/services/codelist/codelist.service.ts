@@ -1,100 +1,106 @@
 import {Injectable} from '@angular/core';
 import {ErrorService} from '../error.service';
 import {CodelistDataService} from './codelist-data.service';
+import {Codelist, CodelistBackend, CodelistEntry, CodelistEntryBackend} from '../../store/codelist/codelist.model';
+import {CodelistStore} from '../../store/codelist/codelist.store';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {buffer, distinct, filter, map, switchMap, tap} from 'rxjs/operators';
 
-export interface Codelist {
-  id: string;
-  entries: CodelistEntry[];
-}
-
-export interface CodelistEntry {
-  id: string;
+export interface SelectOption {
+  label: string;
   value: string;
-  data?: string;
 }
 
+@UntilDestroy()
 @Injectable({
   providedIn: 'root'
 })
 export class CodelistService {
 
-  codelists: { [id: string]: Codelist } = {};
-  pendingCodelists: { [id: string]: Promise<CodelistEntry[]> } = {};
+  private requestedCodelists = new ReplaySubject<string>(100);
+  private collector = new Subject();
 
-  static getLocalisedValue(locals: any[]) {
-    const result = locals.filter( local => local[0] === 'de' );
-    return result[0][1];
+  static mapToSelectSorted = (codelist: Codelist): SelectOption[] => {
+    if (!codelist) {
+      return [];
+    }
+
+    return codelist.entries
+      .map(entry => ({label: entry.value, value: entry.id} as SelectOption))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  static getLocalisedValue(locals: any) {
+    return locals.de;
   }
 
   constructor(private errorService: ErrorService,
+              private store: CodelistStore,
               private dataService: CodelistDataService) {
+
+    this.requestedCodelists
+      .pipe(
+        untilDestroyed(this),
+        // ignore multiple same ids
+        distinct(),
+        // collect multiple ids for the request
+        buffer(this.collector),
+        filter(ids => ids.length > 0),
+        switchMap(ids => this.requestCodelists(ids)),
+        map(codelists => this.prepareCodelists(codelists)),
+        tap(codelists => this.store.add(codelists))
+      )
+      .subscribe();
+
   }
 
-  byId(id: string): Promise<CodelistEntry[]> {
+  byId(id: string): void {
 
-    if (this.codelists[id]) {
-      return Promise.resolve( this.mapCodelist(this.codelists[id].entries) );
-    }
+    // add codelist id to the queue to be requested
+    this.requestedCodelists.next(id);
 
-    // if codelist is being loaded then return the promise
-    if (this.pendingCodelists[id]) {
-      return this.pendingCodelists[id];
-    }
+    // give some time to collect multiple codelists before sending request
+    setTimeout(() => this.collector.next(), 100);
 
-    const myPromise = new Promise<CodelistEntry[]>( (resolve, reject) => {
-
-      this.dataService.byId(id)
-        .subscribe( (data: any) => {
-          if (data === null) {
-            reject( 'Codelist could not be read: ' + id );
-          } else {
-            this.codelists[id] = data;
-            const entries = (<Codelist>this.codelists[id]).entries;
-            if (entries) {
-              resolve( this.prepareEntries( entries ) );
-            } else {
-              reject( 'This codelist does not exist: ' + id );
-            }
-            this.pendingCodelists[id] = null;
-          }
-        }, (err) => reject( err ) );
-
-    } );
-
-    if (this.codelists[id] === undefined) {
-      this.pendingCodelists[id] = myPromise;
-    }
-
-    return myPromise;
   }
 
-  byIds(ids: string[]): Promise<Array<CodelistEntry[]>> {
+  private requestCodelists(ids: string[]): Observable<CodelistBackend[]> {
+    return this.dataService.byIds(ids);
+    // .pipe(map(x => [x])); // TODO: implement correct values
+  }
+
+  /*byIds(ids: string[]): Promise<Array<CodelistEntry[]>> {
     const promises = [];
 
-    ids.forEach( id => {
-      promises.push( this.byId( id ) );
-    } );
-    return Promise.all( promises );
+    ids.forEach(id => {
+      promises.push(this.byId(id));
+    });
+    return Promise.all(promises);
+  }*/
+
+  private prepareCodelists(codelists: CodelistBackend[]): Codelist[] {
+    return codelists.map(codelist => ({
+      id: codelist.id,
+      entries: this.prepareEntries(codelist.entries)
+    }));
   }
 
-  prepareEntries(entries: any[]) {
-    const result: any[] = [];
-    entries.forEach( entry => {
-      const item = {
+  private prepareEntries(entries: CodelistEntryBackend[]): CodelistEntry[] {
+    return entries.map(entry => ({
         id: entry.id,
-        value: CodelistService.getLocalisedValue( entry.localisations )
-      };
-      result.push( item );
-    } );
-    return result;
+        value: CodelistService.getLocalisedValue(entry.localisations)
+      })
+    );
   }
 
-  private mapCodelist(entries: any[]) {
-    return entries.map( e => {
+  /*private mapCodelist(entries: any[]): CodelistEntry[] {
+    return entries.map(e => {
       return {
         id: e.id,
         value: e.localisations[0][1]
       };
     });
-  }
+  }*/
+
 }

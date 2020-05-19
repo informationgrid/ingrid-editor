@@ -1,8 +1,8 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
-import {from} from 'rxjs';
 import {BaseProfile} from '../base.profile';
+import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 export class TestProfile extends BaseProfile {
@@ -57,19 +57,11 @@ export class TestProfile extends BaseProfile {
     }
   ];
 
-  constructor(storageService?: DocumentService, private codelistService?: CodelistService) {
-    super();
+  constructor(storageService?: DocumentService, codelistService?: CodelistService, codelistQuery?: CodelistQuery) {
+
+    super(codelistService, codelistQuery);
     this.fields.push(...this.profileFields);
+
   }
 
-  private getCodelistForSelect(codelistId: number) {
-
-    const codelistPromise = this.codelistService.byId(codelistId + '')
-      .then(codelist => {
-        return codelist.map(cl => {
-          return {label: cl.value, value: cl.id}
-        });
-      });
-    return from(codelistPromise);
-  }
 }

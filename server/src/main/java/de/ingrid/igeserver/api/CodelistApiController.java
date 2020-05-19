@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,6 +37,19 @@ public class CodelistApiController implements CodelistApi {
         }
 
         return ResponseEntity.ok(createJSON(found));
+    }
+
+    public ResponseEntity<List<CodeList>> getCodelistByIds(List<String> ids) {
+
+        List<CodeList> result = new ArrayList<>();
+        // filter codelist by ID
+        for (CodeList cl : this.codelists) {
+            if (ids.contains(cl.getId())) {
+                result.add(cl);
+            }
+        }
+
+        return ResponseEntity.ok(result);
     }
 
     private String createJSON(Object obj) {

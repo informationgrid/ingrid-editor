@@ -1,5 +1,9 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {Profile} from '../app/services/formular/profile';
+import {Observable} from 'rxjs';
+import {CodelistService, SelectOption} from '../app/services/codelist/codelist.service';
+import {map} from 'rxjs/operators';
+import {CodelistQuery} from '../app/store/codelist/codelist.query';
 
 export abstract class BaseProfile implements Profile {
 
@@ -25,11 +29,24 @@ export abstract class BaseProfile implements Profile {
 
   label: string;
 
-  constructor() {
+  constructor(private codelistService: CodelistService,
+              private codelistQuery: CodelistQuery) {
   }
 
   getFields(): FormlyFieldConfig[] {
     return this.fields;
+  }
+
+
+  getCodelistForSelect(codelistId: number): Observable<SelectOption[]> {
+
+    this.codelistService.byId(codelistId + '');
+
+    return this.codelistQuery.selectEntity(codelistId)
+      .pipe(
+        map(CodelistService.mapToSelectSorted)
+      );
+
   }
 
 }

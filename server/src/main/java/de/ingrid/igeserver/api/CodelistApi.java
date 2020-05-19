@@ -5,6 +5,7 @@
  */
 package de.ingrid.igeserver.api;
 
+import de.ingrid.codelists.model.CodeList;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.List;
 
 
 @Tag(name = "Codelist", description = "the codelist API")
@@ -27,5 +30,14 @@ public interface CodelistApi {
 
     @RequestMapping(value = "/codelist/{id}", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<String> getCodelistById(@Parameter(description = "The ID of the codelist.", required = true) @PathVariable("id") String id);
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = ""),
+            @ApiResponse(responseCode = "200", description = "Unexpected error")
+    })
+    @Operation()
+
+    @RequestMapping(value = "/codelists/{ids}", produces = {"application/json"}, method = RequestMethod.GET)
+    ResponseEntity<List<CodeList>> getCodelistByIds(@Parameter(description = "The ID of the codelists.", required = true) @PathVariable("ids") List<String> id);
 
 }

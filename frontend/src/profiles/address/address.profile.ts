@@ -2,9 +2,9 @@ import {FormGroup} from '@angular/forms';
 import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {from} from 'rxjs';
 import {BaseProfile} from '../base.profile';
 import {Behaviour} from '../../app/services/behavior/behaviour.service';
+import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 
 export class ProfileAddress extends BaseProfile {
   // must be same as DBClass!
@@ -312,15 +312,13 @@ export class ProfileAddress extends BaseProfile {
     }
   ];
 
-  constructor(storageService: DocumentService, private codelistService: CodelistService) {
-    super();
+  constructor(storageService: DocumentService,
+              codelistService: CodelistService,
+              codelistQuery: CodelistQuery) {
 
+    super(codelistService, codelistQuery);
     this.fields.push(...this.profileFields);
 
-    /*codelistService.byIds(['6200', '6400']).then(codelists => {
-      this.countrySelect.options = codelists[0];
-      this.adminAreaSelect.options = codelists[1];
-    }).catch(err => console.error(err)/!*modalService.showError(err)*!/);*/
   }
 
   applyValidations(form: FormGroup) {
@@ -334,18 +332,5 @@ export class ProfileAddress extends BaseProfile {
 
 
   };
-
-  private getCodelistForSelect(codelistId: number) {
-
-    const codelistResult = this.codelistService.byId(codelistId + '')
-      .then(codelist => {
-        return codelist
-          .map(cl => {
-            return {label: cl.value, value: cl.id}
-          })
-          .sort((a, b) => a.label.localeCompare(b.label));
-      });
-    return from(codelistResult);
-  }
 
 }

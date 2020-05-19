@@ -4,10 +4,10 @@ import {Profile} from './formular/profile';
 import {CodelistService} from './codelist/codelist.service';
 import {HttpClient} from '@angular/common/http';
 import {SessionStore} from '../store/session.store';
-import {ErrorService} from './error.service';
 import {ModalService} from './modal/modal.service';
-import {ProfileStore} from "../store/profile/profile.store";
-import {ProfileAbstract} from "../store/profile/profile.model";
+import {ProfileStore} from '../store/profile/profile.store';
+import {ProfileAbstract} from '../store/profile/profile.model';
+import {CodelistQuery} from '../store/codelist/codelist.query';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +19,7 @@ export class ProfileService {
   constructor(private sessionStore: SessionStore,
               private http: HttpClient, configService: ConfigService,
               private profileStore: ProfileStore,
+              private codelistQuery: CodelistQuery,
               errorService: ModalService,
               codelistService: CodelistService) {
 
@@ -30,7 +31,7 @@ export class ProfileService {
         import( '../../profiles/pack-' + profile ).then(module => {
           console.log('Loaded module: ', module);
           this.profiles = module.profiles
-            .map(ProfileClass => new ProfileClass(null, codelistService));
+            .map(ProfileClass => new ProfileClass(null, codelistService, codelistQuery));
 
           this.sessionStore.update({profilesInitialized: true});
           this.profileStore.set(this.mapProfiles(this.profiles));
