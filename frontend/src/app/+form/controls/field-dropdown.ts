@@ -1,6 +1,6 @@
 
 import { FieldBase, IFieldBase } from './field-base';
-import {CodelistEntry} from '../../services/codelist/codelist.service';
+import {CodelistEntry} from '../../store/codelist/codelist.model';
 
 interface IDropDownFieldBase extends IFieldBase<string> {
   useCodelist?: number;

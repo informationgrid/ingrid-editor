@@ -1,19 +1,11 @@
-import {
-  CheckboxField,
-  Container,
-  DropdownField,
-  FieldBase,
-  RadioField,
-  TextareaField,
-  TextboxField
-} from '../../app/+form/controls';
+import {CheckboxField, Container, DropdownField, RadioField, TextareaField, TextboxField} from '../../app/+form/controls';
 import {OpenTableField} from '../../app/+form/controls/field-opentable';
-import {Profile} from '../../app/services/formular/profile';
 import {Rubric} from '../../app/+form/controls/rubric';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {TreeField} from '../../app/+form/controls/field-tree';
 import {DocumentService} from '../../app/services/document/document.service';
 import {BaseProfile} from '../base.profile';
+import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 
 export class IsoBaseProfile extends BaseProfile {
 
@@ -23,8 +15,8 @@ export class IsoBaseProfile extends BaseProfile {
 
   // fields: Array<FieldBase<any>> = null;
 
-  constructor(storageService: DocumentService, public codelistService: CodelistService) {
-    super();
+  constructor(storageService: DocumentService, codelistService: CodelistService, codelistQuery: CodelistQuery) {
+    super(codelistService, codelistQuery);
 
 
 
@@ -357,12 +349,12 @@ export class IsoBaseProfile extends BaseProfile {
       options: []
     });
 
-    this.codelistService.byIds(['505', '8010', '99999999', '3571']).then(codelists => {
+    /*this.codelistService.byIds(['505', '8010', '99999999', '3571']).then(codelists => {
       addressTypes.options = codelists[0];
       advProductGroupSelect.options = codelists[1];
       metadataLanguage.options = codelists[2];
       publicationInfo.options = codelists[3];
-    });
+    });*/
 
     return [addressTypes, advProductGroupSelect, metadataLanguage, publicationInfo];
   }

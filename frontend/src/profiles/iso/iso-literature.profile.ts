@@ -3,6 +3,7 @@ import {Rubric} from '../../app/+form/controls/rubric';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {IsoBaseProfile} from './iso-base.profile';
 import {DocumentService} from '../../app/services/document/document.service';
+import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 
 export class IsoLiteratureProfile extends IsoBaseProfile {
 
@@ -10,8 +11,8 @@ export class IsoLiteratureProfile extends IsoBaseProfile {
 
   label = 'ISO-Literatur';
 
-  constructor(storageService: DocumentService, codelistService: CodelistService) {
-    super(storageService, codelistService);
+  constructor(storageService: DocumentService, codelistService: CodelistService, codelistQuery: CodelistQuery) {
+    super(storageService, codelistService, codelistQuery);
 
 /*    this.fields.push(...[
 
