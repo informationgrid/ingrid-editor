@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
-import {Plugin} from '../../../+behaviours/plugin';
+import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {FormGroup} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {FormularService} from '../../formular.service';

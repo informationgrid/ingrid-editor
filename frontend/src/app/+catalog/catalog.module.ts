@@ -20,16 +20,17 @@ import { CatalogsComponent } from './catalogs/catalogs.component';
 import {MatTabsModule} from '@angular/material/tabs';
 import { CodelistsComponent } from './codelists/codelists.component';
 import {MatSelectModule} from '@angular/material/select';
+import {BehavioursModule} from './+behaviours/behaviours.module';
 
 @NgModule( {
-    imports: [
-        CommonModule,
-        FormsModule,
-        FlexLayoutModule,
-        MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-        CatalogDialogsModule,
-        routing, MatIconModule, MatTabsModule, MatSelectModule
-    ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FlexLayoutModule,
+    MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
+    CatalogDialogsModule,
+    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule
+  ],
   providers: [
     CatalogService
   ],

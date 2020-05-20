@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {DocumentService} from '../../../services/document/document.service';
+import {DocumentService} from '../../../../services/document/document.service';
 import {Plugin} from '../../plugin';
 import {Subscription} from 'rxjs';
 

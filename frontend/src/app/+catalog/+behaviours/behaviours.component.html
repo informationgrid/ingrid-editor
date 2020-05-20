@@ -1,6 +1,6 @@
 <!-- System behaviours -->
-<mat-tab-group [animationDuration]="'0ms'">
-    <mat-tab label="System">
+<!--<mat-tab-group [animationDuration]="'0ms'">-->
+<!--    <mat-tab label="System">-->
         <mat-card *ngFor="let plugin of plugins">
             <form [formGroup]="behaviourFields[plugin.id].form">
                 <mat-card-title>
@@ -52,7 +52,7 @@
         <button mat-stroked-button color="primary" (click)="save()"
                 [disabled]="hasInvalidForm()">Speichern
         </button>
-    </mat-tab>
+<!--    </mat-tab>-->
 
     <!-- Behaviours for each profile -->
     <!--<mat-tab *ngFor="let key of behavioursLabel" label="Profil: {{key}}">
@@ -77,4 +77,4 @@
             </mat-card>
         </ng-container>
     </mat-tab>-->
-</mat-tab-group>
+<!--</mat-tab-group>-->

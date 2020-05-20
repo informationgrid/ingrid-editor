@@ -67,15 +67,15 @@ export const routes: Routes = [
       icon: 'Katalog'
     }
   },
-  {
+/*  {
     path: 'plugins',
-    loadChildren: () => import('./+behaviours/behaviours.module').then(m => m.BehavioursModule),
+    loadChildren: () => import('./+catalog/+behaviours/behaviours.module').then(m => m.BehavioursModule),
     data: {
       title: 'Verhalten',
       onlyAdmin: true,
       icon: 'outline-star_border-24px'
     }
-  },
+  },*/
   {
     path: '',
     redirectTo: '/dashboard',

@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {EventManager} from '@angular/platform-browser';
-import {Plugin} from '../../+behaviours/plugin';
+import {Plugin} from '../../+catalog/+behaviours/plugin';
 import {ProfileService} from '../profile.service';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {tap} from 'rxjs/internal/operators';

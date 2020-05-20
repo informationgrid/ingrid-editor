@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Plugin} from '../../plugin';
-import {TreeService, TreeSortFn} from '../../../+form/sidebars/tree/tree.service';
-import {TreeNode} from '../../../store/tree/tree-node.model';
-import {EventService} from '../../../services/event/event.service';
+import {TreeService, TreeSortFn} from '../../../../+form/sidebars/tree/tree.service';
+import {TreeNode} from '../../../../store/tree/tree-node.model';
+import {EventService} from '../../../../services/event/event.service';
 
 @Injectable({
   providedIn: 'root'

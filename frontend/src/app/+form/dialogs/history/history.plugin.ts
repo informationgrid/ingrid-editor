@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Plugin} from '../../../+behaviours/plugin';
+import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';

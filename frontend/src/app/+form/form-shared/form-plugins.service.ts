@@ -1,5 +1,5 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {Plugin} from '../../+behaviours/plugin';
+import {Plugin} from '../../+catalog/+behaviours/plugin';
 import {FormPluginToken} from '../../tokens/plugin.token';
 
 @Injectable()

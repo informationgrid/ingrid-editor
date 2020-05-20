@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Plugin} from '../../plugin';
-import {EventData, EventResponseHandler, EventService, IgeEvent, IgeEventResultType} from '../../../services/event/event.service';
-import {TreeQuery} from '../../../store/tree/tree.query';
-import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {ModalService} from '../../../services/modal/modal.service';
-import {IgeError} from '../../../models/ige-error';
+import {EventData, EventResponseHandler, EventService, IgeEvent, IgeEventResultType} from '../../../../services/event/event.service';
+import {TreeQuery} from '../../../../store/tree/tree.query';
+import {AddressTreeQuery} from '../../../../store/address-tree/address-tree.query';
+import {ModalService} from '../../../../services/modal/modal.service';
+import {IgeError} from '../../../../models/ige-error';
 
 @Injectable({
   providedIn: 'root'

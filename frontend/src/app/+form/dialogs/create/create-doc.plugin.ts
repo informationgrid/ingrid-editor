@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Plugin} from '../../../+behaviours/plugin';
+import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';

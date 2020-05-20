@@ -33,10 +33,10 @@
                       [class.hide]="model._profile === 'FOLDER'">
                     <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
 
-                    <!--<pre>
+                    <pre>
     JSON:
     {{model | json}}
-                    </pre>-->
+                    </pre>
                 </form>
 
                 <div *ngIf="model._profile === 'FOLDER'" class="folder-content">

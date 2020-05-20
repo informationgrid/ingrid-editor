@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BehaviourService} from '../services/behavior/behaviour.service';
+import {BehaviourService} from '../../services/behavior/behaviour.service';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -7,6 +7,7 @@ import {Plugin} from './plugin';
 
 @UntilDestroy()
 @Component({
+  selector: 'ige-behaviours',
   templateUrl: './behaviours.component.html',
   styleUrls: ['./behaviours.component.scss']/*,
   animations: [

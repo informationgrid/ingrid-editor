@@ -7,7 +7,7 @@ import {CopyCutPastePlugin} from './+form/dialogs/copy-cut-paste/copy-cut-paste.
 import {PrintViewPlugin} from './+form/dialogs/print-view/print-view.plugin';
 import {DeleteDocsPlugin} from './+form/dialogs/delete-docs/delete-docs.plugin';
 import {HistoryPlugin} from './+form/dialogs/history/history.plugin';
-import {DeleteEmptyFoldersBehaviour} from './+behaviours/system/DeleteEmptyFolders/delete-empty-folders.behaviour';
+import {DeleteEmptyFoldersBehaviour} from './+catalog/+behaviours/system/DeleteEmptyFolders/delete-empty-folders.behaviour';
 
 export const formPluginProvider = [
   {provide: FormPluginToken, useClass: PublishPlugin, multi: true},

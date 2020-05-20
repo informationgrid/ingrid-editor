@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Plugin} from '../../plugin';
-import {AddressTitleFn, DocumentService} from '../../../services/document/document.service';
-import {IgeDocument} from '../../../models/ige-document';
+import {AddressTitleFn, DocumentService} from '../../../../services/document/document.service';
+import {IgeDocument} from '../../../../models/ige-document';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 
 @Injectable({
