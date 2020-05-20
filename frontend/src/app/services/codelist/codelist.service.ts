@@ -65,23 +65,24 @@ export class CodelistService {
 
   }
 
+  update(): Observable<Codelist[]> {
+
+    return this.dataService.update()
+      .pipe(
+        map(codelists => this.prepareCodelists(codelists))
+      );
+
+  }
+
   private requestCodelists(ids: string[]): Observable<CodelistBackend[]> {
     return this.dataService.byIds(ids);
     // .pipe(map(x => [x])); // TODO: implement correct values
   }
 
-  /*byIds(ids: string[]): Promise<Array<CodelistEntry[]>> {
-    const promises = [];
-
-    ids.forEach(id => {
-      promises.push(this.byId(id));
-    });
-    return Promise.all(promises);
-  }*/
-
   private prepareCodelists(codelists: CodelistBackend[]): Codelist[] {
     return codelists.map(codelist => ({
       id: codelist.id,
+      name: codelist.name,
       entries: this.prepareEntries(codelist.entries)
     }));
   }
@@ -94,13 +95,10 @@ export class CodelistService {
     );
   }
 
-  /*private mapCodelist(entries: any[]): CodelistEntry[] {
-    return entries.map(e => {
-      return {
-        id: e.id,
-        value: e.localisations[0][1]
-      };
-    });
-  }*/
-
+  getAll() {
+    return this.dataService.getAll()
+      .pipe(
+        map(codelists => this.prepareCodelists(codelists))
+      );
+  }
 }

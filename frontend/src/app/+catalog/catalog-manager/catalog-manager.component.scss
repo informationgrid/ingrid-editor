@@ -1,17 +1,9 @@
 :host {
-  padding: 20px;
-}
+  //padding: 20px;
+  display: flex;
+  flex: 1;
 
-.modal-body input {
-  width: 100%;
-}
-
-.button-add {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-}
-
-.mat-card {
-  margin: 12px;
+  ::ng-deep .mat-tab-body-wrapper {
+    flex: 1;
+  }
 }

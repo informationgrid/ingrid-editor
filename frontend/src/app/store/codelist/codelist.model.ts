@@ -1,5 +1,6 @@
 export interface Codelist {
   id: string;
+  name: string;
   entries: CodelistEntry[];
 }
 

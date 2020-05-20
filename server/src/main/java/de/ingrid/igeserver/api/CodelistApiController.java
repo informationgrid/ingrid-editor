@@ -1,68 +1,48 @@
 package de.ingrid.igeserver.api;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
-import com.thoughtworks.xstream.io.json.JsonWriter;
-import de.ingrid.codelists.CodeListService;
 import de.ingrid.codelists.model.CodeList;
+import de.ingrid.igeserver.services.CodelistHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/codelist")
 public class CodelistApiController implements CodelistApi {
 
-    private List<CodeList> codelists;
+    @Autowired
+    CodelistHandler handler;
 
-    public CodelistApiController() {
-        CodeListService codeListService = new CodeListService();
-        this.codelists = codeListService.getInitialCodelists();
+    @Override
+    public ResponseEntity<List<CodeList>> getCodelistsByIds(List<String> ids) {
+
+        List<CodeList> codelists = this.handler.getCodelists(ids);
+        return ResponseEntity.ok(codelists);
+
     }
 
-    public ResponseEntity<String> getCodelistById(String id) {
+    @Override
+    public ResponseEntity<List<CodeList>> getAllCodelists() throws ApiException {
 
-        CodeList found = null;
-        // filter codelist by ID
-        for (CodeList cl : this.codelists) {
-            if (cl.getId().equals(id)) {
-                found = cl;
-                break;
-            }
+        List<CodeList> codelists = this.handler.getAllCodelists();
+        return ResponseEntity.ok(codelists);
+
+    }
+
+    @Override
+    public ResponseEntity<List<CodeList>> updateCodelists() throws ApiException {
+
+        List<CodeList> codelists = this.handler.fetchCodelists();
+
+        if (codelists == null) {
+            throw new ApiException("Codelists could not be synchronized");
         }
 
-        return ResponseEntity.ok(createJSON(found));
-    }
+        return ResponseEntity.ok(codelists);
 
-    public ResponseEntity<List<CodeList>> getCodelistByIds(List<String> ids) {
-
-        List<CodeList> result = new ArrayList<>();
-        // filter codelist by ID
-        for (CodeList cl : this.codelists) {
-            if (ids.contains(cl.getId())) {
-                result.add(cl);
-            }
-        }
-
-        return ResponseEntity.ok(result);
-    }
-
-    private String createJSON(Object obj) {
-        XStream xstream = new XStream(new JsonHierarchicalStreamDriver() {
-            @Override
-            public HierarchicalStreamWriter createWriter(Writer writer) {
-                return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE);
-            }
-        });
-
-        //XStream xstream = new XStream(new JettisonMappedXmlDriver());
-        //xstream.setMode(XStream.NO_REFERENCES);
-        return xstream.toXML(obj);
     }
 
 }

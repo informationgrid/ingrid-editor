@@ -1,4 +1,3 @@
-import {Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {ConfigService, Configuration} from '../config/config.service';
 import {Injectable} from '@angular/core';
@@ -14,12 +13,21 @@ export class CodelistDataService {
     this.configuration = configService.getConfiguration();
   }
 
-  byId(id: string): Observable<CodelistBackend> {
-    return this.http.get<CodelistBackend>(this.configuration.backendUrl + 'codelist/' + id);
+  byIds(ids: string[]) {
+
+    return this.http.get<CodelistBackend[]>(this.configuration.backendUrl + 'codelist/' + ids.join(','));
+
   }
 
-  byIds(ids: string[]) {
-    return this.http.get<CodelistBackend[]>(this.configuration.backendUrl + 'codelists/' + ids.join(','));
+  update() {
+
+    return this.http.post<CodelistBackend[]>(this.configuration.backendUrl + 'codelist', null);
+
+  }
+
+  getAll() {
+
+    return this.http.get<CodelistBackend[]>(this.configuration.backendUrl + 'codelist');
 
   }
 }
