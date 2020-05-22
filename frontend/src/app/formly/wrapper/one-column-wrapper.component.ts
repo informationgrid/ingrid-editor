@@ -4,25 +4,25 @@ import {FieldWrapper} from '@ngx-formly/core';
 import {ContextHelpComponent} from '../../+demo-layout/form/context-help/context-help.component';
 import {MatDialog} from '@angular/material/dialog';
 import {Overlay} from '@angular/cdk/overlay';
-import {ConfigService} from "../../services/config/config.service";
-import {ContexthelpService} from "../../services/contexthelp.service";
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import {ConfigService} from '../../services/config/config.service';
+import {ContexthelpService} from '../../services/contexthelp.service';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'ige-one-column-wrapper',
   template: `
-      <div [class.hasContexthelp]="hasContexthelp" fxLayout="row">
-          <div *ngIf="hasContexthelp && mouseOnLabel" class="contexthelpIcon">
-              <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
-          </div>
-          <div class="label-wrapper" (mouseover)="mouseOnLabel=true" (mouseout)="mouseOnLabel=false">
-              <label (click)="showContextHelp($event)">
-                  {{ to.externalLabel }} <span *ngIf="to.required">*</span>
-              </label>
-          </div>
-          <ng-container #fieldComponent></ng-container>
+    <div [class.hasContexthelp]="hasContexthelp" fxLayout="row">
+      <div *ngIf="hasContexthelp" class="contexthelpIcon">
+        <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
       </div>
+      <div class="label-wrapper">
+        <label (click)="showContextHelp($event)">
+          {{ to.externalLabel }} <span *ngIf="to.required">*</span>
+        </label>
+      </div>
+      <ng-container #fieldComponent></ng-container>
+    </div>
   `,
   styleUrls: ['./one-column-wrapper.component.scss']
 })
@@ -34,7 +34,6 @@ export class OneColumnWrapperComponent extends FieldWrapper implements AfterView
   fieldId: string;
   hasContexthelp$: Observable<boolean>;
   hasContexthelp = false;
-  mouseOnLabel = false;
 
 
   constructor(public dialog: MatDialog,

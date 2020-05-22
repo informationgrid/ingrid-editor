@@ -80,18 +80,20 @@
 }
 
 .hasContexthelp {
-  :hover {
-    label {
-      color: $ige-primary;
+
+  &:hover {
+    .contexthelpIcon {
+      display: inline-block;
     }
 
-    //&.contexthelpIcon {
-    //  display: inline-block;
-    //}
+    label {
+      color: $ige-primary;
+      cursor: pointer;
+    }
   }
 
   .contexthelpIcon {
-    display: inline-block;
+    display: none;
     background-color: $ige-background;
     border-radius: 50%;
     height: 24px;
