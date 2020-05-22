@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DocumentAbstract} from '../store/document/document.model';
-import {Profile} from '../services/formular/profile';
+import {Doctype} from '../services/formular/doctype';
 import {ProfileService} from '../services/profile.service';
 import {DocumentService} from '../services/document/document.service';
 import {TreeQuery} from '../store/tree/tree.query';
@@ -19,7 +19,7 @@ export class FormularService {
 
   currentProfile: string;
 
-  profileDefinitions: Profile[];
+  profileDefinitions: Doctype[];
 
   constructor(private dialog: MatDialog,
               private profiles: ProfileService,
@@ -57,7 +57,7 @@ export class FormularService {
     }
   }
 
-  getProfile(id: string): Profile {
+  private getProfile(id: string): Doctype {
     if (this.profileDefinitions) {
       const profile = this.profileDefinitions.find(p => p.id === id);
       if (!profile) {

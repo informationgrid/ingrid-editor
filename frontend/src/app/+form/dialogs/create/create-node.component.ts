@@ -77,7 +77,7 @@ export class CreateNodeComponent implements OnInit {
         const selectedNode = query.getOpenedDocument();
         this.path = [...path];
 
-        if (selectedNode && selectedNode._profile !== 'FOLDER') {
+        if (selectedNode && selectedNode._type !== 'FOLDER') {
           this.path.pop();
         }
       });

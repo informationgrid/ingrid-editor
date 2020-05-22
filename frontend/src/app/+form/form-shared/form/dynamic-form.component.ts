@@ -210,7 +210,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const profile = data._profile;
+    const profile = data._type;
 
     if (profile === null) {
       console.error('This document does not have any profile');

@@ -17,12 +17,12 @@ export class SortTreeByTypeBehaviour extends Plugin {
 
   private sortByDocumentType: TreeSortFn = (a: TreeNode, b: TreeNode) => {
     // folders first
-    if (a.profile === 'FOLDER' && b.profile !== 'FOLDER') {
+    if (a.type === 'FOLDER' && b.type !== 'FOLDER') {
       return -1;
-    } else if (a.profile !== 'FOLDER' && b.profile === 'FOLDER') {
+    } else if (a.type !== 'FOLDER' && b.type === 'FOLDER') {
       return 1;
     } else {
-      return a.profile.localeCompare(b.profile);
+      return a.type.localeCompare(b.type);
     }
   };
 

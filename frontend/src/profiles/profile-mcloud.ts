@@ -1,7 +1,7 @@
-import {McloudProfile} from './mcloud/mcloud.profile';
-import {ProfileAddress} from './address/address.profile';
-import {ProfileFolder} from './folder.profile';
-import {TestProfile} from './test/test.profile';
+import {McloudDoctype} from './mcloud/mcloud.doctype';
+import {ProfileAddress} from './address/address.doctype';
+import {ProfileFolder} from './folder.doctype';
+import {TestDoctype} from './test/test.doctype';
 import {Component, NgModule} from '@angular/core';
 import {ProfileService} from '../app/services/profile.service';
 
@@ -12,7 +12,7 @@ import {ProfileService} from '../app/services/profile.service';
 class MCloudComponent {
 
   constructor(service: ProfileService,
-              mcloud: McloudProfile, folder: ProfileFolder, test: TestProfile, address: ProfileAddress) {
+              mcloud: McloudDoctype, folder: ProfileFolder, test: TestDoctype, address: ProfileAddress) {
 
     service.registerProfiles([mcloud, folder, test, address]);
 

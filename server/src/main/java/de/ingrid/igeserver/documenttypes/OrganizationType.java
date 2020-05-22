@@ -6,33 +6,31 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
 
 //@Service
 public class OrganizationType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(OrganizationType.class);
 
-    private static final String DOC_ID = "OrganizationDoc";
+    private static final String TYPE = "OrganizationDoc";
 
-    private String[] profiles = new String[0];
+    private static final String[] profiles = new String[0];
+
+    public OrganizationType() {
+        super(TYPE, profiles);
+    }
 
     @Override
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(DOC_ID)) {
-            log.debug("Create class " + DOC_ID);
-            OClass myClass = schema.createClass(DOC_ID);
+        if (!schema.existsClass(TYPE)) {
+            log.debug("Create class " + TYPE);
+            OClass myClass = schema.createClass(TYPE);
             myClass.createProperty("_id", OType.STRING);
             myClass.createProperty("_parent", OType.STRING);
         }
 
-    }
-
-    @Override
-    public String[] activeInProfiles() {
-        return profiles;
     }
 
 }

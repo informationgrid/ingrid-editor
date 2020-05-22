@@ -63,7 +63,7 @@ export class TreeHeaderComponent implements OnInit {
 
   private filterResult(result: TreeNode[]) {
     return this.showOnlyFolders
-      ? result.filter(node => node.profile === 'FOLDER')
+      ? result.filter(node => node.type === 'FOLDER')
       : result;
   }
 }

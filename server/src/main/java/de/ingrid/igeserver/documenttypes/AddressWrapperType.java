@@ -13,17 +13,21 @@ public class AddressWrapperType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(AddressWrapperType.class);
 
-    public static final String ADDRESS_WRAPPER = "AddressWrapper";
+    public static final String TYPE = "AddressWrapper";
 
-    private String[] profiles = new String[0];
+    private static final String[] profiles = new String[0];
+
+    public AddressWrapperType() {
+        super(TYPE, profiles);
+    }
 
     @Override
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(ADDRESS_WRAPPER)) {
-            log.debug("Create class " + ADDRESS_WRAPPER);
-            OClass docClass = schema.createClass(ADDRESS_WRAPPER);
+        if (!schema.existsClass(TYPE)) {
+            log.debug("Create class " + TYPE);
+            OClass docClass = schema.createClass(TYPE);
 
             // TODO: set more constraints and information for a new catalog (name, email?, ...)
             docClass.createProperty("_id", OType.STRING);
@@ -35,8 +39,4 @@ public class AddressWrapperType extends DocumentType {
 
     }
 
-    @Override
-    public String[] activeInProfiles() {
-        return profiles;
-    }
 }

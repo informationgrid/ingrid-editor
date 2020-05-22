@@ -11,13 +11,13 @@ export class TreeService {
   private alternativeSortFunction: TreeSortFn = null;
 
   private sortNodesByFolderFirst = (a: TreeNode, b: TreeNode) => {
-    if (a.profile === 'FOLDER' && b.profile === 'FOLDER') {
+    if (a.type === 'FOLDER' && b.type === 'FOLDER') {
       return a.title.localeCompare(b.title);
-    } else if (a.profile !== 'FOLDER' && b.profile !== 'FOLDER') {
+    } else if (a.type !== 'FOLDER' && b.type !== 'FOLDER') {
       return a.title.localeCompare(b.title);
-    } else if (a.profile === 'FOLDER') {
+    } else if (a.type === 'FOLDER') {
       return -1;
-    } else if (b.profile === 'FOLDER') {
+    } else if (b.type === 'FOLDER') {
       return 1;
     }
   };

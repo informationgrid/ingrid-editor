@@ -45,7 +45,7 @@ export class OneColumnWrapperComponent extends FieldWrapper implements AfterView
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    this.docType = this.model._profile;
+    this.docType = this.model._type;
     this.fieldId = this.field.key;
     this.hasContexthelp$ = this.contexthelpService.getAvailableHelpFieldIds(this.profile, this.docType).pipe(map(ids => ids.includes(this.fieldId)));
     this.hasContexthelp$.subscribe(hasContexthelp => this.hasContexthelp = hasContexthelp);

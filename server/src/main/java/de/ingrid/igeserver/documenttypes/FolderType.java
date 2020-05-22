@@ -6,7 +6,6 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +15,11 @@ public class FolderType extends DocumentType {
 
     private static final String FOLDER = "FOLDER";
 
-    private String[] profiles = new String[0];
+    private static final String[] profiles = new String[0];
+
+    public FolderType() {
+        super(FOLDER, profiles);
+    }
 
     @Override
     public void initialize(ODatabaseSession session) {
@@ -31,8 +34,4 @@ public class FolderType extends DocumentType {
 
     }
 
-    @Override
-    public String[] activeInProfiles() {
-        return profiles;
-    }
 }

@@ -30,13 +30,13 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
 
   getFirstParentFolder(childId: string): DocumentAbstract {
     let child = this.getEntity(childId);
-    if (child._profile === 'FOLDER') {
+    if (child._type === 'FOLDER') {
       return child;
     }
 
     while (child._parent !== null) {
       child = this.getEntity(child._parent);
-      if (child._profile === 'FOLDER') {
+      if (child._type === 'FOLDER') {
         return child;
       }
     }

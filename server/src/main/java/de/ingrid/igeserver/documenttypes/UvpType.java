@@ -13,26 +13,25 @@ public class UvpType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(UvpType.class);
 
-    private static final String UVP_DOC = "UvpDoc";
+    private static final String TYPE = "UvpDoc";
 
-    private String[] profiles = new String[]{"uvp"};
+    private static final String[] profiles = new String[]{"uvp"};
+
+    public UvpType() {
+        super(TYPE, profiles);
+    }
 
     @Override
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(UVP_DOC)) {
-            log.debug("Create class " + UVP_DOC);
-            OClass addressClass = schema.createClass(UVP_DOC);
+        if (!schema.existsClass(TYPE)) {
+            log.debug("Create class " + TYPE);
+            OClass addressClass = schema.createClass(TYPE);
             addressClass.createProperty("_id", OType.STRING);
             addressClass.createProperty("_parent", OType.STRING);
         }
 
-    }
-
-    @Override
-    public String[] activeInProfiles() {
-        return profiles;
     }
 
 }

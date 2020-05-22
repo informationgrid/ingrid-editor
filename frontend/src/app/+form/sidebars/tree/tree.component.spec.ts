@@ -73,7 +73,7 @@ describe('TreeComponent', () => {
 
     hasNumberOfTreeNodes(3);
 
-    const doc = createDocument({id: '12345', _profile: 'A', title: 'new node', _state: 'W'});
+    const doc = createDocument({id: '12345', _type: 'A', title: 'new node', _state: 'W'});
     sendTreeEvent(UpdateType.New, [doc]);
 
     hasNumberOfTreeNodes(4);
@@ -84,13 +84,13 @@ describe('TreeComponent', () => {
     spectator.detectChanges();
 
     // add a new document via the storage service
-    const doc = createDocument({id: '12345', _profile: 'A', title: 'initial node', _state: 'W'});
+    const doc = createDocument({id: '12345', _type: 'A', title: 'initial node', _state: 'W'});
     sendTreeEvent(UpdateType.New, [doc]);
     hasNumberOfTreeNodes(4);
     nodeContainsTitle(0, 'initial node');
 
     // update document with a new id
-    const docUpdate = createDocument({id: '12345', _profile: 'A', title: 'modified node', _state: 'W'});
+    const docUpdate = createDocument({id: '12345', _type: 'A', title: 'modified node', _state: 'W'});
     sendTreeEvent(UpdateType.Update, [docUpdate]);
 
     // new/modified node should be placed correctly (alphabetically)
@@ -157,7 +157,7 @@ describe('TreeComponent', () => {
     sendTreeEvent(UpdateType.New, [doc], '3');
 
     // after changes to tree are visible, modify dataset
-    const child = createDocument({id: '12345', _profile: 'A', title: 'modified child node', _state: 'W'});
+    const child = createDocument({id: '12345', _type: 'A', title: 'modified child node', _state: 'W'});
     sendTreeEvent(UpdateType.Update, [child]);
 
     hasNumberOfTreeNodes(4);

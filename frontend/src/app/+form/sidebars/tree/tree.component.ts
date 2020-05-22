@@ -145,7 +145,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   hasChild = (_: number, node: TreeNode) => {
 
     // return node.hasChildren;
-    return node.profile === 'FOLDER';
+    return node.type === 'FOLDER';
 
   };
 

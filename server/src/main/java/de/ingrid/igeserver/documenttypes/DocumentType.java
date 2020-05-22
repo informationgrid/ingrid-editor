@@ -12,7 +12,14 @@ import java.util.Arrays;
  */
 public abstract class DocumentType {
 
+    private final String typeName;
+
     protected String[] forProfiles;
+
+    public DocumentType(String typeName, String[] forProfiles) {
+        this.typeName = typeName;
+        this.forProfiles = forProfiles;
+    }
 
     /**
      * Initialize a database session with this DocumentType.
@@ -20,14 +27,12 @@ public abstract class DocumentType {
      */
     abstract public void initialize(ODatabaseSession session);
 
-    /**
-     * Return a list of profile IDs, where this DocumentType should be used.
-     */
-    abstract public String[] activeInProfiles();
+    public String getTypeName() {
+        return typeName;
+    }
 
     public boolean usedInProfile(String profileId) {
-        String[] activeInProfiles = activeInProfiles();
-        return activeInProfiles.length == 0 || Arrays.asList(activeInProfiles).contains(profileId);
+        return forProfiles.length == 0 || Arrays.asList(forProfiles).contains(profileId);
     }
 
 }

@@ -1,10 +1,10 @@
-import {BaseProfile} from './base.profile';
+import {BaseDoctype} from './base.doctype';
 import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ProfileFolder extends BaseProfile {
+export class ProfileFolder extends BaseDoctype {
 
   id = 'FOLDER';
 

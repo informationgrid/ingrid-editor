@@ -7,7 +7,7 @@ export class DocumentMockService {
     const doc1: IgeDocument = {
       _id: '1',
       _parent: null,
-      _profile: 'UVP',
+      _type: 'UVP',
       _state: 'W',
       _created: new Date().toDateString(),
       _modified: new Date().toDateString(),
@@ -26,7 +26,7 @@ export class DocumentMockService {
     const doc1: IgeDocument = {
       _id: '1',
       _parent: null,
-      _profile: 'UVP',
+      _type: 'UVP',
       _state: 'W',
       _created: new Date().toDateString(),
       _modified: new Date().toDateString(),
@@ -62,7 +62,7 @@ export class DocumentMockService {
     const doc1: IgeDocument = {
       _id: '1',
       _parent: null,
-      _profile: 'UVP',
+      _type: 'UVP',
       _state: 'P',
       _created: new Date().toDateString(),
       _modified: new Date().toDateString(),

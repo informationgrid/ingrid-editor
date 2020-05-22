@@ -32,11 +32,11 @@ export class CreateDocRulesPlugin extends Plugin {
       console.log( 'handle new documents', data );
 
       // if no document was selected then everything is allowed
-      if (data.selectedDataset._profile === undefined) {
+      if (data.selectedDataset._type === undefined) {
         return;
       }
 
-      if (data.selectedDataset._profile === 'FOLDER') {
+      if (data.selectedDataset._type === 'FOLDER') {
         if (data.selectedDataset.title === 'UVPs') {
           data.docTypes = data.docTypes.filter( (type: any) => type.id === 'UVP' );
         } else if (data.selectedDataset.title === 'Adressen') {

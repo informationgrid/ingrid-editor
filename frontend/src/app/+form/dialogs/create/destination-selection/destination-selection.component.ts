@@ -34,7 +34,7 @@ export class DestinationSelectionComponent implements OnInit, OnChanges {
     }
 
     disabledCondition(node: TreeNode) {
-        return node.profile !== 'FOLDER';
+        return node.type !== 'FOLDER';
     }
 
     updateParent(node: string[], source: 'Tree' | 'List') {

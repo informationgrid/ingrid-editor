@@ -6,34 +6,32 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AddressType extends DocumentType {
 
-    private static Logger log = LogManager.getLogger(AddressType.class);
+    private final Logger log = LogManager.getLogger(AddressType.class);
 
-    private static final String ADDRESSES = "AddressDoc";
+    private static final String TYPE = "AddressDoc";
 
-    private String[] profiles = new String[0];
+    private static final String[] profiles = new String[0];
+
+    public AddressType() {
+        super(TYPE, profiles);
+    }
 
     @Override
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(ADDRESSES)) {
-            log.debug("Create class " + ADDRESSES);
-            OClass addressClass = schema.createClass(ADDRESSES);
+        if (!schema.existsClass(TYPE)) {
+            log.debug("Create class " + TYPE);
+            OClass addressClass = schema.createClass(TYPE);
             addressClass.createProperty("_id", OType.STRING);
             addressClass.createProperty("_parent", OType.STRING);
         }
 
-    }
-
-    @Override
-    public String[] activeInProfiles() {
-        return profiles;
     }
 
 }

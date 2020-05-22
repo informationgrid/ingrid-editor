@@ -1,11 +1,11 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {Profile} from '../app/services/formular/profile';
+import {Doctype} from '../app/services/formular/doctype';
 import {Observable} from 'rxjs';
 import {CodelistService, SelectOption} from '../app/services/codelist/codelist.service';
 import {map} from 'rxjs/operators';
 import {CodelistQuery} from '../app/store/codelist/codelist.query';
 
-export abstract class BaseProfile implements Profile {
+export abstract class BaseDoctype implements Doctype {
 
   fields = <FormlyFieldConfig[]>[
     {
@@ -18,7 +18,7 @@ export abstract class BaseProfile implements Profile {
       key: '_parent'
     },
     {
-      key: '_profile'
+      key: '_type'
     },
     {
       key: '_created'

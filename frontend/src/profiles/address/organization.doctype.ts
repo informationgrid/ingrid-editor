@@ -1,4 +1,4 @@
-import {ProfileAddress} from './address.profile';
+import {ProfileAddress} from './address.doctype';
 
 export class ProfileOrganization extends ProfileAddress {
 
@@ -9,6 +9,6 @@ export class ProfileOrganization extends ProfileAddress {
 
   iconClass = 'Institution';
 
-  isAddressProfile = true;
+  isAddressType = true;
 
 }

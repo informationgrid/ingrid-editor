@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.documenttypes.AddressWrapperType;
 import de.ingrid.igeserver.exports.ExportTypeInfo;
 import de.ingrid.igeserver.model.ExportRequestParameter;
 import de.ingrid.igeserver.services.DocumentService;
@@ -19,8 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.List;
 
-import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.ADDRESS_WRAPPER;
-import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.TYPE;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -48,7 +48,7 @@ public class ExportApiController implements ExportApi {
 
         // TODO: option to export addresses too?
         boolean forAddress = false;
-        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         String result;
 

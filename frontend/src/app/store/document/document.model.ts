@@ -6,7 +6,7 @@ export interface DocumentAbstract {
   title: string;
   icon: string;
   _state: DocumentState;
-  _profile: string;
+  _type: string;
   _parent: string;
   _hasChildren: boolean;
   _modified: any;

@@ -14,26 +14,25 @@ public class TestType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(TestType.class);
 
-    private static final String DOC_ID = "TestDoc";
+    private static final String TYPE = "TestDoc";
 
-    private String[] profiles = new String[]{"mcloud"};
+    private static final String[] profiles = new String[]{"mcloud"};
+
+    public TestType() {
+        super(TYPE, profiles);
+    }
 
     @Override
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(DOC_ID)) {
-            log.debug("Create class " + DOC_ID);
-            OClass myClass = schema.createClass(DOC_ID);
+        if (!schema.existsClass(TYPE)) {
+            log.debug("Create class " + TYPE);
+            OClass myClass = schema.createClass(TYPE);
             myClass.createProperty("_id", OType.STRING);
             myClass.createProperty("_parent", OType.STRING);
         }
 
-    }
-
-    @Override
-    public String[] activeInProfiles() {
-        return profiles;
     }
 
 }

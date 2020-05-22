@@ -4,10 +4,10 @@ import {Rubric} from '../../app/+form/controls/rubric';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {TreeField} from '../../app/+form/controls/field-tree';
 import {DocumentService} from '../../app/services/document/document.service';
-import {BaseProfile} from '../base.profile';
+import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 
-export class IsoBaseProfile extends BaseProfile {
+export class IsoBaseDoctype extends BaseDoctype {
 
   id = 'ISOService';
 

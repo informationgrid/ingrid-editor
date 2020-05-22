@@ -2,7 +2,7 @@ import {FormGroup} from '@angular/forms';
 import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {BaseProfile} from '../base.profile';
+import {BaseDoctype} from '../base.doctype';
 import {Behaviour} from '../../app/services/behavior/behaviour.service';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {IgeDocument} from '../../app/models/ige-document';
@@ -11,7 +11,7 @@ import {Injectable} from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class ProfileAddress extends BaseProfile {
+export class ProfileAddress extends BaseDoctype {
   // must be same as DBClass!
   id = 'AddressDoc';
 
@@ -19,9 +19,9 @@ export class ProfileAddress extends BaseProfile {
 
   iconClass = 'Freie-Adresse';
 
-  isAddressProfile = true;
+  isAddressType = true;
 
-  profileFields = <FormlyFieldConfig[]>[
+  documentFields = <FormlyFieldConfig[]>[
     {
       wrappers: ['section'],
       templateOptions: {
@@ -326,7 +326,7 @@ export class ProfileAddress extends BaseProfile {
               codelistQuery: CodelistQuery) {
 
     super(codelistService, codelistQuery);
-    this.fields.push(...this.profileFields);
+    this.fields.push(...this.documentFields);
 
   }
 

@@ -7,8 +7,8 @@ export class IgeDocument {
   // the title of the document, which also can be dynamically added by other fields
   title?: string;
 
-  // the profile which defines the formular fields
-  _profile: string;
+  // the document type, which defines the formular fields
+  _type: string;
 
   // the hierarchical parent of this document
   _parent: string;
@@ -29,7 +29,7 @@ export class IgeDocument {
   [x: string]: any;
 
   constructor(type: string, parent?: string) {
-    this._profile = type;
+    this._type = type;
     this._parent = parent ? parent : null;
   }
 }

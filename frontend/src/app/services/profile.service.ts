@@ -1,6 +1,6 @@
 import {ComponentFactoryResolver, Injectable} from '@angular/core';
 import {ConfigService} from './config/config.service';
-import {Profile} from './formular/profile';
+import {Doctype} from './formular/doctype';
 import {ModalService} from './modal/modal.service';
 import {ProfileStore} from '../store/profile/profile.store';
 import {ProfileAbstract} from '../store/profile/profile.model';
@@ -11,7 +11,7 @@ import {IgeDocument} from '../models/ige-document';
 })
 export class ProfileService {
 
-  private profiles: Profile[] = [];
+  private doctypes: Doctype[] = [];
 
   constructor(private resolver: ComponentFactoryResolver,
               configService: ConfigService,
@@ -23,7 +23,7 @@ export class ProfileService {
 
         const profile = info.currentCatalog.type;
 
-        import( '../../profiles/pack-' + profile ).then(({ProfilePack}) => {
+        import( '../../profiles/profile-' + profile ).then(({ProfilePack}) => {
           console.log('Loaded module: ', ProfilePack);
 
           const MyComponent = ProfilePack.getMyComponent();
@@ -38,41 +38,41 @@ export class ProfileService {
     });
   }
 
-  getProfiles(): Profile[] {
-    return this.profiles;
+  getProfiles(): Doctype[] {
+    return this.doctypes;
   }
 
-  getProfileIcon(doc: IgeDocument): string {
-    const iconClass = this.profiles
-      .filter(profile => profile.id === doc._profile)
-      .map(profile => (profile.getIconClass && profile.getIconClass(doc)) || profile.iconClass);
+  getDocumentIcon(doc: IgeDocument): string {
+    const iconClass = this.doctypes
+      .filter(doctype => doctype.id === doc._type)
+      .map(doctype => (doctype.getIconClass && doctype.getIconClass(doc)) || doctype.iconClass);
 
     if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
-      console.log('Unknown profile or iconClass for: ', doc);
+      console.log('Unknown document type or iconClass for: ', doc);
       return null;
     }
 
     return iconClass[0];
   }
 
-  private mapProfiles(profiles: Profile[]) {
+  private mapDocumentTypes(doctypes: Doctype[]) {
 
-    return profiles.map(profile => {
+    return doctypes.map(doctype => {
       return {
-        id: profile.id,
-        label: profile.label,
-        iconClass: profile.iconClass,
-        isAddressProfile: profile.isAddressProfile
+        id: doctype.id,
+        label: doctype.label,
+        iconClass: doctype.iconClass,
+        isAddressProfile: doctype.isAddressType
       } as ProfileAbstract;
     });
 
   }
 
-  registerProfiles(profiles: Profile[]) {
+  registerProfiles(doctypes: Doctype[]) {
 
     console.log('Registering profile');
-    this.profiles = profiles;
-    this.profileStore.set(this.mapProfiles(this.profiles));
+    this.doctypes = doctypes;
+    this.profileStore.set(this.mapDocumentTypes(this.doctypes));
 
   }
 

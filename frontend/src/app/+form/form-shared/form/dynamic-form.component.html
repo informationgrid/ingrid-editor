@@ -30,16 +30,16 @@
                 <form [formGroup]="form"
                       [style.padding-top]="paddingWithHeader"
                       [class.hide-validation]="!showValidationErrors"
-                      [class.hide]="model._profile === 'FOLDER'">
+                      [class.hide]="model._type === 'FOLDER'">
                     <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
 
-                    <pre>
+                    <!--<pre>
     JSON:
     {{model | json}}
-                    </pre>
+                    </pre>-->
                 </form>
 
-                <div *ngIf="model._profile === 'FOLDER'" class="folder-content">
+                <div *ngIf="model._type === 'FOLDER'" class="folder-content">
                     <ige-card-box label="Ordner-Informationen"></ige-card-box>
                 </div>
             </ng-container>

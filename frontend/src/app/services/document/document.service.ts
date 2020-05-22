@@ -51,7 +51,7 @@ export class DocumentService {
     return this.http.get<ServerSearchResult>(
       `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}&address=${address}`)
       .pipe(
-        // map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       );
@@ -60,7 +60,7 @@ export class DocumentService {
   findRecent(): void {
     this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC&size=5`)
       .pipe(
-        // map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result)),
         tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
@@ -90,12 +90,12 @@ export class DocumentService {
     return docs.map(doc => {
       return {
         id: doc._id,
-        icon: this.profileService.getProfileIcon(doc),
+        icon: this.profileService.getDocumentIcon(doc),
         title: doc.title || '-Ohne Titel-',
         _state: doc._state,
         _hasChildren: doc._hasChildren,
         _parent: parentId,
-        _profile: doc._profile,
+        _type: doc._type,
         _modified: doc._modified
       };
     });
@@ -280,6 +280,6 @@ export class DocumentService {
   }
 
   getDocumentIcon(doc: IgeDocument): string {
-    return this.profileService.getProfileIcon(doc);
+    return this.profileService.getDocumentIcon(doc);
   }
 }

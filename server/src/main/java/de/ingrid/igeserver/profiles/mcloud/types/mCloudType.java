@@ -14,26 +14,25 @@ public class mCloudType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(mCloudType.class);
 
-    private static final String M_CLOUD_DOC = "mCloudDoc";
+    private static final String TYPE = "mCloudDoc";
 
-    private String[] profiles = new String[]{"mcloud"};
+    private static final String[] profiles = new String[]{"mcloud"};
+
+    public mCloudType() {
+        super(TYPE, profiles);
+    }
 
     @Override
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(M_CLOUD_DOC)) {
-            log.debug("Create class " + M_CLOUD_DOC);
-            OClass addressClass = schema.createClass(M_CLOUD_DOC);
+        if (!schema.existsClass(TYPE)) {
+            log.debug("Create class " + TYPE);
+            OClass addressClass = schema.createClass(TYPE);
             addressClass.createProperty("_id", OType.STRING);
             addressClass.createProperty("_parent", OType.STRING);
         }
 
-    }
-
-    @Override
-    public String[] activeInProfiles() {
-        return profiles;
     }
 
 }

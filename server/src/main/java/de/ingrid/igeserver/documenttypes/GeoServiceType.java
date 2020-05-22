@@ -13,17 +13,21 @@ public class GeoServiceType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(GeoServiceType.class);
 
-    private static final String GEO_SERVICE_DOC = "GeoServiceDoc";
+    private static final String TYPE = "GeoServiceDoc";
 
-    private String[] profiles = new String[]{"mcloud"};
+    private static final String[] profiles = new String[]{"mcloud"};
+
+    public GeoServiceType() {
+        super(TYPE, profiles);
+    }
 
     @Override
     public void initialize(ODatabaseSession session) {
 
         OSchema schema = session.getMetadata().getSchema();
-        if (!schema.existsClass(GEO_SERVICE_DOC)) {
-            log.debug("Create class " + GEO_SERVICE_DOC);
-            OClass docClass = schema.createClass(GEO_SERVICE_DOC);
+        if (!schema.existsClass(TYPE)) {
+            log.debug("Create class " + TYPE);
+            OClass docClass = schema.createClass(TYPE);
 
             // TODO: set more constraints and information for a new catalog (name, email?, ...)
             docClass.createProperty("_id", OType.STRING);
@@ -42,8 +46,4 @@ public class GeoServiceType extends DocumentType {
 
     }
 
-    @Override
-    public String[] activeInProfiles() {
-        return profiles;
-    }
 }

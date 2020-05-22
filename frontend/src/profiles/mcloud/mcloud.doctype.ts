@@ -1,7 +1,7 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
-import {BaseProfile} from '../base.profile';
+import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {Injectable} from '@angular/core';
 
@@ -9,7 +9,7 @@ import {Injectable} from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class McloudProfile extends BaseProfile {
+export class McloudDoctype extends BaseDoctype {
   // must be same as DBClass!?
   id = 'mCloudDoc';
 
@@ -17,7 +17,7 @@ export class McloudProfile extends BaseProfile {
 
   iconClass = 'Fachaufgabe';
 
-  profileFields = <FormlyFieldConfig[]>[
+  documentFields = <FormlyFieldConfig[]>[
     {
       wrappers: ['section'],
       templateOptions: {
@@ -253,7 +253,7 @@ export class McloudProfile extends BaseProfile {
               codelistQuery?: CodelistQuery) {
 
     super(codelistService, codelistQuery);
-    this.fields.push(...this.profileFields);
+    this.fields.push(...this.documentFields);
 
     console.log('Profile mCLOUD initialized');
 

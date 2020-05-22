@@ -58,10 +58,10 @@ export class BrowserComponent implements OnInit, OnDestroy {
     this.storageService.find(this.searchString);
     /*TODO: .subscribe( (docs: any[]) => {
       this.entries = docs
-        .filter(doc => doc._profile !== undefined)
+        .filter(doc => doc._type !== undefined)
         .filter(doc => !this.filter || this.matchFilter(doc) )
         .map( doc => {
-          doc.title = this.formularService.getTitle(doc._profile, doc);
+          doc.title = this.formularService.getTitle(doc._type, doc);
           return doc;
         } );
     });*/

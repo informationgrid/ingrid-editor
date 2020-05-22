@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class MapperService {
 
     public static final String FIELD_STATE = "_state";
-    public static final String FIELD_PROFILE = "_profile";
+    public static final String FIELD_DOCUMENT_TYPE = "_type";
     public static final String FIELD_ID = "_id";
     public static final String PARENT_ID = "_parent";
     public static final String FIELD_CREATED = "_created";
