@@ -79,8 +79,31 @@
   padding-top: 17px;
 }
 
-.hasContexthelp:hover {
-  color: $ige-primary;
+.hasContexthelp {
+  :hover {
+    label {
+      color: $ige-primary;
+    }
+
+    //&.contexthelpIcon {
+    //  display: inline-block;
+    //}
+  }
+
+  .contexthelpIcon {
+    display: inline-block;
+    background-color: $ige-background;
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+    margin-left: -28px;
+    margin-right: 4px;
+    margin-top: 14px;
+
+    ::ng-deep .mat-icon svg rect {
+      fill: $ige-secondary;
+    }
+  }
 }
 
 .checkbox-row {
@@ -89,19 +112,4 @@
 
 .checkbox-row-label {
   padding-top: 2px !important;
-}
-
-.contexthelp {
-  display: inline-block;
-  background-color: $ige-background;
-  border-radius: 50%;
-  height: 24px;
-  width: 24px;
-  margin-left: -28px;
-  margin-right: 4px;
-  margin-top: 14px;
-
-  ::ng-deep .mat-icon svg rect {
-    fill: $ige-secondary;
-  }
 }

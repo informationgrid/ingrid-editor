@@ -12,12 +12,12 @@ import {map} from "rxjs/operators";
 @Component({
   selector: 'ige-one-column-wrapper',
   template: `
-      <div fxLayout="row">
-          <div *ngIf="hasContexthelp && mouseOnLabel" class="contexthelp">
+      <div [class.hasContexthelp]="hasContexthelp" fxLayout="row">
+          <div *ngIf="hasContexthelp && mouseOnLabel" class="contexthelpIcon">
               <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
           </div>
-          <div class="label-wrapper">
-              <label [class.hasContexthelp]="hasContexthelp" (click)="hasContexthelp ? showContextHelp($event) : ''" (mouseover)="mouseOnLabel=true" (mouseout)="mouseOnLabel=false">
+          <div class="label-wrapper" (mouseover)="mouseOnLabel=true" (mouseout)="mouseOnLabel=false">
+              <label (click)="showContextHelp($event)">
                   {{ to.externalLabel }} <span *ngIf="to.required">*</span>
               </label>
           </div>
@@ -53,6 +53,9 @@ export class OneColumnWrapperComponent extends FieldWrapper implements AfterView
   }
 
   showContextHelp(evt: MouseEvent) {
+    if (!this.hasContexthelp) {
+      return;
+    }
     const helptext = this.contexthelpService.getContexthelpText(this.profile, this.docType, this.fieldId);
 
     const contextDialogHeight = 400;
