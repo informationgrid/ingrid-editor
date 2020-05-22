@@ -9,6 +9,7 @@ import {UpdateType} from '../../../models/update-type.enum';
 import {DynamicDataSource} from './dynamic.datasource';
 import {DynamicDatabase} from './dynamic.database';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TreeService} from './tree.service';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -68,9 +69,9 @@ export class TreeComponent implements OnInit, OnDestroy {
   };
 
 
-  constructor(private database: DynamicDatabase) {
+  constructor(private database: DynamicDatabase, private treeService: TreeService) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
-    this.dataSource = new DynamicDataSource(this.treeControl, database);
+    this.dataSource = new DynamicDataSource(this.treeControl, database, treeService);
   }
 
   getLevel = (node: TreeNode) => node.level;
@@ -127,6 +128,7 @@ export class TreeComponent implements OnInit, OnDestroy {
         if (ids.length === 0) {
           const folderAlreadyExpanded = data.find(d => d.parent === nextId) !== undefined;
           if (folderAlreadyExpanded) {
+            setTimeout(() => changeObserver.unsubscribe(), 0);
             resolve();
           }
           resolveNextTime = true;
@@ -143,7 +145,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   hasChild = (_: number, node: TreeNode) => {
 
     // return node.hasChildren;
-    return node.profile === 'FOLDER';
+    return node.type === 'FOLDER';
 
   };
 
@@ -201,8 +203,8 @@ export class TreeComponent implements OnInit, OnDestroy {
   reloadTree(forceFromServer = false): Observable<TreeNode[]> {
     return this.database.initialData(forceFromServer, this.forAddresses)
       .pipe(
-        map(docs => DynamicDatabase.mapDocumentsToTreeNodes(docs, 0)),
-        map(docs => docs.sort(this.dataSource.sortNodesByFolderFirst)),
+        map(docs => this.database.mapDocumentsToTreeNodes(docs, 0)),
+        map(docs => docs.sort(this.treeService.getSortTreeNodesFunction())),
         tap(rootElements => {
           this.dataSource.data = rootElements;
           this.selectionModel.clear();

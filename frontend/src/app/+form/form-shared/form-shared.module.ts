@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormToolbarComponent} from './toolbar/form-toolbar.component';
-import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
@@ -35,34 +34,49 @@ import {DestinationSelectionComponent} from '../dialogs/create/destination-selec
 import {HeaderTitleRowMinComponent} from '../form-info/header-title-row-min/header-title-row-min.component';
 import {HistoryPlugin} from '../dialogs/history/history.plugin';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {DynamicFormComponent} from './form/dynamic-form.component';
+import {SidebarComponent} from '../sidebars/sidebar.component';
+import {FormDashboardComponent} from '../form-dashboard/form-dashboard.component';
+import {AngularSplitModule} from 'angular-split';
+import {FormComponent} from '../form/form.component';
+import {FormToolbarService} from './toolbar/form-toolbar.service';
+import {formPluginProvider} from '../../form-plugin.provider';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 @NgModule({
   declarations: [
-    FormToolbarComponent, BreadcrumbComponent,
+    FormToolbarComponent, BreadcrumbComponent, FormComponent,
     FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent, HeaderTitleRowMinComponent,
-    FormMessageComponent, DestinationSelectionComponent
+    FormMessageComponent, DestinationSelectionComponent,
+    DynamicFormComponent, SidebarComponent, FormDashboardComponent
   ],
-  imports: [
-    CommonModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    FlexLayoutModule,
-    IgeFormlyModule,
-    MatTabsModule,
-    SharedModule,
-    MatTooltipModule
-  ],
+    imports: [
+        CommonModule,
+        AngularSplitModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatMenuModule,
+        MatDividerModule,
+        MatInputModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        FlexLayoutModule,
+        IgeFormlyModule,
+        MatTabsModule,
+        SharedModule,
+        MatTooltipModule,
+        MatProgressSpinnerModule
+    ],
   providers: [FormToolbarService, FormPluginsService, CreateDocumentPlugin, SavePlugin, CreateFolderPlugin, DeleteDocsPlugin,
-    IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService, HistoryPlugin],
+    IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService, HistoryPlugin,
+
+    // FORM-PLUGINS
+    formPluginProvider
+  ],
   exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, IgeFormlyModule,
-    FormInfoComponent, DestinationSelectionComponent],
+    FormInfoComponent, DestinationSelectionComponent, DynamicFormComponent],
   entryComponents: []
 })
 export class FormSharedModule {

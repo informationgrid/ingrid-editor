@@ -1,0 +1,50 @@
+<div fxLayout="column" fxFill>
+    <!-- Toolbar -->
+    <form-toolbar></form-toolbar>
+
+    <as-split [useTransition]="true" (dragEnd)="rememberSizebarWidth($event)" [gutterSize]="12">
+
+        <!-- exchangable sidebar -->
+        <as-split-area [size]="sidebarWidth" id="sidebar">
+            <ige-sidebar [address]="address" [activeId]="activeId"></ige-sidebar>
+        </as-split-area>
+
+        <!-- The form -->
+        <as-split-area #scrollForm [size]="100-sidebarWidth" id="form" class="form-content">
+
+            <div *ngIf="isLoading" class="loading">
+                <div>Lade Dokument ...</div>
+                <mat-spinner [diameter]="30"></mat-spinner>
+            </div>
+
+            <ng-content *ngIf="!isLoading && (!(activeId | async) || fields.length === 0)"></ng-content>
+
+            <ng-container *ngIf="!isLoading && fields.length !== 0">
+                <ige-form-info [form]="form"
+                               [model]="model"
+                               [forAddress]="address"
+                               [sections]="sections"
+                               [parentContainer]="scrollForm"
+                               (showStickyHeader)="updateContentPadding($event)"></ige-form-info>
+
+                <form [formGroup]="form"
+                      [style.padding-top]="paddingWithHeader"
+                      [class.hide-validation]="!showValidationErrors"
+                      [class.hide]="model._type === 'FOLDER'">
+                    <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
+
+                    <!--<pre>
+    JSON:
+    {{model | json}}
+                    </pre>-->
+                </form>
+
+                <div *ngIf="model._type === 'FOLDER'" class="folder-content">
+                    <ige-card-box label="Ordner-Informationen"></ige-card-box>
+                </div>
+            </ng-container>
+
+        </as-split-area>
+
+    </as-split>
+</div>

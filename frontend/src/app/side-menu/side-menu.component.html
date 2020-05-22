@@ -1,24 +1,25 @@
 <mat-nav-list fxFlex fxLayout="column" [class.collapsed]="!menuIsExpanded">
-    <a mat-list-item *ngFor="let item of menuItems" [routerLink]="item.path"
-       [class.light]="!item.onlyAdmin"
+    <a mat-list-item *ngFor="let item of menuItems | async" [routerLink]="item.path"
+       [matTooltip]="item.data?.title"
+       matTooltipPosition="right"
+       [matTooltipDisabled]="menuIsExpanded"
+       matTooltipClass="tooltip-big"
+       [class.light]="!item.data?.onlyAdmin"
        [class.active]="item.path === currentRoute">
-        <mat-icon mat-list-icon [matTooltip]="item.name"
-                  matTooltipPosition="right"
-                  [matTooltipDisabled]="menuIsExpanded"
-                  [svgIcon]="mapRouteToIcon(item.path)"
-                  matTooltipClass="tooltip-big">
+        <mat-icon mat-list-icon
+                  [svgIcon]="item.data?.icon">
         </mat-icon>
-        <p mat-line>{{item.name}}</p>
+        <p mat-line>{{item.data?.title}}</p>
     </a>
 
     <div class="fillVertical"></div>
 
-    <a mat-list-item (click)="toggleSidebar(!menuIsExpanded)" *ngIf="showDrawer | async" class="menu-toggle">
-        <mat-icon *ngIf="!menuIsExpanded" mat-list-icon
-                  svgIcon="Nav-auf"
-                  matTooltip="Vergrößern"
-                  matTooltipClass="tooltip-big"
-                  matTooltipPosition="right"></mat-icon>
+    <a *ngIf="showDrawer | async" mat-list-item class="menu-toggle"
+       (click)="toggleSidebar(!menuIsExpanded)"
+       matTooltip="Vergrößern"
+       matTooltipClass="tooltip-big"
+       matTooltipPosition="right">
+        <mat-icon *ngIf="!menuIsExpanded" mat-list-icon svgIcon="Nav-auf"></mat-icon>
         <mat-icon *ngIf="menuIsExpanded" mat-list-icon svgIcon="Nav-zu"></mat-icon>
         <p mat-line>Verkleinern</p>
     </a>

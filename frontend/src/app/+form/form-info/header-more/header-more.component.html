@@ -1,5 +1,5 @@
 <div *ngIf="showMore" [@slideDown] class="more-info">
-    <div fxLayout="row" *ngIf="model._profile !== 'FOLDER'">
+    <div fxLayout="row" *ngIf="model._type !== 'FOLDER'">
         <div>Status</div>
         <div class="state" [class.working]="model._state === 'W'">{{getState(model._state)}}</div>
     </div>
@@ -10,7 +10,7 @@
     </div>
     <div fxLayout="row">
         <div>Typ</div>
-        <div>{{model._profile}}</div>
+        <div>{{model._type}}</div>
     </div>
     <div fxLayout="row" class="padding-below">
         <div>ID</div>

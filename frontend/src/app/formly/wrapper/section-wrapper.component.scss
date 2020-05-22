@@ -1,15 +1,19 @@
 @import "../../../variables";
 .mat-icon {
   vertical-align: bottom;
+
+  ::ng-deep path {
+    fill: $ige-secondary;
+  }
 }
 
 .mat-divider {
-  margin-left: -36px;
-  margin-right: -24px;
+  margin: 30px -24px 30px -36px;
 }
 
 h3 {
   color: $ige-primary;
   margin-top: 0;
-  padding-top: 10px;
+  font-weight: normal;
+  font-size: 24px;
 }

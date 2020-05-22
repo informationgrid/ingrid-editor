@@ -10,7 +10,7 @@
     left: 0;
     right: 17px;
     top: 104px;
-    z-index: 1000;
+    z-index: 2000;
 
     ::ng-deep .anchor-navigation {
       margin-left: 0;
@@ -28,7 +28,7 @@
 
       .mat-button {
         font-weight: 400;
-        letter-spacing: 0.25px;
+        letter-spacing: 0.4px;
       }
     }
 

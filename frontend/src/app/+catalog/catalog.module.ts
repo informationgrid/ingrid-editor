@@ -16,20 +16,25 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import { AddUserDialogComponent } from './catalog-detail/add-user-dialog/add-user-dialog.component';
+import { CatalogsComponent } from './catalogs/catalogs.component';
+import {MatTabsModule} from '@angular/material/tabs';
+import { CodelistsComponent } from './codelists/codelists.component';
+import {MatSelectModule} from '@angular/material/select';
+import {BehavioursModule} from './+behaviours/behaviours.module';
 
 @NgModule( {
-    imports: [
-        CommonModule,
-        FormsModule,
-        FlexLayoutModule,
-        MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-        CatalogDialogsModule,
-        routing, MatIconModule
-    ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FlexLayoutModule,
+    MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
+    CatalogDialogsModule,
+    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule
+  ],
   providers: [
     CatalogService
   ],
-  declarations: [CatalogManagerComponent, CatalogDetailComponent, AddUserDialogComponent],
+  declarations: [CatalogManagerComponent, CatalogDetailComponent, AddUserDialogComponent, CatalogsComponent, CodelistsComponent],
   exports: [RouterModule],
   entryComponents: [AddUserDialogComponent]
 } )

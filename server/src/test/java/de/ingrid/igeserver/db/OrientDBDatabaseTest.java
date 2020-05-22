@@ -65,7 +65,7 @@ public class OrientDBDatabaseTest {
             ODatabaseSession session2 = dbService.acquire("test");
             assertEquals(0, session2.countClass("User"));
 
-            List<JsonNode> persons = dbService.findAll(DBApi.DBClass.User);
+            List<JsonNode> persons = dbService.findAll(DBApi.DBClass.User.name());
             assertEquals(0, persons.size());
             session2.close();
 
@@ -75,7 +75,7 @@ public class OrientDBDatabaseTest {
 
             // change session
             ODatabaseSession session3 = dbService.acquire("test");
-            persons = dbService.findAll(DBApi.DBClass.User);
+            persons = dbService.findAll(DBApi.DBClass.User.name());
             assertEquals(1, persons.size());
 
             // set correct session to close it correctly
@@ -89,7 +89,7 @@ public class OrientDBDatabaseTest {
 
         try (ODatabaseSession session = dbService.acquire("test")) {
 
-            List<JsonNode> persons = dbService.findAll(DBApi.DBClass.User);
+            List<JsonNode> persons = dbService.findAll(DBApi.DBClass.User.name());
 
             assertEquals(2, persons.size());
 
@@ -173,7 +173,7 @@ public class OrientDBDatabaseTest {
         }
 
         try (ODatabaseSession session = dbService.acquire("test")) {
-            List<JsonNode> docs = dbService.findAll(DBApi.DBClass.Documents);
+            List<JsonNode> docs = dbService.findAll(DBApi.DBClass.Documents.name());
             assertEquals(2, docs.size());
             assertEquals("my document", ((ODocument) ((List) docs.get(1).get("addresses")).get(0)).field("title"));
         }

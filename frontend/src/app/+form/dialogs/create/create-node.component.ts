@@ -32,15 +32,17 @@ export class CreateNodeComponent implements OnInit {
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
-  private selectedLocation: any;
+  private selectedLocation: any = {
+    parent: null,
+    path: []
+  };
   formGroup: FormGroup;
   documentTypes: Observable<DocumentAbstract[]>;
   numDocumentTypes: number;
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(null);
   jumpedTreeNodeId: string = null;
 
-  constructor(private storageService: DocumentService,
-              private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery,
+  constructor(private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery,
               private router: Router,
               private fb: FormBuilder,
               private profileQuery: ProfileQuery,
@@ -75,7 +77,7 @@ export class CreateNodeComponent implements OnInit {
         const selectedNode = query.getOpenedDocument();
         this.path = [...path];
 
-        if (selectedNode && selectedNode._profile !== 'FOLDER') {
+        if (selectedNode && selectedNode._type !== 'FOLDER') {
           this.path.pop();
         }
       });
@@ -143,7 +145,7 @@ export class CreateNodeComponent implements OnInit {
 
   applyLocation() {
     this.parent = this.selectedLocation.parent;
-    this.path = this.selectedLocation.path;
+    this.path = this.selectedLocation.path.filter(x => x.id);
     this.selectedPage = 0;
   }
 
@@ -165,6 +167,7 @@ export class CreateNodeComponent implements OnInit {
     newAddress.firstName = this.formGroup.get('firstName').value;
     newAddress.lastName = this.formGroup.get('lastName').value;
     newAddress.organization = this.formGroup.get('organization').value;
+    newAddress.title = this.documentService.createAddressTitle(newAddress);
     const savedDoc = await this.saveForm(newAddress);
 
     this.navigateAfterSave(savedDoc._id);
@@ -195,5 +198,9 @@ export class CreateNodeComponent implements OnInit {
     if (id !== null) {
       this.jumpedTreeNodeId = id;
     }
+  }
+
+  setDocType(docType: DocumentAbstract) {
+    this.formGroup.get('choice').setValue(docType.id);
   }
 }

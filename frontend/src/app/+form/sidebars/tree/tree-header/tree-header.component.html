@@ -2,7 +2,9 @@
     <div *ngIf="showOptions" class="options" fxLayout="row" fxLayoutAlign="space-between">
         <mat-slide-toggle class="show-all" disabled>Alle anzeigen</mat-slide-toggle>
 
-        <button *ngIf="showReloadButton" mat-icon-button (click)="reloadTree()">
+        <button *ngIf="showReloadButton" mat-icon-button
+                matTooltip="Aktualisieren"
+                (click)="reloadTree()">
             <mat-icon>refresh</mat-icon>
         </button>
     </div>
@@ -11,7 +13,7 @@
         <input matInput placeholder="Suche" aria-label="Search"
                [formControl]="query"
                [matAutocomplete]="searchAuto">
-        <mat-icon *ngIf="query.value?.length === 0" matSuffix>search</mat-icon>
+        <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix>search</mat-icon>
         <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="button" (click)="query.reset('')">
             <mat-icon class="passive" svgIcon="Entfernen"></mat-icon>
         </button>

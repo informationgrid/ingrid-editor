@@ -8,7 +8,7 @@ import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
-import {arrayAdd, arrayRemove} from '@datorama/akita';
+import {applyTransaction, arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
 import {ProfileService} from '../profile.service';
 import {SessionStore} from '../../store/session.store';
@@ -18,19 +18,22 @@ import {SearchResult} from '../../models/search-result.model';
 import {ServerSearchResult} from '../../models/server-search-result.model';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 
+export type AddressTitleFn = (address: IgeDocument) => string;
+
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
 
   // TODO: check usefulness
-  beforeSave$ = new Subject<any>();
+  beforePublish$ = new Subject<any>();
   afterSave$ = new Subject<any>();
   afterLoadAndSet$ = new Subject<any>();
   afterProfileSwitch$ = new Subject<any>();
   datasetsChanged$ = new Subject<UpdateDatasetInfo>();
   publishState$ = new BehaviorSubject<boolean>(false);
   private configuration: Configuration;
+  private alternateAddressTitle: (IgeDocument) => string = null;
 
   constructor(private http: HttpClient, configService: ConfigService,
               private modalService: ModalService,
@@ -48,7 +51,7 @@ export class DocumentService {
     return this.http.get<ServerSearchResult>(
       `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}&address=${address}`)
       .pipe(
-        // map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       );
@@ -57,7 +60,7 @@ export class DocumentService {
   findRecent(): void {
     this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC&size=5`)
       .pipe(
-        // map(json => json.filter(item => item && item._profile !== 'FOLDER')),
+        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result)),
         tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
         // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
@@ -87,12 +90,12 @@ export class DocumentService {
     return docs.map(doc => {
       return {
         id: doc._id,
-        icon: this.profileService.getProfileIcon(doc._profile),
+        icon: this.profileService.getDocumentIcon(doc),
         title: doc.title || '-Ohne Titel-',
         _state: doc._state,
         _hasChildren: doc._hasChildren,
         _parent: parentId,
-        _profile: doc._profile,
+        _type: doc._type,
         _modified: doc._modified
       };
     });
@@ -109,11 +112,16 @@ export class DocumentService {
     return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 
-  updateOpenedDocumentInTreestore(doc: DocumentAbstract, address: boolean) {
+  updateOpenedDocumentInTreestore(doc: DocumentAbstract, address: boolean, keepOpenedDocument = false) {
     const store = address ? this.addressTreeStore : this.treeStore;
-    setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
-    return store.update({
-      openedDocument: doc
+
+    applyTransaction(() => {
+      setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
+      if (!keepOpenedDocument) {
+        return store.update({
+          openedDocument: doc
+        });
+      }
     });
   }
 
@@ -124,6 +132,7 @@ export class DocumentService {
       .toPromise().then(json => {
         const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
+        // TODO: this should be controlled by dynamic-form component
         this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 
         this.afterSave$.next(data);
@@ -146,9 +155,7 @@ export class DocumentService {
     console.log('PUBLISHING');
     const errors: any = {errors: []};
 
-    // this.handleTitle(data);
-
-    this.beforeSave$.next(errors);
+    this.beforePublish$.next(errors);
     console.log('After validation:', data);
     const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
     if (formInvalid && formInvalid.invalid) {
@@ -245,5 +252,34 @@ export class DocumentService {
       totalHits: result.totalHits,
       hits: this.mapToDocumentAbstracts(result.hits, null)
     } as SearchResult;
+  }
+
+  createAddressTitle(address: IgeDocument) {
+    if (this.alternateAddressTitle) {
+      return this.alternateAddressTitle(address);
+    } else {
+      const fields = [address.organization, address.lastName, address.firstName]
+        .filter(item => item);
+      return fields.join(', ');
+    }
+  }
+
+  registerAddressTitleFunction(func: AddressTitleFn) {
+
+    if (func !== null && this.alternateAddressTitle !== null) {
+      console.error('There are multiple sort functions registered for the tree. Will ignore others!');
+    } else {
+      this.alternateAddressTitle = func;
+    }
+
+  }
+
+  setDocLoadingState(isLoading: boolean, address: boolean) {
+    const store = address ? this.addressTreeStore : this.treeStore;
+    store.update({isDocLoading: isLoading});
+  }
+
+  getDocumentIcon(doc: IgeDocument): string {
+    return this.profileService.getDocumentIcon(doc);
   }
 }

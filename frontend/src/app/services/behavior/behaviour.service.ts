@@ -1,19 +1,35 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {Behaviour, BehavioursDefault} from '../../+behaviours/behaviours';
 import {EventManager} from '@angular/platform-browser';
-import {Plugin} from '../../+behaviours/plugin';
+import {Plugin} from '../../+catalog/+behaviours/plugin';
 import {ProfileService} from '../profile.service';
-import {throwError} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {tap} from 'rxjs/internal/operators';
 import {BehaviorDataService} from './behavior-data.service';
 import {ProfileQuery} from '../../store/profile/profile.query';
-import {ConfigService} from '../config/config.service';
 import {SessionQuery} from '../../store/session.query';
+import {PluginToken} from '../../tokens/plugin.token';
 
-// the variable containing additional behaviours is global!
-declare const additionalBehaviours: any;
-declare const webpackJsonp: any;
+export interface BehaviourFormatBackend {
+  _id: string;
+  active: boolean;
+  data?: any;
+}
+
+export interface Behaviour {
+  id: string;
+  title: string;
+  description: string;
+  defaultActive: boolean;
+  forProfile?: string;
+  isActive?: boolean;
+  register: (form: FormGroup, eventManager: EventManager) => void;
+  unregister: () => void;
+  controls?: any[];
+  outer?: any;
+  isProfileBehaviour?: boolean;
+  _state?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -21,96 +37,39 @@ declare const webpackJsonp: any;
 export class BehaviourService {
 
   behaviours: Behaviour[] = [];
-  systemBehaviours: Plugin[] = [];
 
-  // initialized: Promise<any>;
+  theSystemBehaviours$ = new BehaviorSubject<Plugin[]>([]);
 
-  constructor(private defaultBehaves: BehavioursDefault,
-              private eventManager: EventManager,
+  constructor(private eventManager: EventManager,
               private profileService: ProfileService,
               private profileQuery: ProfileQuery,
               private sessionQuery: SessionQuery,
-              private dataService: BehaviorDataService,
-              private configService: ConfigService) {
+              @Inject(PluginToken) private systemBehaviours: Plugin[],
+              private dataService: BehaviorDataService) {
 
-    this.behaviours = defaultBehaves.behaviours;
-    this.systemBehaviours = defaultBehaves.systemBehaviours;
-
-    /*this.initialized = new Promise(resolve => {
-      // do nothing if user has no assigned catalogs
-      configService.$userInfo.subscribe(info => {
-        if (info.assignedCatalogs.length > 0) {
-
-          this.sessionQuery.isProfilesInitialized$.subscribe(() => {
-            const profiles = this.profileService.getProfiles();
-            profiles.forEach(p => {
-              if (p.behaviours) {
-                p.behaviours.forEach(behaviour => behaviour.forProfile = p.id);
-                this.behaviours.push(...p.behaviours);
-              }
-            });
-            // this.loadStoredBehaviours();
-            resolve();
-          });
-        }
-      });
-
-    });*/
+    this.loadStoredBehaviours()
+      .pipe(
+        tap(() => this.theSystemBehaviours$.next(this.systemBehaviours))
+      )
+      .subscribe(() => this.registerActiveBehaviours());
 
   }
 
-  loadStoredBehaviours(): Promise<any> {
-    // const request =
-    return new Promise<any>(resolve => {
-      this.dataService.loadStoredBehaviours()
-        .pipe(
-          tap(b => console.log(`fetched behaviours`, b))
-          // catchError(this.handleError('loadStoredBehaviours', []))
-        )
-        .subscribe((storedBehaviours: any[]) => {
-          // TODO: set correct active state to each behaviour
-          /*this.behaviours.forEach( (behaviour) => {
-            const stored = storedBehaviours.filter( (sb: any) => sb._id === behaviour.id );
-            let state = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-            if (behaviour.isProfileBehaviour) {
-              this.profileStore.update(behaviour.id, {isActive: state});
-            } else {
-              behaviour.isActive = state;
-            }
-          } );*/
+  loadStoredBehaviours(): Observable<any> {
 
-          // set correct active state to each system behaviour
+    return this.dataService.loadStoredBehaviours()
+      .pipe(
+        tap(b => console.log(`fetched behaviours`, b)),
+        tap(storedBehaviours => {
           this.systemBehaviours.forEach((behaviour) => {
             const stored = storedBehaviours.filter((sb: any) => sb._id === behaviour.id);
             behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+            behaviour.data = stored.length > 0 ? stored[0].data : null;
           });
-          resolve();
-        });
-    });
+        })
+      );
 
-    // return this.behaviorQuery.isPristine ? request : noop(); // request
   }
-
-  /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   */
-
-  /*private handleError<T> (operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      // this.log(`${operation} failed: ${error.message}`);
-
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
-  }*/
 
   apply(form: FormGroup, profile: string) {
     // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
@@ -145,50 +104,44 @@ export class BehaviourService {
     });
   }
 
-  saveBehaviour(behaviour: Behaviour | Plugin) {
-    const stripped = {
-      _id: behaviour.id,
-      active: behaviour.isActive
-    };
-
-    this.dataService.saveBehavior(stripped).toPromise().catch(err => {
-      // this.modalService.showError( err );
-      // TODO: remove since it's already handled
-      return throwError(err);
-    });
-  }
-
-  enable(id: string) {
-    this.updateBehaviour(id, true);
-  }
-
-  disable(id: string) {
-    this.updateBehaviour(id, false);
-  }
-
-  private updateBehaviour(id: string, isActive: boolean) {
-    const found = this.behaviours
-      .filter(beh => beh.id === id)
-      .some(behaviour => {
-        behaviour.isActive = isActive;
-        this.saveBehaviour(behaviour);
-        return true;
-      });
-
-    if (!found) {
-      this.systemBehaviours
-        .filter(beh => beh.id === id)
-        .forEach(behaviour => {
-          behaviour.isActive = isActive;
-          this.saveBehaviour(behaviour);
-        });
-    }
-  }
-
-  unregisterAll() {
+  /*unregisterAll() {
     this.behaviours
       // unregister all active behaviours that do have an unregister function
       .filter(beh => beh.isActive && beh.unregister)
       .forEach(behaviour => behaviour.unregister());
+  }*/
+
+  registerActiveBehaviours() {
+    this.systemBehaviours
+      .filter(systemBehaviour => systemBehaviour.isActive)
+      .forEach(systemBehaviour => {
+        console.log('register system behaviour: ' + systemBehaviour.name);
+        systemBehaviour.register();
+      });
   }
+
+  saveBehaviours(behaviours: BehaviourFormatBackend[]) {
+    this.updateState(behaviours);
+    this.dataService.saveBehaviors(behaviours).subscribe();
+  }
+
+  private updateState(behaviours: BehaviourFormatBackend[]) {
+    const activate: Plugin[] = [];
+    const deactivate: Plugin[] = [];
+
+    behaviours.forEach(behaviour => {
+      const found = this.systemBehaviours.find(sysBehaviour => sysBehaviour.id === behaviour._id);
+      if (behaviour.active !== found.isActive) {
+        behaviour.active ? activate.push(found) : deactivate.push(found);
+      }
+      found.isActive = behaviour.active;
+      found.data = behaviour.data;
+    });
+
+    activate.forEach(a => a.register());
+    deactivate.forEach(a => a.unregister());
+
+    this.theSystemBehaviours$.next(this.systemBehaviours);
+  }
+
 }

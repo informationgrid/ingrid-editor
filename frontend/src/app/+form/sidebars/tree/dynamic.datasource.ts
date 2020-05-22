@@ -6,6 +6,7 @@ import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
 import {map} from 'rxjs/operators';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {DynamicDatabase} from './dynamic.database';
+import {TreeService} from './tree.service';
 
 /**
  * File database, it can build a tree structured Json object from string.
@@ -20,17 +21,6 @@ export class DynamicDataSource {
   dataChange = new BehaviorSubject<TreeNode[]>(null);
 
   private forAddress = false;
-  sortNodesByFolderFirst = (a: TreeNode, b: TreeNode) => {
-    if (a.profile === 'FOLDER' && b.profile === 'FOLDER') {
-      return a.title.localeCompare(b.title);
-    } else if (a.profile !== 'FOLDER' && b.profile !== 'FOLDER') {
-      return a.title.localeCompare(b.title);
-    } else if (a.profile === 'FOLDER') {
-      return -1;
-    } else if (b.profile === 'FOLDER') {
-      return 1;
-    }
-  };
 
   get data(): TreeNode[] {
     return this.dataChange.value;
@@ -42,7 +32,8 @@ export class DynamicDataSource {
   }
 
   constructor(private _treeControl: FlatTreeControl<TreeNode>,
-              private _database: DynamicDatabase) {
+              private _database: DynamicDatabase,
+              private treeService: TreeService) {
   }
 
   connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
@@ -91,8 +82,8 @@ export class DynamicDataSource {
     node.isLoading = true;
     this._database.getChildren(node._id, false, this.forAddress)
       .pipe(
-        map(docs => DynamicDatabase.mapDocumentsToTreeNodes(docs, node.level + 1)),
-        map(docs => docs.sort(this.sortNodesByFolderFirst))
+        map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
+        map(docs => docs.sort(this.treeService.getSortTreeNodesFunction()))
       )
       .subscribe(children => {
 
@@ -130,7 +121,7 @@ export class DynamicDataSource {
     docs.forEach(doc => {
       const index = this.data.findIndex(node => node._id === doc.id);
       if (index !== -1) {
-        this.data.splice(index, 1, ...DynamicDatabase.mapDocumentsToTreeNodes([doc], this.data[index].level));
+        this.data.splice(index, 1, ...this._database.mapDocumentsToTreeNodes([doc], this.data[index].level));
         this.dataChange.next(this.data);
       }
     });
@@ -138,7 +129,7 @@ export class DynamicDataSource {
 
   addRootNode(doc: DocumentAbstract) {
 
-    const docAsTreeNode = DynamicDatabase.mapDocumentsToTreeNodes([doc], 0);
+    const docAsTreeNode = this._database.mapDocumentsToTreeNodes([doc], 0);
 
     const indexOfPreviousNodeInTree = this.getIndexToInsertNode(docAsTreeNode, doc);
 
@@ -156,7 +147,7 @@ export class DynamicDataSource {
     const indexOfNewDoc = this.data
       .filter(document => document.level === 0)
       .concat(docAsTreeNode)
-      .sort(this.sortNodesByFolderFirst)
+      .sort(this.treeService.getSortTreeNodesFunction())
       .findIndex(document => document._id === doc.id);
 
     // get index of complete tree with eventually expanded nodes

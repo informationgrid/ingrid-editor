@@ -2,16 +2,16 @@ import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
-import {Plugin} from '../../../+behaviours/plugin';
+import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {MessageService} from '../../../services/message.service';
 import {IgeDocument} from '../../../models/ige-document';
 import {MatDialog} from '@angular/material/dialog';
-import {HttpErrorResponse} from '@angular/common/http';
 import {merge} from 'rxjs';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {filter} from 'rxjs/operators';
 
 @UntilDestroy()
 @Injectable()
@@ -51,17 +51,16 @@ export class SavePlugin extends Plugin {
     });
 
     // add event handler for revert
-    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
-      if (eventId === 'SAVE') {
-        let forAddress = false;
-        let form = this.formsManager.getForm('document');
-        if (!form) {
-          form = this.formsManager.getForm('address');
-          forAddress = true;
+    this.formToolbarService.toolbarEvent$
+      .pipe(
+        filter(eventId => eventId === 'SAVE')
+      )
+      .subscribe(() => {
+        const form: IgeDocument = this.getForm()?.value;
+        if (form) {
+          this.save(form);
         }
-        this.save(form.value, forAddress);
-      }
-    });
+      });
 
     // react on document selection
     merge(
@@ -81,13 +80,15 @@ export class SavePlugin extends Plugin {
 
   }
 
-  save(formData: IgeDocument, forAddress: boolean) {
+  private getForm() {
+    const formDoc = this.forAddress ? 'address' : 'document';
+    return this.formsManager.getForm(formDoc);
+  }
+
+  save(formData: IgeDocument) {
     this.documentService.publishState$.next(false);
 
-    this.documentService.save(formData, undefined, forAddress)
-      .catch((err: HttpErrorResponse) => {
-        throw err;
-      });
+    return this.documentService.save(formData, false, this.forAddress);
   }
 
   unregister() {

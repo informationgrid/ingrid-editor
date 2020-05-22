@@ -40,7 +40,7 @@ const docService = {
       title: 'my node 1',
       _hasChildren: true,
       _parent: '1',
-      _profile: 'AddressDoc',
+      _type: 'AddressDoc',
       id: '2',
       _state: 'W',
       icon: ''
@@ -52,7 +52,7 @@ store.set([{
   title: 'root 1',
   _hasChildren: true,
   _parent: null,
-  _profile: 'FOLDER',
+  _type: 'FOLDER',
   id: '1',
   _state: 'W',
   icon: '',

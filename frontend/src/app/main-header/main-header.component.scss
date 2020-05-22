@@ -9,6 +9,10 @@
   padding-right: 32px;
 }
 
+.link-button ::ng-deep .mat-button-wrapper {
+  text-transform: none;
+}
+
 .mat-toolbar-row {
   padding-right: 12px;
 }
@@ -27,14 +31,12 @@
 .page-title-general {
   font-weight: normal;
   padding-left: 10px;
-  letter-spacing: 0.25px;
 }
 
 .page-title {
   font-weight: normal;
   color: $ige-primary;
   padding-left: 20px;
-  letter-spacing: 0.25px;
 }
 
 .catalog-title {

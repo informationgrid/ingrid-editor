@@ -14,7 +14,7 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
   expandedNodes$: Observable<string[]> = this.select(state => state.expandedNodes);
   pathTitles$: Observable<ShortTreeNode[]> = this.select(state => state.activePathTitles);
   selectedNodes$: Observable<string[]> = this.select(state => state.selected);
-  explicitActiveNode$: Observable<string> = this.select(state => state.explicitActiveNode);
+  explicitActiveNode$: Observable<ShortTreeNode> = this.select(state => state.explicitActiveNode);
 
   constructor(protected store: TreeStore) {
     super(store);
@@ -30,13 +30,13 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
 
   getFirstParentFolder(childId: string): DocumentAbstract {
     let child = this.getEntity(childId);
-    if (child._profile === 'FOLDER') {
+    if (child._type === 'FOLDER') {
       return child;
     }
 
     while (child._parent !== null) {
       child = this.getEntity(child._parent);
-      if (child._profile === 'FOLDER') {
+      if (child._type === 'FOLDER') {
         return child;
       }
     }

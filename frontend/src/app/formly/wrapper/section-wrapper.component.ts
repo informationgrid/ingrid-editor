@@ -4,7 +4,7 @@ import {FieldWrapper} from '@ngx-formly/core';
 @Component({
   selector: 'ige-section-wrapper',
   template: `
-    <h3><mat-icon inline>format_line_spacing</mat-icon> {{to.label}}</h3>
+    <h3><mat-icon svgIcon="outline-playlist_add-24px"></mat-icon> {{to.label}}</h3>
     <ng-container #fieldComponent></ng-container>
 
     <mat-divider></mat-divider>

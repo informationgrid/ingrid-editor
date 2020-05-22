@@ -2,12 +2,13 @@ import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
-import {Plugin} from '../../../+behaviours/plugin';
+import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {MessageService} from '../../../services/message.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {merge} from 'rxjs';
+import {IgeDocument} from '../../../models/ige-document';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -78,13 +79,19 @@ export class PublishPlugin extends Plugin {
       const message = 'Wollen Sie diesen Datensatz wirklich veröffentlichen?';
       this.modalService.confirm('Veröffentlichen', message).subscribe(doPublish => {
         if (doPublish) {
-          this.storageService.publish(this.formsManager.getForm('document').value)
+          this.storageService.publish(this.getFormValue())
             .then(() => this.messageService.sendInfo('Das Dokument wurde veröffentlicht.'));
         }
       });
     } else {
       this.modalService.showJavascriptError('Es müssen alle Felder korrekt ausgefüllt werden.');
     }
+  }
+
+  private getFormValue(): IgeDocument {
+    const formDoc = this.forAddress ? 'address' : 'document';
+    const form = this.formsManager.getForm(formDoc);
+    return form?.value;
   }
 
   revert() {
@@ -120,7 +127,7 @@ export class PublishPlugin extends Plugin {
       this.treeQuery.openedDocument$,
       this.addressTreeQuery.openedDocument$
     ).subscribe(loadedDocument => {
-      this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null && loadedDocument._profile !== 'FOLDER');
+      this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null && loadedDocument._type !== 'FOLDER');
       this.formToolbarService.setButtonState('toolBtnRevert', loadedDocument !== null && loadedDocument._state === 'PW');
     });
 

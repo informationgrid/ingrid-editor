@@ -1,0 +1,28 @@
+<p *ngIf="noAssignedCatalogs">
+    Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog angehören, können Sie zusätzliche Operationen ausführen.
+</p>
+
+<div fxLayout="row wrap">
+    <div *ngFor="let cat of catalogs | async; trackBy:trackByCatalogId" fxFlex="25">
+        <mat-card [class.mat-elevation-z6]="cat.id === currentCatalog">
+            <mat-card-title>{{cat.label}}</mat-card-title>
+            <mat-card-content>
+                Profil: {{cat.type}}
+            </mat-card-content>
+            <mat-card-actions>
+                <button *ngIf="cat.id !== currentCatalog" mat-button (click)="chooseCatalog(cat.id)">Verwenden</button>
+                <div fxFlex></div>
+                <button mat-button (click)="showCatalogDetail(cat)">Bearbeiten</button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+
+    <mat-spinner *ngIf="showSpinner" diameter="50"></mat-spinner>
+</div>
+
+
+<div class="button-add">
+    <button mat-fab color="primary" (click)="showCreateCatalogDialog()">
+        <mat-icon>add</mat-icon>
+    </button>
+</div>

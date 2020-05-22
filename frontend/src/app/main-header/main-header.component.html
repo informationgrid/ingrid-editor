@@ -1,5 +1,5 @@
 <mat-toolbar>
-    <mat-toolbar-row class="header-row" [class.showShadow]="showShadow">
+    <mat-toolbar-row class="header-row medium-spacing" [class.showShadow]="showShadow">
         <img src="assets/icons/logo.svg" height="32">
         <span class="page-title-general"><strong>INGRID</strong> EDITOR</span>
         <span class="page-title">{{pageTitle}}</span>
@@ -7,9 +7,9 @@
         <div fxFlex></div>
 
         <span class="header-info">
-            <button type="button" mat-button (click)="showInfo()">
+            <a class="link-button" mat-button (click)="showInfo()">
                 Info
-            </button>
+            </a>
         </span>
 
         <!--<span class="catalog-title">{{(userInfo|async).currentCatalog.label}}</span>-->

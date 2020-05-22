@@ -2,20 +2,23 @@ import {DocumentPage} from '../../pages/document.page';
 import {Utils} from '../../pages/utils';
 import {AddressPage} from '../../pages/address.page';
 
+const SEPARATOR = ' chevron_right';
+
 describe('General create addresses/folders', () => {
 
   beforeEach(() => {
+    cy.kcLogin('user');
     AddressPage.visit();
   });
 
   describe('Create Addresses', () => {
 
-    it('should create a root address', function () {
+    it('should create a root address', () => {
       const docName = 'Root Test-Adresse ' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
-      cy.get('mat-dialog-container ige-breadcrumb').should('have.text', 'Adressen');
+      cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(`Adressen`);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
       // cy.get('[data-cy=create-title]').type(docName);
@@ -32,10 +35,30 @@ describe('General create addresses/folders', () => {
       cy.get('.lastName input').should('have.value', 'Meier');
     });
 
+    xit('should generate a title from create parameters', () => {
+      // only first name and last name
+
+      // only organization
+
+      // all
+    });
+
+    xit('should apply initially selected item when switching location for a new folder', () => {
+      // #1687
+      // create a new folder/doc/address
+      // switch location
+      // click 'Übernehmen' without changing the location
+      // -> error
+    });
+
+    xit('should create an organization', () => {
+
+    });
+
   });
 
   describe('Publish addresses', () => {
-    it('should show a validation error when a required field is not filled', () => {
+    xit('should show a validation error when a required field is not filled', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
 
       // AddressPage.createAddress();
@@ -46,6 +69,26 @@ describe('General create addresses/folders', () => {
       cy.hasErrorDialog('Es müssen alle Felder korrekt');
 
       cy.fieldIsInvalid('description', 'Dieses Feld muss ausgefüllt sein');
+    });
+  });
+
+  describe('Dirty checks', () => {
+    xit('should show a dialog when an address was modified and another address was clicked', () => {
+
+      // reject dialog
+      // check selected tree node === previous selected node
+
+      // accept dialog
+      // check selected tree node === newly selected node
+
+    });
+
+    xit('should show a dialog when an address was modified and the page was changed', () => {
+
+      // reject -> should stay on page
+
+      // accept -> should load new page
+
     });
   });
 });

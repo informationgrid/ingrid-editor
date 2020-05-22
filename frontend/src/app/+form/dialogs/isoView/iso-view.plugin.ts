@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Plugin} from '../../../+behaviours/plugin';
+import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
 import {IsoViewComponent} from './iso-view.component';
 import {MatDialog} from '@angular/material/dialog';
@@ -38,7 +38,7 @@ export class IsoViewPlugin extends Plugin {
     this.formService.selectedDocuments$.subscribe( data => {
       this.formToolbarService.setButtonState(
         'toolBtnIso',
-        data.length === 1 && data[0]._profile.startsWith('ISO') );
+        data.length === 1 && data[0]._type.startsWith('ISO') );
     } );
 */
   };

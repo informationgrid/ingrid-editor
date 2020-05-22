@@ -51,7 +51,7 @@ export class TreeHeaderComponent implements OnInit {
 
     this.db.search(value, this.isAddress)
       .pipe(
-        map(result => DynamicDatabase.mapDocumentsToTreeNodes(result.hits, 0))
+        map(result => this.db.mapDocumentsToTreeNodes(result.hits, 0))
       )
       .subscribe(result => this.searchResult.next(this.filterResult(result)));
   }
@@ -63,7 +63,7 @@ export class TreeHeaderComponent implements OnInit {
 
   private filterResult(result: TreeNode[]) {
     return this.showOnlyFolders
-      ? result.filter(node => node.profile === 'FOLDER')
+      ? result.filter(node => node.type === 'FOLDER')
       : result;
   }
 }

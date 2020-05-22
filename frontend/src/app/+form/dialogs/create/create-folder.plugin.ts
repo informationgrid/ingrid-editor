@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
-import {Plugin} from '../../../+behaviours/plugin';
+import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {CreateNodeComponent, CreateOptions} from './create-node.component';
@@ -70,32 +70,37 @@ export class CreateFolderPlugin extends Plugin {
     // wait for entity in store, otherwise it could happen that the tree is being
     // loaded while we clicked on the create node button. In this case the function
     // getFirstParentFolder would throw an error
-    query.selectEntity(selectedDoc.id)
-      .pipe(
-        filter(entity => entity !== undefined),
-        take(1)
-      )
-      .subscribe((entity) => {
-        let parentDocId = null;
-        if (selectedDoc) {
+    if (selectedDoc) {
+      query.selectEntity(selectedDoc.id)
+        .pipe(
+          filter(entity => entity !== undefined),
+          take(1)
+        )
+        .subscribe((entity) => {
+          let parentDocId = null;
           const folder = query.getFirstParentFolder(selectedDoc.id.toString());
           if (folder !== null) {
             parentDocId = folder.id;
           }
-        }
-
-        this.dialog.open(CreateNodeComponent, {
-          minWidth: 500,
-          minHeight: 400,
-          disableClose: true,
-          data: {
-            parent: parentDocId,
-            forAddress: this.forAddress,
-            isFolder: true
-          } as CreateOptions
+          this.showDialog(parentDocId);
         });
+    } else {
+      this.showDialog(null);
+    }
 
-      });
+  }
+
+  showDialog(parentDocId: string) {
+    this.dialog.open(CreateNodeComponent, {
+      minWidth: 500,
+      minHeight: 400,
+      disableClose: true,
+      data: {
+        parent: parentDocId,
+        forAddress: this.forAddress,
+        isFolder: true
+      } as CreateOptions
+    });
   }
 
   unregister() {

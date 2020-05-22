@@ -1,0 +1,33 @@
+<mat-card>
+    <mat-card-content>
+        Die Codelisten werden von einem zentralen Repository verwaltet und werden mit dem IGE-NG synchronisiert.
+    </mat-card-content>
+
+    <mat-card-actions>
+        <button mat-stroked-button color="primary" (click)="updateCodelists()">
+            Codelisten synchronisieren
+        </button>
+    </mat-card-actions>
+</mat-card>
+
+
+<mat-card>
+    <mat-card-title>Anzeige</mat-card-title>
+
+    <mat-card-content>
+        <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>Codelist</mat-label>
+            <mat-select (selectionChange)="selectedCodelist = $event.value">
+                <mat-option *ngFor="let codelist of codelists | async" [value]="codelist">
+                    {{codelist.id}} - {{codelist.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div class="entries">
+            <div *ngFor="let entry of selectedCodelist?.entries">
+                {{entry.id}} - {{entry.value}} - {{entry.data}}
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

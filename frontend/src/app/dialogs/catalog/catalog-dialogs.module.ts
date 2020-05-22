@@ -10,15 +10,16 @@ import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
+import {MatIconModule} from '@angular/material/icon';
 
 
 @NgModule({
   declarations: [NewCatalogDialogComponent],
-  imports: [
-    CommonModule, FormsModule,
-    MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatDialogModule,
-    MatInputModule, MatButtonModule, MatSelectModule, FlexModule
-  ],
+    imports: [
+        CommonModule, FormsModule,
+        MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatDialogModule,
+        MatInputModule, MatButtonModule, MatSelectModule, FlexModule, MatIconModule
+    ],
   entryComponents: [NewCatalogDialogComponent]
 })
 export class CatalogDialogsModule {

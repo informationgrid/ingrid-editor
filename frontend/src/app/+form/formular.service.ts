@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DocumentAbstract} from '../store/document/document.model';
-import {Profile} from '../services/formular/profile';
+import {Doctype} from '../services/formular/doctype';
 import {ProfileService} from '../services/profile.service';
 import {DocumentService} from '../services/document/document.service';
 import {TreeQuery} from '../store/tree/tree.query';
@@ -10,7 +10,7 @@ import {SessionStore} from '../store/session.store';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {IFieldBase} from './controls';
 import {MessageService} from '../services/message.service';
-import {SessionQuery} from '../store/session.query';
+import {ProfileQuery} from '../store/profile/profile.query';
 
 @Injectable()
 export class FormularService {
@@ -19,7 +19,7 @@ export class FormularService {
 
   currentProfile: string;
 
-  profileDefinitions: Profile[];
+  profileDefinitions: Doctype[];
 
   constructor(private dialog: MatDialog,
               private profiles: ProfileService,
@@ -28,12 +28,12 @@ export class FormularService {
               private treeQuery: TreeQuery,
               private treeStore: TreeStore,
               private sessionStore: SessionStore,
-              private sessionQuery: SessionQuery) {
+              private profileQuery: ProfileQuery) {
 
     // create profiles after we have logged in
     console.log('init profiles');
-    this.sessionQuery.isProfilesInitialized$.subscribe(initialized => {
-      if (initialized) {
+    this.profileQuery.selectLoading().subscribe(isLoading => {
+      if (!isLoading) {
         this.profileDefinitions = this.profiles.getProfiles();
       }
     });
@@ -57,7 +57,7 @@ export class FormularService {
     }
   }
 
-  getProfile(id: string): Profile {
+  private getProfile(id: string): Doctype {
     if (this.profileDefinitions) {
       const profile = this.profileDefinitions.find(p => p.id === id);
       if (!profile) {

@@ -44,6 +44,9 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {FormSharedModule} from './+form/form-shared/form-shared.module';
 import {MatMenuModule} from '@angular/material/menu';
 import {AuthInterceptor} from './security/keycloak/auth.interceptor';
+import {SharedDocumentItemModule} from './shared/shared-document-item.module';
+import {pluginProvider} from './plugin.provider';
+import {formPluginProvider} from './form-plugin.provider';
 
 registerLocaleData(de);
 
@@ -107,7 +110,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
     // IGE-Modules
     // IgeFormModule, FormFieldsModule,
-    routing, FormsModule, MatTabsModule, FormSharedModule, MatMenuModule
+    routing, FormsModule, MatTabsModule, FormSharedModule, MatMenuModule, SharedDocumentItemModule
   ],
   providers: [
     // appRoutingProviders,
@@ -133,7 +136,10 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    }
+    },
+
+    // PLUGINS
+    pluginProvider
 
   ], // additional providers
 

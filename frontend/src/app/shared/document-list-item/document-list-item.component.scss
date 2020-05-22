@@ -20,6 +20,20 @@
     }
   }
 
+  &.dense {
+    mat-list-option {
+      height: 40px !important;
+
+      ::ng-deep .mat-list-item-content {
+        min-height: 40px;
+
+        .mat-icon {
+          align-self: unset;
+        }
+      }
+    }
+  }
+
   ::ng-deep .mat-list-item .mat-list-item-content {
     padding-top: 12px;
     padding-bottom: 12px;
@@ -34,8 +48,6 @@
     padding: 0;
 
     &.marker {
-      padding-left: 12px;
-
       ::ng-deep polygon {
         fill: limegreen;
       }
@@ -84,6 +96,3 @@
   background: #00000000;
 }
 
-::ng-deep .tooltip-medium {
-  font-size: 16px;
-}

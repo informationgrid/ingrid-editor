@@ -7,6 +7,7 @@ import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.DBFindAllResults;
 import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
+import de.ingrid.igeserver.documenttypes.AddressWrapperType;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.model.SearchResult;
 import de.ingrid.igeserver.services.DocumentService;
@@ -27,8 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.ingrid.igeserver.db.OrientDBDatabase.DB_ID;
-import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.ADDRESS_WRAPPER;
-import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.DOCUMENT_WRAPPER;
+import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.TYPE;
 import static de.ingrid.igeserver.services.MapperService.*;
 
 
@@ -82,7 +82,7 @@ public class DatasetsApiController implements DatasetsApi {
             dataJson.put(FIELD_MODIFIED, now);
 
             // get document type from document
-            String documentType = dataJson.get(FIELD_PROFILE).asText();
+            String documentType = dataJson.get(FIELD_DOCUMENT_TYPE).asText();
 
             JsonNode result = this.dbService.save(documentType, null, dataJson.toString());
 
@@ -97,7 +97,7 @@ public class DatasetsApiController implements DatasetsApi {
             documentWrapper.put(FIELD_PARENT, parentId);
 
             JsonNode resultWrapper = this.dbService.save(
-                    address ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER, null, documentWrapper.toString());
+                    address ? AddressWrapperType.TYPE : TYPE, null, documentWrapper.toString());
 
             ObjectNode resultDoc = this.documentService.getLatestDocument(resultWrapper);
             return ResponseEntity.ok(resultDoc);
@@ -119,7 +119,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
@@ -151,7 +151,7 @@ public class DatasetsApiController implements DatasetsApi {
             // save document with same ID or new one, if no draft version exists
             ObjectNode updatedDocument = (ObjectNode) getJsonNode(data);
             updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString());
-            String docType = updatedDocument.get(FIELD_PROFILE).asText();
+            String docType = updatedDocument.get(FIELD_DOCUMENT_TYPE).asText();
 
             JsonNode save = this.dbService.save(docType, recordId, updatedDocument.toString());
             String dbID = save.get(DB_ID).asText();
@@ -202,7 +202,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             for (String id : ids) {
@@ -253,7 +253,7 @@ public class DatasetsApiController implements DatasetsApi {
 
     private void copyOrMove(CopyMoveOperation operation, List<String> ids, String destId) throws Exception {
         for (String id : ids) {
-            JsonNode doc = this.dbService.find(DOCUMENT_WRAPPER, id);
+            JsonNode doc = this.dbService.find(TYPE, id);
 
             // add new parent to document
             ObjectNode updatedDoc = (ObjectNode) documentService.updateParent(DBUtils.toJsonString(doc), destId);
@@ -283,7 +283,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = isAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+        String type = isAddress ? AddressWrapperType.TYPE : TYPE;
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
@@ -315,7 +315,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             Map<String, String> queryMap = new HashMap<>();
@@ -347,7 +347,7 @@ public class DatasetsApiController implements DatasetsApi {
             String id,
             Boolean publish, boolean address) throws Exception {
 
-        String type = address ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+        String type = address ? AddressWrapperType.TYPE : TYPE;
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
@@ -379,7 +379,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = forAddress ? ADDRESS_WRAPPER : DOCUMENT_WRAPPER;
+        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         String destId = id;
         List<String> path = new ArrayList<>();

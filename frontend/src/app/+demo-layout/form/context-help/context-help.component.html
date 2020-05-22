@@ -1,18 +1,19 @@
 <h2 mat-dialog-title
     cdkDrag
     cdkDragRootElement=".cdk-overlay-pane"
-    cdkDragHandle>Beschreibung</h2>
-<div mat-dialog-content>
-    <p>
-        Hier wird der Datensatz beschrieben. Die Beschreibung sollte folgende Informationen beinhalten:
-    </p>
-    <ul>
-        <li>Ort</li>
-        <li>Zeit</li>
-        <li>Zweckhaftigkeit</li>
-    </ul>
+    cdkDragHandle>
+    <div class="infoIcon">
+        <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
+    </div>
+    <span class="text">{{title}}</span>
+    <button mat-icon-button mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+</h2>
+<div mat-dialog-content [style.height]="inExpandedView ? 'max-content' : '300px'">{{description$ | async}}
 </div>
-<div mat-dialog-actions>
-    <button mat-button (click)="showMore()">Mehr</button>
-    <button mat-button [mat-dialog-close]="'cool'" cdkFocusInitial>Ok</button>
+<div *ngIf="!inExpandedView" mat-dialog-actions>
+    <button mat-icon-button color='primary' (click)="showMore()">
+        <mat-icon svgIcon="Infolayer-gross"></mat-icon>
+        <span>grösser</span></button>
 </div>

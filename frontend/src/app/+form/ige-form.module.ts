@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {DynamicFormComponent} from './dynamic-form.component';
 import {LeafletComponent} from './leaflet/leaflet.component';
 import {routing} from './ige-form.routing';
 import {SharedModule} from '../shared/shared.module';
@@ -32,12 +31,12 @@ import {IsoViewComponent} from './dialogs/isoView/iso-view.component';
 import {FormDashboardComponent} from './form-dashboard/form-dashboard.component';
 import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.component';
 import {FormSharedModule} from './form-shared/form-shared.module';
+import { FormComponent } from './form/form.component';
 
 @NgModule({
   imports: [
     RouterModule.forChild(routing),
     CommonModule,
-    AngularSplitModule,
     IgeWizardModule, FormDialogsModule, SharedModule,
     MatFormFieldModule, MatInputModule, MatTableModule, MatMenuModule, MatButtonToggleModule, MatSlideToggleModule,
     MatTabsModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule, MatCardModule,
@@ -46,15 +45,14 @@ import {FormSharedModule} from './form-shared/form-shared.module';
     FormSharedModule
   ],
   declarations: [
-    LeafletComponent, DynamicFormComponent,
+    LeafletComponent,
     PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
     // OneColumnWrapperComponent,
-    ScrollToDirective, SidebarComponent,
-    FormDashboardComponent
+    ScrollToDirective
   ],
   providers: [
     NominatimService],
-  exports: [RouterModule, FormsModule, ScrollToDirective, SidebarComponent],
+  exports: [RouterModule, FormsModule, ScrollToDirective],
   entryComponents: [PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
 })
 export class IgeFormModule {

@@ -1,10 +1,19 @@
-<h2 mat-dialog-title>Neuen Katalog anlegen</h2>
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Neuen Katalog anlegen</span>
+    </h2>
+</div>
 <mat-dialog-content>
     <form #catForm="ngForm" fxFlex fxLayout="column">
-        <mat-form-field>
-            <input matInput placeholder="Katalogname" [(ngModel)]="model.name" name="name" required>
+        <mat-form-field appearance="outline">
+            <mat-label>Katalogname</mat-label>
+            <input matInput autocomplete="off" cdkFocusInitial
+                   [(ngModel)]="model.name" name="name" required>
         </mat-form-field>
-        <mat-form-field>
+        <mat-form-field appearance="outline">
             <mat-label>Typ</mat-label>
             <mat-select [(ngModel)]="model.type" name="type" required>
                 <mat-option *ngFor="let type of types" [value]="type.id">

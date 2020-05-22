@@ -1,39 +1,35 @@
-import {Injectable} from '@angular/core';
+import {ComponentFactoryResolver, Injectable} from '@angular/core';
 import {ConfigService} from './config/config.service';
-import {Profile} from './formular/profile';
-import {CodelistService} from './codelist/codelist.service';
-import {HttpClient} from '@angular/common/http';
-import {SessionStore} from '../store/session.store';
-import {ErrorService} from './error.service';
+import {Doctype} from './formular/doctype';
 import {ModalService} from './modal/modal.service';
-import {ProfileStore} from "../store/profile/profile.store";
-import {ProfileAbstract} from "../store/profile/profile.model";
+import {ProfileStore} from '../store/profile/profile.store';
+import {ProfileAbstract} from '../store/profile/profile.model';
+import {IgeDocument} from '../models/ige-document';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
 
-  private profiles: Profile[] = [];
+  private doctypes: Doctype[] = [];
 
-  constructor(private sessionStore: SessionStore,
-              private http: HttpClient, configService: ConfigService,
+  constructor(private resolver: ComponentFactoryResolver,
+              configService: ConfigService,
               private profileStore: ProfileStore,
-              errorService: ModalService,
-              codelistService: CodelistService) {
+              errorService: ModalService) {
 
     configService.$userInfo.subscribe(info => {
       if (info.assignedCatalogs.length > 0) {
 
         const profile = info.currentCatalog.type;
 
-        import( '../../profiles/pack-' + profile ).then(module => {
-          console.log('Loaded module: ', module);
-          this.profiles = module.profiles
-            .map(ProfileClass => new ProfileClass(null, codelistService));
+        import( '../../profiles/profile-' + profile ).then(({ProfilePack}) => {
+          console.log('Loaded module: ', ProfilePack);
 
-          this.sessionStore.update({profilesInitialized: true});
-          this.profileStore.set(this.mapProfiles(this.profiles));
+          const MyComponent = ProfilePack.getMyComponent();
+          const factory = this.resolver.resolveComponentFactory(MyComponent);
+          // @ts-ignore
+          factory.create(factory.ngModule.injector);
 
         }).catch(e => {
           errorService.showJavascriptError(e.message, e.stack);
@@ -42,33 +38,42 @@ export class ProfileService {
     });
   }
 
-  getProfiles(): Profile[] {
-    return this.profiles;
+  getProfiles(): Doctype[] {
+    return this.doctypes;
   }
 
-  getProfileIcon(profileId: string): string {
-    const iconClass = this.profiles
-      .filter(profile => profile.id === profileId)
-      .map(profile => profile.iconClass);
+  getDocumentIcon(doc: IgeDocument): string {
+    const iconClass = this.doctypes
+      .filter(doctype => doctype.id === doc._type)
+      .map(doctype => (doctype.getIconClass && doctype.getIconClass(doc)) || doctype.iconClass);
 
     if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
-      console.debug('Unknown profile or iconClass');
+      console.log('Unknown document type or iconClass for: ', doc);
       return null;
     }
 
     return iconClass[0];
   }
 
-  private mapProfiles(profiles: Profile[]) {
+  private mapDocumentTypes(doctypes: Doctype[]) {
 
-    return profiles.map(profile => {
+    return doctypes.map(doctype => {
       return {
-        id: profile.id,
-        label: profile.label,
-        iconClass: profile.iconClass,
-        isAddressProfile: profile.isAddressProfile
+        id: doctype.id,
+        label: doctype.label,
+        iconClass: doctype.iconClass,
+        isAddressProfile: doctype.isAddressType
       } as ProfileAbstract;
     });
 
   }
+
+  registerProfiles(doctypes: Doctype[]) {
+
+    console.log('Registering profile');
+    this.doctypes = doctypes;
+    this.profileStore.set(this.mapDocumentTypes(this.doctypes));
+
+  }
+
 }

@@ -8,8 +8,8 @@
   "files": [
     "main.ts",
     "polyfills.ts",
-    "profiles/pack-lgv.ts",
-    "profiles/pack-mcloud.ts",
-    "profiles/pack-uvp.ts"
+    "profiles/profile-lgv.ts",
+    "profiles/profile-mcloud.ts",
+    "profiles/profile-uvp.ts"
   ]
 }

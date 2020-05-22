@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ResearchComponent} from './research/research.component';
-import {routing} from "./research.routing";
+import {routing} from './research.routing';
 
 
 @NgModule({

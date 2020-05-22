@@ -35,7 +35,7 @@
                        [class.expanded]="treeControl.isExpanded(node)"
                        [class.disabled]="disabledCondition(node)"
                        [class.rootNode]="node.level === 0"
-                       [class.folder]="node.profile === 'FOLDER'">
+                       [class.folder]="node.type === 'FOLDER'">
             <div style="width: 100%;">
                 <button mat-icon-button matTreeNodeToggle
                         class="toggle"

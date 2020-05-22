@@ -1,24 +1,23 @@
-import {DocumentPage} from '../../pages/document.page';
+import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
-
-const SEPARATOR = ' chevron_right';
 
 describe('General create documents/folders', () => {
 
   beforeEach(() => {
+    cy.kcLogin('user');
     DocumentPage.visit();
   });
 
 
   describe('Create documents', () => {
-    it('should create a root document', function () {
+    it('should create a root document', () => {
 
       const docName = 'Root Test-Dokument ' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
-      cy.get('mat-dialog-container ige-breadcrumb').should('have.text', 'Daten');
+      cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(ROOT);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
       cy.get('[data-cy=create-title]').type(docName);
@@ -49,13 +48,13 @@ describe('General create documents/folders', () => {
   });
 
   describe('Create folders', () => {
-    it('should create a root folder', function () {
+    it('should create a root folder', () => {
 
       const folderName = 'Root Ordner ' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
-      cy.get('mat-dialog-container ige-breadcrumb').should('have.text', 'Daten');
+      cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(ROOT);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
       cy.get('[data-cy=create-title]').type(folderName);
@@ -69,26 +68,26 @@ describe('General create documents/folders', () => {
 
     });
 
-    it('should create a folder below a root folder which was selected before', function () {
+    it('should create a folder below a root folder which was selected before', () => {
 
-      const parentFolder = 'neues';
+      const parentFolder = 'Neue Testdokumente';
       const folderName = 'Unterordner ' + Utils.randomString();
 
       Tree.selectNodeWithTitle(parentFolder);
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
-      cy.get('.mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(parentFolder);
+      cy.get('.mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(ROOT + SEPARATOR + ' ' + parentFolder);
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 1);
-      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(parentFolder + SEPARATOR);
+      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT + SEPARATOR + ' ' + parentFolder + SEPARATOR);
 
     });
 
-    it('should create a folder by switching location in dialog to \'Daten\' when a root folder was selected initially', function () {
-      const parentFolder = 'neues';
+    it('should create a folder by switching location in dialog to \'Daten\' when a root folder was selected initially', () => {
+      const parentFolder = 'Neue Testdokumente';
       const folderName = 'Root Ordner ' + Utils.randomString();
 
       Tree.selectNodeWithTitle(parentFolder);
@@ -103,12 +102,12 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 0);
-      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText('Daten');
+      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT);
 
     });
 
-    it('should create a folder by switching location in dialog to a sub folder when no node was selected initially', function () {
-      const parentFolder = 'neues';
+    it('should create a folder by switching location in dialog to a sub folder when no node was selected initially', () => {
+      const parentFolder = 'Neue Testdokumente';
       const folderName = 'Unterordner ' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
@@ -121,7 +120,28 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 1);
-      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(parentFolder + SEPARATOR);
+      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT + SEPARATOR + ' ' + parentFolder + SEPARATOR);
+
+    });
+  });
+
+
+  describe('Dirty checks', () => {
+    xit('should show a dialog when a document was modified and another address was clicked', () => {
+
+      // reject dialog
+      // check selected tree node === previous selected node
+
+      // accept dialog
+      // check selected tree node === newly selected node
+
+    });
+
+    xit('should show a dialog when a document was modified and the page was changed', () => {
+
+      // reject -> should stay on page
+
+      // accept -> should load new page
 
     });
   });

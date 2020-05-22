@@ -1,16 +1,15 @@
 import {DocumentService} from '../services/document/document.service';
 import {FormGroup} from '@angular/forms';
+import {FormToolbarService} from './form-shared/toolbar/form-toolbar.service';
 
 export class FormUtils {
-  addHotkeys(event: KeyboardEvent, service: DocumentService, form: FormGroup) {
-    if (event.ctrlKey && event.keyCode === 83) { // CTRL + S (Save)
+  static addHotkeys(event: KeyboardEvent, service: FormToolbarService) {
+    if (event.ctrlKey && event.key === 's') { // CTRL + S (Save)
       console.log( 'SAVE' );
       event.stopImmediatePropagation();
       event.stopPropagation();
       event.preventDefault();
-      if (form) {
-        service.save(form.value);
-      }
+      service.sendEvent('SAVE');
     }
   }
 }

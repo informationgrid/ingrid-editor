@@ -9,7 +9,7 @@
   flex: 1 1 auto; // IE 11
 
   .mat-dialog-content {
-    padding: 16px 0 10px;
+    padding: 24px 0;
     margin-top: 24px;
     display: flex;
 
@@ -42,6 +42,17 @@ mat-radio-button {
   padding-left: 24px;
   padding-right: 24px;
   padding-top: 1px;
+}
+
+.dlg-create-title {
+  padding-bottom: 8px;
+}
+.dlg-create-place {
+  padding-top: 8px;
+}
+
+.mat-dialog-actions button.btn-create {
+  margin-left: 40px;
 }
 
 .back-button {

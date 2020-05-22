@@ -12,6 +12,7 @@ html, body {
 
 body {
   font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+  letter-spacing: 0.4px;
 }
 
 a {
@@ -29,9 +30,13 @@ a {
 h1 {
   font-size: 48px;
   color: $ige-primary;
+  font-weight: normal;
 }
 
-.wide-spacing {
+.medium-spacing {
+  letter-spacing: 0.4px;
+}
+.extra-large-spacing {
   letter-spacing: 1.25px;
 }
 
@@ -65,6 +70,12 @@ h1 {
   }
 }
 
+.link-text {
+  a:hover {
+    color: $ige-primary;
+  }
+}
+
 .hide {
   display: none !important;
 }
@@ -74,6 +85,15 @@ h1 {
 }
 .width-100 {
   width: 100%;
+}
+
+.mat-button.link-button {
+  font-weight: normal;
+  letter-spacing: 0.4px;
+
+  color: #28225B;
+  padding: 0 10px;
+  text-transform: none;
 }
 
 .shortcut {
@@ -371,8 +391,11 @@ ige-root .mat-drawer-container {
 
 .mat-icon {
 
-  &.passive svg path {
-    fill: $ige-background-bar;
+  &.passive {
+    color: $ige-background-bar;
+    svg path {
+      fill: $ige-background-bar;
+    }
   }
 
   &.document-icon {
@@ -419,4 +442,17 @@ ige-root .mat-drawer-container {
 
 .mat-form-field-appearance-outline .mat-form-field-outline {
   color: $ige-comment-color !important;
+}
+
+// TOOLTIPS
+.mat-tooltip {
+  &.tooltip-medium {
+    font-size: 16px;
+  }
+
+  &.tooltip-big {
+    font-size: 20px;
+    margin-left: 10px;
+    padding-left: 20px;
+  }
 }

@@ -8,14 +8,14 @@ import { IgeError } from '../../models/ige-error';
   styleUrls: ['error-dialog.component.scss']
 } )
 export class ErrorDialogComponent {
-  error: IgeError[];
+  errors: IgeError[];
 
   constructor(@Inject( MAT_DIALOG_DATA ) data: IgeError|IgeError[], private dlgRef: MatDialogRef<ErrorDialogComponent>) {
     console.log( 'Data:', data );
     if (data instanceof Array) {
-      this.error = data;
+      this.errors = data;
     } else {
-      this.error = [data];
+      this.errors = [data];
     }
   }
 
