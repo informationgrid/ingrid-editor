@@ -24,7 +24,7 @@ describe('Load documents', () => {
   it('should jump directly to a nested folder specified by URL', () => {
     cy.visit('/form;id=9b264daf-3044-441d-864c-699b44c46dc1');
     cy.get(DocumentPage.title, {timeout: 10000}).should('have.text', 'Tiefes Dokument');
-    cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR} Testdokumente${SEPARATOR} Ordner 2. Ebene${SEPARATOR}`);
+    cy.get('ige-form-info ige-breadcrumb', {timeout: 3000}).shouldHaveTrimmedText(`${ROOT}${SEPARATOR} Testdokumente${SEPARATOR} Ordner 2. Ebene${SEPARATOR}`);
   })
 
   it('should open a document from a quick search result', () => {
