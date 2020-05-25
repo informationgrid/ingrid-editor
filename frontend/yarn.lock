@@ -1932,10 +1932,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@datorama/akita@^4.23.0":
-  version "4.23.0"
-  resolved "https://registry.yarnpkg.com/@datorama/akita/-/akita-4.23.0.tgz#cb0dda487776a13f2d8a195ebe0c9c30f27d9e10"
-  integrity sha512-Em4u5FkHNE+OyxecXeAAmHIWVA0Z3Zyv/AMLPlmlqMRaZLg19p7axfPQSevORq7EnJcmv6Ub91QIFpb1Oe///w==
+"@datorama/akita@^4.23.2":
+  version "4.23.2"
+  resolved "https://registry.yarnpkg.com/@datorama/akita/-/akita-4.23.2.tgz#294fa703a2977e079735e15196aa9e690ca44feb"
+  integrity sha512-MJorZ0AHN8m4iW0RzeXYRSRLK4Rkdj6M4iErREVFgUWLf87MXROCsD+m0Zac1V2aNl7S+WWhlr1zKGO6JfZJnA==
   dependencies:
     schematics-utilities "^1.1.1"
 
