@@ -42,7 +42,7 @@ export const routes: Routes = [
     loadChildren: () => import('./+user/user.module').then(m => m.UserModule),
     data: {
       title: 'Benutzerverwaltung',
-      // featureFlag: 'AP3',
+      featureFlag: 'AP3',
       onlyAdmin: true,
       icon: 'Nutzer'
     }
