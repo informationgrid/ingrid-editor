@@ -1,254 +1,259 @@
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import de.ingrid.igeserver.db.*;
-import de.ingrid.igeserver.model.Catalog;
-import de.ingrid.igeserver.model.User;
-import de.ingrid.igeserver.model.User1;
-import de.ingrid.igeserver.model.UserInfo;
-import de.ingrid.igeserver.services.UserManagementService;
-import de.ingrid.igeserver.utils.AuthUtils;
-import de.ingrid.igeserver.utils.DBUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.keycloak.representations.AccessTokenResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.naming.NoPermissionException;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.*;
-
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.db.FindOptions
+import de.ingrid.igeserver.db.OrientDBDatabase
+import de.ingrid.igeserver.db.QueryType
+import de.ingrid.igeserver.model.Catalog
+import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.model.User1
+import de.ingrid.igeserver.model.UserInfo
+import de.ingrid.igeserver.services.UserManagementService
+import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.DBUtils
+import org.apache.logging.log4j.kotlin.logger
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
+import org.keycloak.representations.AccessTokenResponse
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.io.IOException
+import java.security.Principal
+import java.util.*
+import java.util.function.Consumer
+import javax.naming.NoPermissionException
 
 @RestController
-@RequestMapping(path = "/api")
-public class UsersApiController implements UsersApi {
+@RequestMapping(path = ["/api"])
+class UsersApiController : UsersApi {
 
-    private static Logger log = LogManager.getLogger(UsersApiController.class);
-
-    @Autowired
-    private DBUtils dbUtils;
+    val logger = logger()
 
     @Autowired
-    private DBApi dbService;
+    private lateinit var dbUtils: DBUtils
 
     @Autowired
-    private UserManagementService keycloakService;
+    private lateinit var dbService: DBApi
 
     @Autowired
-    private AuthUtils authUtils;
+    private lateinit var keycloakService: UserManagementService
 
-    @Value("#{'${spring.profiles.active:}'.indexOf('dev') != -1}")
-    private boolean developmentMode;
+    @Autowired
+    private lateinit var authUtils: AuthUtils
 
-    public ResponseEntity<Void> createUser(String id, User1 user) {
+    @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
+    private val developmentMode = false
+
+    override fun createUser(id: String, user: User1): ResponseEntity<Void> {
+
         // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+
     }
 
-    public ResponseEntity<Void> deleteUser(String id) {
+    override fun deleteUser(id: String): ResponseEntity<Void> {
+
         // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+
     }
 
-    public ResponseEntity<Void> get() {
+    fun get(): ResponseEntity<Void> {
+
         // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+
     }
 
-    public ResponseEntity<User> getUser(Principal principal, String id) throws IOException {
-        User user = keycloakService.getUser(principal, id);
+    @Throws(IOException::class)
+    override fun getUser(principal: Principal?, id: String): ResponseEntity<User> {
 
-        return ResponseEntity.ok(user);
+        val user = keycloakService.getUser(principal, id)
+        return ResponseEntity.ok(user)
+
     }
 
-    public ResponseEntity<List<User>> list(Principal principal, AccessTokenResponse res) throws IOException, NoPermissionException {
+    @Throws(IOException::class, NoPermissionException::class)
+    override fun list(principal: Principal?, res: AccessTokenResponse): ResponseEntity<List<User>> {
 
         if (principal == null && !developmentMode) {
-            log.warn("No principal found in request!");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            logger.warn("No principal found in request!")
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         }
-
-        List<User> users = keycloakService.getUsers(principal);
-
-        if (users == null) {
-            return ResponseEntity.status(500).body(null);
+        val users = keycloakService.getUsers(principal)
+        return if (users == null) {
+            ResponseEntity.status(500).body(null)
         } else {
-            return ResponseEntity.ok(users);
+            ResponseEntity.ok(users)
         }
+
     }
 
-    public ResponseEntity<Void> updateUser(String id, User user) {
+    override fun updateUser(id: String, user: User): ResponseEntity<Void> {
+
         // do some magic!
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+
     }
 
-    @Override
-    public ResponseEntity<UserInfo> currentUserInfo(Principal principal) throws ApiException {
-        String userId = this.authUtils.getUsernameFromPrincipal(principal);
-        Set<String> dbIds = this.dbUtils.getCatalogsForUser(userId);
-        Set<String> dbIdsValid = new HashSet<>();
+    @Throws(ApiException::class)
+    override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
 
-        List<Catalog> assignedCatalogs = new ArrayList<>();
-
-        for (String dbId : dbIds) {
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val dbIds = dbUtils.getCatalogsForUser(userId)
+        val dbIdsValid: MutableSet<String> = HashSet()
+        val assignedCatalogs: MutableList<Catalog> = ArrayList()
+        for (dbId in dbIds) {
             if (dbId != null) {
-                Catalog catalogById = this.dbUtils.getCatalogById(dbId);
+                val catalogById = dbUtils.getCatalogById(dbId)
                 if (catalogById != null) {
-                    assignedCatalogs.add(catalogById);
-                    dbIdsValid.add(dbId);
+                    assignedCatalogs.add(catalogById)
+                    dbIdsValid.add(dbId)
                 }
             }
         }
 
         // clean up catalog association if one was deleted?
-        if (dbIds.size() != assignedCatalogs.size()) {
-            this.dbUtils.setCatalogIdsForUser(userId, dbIdsValid);
+        if (dbIds.size != assignedCatalogs.size) {
+            dbUtils.setCatalogIdsForUser(userId, dbIdsValid)
         }
+        val currentCatalogForUser = dbUtils.getCurrentCatalogForUser(userId)
+        val catalog = dbUtils.getCatalogById(currentCatalogForUser)
+        val userInfo = UserInfo(
+                userId = userId,
+                name = keycloakService.getName(principal as KeycloakAuthenticationToken?),
+                assignedCatalogs = assignedCatalogs,
+                roles = keycloakService.getRoles(principal),
+                currentCatalog = catalog)
+        return ResponseEntity.ok(userInfo)
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.userId = userId;
-        userInfo.assignedCatalogs = assignedCatalogs;
-        userInfo.name = keycloakService.getName((KeycloakAuthenticationToken) principal);
-        userInfo.roles = keycloakService.getRoles((KeycloakAuthenticationToken) principal);
-        String currentCatalogForUser = this.dbUtils.getCurrentCatalogForUser(userId);
-        Catalog catalog = this.dbUtils.getCatalogById(currentCatalogForUser);
-        userInfo.currentCatalog = catalog;
-
-        return ResponseEntity.ok(userInfo);
     }
 
-    @Override
-    public ResponseEntity<UserInfo> setCatalogAdmin(
-            Principal principal,
-            Map info) throws ApiException {
+    @Throws(ApiException::class)
+    override fun setCatalogAdmin(
+            principal: Principal?,
+            info: Map<String, String>): ResponseEntity<UserInfo?> {
 
-        try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
-
-            log.info("Parameter:", info);
-            List<String> userIds = (List<String>) info.get("userIds");
-            String catalogName = (String) info.get("catalogName");
-
-            if (userIds == null || userIds.size() == 0) {
-                throw new ApiException(500, "No user ids set to use as a catalog administrator");
+        try {
+            dbService.acquire("IgeUsers").use { _ ->
+                logger.info("Parameter: $info")
+                val userIds = info["userIds"] as List<String>?
+                val catalogName = info["catalogName"] as String
+                if (userIds == null || userIds.size == 0) {
+                    throw ApiException(500, "No user ids set to use as a catalog administrator")
+                }
+                for (userId in userIds) {
+                    addOrUpdateCatalogAdmin(catalogName, userId)
+                }
             }
-
-            for (String userId : userIds) {
-                addOrUpdateCatalogAdmin(catalogName, userId);
-            }
-
-        } catch (JsonProcessingException e) {
-            log.error("Error processing JSON", e);
-            throw new ApiException(e.getMessage());
-        } catch (Exception e) {
-            log.error(e);
+        } catch (e: JsonProcessingException) {
+            logger.error("Error processing JSON", e)
+            throw ApiException(e.message)
+        } catch (e: Exception) {
+            logger.error(e)
         }
+        return ResponseEntity.ok(null)
 
-        return null;
     }
 
-    private void addOrUpdateCatalogAdmin(String catalogName, String userId) throws Exception {
-        Map<String, String> query = new HashMap<>();
-        query.put("userId", userId);
-        FindOptions findOptions = new FindOptions();
-        findOptions.queryType = QueryType.exact;
-        findOptions.resolveReferences = false;
-        DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
-        boolean isNewEntry = list.totalHits == 0;
+    @Throws(Exception::class)
+    private fun addOrUpdateCatalogAdmin(catalogName: String, userId: String) {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Set<String> catalogIds = new HashSet<>();
-        ObjectNode catInfo;
-
+        val query: MutableMap<String, String> = HashMap()
+        query["userId"] = userId
+        val findOptions = FindOptions()
+        findOptions.queryType = QueryType.exact
+        findOptions.resolveReferences = false
+        val list = dbService.findAll("Info", query, findOptions)
+        val isNewEntry = list.totalHits == 0L
+        val objectMapper = ObjectMapper()
+        val catalogIds: MutableSet<String> = HashSet()
+        val catInfo: ObjectNode
         if (isNewEntry) {
-            catInfo = objectMapper.createObjectNode();
-            catInfo.put("userId", userId);
-            catInfo.put("catalogIds", objectMapper.createArrayNode());
+            catInfo = objectMapper.createObjectNode()
+            catInfo.put("userId", userId)
+            catInfo.put("catalogIds", objectMapper.createArrayNode())
         } else {
-
-            catInfo = (ObjectNode) list.hits.get(0);
+            catInfo = list.hits[0] as ObjectNode
             // make list to hashset
-            catInfo.put("catalogIds", catInfo.get("catalogIds"));
+            catInfo.put("catalogIds", catInfo["catalogIds"])
         }
-
-        ArrayNode catalogIdsArray = (ArrayNode) catInfo.get("catalogIds");
-
-        for (JsonNode jsonNode : catalogIdsArray) {
-            catalogIds.add(jsonNode.asText());
+        val catalogIdsArray = catInfo["catalogIds"] as ArrayNode
+        for (jsonNode in catalogIdsArray) {
+            catalogIds.add(jsonNode.asText())
         }
 
         // update catadmin in catalog Info
-        if (catalogName != null) catalogIds.add(catalogName);
-
-        ArrayNode arrayNode = objectMapper.createArrayNode();
-        catalogIds.forEach(arrayNode::add);
-        catInfo.replace("catalogIds", arrayNode);
-
-        String recordId = null;
+        if (catalogName != null) catalogIds.add(catalogName)
+        val arrayNode = objectMapper.createArrayNode()
+        catalogIds.forEach(Consumer { v: String -> arrayNode.add(v) })
+        catInfo.replace("catalogIds", arrayNode)
+        var recordId: String? = null
         if (!isNewEntry) {
-            recordId = catInfo.get("@rid").asText();
+            recordId = catInfo["@rid"].asText()
         }
-        dbService.save(DBApi.DBClass.Info.name(), recordId, catInfo.toString());
+        dbService.save(DBApi.DBClass.Info.name, recordId, catInfo.toString())
+
     }
 
-    @Override
-    public ResponseEntity<List<String>> assignedUsers(Principal principal, String id) throws ApiException {
-        List<String> result = new ArrayList<>();
+    @Throws(ApiException::class)
+    override fun assignedUsers(principal: Principal?, id: String): ResponseEntity<List<String>> {
 
-        try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
-            Map<String, String> query = new HashMap<>();
-            query.put("catalogIds", id);
-            FindOptions findOptions = new FindOptions();
-            findOptions.queryType = QueryType.contains;
-            findOptions.resolveReferences = false;
-            DBFindAllResults infos = this.dbService.findAll("Info", query, findOptions);
-            for (JsonNode entry : infos.hits) {
-                result.add(entry.get("userId").asText());
+        val result: MutableList<String> = ArrayList()
+        try {
+            dbService.acquire("IgeUsers").use { _ ->
+                val query: MutableMap<String, String> = HashMap()
+                query["catalogIds"] = id
+                val findOptions = FindOptions()
+                findOptions.queryType = QueryType.contains
+                findOptions.resolveReferences = false
+                val infos = dbService.findAll("Info", query, findOptions)
+                for (entry in infos.hits) {
+                    result.add(entry["userId"].asText())
+                }
             }
-
-        } catch (Exception e) {
-            log.error("Could not get assigned Users", e);
+        } catch (e: Exception) {
+            logger.error("Could not get assigned Users", e)
         }
+        return ResponseEntity.ok(result)
 
-        return ResponseEntity.ok(result);
     }
 
-    public ResponseEntity<Void> switchCatalog(Principal principal, String catalogId) throws ApiException {
-        String userId = this.authUtils.getUsernameFromPrincipal(principal);
+    @Throws(ApiException::class)
+    override fun switchCatalog(principal: Principal?, catalogId: String): ResponseEntity<Void> {
 
-        try (ODatabaseSession session = dbService.acquire("IgeUsers")) {
-            Map<String, String> query = new HashMap<>();
-            query.put("userId", userId);
-            FindOptions findOptions = new FindOptions();
-            findOptions.queryType = QueryType.exact;
-            findOptions.resolveReferences = false;
-            DBFindAllResults info = dbService.findAll("Info", query, findOptions);
-            if (info.totalHits != 1) {
-                String message = "User is not defined or more than once in IgeUsers-table: " + info.totalHits;
-                log.error(message);
-                throw new ApiException(message);
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        try {
+            dbService.acquire("IgeUsers").use { _ ->
+                val query: MutableMap<String, String> = HashMap()
+                query["userId"] = userId
+                val findOptions = FindOptions()
+                findOptions.queryType = QueryType.exact
+                findOptions.resolveReferences = false
+                val info = dbService.findAll("Info", query, findOptions)
+                if (info.totalHits != 1L) {
+                    val message = "User is not defined or more than once in IgeUsers-table: " + info.totalHits
+                    logger.error(message)
+                    throw ApiException(message)
+                }
+                val map = info.hits[0] as ObjectNode
+                map.put("currentCatalogId", catalogId)
+                dbService.save("Info", map[OrientDBDatabase.DB_ID].asText(), map.toString())
+                return ResponseEntity.ok().build()
             }
-
-            ObjectNode map = (ObjectNode) info.hits.get(0);
-            map.put("currentCatalogId", catalogId);
-            this.dbService.save("Info", map.get(OrientDBDatabase.DB_ID).asText(), map.toString());
-            return ResponseEntity.ok().build();
-
-        } catch (Exception e) {
-            log.error(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (e: Exception) {
+            logger.error(e)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
+
     }
 
 }

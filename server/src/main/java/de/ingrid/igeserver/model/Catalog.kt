@@ -1,11 +1,3 @@
-package de.ingrid.igeserver.model;
+package de.ingrid.igeserver.model
 
-public class Catalog {
-    public String id;
-
-    public String name;
-
-    public String description;
-
-    public String type;
-}
+data class Catalog(val id: String, val name: String, val description: String = "", var type: String = "")

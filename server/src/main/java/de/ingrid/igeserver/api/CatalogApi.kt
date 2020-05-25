@@ -3,69 +3,48 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.Catalog;
-import de.ingrid.igeserver.model.InlineResponseDefault;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import de.ingrid.igeserver.model.Catalog
+import de.ingrid.igeserver.model.InlineResponseDefault
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 
 @Tag(name = "Catalogs", description = "Handle catalog requests")
-public interface CatalogApi {
-
-    @GetMapping(
-            value = "/catalogs",
-            produces = {"application/json"}
-    )
-    @Operation(responses = {@ApiResponse(content = @Content(schema = @Schema(implementation = String.class)))}, summary = "Get all catalogs")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = ""),
-            @ApiResponse(responseCode = "200", description = "Unexpected error", content = @Content(schema = @Schema(implementation = InlineResponseDefault.class)))
-    })
-    ResponseEntity<List<Catalog>> getCatalogs();
+interface CatalogApi {
+    @get:ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error", content = [Content(schema = Schema(implementation = InlineResponseDefault::class))])])
+    @get:Operation(responses = [ApiResponse(content = [Content(schema = Schema(implementation = String::class))])], summary = "Get all catalogs")
+    @get:GetMapping(value = ["/catalogs"], produces = ["application/json"])
+    val catalogs: ResponseEntity<List<Catalog>>
 
     // @PreAuthorize("hasRole('admin')")
-    @RequestMapping(
-            value = "/catalogs",
-            produces = {"application/json"},
-            method = RequestMethod.POST
-    )
-    @Operation()
-    public ResponseEntity<String> createCatalog(
-            @Parameter(description = "The settings of the catalog to create.", required = true) @RequestBody Catalog settings
-    ) throws ApiException;
+    @RequestMapping(value = ["/catalogs"], produces = ["application/json"], method = [RequestMethod.POST])
+    @Operation
+    @Throws(ApiException::class)
+    fun createCatalog(
+            @Parameter(description = "The settings of the catalog to create.", required = true) @RequestBody settings: Catalog
+    ): ResponseEntity<String>
 
-    @RequestMapping(
-            value = "/catalogs/{name}",
-            produces = {"application/json"},
-            method = RequestMethod.PUT
-    )
-    @Operation()
-    public ResponseEntity<Void> updateCatalog(
-            @Parameter(description = "The name of the catalog to update.", required = true) @PathVariable("name") String name,
-            @Parameter(description = "The settings of the catalog to update.", required = true) @RequestBody Catalog settings
-    ) throws ApiException;
+    @RequestMapping(value = ["/catalogs/{name}"], produces = ["application/json"], method = [RequestMethod.PUT])
+    @Operation
+    @Throws(ApiException::class)
+    fun updateCatalog(
+            @Parameter(description = "The name of the catalog to update.", required = true) @PathVariable("name") name: String,
+            @Parameter(description = "The settings of the catalog to update.", required = true) @RequestBody settings: Catalog
+    ): ResponseEntity<Void>
 
-    @RequestMapping(
-            value = "/catalogs/{name}",
-            produces = {"application/json"},
-            method = RequestMethod.DELETE
-    )
-    @Operation()
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "Unknown database")
-    })
-    public ResponseEntity<Void> deleteCatalog(
-            @Parameter(description = "The name of the catalog to delete.", required = true) @PathVariable("name") String name
-    ) throws ApiException;
-
+    @RequestMapping(value = ["/catalogs/{name}"], produces = ["application/json"], method = [RequestMethod.DELETE])
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "404", description = "Unknown database")])
+    @Throws(ApiException::class)
+    fun deleteCatalog(
+            @Parameter(description = "The name of the catalog to delete.", required = true) @PathVariable("name") name: String
+    ): ResponseEntity<Void>
 }

@@ -3,149 +3,89 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.User;
-import de.ingrid.igeserver.model.User1;
-import de.ingrid.igeserver.model.UserInfo;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.keycloak.representations.AccessTokenResponse;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.naming.NoPermissionException;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.List;
-import java.util.Map;
+import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.model.User1
+import de.ingrid.igeserver.model.UserInfo
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.keycloak.representations.AccessTokenResponse
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
+import java.io.IOException
+import java.security.Principal
+import javax.naming.NoPermissionException
+import javax.validation.Valid
 
 @Tag(name = "Users", description = "the users API")
-public interface UsersApi {
-
-    @RequestMapping(
-            value = "/users/{id}",
-            produces = {"application/json"},
-            method = RequestMethod.POST
-    )
+interface UsersApi {
+    @RequestMapping(value = ["/users/{id}"], produces = ["application/json"], method = [RequestMethod.POST])
     @Operation(description = "Create a new user. If the user already exists an error will be returned.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User was successfully updated"),
-            @ApiResponse(responseCode = "406", description = "A user with the given login does not exist and cannot be updated")
-    })
-    ResponseEntity<Void> createUser(
-            @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") String id,
-            @Parameter(description = "Save the user data into the database.", required = true) @Valid @RequestBody User1 user);
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "User was successfully updated"), ApiResponse(responseCode = "406", description = "A user with the given login does not exist and cannot be updated")])
+    fun createUser(
+            @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
+            @Parameter(description = "Save the user data into the database.", required = true) @RequestBody user: @Valid User1): ResponseEntity<Void>
 
-
-    @RequestMapping(
-            value = "/users/{id}",
-            produces = {"application/json"},
-            method = RequestMethod.DELETE
-    )
+    @RequestMapping(value = ["/users/{id}"], produces = ["application/json"], method = [RequestMethod.DELETE])
     @Operation(description = "The user with the given ID is deleted. If user with a given login does not exists an error will be returned.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User was successfully deleted"),
-            @ApiResponse(responseCode = "406", description = "A user with the given login does not exist and cannot be deleted")
-    })
-    ResponseEntity<Void> deleteUser(
-            @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") String id);
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "User was successfully deleted"), ApiResponse(responseCode = "406", description = "A user with the given login does not exist and cannot be deleted")])
+    fun deleteUser(
+            @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String): ResponseEntity<Void>
 
-
-    @RequestMapping(
-            value = "/users/{id}",
-            produces = {"application/json"},
-            method = RequestMethod.GET)
+    @RequestMapping(value = ["/users/{id}"], produces = ["application/json"], method = [RequestMethod.GET])
     @Operation(description = "Get the user with the given ID.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Returns the user")
-    })
-    ResponseEntity<User> getUser(
-            Principal principal,
-            @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") String id) throws IOException;
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
+    @Throws(IOException::class)
+    fun getUser(
+            principal: Principal?,
+            @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String): ResponseEntity<User>
 
+    @RequestMapping(value = ["/users"], produces = ["application/json"], method = [RequestMethod.GET])
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of users")])
+    @Throws(IOException::class, NoPermissionException::class)
+    fun list(principal: Principal?, res: AccessTokenResponse): ResponseEntity<List<User>>
 
-    @RequestMapping(
-            value = "/users",
-            produces = {"application/json"},
-            method = RequestMethod.GET
-    )
-    @Operation()
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Returns the list of users")
-    })
-    ResponseEntity<List<User>> list(Principal principal, AccessTokenResponse res) throws IOException, NoPermissionException;
-
-
-    @RequestMapping(
-            value = "/users/{id}",
-            produces = {"application/json"},
-            method = RequestMethod.PUT
-    )
+    @RequestMapping(value = ["/users/{id}"], produces = ["application/json"], method = [RequestMethod.PUT])
     @Operation(description = "Updates an existing user user. If the user does not exist an error will be returned.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User was successfully created"),
-            @ApiResponse(responseCode = "406", description = "A user already exists with the given login")
-    })
-    ResponseEntity<Void> updateUser(
-            @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") String id,
-            @Parameter(description = "Save the user data into the database.", required = true) @Valid @RequestBody User user);
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "User was successfully created"), ApiResponse(responseCode = "406", description = "A user already exists with the given login")])
+    fun updateUser(
+            @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
+            @Parameter(description = "Save the user data into the database.", required = true) @RequestBody user: @Valid User): ResponseEntity<Void>
 
+    @RequestMapping(value = ["/info/currentUser"], produces = ["application/json"], method = [RequestMethod.GET])
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "406", description = "")])
+    @Throws(ApiException::class)
+    fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo>
 
-    @RequestMapping(
-            value = "/info/currentUser",
-            produces = {"application/json"},
-            method = RequestMethod.GET
-    )
-    @Operation()
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = ""),
-            @ApiResponse(responseCode = "406", description = "")
-    })
-    ResponseEntity<UserInfo> currentUserInfo(Principal principal) throws ApiException;
+    @RequestMapping(value = ["/info/setCatalogAdmin"], produces = ["application/json"], method = [RequestMethod.POST])
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "406", description = "")])
+    @Throws(ApiException::class)
+    fun setCatalogAdmin(principal: Principal?,
+                        @Parameter(description = "Save the user data into the database.", required = true) @RequestBody info: @Valid Map<String, String>): ResponseEntity<UserInfo?>
 
+    @RequestMapping(value = ["/info/assignedUsers/{id}"], produces = ["application/json"], method = [RequestMethod.GET])
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    @Throws(ApiException::class)
+    fun assignedUsers(principal: Principal?,
+                      @Parameter(description = "The database id to query the assigned users from.", required = true) @PathVariable("id") id: String): ResponseEntity<List<String>>
 
-    @RequestMapping(
-            value = "/info/setCatalogAdmin",
-            produces = {"application/json"},
-            method = RequestMethod.POST
-    )
-    @Operation()
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = ""),
-            @ApiResponse(responseCode = "406", description = "")
-    })
-    ResponseEntity<UserInfo> setCatalogAdmin(Principal principal,
-                                             @Parameter(description = "Save the user data into the database.", required = true) @Valid @RequestBody Map info) throws ApiException;
-
-    @RequestMapping(
-            value = "/info/assignedUsers/{id}",
-            produces = {"application/json"},
-            method = RequestMethod.GET
-    )
-    @Operation()
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "")
-    })
-    ResponseEntity<List<String>> assignedUsers(Principal principal,
-                                               @Parameter(description = "The database id to query the assigned users from.", required = true) @PathVariable("id") String id) throws ApiException;
-
-    @RequestMapping(
-            value = "/user/catalog/{catalogId}",
-            method = RequestMethod.POST
-    )
-    @Operation()
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "")
-    })
-    public ResponseEntity<Void> switchCatalog(
-            Principal principal,
-            @Parameter(description = "The id of the catalog to switch to for the current user", required = true) @PathVariable("catalogId") String catalogId) throws ApiException;
+    @RequestMapping(value = ["/user/catalog/{catalogId}"], method = [RequestMethod.POST])
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    @Throws(ApiException::class)
+    fun switchCatalog(
+            principal: Principal?,
+            @Parameter(description = "The id of the catalog to switch to for the current user", required = true) @PathVariable("catalogId") catalogId: String): ResponseEntity<Void>
 }

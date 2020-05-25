@@ -1,53 +1,51 @@
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.db.DBApi;
-import de.ingrid.igeserver.model.Catalog;
-import de.ingrid.igeserver.utils.DBUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
+import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.model.Catalog
+import de.ingrid.igeserver.utils.DBUtils
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api")
-public class CatalogApiController implements CatalogApi {
+class CatalogApiController : CatalogApi {
 
     @Autowired
-    private DBApi dbService;
+    private lateinit var dbService: DBApi
 
     @Autowired
-    private DBUtils dbUtils;
+    private lateinit var dbUtils: DBUtils
 
-    @Override
-    public ResponseEntity<List<Catalog>> getCatalogs() {
-        String[] databases = this.dbService.getDatabases();
-        List<Catalog> catalogs = new ArrayList<>();
+    override val catalogs: ResponseEntity<List<Catalog>>
+        get() {
 
-        for (String db : databases) {
-            catalogs.add(this.dbUtils.getCatalogById(db));
+            val catalogs = dbService.databases.map { dbUtils.getCatalogById(it) }
+            return ResponseEntity.ok().body(catalogs)
+
         }
 
-        return ResponseEntity.ok().body(catalogs);
+    @Throws(ApiException::class)
+    override fun createCatalog(settings: Catalog): ResponseEntity<String> {
+
+        val catalogId = dbService.createDatabase(settings)
+        return ResponseEntity.ok().body("{ \"catalogId\": \"$catalogId\"}")
+
     }
 
-    @Override
-    public ResponseEntity<String> createCatalog(Catalog settings) throws ApiException {
-        String catalogId = this.dbService.createDatabase(settings);
-        return ResponseEntity.ok().body("{ \"catalogId\": \"" + catalogId + "\"}");
+    @Throws(ApiException::class)
+    override fun updateCatalog(name: String, settings: Catalog): ResponseEntity<Void> {
+
+        dbService.updateDatabase(settings)
+        return ResponseEntity.ok().build()
+
     }
 
-    @Override
-    public ResponseEntity<Void> updateCatalog(String name, Catalog settings) throws ApiException {
-        this.dbService.updateDatabase(settings);
-        return ResponseEntity.ok().build();
-    }
+    override fun deleteCatalog(name: String): ResponseEntity<Void> {
 
-    public ResponseEntity<Void> deleteCatalog(String name) {
-        this.dbService.removeDatabase(name);
-        return ResponseEntity.ok().build();
-    }
+        dbService.removeDatabase(name)
+        return ResponseEntity.ok().build()
 
+    }
 }

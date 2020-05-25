@@ -90,9 +90,9 @@ public class OrientDBDatabase implements DBApi {
     private void initDocumentTypes(Catalog... settings) {
 
         for (Catalog dbSetting : settings) {
-            try (ODatabaseSession session = acquire(dbSetting.id)) {
+            try (ODatabaseSession session = acquire(dbSetting.getId())) {
                 documentTypes.stream()
-                        .filter(docType -> docType.usedInProfile(dbSetting.type))
+                        .filter(docType -> docType.usedInProfile(dbSetting.getType()))
                         .forEach(type -> type.initialize(session));
             }
         }
@@ -346,10 +346,10 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public String createDatabase(Catalog catalog) throws ApiException {
-        catalog.id = this.generateDBNameFromLabel(catalog.name);
+        String id = this.generateDBNameFromLabel(catalog.getName());
 
-        server.createDatabase(catalog.id, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
-        try (ODatabaseSession session = acquire(catalog.id)) {
+        server.createDatabase(catalog.getId(), ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
+        try (ODatabaseSession session = acquire(catalog.getId())) {
 
             initNewDatabase(catalog, session);
             JsonNode catInfo = getMapFromCatalogSettings(catalog);
@@ -358,16 +358,16 @@ public class OrientDBDatabase implements DBApi {
 
         initDocumentTypes(catalog);
 
-        return catalog.id;
+        return id;
     }
 
     public void updateDatabase(Catalog settings) throws ApiException {
-        try (ODatabaseSession ignored = acquire(settings.id)) {
+        try (ODatabaseSession ignored = acquire(settings.getId())) {
 
             List<JsonNode> list = this.findAll(DBClass.Info.name());
             ObjectNode map = (ObjectNode) list.get(0);
-            map.put("name", settings.name);
-            map.put("description", settings.description);
+            map.put("name", settings.getName());
+            map.put("description", settings.getDescription());
             String id = map.get(DB_ID).asText();
             MapperService.removeDBManagementFields(map);
             this.save(DBClass.Info.name(), id, map.toString());
@@ -376,10 +376,10 @@ public class OrientDBDatabase implements DBApi {
 
     private JsonNode getMapFromCatalogSettings(Catalog settings) {
         ObjectNode catInfo = new ObjectMapper().createObjectNode();
-        catInfo.put("id", settings.id);
-        catInfo.put("name", settings.name);
-        catInfo.put("description", settings.description);
-        catInfo.put("type", settings.type);
+        catInfo.put("id", settings.getId());
+        catInfo.put("name", settings.getName());
+        catInfo.put("description", settings.getDescription());
+        catInfo.put("type", settings.getType());
         return catInfo;
     }
 

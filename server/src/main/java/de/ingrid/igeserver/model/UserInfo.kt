@@ -1,16 +1,3 @@
-package de.ingrid.igeserver.model;
+package de.ingrid.igeserver.model
 
-
-import java.util.List;
-import java.util.Set;
-
-public class UserInfo {
-    public String userId;
-    public String name;
-
-    public List<Catalog> assignedCatalogs;
-    public Set<String> roles;
-
-    // the current selected catalog in case a user can access multiple catalogs
-    public Catalog currentCatalog;
-}
+data class UserInfo(val userId: String? = null, val name: String, val assignedCatalogs: List<Catalog>, val roles: Set<String>, val currentCatalog: Catalog)

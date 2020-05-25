@@ -107,13 +107,12 @@ public class DBUtils {
             // TODO: can this happen?
             if (catalogInfo == null || catalogInfo.size() == 0) return null;
 
-            Catalog catalog = new Catalog();
-            catalog.id = id;
             JsonNode jsonNode = catalogInfo.get(0);
-            catalog.name = jsonNode.get("name").asText();
-            catalog.description = jsonNode.has("description") ? jsonNode.get("description").asText() : "";
-            catalog.type = jsonNode.get("type").asText();
-            return catalog;
+            return new Catalog(
+                    id,
+                    jsonNode.get("name").asText(),
+                    jsonNode.has("description") ? jsonNode.get("description").asText() : "",
+                    jsonNode.get("type").asText());
         } catch (OStorageException ex) {
             // in case catalog has been deleted but reference is still there
             // TODO: remove reference from user to deleted catalogs
