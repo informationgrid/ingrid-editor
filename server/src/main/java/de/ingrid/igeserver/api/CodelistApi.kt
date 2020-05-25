@@ -5,6 +5,7 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.codelists.model.CodeList
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -17,8 +18,22 @@ import org.springframework.web.bind.annotation.RequestMethod
 
 @Tag(name = "Codelist", description = "the codelist API")
 interface CodelistApi {
+
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
     @Operation
-    @RequestMapping(value = ["/codelist/{id}"], produces = ["application/json"], method = [RequestMethod.GET])
-    fun getCodelistById(@Parameter(description = "The ID of the codelist.", required = true) @PathVariable("id") id: String?): ResponseEntity<String?>?
+    @RequestMapping(value = [""], produces = ["application/json"], method = [RequestMethod.GET])
+    @Throws(ApiException::class)
+    fun getAllCodelists(): ResponseEntity<List<CodeList>>
+
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
+    @Operation
+    @RequestMapping(value = [""], produces = ["application/json"], method = [RequestMethod.POST])
+    @Throws(ApiException::class)
+    fun updateCodelists(): ResponseEntity<List<CodeList>>
+
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
+    @Operation
+    @RequestMapping(value = ["/{ids}"], produces = ["application/json"], method = [RequestMethod.GET])
+    fun getCodelistsByIds(
+            @Parameter(description = "The ID of the codelists.", required = true) @PathVariable("ids") ids: List<String>): ResponseEntity<List<CodeList>>
 }
