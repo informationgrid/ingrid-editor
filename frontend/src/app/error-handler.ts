@@ -12,10 +12,11 @@ export class GlobalErrorHandler implements ErrorHandler {
   }
 
   handleError(error) {
+
     console.log('HANDLE ERROR', error);
 
     if (error instanceof IgeError) {
-      this.modalService.showIgeError( error );
+      this.modalService.showIgeError(error);
     } else if (error instanceof HttpErrorResponse) {
       const e = new IgeError();
       e.setMessage(error.message, (error.error && error.error.message) ? error.error.message : error.error);
@@ -23,7 +24,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     } else {
       this.modalService.showJavascriptError(error.message, error.stack);
     }
-    throw(error);
+
   }
 
 }

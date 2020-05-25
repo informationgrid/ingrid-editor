@@ -14,7 +14,7 @@ class CodelistHandler(private val codeListService: CodeListService) {
 
     }
 
-    fun fetchCodelists(): List<CodeList> {
+    fun fetchCodelists(): List<CodeList>? {
 
         return codeListService.updateFromServer()
 
