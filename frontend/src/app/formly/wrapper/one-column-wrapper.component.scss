@@ -79,10 +79,10 @@
   padding-top: 17px;
 }
 
-.hasContexthelp {
+.hasContextHelp {
 
   &:hover {
-    .contexthelpIcon {
+    .contextHelpIcon {
       display: inline-block;
     }
 
@@ -92,7 +92,7 @@
     }
   }
 
-  .contexthelpIcon {
+  .contextHelpIcon {
     display: none;
     background-color: $ige-background;
     border-radius: 50%;

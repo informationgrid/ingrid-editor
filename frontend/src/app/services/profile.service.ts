@@ -5,6 +5,10 @@ import {ModalService} from './modal/modal.service';
 import {ProfileStore} from '../store/profile/profile.store';
 import {ProfileAbstract} from '../store/profile/profile.model';
 import {IgeDocument} from '../models/ige-document';
+import {ContextHelpService} from './context-help/context-help.service';
+import {ContextHelpQuery} from '../store/context-help/context-help.query';
+import {forkJoin} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +18,9 @@ export class ProfileService {
   private doctypes: Doctype[] = [];
 
   constructor(private resolver: ComponentFactoryResolver,
-              configService: ConfigService,
+              private configService: ConfigService,
               private profileStore: ProfileStore,
+              private contextHelpService: ContextHelpService,
               errorService: ModalService) {
 
     configService.$userInfo.subscribe(info => {
@@ -36,13 +41,17 @@ export class ProfileService {
         });
       }
     });
+
   }
 
   getProfiles(): Doctype[] {
+
     return this.doctypes;
+
   }
 
   getDocumentIcon(doc: IgeDocument): string {
+
     const iconClass = this.doctypes
       .filter(doctype => doctype.id === doc._type)
       .map(doctype => (doctype.getIconClass && doctype.getIconClass(doc)) || doctype.iconClass);
@@ -53,6 +62,7 @@ export class ProfileService {
     }
 
     return iconClass[0];
+
   }
 
   private mapDocumentTypes(doctypes: Doctype[]) {
@@ -72,8 +82,28 @@ export class ProfileService {
 
     console.log('Registering profile');
     this.doctypes = doctypes;
-    this.profileStore.set(this.mapDocumentTypes(this.doctypes));
+
+    // TODO: get ContextHelpIDs of all document types at once to improve speed
+    const profile = this.configService.$userInfo.value.currentCatalog.type;
+    const helpIdsObservables = this.doctypes.map(type => this.contextHelpService.getAvailableHelpFieldIds(profile, type.id));
+    forkJoin(helpIdsObservables)
+      .pipe(
+        tap(results => this.initDocumentTypes(results)),
+        tap(() => this.finishProfileInitialization())
+      )
+      .subscribe();
 
   }
 
+  private initDocumentTypes(results: string[][]) {
+
+    results.forEach((result, index) => this.doctypes[index].init(result));
+
+  }
+
+  private finishProfileInitialization() {
+
+    this.profileStore.set(this.mapDocumentTypes(this.doctypes));
+
+  }
 }

@@ -1,19 +1,15 @@
-// panel-wrapper.component.ts
 import {AfterViewInit, Component, ElementRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {FieldWrapper} from '@ngx-formly/core';
 import {ContextHelpComponent} from '../../+demo-layout/form/context-help/context-help.component';
 import {MatDialog} from '@angular/material/dialog';
-import {Overlay} from '@angular/cdk/overlay';
 import {ConfigService} from '../../services/config/config.service';
-import {ContexthelpService} from '../../services/contexthelp.service';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {ContextHelpService} from '../../services/context-help/context-help.service';
 
 @Component({
   selector: 'ige-one-column-wrapper',
   template: `
-    <div [class.hasContexthelp]="hasContexthelp" fxLayout="row">
-      <div *ngIf="hasContexthelp" class="contexthelpIcon">
+    <div [class.hasContextHelp]="to.hasContextHelp" fxLayout="row">
+      <div *ngIf="to.hasContextHelp" class="contextHelpIcon">
         <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
       </div>
       <div class="label-wrapper">
@@ -27,62 +23,68 @@ import {map} from 'rxjs/operators';
   styleUrls: ['./one-column-wrapper.component.scss']
 })
 export class OneColumnWrapperComponent extends FieldWrapper implements AfterViewInit {
+
+  private static contextDialogHeight = 400;
+
   @ViewChild('fieldComponent', {read: ViewContainerRef, static: true}) fieldComponent: ViewContainerRef;
 
-  profile: string;
-  docType: string;
-  fieldId: string;
-  hasContexthelp$: Observable<boolean>;
-  hasContexthelp = false;
+  private profile: string;
+  private docType: string;
+  private fieldId: string;
+
+  private static getLeftPosition = (infoElement: HTMLElement) => `${infoElement.getBoundingClientRect().left}px`
+
+  private static getTopPosition(infoElement: HTMLElement) {
+    const topPosition = window.innerHeight - infoElement.getBoundingClientRect().top;
+    const enoughSpaceBeneath = topPosition > OneColumnWrapperComponent.contextDialogHeight;
+
+    return enoughSpaceBeneath
+      ? `${infoElement.getBoundingClientRect().top}px`
+      : `${infoElement.getBoundingClientRect().top - OneColumnWrapperComponent.contextDialogHeight}px`
+  }
 
 
   constructor(public dialog: MatDialog,
               public configService: ConfigService,
-              public contexthelpService: ContexthelpService,
-              private overlay: Overlay) {
+              public contextHelpService: ContextHelpService) {
     super();
   }
 
   ngAfterViewInit() {
+
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
     this.docType = this.model._type;
     this.fieldId = this.field.key;
-    this.hasContexthelp$ = this.contexthelpService.getAvailableHelpFieldIds(this.profile, this.docType).pipe(map(ids => ids.includes(this.fieldId)));
-    this.hasContexthelp$.subscribe(hasContexthelp => this.hasContexthelp = hasContexthelp);
+
   }
 
   showContextHelp(evt: MouseEvent) {
-    if (!this.hasContexthelp) {
+
+    if (!this.to.hasContextHelp) {
       return;
     }
-    const helptext = this.contexthelpService.getContexthelpText(this.profile, this.docType, this.fieldId);
-
-    const contextDialogHeight = 400;
+    const helptext = this.contextHelpService.getContexthelpText(this.profile, this.docType, this.fieldId);
 
     const target = new ElementRef(evt.currentTarget);
-    // @ts-ignore
-    const enoughSpaceBeneath = (window.innerHeight - target.nativeElement.getBoundingClientRect().top) > contextDialogHeight;
-    const dialogRef = this.dialog.open(ContextHelpComponent, {
-      data: {title: this.to.externalLabel, description$: helptext},
+    const infoElement = target.nativeElement as HTMLElement;
+
+
+    this.dialog.open(ContextHelpComponent, {
+      data: {
+        title: this.to.externalLabel,
+        description$: helptext
+      },
       backdropClass: 'cdk-overlay-transparent-backdrop',
       hasBackdrop: true,
       closeOnNavigation: true,
-
-      // data: { dialogRef: dialogRef }
       position: {
-        // @ts-ignore
-        left: `${target.nativeElement.getBoundingClientRect().left}px`,
-        // @ts-ignore
-        top: `${enoughSpaceBeneath ? target.nativeElement.getBoundingClientRect().top : target.nativeElement.getBoundingClientRect().top - contextDialogHeight}px`
-        // top: `${target.nativeElement.getBoundingClientRect().top - 400}px`
+        left: OneColumnWrapperComponent.getLeftPosition(infoElement),
+        top: OneColumnWrapperComponent.getTopPosition(infoElement)
       },
-      /*scrollStrategy: this.overlay.scrollStrategies.reposition({
-        autoClose: true
-      }),*/
       autoFocus: false,
-      height: contextDialogHeight + 'px',
+      height: OneColumnWrapperComponent.contextDialogHeight + 'px',
       width: '330px'
     });
-  }
 
+  }
 }

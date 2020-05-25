@@ -4,6 +4,9 @@ import {ProfileFolder} from './folder.doctype';
 import {TestDoctype} from './test/test.doctype';
 import {Component, NgModule} from '@angular/core';
 import {ProfileService} from '../app/services/profile.service';
+import {ContextHelpService} from '../app/services/context-help/context-help.service';
+import {forkJoin} from 'rxjs';
+import {delay, tap} from 'rxjs/operators';
 
 
 @Component({
@@ -11,10 +14,21 @@ import {ProfileService} from '../app/services/profile.service';
 })
 class MCloudComponent {
 
-  constructor(service: ProfileService,
+  constructor(service: ProfileService, contextHelpService: ContextHelpService,
               mcloud: McloudDoctype, folder: ProfileFolder, test: TestDoctype, address: ProfileAddress) {
 
-    service.registerProfiles([mcloud, folder, test, address]);
+    const types = [mcloud, folder, test, address];
+    service.registerProfiles(types)
+
+    /*const helpIdsObservables = types.map(type => contextHelpService.getAvailableHelpFieldIds('mcloud', type.id));
+
+    forkJoin(helpIdsObservables)
+      .pipe(
+        delay(5000),
+        tap(results => results.forEach( (result, index) => types[index].init(result))),
+        tap(() => service.finishProfileInitialization())
+      )
+      .subscribe();*/
 
   }
 }

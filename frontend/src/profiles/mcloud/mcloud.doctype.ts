@@ -4,6 +4,7 @@ import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {Injectable} from '@angular/core';
+import {ContextHelpQuery} from '../../app/store/context-help/context-help.query';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -17,7 +18,7 @@ export class McloudDoctype extends BaseDoctype {
 
   iconClass = 'Fachaufgabe';
 
-  documentFields = <FormlyFieldConfig[]>[
+  documentFields = (help: string[]) => <FormlyFieldConfig[]>[
     {
       wrappers: ['section'],
       templateOptions: {
@@ -30,6 +31,7 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Beschreibung',
+          hasContextHelp: help.indexOf('description') > -1,
           autosize: true,
           autosizeMinRows: 3,
           autosizeMaxRows: 8,
@@ -248,13 +250,17 @@ export class McloudDoctype extends BaseDoctype {
     }
   ];
 
-  constructor(storageService?: DocumentService,
-              codelistService?: CodelistService,
+  constructor(codelistService: CodelistService,
+              private help: ContextHelpQuery,
               codelistQuery?: CodelistQuery) {
 
     super(codelistService, codelistQuery);
-    this.fields.push(...this.documentFields);
 
+  }
+
+  init(help: string[]) {
+
+    this.fields.push(...this.documentFields(help));
     console.log('Profile mCLOUD initialized');
 
   }

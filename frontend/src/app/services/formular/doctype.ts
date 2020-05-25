@@ -41,5 +41,9 @@ export interface Doctype {
    * @param doc is the document for which the icon shall be determined
    */
   getIconClass?(doc: IgeDocument): string;
+
+
+  init(help: string[]);
+
 }
 

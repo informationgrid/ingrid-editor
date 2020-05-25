@@ -49,4 +49,8 @@ export abstract class BaseDoctype implements Doctype {
 
   }
 
+  init(help: string[]) {
+
+  }
+
 }
