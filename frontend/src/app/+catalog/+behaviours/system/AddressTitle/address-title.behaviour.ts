@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Plugin} from '../../plugin';
 import {AddressTitleFn, DocumentService} from '../../../../services/document/document.service';
 import {IgeDocument} from '../../../../models/ige-document';
-import {FormlyFieldConfig} from '@ngx-formly/core';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,7 @@ export class AddressTitleBehaviour extends Plugin {
   defaultActive = false;
 
 
-  private addressTitleFunction: AddressTitleFn = (address: IgeDocument) => {
+  private addressTitleFunction: AddressTitleFn = (address: IgeDocument/* IMPORTANT FOR EVALUATION! */) => {
     // tslint:disable-next-line:no-eval
     return eval(this.data.template);
   };
@@ -26,7 +25,6 @@ export class AddressTitleBehaviour extends Plugin {
     this.fields.push({
       key: 'template',
       type: 'input',
-      // wrappers: ['form-field'],
       templateOptions: {
         label: 'Template',
         placeholder: 'address.organization + ", " + address.lastName + ", " + address.firstName',
@@ -37,7 +35,7 @@ export class AddressTitleBehaviour extends Plugin {
         template: {
           expression: (c) => {
             let error = false;
-            const address = {};
+            const address = {}; /* IMPORTANT FOR EVALUATION! */
             try {
               // tslint:disable-next-line:no-eval
               const testString = eval(c.value);
@@ -50,7 +48,7 @@ export class AddressTitleBehaviour extends Plugin {
             }
             return !error;
           },
-          message: (error, field: FormlyFieldConfig) => 'Der Wert ist ungültig'
+          message: () => 'Der Wert ist ungültig'
         }
       }
     });

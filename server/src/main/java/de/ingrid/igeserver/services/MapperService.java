@@ -1,9 +1,11 @@
 package de.ingrid.igeserver.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.ingrid.igeserver.model.Behaviour;
 
 public class MapperService {
 
@@ -25,6 +27,11 @@ public class MapperService {
 
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         return mapper.readTree(json);
+    }
+
+    public static String getJsonNodeFromClass(Behaviour clazz) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(clazz);
     }
 
     /**

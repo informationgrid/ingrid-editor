@@ -4,15 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.db.FindOptions
 import de.ingrid.igeserver.db.OrientDBDatabase
 import de.ingrid.igeserver.db.QueryType
-import de.ingrid.igeserver.model.Catalog
-import de.ingrid.igeserver.model.User
-import de.ingrid.igeserver.model.User1
-import de.ingrid.igeserver.model.UserInfo
+import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.DBUtils
@@ -28,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController
 import java.io.IOException
 import java.security.Principal
 import java.util.*
-import java.util.function.Consumer
 import javax.naming.NoPermissionException
 
 @RestController
@@ -140,19 +135,19 @@ class UsersApiController : UsersApi {
     @Throws(ApiException::class)
     override fun setCatalogAdmin(
             principal: Principal?,
-            info: Map<String, String>): ResponseEntity<UserInfo?> {
+            info: CatalogAdmin): ResponseEntity<UserInfo?> {
 
         try {
             dbService.acquire("IgeUsers").use { _ ->
                 logger.info("Parameter: $info")
-                val userIds = info["userIds"] as List<String>?
-                val catalogName = info["catalogName"] as String
-                if (userIds == null || userIds.size == 0) {
+                val userIds = info.userIds
+                val catalogName = info.catalogName
+                if (userIds.isEmpty()) {
                     throw ApiException(500, "No user ids set to use as a catalog administrator")
                 }
-                for (userId in userIds) {
-                    addOrUpdateCatalogAdmin(catalogName, userId)
-                }
+
+                userIds.forEach { addOrUpdateCatalogAdmin(catalogName, it) }
+
             }
         } catch (e: JsonProcessingException) {
             logger.error("Error processing JSON", e)
@@ -167,16 +162,17 @@ class UsersApiController : UsersApi {
     @Throws(Exception::class)
     private fun addOrUpdateCatalogAdmin(catalogName: String, userId: String) {
 
-        val query: MutableMap<String, String> = HashMap()
-        query["userId"] = userId
+        val query = mapOf("userId" to userId);
         val findOptions = FindOptions()
         findOptions.queryType = QueryType.exact
         findOptions.resolveReferences = false
         val list = dbService.findAll("Info", query, findOptions)
+
         val isNewEntry = list.totalHits == 0L
         val objectMapper = ObjectMapper()
         val catalogIds: MutableSet<String> = HashSet()
         val catInfo: ObjectNode
+
         if (isNewEntry) {
             catInfo = objectMapper.createObjectNode()
             catInfo.put("userId", userId)
@@ -192,9 +188,10 @@ class UsersApiController : UsersApi {
         }
 
         // update catadmin in catalog Info
-        if (catalogName != null) catalogIds.add(catalogName)
+        catalogIds.add(catalogName)
+
         val arrayNode = objectMapper.createArrayNode()
-        catalogIds.forEach(Consumer { v: String -> arrayNode.add(v) })
+        catalogIds.forEach { arrayNode.add(it) }
         catInfo.replace("catalogIds", arrayNode)
         var recordId: String? = null
         if (!isNewEntry) {
@@ -210,15 +207,12 @@ class UsersApiController : UsersApi {
         val result: MutableList<String> = ArrayList()
         try {
             dbService.acquire("IgeUsers").use { _ ->
-                val query: MutableMap<String, String> = HashMap()
-                query["catalogIds"] = id
+                val query = mapOf("catalogIds" to id)
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.contains
                 findOptions.resolveReferences = false
                 val infos = dbService.findAll("Info", query, findOptions)
-                for (entry in infos.hits) {
-                    result.add(entry["userId"].asText())
-                }
+                infos.hits.forEach { result.add(it["userId"].asText()) }
             }
         } catch (e: Exception) {
             logger.error("Could not get assigned Users", e)
@@ -233,8 +227,7 @@ class UsersApiController : UsersApi {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         try {
             dbService.acquire("IgeUsers").use { _ ->
-                val query: MutableMap<String, String> = HashMap()
-                query["userId"] = userId
+                val query = mapOf("userId" to userId)
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = false

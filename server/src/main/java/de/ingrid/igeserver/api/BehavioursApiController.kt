@@ -1,83 +1,67 @@
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import de.ingrid.igeserver.db.DBApi;
-import de.ingrid.igeserver.services.MapperService;
-import de.ingrid.igeserver.utils.AuthUtils;
-import de.ingrid.igeserver.utils.DBUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.security.Principal;
-import java.util.List;
-import java.util.stream.Collectors;
+import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.model.Behaviour
+import de.ingrid.igeserver.services.MapperService
+import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.DBUtils
+import org.apache.logging.log4j.kotlin.Logging
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 
 @RestController
-@RequestMapping(path = "/api")
-public class BehavioursApiController implements BehavioursApi {
-
-    private static Logger log = LogManager.getLogger(BehavioursApiController.class);
+@RequestMapping(path = ["/api"])
+class BehavioursApiController : BehavioursApi, Logging {
 
     @Autowired
-    private DBApi dbService;
+    lateinit var dbService: DBApi
 
     @Autowired
-    private DBUtils dbUtils;
+    lateinit var dbUtils: DBUtils
 
     @Autowired
-    private AuthUtils authUtils;
+    lateinit var authUtils: AuthUtils
 
-    public ResponseEntity<List<JsonNode>> getBehaviours(Principal principal) throws ApiException {
-        System.out.println(principal == null ? "principal is null" : "principal is " + principal.getName());
+    @Throws(ApiException::class)
+    override fun getBehaviours(principal: Principal?): ResponseEntity<List<Behaviour>> {
 
-        String userId = this.authUtils.getUsernameFromPrincipal(principal);
-        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val dbId = dbUtils.getCurrentCatalogForUser(userId)
 
-        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
+        dbService.acquire(dbId).use {
+            val behaviours = dbService.findAll(DBApi.DBClass.Behaviours.name)
+            val result = behaviours
+                    .map {
+                        Behaviour(
+                                _id = it.get("_id").asText(),
+                                active = it.get("active").asBoolean(),
+                                data = it.get("data"))
+                    }
 
-            List<JsonNode> behaviours = this.dbService.findAll(DBApi.DBClass.Behaviours.name());
-
-            // String prepareBehaviour = jsonService.prepareBehaviour( behaviours.get( 0 ) );
-            // TODO: map behaviours to JSON
-            // List<JSONObject> collect = behaviours.stream().map(b -> new JSONObject(b)).collect(Collectors.toList());
-            List<JsonNode> collect = behaviours.stream()
-                    .map(b -> {
-                        try {
-                            MapperService.removeDBManagementFields((ObjectNode) b);
-                            return b;
-                        } catch (Exception e) {
-                            log.error(e);
-                            return null;
-                        }
-                    })
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(collect);
+            return ResponseEntity.ok(result)
         }
+
     }
 
-    public ResponseEntity<Void> setBehaviours(
-            Principal principal,
-            JsonNode[] behaviours) throws Exception {
-        String userId = this.authUtils.getUsernameFromPrincipal(principal);
-        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+    @Throws(Exception::class)
+    override fun setBehaviours(
+            principal: Principal?,
+            behaviours: List<Behaviour>): ResponseEntity<Void> {
 
-        try (ODatabaseSession ignored = dbService.acquire(dbId)) {
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val dbId = dbUtils.getCurrentCatalogForUser(userId)
 
-            for (JsonNode behaviour : behaviours) {
-                String rid = this.dbService.getRecordId("Behaviours", behaviour.get("_id").asText());
-                this.dbService.save("Behaviours", rid, behaviour.toString());
+        dbService.acquire(dbId).use {
+            for (behaviour in behaviours) {
+                val rid = dbService.getRecordId("Behaviours", behaviour._id)
+                dbService.save("Behaviours", rid, MapperService.getJsonNodeFromClass(behaviour))
             }
-
-            return ResponseEntity.ok().build();
-
+            return ResponseEntity.ok().build()
         }
+
     }
 
 }

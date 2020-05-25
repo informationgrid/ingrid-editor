@@ -4,6 +4,7 @@ import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Plugin} from './plugin';
+import {FormlyFormBuilder} from '@ngx-formly/core';
 
 @UntilDestroy()
 @Component({
@@ -34,6 +35,7 @@ export class BehavioursComponent implements OnInit {
 
 
   constructor(private formBuilder: FormBuilder,
+              private builder: FormlyFormBuilder,
               private behaviourService: BehaviourService) {
   }
 
@@ -57,10 +59,14 @@ export class BehavioursComponent implements OnInit {
           this.behaviourFields = items
             .reduce((acc: any, val: Plugin) => {
               const formGroup = new FormGroup({});
+
               // initially set disabled state for fields
               if (val.fields.length > 0 && !val.isActive) {
-                setTimeout(() => formGroup.disable());
+                // we need to build form when we want to set it disabled initialially
+                this.builder.buildForm(formGroup, val.fields, val.data ? val.data : {}, {});
+                formGroup.disable();
               }
+
               acc[val.id] = {
                 form: formGroup,
                 active: new FormControl(val.isActive),

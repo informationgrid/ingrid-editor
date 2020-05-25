@@ -6,6 +6,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.model.CatalogAdmin
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.model.User1
 import de.ingrid.igeserver.model.UserInfo
@@ -72,7 +73,7 @@ interface UsersApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "406", description = "")])
     @Throws(ApiException::class)
     fun setCatalogAdmin(principal: Principal?,
-                        @Parameter(description = "Save the user data into the database.", required = true) @RequestBody info: @Valid Map<String, String>): ResponseEntity<UserInfo?>
+                        @Parameter(description = "Save the user data into the database.", required = true) @RequestBody info: @Valid CatalogAdmin): ResponseEntity<UserInfo?>
 
     @RequestMapping(value = ["/info/assignedUsers/{id}"], produces = ["application/json"], method = [RequestMethod.GET])
     @Operation
