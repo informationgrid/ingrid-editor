@@ -5,18 +5,36 @@ import {SessionStore} from '../../store/session.store';
 import {ContextHelpStore} from '../../store/context-help/context-help.store';
 import {ContextHelpQuery} from '../../store/context-help/context-help.query';
 import {Observable, of} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
+import {ContextHelpComponent} from '../../+demo-layout/form/context-help/context-help.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContextHelpService {
+
+  private static contextDialogHeight = 400;
+
   private configuration: Configuration;
 
+  private static getLeftPosition = (infoElement: HTMLElement) => `${infoElement.getBoundingClientRect().left}px`
+
+  private static getTopPosition(infoElement: HTMLElement) {
+    const topPosition = window.innerHeight - infoElement.getBoundingClientRect().top;
+    const enoughSpaceBeneath = topPosition > this.contextDialogHeight;
+
+    return enoughSpaceBeneath
+      ? `${infoElement.getBoundingClientRect().top}px`
+      : `${infoElement.getBoundingClientRect().top - this.contextDialogHeight}px`
+  }
+
+
   constructor(private sessionStore: SessionStore,
+              public dialog: MatDialog,
               private http: HttpClient, configService: ConfigService,
-              private contexthelpQuery: ContextHelpQuery,
-              private contexthelpStore: ContextHelpStore
+              private contextHelpQuery: ContextHelpQuery,
+              private contextHelpStore: ContextHelpStore
   ) {
 
     this.configuration = configService.getConfiguration();
@@ -24,33 +42,53 @@ export class ContextHelpService {
 
   getAvailableHelpFieldIds(profile: string, docType: string): Observable<string[]> {
 
-    const IDs = this.contexthelpQuery.getAvailableHelpFieldIds(profile, docType);
-    if (IDs.length < 1) {
-      return this.getIdsFromBackend(profile, docType)
+    return this.getIdsFromBackend(profile, docType)
+      .pipe(
+        tap(helpfieldIds => this.addHelpToStore(profile, docType, helpfieldIds))
+      );
+
+  }
+
+  showContextHelp(profile: string, docType: string, fieldId: string, label: string, infoElement: HTMLElement) {
+
+    const helpText$ = this.getContextHelpText(profile, docType, fieldId);
+
+    this.dialog.open(ContextHelpComponent, {
+      data: {
+        title: label,
+        description$: helpText$
+      },
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+      hasBackdrop: true,
+      closeOnNavigation: true,
+      position: {
+        left: ContextHelpService.getLeftPosition(infoElement),
+        top: ContextHelpService.getTopPosition(infoElement)
+      },
+      autoFocus: false,
+      height: ContextHelpService.contextDialogHeight + 'px',
+      width: '330px'
+    });
+
+  }
+
+  private addHelpToStore(profile: string, docType: string, helpfieldIds: string[]) {
+    helpfieldIds.forEach(fieldId => this.contextHelpStore.add({docType, profile, fieldId}));
+  }
+
+  private getContextHelpText(profile: string, docType: string, fieldId: string): Observable<string> {
+
+    const contextHelp = this.contextHelpQuery.getContextHelp(profile, docType, fieldId);
+    if (contextHelp === undefined || !contextHelp.helptext) {
+      return this.getHelptextFromBackend(profile, docType, fieldId)
         .pipe(
-          tap(
-            helpfieldIds => helpfieldIds.forEach(fieldId => this.contexthelpStore.add({docType, profile, fieldId, fakeId: ''}))
-          )
-        );
-    } else {
-      return of(this.contexthelpQuery.getAvailableHelpFieldIds(profile, docType));
+          tap(helptext => this.contextHelpStore.add({docType, profile, fieldId, helptext}))
+        )
     }
 
-  }
-
-  getContexthelpText(profile: string, docType: string, fieldId: string): Observable<string> {
-
-    const ctxHelp = this.contexthelpQuery.getContexthelp(profile, docType, fieldId);
-    if (ctxHelp === undefined || !ctxHelp.helptext) {
-      this.getHelptextFromBackend(profile, docType, fieldId).subscribe(helptext => {
-        this.contexthelpStore.add({docType, profile, fieldId, helptext, fakeId: ''})
-      });
-    }
-    return this.contexthelpQuery.contexthelp(profile, docType, fieldId).pipe(
-      map(help => help && help.helptext ? help.helptext : ''));
+    return of(contextHelp.helptext);
 
   }
-
 
   private getIdsFromBackend(profile: string, docType: string): Observable<string[]> {
 
@@ -70,6 +108,5 @@ export class ContextHelpService {
     return this.http.get(this.configuration.backendUrl + 'contexthelp', {params: httpParams});
 
   }
-
 
 }

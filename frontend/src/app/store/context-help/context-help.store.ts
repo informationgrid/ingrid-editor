@@ -6,7 +6,7 @@ export interface ContexthelpState extends EntityState<ContextHelpAbstract> {
 }
 
 @Injectable({providedIn: 'root'})
-@StoreConfig({name: 'contexthelp', idKey: 'fakeId'})
+@StoreConfig({name: 'contexthelp'})
 export class ContextHelpStore extends EntityStore<ContexthelpState, ContextHelpAbstract> {
 
   constructor() {
@@ -16,7 +16,7 @@ export class ContextHelpStore extends EntityStore<ContexthelpState, ContextHelpA
   akitaPreAddEntity(x: Readonly<ContextHelpAbstract>): ContextHelpAbstract {
     return {
       ...x,
-      fakeId: [x.profile, x.docType, x.fieldId].join(',')
+      id: [x.profile, x.docType, x.fieldId].join('_')
     };
   }
 
