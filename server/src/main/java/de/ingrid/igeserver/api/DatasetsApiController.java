@@ -8,6 +8,7 @@ import de.ingrid.igeserver.db.DBFindAllResults;
 import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.documenttypes.AddressWrapperType;
+import de.ingrid.igeserver.documenttypes.DocumentType;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.model.SearchResult;
 import de.ingrid.igeserver.services.DocumentService;
@@ -50,6 +51,7 @@ public class DatasetsApiController implements DatasetsApi {
 
     @Autowired
     public DatasetsApiController(AuthUtils authUtils, DBUtils dbUtils, DBApi dbService, DocumentService documentService) {
+
         this.authUtils = authUtils;
         this.dbUtils = dbUtils;
         this.dbService = dbService;
@@ -153,6 +155,8 @@ public class DatasetsApiController implements DatasetsApi {
             updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString());
             String docType = updatedDocument.get(FIELD_DOCUMENT_TYPE).asText();
 
+            handleLinkedDocs(updatedDocument);
+
             JsonNode save = this.dbService.save(docType, recordId, updatedDocument.toString());
             String dbID = save.get(DB_ID).asText();
 
@@ -171,6 +175,15 @@ public class DatasetsApiController implements DatasetsApi {
             log.error("Error during updating of document", e);
             throw new ApiException(e.getMessage());
         }
+
+    }
+
+    private void handleLinkedDocs(ObjectNode doc) throws Exception {
+
+        String docType = doc.get(FIELD_DOCUMENT_TYPE).asText();
+        DocumentType refType = documentService.getDocumentType(docType);
+
+        refType.handleLinkedFields(doc, dbService);
 
     }
 
@@ -240,6 +253,7 @@ public class DatasetsApiController implements DatasetsApi {
             Principal principal,
             List<String> ids,
             Data1 data) throws Exception {
+
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
 
@@ -252,6 +266,7 @@ public class DatasetsApiController implements DatasetsApi {
     }
 
     private void copyOrMove(CopyMoveOperation operation, List<String> ids, String destId) throws Exception {
+
         for (String id : ids) {
             JsonNode doc = this.dbService.find(TYPE, id);
 
@@ -279,6 +294,7 @@ public class DatasetsApiController implements DatasetsApi {
             String parentId,
             boolean isAddress
     ) throws ApiException {
+
         DBFindAllResults docs;
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);

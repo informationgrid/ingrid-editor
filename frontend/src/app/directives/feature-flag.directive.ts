@@ -1,10 +1,10 @@
-import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, Input, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
 import {ConfigService} from '../services/config/config.service';
 
 @Directive({
   selector: '[featureFlag]'
 })
-export class FeatureFlagDirective {
+export class FeatureFlagDirective implements OnInit {
   @Input() featureFlag: string | string[];
 
   constructor(

@@ -26,6 +26,11 @@ import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {DocReferenceTypeComponent} from './types/doc-reference-type.component';
 import {TreeSelectDialog} from '../+form/dialogs/tree-select/tree-select.dialog';
 import {SharedModule} from '../shared/shared.module';
+import {AddressTypeComponent} from './types/address-type/address-type.component';
+import {AddressCardComponent} from './types/address-type/address-card/address-card.component';
+import { ChooseAddressDialogComponent } from './types/address-type/choose-address-dialog/choose-address-dialog.component';
+import {MatCardModule} from '@angular/material/card';
+import {CodelistPipe} from '../directives/codelist.pipe';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -37,7 +42,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
     MatInputModule, ReactiveFormsModule, FormsModule,
     FlexLayoutModule,
     MatDialogModule, MatButtonModule, MatAutocompleteModule, MatIconModule, MatSelectModule, MatDividerModule, MatListModule,
-    MatTableModule, MatPopoverEditModule,
+    MatTableModule, MatPopoverEditModule, MatCardModule,
     FormlyMaterialModule, FormlyMatDatepickerModule,
     FormlyModule.forChild({
       types: [{
@@ -55,6 +60,9 @@ export function IpValidator(control: FormControl): ValidationErrors {
         name: 'ngx-table',
         component: NgxDatatableTypeComponent
       }, {
+        name: 'address-card',
+        component: AddressTypeComponent
+      }, {
         name: 'doc-reference',
         component: DocReferenceTypeComponent
       }],
@@ -62,7 +70,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
         {name: 'ip', validation: IpValidator}
       ],
       validationMessages: [
-        { name: 'required', message: 'Dieses Feld muss ausgefüllt sein' }
+        {name: 'required', message: 'Dieses Feld muss ausgefüllt sein'}
       ]/*,
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
@@ -83,8 +91,10 @@ export function IpValidator(control: FormControl): ValidationErrors {
     }
   ],
   declarations: [
+    CodelistPipe,
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, NgxDatatableTypeComponent,
-    TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog
+    TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
+    AddressCardComponent, ChooseAddressDialogComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [

@@ -29,6 +29,8 @@ export abstract class BaseDoctype implements Doctype {
 
   label: string;
 
+  helpIds: string[];
+
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery) {
   }
@@ -51,6 +53,10 @@ export abstract class BaseDoctype implements Doctype {
 
   init(help: string[]) {
 
+  }
+
+  hasHelp(fieldId: string): boolean {
+    return this.helpIds.indexOf(fieldId) > -1;
   }
 
 }

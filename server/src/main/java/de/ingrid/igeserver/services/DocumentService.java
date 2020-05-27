@@ -7,12 +7,14 @@ import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.DBFindAllResults;
 import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
+import de.ingrid.igeserver.documenttypes.DocumentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -21,9 +23,13 @@ public class DocumentService extends MapperService {
     private static Logger log = LogManager.getLogger(DocumentService.class);
 
     @Autowired
+    List<DocumentType> documentTypes;
+
+    @Autowired
     private DBApi dbService;
 
     public JsonNode updateParent(String dbDoc, String parent) throws Exception {
+
         ObjectNode map = (ObjectNode) getJsonNode(dbDoc);
         map.put(FIELD_PARENT, parent);
 
@@ -31,6 +37,7 @@ public class DocumentService extends MapperService {
     }
 
     public String determineState(JsonNode node) {
+
         boolean draft = !node.get(FIELD_DRAFT).isNull();
         boolean published = !node.get(FIELD_PUBLISHED).isNull();
 
@@ -66,6 +73,7 @@ public class DocumentService extends MapperService {
     }
 
     public ObjectNode getDocumentWrapper() {
+
         ObjectNode docWrapper = new ObjectMapper().createObjectNode();
         //docWrapper.put(FIELD_ID, UUID.randomUUID());
         docWrapper.put(FIELD_DRAFT, (String) null);
@@ -75,6 +83,7 @@ public class DocumentService extends MapperService {
     }
 
     public boolean determineHasChildren(JsonNode doc, String type) {
+
         String id = doc.get(FIELD_ID).asText();
         Map<String, Long> countMap = this.dbService.countChildrenFromNode(id, type);
         if (countMap.containsKey(id)) {
@@ -84,6 +93,7 @@ public class DocumentService extends MapperService {
     }
 
     public ObjectNode getLatestDocument(JsonNode doc) {
+
         String state = determineState(doc);
         JsonNode jsonNode = doc.get(FIELD_DRAFT);
         ObjectNode docData;
@@ -102,6 +112,33 @@ public class DocumentService extends MapperService {
 
         MapperService.removeDBManagementFields(docData);
 
+        // get latest references from links
+        handleLatestLinkedDocs(docData);
+
         return docData;
+    }
+
+    private void handleLatestLinkedDocs(ObjectNode doc) {
+
+        String docType = doc.get(FIELD_DOCUMENT_TYPE).asText();
+        DocumentType refType = this.getDocumentType(docType);
+
+        refType.mapLatestDocReference(doc, this);
+
+    }
+
+    public DocumentType getDocumentType(String docType) {
+
+        DocumentType refType = null;
+
+        // get linked fields
+        for (DocumentType type : documentTypes) {
+            if (type.getTypeName().equals(docType)) {
+                refType = type;
+                break;
+            }
+        }
+
+        return refType;
     }
 }

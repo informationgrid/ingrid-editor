@@ -1,0 +1,43 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Adresse auswählen</span>
+    </h2>
+</div>
+<mat-dialog-content>
+
+    <div class="side-padding">
+        <mat-form-field appearance="outline" class="width-100">
+            <mat-label>Adresstyp</mat-label>
+            <mat-select [(value)]="selectedType">
+                <mat-option *ngFor="let type of types | async" [value]="type.value">
+                    {{type.label}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div class="side-padding place-title">Adresse wählen</div>
+    <ige-tree (selected)="updateAddress($event[0], 'Tree')"
+              [forAddresses]="true"
+              [disabledCondition]="disabledCondition"
+              [showReloadButton]="false"></ige-tree>
+
+    <!--<div class="side-padding place-title-other">Zuletzt verwendete Adressen</div>
+    <ige-document-list-item [docs]="recentAddresses"
+                            [hideDivider]="true"
+                            (select)="updateAddress($event.id, 'List')"></ige-document-list-item>
+-->
+
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close cdkFocusInitial>Abbrechen</button>
+    <div fxFlex></div>
+    <button mat-stroked-button color="primary"
+            [disabled]="!selection || !selectedType"
+            [mat-dialog-close]="getResult()">
+        Übernehmen
+    </button>
+</mat-dialog-actions>

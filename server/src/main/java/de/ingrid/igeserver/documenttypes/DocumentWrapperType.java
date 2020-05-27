@@ -6,9 +6,11 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 @Service
+@Order(2)
 public class DocumentWrapperType extends DocumentType {
 
     private static Logger log = LogManager.getLogger(DocumentWrapperType.class);

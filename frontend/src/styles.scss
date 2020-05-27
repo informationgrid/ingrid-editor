@@ -33,6 +33,12 @@ h1 {
   font-weight: normal;
 }
 
+.mat-card.no-box-shadow {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+
 .medium-spacing {
   letter-spacing: 0.4px;
 }

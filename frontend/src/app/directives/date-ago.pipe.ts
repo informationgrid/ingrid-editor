@@ -21,8 +21,9 @@ export class DateAgoPipe implements PipeTransform {
 
   private static transform_DE(value: any) {
     const seconds = Math.floor((+new Date() - +new Date(value)) / 1000);
-    if (seconds < 29) // less than 30 seconds ago will show as 'Just now'
+    if (seconds < 29) { // less than 30 seconds ago will show as 'Just now'
       return 'Gerade eben';
+    }
     const intervals = {
       'Jahren': 31536000,
       'Monaten': 2592000,
@@ -44,19 +45,21 @@ export class DateAgoPipe implements PipeTransform {
     let counter;
     for (const i in intervals) {
       counter = Math.floor(seconds / intervals[i]);
-      if (counter > 0)
+      if (counter > 0) {
         if (counter === 1) {
           return 'vor ' + singleText[i] ; // singular (vor einem Tag)
         } else {
           return 'vor ' +  counter + ' ' + i ; // plural (vor 2 Tagen)
         }
+      }
     }
   }
 
   private static transform_EN(value: any) {
     const seconds = Math.floor((+new Date() - +new Date(value)) / 1000);
-    if (seconds < 29) // less than 30 seconds ago will show as 'Just now'
+    if (seconds < 29) { // less than 30 seconds ago will show as 'Just now'
       return 'Just now';
+    }
     const intervals = {
       'year': 31536000,
       'month': 2592000,
@@ -69,12 +72,13 @@ export class DateAgoPipe implements PipeTransform {
     let counter;
     for (const i in intervals) {
       counter = Math.floor(seconds / intervals[i]);
-      if (counter > 0)
+      if (counter > 0) {
         if (counter === 1) {
           return counter + ' ' + i + ' ago'; // singular (1 day ago)
         } else {
           return counter + ' ' + i + 's ago'; // plural (2 days ago)
         }
+      }
     }
   }
 }

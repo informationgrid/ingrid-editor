@@ -1,24 +1,23 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {Injectable} from '@angular/core';
-import {ContextHelpQuery} from '../../app/store/context-help/context-help.query';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
   providedIn: 'root'
 })
 export class McloudDoctype extends BaseDoctype {
-  // must be same as DBClass!?
+
+  // must be same as DBClass
   id = 'mCloudDoc';
 
   label = 'mCLOUD';
 
   iconClass = 'Fachaufgabe';
 
-  documentFields = (help: string[]) => <FormlyFieldConfig[]>[
+  documentFields = () => <FormlyFieldConfig[]>[
     {
       wrappers: ['section'],
       templateOptions: {
@@ -31,7 +30,7 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Beschreibung',
-          hasContextHelp: help.indexOf('description') > -1,
+          hasContextHelp: this.hasHelp('description'),
           autosize: true,
           autosizeMinRows: 3,
           autosizeMaxRows: 8,
@@ -50,20 +49,11 @@ export class McloudDoctype extends BaseDoctype {
         }
       }, {
         key: 'addresses',
-        type: 'ngx-table',
+        type: 'address-card',
         wrappers: ['panel'],
         templateOptions: {
           externalLabel: 'Adressen',
-          columns: [
-            {label: 'Name', key: 'name'},
-            {
-              label: 'Geschlecht', key: 'gender', type: 'select', options: [
-                {label: 'Male', value: 'm'},
-                {label: 'Female', value: 'f'}
-              ]
-            },
-            {label: 'Start', key: 'start', type: 'date'}
-          ]
+          hasContextHelp: this.hasHelp('addresses')
         }
       }]
     }, {
@@ -77,6 +67,7 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Nutzungshinweise',
+          hasContextHelp: this.hasHelp('usage'),
           rows: 3,
           appearance: 'outline'
         }
@@ -84,7 +75,8 @@ export class McloudDoctype extends BaseDoctype {
         fieldGroupClassName: 'display-flex',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Kategorien'
+          externalLabel: 'Kategorien',
+          hasContextHelp: this.hasHelp('categories')
         },
         fieldGroup: [{
           key: 'mCloudCategories',
@@ -119,6 +111,7 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Downloads',
+          hasContextHelp: this.hasHelp('downloads'),
           appearance: 'outline',
           click: () => {
             console.log('downloads clicked');
@@ -130,6 +123,7 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Lizenz',
+          hasContextHelp: this.hasHelp('license'),
           placeholder: 'Bitte wählen',
           appearance: 'outline',
           options: this.getCodelistForSelect(6500)
@@ -140,6 +134,7 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Quellenvermerk',
+          hasContextHelp: this.hasHelp('origin'),
           rows: 3,
           appearance: 'outline'
         }
@@ -147,7 +142,8 @@ export class McloudDoctype extends BaseDoctype {
         fieldGroupClassName: 'display-flex',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'mFUND'
+          externalLabel: 'mFUND',
+          hasContextHelp: this.hasHelp('mfund')
         },
         fieldGroup: [{
           key: 'mfundProject',
@@ -180,6 +176,7 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel'],
         templateOptions: {
           externalLabel: 'Raumbezug',
+          hasContextHelp: this.hasHelp('geoReference'),
           mapOptions: {},
           height: 300
         }
@@ -196,13 +193,15 @@ export class McloudDoctype extends BaseDoctype {
           wrappers: ['panel', 'form-field'],
           templateOptions: {
             externalLabel: 'Zeitbezug',
+            hasContextHelp: this.hasHelp('temporalReference'),
             appearance: 'outline'
           }
         }, {
           fieldGroupClassName: 'display-flex',
           wrappers: ['panel'],
           templateOptions: {
-            externalLabel: 'Zeitspanne'
+            externalLabel: 'Zeitspanne',
+            hasContextHelp: this.hasHelp('dateRange')
           },
           fieldGroup: [{
             key: 'rangeType',
@@ -251,7 +250,6 @@ export class McloudDoctype extends BaseDoctype {
   ];
 
   constructor(codelistService: CodelistService,
-              private help: ContextHelpQuery,
               codelistQuery?: CodelistQuery) {
 
     super(codelistService, codelistQuery);
@@ -260,7 +258,8 @@ export class McloudDoctype extends BaseDoctype {
 
   init(help: string[]) {
 
-    this.fields.push(...this.documentFields(help));
+    this.helpIds = help;
+    this.fields.push(...this.documentFields());
     console.log('Profile mCLOUD initialized');
 
   }
