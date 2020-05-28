@@ -12,8 +12,8 @@
         <mat-tab label="Titel">
             <div class="first-tab-wrapper" fxFlex fxLayout="column" [formGroup]="formGroup">
 
-                <div class="dlg-create-title">Titel</div>
                 <ng-container *ngIf="isFolder || !forAddress; else addressForm">
+                    <div class="dlg-create-title">Titel</div>
                     <mat-form-field appearance="outline">
                         <input matInput
                                formControlName="title"
@@ -38,6 +38,7 @@
 
                 <ng-template #addressForm>
 
+                    <div class="dlg-create-title">Legen Sie eine Person/Organisation an</div>
                     <div fxFlex fxLayout="row" fxLayoutGap="24px">
 
                         <mat-form-field appearance="outline" class="width-100">
@@ -65,12 +66,8 @@
                                name="organization"
                                formControlName="organization"
                                placeholder="Oder eine Organisation">
+                        <mat-hint>Es müssen Name oder Organisation eingegeben werden.</mat-hint>
                     </mat-form-field>
-
-                    <div *ngIf="formGroup.errors?.nameOrOrganization && (formGroup.touched || formGroup.dirty)"
-                         class="">
-                        Es müssen Name oder Organisation eingegeben werden.
-                    </div>
 
                 </ng-template>
 
