@@ -121,7 +121,7 @@ class UsersApiController : UsersApi {
             dbUtils.setCatalogIdsForUser(userId, dbIdsValid)
         }
         val currentCatalogForUser = dbUtils.getCurrentCatalogForUser(userId)
-        val catalog = dbUtils.getCatalogById(currentCatalogForUser)
+        val catalog: Catalog? = dbUtils.getCatalogById(currentCatalogForUser)
         val userInfo = UserInfo(
                 userId = userId,
                 name = keycloakService.getName(principal as KeycloakAuthenticationToken?),

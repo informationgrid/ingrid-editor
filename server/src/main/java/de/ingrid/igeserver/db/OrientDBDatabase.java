@@ -347,9 +347,10 @@ public class OrientDBDatabase implements DBApi {
     @Override
     public String createDatabase(Catalog catalog) throws ApiException {
         String id = this.generateDBNameFromLabel(catalog.getName());
+        catalog.setId(id);
 
-        server.createDatabase(catalog.getId(), ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
-        try (ODatabaseSession session = acquire(catalog.getId())) {
+        server.createDatabase(id, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
+        try (ODatabaseSession session = acquire(id)) {
 
             initNewDatabase(catalog, session);
             JsonNode catInfo = getMapFromCatalogSettings(catalog);

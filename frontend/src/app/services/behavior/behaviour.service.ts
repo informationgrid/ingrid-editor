@@ -4,11 +4,12 @@ import {EventManager} from '@angular/platform-browser';
 import {Plugin} from '../../+catalog/+behaviours/plugin';
 import {ProfileService} from '../profile.service';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {tap} from 'rxjs/internal/operators';
+import {catchError, tap} from 'rxjs/internal/operators';
 import {BehaviorDataService} from './behavior-data.service';
 import {ProfileQuery} from '../../store/profile/profile.query';
 import {SessionQuery} from '../../store/session.query';
 import {PluginToken} from '../../tokens/plugin.token';
+import {ConfigService} from '../config/config.service';
 
 export interface BehaviourFormatBackend {
   _id: string;
@@ -41,6 +42,7 @@ export class BehaviourService {
   theSystemBehaviours$ = new BehaviorSubject<Plugin[]>([]);
 
   constructor(private eventManager: EventManager,
+              private configService: ConfigService,
               private profileService: ProfileService,
               private profileQuery: ProfileQuery,
               private sessionQuery: SessionQuery,
@@ -66,6 +68,16 @@ export class BehaviourService {
             behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
             behaviour.data = stored.length > 0 ? stored[0].data : null;
           });
+        }),
+        catchError(e => {
+          const userInfo = this.configService.$userInfo.value;
+          console.error('Could not get behaviours');
+          if (userInfo.assignedCatalogs.length === 0) {
+            console.log('because of user with no assigned catalogs');
+            return [];
+          } else {
+            throw e;
+          }
         })
       );
 
