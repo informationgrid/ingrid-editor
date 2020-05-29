@@ -43,7 +43,7 @@ TBD: create an installer instead
   * Run > Edit Configurations > + (new configuration) > 
     * *community edition* Shell Script
       * Script path: *path/to/npm*
-      * Script options: *start*
+      * Script options: `start`
       * Working directory: *path/to/frontend*
       * Interpreter path: *empty*
     * *ultimate edition* npm
@@ -55,9 +55,9 @@ TBD: create an installer instead
 ### OrientDB Studio
 
 Copy the zip file from the distribution (e.g. https://s3.us-east-2.amazonaws.com/orientdb3/releases/3.0.26/orientdb-3.0.26.zip) and extract the file "plugins/orient-studio-<version>.zip" into the plugins directory.
-After a restart of the server the Studio should be available under http://10.0.75.1:2480/studio/index.html.
+After a restart of the server the Studio should be available under http://10.0.75.1:2480/studio/index.html (login *admin*/*admin*).
 
-When starting the application, the studio will be available under the IP and Port found in the logs.
+**NOTE** When starting the application, the studio will be available under the IP and Port found in the logs.
 
 If this does not work, check the logs for a correct link. Otherwise unpack the zip-file into "src/site" (everything under www).
 It's possible that the database cannot be found because there're wrong api calls. Open main.js file and search for "/api/" and replace it with "/".
