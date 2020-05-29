@@ -6,7 +6,8 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Required for Kotlin integration
-        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version" // See https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+        // See https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
     }
 }
@@ -57,6 +58,11 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
 
+    // Markdown
+    implementation "com.atlassian.commonmark:commonmark:0.12.1"
+    implementation "com.atlassian.commonmark:commonmark-ext-yaml-front-matter:0.12.1"
+    implementation "com.atlassian.commonmark:commonmark-ext-gfm-tables:0.12.1"
+
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'com.auth0:java-jwt:3.10.0'
     implementation 'org.springdoc:springdoc-openapi-ui:1.2.32'
@@ -104,7 +110,7 @@ jib {
     }
     container {
         creationTime = 'USE_CURRENT_TIMESTAMP'
-        jvmFlags = ['-Xmx512m','-Dstorage.diskCache.bufferSize=256']
+        jvmFlags = ['-Xmx512m', '-Dstorage.diskCache.bufferSize=256']
     }
 }
 

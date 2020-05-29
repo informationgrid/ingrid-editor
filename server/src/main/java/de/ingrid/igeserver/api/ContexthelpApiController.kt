@@ -1,21 +1,29 @@
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.Role;
-import de.ingrid.igeserver.model.Role1;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import de.ingrid.igeserver.model.HelpMessage
+import de.ingrid.igeserver.services.ContextHelpService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(path = "/api")
-public class ContexthelpApiController implements ContexthelpApi {
+@RequestMapping(path = ["/api"])
+class ContexthelpApiController : ContexthelpApi {
 
-    public ResponseEntity<String> getContexthelptext(String id, String profile, String docType) {
-        return ResponseEntity.ok("\"Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus BackendLange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus BackendLange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus BackendLange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus BackendLange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend Lange Testdescription aus Backend\"");
+    @Autowired
+    lateinit var helpService: ContextHelpService
+
+    override fun getContextHelpText(id: String, profile: String, docType: String): ResponseEntity<HelpMessage> {
+
+        val help = helpService.getHelp(profile, docType, id)
+        return ResponseEntity.ok(help)
+
     }
 
-    public ResponseEntity<String> listContexthelpIds(String profile, String docType) {
-        return ResponseEntity.ok("[\"description\"]");
+    override fun listContextHelpIds(profile: String, docType: String): ResponseEntity<String> {
+
+        return ResponseEntity.ok("[\"description\"]")
+
     }
 }

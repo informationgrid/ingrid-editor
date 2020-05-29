@@ -7,7 +7,7 @@
         <mat-icon>close</mat-icon>
     </button>
 </h2>
-<div mat-dialog-content [style.height]="inExpandedView ? 'max-content' : '300px'">{{description$ | async}}
+<div mat-dialog-content [style.height]="inExpandedView ? 'max-content' : '300px'" [innerHTML]="description$ | async">
 </div>
 <div *ngIf="!inExpandedView" mat-dialog-actions>
     <button mat-icon-button color='primary' (click)="showMore()">

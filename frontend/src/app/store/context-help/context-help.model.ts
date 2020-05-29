@@ -3,5 +3,7 @@ export interface ContextHelpAbstract {
   fieldId: string;
   profile: string;
   docType: string;
-  helptext?: string;
+  helpText?: string;
+  name?: string;
+  language?: string;
 }

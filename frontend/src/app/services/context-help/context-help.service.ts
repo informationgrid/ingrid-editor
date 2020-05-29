@@ -5,9 +5,10 @@ import {SessionStore} from '../../store/session.store';
 import {ContextHelpStore} from '../../store/context-help/context-help.store';
 import {ContextHelpQuery} from '../../store/context-help/context-help.query';
 import {Observable, of} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {ContextHelpComponent} from '../../+demo-layout/form/context-help/context-help.component';
 import {MatDialog} from '@angular/material/dialog';
+import {ContextHelpAbstract} from '../../store/context-help/context-help.model';
 
 @Injectable({
   providedIn: 'root'
@@ -79,14 +80,15 @@ export class ContextHelpService {
   private getContextHelpText(profile: string, docType: string, fieldId: string): Observable<string> {
 
     const contextHelp = this.contextHelpQuery.getContextHelp(profile, docType, fieldId);
-    if (contextHelp === undefined || !contextHelp.helptext) {
+    if (contextHelp === undefined || !contextHelp.helpText) {
       return this.getHelptextFromBackend(profile, docType, fieldId)
         .pipe(
-          tap(helptext => this.contextHelpStore.add({docType, profile, fieldId, helptext}))
+          tap(help => this.contextHelpStore.add(help)),
+          map(help => help.helpText)
         )
     }
 
-    return of(contextHelp.helptext);
+    return of(contextHelp.helpText);
 
   }
 
@@ -99,13 +101,13 @@ export class ContextHelpService {
 
   }
 
-  private getHelptextFromBackend(profile: string, docType: string, fieldId: string): Observable<any> {
+  private getHelptextFromBackend(profile: string, docType: string, fieldId: string): Observable<ContextHelpAbstract> {
 
     const httpParams = new HttpParams()
       .set('fieldId', fieldId)
       .set('profile', profile)
       .set('docType', docType);
-    return this.http.get(this.configuration.backendUrl + 'contexthelp', {params: httpParams});
+    return this.http.get<ContextHelpAbstract>(this.configuration.backendUrl + 'contexthelp', {params: httpParams});
 
   }
 

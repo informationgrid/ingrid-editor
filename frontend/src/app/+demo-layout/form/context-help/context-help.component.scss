@@ -6,6 +6,17 @@
   height: 300px;
 }
 
+:host {
+  ::ng-deep h1 {
+    font-size: 24px;
+  }
+
+  ::ng-deep h2 {
+    font-size: 16px;
+  }
+
+}
+
 .mat-dialog-title {
   margin-bottom: 10px;
   margin-top: -14px;

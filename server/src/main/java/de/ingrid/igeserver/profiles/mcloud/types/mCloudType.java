@@ -38,9 +38,6 @@ public class mCloudType extends DocumentType {
             OClass clazz = schema.createClass(TYPE);
             clazz.createProperty("_id", OType.STRING);
             clazz.createProperty("_parent", OType.STRING);
-
-            OClass addressWrapperClass = session.getClass("AddressWrapper");
-            clazz.createProperty("addresses", OType.LINKLIST, addressWrapperClass);
         }
 
     }

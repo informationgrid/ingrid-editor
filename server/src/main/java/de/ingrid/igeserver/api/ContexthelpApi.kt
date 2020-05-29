@@ -3,36 +3,33 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.Role;
-import de.ingrid.igeserver.model.Role1;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import de.ingrid.igeserver.model.HelpMessage
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 
 @Tag(name = "Contexthelp", description = "the contexthelp API")
-public interface ContexthelpApi {
-
+interface ContexthelpApi {
     @Operation(description = "Get the contexthelp text for a given ID.")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Returns the role")})
-    @RequestMapping(value = "/contexthelp", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<String> getContexthelptext(
-            @Parameter(description = "The unique id of the field.", required = true) @RequestParam("fieldId") String id,
-            @Parameter(description = "The active profile.", required = true) @RequestParam("profile") String profile,
-            @Parameter(description = "The current document type.", required = true) @RequestParam("docType") String docType);
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the role")])
+    @RequestMapping(value = ["/contexthelp"], produces = ["application/json"], method = [RequestMethod.GET])
+    fun getContextHelpText(
+            @Parameter(description = "The unique id of the field.", required = true) @RequestParam("fieldId") id: String,
+            @Parameter(description = "The active profile.", required = true) @RequestParam("profile") profile: String,
+            @Parameter(description = "The current document type.", required = true) @RequestParam("docType") docType: String): ResponseEntity<HelpMessage>
 
     @Operation(description = "Get all fields with contexthelptexts")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Returns the list of field ids with contexthelptexts")})
-    @RequestMapping(value = "/contexthelpIds", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<String> listContexthelpIds(
-            @Parameter(description = "The active profile.", required = true) @RequestParam("profile") String profile,
-            @Parameter(description = "The current document type.", required = true) @RequestParam("docType") String docType);
-
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of field ids with contexthelptexts")])
+    @RequestMapping(value = ["/contexthelpIds"], produces = ["application/json"], method = [RequestMethod.GET])
+    fun listContextHelpIds(
+            @Parameter(description = "The active profile.", required = true) @RequestParam("profile") profile: String,
+            @Parameter(description = "The current document type.", required = true) @RequestParam("docType") docType: String): ResponseEntity<String>
 }
