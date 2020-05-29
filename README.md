@@ -28,12 +28,28 @@ TBD: create an installer instead
 
 ### Setup IntelliJ IDEA
 * Open IntelliJ
-* File > import module from existing sources > YOUR_IGE_NG_PATH > Gradle
-* Set prefered spring profile in server/src/main/resources/aplication.properties (see also in section Configure the server)
-* IgeServer is now ready to be started an shoulb be available as a Run Configuration
-* Run > Edit Configurations > + (new configuration) > select npm > set scripts to 'start', if available select 'yarn' as package manager. > Save
- 
- You are all set. Start ige-ng by first running IgeServer and then your newly created Run configuration.
+* Import project
+  * *If first project in IntelliJ* Open or Import > Select `build.gradle` > Open as Project > OK
+  * *Else* File > New > Project from Existing Sources... > Select `build.gradle` > OK
+* Create **server run configuration**
+  * **NOTE** Java 11 SDK is required
+  * Right click file *server/src/main/java/de/ingrid/igeserver/IgeServer.kt* > Run
+  * Run > Edit Configurations > Kotlin > IgeServerKt
+    * VM options: `-Dspring.profiles.active=default,dev,mcloud` 
+* Install **frontend packages** 
+  * Install *yarn* if not installed yet: `npm -g i yarn`
+  * Install packages: `yarn`
+* Create **frontend run configuration**
+  * Run > Edit Configurations > + (new configuration) > 
+    * *community edition* Shell Script
+      * Script path: *path/to/npm*
+      * Script options: *start*
+      * Working directory: *path/to/frontend*
+      * Interpreter path: *empty*
+    * *ultimate edition* npm
+      * It just works (Andre)
+
+ You are all set. Run server and frontend with the appropriate run configuration.
 
 
 ### OrientDB Studio
