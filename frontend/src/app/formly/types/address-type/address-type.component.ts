@@ -22,14 +22,14 @@ export class AddressTypeComponent extends FieldType implements OnInit {
 
   ngOnInit(): void {
 
-    this.addresses = this.formControl.value;
+    this.addresses = this.formControl.value || [];
 
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
         distinctUntilChanged()
       )
-      .subscribe(value => this.addresses = value);
+      .subscribe(value => this.addresses = value || []);
 
   }
 
@@ -42,6 +42,7 @@ export class AddressTypeComponent extends FieldType implements OnInit {
         console.log('Data-info', data);
         this.addresses.push(this.convertDataForBackend(data));
         this.formControl.setValue(this.addresses);
+        this.formControl.markAsDirty();
       });
 
   }
