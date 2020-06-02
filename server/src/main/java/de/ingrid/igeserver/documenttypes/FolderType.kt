@@ -1,37 +1,28 @@
-package de.ingrid.igeserver.documenttypes;
+package de.ingrid.igeserver.documenttypes
 
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
+import com.orientechnologies.orient.core.db.ODatabaseSession
+import com.orientechnologies.orient.core.metadata.schema.OType
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
+import org.springframework.stereotype.Service
 
 @Service
-public class FolderType extends DocumentType {
+class FolderType : DocumentType(FOLDER, profiles) {
 
-    private static Logger log = LogManager.getLogger(FolderType.class);
+    val log = logger()
 
-    private static final String FOLDER = "FOLDER";
-
-    private static final String[] profiles = new String[0];
-
-    public FolderType() {
-        super(FOLDER, profiles);
+    companion object {
+        private const val FOLDER = "FOLDER"
+        private val profiles = arrayOf<String>()
     }
 
-    @Override
-    public void initialize(ODatabaseSession session) {
-
-        OSchema schema = session.getMetadata().getSchema();
+    override fun initialize(session: ODatabaseSession) {
+        val schema = session.metadata.schema
         if (!schema.existsClass(FOLDER)) {
-            log.debug("Create class " + FOLDER);
-            OClass addressClass = schema.createClass(FOLDER);
-            addressClass.createProperty("_id", OType.STRING);
-            addressClass.createProperty("_parent", OType.STRING);
+            log.debug("Create class $FOLDER")
+            val addressClass = schema.createClass(FOLDER)
+            addressClass.createProperty("_id", OType.STRING)
+            addressClass.createProperty("_parent", OType.STRING)
         }
-
     }
-
 }

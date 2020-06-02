@@ -1,12 +1,12 @@
-package de.ingrid.igeserver.documenttypes;
+package de.ingrid.igeserver.documenttypes
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import de.ingrid.igeserver.api.ApiException;
-import de.ingrid.igeserver.db.DBApi;
-import de.ingrid.igeserver.services.DocumentService;
-
-import java.util.Arrays;
+import com.orientechnologies.orient.core.db.ODatabaseSession
+import kotlin.jvm.Throws
+import de.ingrid.igeserver.api.ApiException
+import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.services.DocumentService
+import java.util.*
 
 /**
  * Classes that implement this interface have to check that the class that
@@ -14,40 +14,22 @@ import java.util.Arrays;
  * Most important properties are those, which contain references to other
  * DocumentTypes.
  */
-public abstract class DocumentType {
-
-    private final String typeName;
-
-    protected String[] forProfiles;
-
-    public DocumentType(String typeName, String[] forProfiles) {
-
-        this.typeName = typeName;
-        this.forProfiles = forProfiles;
-    }
+abstract class DocumentType(val typeName: String, private val forProfiles: Array<String>) {
 
     /**
      * Initialize a database session with this DocumentType.
      *
      * @param session is the database session for access
      */
-    abstract public void initialize(ODatabaseSession session);
+    abstract fun initialize(session: ODatabaseSession)
 
-    public String getTypeName() {
-
-        return typeName;
+    @Throws(ApiException::class)
+    open fun handleLinkedFields(doc: JsonNode?, dbService: DBApi?) {
     }
 
-    public void handleLinkedFields(JsonNode doc, DBApi dbService) throws ApiException {
-
+    open fun mapLatestDocReference(doc: JsonNode?, docService: DocumentService?) {}
+    fun usedInProfile(profileId: String): Boolean {
+        return forProfiles.isEmpty() || Arrays.asList(*forProfiles).contains(profileId)
     }
 
-    public void mapLatestDocReference(JsonNode doc, DocumentService docService) {
-
-    }
-
-    public boolean usedInProfile(String profileId) {
-
-        return forProfiles.length == 0 || Arrays.asList(forProfiles).contains(profileId);
-    }
 }

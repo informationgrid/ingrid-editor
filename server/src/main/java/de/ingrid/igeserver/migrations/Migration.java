@@ -6,7 +6,6 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.documenttypes.DocumentType;
-import de.ingrid.igeserver.documenttypes.OrganizationType;
 import de.ingrid.igeserver.profiles.TestType;
 import de.ingrid.igeserver.services.MapperService;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +42,6 @@ public class Migration {
 
         for (String database : databases) {
             addTestDocClass(database);
-//            addOrganizationClass(database);
             migrateProfileToDoctypes(database);
         }
 
@@ -105,19 +103,4 @@ public class Migration {
 
     }
 
-    /**
-     * Add TestDoc class to databases that is using them
-     *
-     * @param database
-     */
-    private void addOrganizationClass(String database) {
-
-        try (ODatabaseSession session = dbService.acquire(database)) {
-            List<JsonNode> docs = dbService.findAll("OrganizationDoc");
-            if (docs == null) {
-                new OrganizationType().initialize(session);
-            }
-        }
-
-    }
 }

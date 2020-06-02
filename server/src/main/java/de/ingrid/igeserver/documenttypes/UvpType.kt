@@ -1,37 +1,28 @@
-package de.ingrid.igeserver.documenttypes;
+package de.ingrid.igeserver.documenttypes
 
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
+import com.orientechnologies.orient.core.db.ODatabaseSession
+import com.orientechnologies.orient.core.metadata.schema.OType
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
+import org.springframework.stereotype.Service
 
 @Service
-public class UvpType extends DocumentType {
+class UvpType : DocumentType(TYPE, profiles) {
 
-    private static Logger log = LogManager.getLogger(UvpType.class);
+    private val log = logger()
 
-    private static final String TYPE = "UvpDoc";
-
-    private static final String[] profiles = new String[]{"uvp"};
-
-    public UvpType() {
-        super(TYPE, profiles);
+    companion object {
+        private const val TYPE = "UvpDoc"
+        private val profiles = arrayOf("uvp")
     }
 
-    @Override
-    public void initialize(ODatabaseSession session) {
-
-        OSchema schema = session.getMetadata().getSchema();
+    override fun initialize(session: ODatabaseSession) {
+        val schema = session.metadata.schema
         if (!schema.existsClass(TYPE)) {
-            log.debug("Create class " + TYPE);
-            OClass addressClass = schema.createClass(TYPE);
-            addressClass.createProperty("_id", OType.STRING);
-            addressClass.createProperty("_parent", OType.STRING);
+            log.debug("Create class $TYPE")
+            val addressClass = schema.createClass(TYPE)
+            addressClass.createProperty("_id", OType.STRING)
+            addressClass.createProperty("_parent", OType.STRING)
         }
-
     }
-
 }
