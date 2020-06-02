@@ -1,41 +1,19 @@
-/*-
- * **************************************************-
- * InGrid Portal MDEK Application
- * ==================================================
- * Copyright (C) 2014 - 2020 wemove digital solutions GmbH
- * ==================================================
- * Licensed under the EUPL, Version 1.1 or – as soon they will be
- * approved by the European Commission - subsequent versions of the
- * EUPL (the "Licence");
- * 
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at:
- * 
- * http://ec.europa.eu/idabc/eupl5
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and
- * limitations under the Licence.
- * **************************************************#
- */
 package de.ingrid.igeserver.utils.markdown
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.kotlin.logger
 import org.commonmark.ext.front.matter.YamlFrontMatterExtension
 import org.commonmark.ext.front.matter.YamlFrontMatterVisitor
 import org.commonmark.ext.gfm.tables.TablesExtension
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import org.springframework.stereotype.Service
+import java.io.File
 import java.io.IOException
 import java.net.URISyntaxException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
-import java.util.stream.Collectors
 
 /**
  * Scans the context help directory (defaults to "context_help") for markdown
@@ -45,28 +23,21 @@ import java.util.stream.Collectors
  */
 @Service
 class MarkdownContextHelpUtils {
-    var contextHelpPath = DEFAULT_CONTEXT_HELP_PATH
+
+    val LOG = logger()
+
+    val contextHelpPath = DEFAULT_CONTEXT_HELP_PATH
+
     /**
      * Default language (ISO 639-1)
      *
      * @return
      */
-    /**
-     * @param language (ISO 639-1)
-     */
     var defaultLanguage = DEFAULT_LANG
-    private var parser: Parser? = null
+
+    private lateinit var parser: Parser
+
     private var htmlRenderer: HtmlRenderer? = null
-
-    constructor() {
-        contextHelpPath = DEFAULT_CONTEXT_HELP_PATH
-        init()
-    }
-
-    constructor(contextHelpPath: String) {
-        this.contextHelpPath = contextHelpPath
-        init()
-    }
 
     private fun init() {
         val extensions = Arrays.asList(YamlFrontMatterExtension.create(), TablesExtension.create())
@@ -93,18 +64,14 @@ class MarkdownContextHelpUtils {
      *
      * <pre>
      * context_help
-     * _profile // profiles
-     * myprofile // profile directory
-     * en // localization directory
-     * markdownfile_en.md
-     * markdownfile.md
-     * en // localization directory
-     * markdownfile_en.md
-     * markdownfile.md
-    </pre> *
+     *   myprofile // profile directory
+     *     en // localization directory
+     *       markdownfile_en.md
+     *     markdownfile.md
+     * </pre>
      *
      *
-     * Base directory is <pre>TOMCAT/webapps/ingrid-portal-mdek-application/WEB-INF/classes/context_help</pre>
+     * Base directory is <pre>resources/contextHelp</pre>
      *
      *
      * Markdown files must contain front matter meta data like this to be assigned to a GUI element.
@@ -113,111 +80,110 @@ class MarkdownContextHelpUtils {
      * <pre>
      * ---
      * # ID of GUI element
-     * guid: 3000
+     * id: 3000
      * # optional: ID of "Objektklasse"
-     * oid: 1
+     * docType: mcloud
      * # optional: title, used as windows title
      * title: My Title
      * ---
-    </pre> *
+     * </pre>
      *
      * @return
      */
     val availableMarkdownHelpFiles: Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem>
         get() {
-            val result: MutableMap<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = HashMap()
-            try {
-                result.putAll(getLocMarkdownHelpFilesFromPath(contextHelpPath, null))
+            val result = mutableMapOf<MarkdownContextHelpItemKey, MarkdownContextHelpItem>()
 
-                // override directory
-                val overrideDir = Paths.get(contextHelpPath, PROFILE_DIR)
-                if (javaClass.classLoader.getResource(overrideDir.toString()) != null) {
-                    Files.list(Paths.get(javaClass.classLoader.getResource(overrideDir.toString()).toURI()))
-                            .filter { path: Path? -> Files.isDirectory(path) }.collect(Collectors.toList())
-                            .forEach { profilePath ->
-                                val abs = profilePath.toAbsolutePath().toString()
-                                val dir = abs.substring(abs.indexOf(contextHelpPath))
-                                result.putAll(getLocMarkdownHelpFilesFromPath(dir, profilePath.fileName.toString()))
-                            }
-                }
-
-            } catch (e: IOException) {
-                LOG.error("Impossible to get ressource from class path.", e)
-                throw RuntimeException(e)
-            } catch (e: URISyntaxException) {
-                LOG.error("Impossible to get ressource from class path.", e)
-                throw RuntimeException(e)
+            val profileDir = this::class.java.getResource(contextHelpPath)
+            if (profileDir == null) {
+                LOG.error("Path for context help not found: $contextHelpPath")
+                return result
             }
+
+            val profileResource = File(profileDir.path)
+
+            profileResource.walk()
+                    .maxDepth(1)
+                    .drop(1)
+                    .filter { it.isDirectory }
+                    .forEach { profilePath ->
+                        val from = getLanguageHelpFiles(profilePath, profilePath.name)
+                        result.putAll(from)
+                    }
+
+
             return result
         }
 
     @Throws(IOException::class, URISyntaxException::class)
-    private fun getLocMarkdownHelpFilesFromPath(sourcePath: String, profile: String?): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
-        val result: MutableMap<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = HashMap()
-        result.putAll(getMarkdownHelpFilesFromPath(sourcePath, defaultLanguage, profile))
-        Files.list(Paths.get(javaClass.classLoader.getResource(sourcePath).toURI()))
-                .filter { path: Path? -> Files.isDirectory(path) }
-                .filter { path: Path -> "override" != path.fileName.toString() }
+    private fun getLanguageHelpFiles(sourcePath: File, profile: String): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
+
+        val result = mutableMapOf<MarkdownContextHelpItemKey, MarkdownContextHelpItem>()
+
+        // get default language
+        val defaultHelpFiles = getHelpFilesFromPath(sourcePath, defaultLanguage, profile)
+        result.putAll(defaultHelpFiles)
+
+        // get other languages
+        sourcePath.walk().maxDepth(1)
+                .drop(1)
+                .filter { it.isDirectory }
+//                .filter { "override" != it.name }
                 .forEach { langPath ->
-                    val abs = langPath.toAbsolutePath().toString()
-                    val dir = abs.substring(abs.indexOf(sourcePath))
-                    result.putAll(getMarkdownHelpFilesFromPath(dir, langPath.fileName.toString(), profile))
+                    val localeHelpFiles = getHelpFilesFromPath(langPath, langPath.name, profile)
+                    result.putAll(localeHelpFiles)
                 }
 
         return result
     }
 
     @Throws(IOException::class, URISyntaxException::class)
-    private fun getMarkdownHelpFilesFromPath(sourcePath: String, language: String, profile: String?): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
-        val result: MutableMap<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = HashMap()
-        Files.list(Paths.get(javaClass.classLoader.getResource(sourcePath).toURI()))
-                .filter { path: Path? -> Files.isRegularFile(path) }
-                .forEach { path ->
-                    val content = String(Files.readAllBytes(Paths.get(path.toUri())))
-                    val mdNode = parser!!.parse(content)
-                    val visitor = YamlFrontMatterVisitor()
-                    mdNode.accept(visitor)
-                    val data = visitor.data
-                    var fieldId: String? = null
-                    var docType: String? = null
-                    var title: String? = null
-                    for ((key, value) in data) {
-                        if (key == "id") {
-                            fieldId = value[0]
-                        }
-                        if (key == "docType") {
-                            docType = value[0]
-                        }
-                        if (key == "title") {
-                            title = value[0]
-                        }
-                    }
-                    if (fieldId != null) {
-                        val itemKey = MarkdownContextHelpItemKey(fieldId)
-                        itemKey.lang = language
-                        if (docType != null) {
-                            itemKey.docType = docType
-                        }
-                        if (profile != null) {
-                            itemKey.profile = profile
-                        }
-                        val helpItem = MarkdownContextHelpItem(path)
-                        if (title != null) {
-                            helpItem.title = title
-                        }
-                        result[itemKey] = helpItem
-                    }
+    private fun getHelpFilesFromPath(sourcePath: File, language: String, profile: String): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
 
-                }
+        return sourcePath.walk().maxDepth(1)
+                .filter { it.isFile }
+                .map { readMarkDownFile(it, language, profile) }
+                .filter { it != null }
+                .map { it!!.first to it.second }
+                .toMap()
+
+    }
+
+    private fun readMarkDownFile(path: File, language: String, profile: String): Pair<MarkdownContextHelpItemKey, MarkdownContextHelpItem>? {
+
+        var result: Pair<MarkdownContextHelpItemKey, MarkdownContextHelpItem>? = null
+        val content = File(path.toURI()).readText()
+        val data = parseYaml(content)
+
+        val fieldId: String? = data["id"]?.get(0)
+        val docType: String? = data["docType"]?.get(0)
+        val title: String? = data["title"]?.get(0)
+
+        if (fieldId != null) {
+            val itemKey = MarkdownContextHelpItemKey(
+                    fieldId, docType!!, language, profile)
+
+            val helpItem = MarkdownContextHelpItem(path.toPath())
+            helpItem.title = title
+            result = Pair(itemKey, helpItem)
+        }
 
         return result
+
+    }
+
+    private fun parseYaml(content: String): Map<String, MutableList<String>> {
+        val mdNode = parser.parse(content)
+        val visitor = YamlFrontMatterVisitor()
+        mdNode.accept(visitor)
+        return visitor.data
     }
 
     fun renderMarkdownFile(markdownPath: Path): String? {
-        var renderedNode: String? = null
+        val renderedNode: String?
         renderedNode = try {
             val content = String(Files.readAllBytes(Paths.get(markdownPath.toUri())))
-            val mdNode = parser!!.parse(content)
+            val mdNode = parser.parse(content)
             htmlRenderer!!.render(mdNode)
         } catch (e: IOException) {
             LOG.error("Impossible to open ressource from class path.", e)
@@ -227,9 +193,11 @@ class MarkdownContextHelpUtils {
     }
 
     companion object {
-        protected const val PROFILE_DIR = "profile"
-        private const val DEFAULT_CONTEXT_HELP_PATH = "contextHelp"
+        private const val DEFAULT_CONTEXT_HELP_PATH = "/contextHelp"
         private const val DEFAULT_LANG = "de"
-        private val LOG = Logger.getLogger(MarkdownContextHelpUtils::class.java)
+    }
+
+    init {
+        init()
     }
 }

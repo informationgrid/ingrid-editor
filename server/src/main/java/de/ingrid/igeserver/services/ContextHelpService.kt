@@ -12,50 +12,43 @@ import org.springframework.stereotype.Service
 class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils) {
 
     val log = logger()
+    val defaultLanguage = "de"
 
     private val markdownContextHelp: Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = helpUtils.availableMarkdownHelpFiles
 
     fun getHelp(profile: String, docType: String, id: String): HelpMessage {
 
-        val itemKey = MarkdownContextHelpItemKey(id)
+        val help = getContextHelp(profile, docType, id)
 
-        if (docType != null) {
-            itemKey.docType = docType
+        if (help == null) {
+            throw ApiException("Context help could not be found")
         }
-        /*if (language != null) {
-            itemKey.setLang(language)
-        } else {
-            itemKey.setLang(defaultLanguage)
-        }*/
 
-        var markDownFound = false
+        return HelpMessage(
+                fieldId = id,
+                docType = docType,
+                language = defaultLanguage,
+                name = help.title,
+                helpText = helpUtils.renderMarkdownFile(help.markDownFilename),
+                profile = profile
+        )
+
+    }
+
+    private fun getContextHelp(profile: String, docType: String, id: String): MarkdownContextHelpItem? {
+        val itemKey = MarkdownContextHelpItemKey(
+                fieldId = id,
+                profile = profile,
+                docType = docType,
+                lang = defaultLanguage
+        )
+
         if (markdownContextHelp.containsKey(itemKey)) {
-            markDownFound = true
-        } else {
-            itemKey.docType = null
-            if (!markdownContextHelp.containsKey(itemKey)) {
-                log.debug("No markdown help file found for { guid: $id; oid: $docType; language: de}.")
-            } else {
-                markDownFound = true
-            }
-        }
-        if (markDownFound) {
-
-            val itemValue: MarkdownContextHelpItem = markdownContextHelp.get(itemKey)!!
-
-            return HelpMessage(
-                    fieldId = id,
-                    docType = docType,
-                    language = itemKey.lang,
-                    name = itemValue.title,
-                    helpText = helpUtils.renderMarkdownFile(itemValue.markDownFilename),
-                    profile = profile
-            )
-
+            return markdownContextHelp.get(itemKey)
         }
 
-        throw ApiException("Context help could not be found")
-
+        log.debug("No markdown help file found for { guid: $id; oid: $docType; language: de}.")
+        return null
     }
 
 }
