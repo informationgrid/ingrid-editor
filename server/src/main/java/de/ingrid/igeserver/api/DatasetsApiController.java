@@ -7,7 +7,7 @@ import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.DBFindAllResults;
 import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
-import de.ingrid.igeserver.documenttypes.AddressWrapperType;
+import de.ingrid.igeserver.documenttypes.AbstractDocumentType;
 import de.ingrid.igeserver.documenttypes.DocumentType;
 import de.ingrid.igeserver.model.Data1;
 import de.ingrid.igeserver.model.SearchResult;
@@ -86,7 +86,7 @@ public class DatasetsApiController implements DatasetsApi {
             // get document type from document
             String documentType = dataJson.get(FIELD_DOCUMENT_TYPE).asText();
 
-            JsonNode result = this.dbService.save(documentType, null, dataJson.toString());
+            JsonNode result = this.dbService.save(DocumentType.TYPE, null, dataJson.toString());
 
 
             JsonNode nodeParentId = dataJson.get(PARENT_ID);
@@ -97,9 +97,10 @@ public class DatasetsApiController implements DatasetsApi {
             documentWrapper.put(FIELD_ID, uuid.toString());
             documentWrapper.put(FIELD_DRAFT, result.get(DB_ID).asText());
             documentWrapper.put(FIELD_PARENT, parentId);
+            documentWrapper.put(FIELD_DOCUMENT_TYPE, documentType);
+            documentWrapper.put(FIELD_CATEGORY, address ? "address" : "data");
 
-            JsonNode resultWrapper = this.dbService.save(
-                    address ? AddressWrapperType.TYPE : TYPE, null, documentWrapper.toString());
+            JsonNode resultWrapper = this.dbService.save(TYPE, null, documentWrapper.toString());
 
             ObjectNode resultDoc = this.documentService.getLatestDocument(resultWrapper);
             return ResponseEntity.ok(resultDoc);
@@ -117,11 +118,10 @@ public class DatasetsApiController implements DatasetsApi {
             Principal principal, String id,
             String data,
             boolean publish,
-            boolean revert, boolean forAddress) throws ApiException {
+            boolean revert) throws ApiException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
@@ -135,7 +135,7 @@ public class DatasetsApiController implements DatasetsApi {
                 // return;
             }
 
-            ObjectNode docWrapper = (ObjectNode) this.documentService.getByDocId(id, type, false);
+            ObjectNode docWrapper = (ObjectNode) this.documentService.getByDocId(id, TYPE, false);
 
 
             String recordId;
@@ -153,20 +153,19 @@ public class DatasetsApiController implements DatasetsApi {
             // save document with same ID or new one, if no draft version exists
             ObjectNode updatedDocument = (ObjectNode) getJsonNode(data);
             updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString());
-            String docType = updatedDocument.get(FIELD_DOCUMENT_TYPE).asText();
 
             handleLinkedDocs(updatedDocument);
 
-            JsonNode save = this.dbService.save(docType, recordId, updatedDocument.toString());
+            JsonNode save = this.dbService.save(DocumentType.TYPE, recordId, updatedDocument.toString());
             String dbID = save.get(DB_ID).asText();
 
             if (publish) {
-                handlePublishingOnWrapper(type, docWrapper, dbID);
+                handlePublishingOnWrapper(docWrapper, dbID);
             } else {
-                handleSaveOnWrapper(type, docWrapper, dbID);
+                handleSaveOnWrapper(docWrapper, dbID);
             }
 
-            JsonNode savedDoc = documentService.getByDocId(id, type, true);
+            JsonNode savedDoc = documentService.getByDocId(id, TYPE, true);
             ObjectNode result = documentService.getLatestDocument(savedDoc);
 
             return ResponseEntity.ok(result);
@@ -181,22 +180,22 @@ public class DatasetsApiController implements DatasetsApi {
     private void handleLinkedDocs(ObjectNode doc) throws Exception {
 
         String docType = doc.get(FIELD_DOCUMENT_TYPE).asText();
-        DocumentType refType = documentService.getDocumentType(docType);
+        AbstractDocumentType refType = documentService.getDocumentType(docType);
 
         refType.handleLinkedFields(doc, dbService);
 
     }
 
-    private void handleSaveOnWrapper(String type, ObjectNode docWrapper, String dbID) throws ApiException {
+    private void handleSaveOnWrapper(ObjectNode docWrapper, String dbID) throws ApiException {
         // update document wrapper with new draft version
         if (docWrapper.get(FIELD_DRAFT).isNull()) {
             // TODO: db_id is ORecord!
             docWrapper.put(FIELD_DRAFT, dbID);
-            this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
+            this.dbService.save(TYPE, docWrapper.get(DB_ID).asText(), docWrapper.toString());
         }
     }
 
-    private void handlePublishingOnWrapper(String type, ObjectNode docWrapper, String dbID) throws ApiException {
+    private void handlePublishingOnWrapper(ObjectNode docWrapper, String dbID) throws ApiException {
         // add ID from published field to archive
         if (!docWrapper.get(FIELD_PUBLISHED).isNull()) {
             docWrapper.withArray(FIELD_ARCHIVE).add(docWrapper.get(FIELD_PUBLISHED));
@@ -208,14 +207,13 @@ public class DatasetsApiController implements DatasetsApi {
         // remove draft version
         docWrapper.put(FIELD_DRAFT, (String) null);
 
-        this.dbService.save(type, docWrapper.get(DB_ID).asText(), docWrapper.toString());
+        this.dbService.save(TYPE, docWrapper.get(DB_ID).asText(), docWrapper.toString());
     }
 
-    public ResponseEntity<String> deleteById(Principal principal, String[] ids, boolean forAddress) throws Exception {
+    public ResponseEntity<String> deleteById(Principal principal, String[] ids) throws Exception {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             for (String id : ids) {
@@ -226,7 +224,7 @@ public class DatasetsApiController implements DatasetsApi {
                 // String recordId = this.dbService.getRecordId(type, id);
                 // JsonNode dbDoc = this.dbService.find(type, recordId);
 
-                this.dbService.remove(type, id);
+                this.dbService.remove(TYPE, id);
 
             }
             return ResponseEntity.ok().build();
@@ -299,21 +297,22 @@ public class DatasetsApiController implements DatasetsApi {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = isAddress ? AddressWrapperType.TYPE : TYPE;
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
 
             Map<String, String> queryMap = new HashMap<>();
-            queryMap.put("_parent", parentId);
+            queryMap.put(FIELD_PARENT, parentId);
+            queryMap.put(FIELD_CATEGORY, isAddress ? "address" : "data");
             FindOptions findOptions = new FindOptions();
             findOptions.queryType = QueryType.exact;
             findOptions.resolveReferences = true;
-            docs = this.dbService.findAll(type, queryMap, findOptions);
+            findOptions.queryOperator = "AND";
+            docs = this.dbService.findAll(TYPE, queryMap, findOptions);
 
             List<ObjectNode> childDocs = docs.hits.stream()
                     .map(doc -> {
                         ObjectNode node = documentService.getLatestDocument(doc);
-                        node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc, type));
+                        node.put(FIELD_HAS_CHILDREN, this.documentService.determineHasChildren(doc, TYPE));
                         return node;
                     })
                     .collect(Collectors.toList());
@@ -331,12 +330,12 @@ public class DatasetsApiController implements DatasetsApi {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             Map<String, String> queryMap = new HashMap<>();
-            queryMap.put("draft.title", query);
-            queryMap.put("draft IS NULL AND published.title", query);
+            String cat = FIELD_CATEGORY + " == " + (forAddress ? "\"address\"" : "\"data\"");
+            queryMap.put(cat + " AND draft.title", query);
+            queryMap.put(cat + " AND draft IS NULL AND published.title", query);
             FindOptions findOptions = new FindOptions();
             findOptions.size = size;
             findOptions.queryType = QueryType.like;
@@ -344,7 +343,7 @@ public class DatasetsApiController implements DatasetsApi {
             findOptions.sortOrder = sortOrder;
             findOptions.resolveReferences = true;
 
-            docs = this.dbService.findAll(type, queryMap, findOptions);
+            docs = this.dbService.findAll(TYPE, queryMap, findOptions);
 
             SearchResult searchResult = new SearchResult();
             searchResult.totalHits = docs.totalHits;
@@ -361,9 +360,7 @@ public class DatasetsApiController implements DatasetsApi {
     public ResponseEntity<JsonNode> getByID(
             Principal principal,
             String id,
-            Boolean publish, boolean address) throws Exception {
-
-        String type = address ? AddressWrapperType.TYPE : TYPE;
+            Boolean publish) throws Exception {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
@@ -374,7 +371,7 @@ public class DatasetsApiController implements DatasetsApi {
             FindOptions findOptions = new FindOptions();
             findOptions.queryType = QueryType.exact;
             findOptions.resolveReferences = true;
-            DBFindAllResults docs = this.dbService.findAll(type, query, findOptions);
+            DBFindAllResults docs = this.dbService.findAll(TYPE, query, findOptions);
 
             if (docs.totalHits > 0) {
                 ObjectNode doc = documentService.getLatestDocument(docs.hits.get(0));
@@ -390,12 +387,10 @@ public class DatasetsApiController implements DatasetsApi {
 
     public ResponseEntity<List<String>> getPath(
             Principal principal,
-            String id,
-            boolean forAddress) throws ApiException {
+            String id) throws ApiException {
 
         String userId = this.authUtils.getUsernameFromPrincipal(principal);
         String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
-        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         String destId = id;
         List<String> path = new ArrayList<>();
@@ -403,7 +398,7 @@ public class DatasetsApiController implements DatasetsApi {
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
             while (destId != null) {
-                JsonNode doc = this.documentService.getByDocId(destId, type, false);
+                JsonNode doc = this.documentService.getByDocId(destId, TYPE, false);
                 destId = doc.get("_parent").textValue();
                 path.add(destId);
             }

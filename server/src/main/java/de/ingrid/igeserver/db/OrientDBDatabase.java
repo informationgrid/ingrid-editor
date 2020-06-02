@@ -20,7 +20,7 @@ import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 import com.orientechnologies.orient.server.plugin.OServerPluginManager;
 import de.ingrid.igeserver.api.ApiException;
-import de.ingrid.igeserver.documenttypes.DocumentType;
+import de.ingrid.igeserver.documenttypes.AbstractDocumentType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
 import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.services.MapperService;
@@ -44,7 +44,7 @@ public class OrientDBDatabase implements DBApi {
     private static Logger log = LogManager.getLogger(OrientDBDatabase.class);
 
     @Autowired
-    List<DocumentType> documentTypes;
+    List<AbstractDocumentType> documentTypes;
 
     private OServer server = null;
 
@@ -101,12 +101,14 @@ public class OrientDBDatabase implements DBApi {
 
     @PreDestroy
     void destroy() {
+
         log.info("Closing database before exit");
         server.shutdown();
     }
 
     @PostConstruct
     public void startServer() throws Exception {
+
         String orientdbHome = new File("").getAbsolutePath();
         System.setProperty("ORIENTDB_HOME", orientdbHome);
         if (server == null) {
@@ -125,16 +127,19 @@ public class OrientDBDatabase implements DBApi {
     }
 
     public void stop() {
+
         Orient.instance().shutdown();
     }
 
     /**
      * DB Actions
+     *
      * @param type
      */
 
     @Override
     public List<JsonNode> findAll(String type) {
+
         ORecordIteratorClass<ODocument> oDocuments;
         try {
             oDocuments = getDBFromThread().browseClass(type);
@@ -148,6 +153,7 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) throws Exception {
+
         String queryString;
         String countQuery;
 
@@ -157,13 +163,13 @@ public class OrientDBDatabase implements DBApi {
         } else {
             // TODO: try to use Elasticsearch as an alternative!
             List<String> where = createWhereClause(query, options);
-            String whereString = String.join(" OR ", where);
+            String whereString = String.join(" " + options.queryOperator + " ", where);
 
             String fetchPlan = options.resolveReferences ? ",fetchPlan:*:-1" : "";
 
-            if ( options.sortField != null){
-                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " LET $temp = max( draft."+options.sortField+", published."+options.sortField+" ) WHERE (" + whereString + ")";
-            }else{
+            if (options.sortField != null) {
+                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " LET $temp = max( draft." + options.sortField + ", published." + options.sortField + " ) WHERE (" + whereString + ")";
+            } else {
                 queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " WHERE (" + whereString + ")";
             }
             countQuery = "SELECT count(*) FROM " + type + " WHERE (" + whereString + ")";
@@ -187,11 +193,15 @@ public class OrientDBDatabase implements DBApi {
         OResultSet docs = getDBFromThread().query(queryString);
         OResultSet countDocs = getDBFromThread().query(countQuery);
 
+        docs.close();
+        countDocs.close();
+
         return mapFindAllResults(docs, countDocs);
 
     }
 
     private List<String> createWhereClause(Map<String, String> query, FindOptions options) {
+
         List<String> where = new ArrayList<>();
         for (String key : query.keySet()) {
             String value = query.get(key);
@@ -215,6 +225,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     private String attachFieldToWhereList(List<String> whereList, String field) {
+
         return whereList.stream()
                 .map(item -> field + item)
                 .collect(Collectors.joining(" OR "));
@@ -229,12 +240,14 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public String getRecordId(String dbClass, String docUuid) throws ApiException {
+
         String queryString = "SELECT * FROM " + dbClass + " WHERE _id == '" + docUuid + "'";
         OResultSet docs = getDBFromThread().query(queryString);
 
         if (docs.hasNext()) {
             OResult doc = docs.next();
             if (!docs.hasNext()) {
+                docs.close();
                 return doc.getIdentity().get().toString();
             } else {
                 throw new ApiException("There is more than one result for dbClass: " + dbClass + " docUuid: " + docUuid);
@@ -246,6 +259,7 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public Map<String, Long> countChildrenFromNode(String id, String type) {
+
         Map<String, Long> response = new HashMap<>();
         String query = "select _parent,count(_id) from " + type + " " +
                 "where _parent IN ['" + id + "']" +
@@ -256,21 +270,26 @@ public class OrientDBDatabase implements DBApi {
             OResult next = countQuery.next();
             response.put(next.getProperty(MapperService.FIELD_PARENT), next.getProperty("count(_id)"));
         }
+
+        countQuery.close();
         return response;
     }
 
     @Override
     public int count(String type, Map<String, String> query, FindOptions findOptions) {
+
         return 0;
     }
 
     @Override
     public JsonNode find(String type, String id) throws Exception {
+
         String query = "SELECT @this.toJSON('rid,class') as jsonDoc FROM " + type + " WHERE @rid = " + id;
 //        String query = "SELECT * FROM " + type + " WHERE _id = " + id;
 
         OResultSet result = getDBFromThread().query(query);
         List<JsonNode> list = mapODocumentsToJSON(result);
+        result.close();
 
         if (list.size() == 1) {
 
@@ -295,6 +314,7 @@ public class OrientDBDatabase implements DBApi {
      */
     @Override
     public JsonNode save(String type, String id, String data) throws ApiException {
+
         Optional<OResult> doc = getById(type, id);
         ODocument docToSave;
 
@@ -316,6 +336,7 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public boolean remove(String type, String id) throws ApiException {
+
         OResultSet result = getDBFromThread().command("select * from " + type + " where _id = '" + id + "'");
 
         OElement record = result.elementStream()
@@ -323,6 +344,8 @@ public class OrientDBDatabase implements DBApi {
                     throw new IllegalStateException("Multiple elements: " + a + ", " + b);
                 })
                 .orElseGet(null);
+
+        result.close();
 
         if (record == null) {
             throw new ApiException("Dockument cannot be deleted, since it wasn't found: " + type + " -> " + id);
@@ -332,13 +355,18 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public List<String> remove(DBClass type, Map<String, String> query) {
-        // TODO: implement
-        throw new NotImplementedException("Remove function is not implemented yet");
+    public boolean remove(String type, Map<String, String> query) {
+
+        // TODO: finish implementation
+        OResultSet command = getDBFromThread().command("DROP CLASS " + type + " IF EXISTS");
+        command.close();
+        return true;
+
     }
 
     @Override
     public String[] getDatabases() {
+
         return server.listDatabases().stream()
                 .filter(item -> !(item.equals("IgeUsers") || item.equals("OSystem") || item.equals("management")))
                 .toArray(String[]::new);
@@ -346,6 +374,7 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public String createDatabase(Catalog catalog) throws ApiException {
+
         String id = this.generateDBNameFromLabel(catalog.getName());
         catalog.setId(id);
 
@@ -363,6 +392,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     public void updateDatabase(Catalog settings) throws ApiException {
+
         try (ODatabaseSession ignored = acquire(settings.getId())) {
 
             List<JsonNode> list = this.findAll(DBClass.Info.name());
@@ -376,6 +406,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     private JsonNode getMapFromCatalogSettings(Catalog settings) {
+
         ObjectNode catInfo = new ObjectMapper().createObjectNode();
         catInfo.put("id", settings.getId());
         catInfo.put("name", settings.getName());
@@ -385,6 +416,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     private void initNewDatabase(Catalog settings, ODatabaseSession session) {
+
         session.getMetadata().getSchema().createClass("Behaviours");
         OClass info = session.getMetadata().getSchema().createClass("Info");
 
@@ -394,11 +426,13 @@ public class OrientDBDatabase implements DBApi {
     }
 
     private String generateDBNameFromLabel(String name) {
+
         return name.toLowerCase().replaceAll(" ", "_");
     }
 
     @Override
     public boolean removeDatabase(String name) {
+
         server.dropDatabase(name);
 
         // TODO: remove database from all assigned users
@@ -408,6 +442,7 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public ODatabaseSession acquire(String dbName) {
+
         if (!server.existsDatabase(dbName)) {
             throw new DatabaseDoesNotExistException("Database does not exist: " + dbName);
         }
@@ -418,10 +453,12 @@ public class OrientDBDatabase implements DBApi {
      * Private methods
      */
     private ODatabaseSession getDBFromThread() {
+
         return ODatabaseRecordThreadLocal.instance().get();
     }
 
     private List<JsonNode> mapODocumentsToJsonNode(ORecordIteratorClass<ODocument> oDocsIterator) throws Exception {
+
         List<JsonNode> list = new ArrayList<>();
         while (oDocsIterator.hasNext()) {
             ODocument next = oDocsIterator.next();
@@ -432,10 +469,11 @@ public class OrientDBDatabase implements DBApi {
     }
 
     private List<JsonNode> mapODocumentsToJSON(OResultSet docs) throws Exception {
+
         List<JsonNode> list = new ArrayList<>();
         while (docs.hasNext()) {
             OResult doc = docs.next();
-            String json = doc.getProperty( "jsonDoc" );
+            String json = doc.getProperty("jsonDoc");
             JsonNode node = MapperService.getJsonNode(json);
             list.add(node);
         }
@@ -444,6 +482,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     private JsonNode mapODocumentToJson(ODocument oDoc, boolean resolveReferences) throws Exception {
+
         String json;
         if (resolveReferences) {
             json = oDoc.toJSON("rid,class,fetchPlan:*:-1");
@@ -462,10 +501,14 @@ public class OrientDBDatabase implements DBApi {
      */
     @Deprecated()
     private Optional<OResult> getById(String type, String id) {
+
         String query = "SELECT * FROM " + type + " WHERE @rid = " + id;
 
         OResultSet result = getDBFromThread().query(query);
-        return result.stream()
+        Optional<OResult> first = result.stream()
                 .findFirst();
+
+        result.close();
+        return first;
     }
 }

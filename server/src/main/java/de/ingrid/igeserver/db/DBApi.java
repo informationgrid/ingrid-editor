@@ -58,7 +58,7 @@ public interface DBApi {
      *
      * @return a list of IDs of the deleted documents
      */
-    public List<String> remove(DBClass type, Map<String, String> query);
+    public boolean remove(String type, Map<String, String> query);
 
 
     /**

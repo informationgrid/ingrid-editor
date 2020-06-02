@@ -4,13 +4,13 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import de.ingrid.igeserver.documenttypes.DocumentType;
+import de.ingrid.igeserver.documenttypes.AbstractDocumentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TestType extends DocumentType {
+public class TestType extends AbstractDocumentType {
 
     private static Logger log = LogManager.getLogger(TestType.class);
 

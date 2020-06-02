@@ -3,17 +3,15 @@ package de.ingrid.igeserver.profiles.mcloud.types
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.orientechnologies.orient.core.db.ODatabaseSession
-import com.orientechnologies.orient.core.metadata.schema.OType
 import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.db.DBApi
-import de.ingrid.igeserver.documenttypes.AddressWrapperType
-import de.ingrid.igeserver.documenttypes.DocumentType
+import de.ingrid.igeserver.documenttypes.AbstractDocumentType
 import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
 @Service
-class mCloudType : DocumentType(TYPE, profiles) {
+class mCloudType : AbstractDocumentType(TYPE, profiles) {
 
     companion object {
         private val log = logger()
@@ -22,13 +20,7 @@ class mCloudType : DocumentType(TYPE, profiles) {
     }
 
     override fun initialize(session: ODatabaseSession) {
-        val schema = session.metadata.schema
-        if (!schema.existsClass(TYPE)) {
-            log.debug("Create class $TYPE")
-            val clazz = schema.createClass(TYPE)
-            clazz.createProperty("_id", OType.STRING)
-            clazz.createProperty("_parent", OType.STRING)
-        }
+
     }
 
     @Throws(ApiException::class)
@@ -46,7 +38,7 @@ class mCloudType : DocumentType(TYPE, profiles) {
             val wrapperId = address.path("ref").asText()
             var wrapper: JsonNode?
             try {
-                wrapper = docService!!.getByDocId(wrapperId, AddressWrapperType.TYPE, true)
+                wrapper = docService!!.getByDocId(wrapperId, TYPE, true)
                 val latestDocument = docService.getLatestDocument(wrapper)
                 (address as ObjectNode).put("ref", latestDocument)
             } catch (e: Exception) {

@@ -359,7 +359,8 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.selectionModel.clear();
 
     if (id !== null) {
-      return this.database.getPath(id, this.forAddresses).then((path) => {
+      // TODO: do not always request path, when not needed
+      return this.database.getPath(id).then((path) => {
         this.activeNodeId = path.pop();
         if (path.length > 0) {
           this.handleExpandNodes(path)

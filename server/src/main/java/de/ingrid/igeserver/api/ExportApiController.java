@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
-import de.ingrid.igeserver.documenttypes.AddressWrapperType;
 import de.ingrid.igeserver.exports.ExportTypeInfo;
 import de.ingrid.igeserver.model.ExportRequestParameter;
 import de.ingrid.igeserver.services.DocumentService;
@@ -48,12 +47,11 @@ public class ExportApiController implements ExportApi {
 
         // TODO: option to export addresses too?
         boolean forAddress = false;
-        String type = forAddress ? AddressWrapperType.TYPE : TYPE;
 
         String result;
 
         try (ODatabaseSession ignored = dbService.acquire(dbId)) {
-            JsonNode doc = documentService.getByDocId(data.getId(), type, true);
+            JsonNode doc = documentService.getByDocId(data.getId(), TYPE, true);
 
             JsonNode docVersion = null;
             if (data.isUseDraft()) {

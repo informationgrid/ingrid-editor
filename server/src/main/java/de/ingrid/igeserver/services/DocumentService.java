@@ -7,7 +7,7 @@ import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.db.DBFindAllResults;
 import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.db.QueryType;
-import de.ingrid.igeserver.documenttypes.DocumentType;
+import de.ingrid.igeserver.documenttypes.AbstractDocumentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class DocumentService extends MapperService {
     private static Logger log = LogManager.getLogger(DocumentService.class);
 
     @Autowired
-    List<DocumentType> documentTypes;
+    List<AbstractDocumentType> documentTypes;
 
     @Autowired
     private DBApi dbService;
@@ -121,18 +121,18 @@ public class DocumentService extends MapperService {
     private void handleLatestLinkedDocs(ObjectNode doc) {
 
         String docType = doc.get(FIELD_DOCUMENT_TYPE).asText();
-        DocumentType refType = this.getDocumentType(docType);
+        AbstractDocumentType refType = this.getDocumentType(docType);
 
         refType.mapLatestDocReference(doc, this);
 
     }
 
-    public DocumentType getDocumentType(String docType) {
+    public AbstractDocumentType getDocumentType(String docType) {
 
-        DocumentType refType = null;
+        AbstractDocumentType refType = null;
 
         // get linked fields
-        for (DocumentType type : documentTypes) {
+        for (AbstractDocumentType type : documentTypes) {
             if (type.getTypeName().equals(docType)) {
                 refType = type;
                 break;

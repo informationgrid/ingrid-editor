@@ -17,6 +17,7 @@ public class MapperService {
     public static final String FIELD_MODIFIED = "_modified";
     public static final String FIELD_HAS_CHILDREN = "_hasChildren";
     public static final String FIELD_PARENT = "_parent";
+    public static final String FIELD_CATEGORY = "_category";
     public static final String FIELD_MODIFIED_BY = "_modifiedBy";
     public static final String FIELD_DRAFT = "draft";
     public static final String FIELD_PUBLISHED = "published";
@@ -43,7 +44,7 @@ public class MapperService {
         node.remove("@rid");
         node.remove("@class");
         node.remove("@type");
-        node.remove("@fieldTypes");
+        node.remove("@version");
     }
 
 }

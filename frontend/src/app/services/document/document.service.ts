@@ -102,7 +102,7 @@ export class DocumentService {
   }
 
   load(id: string, address?: boolean): Observable<IgeDocument> {
-    return this.dataService.load(id, address).pipe(
+    return this.dataService.load(id).pipe(
       tap(doc => this.updateTreeStore(doc, address))
     );
   }
@@ -177,8 +177,8 @@ export class DocumentService {
       );
   }
 
-  delete(ids: string[], forAddress?: boolean): void {
-    this.dataService.delete(ids, forAddress)
+  delete(ids: string[]): void {
+    this.dataService.delete(ids)
       .subscribe(res => {
         console.log('ok', res);
         const data = ids.map(id => {
@@ -201,8 +201,8 @@ export class DocumentService {
       );
   }
 
-  getPath(id: string, address?: boolean): Observable<string[]> {
-    return this.dataService.getPath(id, address).pipe(
+  getPath(id: string): Observable<string[]> {
+    return this.dataService.getPath(id).pipe(
       // tap( path => this.treeStore.setExpandedNodes(path))
     );
   }

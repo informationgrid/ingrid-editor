@@ -65,18 +65,16 @@ export class DocumentDataService {
     }
   }
 
-    delete(ids: string[], forAddress?: boolean): Observable<any> {
-    const params = forAddress ? '?address=true' : '';
-    return this.http.delete(this.configuration.backendUrl + 'datasets/' + ids + params, {responseType: 'text'});
+  delete(ids: string[]): Observable<any> {
+    return this.http.delete(this.configuration.backendUrl + 'datasets/' + ids, {responseType: 'text'});
   }
 
   revert(id: string): Observable<any> {
     return this.http.put(this.configuration.backendUrl + 'datasets/' + id + '?revert=true', {});
   }
 
-  getPath(id: string, address = false): Observable<string[]> {
-    const params = '?address=' + address;
-    return this.http.get<string[]>(this.configuration.backendUrl + 'datasets/' + id + '/path' + params);
+  getPath(id: string): Observable<string[]> {
+    return this.http.get<string[]>(this.configuration.backendUrl + 'datasets/' + id + '/path');
   }
 
   copy(srcIDs: string[], dest: string, includeTree: boolean) {

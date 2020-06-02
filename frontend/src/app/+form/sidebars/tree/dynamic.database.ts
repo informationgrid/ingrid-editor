@@ -55,8 +55,8 @@ export class DynamicDatabase {
     return this.docService.find(value, 10, isAddress);
   }
 
-  getPath(id: string, address = false): Promise<string[]> {
-    return this.docService.getPath(id, address).toPromise();
+  getPath(id: string): Promise<string[]> {
+    return this.docService.getPath(id).toPromise();
   }
 
   mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
