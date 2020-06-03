@@ -2,7 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {CodelistService} from '../../services/codelist/codelist.service';
 import {CodelistQuery} from '../../store/codelist/codelist.query';
 import {Codelist, CodelistEntry} from '../../store/codelist/codelist.model';
-import {Observable} from 'rxjs';
+import {throwError} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 
 @Component({
   selector: 'ige-codelists',
@@ -13,6 +14,7 @@ export class CodelistsComponent implements OnInit {
   codelists = this.codelistService.getAll();
   entries: CodelistEntry[];
   selectedCodelist: Codelist;
+  disableSyncButton = false;
 
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery) {
@@ -25,12 +27,20 @@ export class CodelistsComponent implements OnInit {
 
   updateCodelists() {
 
+    this.disableSyncButton = true;
     this.codelistService.update()
-      .subscribe(codelists => console.log('Updated codelists', codelists));
+      .pipe(catchError(e => this.handleSyncError(e)))
+      .subscribe(codelists => this.disableSyncButton = false);
 
   }
 
   /*selectedCodelist(value: string) {
     this.entries = this.codelistQuery.getEntity(value).entries;
   }*/
+
+  private handleSyncError(e: any) {
+    console.error(e);
+    this.disableSyncButton = false;
+    return throwError(e);
+  }
 }
