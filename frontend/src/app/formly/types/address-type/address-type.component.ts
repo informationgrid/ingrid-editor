@@ -41,8 +41,7 @@ export class AddressTypeComponent extends FieldType implements OnInit {
       .subscribe((data: ChooseAddressResponse) => {
         console.log('Data-info', data);
         this.addresses.push(this.convertDataForBackend(data));
-        this.formControl.setValue(this.addresses);
-        this.formControl.markAsDirty();
+        this.updateFormControl(this.addresses);
       });
 
   }
@@ -56,4 +55,15 @@ export class AddressTypeComponent extends FieldType implements OnInit {
       }
     }
   }
+
+  removeAddress(address: AddressRef) {
+    const value = this.addresses.filter(ref => ref !== address);
+    this.updateFormControl(value);
+  }
+
+  private updateFormControl(value: AddressRef[]) {
+    this.formControl.setValue(value);
+    this.formControl.markAsDirty();
+  }
+
 }

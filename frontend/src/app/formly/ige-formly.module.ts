@@ -31,59 +31,60 @@ import {AddressCardComponent} from './types/address-type/address-card/address-ca
 import { ChooseAddressDialogComponent } from './types/address-type/choose-address-dialog/choose-address-dialog.component';
 import {MatCardModule} from '@angular/material/card';
 import {CodelistPipe} from '../directives/codelist.pipe';
+import {MatMenuModule} from '@angular/material/menu';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
 }
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatInputModule, ReactiveFormsModule, FormsModule,
-    FlexLayoutModule,
-    MatDialogModule, MatButtonModule, MatAutocompleteModule, MatIconModule, MatSelectModule, MatDividerModule, MatListModule,
-    MatTableModule, MatPopoverEditModule, MatCardModule,
-    FormlyMaterialModule, FormlyMatDatepickerModule,
-    FormlyModule.forChild({
-      types: [{
-        name: 'autocomplete',
-        component: AutocompleteTypeComponent,
-        wrappers: ['form-field']
-      }, {
-        name: 'leaflet',
-        component: LeafletTypeComponent/*,
+    imports: [
+        CommonModule,
+        MatInputModule, ReactiveFormsModule, FormsModule,
+        FlexLayoutModule,
+        MatDialogModule, MatButtonModule, MatAutocompleteModule, MatIconModule, MatSelectModule, MatDividerModule, MatListModule,
+        MatTableModule, MatPopoverEditModule, MatCardModule,
+        FormlyMaterialModule, FormlyMatDatepickerModule,
+        FormlyModule.forChild({
+            types: [{
+                name: 'autocomplete',
+                component: AutocompleteTypeComponent,
+                wrappers: ['form-field']
+            }, {
+                name: 'leaflet',
+                component: LeafletTypeComponent/*,
         wrappers: ['form-field']*/
-      }, {
-        name: 'table',
-        component: TableTypeComponent
-      }, {
-        name: 'ngx-table',
-        component: NgxDatatableTypeComponent
-      }, {
-        name: 'address-card',
-        component: AddressTypeComponent
-      }, {
-        name: 'doc-reference',
-        component: DocReferenceTypeComponent
-      }],
-      validators: [
-        {name: 'ip', validation: IpValidator}
-      ],
-      validationMessages: [
-        {name: 'required', message: 'Dieses Feld muss ausgefüllt sein'}
-      ]/*,
+            }, {
+                name: 'table',
+                component: TableTypeComponent
+            }, {
+                name: 'ngx-table',
+                component: NgxDatatableTypeComponent
+            }, {
+                name: 'address-card',
+                component: AddressTypeComponent
+            }, {
+                name: 'doc-reference',
+                component: DocReferenceTypeComponent
+            }],
+            validators: [
+                {name: 'ip', validation: IpValidator}
+            ],
+            validationMessages: [
+                {name: 'required', message: 'Dieses Feld muss ausgefüllt sein'}
+            ]/*,
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
       ]*/
-    }), NgxDatatableModule.forRoot({
-      messages: {
-        emptyMessage: 'No data to display', // Message to show when array is presented, but contains no values
-        totalMessage: 'total', // Footer total message
-        selectedMessage: 'selected' // Footer selected message
-      }
-    }), FormFieldsModule,
-    SharedModule
-  ],
+        }), NgxDatatableModule.forRoot({
+            messages: {
+                emptyMessage: 'No data to display', // Message to show when array is presented, but contains no values
+                totalMessage: 'total', // Footer total message
+                selectedMessage: 'selected' // Footer selected message
+            }
+        }), FormFieldsModule,
+        SharedModule, MatMenuModule
+    ],
   providers: [
     {
       provide: MAT_DATE_LOCALE,

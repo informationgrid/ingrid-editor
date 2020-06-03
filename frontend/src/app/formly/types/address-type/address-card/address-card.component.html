@@ -2,14 +2,19 @@
     <mat-card-header>
         <div mat-card-avatar><mat-icon [svgIcon]="'Institution'"></mat-icon></div>
         <mat-card-title fxFlex>{{address.type | codelist:"505" | async}}</mat-card-title>
-        <!--<div>
-            <button mat-icon-button mat-flat-button class="menu clickable">
+        <div fxFlex></div>
+        <div>
+            <button mat-icon-button class="menu dark context-button" [matMenuTriggerFor]="linkedAddressMenu">
                 <mat-icon>more_vert</mat-icon>
             </button>
-        </div>-->
+            <mat-menu #linkedAddressMenu="matMenu">
+                <button mat-menu-item disabled>Bearbeiten</button>
+                <button mat-menu-item (click)="remove.next()">Löschen</button>
+            </mat-menu>
+        </div>
     </mat-card-header>
 
     <mat-card-content>
-        <mat-card-subtitle>{{address.ref.title}}</mat-card-subtitle>
+        <mat-card-subtitle>{{address.ref?.title}}</mat-card-subtitle>
     </mat-card-content>
 </mat-card>

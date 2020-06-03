@@ -462,3 +462,20 @@ ige-root .mat-drawer-container {
     padding-left: 20px;
   }
 }
+
+// Context Buttons
+.context-button.mat-icon-button {
+  width: 26px;
+  height: 26px;
+  line-height: 24px;
+  background-color: $ige-background-bar;
+
+  &:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.04) !important;
+
+    &.dark {
+      background-color: darken($ige-background-bar, 5%) !important;
+    }
+  }
+}

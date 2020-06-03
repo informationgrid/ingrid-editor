@@ -1,5 +1,6 @@
 <div fxLayout="row" fxLayoutGap="24px" class="address-cards">
     <ige-address-card *ngFor="let address of addresses" fxFlex="50"
+                      (remove)="removeAddress(address)"
                       [address]="address"></ige-address-card>
 </div>
 

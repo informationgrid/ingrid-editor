@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IgeDocument} from '../../../../models/ige-document';
 
 export interface AddressRef {
@@ -15,6 +15,7 @@ export interface AddressRef {
 export class AddressCardComponent implements OnInit {
 
   @Input() address: AddressRef;
+  @Output() remove = new EventEmitter();
 
   constructor() {
   }
