@@ -1,6 +1,3 @@
-@import '~@swimlane/ngx-datatable/index.css';
-@import '~@swimlane/ngx-datatable/themes/material.scss';
-@import '~@swimlane/ngx-datatable/assets/icons.css';
 @import './variables.scss';
 @import './material.override.scss';
 @import './material-fields.override.scss';
@@ -277,15 +274,6 @@ dynamic-form textarea {
   vertical-align: top;
 }
 
-p-dataTable {
-  width: 100%;
-  height: 100px;
-}
-
-.ag-body-viewport {
-  -webkit-overflow-scrolling: touch;
-}
-
 sidebar .list-group-item {
   cursor: pointer;
 }
@@ -358,22 +346,6 @@ sidebar .list-group-item:hover {
 .smallField {
   width: 110px;
   max-width: 150px;
-}
-
-/* ngx-datatable */
-.ngx-datatable.material {
-
-  .datatable-body-cell {
-    padding: 0.4rem 1rem !important;
-  }
-
-  .datatable-checkbox {
-    margin-top: -3px !important;
-  }
-}
-
-.datatable-row-detail {
-  width: 100vw;
 }
 
 /* Split gutter style */

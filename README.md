@@ -18,7 +18,7 @@ We suggest to use the startup configuration to prevent accidentally commit of de
 ### Start the client and server
 Run IgeServer.java as Java Application in the server directory.
 
-For the client just run `npm start` in the frontend directory.
+For the client just run `npm start` in the frontend directory. When developing for Internet Explorer please run `npm run start-ie11`.
 
 With the following command a jar is generated, which contains the whole server: 
 TBD: create an installer instead

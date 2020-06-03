@@ -15,28 +15,21 @@ import {MatInputModule} from '@angular/material/input';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
-import {NgxDatagridComponent} from './ngx-datagrid/ngx-datagrid.component';
-import {NgxDatatableModule} from '@swimlane/ngx-datatable';
-import {GridTextComponent} from './ngx-datagrid/grid-text/grid-text.component';
-import {GridSelectComponent} from './ngx-datagrid/grid-select/grid-select.component';
 import {FocusDirective} from '../directives/focus.directive';
-import { GridDateComponent } from './ngx-datagrid/grid-date/grid-date.component';
-import {GridBaseComponent} from './ngx-datagrid/grid-base/grid-base.component';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     MatInputModule, MatDatepickerModule, MatNativeDateModule, MatCheckboxModule, MatRadioModule,
     MatTableModule, MatButtonModule,
-    MatIconModule, MatSelectModule,
-    NgxDatatableModule
+    MatIconModule, MatSelectModule
   ],
   declarations: [
     DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent,
-    NgxDatagridComponent, GridTextComponent, GridSelectComponent, FocusDirective, GridDateComponent, GridBaseComponent
+    FocusDirective
   ],
   exports: [
-    DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent, NgxDatagridComponent,
+    DropDownComponent, DataGridComponent, DateboxComponent, CheckboxComponent, RadioboxComponent,
     FocusDirective, MatInputModule
   ]
 })

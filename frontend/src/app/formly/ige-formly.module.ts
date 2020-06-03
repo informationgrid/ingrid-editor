@@ -20,8 +20,6 @@ import {FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';
 import {TableTypeComponent} from './types/table-type.component';
 import {CommonModule} from '@angular/common';
 import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
-import {NgxDatatableTypeComponent} from './types/ngx-datatable-type.component';
-import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {DocReferenceTypeComponent} from './types/doc-reference-type.component';
 import {TreeSelectDialog} from '../+form/dialogs/tree-select/tree-select.dialog';
@@ -58,9 +56,6 @@ export function IpValidator(control: FormControl): ValidationErrors {
                 name: 'table',
                 component: TableTypeComponent
             }, {
-                name: 'ngx-table',
-                component: NgxDatatableTypeComponent
-            }, {
                 name: 'address-card',
                 component: AddressTypeComponent
             }, {
@@ -76,12 +71,6 @@ export function IpValidator(control: FormControl): ValidationErrors {
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
       ]*/
-        }), NgxDatatableModule.forRoot({
-            messages: {
-                emptyMessage: 'No data to display', // Message to show when array is presented, but contains no values
-                totalMessage: 'total', // Footer total message
-                selectedMessage: 'selected' // Footer selected message
-            }
         }), FormFieldsModule,
         SharedModule, MatMenuModule
     ],
@@ -93,7 +82,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
   ],
   declarations: [
     CodelistPipe,
-    ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent, NgxDatatableTypeComponent,
+    ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent,
     TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
     AddressCardComponent, ChooseAddressDialogComponent
   ],
