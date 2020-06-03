@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start-ie11": "ng serve --configuration es5",
     "hmr": "ng serve --configuration hmr",
     "build": "ng build ige-ng",
     "prod": "ng build ige-ng --prod",
@@ -38,7 +39,6 @@
     "@ngneat/until-destroy": "^7.1.6",
     "@ngx-formly/core": "5.6.0",
     "@ngx-formly/material": "5.6.0",
-    "@swimlane/ngx-datatable": "^17.0.0",
     "angular-split": "^3.0.3",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.6.3",
@@ -88,5 +88,10 @@
     "ts-node": "~7.0.1",
     "tslint": "~5.12.1",
     "typescript": "~3.7.5"
+  },
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">= 1.22.0",
+    "node": ">= 12.5.0"
   }
 }
