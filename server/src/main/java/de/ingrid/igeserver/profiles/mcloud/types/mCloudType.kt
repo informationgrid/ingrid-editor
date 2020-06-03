@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.db.ODatabaseSession
 import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.documenttypes.AbstractDocumentType
+import de.ingrid.igeserver.documenttypes.DocumentWrapperType
 import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
@@ -38,11 +39,12 @@ class mCloudType : AbstractDocumentType(TYPE, profiles) {
             val wrapperId = address.path("ref").asText()
             var wrapper: JsonNode?
             try {
-                wrapper = docService!!.getByDocId(wrapperId, TYPE, true)
+                wrapper = docService!!.getByDocId(wrapperId, DocumentWrapperType.TYPE, true)
                 val latestDocument = docService.getLatestDocument(wrapper)
                 (address as ObjectNode).put("ref", latestDocument)
             } catch (e: Exception) {
                 log.error(e)
+                throw e
             }
         }
     }
