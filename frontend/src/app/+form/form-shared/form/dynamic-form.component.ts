@@ -62,6 +62,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private formStateName: 'document' | 'address';
   private query: TreeQuery | AddressTreeQuery;
   isLoading = true;
+  showJson = false;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
@@ -150,6 +151,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     externalTreeNodeChange$.subscribe(node => {
       this.activeId.next(node.id);
     });
+
+    this.session.showJSONView$
+      .pipe(untilDestroyed(this))
+      .subscribe(show => this.showJson = show);
 
   }
 
@@ -240,7 +245,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // TODO: extract to permission service class
-
   hasPermission(data: any): boolean {
     // TODO: check all roles
     if (this.userRoles.length > 0) {

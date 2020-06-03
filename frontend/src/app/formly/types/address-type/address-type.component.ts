@@ -35,7 +35,7 @@ export class AddressTypeComponent extends FieldType implements OnInit {
 
   addAddress() {
 
-    this.dialog.open(ChooseAddressDialogComponent)
+    this.dialog.open(ChooseAddressDialogComponent, {minWidth: 400})
       .afterClosed()
       .pipe(filter(data => data))
       .subscribe((data: ChooseAddressResponse) => {

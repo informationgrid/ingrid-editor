@@ -8,8 +8,10 @@ import {PrintViewPlugin} from './+form/dialogs/print-view/print-view.plugin';
 import {DeleteDocsPlugin} from './+form/dialogs/delete-docs/delete-docs.plugin';
 import {HistoryPlugin} from './+form/dialogs/history/history.plugin';
 import {DeleteEmptyFoldersBehaviour} from './+catalog/+behaviours/system/DeleteEmptyFolders/delete-empty-folders.behaviour';
+import {ShowJsonBehaviour} from './+catalog/+behaviours/system/ShowJson/show-json.behaviour';
 
 export const formPluginProvider = [
+  {provide: FormPluginToken, useClass: ShowJsonBehaviour, multi: true},
   {provide: FormPluginToken, useClass: PublishPlugin, multi: true},
   {provide: FormPluginToken, useClass: CreateDocumentPlugin, multi: true},
   {provide: FormPluginToken, useClass: SavePlugin, multi: true},

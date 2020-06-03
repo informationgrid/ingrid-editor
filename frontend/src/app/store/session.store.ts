@@ -7,6 +7,7 @@ export interface SessionState {
   ui: {
     sidebarExpanded?: boolean
     sidebarWidth?: number;
+    showJSONView?: boolean;
   },
   latestDocuments: DocumentAbstract[]
 }
@@ -16,7 +17,8 @@ export function createInitialState(): SessionState {
     loggedIn: false,
     ui: {
       sidebarExpanded: true,
-      sidebarWidth: 15
+      sidebarWidth: 15,
+      showJSONView: false
     },
     latestDocuments: []
   };

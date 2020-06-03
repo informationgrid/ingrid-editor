@@ -8,6 +8,7 @@ export class SessionQuery extends Query<SessionState> {
   isSidebarExpanded$ = this.select(state => state.ui.sidebarExpanded);
   sidebarWidth$ = this.select(state => state.ui.sidebarWidth);
   latestDocuments$ = this.select(state => state.latestDocuments);
+  showJSONView$ = this.select(state => state.ui.showJSONView);
 
   constructor(protected store: SessionStore) {
     super(store);
