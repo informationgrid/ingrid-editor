@@ -44,7 +44,7 @@ export class ProfileAddress extends BaseDoctype {
                 appearance: 'outline'
               },
               expressionProperties: {
-                'templateOptions.required': '(!model.firstName && !model.lastName) || model.firstName.length === 0 && model.lastName?.length === 0',
+                'templateOptions.required': '(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0)',
               },
             }]
           }, {
@@ -69,14 +69,10 @@ export class ProfileAddress extends BaseDoctype {
         }]
       }, {
         key: 'contact',
-        type: 'ngx-table',
+        type: 'input',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Kommunikation',
-          columns: [
-            {key: 'name', editable: true, label: 'Name'},
-            {key: 'type', editable: false, label: 'Art'}
-          ]
+          externalLabel: 'Kommunikation'
         }
       }, {
         key: 'contact-link',
