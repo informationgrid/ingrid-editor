@@ -2,8 +2,6 @@ import {DocumentPage} from '../../pages/document.page';
 import {Utils} from '../../pages/utils';
 import {AddressPage} from '../../pages/address.page';
 
-const SEPARATOR = ' chevron_right';
-
 describe('General create addresses/folders', () => {
 
   beforeEach(() => {
