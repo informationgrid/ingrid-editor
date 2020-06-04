@@ -39,7 +39,7 @@ interface DBApi {
      * @return
      */
     @Throws(Exception::class)
-    fun findAll(type: String, query: Map<String, String>?, options: FindOptions?): DBFindAllResults
+    fun findAll(type: String, query: Map<String, String?>?, options: FindOptions?): DBFindAllResults
 
     /**
      * Save a raw object with a given ID (like file uploads).

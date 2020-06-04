@@ -207,10 +207,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         try {
             dbService.acquire(dbId).use {
-                val queryMap: MutableMap<String, String> = HashMap()
-                if (parentId != null) {
-                    queryMap[FIELD_PARENT] = parentId
-                }
+                val queryMap: MutableMap<String, String?> = HashMap()
+                queryMap[FIELD_PARENT] = parentId
                 queryMap[FIELD_CATEGORY] = if (isAddress) "address" else "data"
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
