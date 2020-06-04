@@ -27,7 +27,7 @@ abstract class AbstractDocumentType(val typeName: String, private val forProfile
     open fun handleLinkedFields(doc: JsonNode?, dbService: DBApi?) {
     }
 
-    open fun mapLatestDocReference(doc: JsonNode?, docService: DocumentService?) {}
+    open fun mapLatestDocReference(doc: JsonNode, docService: DocumentService) {}
     fun usedInProfile(profileId: String): Boolean {
         return forProfiles.isEmpty() || Arrays.asList(*forProfiles).contains(profileId)
     }

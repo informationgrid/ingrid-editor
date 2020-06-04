@@ -22,21 +22,17 @@ class BehavioursApiController : BehavioursApi, Logging {
     @Autowired
     lateinit var dbUtils: DBUtils
 
-    @Autowired
-    lateinit var authUtils: AuthUtils
-
     @Throws(ApiException::class)
     override fun getBehaviours(principal: Principal?): ResponseEntity<List<Behaviour>> {
 
-        val userId = authUtils.getUsernameFromPrincipal(principal)
-        val dbId = dbUtils.getCurrentCatalogForUser(userId)
+        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            val behaviours = dbService.findAll(DBApi.DBClass.Behaviours.name)
+            val behaviours = dbService.findAll(DBApi.DBClass.Behaviours.name)!!
             val result = behaviours
                     .map {
                         Behaviour(
-                                _id = it.get("_id").asText(),
+                                _id = it!!.get("_id").asText(),
                                 active = it.get("active").asBoolean(),
                                 data = it.get("data"))
                     }
@@ -51,8 +47,7 @@ class BehavioursApiController : BehavioursApi, Logging {
             principal: Principal?,
             behaviours: List<Behaviour>): ResponseEntity<Void> {
 
-        val userId = authUtils.getUsernameFromPrincipal(principal)
-        val dbId = dbUtils.getCurrentCatalogForUser(userId)
+        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
             for (behaviour in behaviours) {

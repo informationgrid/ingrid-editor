@@ -21,6 +21,7 @@ import java.util.List;
 
 import static de.ingrid.igeserver.db.OrientDBDatabase.DB_ID;
 import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.TYPE;
+import static de.ingrid.igeserver.services.ConstantsKt.*;
 import static de.ingrid.igeserver.services.MapperService.*;
 
 @Service
@@ -150,7 +151,7 @@ public class Migration {
 
         JsonNode doctype = doc.get("_profile");
         if (doctype != null && !doctype.asText().isEmpty()) {
-            ((ObjectNode) doc).put(MapperService.FIELD_DOCUMENT_TYPE, doctype.asText());
+            ((ObjectNode) doc).put(FIELD_DOCUMENT_TYPE, doctype.asText());
             ((ObjectNode) doc).remove("_profile");
             String recordId = doc.get("@rid").asText();
             try {

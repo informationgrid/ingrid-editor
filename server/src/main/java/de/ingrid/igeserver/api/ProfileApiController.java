@@ -42,8 +42,7 @@ public class ProfileApiController implements ProfileApi {
         // ClassPathResource resource = new ClassPathResource( "/profile-uvp.chunk.js" );
         String profile = null; // new String( Files.readAllBytes( Paths.get( resource.getURI() ) ) );
 
-        String userId = this.authUtils.getUsernameFromPrincipal(principal);
-        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String dbId = dbUtils.getCurrentCatalogForPrincipal(principal);
 
         try (ODatabaseSession session = dbService.acquire(dbId)) {
             List<JsonNode> allFrom = dbService.findAll(DBApi.DBClass.Info.name());
@@ -63,8 +62,7 @@ public class ProfileApiController implements ProfileApi {
     public ResponseEntity<String> uploadProfile(Principal principal, MultipartFile file,
                                                 RedirectAttributes redirectAttributes) throws ApiException {
 
-        String userId = this.authUtils.getUsernameFromPrincipal(principal);
-        String dbId = this.dbUtils.getCurrentCatalogForUser(userId);
+        String dbId = dbUtils.getCurrentCatalogForPrincipal(principal);
 
         log.info("Received file:" + file.getOriginalFilename());
         log.info("file-size:" + file.getSize());

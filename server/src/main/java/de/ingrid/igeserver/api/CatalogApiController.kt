@@ -21,7 +21,10 @@ class CatalogApiController : CatalogApi {
     override val catalogs: ResponseEntity<List<Catalog>>
         get() {
 
-            val catalogs = dbService.databases.map { dbUtils.getCatalogById(it) }
+            val catalogs = dbService.databases
+                    .map { dbUtils.getCatalogById(it) }
+                    .filterNotNull()
+
             return ResponseEntity.ok().body(catalogs)
 
         }

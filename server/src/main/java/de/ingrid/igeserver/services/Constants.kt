@@ -1,0 +1,15 @@
+package de.ingrid.igeserver.services
+
+const val FIELD_STATE = "_state"
+const val FIELD_DOCUMENT_TYPE = "_type"
+const val FIELD_ID = "_id"
+const val PARENT_ID = "_parent"
+const val FIELD_CREATED = "_created"
+const val FIELD_MODIFIED = "_modified"
+const val FIELD_HAS_CHILDREN = "_hasChildren"
+const val FIELD_PARENT = "_parent"
+const val FIELD_CATEGORY = "_category"
+const val FIELD_MODIFIED_BY = "_modifiedBy"
+const val FIELD_DRAFT = "draft"
+const val FIELD_PUBLISHED = "published"
+const val FIELD_ARCHIVE = "archive"

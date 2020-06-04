@@ -1,18 +1,14 @@
-package de.ingrid.igeserver.db;
+package de.ingrid.igeserver.db
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import de.ingrid.igeserver.api.ApiException;
-import de.ingrid.igeserver.model.Catalog;
+import com.fasterxml.jackson.databind.JsonNode
+import com.orientechnologies.orient.core.db.ODatabaseSession
+import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.model.Catalog
 
-import java.util.List;
-import java.util.Map;
-
-public interface DBApi {
-
-    String getRecordId(String dbClass, String docUuid) throws ApiException;
-
-    Map<String, Long> countChildrenFromNode(String id, String type);
+interface DBApi {
+    @Throws(ApiException::class)
+    fun getRecordId(dbClass: String, docUuid: String): String?
+    fun countChildrenFromNode(id: String?, type: String): Map<String, Long>
 
     /**
      * Count number of documents found with findAll method
@@ -21,72 +17,78 @@ public interface DBApi {
      * @param findOptions
      * @return
      */
-    int count(String type, Map<String, String> query, FindOptions findOptions);
-
-    public static enum DBClass {Documents, User, Role, Info, Behaviours};
+    fun count(type: String, query: Map<String, String>?, findOptions: FindOptions?): Int
+    enum class DBClass {
+        Documents, User, Role, Info, Behaviours
+    }
 
     /**
      * Find a document of a certain type with a given ID.
      */
-    public JsonNode find(String type, String id) throws Exception;
+    @Throws(Exception::class)
+    fun find(type: String, id: String?): JsonNode?
 
     /**
      * Get all documents of a certain type.
      * @param type
      */
-    public List<JsonNode> findAll(String type);
+    fun findAll(type: String?): List<JsonNode?>?
 
     /**
      * Get all documents of a certain type that matches a given query.
      * @return
      */
-    public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) throws Exception;
+    @Throws(Exception::class)
+    fun findAll(type: String, query: Map<String, String>?, options: FindOptions?): DBFindAllResults
 
     /**
      * Save a raw object with a given ID (like file uploads).
      * @return
      */
-    JsonNode save(String type, String dbDocId, String data) throws ApiException;
+    @Throws(ApiException::class)
+    fun save(type: String, dbDocId: String?, data: String): JsonNode
 
     /**
      * Delete a document with a given ID.
      */
-    public boolean remove(String type, String id) throws ApiException;
+    @Throws(ApiException::class)
+    fun remove(type: String, id: String): Boolean
 
     /**
      * Delete documents that match a given query.
      *
      * @return a list of IDs of the deleted documents
      */
-    public boolean remove(String type, Map<String, String> query);
-
+    fun remove(type: String, query: Map<String, String>): Boolean
 
     /**
      * Get all databases
      * @return an array of database names
      */
-    public String[] getDatabases();
+    val databases: Array<String>
 
     /**
      * Create a database with a given name.
      * @return the generated database name
      */
-    public String createDatabase(Catalog settings) throws ApiException;
+    @Throws(ApiException::class)
+    fun createDatabase(settings: Catalog?): String?
 
     /**
      * Update an existing database, like name property.
      * @param settings
      */
-    public void updateDatabase(Catalog settings) throws ApiException;
+    @Throws(ApiException::class)
+    fun updateDatabase(settings: Catalog?)
 
     /**
      * Delete a database with a given name.
      */
-    public boolean removeDatabase(String name);
+    fun removeDatabase(name: String?): Boolean
 
     /**
      * Open a session to a database with name dbName. With that it's possible to
      * begin, commit and rollback transactions.
      */
-    ODatabaseSession acquire(String dbName);
+    fun acquire(dbName: String?): ODatabaseSession?
 }

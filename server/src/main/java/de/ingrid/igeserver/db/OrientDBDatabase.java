@@ -36,6 +36,8 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static de.ingrid.igeserver.services.ConstantsKt.FIELD_PARENT;
+
 @Service
 public class OrientDBDatabase implements DBApi {
 
@@ -268,7 +270,7 @@ public class OrientDBDatabase implements DBApi {
         OResultSet countQuery = getDBFromThread().query(query);
         while (countQuery.hasNext()) {
             OResult next = countQuery.next();
-            response.put(next.getProperty(MapperService.FIELD_PARENT), next.getProperty("count(_id)"));
+            response.put(next.getProperty(FIELD_PARENT), next.getProperty("count(_id)"));
         }
 
         countQuery.close();
@@ -315,19 +317,21 @@ public class OrientDBDatabase implements DBApi {
     @Override
     public JsonNode save(String type, String id, String data) throws ApiException {
 
+        // TODO: we shouldn't use DB-ID but document ID here
         Optional<OResult> doc = getById(type, id);
         ODocument docToSave;
 
-        // if it's a new document
+        // get record or a new document
         docToSave = doc
                 .map(oResult -> (ODocument) oResult.getRecord().get())
                 .orElseGet(() -> new ODocument(type));
 
         docToSave.fromJSON(data);
 
-        docToSave.save();
+        ODocument savedDoc = docToSave.save();
+
         try {
-            return mapODocumentToJson(docToSave, true);
+            return mapODocumentToJson(savedDoc, true);
         } catch (Exception e) {
             log.error("Error saving document", e);
             throw new ApiException("Error saving document" + e.getMessage());

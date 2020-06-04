@@ -26,6 +26,9 @@ class DocumentType : AbstractDocumentType(TYPE, profiles) {
             docClass.createProperty("_id", OType.STRING)
             docClass.createProperty("_parent", OType.STRING)
             docClass.createProperty("_type", OType.STRING)
+//            docClass.createProperty("_created", OType.DATETIME)
+//            docClass.createProperty("_modified", OType.DATETIME)
+//            docClass.createProperty("title", OType.STRING)
         }
     }
 }

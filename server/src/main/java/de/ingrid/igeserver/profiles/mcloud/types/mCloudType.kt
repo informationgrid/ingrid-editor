@@ -29,19 +29,22 @@ class mCloudType : AbstractDocumentType(TYPE, profiles) {
         handleLinkedAddresses(doc)
     }
 
-    override fun mapLatestDocReference(doc: JsonNode?, docService: DocumentService?) {
+    override fun mapLatestDocReference(doc: JsonNode, docService: DocumentService) {
         handleLatestsAddresses(doc, docService)
     }
 
-    private fun handleLatestsAddresses(doc: JsonNode?, docService: DocumentService?) {
-        val addresses = doc!!.path("addresses")
+    private fun handleLatestsAddresses(doc: JsonNode, docService: DocumentService) {
+        val addresses = doc.path("addresses")
         for (address in addresses) {
             val wrapperId = address.path("ref").asText()
-            var wrapper: JsonNode?
             try {
-                wrapper = docService!!.getByDocId(wrapperId, DocumentWrapperType.TYPE, true)
-                val latestDocument = docService.getLatestDocument(wrapper)
-                (address as ObjectNode).put("ref", latestDocument)
+                val wrapper = docService.getByDocId(wrapperId, DocumentWrapperType.TYPE, true)
+                if (wrapper != null) {
+                    val latestDocument = docService.getLatestDocument(wrapper)
+                    (address as ObjectNode).put("ref", latestDocument)
+                } else {
+                    log.error("Referenced Address could not be found: $wrapperId")
+                }
             } catch (e: Exception) {
                 log.error(e)
                 throw e

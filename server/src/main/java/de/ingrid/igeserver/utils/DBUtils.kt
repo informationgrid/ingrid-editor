@@ -1,153 +1,156 @@
-package de.ingrid.igeserver.utils;
+package de.ingrid.igeserver.utils
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.exception.OStorageException;
-import de.ingrid.igeserver.api.ApiException;
-import de.ingrid.igeserver.db.*;
-import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
-import de.ingrid.igeserver.model.Catalog;
-import de.ingrid.igeserver.services.MapperService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.orientechnologies.orient.core.exception.OStorageException
+import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.db.FindOptions
+import de.ingrid.igeserver.db.OrientDBDatabase
+import de.ingrid.igeserver.db.QueryType
+import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException
+import de.ingrid.igeserver.model.Catalog
+import de.ingrid.igeserver.services.MapperService.Companion.removeDBManagementFields
+import org.apache.logging.log4j.LogManager
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import java.security.Principal
+import java.util.*
 
 @Service
-public class DBUtils {
+class DBUtils @Autowired constructor(private val dbService: DBApi, private val authUtils: AuthUtils) {
 
-    private static Logger log = LogManager.getLogger(DBUtils.class);
-
-    private final DBApi dbService;
-
-    @Autowired
-    public DBUtils(DBApi dbService) {
-        this.dbService = dbService;
+    fun getCurrentCatalogForPrincipal(principal: Principal?): String? {
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        return getCurrentCatalogForUser(userId)
     }
 
-    public String getCurrentCatalogForUser(String userId) {
-        Map<String, String> query = new HashMap<>();
-        query.put("userId", userId);
+    fun getCurrentCatalogForUser(userId: String): String? {
+        val query: MutableMap<String, String> = HashMap()
+        query["userId"] = userId
 
         // TODO: use cache!
-        try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            FindOptions findOptions = new FindOptions();
-            findOptions.queryType = QueryType.exact;
-            findOptions.resolveReferences = false;
-            DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
-
-            if (list.totalHits == 0) {
-                String msg = "The user does not seem to be assigned to any database: " + userId;
-                log.error(msg);
-            }
-
-            // TODO: can this exception be thrown? what about size check above?
-            JsonNode catInfo = list.hits.stream()
-                    .findFirst()
-                    .orElseThrow(() -> new ApiException(500, "No catalog Info found"));
-
-            String currentCatalogId = catInfo.has("currentCatalogId") ? catInfo.get("currentCatalogId").asText() : null;
-            if (currentCatalogId == null || currentCatalogId.trim().equals("")) {
-                ArrayNode catalogIds = (ArrayNode) catInfo.get("catalogIds");
-                if (catalogIds.size() > 0) {
-                    currentCatalogId = catalogIds.get(0).asText();
+        try {
+            dbService.acquire("IgeUsers").use { ignored ->
+                val findOptions = FindOptions()
+                findOptions.queryType = QueryType.exact
+                findOptions.resolveReferences = false
+                val list = dbService.findAll("Info", query, findOptions)
+                if (list.totalHits == 0L) {
+                    val msg = "The user does not seem to be assigned to any database: $userId"
+                    log.error(msg)
                 }
+
+                // TODO: can this exception be thrown? what about size check above?
+                val catInfo = list.hits.stream()
+                        .findFirst()
+                        .orElseThrow { ApiException(500, "No catalog Info found") }
+                var currentCatalogId = if (catInfo.has("currentCatalogId")) catInfo["currentCatalogId"].asText() else null
+                if (currentCatalogId == null || currentCatalogId.trim { it <= ' ' } == "") {
+                    val catalogIds = catInfo["catalogIds"] as ArrayNode
+                    if (catalogIds.size() > 0) {
+                        currentCatalogId = catalogIds[0].asText()
+                    }
+                }
+                return currentCatalogId
             }
-            return currentCatalogId;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
         }
     }
 
-    public Set<String> getCatalogsForUser(String userId) {
-        Map<String, String> query = new HashMap<>();
-        query.put("userId", userId);
+    fun getCatalogsForUser(userId: String): Set<String> {
+        val query: MutableMap<String, String> = HashMap()
+        query["userId"] = userId
 
         // TODO: use cache!
-        try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            FindOptions findOptions = new FindOptions();
-            findOptions.queryType = QueryType.exact;
-            findOptions.resolveReferences = false;
-            DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
-
-            if (list.totalHits == 0) {
-                String msg = "The user does not seem to be assigned to any database: " + userId;
-                log.error(msg);
-                // throw new ApiException(500, "User has no assigned catalog");
-            }
-
-            if (list.totalHits == 0) {
-                return new HashSet<>();
-            } else {
-                JsonNode map = list.hits.get(0);
-                ArrayNode catalogIdsArray = (ArrayNode) map.get("catalogIds");
-                Set<String> catalogIds = new HashSet<>();
-                for (JsonNode jsonNode : catalogIdsArray) {
-                    catalogIds.add(jsonNode.asText());
+        try {
+            dbService.acquire("IgeUsers").use { ignored ->
+                val findOptions = FindOptions()
+                findOptions.queryType = QueryType.exact
+                findOptions.resolveReferences = false
+                val list = dbService.findAll("Info", query, findOptions)
+                if (list.totalHits == 0L) {
+                    val msg = "The user does not seem to be assigned to any database: $userId"
+                    log.error(msg)
+                    // throw new ApiException(500, "User has no assigned catalog");
                 }
-                return catalogIds;
+                return if (list.totalHits == 0L) {
+                    HashSet()
+                } else {
+                    val map = list.hits[0]
+                    val catalogIdsArray = map["catalogIds"] as ArrayNode
+                    val catalogIds: MutableSet<String> = HashSet()
+                    for (jsonNode in catalogIdsArray) {
+                        catalogIds.add(jsonNode.asText())
+                    }
+                    catalogIds
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new HashSet<>();
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return HashSet()
         }
     }
 
-    public Catalog getCatalogById(String id) {
-        try (ODatabaseSession ignored = this.dbService.acquire(id)) {
-            List<JsonNode> catalogInfo = this.dbService.findAll(DBApi.DBClass.Info.name());
+    fun getCatalogById(id: String?): Catalog? {
+        try {
+            dbService.acquire(id).use { ignored ->
+                val catalogInfo = dbService.findAll(DBApi.DBClass.Info.name)
 
-            // TODO: can this happen?
-            if (catalogInfo == null || catalogInfo.size() == 0) return null;
+                // TODO: can this happen?
+                assert(catalogInfo != null && catalogInfo.size > 0)
 
-            JsonNode jsonNode = catalogInfo.get(0);
-            return new Catalog(
-                    id,
-                    jsonNode.get("name").asText(),
-                    jsonNode.has("description") ? jsonNode.get("description").asText() : "",
-                    jsonNode.get("type").asText());
-        } catch (OStorageException ex) {
+                val jsonNode = catalogInfo?.get(0)!!
+                return Catalog(
+                        id,
+                        jsonNode.get("name")?.asText() ?: "Unknown",
+                        if (jsonNode.has("description")) jsonNode["description"].asText() else "",
+                        jsonNode["type"].asText())
+            }
+        } catch (ex: OStorageException) {
             // in case catalog has been deleted but reference is still there
             // TODO: remove reference from user to deleted catalogs
-            log.error("User probably has deleted catalog reference", ex);
-            return null;
-        } catch (DatabaseDoesNotExistException ex) {
-            log.error("The database does not exist: " + ex.getMessage());
-            return null;
+            log.error("User probably has deleted catalog reference", ex)
+            return null
+        } catch (ex: DatabaseDoesNotExistException) {
+            log.error("The database does not exist: " + ex.message)
+            return null
         }
     }
 
-    public static String toJsonString(Object map) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-        return mapper.writeValueAsString(map);
-    }
-
-    public void setCatalogIdsForUser(String userId, Set<String> assignedCatalogs) {
-        Map<String, String> query = new HashMap<>();
-        query.put("userId", userId);
-
-        try (ODatabaseSession ignored = this.dbService.acquire("IgeUsers")) {
-            FindOptions findOptions = new FindOptions();
-            findOptions.queryType = QueryType.exact;
-            findOptions.resolveReferences = false;
-            DBFindAllResults list = this.dbService.findAll("Info", query, findOptions);
-
-            ObjectNode catUserRef = (ObjectNode) list.hits.get(0);
-            catUserRef.putPOJO("catalogIds", assignedCatalogs);
-            String id = catUserRef.get(OrientDBDatabase.DB_ID).asText();
-            MapperService.removeDBManagementFields(catUserRef);
-
-            this.dbService.save("Info", id, catUserRef.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
+    fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String?>?) {
+        val query: MutableMap<String, String> = HashMap()
+        query["userId"] = userId
+        try {
+            dbService.acquire("IgeUsers").use { ignored ->
+                val findOptions = FindOptions()
+                findOptions.queryType = QueryType.exact
+                findOptions.resolveReferences = false
+                val list = dbService.findAll("Info", query, findOptions)
+                val catUserRef = list.hits[0] as ObjectNode
+                catUserRef.putPOJO("catalogIds", assignedCatalogs)
+                val id = catUserRef[OrientDBDatabase.DB_ID].asText()
+                removeDBManagementFields(catUserRef)
+                dbService.save("Info", id, catUserRef.toString())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
+
+    companion object {
+        private val log = LogManager.getLogger(DBUtils::class.java)
+
+        @Throws(Exception::class)
+        fun toJsonString(map: Any?): String {
+            val mapper = ObjectMapper()
+            mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+            return mapper.writeValueAsString(map)
+        }
+    }
+
 }
