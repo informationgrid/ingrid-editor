@@ -15,9 +15,7 @@
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "wba": "webpack-bundle-analyzer dist/stats.json",
-    "sme": "source-map-explorer",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "sme": "source-map-explorer"
   },
   "private": true,
   "dependencies": {
@@ -60,11 +58,6 @@
     "@babel/core": "^7.5.0",
     "@datorama/akita-ngdevtools": "^3.0.2",
     "@ngneat/spectator": "^5.1.0",
-    "@storybook/addon-actions": "^5.2.1",
-    "@storybook/addon-links": "^5.2.1",
-    "@storybook/addon-notes": "^5.2.1",
-    "@storybook/addons": "^5.2.1",
-    "@storybook/angular": "^5.2.1",
     "@types/jasmine": "2.8.8",
     "@types/leaflet": "^1.5.8",
     "@types/leaflet-areaselect": "^0.1.4",
