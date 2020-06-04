@@ -291,17 +291,20 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
 
-        var destId: String = id
+        var parentId: String = id
         val path: MutableList<String> = ArrayList()
         path.add(id)
 
         try {
             dbService.acquire(dbId).use {
-                while (destId != null) {
-                    val doc = documentService.getByDocId(destId, DocumentWrapperType.TYPE, false) ?: break
-                    destId = doc[FIELD_PARENT].textValue()
-                    if (destId != null) {
-                        path.add(destId)
+                while (true) {
+                    val doc = documentService.getByDocId(parentId, DocumentWrapperType.TYPE, false) ?: break
+                    val nextParentId = doc[FIELD_PARENT].textValue()
+                    if (nextParentId != null) {
+                        path.add(nextParentId)
+                        parentId = nextParentId
+                    } else {
+                        break;
                     }
                 }
             }
@@ -309,9 +312,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             log.error(e)
         }
 
-        path.reversed()
-
-        return ResponseEntity.ok(path)
+        return ResponseEntity.ok(path.reversed())
 
     }
 
