@@ -24,7 +24,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import de.ingrid.igeserver.model.DocUVP;
 
-@Service
+//@Service
 public class DocValidator extends MapperService {
     
     @SuppressWarnings({ "deprecation", "serial" })
