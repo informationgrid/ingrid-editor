@@ -56,6 +56,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   // signal to show that a tree node is loading
   private isLoading: TreeNode;
   activeNodeId: string = null;
+  skipNextJump = false;
 
   treeControl: FlatTreeControl<TreeNode>;
 
@@ -96,6 +97,10 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.setActiveNode
         .pipe(untilDestroyed(this))
         .subscribe(id => {
+          if (this.skipNextJump) {
+            this.skipNextJump = false;
+            return;
+          }
           this.jumpToNode(id).then(() => this.activeNodeId = id);
         });
     }
@@ -164,6 +169,7 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.selectionModel.clear();
       this.selectionModel.select(node);
       this.activeNodeId = this.selectionModel.selected[0]._id;
+      this.skipNextJump = true;
       this.activate.next([this.activeNodeId]);
 
       // set path in tree for bread crumb (extract to method)
