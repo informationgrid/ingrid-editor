@@ -300,8 +300,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         try {
             dbService.acquire(dbId).use {
                 while (destId != null) {
-                    val doc = documentService.getByDocId(destId, DocumentWrapperType.TYPE, false)
-                    destId = doc!![FIELD_PARENT].textValue()
+                    val doc = documentService.getByDocId(destId, DocumentWrapperType.TYPE, false) ?: break
+                    destId = doc[FIELD_PARENT].textValue()
                     if (destId != null) {
                         path.add(destId)
                     }

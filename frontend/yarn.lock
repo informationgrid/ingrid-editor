@@ -175,10 +175,10 @@
   resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-9.1.9.tgz#de54334ea195189402487855c9a98f5618605da4"
   integrity sha512-qWVi0TxmU6HeXAgEsfpQvFFygh+a0kH2kGe6bWij4XvG6dWfV3xZjlaFwSIYGk+yK4yL0+9+PAXH+ENfxNw+Cw==
 
-"@angular/cdk-experimental@^9.2.1":
-  version "9.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/cdk-experimental/-/cdk-experimental-9.2.1.tgz#d855b3c81d563db67dc671541c8c1065d6e1d98b"
-  integrity sha512-lYCOxQC2bEUdnUZHBsjy4TyHiOrv2CU0qawUqt3PmsdAugc08lI5yltZGzvaBruOMhAc8YbvwXwWOj3TpVja5g==
+"@angular/cdk-experimental@^9.2.4":
+  version "9.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/cdk-experimental/-/cdk-experimental-9.2.4.tgz#9c1830b7280793f20bdd2edefd24cdbd68344b1c"
+  integrity sha512-HKGzJznsvLeUApBCE0Tj/2U1L5rQSSZ5FYEplRJhWosKc4y/KHiKAXbJbxGS5XKg1Fl/abIzbzFCZ82brD1YvQ==
 
 "@angular/cdk@^9.2.4":
   version "9.2.4"
@@ -256,10 +256,10 @@
   resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-9.1.9.tgz#20c9a79d1dcb2cace45df9e2f304b658e02c1687"
   integrity sha512-r675yImnb/0pY7K5W3V2ITa7YETu1I2AS+bRfII6UQ6gthyeFFOHb5noa7YneC2yqQiM6E4DQmF5ig3daPuFNg==
 
-"@angular/material-experimental@^9.2.1":
-  version "9.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/material-experimental/-/material-experimental-9.2.1.tgz#9e7517d7c1637f31469253dc6fb4265343c4de32"
-  integrity sha512-+UEuJR3F+vzbWumX69rdEbwqjSzSdWSGnleIAA2KGndxIGUL0kGfgOC/t6SXgEeegDifkgk/bAkUP7pyXU3i5w==
+"@angular/material-experimental@^9.2.4":
+  version "9.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/material-experimental/-/material-experimental-9.2.4.tgz#a3b1a4671513795f9b18fbea65b09c6d3e70817e"
+  integrity sha512-Mrel4AxOxru3mnSQBPOiRYr0WkEnI6L+YmbUB1383tt5PysIIBlG9bWqQ4YhrJ+51xLU5uTTGAEkfek4wfe5uQ==
 
 "@angular/material@^9.2.4":
   version "9.2.4"
