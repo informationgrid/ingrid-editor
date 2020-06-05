@@ -39,20 +39,6 @@
     color: $ige-secondary;
   }
 
-  .infoIcon {
-    display: inline-block;
-    background-color: $ige-background;
-    border-radius: 50%;
-    height: 24px;
-    width: 24px;
-    margin-right: 4px;
-    margin-top: 0px;
-
-    ::ng-deep .mat-icon svg rect {
-      fill: $ige-secondary;
-    }
-  }
-
 }
 
 .mat-dialog-actions {

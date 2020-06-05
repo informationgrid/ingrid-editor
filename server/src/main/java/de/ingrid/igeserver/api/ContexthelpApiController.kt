@@ -21,9 +21,9 @@ class ContexthelpApiController : ContexthelpApi {
 
     }
 
-    override fun listContextHelpIds(profile: String, docType: String): ResponseEntity<String> {
+    override fun listContextHelpIds(profile: String, docType: String): ResponseEntity<List<String>> {
 
-        return ResponseEntity.ok("[\"description\"]")
+        return ResponseEntity.ok(helpService.getHelpIDs(profile, docType))
 
     }
 }

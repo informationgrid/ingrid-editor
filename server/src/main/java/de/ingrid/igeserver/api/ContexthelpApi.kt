@@ -31,5 +31,5 @@ interface ContexthelpApi {
     @RequestMapping(value = ["/contexthelpIds"], produces = ["application/json"], method = [RequestMethod.GET])
     fun listContextHelpIds(
             @Parameter(description = "The active profile.", required = true) @RequestParam("profile") profile: String,
-            @Parameter(description = "The current document type.", required = true) @RequestParam("docType") docType: String): ResponseEntity<String>
+            @Parameter(description = "The current document type.", required = true) @RequestParam("docType") docType: String): ResponseEntity<List<String>>
 }

@@ -3,7 +3,6 @@ import {DocumentService} from '../../app/services/document/document.service';
 import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {BaseDoctype} from '../base.doctype';
-import {Behaviour} from '../../app/services/behavior/behaviour.service';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {IgeDocument} from '../../app/models/ige-document';
 import {Injectable} from '@angular/core';
@@ -21,7 +20,7 @@ export class ProfileAddress extends BaseDoctype {
 
   isAddressType = true;
 
-  documentFields = <FormlyFieldConfig[]>[
+  documentFields = () => <FormlyFieldConfig[]>[
     {
       wrappers: ['section'],
       templateOptions: {
@@ -44,29 +43,29 @@ export class ProfileAddress extends BaseDoctype {
                 appearance: 'outline'
               },
               expressionProperties: {
-                'templateOptions.required': '(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0)',
-              },
+                'templateOptions.required': '(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0)'
+              }
             }]
           }, {
-          fieldGroupClassName: 'display-flex',
-          fieldGroup: [{
-            key: 'firstName',
-            className: 'flex-1 firstName',
-            type: 'input',
-            templateOptions: {
-              label: 'Vorname',
-              appearance: 'outline'
-            }
-          }, {
-            key: 'lastName',
-            className: 'flex-1 lastName',
-            type: 'input',
-            templateOptions: {
-              label: 'Nachname',
-              appearance: 'outline'
-            }
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'firstName',
+              className: 'flex-1 firstName',
+              type: 'input',
+              templateOptions: {
+                label: 'Vorname',
+                appearance: 'outline'
+              }
+            }, {
+              key: 'lastName',
+              className: 'flex-1 lastName',
+              type: 'input',
+              templateOptions: {
+                label: 'Nachname',
+                appearance: 'outline'
+              }
+            }]
           }]
-        }]
       }, {
         key: 'contact',
         type: 'input',
@@ -273,56 +272,57 @@ export class ProfileAddress extends BaseDoctype {
   })
 ];*/
 
-  behaviours: Behaviour[] = [
-    {
-      id: 'addressTaskWithWork',
-      title: 'Die Aufgaben müssen das Wort "work" enthalten',
-      description: '',
-      isProfileBehaviour: true,
-      defaultActive: true,
-      register: function (form: FormGroup) {
-        // this behaviour should be a validator for a field!
-        form.get('tasks').validator = function (fc) {
-          return fc.value && fc.value.indexOf('work') !== -1 ? null : {
-            other: {valid: false, error: 'Die Aufgaben müssen das Wort "work" enthalten'}
+  /*
+    behaviours: Behaviour[] = [
+      {
+        id: 'addressTaskWithWork',
+        title: 'Die Aufgaben müssen das Wort "work" enthalten',
+        description: '',
+        isProfileBehaviour: true,
+        defaultActive: true,
+        register: function (form: FormGroup) {
+          // this behaviour should be a validator for a field!
+          form.get('tasks').validator = function (fc) {
+            return fc.value && fc.value.indexOf('work') !== -1 ? null : {
+              other: {valid: false, error: 'Die Aufgaben müssen das Wort "work" enthalten'}
+            };
           };
-        };
+        },
+        unregister: function () {
+        }
       },
-      unregister: function () {
-      }
-    },
-    {
-      id: 'addressAdminArea',
-      title: 'Wenn "Gesundheit", dann Text in Servicezeiten',
-      description: '',
-      isProfileBehaviour: true,
-      defaultActive: true,
-      register: (form: FormGroup) => {
-        // when using valueChanges, then we only must react after a document has been loaded
-        // we only want to react, when the user did any action (click or chose a new item from select box or added a new value
-        form.get('address.adminArea').valueChanges.subscribe(value => {
+      {
+        id: 'addressAdminArea',
+        title: 'Wenn "Gesundheit", dann Text in Servicezeiten',
+        description: '',
+        isProfileBehaviour: true,
+        defaultActive: true,
+        register: (form: FormGroup) => {
+          // when using valueChanges, then we only must react after a document has been loaded
+          // we only want to react, when the user did any action (click or chose a new item from select box or added a new value
+          form.get('address.adminArea').valueChanges.subscribe(value => {
 
-          // TODO: validations should be attached directly to the field to
-          //       avoid initialization problems
-          /*if (self.formIsNotLoaded) {
-            return null;
-          }*/
-          if (value && value.id === '5') {
-            form.get('serviceTimes').setValue('Wir leben gesund!');
-          }
-        });
-      },
-      unregister: function () {
+            // TODO: validations should be attached directly to the field to
+            //       avoid initialization problems
+            /!*if (self.formIsNotLoaded) {
+              return null;
+            }*!/
+            if (value && value.id === '5') {
+              form.get('serviceTimes').setValue('Wir leben gesund!');
+            }
+          });
+        },
+        unregister: function () {
+        }
       }
-    }
-  ];
+    ];
+  */
 
   constructor(storageService: DocumentService,
               codelistService: CodelistService,
               codelistQuery: CodelistQuery) {
 
     super(codelistService, codelistQuery);
-    this.fields.push(...this.documentFields);
 
   }
 

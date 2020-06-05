@@ -48,6 +48,7 @@ import {SharedDocumentItemModule} from './shared/shared-document-item.module';
 import {pluginProvider} from './plugin.provider';
 import {formPluginProvider} from './form-plugin.provider';
 import {CodelistPipe} from './directives/codelist.pipe';
+import {InlineHelpWrapperComponent} from './formly/wrapper/inline-help-wrapper/inline-help-wrapper.component';
 
 registerLocaleData(de);
 
@@ -87,7 +88,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
     ConfirmDialogComponent, CreateNodeComponent,
-    OneColumnWrapperComponent, SectionWrapper,
+    OneColumnWrapperComponent, SectionWrapper, InlineHelpWrapperComponent,
     SideMenuComponent,
     MainHeaderComponent,
     InfoDialogComponent],
@@ -101,6 +102,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     FlexLayoutModule,
     FormlyModule.forRoot({
       wrappers: [
+        {name: 'inline-help', component: InlineHelpWrapperComponent},
         {name: 'panel', component: OneColumnWrapperComponent},
         {name: 'section', component: SectionWrapper}
       ]

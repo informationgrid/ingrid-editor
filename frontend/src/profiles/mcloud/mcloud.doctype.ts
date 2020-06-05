@@ -256,12 +256,4 @@ export class McloudDoctype extends BaseDoctype {
 
   }
 
-  init(help: string[]) {
-
-    this.helpIds = help;
-    this.fields.push(...this.documentFields());
-    console.log('Profile mCLOUD initialized');
-
-  }
-
 }

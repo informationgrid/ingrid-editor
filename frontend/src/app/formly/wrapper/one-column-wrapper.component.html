@@ -4,7 +4,7 @@
     </div>
     <div class="label-wrapper">
         <label (click)="showContextHelp($event)">
-            {{ to.externalLabel }} <span *ngIf="to.required">*</span>
+            {{ to.externalLabel }}<span *ngIf="to.required">*</span>
         </label>
     </div>
     <ng-container #fieldComponent></ng-container>

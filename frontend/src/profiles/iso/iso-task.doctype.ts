@@ -12,8 +12,6 @@ export class IsoTaskDoctype extends IsoBaseDoctype {
 
   constructor(storageService: DocumentService, codelistService: CodelistService, codelistQuery: CodelistQuery) {
     super(storageService, codelistService, codelistQuery);
-
-    this.fields.push( ...[]);
   }
 
 }

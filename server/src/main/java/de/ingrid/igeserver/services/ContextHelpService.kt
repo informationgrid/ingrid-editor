@@ -35,6 +35,13 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils) {
 
     }
 
+    fun getHelpIDs(profile: String, docType: String): List<String> {
+        return this.markdownContextHelp.keys
+                .filter { it.profile == profile && it.docType == docType }
+                .map { it.fieldId }
+                .distinct()
+    }
+
     private fun getContextHelp(profile: String, docType: String, id: String): MarkdownContextHelpItem? {
         val itemKey = MarkdownContextHelpItemKey(
                 fieldId = id,

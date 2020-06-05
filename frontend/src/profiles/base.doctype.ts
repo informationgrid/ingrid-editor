@@ -35,6 +35,8 @@ export abstract class BaseDoctype implements Doctype {
               private codelistQuery: CodelistQuery) {
   }
 
+  abstract documentFields();
+
   getFields(): FormlyFieldConfig[] {
     return this.fields;
   }
@@ -52,7 +54,9 @@ export abstract class BaseDoctype implements Doctype {
   }
 
   init(help: string[]) {
-
+    this.helpIds = help;
+    this.fields.push(...this.documentFields());
+    console.log('Profile initialized');
   }
 
   hasHelp(fieldId: string): boolean {

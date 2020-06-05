@@ -17,7 +17,7 @@ export class TestDoctype extends BaseDoctype {
 
   iconClass = 'Geodatendienst';
 
-  documentFields = <FormlyFieldConfig[]>[
+  documentFields = () => <FormlyFieldConfig[]>[
     {
       wrappers: ['section'],
       templateOptions: {
@@ -57,6 +57,18 @@ export class TestDoctype extends BaseDoctype {
           options: this.getCodelistForSelect(8000),
           required: true
         }
+      }, {
+        key: 'checkbox',
+        type: 'checkbox',
+        className: 'flex-1',
+        wrappers: ['panel', 'form-field', 'inline-help'],
+        templateOptions: {
+          externalLabel: 'Checkbox',
+          label: 'Open Data',
+          hasContextHelp: this.hasHelp('checkbox'),
+          indeterminate: false,
+          required: true
+        }
       }]
     }
   ];
@@ -64,7 +76,6 @@ export class TestDoctype extends BaseDoctype {
   constructor(storageService?: DocumentService, codelistService?: CodelistService, codelistQuery?: CodelistQuery) {
 
     super(codelistService, codelistQuery);
-    this.fields.push(...this.documentFields);
 
   }
 
