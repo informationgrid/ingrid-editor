@@ -1,1 +1,39 @@
-<p>spatial-dialog works!</p>
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Raumbezug hinzufügen</span>
+    </h2>
+</div>
+<mat-dialog-content class="nominatimContainer">
+    <div fxLayout="row" fxLayoutGap="24px">
+        <div fxLayout="column" style="width: 400px">
+            <mat-form-field appearance="outline">
+                <mat-label>Suche nach Ort</mat-label>
+                <input matInput type="text" [igeFocus]="true" class="form-control" [formControl]="searchInput">
+            </mat-form-field>
+            <mat-selection-list dense (selectionChange)="handleSelection($event)">
+                <ng-container *ngFor="let entry of nominatimResult">
+                    <mat-list-option [value]="entry.boundingbox">
+                        <p matLine>{{entry.display_name}}</p>
+                    </mat-list-option>
+                    <mat-divider></mat-divider>
+                </ng-container>
+            </mat-selection-list>
+        </div>
+        <div #leafletDlg></div>
+    </div>
+
+    <!--<div class="bottom">
+        <button mat-button class="pull-left" (click)="cancelEdit()">Abbrechen</button>
+        <button mat-button class="pull-right" (click)="applyEdit()">Übernehmen</button>
+    </div>-->
+</mat-dialog-content>
+<mat-dialog-actions>
+    <!--    <button mat-button mat-dialog-close>Abbrechen</button>-->
+    <div fxFlex></div>
+    <button mat-button color="primary"
+            [mat-dialog-close]="">Übernehmen
+    </button>
+</mat-dialog-actions>

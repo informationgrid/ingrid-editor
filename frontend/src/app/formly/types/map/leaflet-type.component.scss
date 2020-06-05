@@ -52,21 +52,6 @@ mat-selection-list {
   overflow: auto;
 }
 
-/*.mat-list .mat-list-item {*/
-/*font-size: 14px;*/
-/*}*/
-
-.nominatimContainer {
-  position: absolute;
-  width: 270px;
-  top: 0;
-  bottom: 0;
-  right: calc(100% + 10px);
-  background-color: #fff;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-}
 
 ::ng-deep .leaflet-areaselect-shade {
   position: absolute;
