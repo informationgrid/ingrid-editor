@@ -26,7 +26,7 @@ describe('Load documents', () => {
     cy.get(DocumentPage.title, {timeout: 10000}).should('have.text', 'Tiefes Dokument');
     // this function waits for text to appear, but shouldHaveTrimmedText not!
     cy.get('ige-form-info ige-breadcrumb')
-      .should('have.text', `${ROOT}chevron_rightTestdokumentechevron_rightOrdner 2. Ebene`);
+      .should('have.text', `${ROOT}${SEPARATOR}Testdokumente${SEPARATOR}Ordner 2. Ebene`);
   })
 
   it('should open a document from a quick search result', () => {

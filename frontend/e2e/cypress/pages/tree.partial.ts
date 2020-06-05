@@ -14,8 +14,9 @@ export class Tree {
 
   }
 
-  static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false) {
+  static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
-    cy.contains(`${parentContainer} mat-tree mat-tree-node .label`, nodeTitle).click();
+    const query = exact ? new RegExp('^ ' + nodeTitle + ' $', 'g') : nodeTitle;
+    cy.contains(`${parentContainer} mat-tree mat-tree-node .label`, query).click();
   }
 }

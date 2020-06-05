@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {DocumentService} from '../../../services/document/document.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {take} from 'rxjs/operators';
+import {filter, take, tap} from 'rxjs/operators';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {Router} from '@angular/router';
@@ -92,6 +92,9 @@ export class CreateNodeComponent implements OnInit {
       this.formGroup.get('choice').setValue('FOLDER');
     } else {
       this.profileQuery.documentProfiles
+        .pipe(
+          filter(types => types.length > 0)
+        )
         .subscribe(result => {
           const docTypes = result
             .map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}))
@@ -114,6 +117,9 @@ export class CreateNodeComponent implements OnInit {
     });
 
     this.profileQuery.addressProfiles
+      .pipe(
+        filter(types => types.length > 0)
+      )
       .subscribe(result => {
         const docTypes = result
           .map(profile => ({id: profile.id, label: profile.label, icon: profile.iconClass}))

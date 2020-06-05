@@ -22,6 +22,6 @@ export class DashboardPage {
   }
 
   static getSearchResult(position: number): Chainable {
-    return cy.get(`.mat-autocomplete mat-option:nth-of-type(${position})`);
+    return cy.get(`.mat-autocomplete-panel mat-option:nth-of-type(${position})`);
   }
 }

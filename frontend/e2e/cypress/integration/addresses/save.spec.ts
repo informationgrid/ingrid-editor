@@ -1,15 +1,58 @@
 import {DocumentPage} from '../../pages/document.page';
 import {Utils} from '../../pages/utils';
-import {AddressPage} from '../../pages/address.page';
+import {Address, AddressPage} from '../../pages/address.page';
+import {Tree} from '../../pages/tree.partial';
 
 describe('General create addresses/folders', () => {
 
+  const dialog = AddressPage.CreateDialog;
+
   beforeEach(() => {
-    cy.kcLogin('user');
+    // cy.kcLogin('user');
     AddressPage.visit();
   });
 
   describe('Create Addresses', () => {
+
+    it('should allow creation if one of firstname, lastname or organization was filled', () => {
+      dialog.open();
+      cy.get('[data-cy=create-action]').should('be.disabled')
+
+      dialog.fill(new Address('Thomas'));
+      cy.get('[data-cy=create-action]').should('be.enabled');
+
+      dialog.fill(new Address('', 'Herbst'));
+      cy.get('[data-cy=create-action]').should('be.enabled');
+
+      dialog.fill(new Address('', '', 'Ich AG'));
+      cy.get('[data-cy=create-action]').should('be.enabled');
+
+      dialog.fill(new Address('', '', ''));
+      cy.get('[data-cy=create-action]').should('be.disabled');
+    });
+
+    it('should show correct breadcrumb depending on initial state and changing it', () => {
+      dialog.open();
+
+      // initial root
+      dialog.checkPath(['Adressen']);
+
+      // change location in dialog
+      dialog.setLocation('Testadressen');
+
+      dialog.checkPath(['Adressen', 'Testadressen']);
+
+      // reopen dialog should show root again
+      dialog.cancel();
+      dialog.open();
+      dialog.checkPath(['Adressen']);
+
+      // click on folder before open dialog
+      dialog.cancel();
+      Tree.selectNodeWithTitle('Neue Testadressen');
+      dialog.open();
+      dialog.checkPath(['Adressen', 'Neue Testadressen']);
+    });
 
     it('should create a root address', () => {
       const docName = 'Root Test-Adresse ' + Utils.randomString();
@@ -25,20 +68,24 @@ describe('General create addresses/folders', () => {
       cy.get('[data-cy=create-address-organization]').type('Ich AG');
 
       cy.get('[data-cy=create-action]')
-        .should('be.enabled')
         .click();
 
-      // Tree.containsNodeWithTitle(docName);
       cy.get('.firstName input').should('have.value', 'Herbert');
       cy.get('.lastName input').should('have.value', 'Meier');
     });
 
-    xit('should generate a title from create parameters', () => {
+    it('should generate a title from create parameters', () => {
       // only first name and last name
+      AddressPage.createAddress(new Address('Anton', 'Riese'));
+      Tree.containsNodeWithTitle('Riese, Anton');
 
       // only organization
+      AddressPage.createAddress(new Address('', '', 'Meine Organisation'));
+      Tree.containsNodeWithTitle('Meine Organisation');
 
       // all
+      AddressPage.createAddress(new Address('Anton', 'Riese', 'Meine Organisation'));
+      Tree.containsNodeWithTitle('Meine Organisation, Riese, Anton');
     });
 
     xit('should apply initially selected item when switching location for a new folder', () => {

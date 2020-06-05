@@ -1,9 +1,39 @@
 import {Utils} from './utils';
+import {BasePage} from './base.page';
+import {Tree} from './tree.partial';
 
-export const SEPARATOR = ' chevron_right';
+export const SEPARATOR = 'chevron_right';
 export const ROOT = `Daten`;
 
-export class DocumentPage {
+export class DocumentPage extends BasePage {
+
+  static CreateDialog = class {
+
+    static open() {
+      cy.get(DocumentPage.Toolbar.NewDoc).click();
+    }
+
+    static checkPath(path: string[]) {
+      cy.get('mat-dialog-container ige-breadcrumb').should('have.text', path.join(SEPARATOR));
+    }
+
+    static setLocation(nodeTitle: string) {
+      cy.get('[data-cy=create-changeLocation]').click();
+      Tree.selectNodeWithTitle(nodeTitle, true);
+      cy.get('[data-cy=create-applyLocation]').click();
+    }
+
+    static execute() {
+      cy.get('[data-cy=create-action]').click();
+    }
+
+    static cancel() {
+      cy.get('[data-cy=dlg-close]').click();
+      // cy.get('.dialog-title-wrapper button').click();
+    }
+
+  }
+
   static title = '.form-info-bar .title .label';
 
   static Toolbar: Record<string, string> = {
@@ -47,7 +77,7 @@ export class DocumentPage {
   }
 
   static checkOnlyActiveToolbarButtons(buttonIds: string[]) {
-    Object.keys(DocumentPage.Toolbar).forEach( key => {
+    Object.keys(DocumentPage.Toolbar).forEach(key => {
       if (buttonIds.indexOf(key) !== -1) {
         cy.get(DocumentPage.Toolbar[key]).should('be.enabled');
       } else {
