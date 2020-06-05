@@ -1,12 +1,14 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FieldType} from '@ngx-formly/material';
 import {LatLngBounds, Map, Rectangle, TileLayer} from 'leaflet';
-import {ModalService} from '../../services/modal/modal.service';
-import {NominatimService} from '../../+form/leaflet/nominatim.service';
-import {LeafletAreaSelect} from '../../+form/leaflet/leaflet-area-select';
+import {ModalService} from '../../../services/modal/modal.service';
+import {NominatimService} from '../../../+form/leaflet/nominatim.service';
+import {LeafletAreaSelect} from '../../../+form/leaflet/leaflet-area-select';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {SpatialDialogComponent} from './spatial-dialog/spatial-dialog.component';
 
 class MyMap extends Map {
   _onResize: () => {};
@@ -42,6 +44,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
   }
 
   constructor(private modalService: ModalService, private nominatimService: NominatimService,
+              private dialog: MatDialog,
               private _changeDetectionRef: ChangeDetectorRef) {
     super();
   }
@@ -70,6 +73,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
         {
           attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
         })];
+      this.to.mapOptions.zoomControl = false;
       this.leafletReference = new Map(this.leaflet.nativeElement, this.to.mapOptions);
     } catch (e) {
       console.error('Problem initializing the map component.', e);
@@ -273,5 +277,12 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
     // this.showSearch = false;
     this.applyAreaSelect();
     this.toggleSearch(false);
+  }
+
+  openSpatialDialog() {
+    this.dialog.open(SpatialDialogComponent).afterClosed()
+      .subscribe(result => {
+        console.log('Spatial result:', result);
+      });
   }
 }

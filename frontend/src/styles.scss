@@ -398,6 +398,15 @@ ige-root .mat-drawer-container {
 
 }
 
+svg  {
+  .coloring {
+    fill: #333333;
+  }
+  .coloring-stroke {
+    stroke: #333333;
+  }
+}
+
 #form {
   .label-wrapper + * {
     flex: 1;
@@ -436,18 +445,31 @@ ige-root .mat-drawer-container {
 }
 
 // Context Buttons
-.context-button.mat-icon-button {
-  width: 26px;
-  height: 26px;
-  line-height: 24px;
-  background-color: $ige-background-bar;
+.mat-icon-button {
 
-  &:hover {
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.04) !important;
+  &.big {
+    width: 56px;
+    height: 56px;
 
-    &.dark {
-      background-color: darken($ige-background-bar, 5%) !important;
+    .mat-icon {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  &.context-button {
+    width: 26px;
+    height: 26px;
+    line-height: 24px;
+    background-color: $ige-background-bar;
+
+    &:hover {
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.04) !important;
+
+      &.dark {
+        background-color: darken($ige-background-bar, 5%) !important;
+      }
     }
   }
 }

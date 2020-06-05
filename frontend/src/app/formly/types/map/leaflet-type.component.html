@@ -1,10 +1,14 @@
 
-<div #leaflet title="Zum Verändern des Ausschnitts, müssen Sie den Bearbeiten-Knopf drücken."></div>
-<!--<div class="fieldContainer half">
-    Latitude: <input type="text" class="form-control" [(ngModel)]="_bbox.lat" (change)="handleChange()">
-</div><div class="fieldContainer half"> &lt;!&ndash; white space between divs would create an unwanted gap!!! &ndash;&gt;
-    Longitude: <input type="text" class="form-control" [(ngModel)]="_bbox.lon" (change)="handleChange()">
-</div>-->
+<div #leaflet [class.passive]="true"></div>
+
+<div class="button-wrapper text-center">
+    <div class="spatialBtnText">Erstellen Sie einen Raumbezug<span *ngIf="to.required">*</span></div>
+    <button mat-icon-button class="big spatialBtn" color="primary" (click)="openSpatialDialog()">
+        <mat-icon svgIcon="spatial-rect"></mat-icon>
+    </button>
+</div>
+
+<!--
 <div class="full">
     <button *ngIf="!showSearch" mat-icon-button title="Bearbeiten"
             class="pull-left"
@@ -21,6 +25,7 @@
             Nichts ausgewählt
         </small>
     </div>
+
     <div *ngIf="showSearch" class="nominatimContainer mat-elevation-z4">
         <mat-form-field>
             <input matInput type="text" [igeFocus]="true" class="form-control" [formControl]="searchInput">
@@ -33,12 +38,13 @@
                 <mat-divider></mat-divider>
             </ng-container>
         </mat-selection-list>
-        <!--<select #locationResult name="nominatimResult" multiple (change)="showBoundingBox(locationResult.value)">-->
-        <!--<option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>-->
-        <!--</select>-->
+        &lt;!&ndash;<select #locationResult name="nominatimResult" multiple (change)="showBoundingBox(locationResult.value)">&ndash;&gt;
+        &lt;!&ndash;<option *ngFor="let entry of nominatimResult" [value]="entry.boundingbox">{{entry.display_name}}</option>&ndash;&gt;
+        &lt;!&ndash;</select>&ndash;&gt;
         <div class="bottom">
             <button mat-button class="pull-left" (click)="cancelEdit()">Abbrechen</button>
             <button mat-button class="pull-right" (click)="applyEdit()">Übernehmen</button>
         </div>
     </div>
 </div>
+-->

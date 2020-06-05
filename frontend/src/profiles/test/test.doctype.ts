@@ -69,7 +69,23 @@ export class TestDoctype extends BaseDoctype {
           indeterminate: false,
           required: true
         }
-      }]
+      },
+        {
+          wrappers: ['section'],
+          templateOptions: {
+            label: 'Raumbezüge'
+          },
+          fieldGroup: [{
+            key: 'map',
+            type: 'leaflet',
+            wrappers: [],
+            templateOptions: {
+              mapOptions: {},
+              height: 386
+            }
+          }]
+        }
+      ]
     }
   ];
 

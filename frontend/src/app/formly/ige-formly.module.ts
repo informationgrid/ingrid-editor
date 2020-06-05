@@ -15,7 +15,7 @@ import {FormlyMaterialModule} from '@ngx-formly/material';
 import {FormlyModule} from '@ngx-formly/core';
 import {ContextHelpComponent} from '../+demo-layout/form/context-help/context-help.component';
 import {AutocompleteTypeComponent} from './types/autocomplete-type.component';
-import {LeafletTypeComponent} from './types/leaflet-type.component';
+import {LeafletTypeComponent} from './types/map/leaflet-type.component';
 import {FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';
 import {TableTypeComponent} from './types/table-type.component';
 import {CommonModule} from '@angular/common';
@@ -30,6 +30,7 @@ import {ChooseAddressDialogComponent} from './types/address-type/choose-address-
 import {MatCardModule} from '@angular/material/card';
 import {CodelistPipe} from '../directives/codelist.pipe';
 import {MatMenuModule} from '@angular/material/menu';
+import { SpatialDialogComponent } from './types/map/spatial-dialog/spatial-dialog.component';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -84,7 +85,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
     CodelistPipe,
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent,
     TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
-    AddressCardComponent, ChooseAddressDialogComponent
+    AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [

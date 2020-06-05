@@ -1,7 +1,41 @@
+@import "src/variables";
 
 :host {
   position: relative;
   display: block;
+}
+
+.spatialBtnText {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  background-color: #FFFFFFAA;
+}
+
+.button-wrapper {
+  position: absolute;
+  left: calc(50% - 116px);
+  top: calc(50% - 56px);
+  z-index: 1000;
+
+  .spatialBtn {
+    background-color: $ige-secondary;
+
+    ::ng-deep .coloring {
+      fill: #FFFFFF;
+    }
+    ::ng-deep .coloring-stroke {
+      stroke: #cccccc;
+    }
+  }
+}
+
+.passive {
+  opacity: 0.4;
+}
+
+::ng-deep .leaflet-control-attribution a {
+  font-size: 11px;
 }
 
 ::ng-deep .leaflet-control a {
