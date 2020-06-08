@@ -101,10 +101,13 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       height: 'auto'
     }).afterClosed()
       .subscribe((result: SpatialLocation) => {
-        console.log('Spatial result:', result);
-        this.locations.push(result);
-        this.formControl.setValue(this.locations);
-        this.formControl.markAsDirty();
+        if (result) {
+          console.log('Spatial result:', result);
+          this.locations.push(result);
+          this.formControl.setValue(this.locations);
+          this.formControl.markAsDirty();
+          this.updateBoundingBox();
+        }
       });
 
   }
