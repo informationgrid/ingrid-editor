@@ -10,7 +10,6 @@
 
   .mat-dialog-content {
     padding: 24px 0;
-    margin-top: 24px;
     display: flex;
 
     .mat-tab-group {
@@ -20,6 +19,10 @@
         display: flex;
       }
     }
+  }
+
+  ::ng-deep ige-tree {
+    max-height: 550px;
   }
 }
 

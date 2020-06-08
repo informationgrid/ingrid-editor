@@ -1,0 +1,32 @@
+<mat-list>
+
+<h3 matSubheader>Freie Raumbezüge</h3>
+<mat-list-item *ngFor="let location of locations; let pos = index;">
+
+    <mat-icon matListIcon
+              [style.background-color]="location.color + '33'"
+              [style.color]="location.color">crop_din
+    </mat-icon>
+
+    <h4 matLine>
+        <span>{{location.title}}</span>
+        <div fxFlex></div>
+        <button mat-icon-button class="menu" [matMenuTriggerFor]="spatialRef">
+            <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #spatialRef="matMenu">
+            <button mat-menu-item disabled>Bearbeiten</button>
+            <button mat-menu-item (click)="remove.next(pos)">Löschen</button>
+        </mat-menu>
+    </h4>
+
+    <div matLine class="coordinates">
+        <span>L1: {{location.box.lat1 | number:'.6'}}°</span>
+        <span>B1: {{location.box.lon1 | number:'.6'}}°</span>
+        <span>L2: {{location.box.lat2 | number:'.6'}}°</span>
+        <span>B2: {{location.box.lon2 | number:'.6'}}°</span>
+    </div>
+
+</mat-list-item>
+
+</mat-list>

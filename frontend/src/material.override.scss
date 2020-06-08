@@ -1,3 +1,20 @@
+// fix for bottom aligned actions buttons in dialog
+// see: https://github.com/angular/components/issues/4609
+.mat-dialog-override {
+  mat-dialog-container {
+    > :first-child {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    mat-dialog-content,
+    div[mat-dialog-content] {
+      flex-grow: 1;
+      max-height: unset;
+    }
+  }
+}
+
 .mat-dialog-actions {
   border-top: 1px solid $ige-background-bar;
   margin-left: -24px;
@@ -40,7 +57,7 @@
   }
 
   .dialog-title-wrapper {
-    margin: -24px -24px;
+    margin: -24px -24px 0;
     background-color: $ige-secondary;
     padding: 10px;
 
@@ -60,7 +77,7 @@
   }
 
   .mat-dialog-content {
-    padding-top: 40px;
+    padding-top: 16px;
 
     .place-title, .place-title-other {
       color: $ige-primary;

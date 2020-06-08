@@ -14,7 +14,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule} from '@angula
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
-import {MatDialogModule} from '@angular/material/dialog';
+import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -140,6 +140,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
     },
+    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {panelClass: 'mat-dialog-override'}},
 
     // PLUGINS
     pluginProvider

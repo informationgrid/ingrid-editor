@@ -65,11 +65,27 @@ export class TestDoctype extends BaseDoctype {
         templateOptions: {
           externalLabel: 'Checkbox',
           label: 'Open Data',
-          hasContextHelp: this.hasHelp('checkbox'),
+          hasInlineContextHelp: this.hasHelp('checkbox'),
           indeterminate: false,
           required: true
         }
-      }]
+      },
+        {
+          wrappers: ['section'],
+          templateOptions: {
+            label: 'Raumbezüge'
+          },
+          fieldGroup: [{
+            key: 'map',
+            type: 'leaflet',
+            wrappers: [],
+            templateOptions: {
+              mapOptions: {},
+              height: 386
+            }
+          }]
+        }
+      ]
     }
   ];
 

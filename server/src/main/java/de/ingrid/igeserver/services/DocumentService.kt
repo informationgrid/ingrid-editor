@@ -41,6 +41,7 @@ class DocumentService : MapperService() {
 
     @Throws(Exception::class)
     fun getByDocId(id: String, type: String, withReferences: Boolean): JsonNode? {
+
         val query: MutableMap<String, String> = HashMap()
         query[FIELD_ID] = id
         val findOptions = FindOptions()
@@ -48,7 +49,7 @@ class DocumentService : MapperService() {
         findOptions.resolveReferences = withReferences
         val docs = dbService.findAll(type, query, findOptions)
         if (docs.totalHits != 1L) {
-            log.error("A Document_Wrapper could not be found or is not unique for UUID: " + id + " (got " + docs.totalHits + ")")
+            log.error("A $type could not be found or is not unique for UUID: $id (got ${docs.totalHits})")
             throw RuntimeException("No unique document wrapper found")
         }
         return try {
