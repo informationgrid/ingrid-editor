@@ -31,7 +31,7 @@ export class InlineHelpWrapperComponent extends FieldWrapper implements OnInit, 
 
   showContextHelp(evt: MouseEvent) {
 
-    if (!this.to.hasContextHelp) {
+    if (!this.to.hasInlineContextHelp) {
       return;
     }
 
