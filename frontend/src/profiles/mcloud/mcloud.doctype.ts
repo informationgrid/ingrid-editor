@@ -173,12 +173,11 @@ export class McloudDoctype extends BaseDoctype {
       fieldGroup: [{
         key: 'geoReferenceVisual',
         type: 'leaflet',
-        wrappers: ['panel'],
+        wrappers: [],
         templateOptions: {
-          externalLabel: 'Raumbezug',
-          hasContextHelp: this.hasHelp('geoReference'),
+          // hasContextHelp: this.hasHelp('geoReference'),
           mapOptions: {},
-          height: 300
+          height: 386
         }
       }]
     }, {

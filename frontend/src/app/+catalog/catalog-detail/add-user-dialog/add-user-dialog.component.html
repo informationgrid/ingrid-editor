@@ -1,11 +1,18 @@
-<h2 mat-dialog-title>Katalog-Administrator hinzufügen</h2>
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Katalog-Administrator hinzufügen</span>
+    </h2>
+</div>
 <mat-dialog-content>
-<mat-selection-list #userList dense>
-    <mat-list-option *ngFor="let user of users | async" [value]="user.login">
-        {{user.firstName}} {{user.lastName}} ({{user.login}})
-    </mat-list-option>
-    <mat-divider></mat-divider>
-</mat-selection-list>
+    <mat-selection-list #userList dense>
+        <mat-list-option *ngFor="let user of users | async" [value]="user.login">
+            {{user.firstName}} {{user.lastName}} ({{user.login}})
+        </mat-list-option>
+        <mat-divider></mat-divider>
+    </mat-selection-list>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Abbrechen</button>
