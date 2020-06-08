@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.DBFindAllResults;
+import de.ingrid.igeserver.db.FindOptions;
+import de.ingrid.igeserver.db.QueryType;
 import de.ingrid.igeserver.documenttypes.AbstractDocumentType;
 import de.ingrid.igeserver.documenttypes.DocumentType;
 import de.ingrid.igeserver.profiles.TestType;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static de.ingrid.igeserver.db.OrientDBDatabase.DB_ID;
 import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.TYPE;
@@ -59,6 +63,54 @@ public class Migration {
                 migrateDocumentClasses(database);
                 setVersion(database, "0.1");
             }
+            if (version.compareTo("0.16") < 0) {
+                log.info("Migrate to version 0.16");
+                removeLocations(database);
+                setVersion(database, "0.16");
+            }
+        }
+
+    }
+
+    private void removeLocations(String database) {
+
+        try (ODatabaseSession ignored = dbService.acquire(database)) {
+
+            documentTypes.forEach(type -> {
+
+                if (type.getTypeName().equals("mCloudDoc")) {
+                    Map<String, String> query = new HashMap<>();
+                    query.put(FIELD_DOCUMENT_TYPE, type.getTypeName());
+
+                    FindOptions findOptions = new FindOptions();
+                    findOptions.queryType = QueryType.exact;
+
+                    DBFindAllResults docs = null;
+                    try {
+                        docs = dbService.findAll(DocumentType.TYPE, query, findOptions);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (docs != null && docs.totalHits > 0) {
+                        docs.hits.forEach( doc -> {
+
+                            if (doc.has("geoReferenceVisual") && doc.get("geoReferenceVisual") != null) {
+                                String dbId = doc.get(DB_ID).asText();
+                                ((ObjectNode) doc).remove("geoReferenceVisual");
+                                removeDBManagementFields((ObjectNode) doc);
+                                try {
+                                    dbService.save(DocumentType.TYPE, dbId, doc.toString());
+                                } catch (ApiException e) {
+                                    log.error(e);
+                                }
+                            }
+
+                        });
+
+                    }
+                }
+
+            });
         }
 
     }

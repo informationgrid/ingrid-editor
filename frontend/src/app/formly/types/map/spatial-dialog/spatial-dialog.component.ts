@@ -1,11 +1,13 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {LatLngBounds, Map, MapOptions, Rectangle} from 'leaflet';
+import {LatLngBounds, Map, Rectangle} from 'leaflet';
 import {LeafletAreaSelect} from '../../../../+form/leaflet/leaflet-area-select';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {debounceTime} from 'rxjs/operators';
 import {NominatimService} from '../../../../+form/leaflet/nominatim.service';
 import {LeafletService} from '../leaflet.service';
+import {MatDialogRef} from '@angular/material/dialog';
+import {SpatialLocation} from '../spatial-list/spatial-list.component';
 
 class MyMap extends Map {
   _onResize: () => {};
@@ -34,7 +36,9 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   searchInput = new FormControl();
 
 
-  constructor(private nominatimService: NominatimService, private leafletService: LeafletService) {
+  constructor(private dialogRef: MatDialogRef<SpatialDialogComponent>,
+              private nominatimService: NominatimService,
+              private leafletService: LeafletService) {
   }
 
   ngOnInit(): void {
@@ -48,7 +52,8 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
       )
       .subscribe(query => this.searchLocation(query));
 
-    this.leaflet.nativeElement.style.height = '300px';
+    this.leaflet.nativeElement.style.height = 'auto';
+    this.leaflet.nativeElement.style.minHeight = 'calc(100vh - 235px)';
     this.leaflet.nativeElement.style.width = '100%';
     this.leaflet.nativeElement.style.minWidth = '400px';
     // const options: MapOptions = this.to.mapOptions;
@@ -73,10 +78,10 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
       event.option._setSelected(true);
     }
 
-    this.showBoundingBox(event.option.value);
+    this.setAndShowBoundingBox(event.option.value);
   }
 
-  showBoundingBox(coords: string[]) {
+  setAndShowBoundingBox(coords: string[]) {
     this._bbox = {
       lat1: coords[0],
       lon1: coords[2],
@@ -84,8 +89,6 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
       lon2: coords[3]
     };
     this.drawBoxAndZoomToBounds();
-    // this.handleChange(false);
-    // let latLonBounds = this.getLatLngBoundsFromBox(bbox);
     this.setAreaSelect();
   }
 
@@ -128,21 +131,6 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     this.areaSelect.addTo(this.leafletReference);
   }
 
-  applyAreaSelect() {
-    if (this.areaSelect) {
-      const bounds = this.areaSelect.getBounds();
-      this.areaSelect.remove();
-      this.drawBoundingBox(bounds);
-      this._bbox = {
-        lat1: bounds.getSouthWest().lat,
-        lon1: bounds.getSouthWest().lng,
-        lat2: bounds.getNorthEast().lat,
-        lon2: bounds.getNorthEast().lng
-      };
-      // this.handleChange(false);
-    }
-  }
-
   private drawBoundingBox(latLonBounds: LatLngBounds) {
     this.removeDrawnBoundingBox();
     this.drawnBBox = new Rectangle(latLonBounds, {color: '#ff7800', weight: 1}).addTo(this.leafletReference);
@@ -156,19 +144,17 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     }
   }
 
-  cancelEdit() {
-    // this.showSearch = false;
-    this._bbox = this._bboxPrevious;
-    if (!this.bbox) {
-      this.removeDrawnBoundingBox();
-    }
-    this.areaSelect.remove();
-    this.drawBoxAndZoomToBounds();
+  getSelectedArea() {
+    const bounds = this.areaSelect.getBounds();
+    this.dialogRef.close(<SpatialLocation>{
+      title: 'N/A',
+      type: 'bbox',
+      box: {
+        lat1: bounds.getSouthWest().lat,
+        lon1: bounds.getSouthWest().lng,
+        lat2: bounds.getNorthEast().lat,
+        lon2: bounds.getNorthEast().lng
+      }
+    });
   }
-
-  applyEdit() {
-    this.applyAreaSelect();
-  }
-
-
 }

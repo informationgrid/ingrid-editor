@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
-import {LatLngBounds, Map, MapOptions, TileLayer} from 'leaflet';
+import {LatLngBounds, Map, MapOptions, Rectangle, TileLayer} from 'leaflet';
 import {MatOption} from '@angular/material/core';
+import {SpatialLocation, SpatialLocationWithColor} from './spatial-list/spatial-list.component';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,8 @@ export class LeafletService {
   }
 
   private defaultOptions: MapOptions = {};
+
+  private colors = ['#ff7800', '#88ff00', '#00ccff', '#7700ff', '#ff0008'];
 
   static getLatLngBoundsFromBox(bbox: any): LatLngBounds {
     if (!bbox) {
@@ -51,5 +54,43 @@ export class LeafletService {
       layers: [this.defaultLayer()],
       ...defaults, ...matOptions
     });
+  }
+
+  drawSpatialRefs(map: Map, locations: SpatialLocationWithColor[]) {
+
+    let bounds: LatLngBounds = null;
+
+    const drawnBoxes = locations
+      .map(location => LeafletService.getLatLngBoundsFromBox(location.box))
+      .map((box, index) => {
+        bounds = this.extendBounds(bounds, box);
+        return this.drawBoundingBox(map, box, this.colors[index]);
+      });
+
+    map.fitBounds(bounds, {maxZoom: 18});
+
+    return drawnBoxes;
+
+  }
+
+  getColor(index: number): string {
+    return this.colors[index];
+  }
+
+  private drawBoundingBox(map: Map, latLonBounds: LatLngBounds, color: string): Rectangle {
+    return new Rectangle(latLonBounds, {color: color, weight: 1}).addTo(map);
+  }
+
+  removeDrawnBoundingBoxes(map: Map, boxes: Rectangle[]) {
+    boxes.forEach(box => setTimeout(() => map.removeLayer(box), 100));
+  }
+
+  private extendBounds(bounds: LatLngBounds, box: LatLngBounds): LatLngBounds {
+    const boxBounds = bounds ? new LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast()) : null;
+    if (!boxBounds) {
+      return box;
+    } else {
+      return boxBounds.extend(box);
+    }
   }
 }

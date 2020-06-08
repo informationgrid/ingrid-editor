@@ -31,6 +31,7 @@ import {MatCardModule} from '@angular/material/card';
 import {CodelistPipe} from '../directives/codelist.pipe';
 import {MatMenuModule} from '@angular/material/menu';
 import { SpatialDialogComponent } from './types/map/spatial-dialog/spatial-dialog.component';
+import { SpatialListComponent } from './types/map/spatial-list/spatial-list.component';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -85,7 +86,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
     CodelistPipe,
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent,
     TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
-    AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent
+    AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [

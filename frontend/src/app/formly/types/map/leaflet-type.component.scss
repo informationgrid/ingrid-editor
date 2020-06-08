@@ -18,9 +18,22 @@
   top: calc(50% - 56px);
   z-index: 1000;
 
-  .spatialBtn {
-    background-color: $ige-secondary;
+  &.has-spatial {
+    top: auto;
+    left: calc(50% - 28px);
+    margin-top: -28px;
+  }
 
+  ::ng-deep .mat-button-wrapper {
+    padding: 0;
+  }
+
+  .mat-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .spatialBtn {
     ::ng-deep .coloring {
       fill: #FFFFFF;
     }

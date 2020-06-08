@@ -7,6 +7,7 @@
     </h2>
 </div>
 <mat-dialog-content class="nominatimContainer">
+
     <div fxLayout="row" fxLayoutGap="24px">
         <div fxLayout="column" style="width: 400px">
             <mat-form-field appearance="outline">
@@ -25,15 +26,13 @@
         <div #leafletDlg></div>
     </div>
 
-    <!--<div class="bottom">
-        <button mat-button class="pull-left" (click)="cancelEdit()">Abbrechen</button>
-        <button mat-button class="pull-right" (click)="applyEdit()">Übernehmen</button>
-    </div>-->
 </mat-dialog-content>
 <mat-dialog-actions>
-    <!--    <button mat-button mat-dialog-close>Abbrechen</button>-->
+
+    <button mat-button disabled>Typ ändern</button>
     <div fxFlex></div>
-    <button mat-button color="primary"
-            [mat-dialog-close]="">Übernehmen
+    <button mat-stroked-button color="primary"
+            (click)="getSelectedArea()">Übernehmen
     </button>
+
 </mat-dialog-actions>

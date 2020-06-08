@@ -1,15 +1,13 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FieldType} from '@ngx-formly/material';
-import {Map, MapOptions} from 'leaflet';
+import {MapOptions, Rectangle} from 'leaflet';
 import {ModalService} from '../../../services/modal/modal.service';
-import {UntilDestroy} from '@ngneat/until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {MatDialog} from '@angular/material/dialog';
 import {SpatialDialogComponent} from './spatial-dialog/spatial-dialog.component';
 import {LeafletService} from './leaflet.service';
-
-class MyMap extends Map {
-  _onResize: () => {};
-}
+import {SpatialLocation, SpatialLocationWithColor} from './spatial-list/spatial-list.component';
+import {distinctUntilChanged, tap} from 'rxjs/operators';
 
 @UntilDestroy()
 @Component({
@@ -20,7 +18,12 @@ class MyMap extends Map {
 export class LeafletTypeComponent extends FieldType implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('leaflet') leaflet: ElementRef;
+
+  locationsWithColor: SpatialLocationWithColor[] = [];
+
   private leafletReference: L.Map;
+  private locations: SpatialLocation[] = [];
+  private drawnSpatialRefs: Rectangle[] = [];
 
   constructor(private modalService: ModalService,
               private dialog: MatDialog,
@@ -30,15 +33,17 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
   }
 
   ngAfterViewInit() {
+
     this.leaflet.nativeElement.style.height = this.to.height + 'px';
     this.leaflet.nativeElement.style.width = '100%';
 
-    /*this.formControl.valueChanges
+    this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        tap(value => this.locations = value || [])
       )
-      .subscribe(value => this.updateBoundingBox(value));*/
+      .subscribe(() => this.updateBoundingBox());
 
     try {
       const options: MapOptions = this.to.mapOptions;
@@ -49,36 +54,26 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       this.modalService.showJavascriptError('Problem initializing the map component.', e);
       return;
     }
-    // this.toggleSearch(false);
     // (<MyMap>this.leafletReference)._onResize();
 
-    this.updateBoundingBox(this.formFieldControl.value);
+    this.locations = this.formFieldControl.value || [];
+    this.updateBoundingBox();
 
   }
 
-  private updateBoundingBox(value) {
-    console.log('new bbox', value);
+  private updateBoundingBox() {
 
-    if (!value) {
-      // this._bbox = null;
+    this.locationsWithColor = [];
+    this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.drawnSpatialRefs);
+
+    if (this.locations.length === 0) {
       this.leafletService.zoomToInitialBox(this.leafletReference);
-      // this.removeDrawnBoundingBox();
     } else {
-      // this._bbox = value;
-      // this.drawBoxAndZoomToBounds();
+      this.locationsWithColor = this.extendLocationsWithColor(this.locations);
+      this.drawnSpatialRefs = this.leafletService.drawSpatialRefs(this.leafletReference, this.locationsWithColor);
     }
+
   }
-
-  /*handleChange(setView?: boolean) {
-    if (setView) {
-      // this.leafletReference.setView(new LatLng(this.bbox.lat, this.bbox.lon));
-      this.leafletReference.fitBounds(
-        new LatLngBounds([this._bbox.lat1, this._bbox.lon1], [this._bbox.lat2, this._bbox.lon2]),
-        {maxZoom: 13});
-    }
-
-    this.formControl.setValue(this._bbox);
-  }*/
 
   /**
    * Destroy the map to handle the view cache functionality of ng2.After the first init the leaflet is already initialised.
@@ -96,13 +91,41 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
   }
 
   openSpatialDialog() {
+
     this.dialog.open(SpatialDialogComponent, {
       width: '90%',
-      maxWidth: 1000,
-      minWidth: 600
+      disableClose: true,
+      maxWidth: 1200,
+      minWidth: 600,
+      minHeight: 'calc(100vh - 90px)',
+      height: 'auto'
     }).afterClosed()
-      .subscribe(result => {
+      .subscribe((result: SpatialLocation) => {
         console.log('Spatial result:', result);
+        this.locations.push(result);
+        this.formControl.setValue(this.locations);
+        this.formControl.markAsDirty();
       });
+
+  }
+
+  private extendLocationsWithColor(locations: SpatialLocation[]): SpatialLocationWithColor[] {
+
+    return locations
+      .map((location, index) => ({
+        ...location,
+        color: this.leafletService.getColor(index)
+      }));
+
+  }
+
+  removeLocation(index: number) {
+
+    this.locations.splice(index, 1);
+    this.formControl.setValue(this.locations);
+    this.formControl.markAsDirty();
+
+    this.updateBoundingBox();
+
   }
 }
