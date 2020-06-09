@@ -4,7 +4,6 @@
 
   .mat-dialog-content {
     padding: 24px 0;
-    margin-top: 24px;
     display: flex;
     flex-direction: column;
 
@@ -18,4 +17,5 @@
 
 ige-tree {
   overflow: auto;
+  max-height: 550px;
 }

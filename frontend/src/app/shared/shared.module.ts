@@ -17,6 +17,7 @@ import {CardBoxComponent} from './card-box/card-box.component';
 import {MatCardModule} from '@angular/material/card';
 import {EmptyNavigationComponent} from '../+form/sidebars/tree/empty-navigation/empty-navigation.component';
 import {SharedDocumentItemModule} from './shared-document-item.module';
+import {AddButtonComponent} from './add-button/add-button.component';
 
 @NgModule({
   imports: [
@@ -25,8 +26,8 @@ import {SharedDocumentItemModule} from './shared-document-item.module';
     MatSlideToggleModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
     MatCardModule,
     SharedDocumentItemModule],
-  declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent],
-  exports: [TreeComponent, MatIconModule, MatInputModule, MatButtonModule, CardBoxComponent, SharedDocumentItemModule]
+  declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent, AddButtonComponent],
+  exports: [TreeComponent, MatIconModule, MatInputModule, MatButtonModule, CardBoxComponent, AddButtonComponent, SharedDocumentItemModule]
 })
 export class SharedModule {
 }
