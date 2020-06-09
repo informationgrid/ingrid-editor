@@ -1,10 +1,9 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {LeafletComponent} from './leaflet/leaflet.component';
 import {routing} from './ige-form.routing';
 import {SharedModule} from '../shared/shared.module';
-import {NominatimService} from './leaflet/nominatim.service';
+import {NominatimService} from '../formly/types/map/nominatim.service';
 import {IgeWizardModule} from '../wizard/wizard.module';
 import {ScrollToDirective} from '../directives/scrollTo.directive';
 import {MatCardModule} from '@angular/material/card';
@@ -17,10 +16,8 @@ import {MatListModule} from '@angular/material/list';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
-import {SidebarComponent} from './sidebars/sidebar.component';
 import {FormDialogsModule} from './dialogs/tree-select/form-dialogs.module';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
-import {AngularSplitModule} from 'angular-split';
 import {RouterModule} from '@angular/router';
 import {FormlyModule} from '@ngx-formly/core';
 import {MatMenuModule} from '@angular/material/menu';
@@ -28,10 +25,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {PasteDialogComponent} from './dialogs/copy-cut-paste/paste-dialog.component';
 import {IsoViewComponent} from './dialogs/isoView/iso-view.component';
-import {FormDashboardComponent} from './form-dashboard/form-dashboard.component';
 import {PrintViewDialogComponent} from './dialogs/print-view/print-view-dialog.component';
 import {FormSharedModule} from './form-shared/form-shared.module';
-import { FormComponent } from './form/form.component';
 
 @NgModule({
   imports: [
@@ -45,9 +40,7 @@ import { FormComponent } from './form/form.component';
     FormSharedModule
   ],
   declarations: [
-    LeafletComponent,
     PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent,
-    // OneColumnWrapperComponent,
     ScrollToDirective
   ],
   providers: [

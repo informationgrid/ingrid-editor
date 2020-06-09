@@ -1,10 +1,10 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {LatLngBounds, Map, Rectangle} from 'leaflet';
-import {LeafletAreaSelect} from '../../../../+form/leaflet/leaflet-area-select';
+import {LeafletAreaSelect} from '../leaflet-area-select';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {debounceTime} from 'rxjs/operators';
-import {NominatimService} from '../../../../+form/leaflet/nominatim.service';
+import {NominatimService} from '../nominatim.service';
 import {LeafletService} from '../leaflet.service';
 import {MatDialogRef} from '@angular/material/dialog';
 import {SpatialLocation} from '../spatial-list/spatial-list.component';
