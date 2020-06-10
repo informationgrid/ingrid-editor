@@ -1,11 +1,12 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {LatLngBounds, Map, Rectangle} from 'leaflet';
 import {LeafletAreaSelect} from '../leaflet-area-select';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {LeafletService} from '../leaflet.service';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {SpatialLocation} from '../spatial-list/spatial-list.component';
 import {SpatialResult} from './spatial-result.model';
+import {FormControl} from '@angular/forms';
 
 class MyMap extends Map {
   _onResize: () => {};
@@ -20,7 +21,16 @@ class MyMap extends Map {
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   @ViewChild('leafletDlg') leaflet: ElementRef;
-  private leafletReference: L.Map;
+
+  result: SpatialLocation = {
+    value: null,
+    title: null,
+    type: 'bbox'
+  };
+
+  titleInput: FormControl;
+
+  leafletReference: L.Map;
 
   private areaSelect: LeafletAreaSelect = null;
   drawnBBox: any;
@@ -28,25 +38,30 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   types = [
     {id: 'free', label: 'Freier Raumbezug'},
     {id: 'wkt', label: 'WKT'},
-    {id: 'draw', label: 'Auf Karte zeichnen'},
+    // {id: 'draw', label: 'Auf Karte zeichnen'},
     {id: 'geo-name', label: 'Geografischer Name'}
   ];
   view = 'free';
-  private _name: string;
 
   get bbox(): any {
     return this._bbox;
   }
 
   constructor(private dialogRef: MatDialogRef<SpatialDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: SpatialLocation,
               private leafletService: LeafletService) {
   }
 
   ngOnInit(): void {
+    if (this.data) {
+      this._bbox = this.data.value;
+      this.titleInput = new FormControl(this.data.title);
+    } else {
+      this.titleInput = new FormControl();
+    }
   }
 
   ngAfterViewInit() {
-
 
     this.leaflet.nativeElement.style.height = 'auto';
     this.leaflet.nativeElement.style.minHeight = 'calc(100vh - 235px)';
@@ -54,14 +69,20 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     this.leaflet.nativeElement.style.minWidth = '400px';
     // const options: MapOptions = this.to.mapOptions;
     this.leafletReference = this.leafletService.initMap(this.leaflet.nativeElement, {});
-    this.leafletService.zoomToInitialBox(this.leafletReference);
 
-    this.setupAreaSelect();
+    if (this.data) {
+      this.drawBoxAndZoomToBounds();
+    } else {
+      this.leafletService.zoomToInitialBox(this.leafletReference);
+    }
+
+    // avoid wrong change detection
+    setTimeout(() => this.setupAreaSelect());
   }
 
 
   setAndShowBoundingBox(result: SpatialResult) {
-    this._name = result.title;
+    this.titleInput.setValue(result.title);
     this._bbox = {
       lat1: result.box[0],
       lon1: result.box[2],
@@ -108,6 +129,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     } else {
       this.areaSelect = new LeafletAreaSelect({width: 50, height: 50});
     }
+    this.areaSelect.on('change', () => this.updateSelectedArea());
     this.areaSelect.addTo(this.leafletReference);
   }
 
@@ -124,25 +146,23 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getSelectedArea() {
+  updateSelectedArea() {
     const bounds = this.areaSelect.getBounds();
-    this.dialogRef.close(<SpatialLocation>{
-      title: this._name || 'N/A',
-      type: 'bbox',
-      box: {
-        lat1: bounds.getSouthWest().lat,
-        lon1: bounds.getSouthWest().lng,
-        lat2: bounds.getNorthEast().lat,
-        lon2: bounds.getNorthEast().lng
-      }
-    });
+    this.result.value = {
+      lat1: bounds.getSouthWest().lat,
+      lon1: bounds.getSouthWest().lng,
+      lat2: bounds.getNorthEast().lat,
+      lon2: bounds.getNorthEast().lng
+    };
   }
 
   updateView(id: string) {
 
     this.view = id;
+    this.result.type = this.getTypeFromView(id);
     this.resetMapAddons();
     this.prepareMapForView(id);
+    this.result.value = null;
 
   }
 
@@ -161,6 +181,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   private resetMapAddons() {
     if (this.areaSelect) {
+      this.areaSelect.clearAllEventListeners();
       this.areaSelect.remove();
       this.areaSelect = null;
     }
@@ -171,5 +192,18 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   }
 
   private setupWktSpatial() {
+  }
+
+  private getTypeFromView(id: string) {
+
+    switch (id) {
+      case 'free':
+        return 'bbox';
+      case 'wkt':
+        return 'text';
+      default:
+        throw new Error('View not mapped for a result type of spatial reference');
+    }
+
   }
 }

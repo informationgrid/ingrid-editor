@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {LatLngBounds, Layer, Map, MapOptions, Rectangle, TileLayer} from 'leaflet';
-import {MatOption} from '@angular/material/core';
-import {SpatialLocation, SpatialLocationWithColor} from './spatial-list/spatial-list.component';
+import {LatLngBounds, Map, MapOptions, Rectangle, TileLayer} from 'leaflet';
+import {SpatialLocationWithColor} from './spatial-list/spatial-list.component';
+import {WktTools} from './spatial-dialog/wkt-spatial/wkt-tools';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,7 @@ export class LeafletService {
   private defaultOptions: MapOptions = {};
 
   private colors = ['#ff7800', '#88ff00', '#00ccff', '#7700ff', '#ff0008'];
+  private wktTools: WktTools;
 
   static getLatLngBoundsFromBox(bbox: any): LatLngBounds {
     if (!bbox) {
@@ -34,6 +35,7 @@ export class LeafletService {
     });
 
   constructor() {
+    this.wktTools = new WktTools();
   }
 
   zoomToInitialBox(map: Map): Map {
@@ -61,7 +63,7 @@ export class LeafletService {
     let bounds: LatLngBounds = null;
 
     const drawnBoxes = locations
-      .map(location => ({box: LeafletService.getLatLngBoundsFromBox(location.box), color: location.color}))
+      .map(location => ({box: LeafletService.getLatLngBoundsFromBox(location.value), color: location.color}))
       .map((location, index) => {
         bounds = this.extendBounds(bounds, location.box);
         return this.drawBoundingBox(map, location.box, location.color);
@@ -94,7 +96,11 @@ export class LeafletService {
   }*/
 
   zoomToLayer(map: Map, location: SpatialLocationWithColor) {
-    map.fitBounds(LeafletService.getLatLngBoundsFromBox(location.box));
+    map.fitBounds(LeafletService.getLatLngBoundsFromBox(location.value));
+  }
+
+  convertWKT(map: Map, wkt: string) {
+    return this.wktTools.mapIt(map, wkt);
   }
 
   private extendBounds(bounds: LatLngBounds, box: LatLngBounds): LatLngBounds {

@@ -51,15 +51,17 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       const options: MapOptions = this.to.mapOptions;
       this.leafletReference = this.leafletService.initMap(
         this.leaflet.nativeElement, {...options, ...LeafletService.optionsNonInteractive});
+
+      // (<MyMap>this.leafletReference)._onResize();
+
+      this.locations = this.formFieldControl.value || [];
+      this.updateBoundingBox();
     } catch (e) {
       console.error('Problem initializing the map component.', e);
-      this.modalService.showJavascriptError('Problem initializing the map component.', e);
-      return;
+      this.locationsWithColor = [];
+      this.formControl.setValue([]);
+      throw Error('Problem initializing the map component: ' + e.message);
     }
-    // (<MyMap>this.leafletReference)._onResize();
-
-    this.locations = this.formFieldControl.value || [];
-    this.updateBoundingBox();
 
   }
 
@@ -92,7 +94,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
     }
   }
 
-  openSpatialDialog() {
+  openSpatialDialog(locationIndex?: number) {
 
     this.dialog.open(SpatialDialogComponent, {
       width: '90%',
@@ -100,7 +102,8 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       maxWidth: 1200,
       minWidth: 600,
       minHeight: 'calc(100vh - 90px)',
-      height: 'auto'
+      height: 'auto',
+      data: this.locations[locationIndex]
     }).afterClosed()
       .subscribe((result: SpatialLocation) => {
         if (result) {

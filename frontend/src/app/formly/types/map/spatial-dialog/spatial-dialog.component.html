@@ -9,10 +9,18 @@
 <mat-dialog-content class="nominatimContainer">
 
     <div fxLayout="row" fxLayoutGap="24px" [ngSwitch]="view">
-        <ige-free-spatial *ngSwitchCase="'free'" (boundingBox)="setAndShowBoundingBox($event);"></ige-free-spatial>
-        <ige-wkt-spatial *ngSwitchCase="'wkt'"></ige-wkt-spatial>
-        <ige-draw-spatial *ngSwitchCase="'draw'"></ige-draw-spatial>
-        <ige-name-spatial *ngSwitchCase="'geo-name'"></ige-name-spatial>
+
+        <div fxLayout="column">
+            <mat-form-field appearance="outline">
+                <mat-label>Titel</mat-label>
+                <input matInput [formControl]="titleInput">
+            </mat-form-field>
+
+            <ige-free-spatial *ngSwitchCase="'free'" (boundingBox)="setAndShowBoundingBox($event);"></ige-free-spatial>
+            <ige-wkt-spatial *ngSwitchCase="'wkt'" [map]="leafletReference"></ige-wkt-spatial>
+            <ige-draw-spatial *ngSwitchCase="'draw'"></ige-draw-spatial>
+            <ige-name-spatial *ngSwitchCase="'geo-name'"></ige-name-spatial>
+        </div>
 
         <div #leafletDlg></div>
     </div>
@@ -29,7 +37,8 @@
     </mat-menu>
     <div fxFlex></div>
     <button mat-stroked-button color="primary"
-            (click)="getSelectedArea()">Übernehmen
+            [disabled]="!result.value"
+            [mat-dialog-close]="result">Übernehmen
     </button>
 
 </mat-dialog-actions>

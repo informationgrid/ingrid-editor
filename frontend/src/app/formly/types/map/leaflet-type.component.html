@@ -14,4 +14,5 @@
 
 <ige-spatial-list [locations]="locationsWithColor"
                   (hoverLocation)="highlightLocation($event)"
+                  (edit)="openSpatialDialog($event)"
                   (remove)="removeLocation($event)"></ige-spatial-list>
