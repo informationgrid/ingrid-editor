@@ -32,6 +32,10 @@ import {CodelistPipe} from '../directives/codelist.pipe';
 import {MatMenuModule} from '@angular/material/menu';
 import { SpatialDialogComponent } from './types/map/spatial-dialog/spatial-dialog.component';
 import { SpatialListComponent } from './types/map/spatial-list/spatial-list.component';
+import { FreeSpatialComponent } from './types/map/spatial-dialog/free-spatial/free-spatial.component';
+import { WktSpatialComponent } from './types/map/spatial-dialog/wkt-spatial/wkt-spatial.component';
+import { DrawSpatialComponent } from './types/map/spatial-dialog/draw-spatial/draw-spatial.component';
+import { NameSpatialComponent } from './types/map/spatial-dialog/name-spatial/name-spatial.component';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -86,7 +90,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
     CodelistPipe,
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent,
     TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
-    AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent
+    AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent, FreeSpatialComponent, WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [

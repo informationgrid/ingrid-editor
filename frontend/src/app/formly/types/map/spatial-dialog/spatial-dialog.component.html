@@ -8,28 +8,25 @@
 </div>
 <mat-dialog-content class="nominatimContainer">
 
-    <div fxLayout="row" fxLayoutGap="24px">
-        <div fxLayout="column" style="width: 400px">
-            <mat-form-field appearance="outline">
-                <mat-label>Suche nach Ort</mat-label>
-                <input matInput type="text" [igeFocus]="true" class="form-control" [formControl]="searchInput">
-            </mat-form-field>
-            <mat-selection-list dense (selectionChange)="handleSelection($event)">
-                <ng-container *ngFor="let entry of nominatimResult">
-                    <mat-list-option [value]="entry.boundingbox">
-                        <p matLine>{{entry.display_name}}</p>
-                    </mat-list-option>
-                    <mat-divider></mat-divider>
-                </ng-container>
-            </mat-selection-list>
-        </div>
+    <div fxLayout="row" fxLayoutGap="24px" [ngSwitch]="view">
+        <ige-free-spatial *ngSwitchCase="'free'" (boundingBox)="setAndShowBoundingBox($event);"></ige-free-spatial>
+        <ige-wkt-spatial *ngSwitchCase="'wkt'"></ige-wkt-spatial>
+        <ige-draw-spatial *ngSwitchCase="'draw'"></ige-draw-spatial>
+        <ige-name-spatial *ngSwitchCase="'geo-name'"></ige-name-spatial>
+
         <div #leafletDlg></div>
     </div>
+
 
 </mat-dialog-content>
 <mat-dialog-actions>
 
-    <button mat-button disabled>Typ ändern</button>
+    <button mat-button [matMenuTriggerFor]="chooseType">Typ ändern</button>
+    <mat-menu #chooseType="matMenu">
+        <button *ngFor="let menuItem of types" mat-menu-item (click)="updateView(menuItem.id)">
+            <span>{{menuItem.label}}</span>
+        </button>
+    </mat-menu>
     <div fxFlex></div>
     <button mat-stroked-button color="primary"
             (click)="getSelectedArea()">Übernehmen

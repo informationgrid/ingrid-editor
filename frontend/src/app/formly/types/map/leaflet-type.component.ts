@@ -24,6 +24,8 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
   private leafletReference: L.Map;
   private locations: SpatialLocation[] = [];
   private drawnSpatialRefs: Rectangle[] = [];
+  private highlightedLayer: Rectangle;
+  isHighlighted = false;
 
   constructor(private modalService: ModalService,
               private dialog: MatDialog,
@@ -129,6 +131,18 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
     this.formControl.markAsDirty();
 
     this.updateBoundingBox();
+
+  }
+
+  highlightLocation(location: SpatialLocationWithColor) {
+
+    if (location) {
+      this.leafletService.zoomToLayer(this.leafletReference, location);
+    } else {
+      this.updateBoundingBox();
+    }
+
+    this.isHighlighted = location != null;
 
   }
 }

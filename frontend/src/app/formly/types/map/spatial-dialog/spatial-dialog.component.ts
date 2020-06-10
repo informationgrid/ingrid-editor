@@ -1,13 +1,11 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {LatLngBounds, Map, Rectangle} from 'leaflet';
 import {LeafletAreaSelect} from '../leaflet-area-select';
-import {FormControl} from '@angular/forms';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {debounceTime} from 'rxjs/operators';
-import {NominatimService} from '../nominatim.service';
+import {UntilDestroy} from '@ngneat/until-destroy';
 import {LeafletService} from '../leaflet.service';
 import {MatDialogRef} from '@angular/material/dialog';
 import {SpatialLocation} from '../spatial-list/spatial-list.component';
+import {SpatialResult} from './spatial-result.model';
 
 class MyMap extends Map {
   _onResize: () => {};
@@ -24,20 +22,23 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   @ViewChild('leafletDlg') leaflet: ElementRef;
   private leafletReference: L.Map;
 
-  private areaSelect: any;
+  private areaSelect: LeafletAreaSelect = null;
   drawnBBox: any;
   _bbox: any = null;
+  types = [
+    {id: 'free', label: 'Freier Raumbezug'},
+    {id: 'wkt', label: 'WKT'},
+    {id: 'draw', label: 'Auf Karte zeichnen'},
+    {id: 'geo-name', label: 'Geografischer Name'}
+  ];
+  view = 'free';
+  private _name: string;
+
   get bbox(): any {
     return this._bbox;
   }
 
-  private _bboxPrevious: any;
-  nominatimResult: any = [];
-  searchInput = new FormControl();
-
-
   constructor(private dialogRef: MatDialogRef<SpatialDialogComponent>,
-              private nominatimService: NominatimService,
               private leafletService: LeafletService) {
   }
 
@@ -45,12 +46,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.searchInput.valueChanges
-      .pipe(
-        untilDestroyed(this),
-        debounceTime(500)
-      )
-      .subscribe(query => this.searchLocation(query));
+
 
     this.leaflet.nativeElement.style.height = 'auto';
     this.leaflet.nativeElement.style.minHeight = 'calc(100vh - 235px)';
@@ -64,29 +60,13 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   }
 
 
-  searchLocation(query: string) {
-    this.nominatimService.search(query).subscribe((response: any) => {
-      this.nominatimResult = response;
-      console.log('Nominatim:', response);
-      setTimeout(() => (<MyMap>this.leafletReference)._onResize());
-    });
-  }
-
-  handleSelection(event) {
-    if (event.option.selected) {
-      event.source.deselectAll();
-      event.option._setSelected(true);
-    }
-
-    this.setAndShowBoundingBox(event.option.value);
-  }
-
-  setAndShowBoundingBox(coords: string[]) {
+  setAndShowBoundingBox(result: SpatialResult) {
+    this._name = result.title;
     this._bbox = {
-      lat1: coords[0],
-      lon1: coords[2],
-      lat2: coords[1],
-      lon2: coords[3]
+      lat1: result.box[0],
+      lon1: result.box[2],
+      lat2: result.box[1],
+      lon2: result.box[3]
     };
     this.drawBoxAndZoomToBounds();
     this.setAreaSelect();
@@ -147,7 +127,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   getSelectedArea() {
     const bounds = this.areaSelect.getBounds();
     this.dialogRef.close(<SpatialLocation>{
-      title: 'N/A',
+      title: this._name || 'N/A',
       type: 'bbox',
       box: {
         lat1: bounds.getSouthWest().lat,
@@ -156,5 +136,40 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
         lon2: bounds.getNorthEast().lng
       }
     });
+  }
+
+  updateView(id: string) {
+
+    this.view = id;
+    this.resetMapAddons();
+    this.prepareMapForView(id);
+
+  }
+
+  private prepareMapForView(id: string) {
+
+    (<MyMap>this.leafletReference)._onResize();
+    switch (id) {
+      case 'free':
+        return this.setupFreeSpatial();
+      case 'wkt':
+        return this.setupWktSpatial();
+    }
+    // setTimeout(() => (<MyMap>this.leafletReference)._onResize(), 100);
+
+  }
+
+  private resetMapAddons() {
+    if (this.areaSelect) {
+      this.areaSelect.remove();
+      this.areaSelect = null;
+    }
+  }
+
+  private setupFreeSpatial() {
+    this.setupAreaSelect();
+  }
+
+  private setupWktSpatial() {
   }
 }

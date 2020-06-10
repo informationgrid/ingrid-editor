@@ -1,0 +1,21 @@
+<div fxLayout="column" style="width: 400px">
+    <mat-form-field appearance="outline">
+        <mat-label>Suche nach Ort</mat-label>
+        <input matInput type="text" igeFocus class="form-control" [formControl]="searchInput">
+    </mat-form-field>
+    <mat-selection-list dense (selectionChange)="handleSelection($event)">
+        <ng-container *ngFor="let entry of nominatimResult">
+            <mat-list-option [value]="entry">
+                <p matLine>{{entry.display_name}}</p>
+            </mat-list-option>
+            <mat-divider></mat-divider>
+        </ng-container>
+    </mat-selection-list>
+
+    <div *ngIf="showNoResult">
+        Keine Ergebnisse. Ändern Sie Ihre Suche.
+    </div>
+    <div *ngIf="showWelcome">
+        Suchen Sie nach einem Ort und wählen Sie diesen aus, um ihn anzuzeigen.
+    </div>
+</div>

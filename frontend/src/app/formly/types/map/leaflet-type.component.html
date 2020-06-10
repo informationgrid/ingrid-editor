@@ -8,7 +8,10 @@
     </button>
 </div>
 
-<mat-list>
-    <ige-spatial-list [locations]="locationsWithColor"
-                      (remove)="removeLocation($event)"></ige-spatial-list>
-</mat-list>
+<div *ngIf="isHighlighted" class="resetBtn">
+    <button mat-flat-button (click)="highlightLocation(null)">Zurücksetzen</button>
+</div>
+
+<ige-spatial-list [locations]="locationsWithColor"
+                  (hoverLocation)="highlightLocation($event)"
+                  (remove)="removeLocation($event)"></ige-spatial-list>

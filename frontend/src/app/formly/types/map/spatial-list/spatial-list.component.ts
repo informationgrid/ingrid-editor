@@ -23,6 +23,7 @@ export interface SpatialLocationWithColor extends SpatialLocation {
 export class SpatialListComponent implements OnInit {
 
   @Input() locations: SpatialLocationWithColor[];
+  @Output() hoverLocation = new EventEmitter<SpatialLocationWithColor>();
   @Output() remove = new EventEmitter<number>();
 
   constructor() { }

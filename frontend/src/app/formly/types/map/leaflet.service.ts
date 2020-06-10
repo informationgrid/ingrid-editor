@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {LatLngBounds, Map, MapOptions, Rectangle, TileLayer} from 'leaflet';
+import {LatLngBounds, Layer, Map, MapOptions, Rectangle, TileLayer} from 'leaflet';
 import {MatOption} from '@angular/material/core';
 import {SpatialLocation, SpatialLocationWithColor} from './spatial-list/spatial-list.component';
 
@@ -56,15 +56,15 @@ export class LeafletService {
     });
   }
 
-  drawSpatialRefs(map: Map, locations: SpatialLocationWithColor[]) {
+  drawSpatialRefs(map: Map, locations: SpatialLocationWithColor[]): Rectangle[] {
 
     let bounds: LatLngBounds = null;
 
     const drawnBoxes = locations
-      .map(location => LeafletService.getLatLngBoundsFromBox(location.box))
-      .map((box, index) => {
-        bounds = this.extendBounds(bounds, box);
-        return this.drawBoundingBox(map, box, this.colors[index]);
+      .map(location => ({box: LeafletService.getLatLngBoundsFromBox(location.box), color: location.color}))
+      .map((location, index) => {
+        bounds = this.extendBounds(bounds, location.box);
+        return this.drawBoundingBox(map, location.box, location.color);
       });
 
     map.fitBounds(bounds, {maxZoom: 18});
@@ -83,6 +83,18 @@ export class LeafletService {
 
   removeDrawnBoundingBoxes(map: Map, boxes: Rectangle[]) {
     boxes.forEach(box => setTimeout(() => map.removeLayer(box), 100));
+  }
+
+  /*highlightLayer(map: Map, location: SpatialLocationWithColor): Rectangle {
+
+    const hightlightArea = this.drawSpatialRefs(map, [location]);
+    // hightlightArea[0].setStyle(this.hightlightColor);
+    return hightlightArea[0];
+
+  }*/
+
+  zoomToLayer(map: Map, location: SpatialLocationWithColor) {
+    map.fitBounds(LeafletService.getLatLngBoundsFromBox(location.box));
   }
 
   private extendBounds(bounds: LatLngBounds, box: LatLngBounds): LatLngBounds {

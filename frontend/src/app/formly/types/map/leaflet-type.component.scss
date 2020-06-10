@@ -43,6 +43,13 @@
   }
 }
 
+.resetBtn {
+  position: absolute;
+  z-index: 1000;
+  margin-top: -41px;
+  margin-left: 5px;
+}
+
 .passive {
   opacity: 0.4;
 }
