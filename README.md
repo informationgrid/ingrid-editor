@@ -37,8 +37,9 @@ TBD: create an installer instead
   * Run > Edit Configurations > Kotlin > IgeServerKt
     * VM options: `-Dspring.profiles.active=default,dev,mcloud` 
 * Install **frontend packages** 
+  * Open a shell in root directory of the project
   * Install *yarn* if not installed yet: `npm -g i yarn`
-  * Install packages: `yarn`
+  * Install packages: `yarn --cwd ./frontend`
 * Create **frontend run configuration**
   * Run > Edit Configurations > + (new configuration) > 
     * *community edition* Shell Script
