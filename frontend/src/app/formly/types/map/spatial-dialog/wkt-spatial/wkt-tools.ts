@@ -13,6 +13,7 @@ export class WktTools {
     weight: 3
   };
 
+  private wkt = new Wkt.Wkt();
 
   constructor() {
     console.log('wicket-leaflet:', Wktleaflet);
@@ -24,15 +25,13 @@ export class WktTools {
    * @param   focus       {Boolean}   Indicates that the map should pan and/or zoom to new features
    * @return              {Object}    Some sort of geometry object
    */
-  mapIt(map: Map, wktString: string, editable = false, focus = true) {
-    let obj, wkt;
-    wkt = new Wkt.Wkt();
+  mapIt(map: Map, wktString: string, overrideConfig = {}, editable = false, focus = true) {
 
     try { // Catch any malformed WKT strings
-      wkt.read(wktString);
+      this.wkt.read(wktString);
     } catch (e1) {
       try {
-        wkt.read(wktString.replace('\n', '').replace('\r', '').replace('\t', ''));
+        this.wkt.read(wktString.replace('\n', '').replace('\r', '').replace('\t', ''));
       } catch (e2) {
         if (e2.name === 'WKTError') {
           alert('Wicket could not understand the WKT string you entered. Check that you have parentheses ' +
@@ -44,13 +43,14 @@ export class WktTools {
 
     const config = {
       ...this.defaultConfig,
+      ...overrideConfig,
       editable: editable
     };
 
-    obj = wkt.toObject(config); // Make an object
+    const obj = this.wkt.toObject(config); // Make an object
 
     // Add listeners for overlay editing events
-    if (wkt.type === 'polygon' || wkt.type === 'linestring') {
+    if (this.wkt.type === 'polygon' || this.wkt.type === 'linestring') {
     }
 
     if (Wkt.isArray(obj)) { // Distinguish multigeometries (Arrays) from objects

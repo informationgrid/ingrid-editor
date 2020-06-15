@@ -112,7 +112,7 @@ export class LeafletService {
   }
 
   convertWKT(map: Map, wkt: string, focus = false) {
-    return this.wktTools.mapIt(map, wkt, false, focus);
+    return this.wktTools.mapIt(map, wkt, {}, false, focus);
   }
 
   private extendBounds(bounds: LatLngBounds, box: LatLngExpression | LatLngBoundsExpression): LatLngBounds {
@@ -143,7 +143,12 @@ export class LeafletService {
   private drawWktLocations(map: Map, locations: SpatialLocationWithColor[]) {
 
     return locations
-      .map(location => this.wktTools.mapIt(map, <string>location.value, false, false));
+      .map(location => this.wktTools.mapIt(map, <string>location.value, {
+          color: location.color,
+          fillColor: location.color + '33',
+          fillOpacity: 1
+        },
+        false, false));
 
   }
 
