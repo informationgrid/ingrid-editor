@@ -36,6 +36,7 @@ TBD: create an installer instead
   * Right click file *server/src/main/java/de/ingrid/igeserver/IgeServer.kt* > Run
   * Run > Edit Configurations > Kotlin > IgeServerKt
     * VM options: `-Dspring.profiles.active=default,dev,mcloud` 
+    * JRE: *path/to/java-11-jdk*
 * Install **frontend packages** 
   * Open a shell in root directory of the project
   * Install *yarn* if not installed yet: `npm -g i yarn`
