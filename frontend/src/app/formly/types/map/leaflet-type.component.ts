@@ -108,7 +108,11 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       .subscribe((result: SpatialLocation) => {
         if (result) {
           console.log('Spatial result:', result);
-          this.locations.push(result);
+          if (locationIndex >= 0) {
+            this.locations[locationIndex] = result;
+          } else {
+            this.locations.push(result);
+          }
           this.formControl.setValue(this.locations);
           this.formControl.markAsDirty();
           this.updateBoundingBox();
@@ -122,6 +126,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
     return locations
       .map((location, index) => ({
         ...location,
+        indexNumber: index,
         color: this.leafletService.getColor(index)
       }));
 
@@ -137,15 +142,18 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
 
   }
 
-  highlightLocation(location: SpatialLocationWithColor) {
+  highlightLocation(index: number) {
 
-    if (location) {
-      this.leafletService.zoomToLayer(this.leafletReference, location);
+    if (index !== null) {
+      const bounds = this.leafletService.getBoundingBoxFromLayers([this.drawnSpatialRefs[index]]);
+      this.leafletReference.fitBounds(bounds);
+
     } else {
       this.updateBoundingBox();
     }
 
-    this.isHighlighted = location != null;
+    this.isHighlighted = index != null;
 
   }
+
 }

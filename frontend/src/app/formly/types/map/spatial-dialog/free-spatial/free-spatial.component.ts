@@ -1,10 +1,13 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {debounceTime} from 'rxjs/operators';
 import {NominatimResult, NominatimService} from '../../nominatim.service';
 import {MatSelectionListChange} from '@angular/material/list';
-import {SpatialResult} from '../spatial-result.model';
+import {LeafletAreaSelect} from '../../leaflet-area-select';
+import {LatLng, LatLngBounds, Map, Rectangle} from 'leaflet';
+import {SpatialBoundingBox} from '../spatial-result.model';
+import {LeafletService} from '../../leaflet.service';
 
 @UntilDestroy()
 @Component({
@@ -12,16 +15,23 @@ import {SpatialResult} from '../spatial-result.model';
   templateUrl: './free-spatial.component.html',
   styleUrls: ['./free-spatial.component.scss']
 })
-export class FreeSpatialComponent implements OnInit {
+export class FreeSpatialComponent implements OnInit, OnDestroy {
 
-  @Output() boundingBox = new EventEmitter<SpatialResult>();
+  @Input() map: Map;
+  @Input() initial: SpatialBoundingBox;
+  @Output() result = new EventEmitter<SpatialBoundingBox>();
+  @Output() updateTitle = new EventEmitter<string>();
 
   nominatimResult: NominatimResult[] = [];
   searchInput = new FormControl();
   showNoResult = false;
   showWelcome = true;
 
-  constructor(private nominatimService: NominatimService) {
+  private areaSelect: LeafletAreaSelect = null;
+  drawnBBox: any;
+
+  constructor(private nominatimService: NominatimService,
+              private leafletService: LeafletService) {
   }
 
   ngOnInit(): void {
@@ -33,6 +43,20 @@ export class FreeSpatialComponent implements OnInit {
       )
       .subscribe(query => this.searchLocation(query));
 
+    if (this.initial) {
+      this.drawAndZoom(this.initial);
+    } else {
+      this.leafletService.zoomToInitialBox(this.map);
+    }
+
+    // avoid wrong change detection
+    setTimeout(() => this.setupAreaSelect());
+
+  }
+
+  ngOnDestroy() {
+    this.areaSelect.clearAllEventListeners();
+    this.areaSelect.remove();
   }
 
   searchLocation(query: string) {
@@ -61,11 +85,73 @@ export class FreeSpatialComponent implements OnInit {
     }
 
     const item: NominatimResult = event.option.value;
-    this.boundingBox.next({
-      title: item.display_name,
-      box: item.boundingbox
-    });
 
+    const box = item.boundingbox;
+    const value = {
+      lat1: +box[0],
+      lon1: +box[2],
+      lat2: +box[1],
+      lon2: +box[3]
+    };
+
+    this.drawAndZoom(value);
+
+    this.result.next(value);
+    this.updateTitle.next(item.display_name);
+
+  }
+
+  private drawAndZoom(value: { lat1: number; lat2: number; lon1: number; lon2: number }) {
+    const bounds = new LatLngBounds(
+      new LatLng(value.lat1, value.lon1),
+      new LatLng(value.lat2, value.lon2));
+    this.drawBoundingBox(bounds);
+
+    this.map.fitBounds(bounds).once('zoomend', () => {
+      setTimeout(() => this.updateAreaSelectPosition(), 10);
+    });
+    setTimeout(() => this.updateAreaSelectPosition(), 270);
+  }
+
+  private drawBoundingBox(latLonBounds: LatLngBounds) {
+    this.removeDrawnBoundingBox();
+    this.drawnBBox = new Rectangle(latLonBounds, {color: '#ff7800', weight: 1}).addTo(this.map);
+  }
+
+  private removeDrawnBoundingBox() {
+    if (this.drawnBBox) {
+      const bbox = this.drawnBBox;
+      setTimeout(() => this.map.removeLayer(bbox), 100);
+      this.drawnBBox = null;
+    }
+  }
+
+  private setupAreaSelect() {
+    const box = this.drawnBBox ? this.drawnBBox._path.getBBox() : null;
+    if (box) {
+      this.areaSelect = new LeafletAreaSelect(box);
+    } else {
+      this.areaSelect = new LeafletAreaSelect({width: 50, height: 50});
+    }
+    this.areaSelect.on('change', () => this.updateSelectedArea());
+    this.areaSelect.addTo(this.map);
+  }
+
+  private updateSelectedArea() {
+    const bounds = this.areaSelect.getBounds();
+    this.result.next({
+      lat1: bounds.getSouthWest().lat,
+      lon1: bounds.getSouthWest().lng,
+      lat2: bounds.getNorthEast().lat,
+      lon2: bounds.getNorthEast().lng
+    });
+  };
+
+  private updateAreaSelectPosition() {
+    if (this.drawnBBox) {
+      const box = this.drawnBBox._path.getBBox();
+      this.areaSelect.setDimensions(box);
+    }
   }
 
 }

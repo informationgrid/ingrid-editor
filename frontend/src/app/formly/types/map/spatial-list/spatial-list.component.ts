@@ -1,17 +1,14 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {SpatialBoundingBox} from '../spatial-dialog/spatial-result.model';
 
 export interface SpatialLocation {
   title: string;
-  type: 'bbox' | 'text',
-  value?: {
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  } | string
+  type: 'free' | 'wkt',
+  value?: SpatialBoundingBox | string
 }
 
 export interface SpatialLocationWithColor extends SpatialLocation {
+  indexNumber: number;
   color: string;
 }
 
@@ -23,7 +20,7 @@ export interface SpatialLocationWithColor extends SpatialLocation {
 export class SpatialListComponent implements OnInit {
 
   @Input() locations: SpatialLocationWithColor[];
-  @Output() hoverLocation = new EventEmitter<SpatialLocationWithColor>();
+  @Output() selectLocation = new EventEmitter<number>();
   @Output() edit = new EventEmitter<number>();
   @Output() remove = new EventEmitter<number>();
 

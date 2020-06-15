@@ -1,5 +1,16 @@
 import {Injectable} from '@angular/core';
-import {LatLngBounds, Map, MapOptions, Rectangle, TileLayer} from 'leaflet';
+import {
+  LatLng,
+  LatLngBounds,
+  LatLngBoundsExpression,
+  LatLngExpression,
+  Layer,
+  Map,
+  MapOptions,
+  Marker,
+  Rectangle,
+  TileLayer
+} from 'leaflet';
 import {SpatialLocationWithColor} from './spatial-list/spatial-list.component';
 import {WktTools} from './spatial-dialog/wkt-spatial/wkt-tools';
 
@@ -17,7 +28,7 @@ export class LeafletService {
 
   private defaultOptions: MapOptions = {};
 
-  private colors = ['#ff7800', '#88ff00', '#00ccff', '#7700ff', '#ff0008'];
+  private colors = ['#4499CC', '#35922C', '#FFBC00', '#FF7500', '#DE2525', '#DE2525', '#2C4EB7'];
   private wktTools: WktTools;
 
   static getLatLngBoundsFromBox(bbox: any): LatLngBounds {
@@ -60,16 +71,24 @@ export class LeafletService {
 
   drawSpatialRefs(map: Map, locations: SpatialLocationWithColor[]): Rectangle[] {
 
-    let bounds: LatLngBounds = null;
+    let bounds: LatLngBoundsExpression;
 
-    const drawnBoxes = locations
-      .map(location => ({box: LeafletService.getLatLngBoundsFromBox(location.value), color: location.color}))
-      .map((location, index) => {
-        bounds = this.extendBounds(bounds, location.box);
-        return this.drawBoundingBox(map, location.box, location.color);
-      });
+    const wktLocations = locations.filter(location => location.type === 'wkt');
+    const boxLocations = locations.filter(location => location.type === 'free');
 
-    map.fitBounds(bounds, {maxZoom: 18});
+    const drawnWktLocations = this.drawWktLocations(map, wktLocations);
+    const drawnBoxLocations = this.drawBoxLocations(map, boxLocations);
+
+    // fix order of drawn layers since we use them for selection and more
+    const drawnBoxes = [];
+    wktLocations.forEach((location, index) => drawnBoxes[location.indexNumber] = drawnWktLocations[index])
+    boxLocations.forEach((location, index) => drawnBoxes[location.indexNumber] = drawnBoxLocations[index])
+
+    bounds = this.getBoundingBoxFromLayers(drawnBoxes);
+
+    if (bounds) {
+      map.fitBounds(bounds, {maxZoom: 18});
+    }
 
     return drawnBoxes;
 
@@ -80,35 +99,66 @@ export class LeafletService {
   }
 
   private drawBoundingBox(map: Map, latLonBounds: LatLngBounds, color: string): Rectangle {
+
+    if (!latLonBounds) {
+      return null;
+    }
     return new Rectangle(latLonBounds, {color: color, weight: 1}).addTo(map);
+
   }
 
   removeDrawnBoundingBoxes(map: Map, boxes: Rectangle[]) {
     boxes.forEach(box => setTimeout(() => map.removeLayer(box), 100));
   }
 
-  /*highlightLayer(map: Map, location: SpatialLocationWithColor): Rectangle {
-
-    const hightlightArea = this.drawSpatialRefs(map, [location]);
-    // hightlightArea[0].setStyle(this.hightlightColor);
-    return hightlightArea[0];
-
-  }*/
-
-  zoomToLayer(map: Map, location: SpatialLocationWithColor) {
-    map.fitBounds(LeafletService.getLatLngBoundsFromBox(location.value));
+  convertWKT(map: Map, wkt: string, focus = false) {
+    return this.wktTools.mapIt(map, wkt, false, focus);
   }
 
-  convertWKT(map: Map, wkt: string) {
-    return this.wktTools.mapIt(map, wkt);
-  }
+  private extendBounds(bounds: LatLngBounds, box: LatLngExpression | LatLngBoundsExpression): LatLngBounds {
 
-  private extendBounds(bounds: LatLngBounds, box: LatLngBounds): LatLngBounds {
     const boxBounds = bounds ? new LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast()) : null;
     if (!boxBounds) {
-      return box;
+      if (box instanceof LatLng) {
+        return new LatLngBounds(box, box);
+      }
+      return <LatLngBounds>box;
     } else {
       return boxBounds.extend(box);
     }
+
+  }
+
+  private drawBoxLocations(map: Map, locations: SpatialLocationWithColor[]) {
+
+
+    return locations
+      .map(location => ({box: LeafletService.getLatLngBoundsFromBox(location.value), color: location.color}))
+      .map(location => {
+        return this.drawBoundingBox(map, location.box, location.color);
+      });
+
+  }
+
+  private drawWktLocations(map: Map, locations: SpatialLocationWithColor[]) {
+
+    return locations
+      .map(location => this.wktTools.mapIt(map, <string>location.value, false, false));
+
+  }
+
+  getBoundingBoxFromLayers(layers: Layer[]): LatLngBoundsExpression {
+
+    let bounds: LatLngBounds = null;
+
+    layers.forEach(layer => {
+      if ((<Rectangle>layer).getBounds) {
+        bounds = this.extendBounds(bounds, (<Rectangle>layer).getBounds())
+      } else if ((<Marker>layer).getLatLng) {
+        bounds = this.extendBounds(bounds, (<Marker>layer).getLatLng())
+      }
+    });
+    return bounds;
+
   }
 }

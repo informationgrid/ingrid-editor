@@ -66,14 +66,16 @@ export class WktTools {
     }
 
     // Pan the map to the feature
-    if (focus && obj.getBounds !== undefined && typeof obj.getBounds === 'function') {
-      // For objects that have defined bounds or a way to get them
-      map.fitBounds(obj.getBounds());
-    } else {
-      if (focus && obj.getLatLng !== undefined && typeof obj.getLatLng === 'function') {
-        map.panTo(obj.getLatLng());
+    setTimeout(() => {
+      if (focus && obj.getBounds !== undefined && typeof obj.getBounds === 'function') {
+        // For objects that have defined bounds or a way to get them
+        map.fitBounds(obj.getBounds());
+      } else {
+        if (focus && obj.getLatLng !== undefined && typeof obj.getLatLng === 'function') {
+          map.panTo(obj.getLatLng());
+        }
       }
-    }
+    });
 
     return obj;
   }

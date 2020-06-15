@@ -2,7 +2,7 @@
 
     <h3 matSubheader>Freie Raumbezüge</h3>
     <mat-list-item *ngFor="let location of locations; let pos = index;" class="clickable"
-                   (click)="hoverLocation.next(location)">
+                   (click)="selectLocation.next(pos)">
 
         <mat-icon matListIcon
                   [style.background-color]="location.color + '33'"
@@ -21,11 +21,15 @@
             </mat-menu>
         </h4>
 
-        <div matLine class="coordinates">
+        <div *ngIf="location.type === 'free' && location.value" matLine class="coordinates">
             <span>L1: {{location.value.lat1 | number:'.6'}}°</span>
             <span>B1: {{location.value.lon1 | number:'.6'}}°</span>
             <span>L2: {{location.value.lat2 | number:'.6'}}°</span>
             <span>B2: {{location.value.lon2 | number:'.6'}}°</span>
+        </div>
+
+        <div *ngIf="location.type === 'wkt'" matLine>
+            {{location.value}}
         </div>
 
     </mat-list-item>

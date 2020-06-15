@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Map} from 'leaflet';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Layer, Map} from 'leaflet';
 import {LeafletService} from '../../leaflet.service';
 
 @Component({
@@ -10,14 +10,37 @@ import {LeafletService} from '../../leaflet.service';
 export class WktSpatialComponent implements OnInit {
 
   @Input() map: Map;
+  @Input() wktString = '';
+  @Output() result = new EventEmitter<string>();
+
+  private drawnWkt: Layer;
 
   constructor(private leafletService: LeafletService) {
   }
 
   ngOnInit(): void {
+    this.leafletService.zoomToInitialBox(this.map);
+
+    if (this.wktString) {
+      this.drawWkt(this.wktString);
+    }
   }
 
   validateWKT(value: string) {
-    this.leafletService.convertWKT(this.map, value);
+
+    this.clearLayer();
+    this.drawWkt(value);
+    this.result.next(value);
+
+  }
+
+  private clearLayer() {
+    if (this.drawnWkt) {
+      this.drawnWkt.remove();
+    }
+  }
+
+  private drawWkt(value: string) {
+    this.drawnWkt = this.leafletService.convertWKT(this.map, value, true);
   }
 }
