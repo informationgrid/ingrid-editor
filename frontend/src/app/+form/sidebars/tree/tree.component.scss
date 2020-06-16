@@ -14,22 +14,15 @@
 mat-tree-node {
   cursor: pointer;
   min-height: 20px;
-  padding: 5px 0;
 
   ::ng-deep svg path {
     fill: #000000;
   }
 
-  &:first-child {
-    border-top: 1px solid $ige-background-bar;
-  }
-
   &.folder {
-    padding: 9px 0;
-    border-bottom: 1px solid $ige-background-bar;
+    border-color: transparent;
 
     &.expanded {
-      border-bottom-color: transparent;
 
       .toggle {
         color: #000000de;
@@ -40,11 +33,20 @@ mat-tree-node {
       }
     }
 
+    &.expanded.rootNode {
+       border-bottom: 1px solid $ige-background-bar;
+    }
 
+    > div {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      align-items: center;
+    }
   }
 
   &.rootNode {
-
+    padding: 9px 0;
     background-color: $ige-background;
 
     &:hover {
@@ -70,30 +72,46 @@ mat-tree-node {
     &.folder {
       font-size: 16px;
     }
+  }
 
+  &.rootNode.folder,
+  &.rootNode.folder + &.rootNode:not(.folder),
+  &:not(.rootNode):not(.folder) + &:not(.rootNode).folder > div,
+  &[aria-level='3'] + &[aria-level='2'] > div,
+  &[aria-level='4'] + &[aria-level='3'] > div,
+  &[aria-level='5'] + &[aria-level='4'] > div { /* Add more levels if necessary */
+    border-top: 1px solid $ige-background-bar;
+  }
+
+  &:not(.rootNode) + &.rootNode {
+    /* Cover bottom border of submenu item above */
+    margin-top: -1px;
+    padding-top: 10px;
+  }
+
+  &:not(.rootNode).expanded + &:not(.rootNode):not(.folder) {
+    /* Cover bottom border of parent item above within submenu */
+    position: relative;
+    z-index: 1;
+    margin-top: -1px;
+    background-color: lighten($ige-background, 10%);
   }
 
   .label {
-    padding-left: 24px;
-    padding-top: 5px;
+    display: flex;
+    padding: 5px 0 5px 24px;
     line-height: 20px;
     user-select: none;
-    display: flex;
 
     .mat-icon {
       line-height: 0;
-      vertical-align: sub;
-      margin-right: 6px;
+      margin: -2px 6px -2px 0;
       font-size: 20px;
     }
 
     .mat-spinner {
       margin-left: 12px;
       margin-top: 3px;
-    }
-
-    span {
-      padding-top: 5px;
     }
   }
 
@@ -114,15 +132,42 @@ mat-tree-node {
     font-style: italic;
   }
 
-  .toggle {
-    color: $ige-comment-color;
-    float: right;
-    height: 30px;
-    width: 30px;
-    line-height: 27px;
-    margin-right: 15px;
+  &:not(.rootNode) {
+    .label {
+      display: flex;
+      align-items: center;
+      padding: 14px 0;
+    }
   }
 
+  &:not(.rootNode):not(.folder) {
+    .label {
+      padding: 8px 0;
+    }
+  }
+
+  &:not(.rootNode) {
+    > div {
+      width: calc(100% - 24px);
+      margin-left: 24px;
+    }
+  }
+
+  &:not(.rootNode).folder {
+    > div {
+      width: calc(100% - 24px);
+      margin-left: 24px;
+      border-bottom: 1px solid $ige-background-bar;
+    }
+  }
+
+  .toggle {
+    color: $ige-comment-color;
+    height: 30px;
+    width: 30px;
+    margin-right: 15px;
+    line-height: 27px;
+  }
 }
 
 .docType {
