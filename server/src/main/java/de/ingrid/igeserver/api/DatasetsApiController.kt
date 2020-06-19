@@ -45,7 +45,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
 
         try {
-            dbService.acquire(dbId).use { ignored ->
+            dbService.acquire(dbId).use {
                 val dataJson = data.toJsonNode() as ObjectNode
 
                 addCreationInfo(dataJson)

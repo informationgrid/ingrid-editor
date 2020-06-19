@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.ImporterFactory
 import de.ingrid.igeserver.model.ImportAnalyzeInfo

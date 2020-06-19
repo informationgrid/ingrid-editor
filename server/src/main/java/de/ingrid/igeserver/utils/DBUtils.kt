@@ -33,7 +33,7 @@ class DBUtils @Autowired constructor(private val dbService: DBApi, private val a
 
         // TODO: use cache!
         try {
-            dbService.acquire("IgeUsers").use { ignored ->
+            dbService.acquire("IgeUsers").use {
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = false
@@ -68,7 +68,7 @@ class DBUtils @Autowired constructor(private val dbService: DBApi, private val a
 
         // TODO: use cache!
         try {
-            dbService.acquire("IgeUsers").use { ignored ->
+            dbService.acquire("IgeUsers").use {
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = false
@@ -98,7 +98,7 @@ class DBUtils @Autowired constructor(private val dbService: DBApi, private val a
 
     fun getCatalogById(id: String?): Catalog? {
         try {
-            dbService.acquire(id).use { ignored ->
+            dbService.acquire(id).use {
                 val catalogInfo = dbService.findAll(DBApi.DBClass.Info.name)
 
                 // TODO: can this happen?
@@ -126,7 +126,7 @@ class DBUtils @Autowired constructor(private val dbService: DBApi, private val a
         val query: MutableMap<String, String> = HashMap()
         query["userId"] = userId
         try {
-            dbService.acquire("IgeUsers").use { ignored ->
+            dbService.acquire("IgeUsers").use {
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = false
