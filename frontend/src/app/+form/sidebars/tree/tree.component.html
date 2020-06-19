@@ -19,6 +19,7 @@
                        [class.active]="node._id === activeNodeId"
                        [class.hide]="showOnlyFolders"
                        [class.rootNode]="node.level === 0"
+                       [class.afterExpanded]="node.afterExpanded"
                        [class.disabled]="disabledCondition(node)">
             <div class="label">
                 <mat-icon [svgIcon]="node.iconClass" [ngClass]="['document-icon',getStateClass(node)]"></mat-icon>
@@ -35,6 +36,7 @@
                        [class.expanded]="treeControl.isExpanded(node)"
                        [class.disabled]="disabledCondition(node)"
                        [class.rootNode]="node.level === 0"
+                       [class.afterExpanded]="node.afterExpanded"
                        [class.folder]="node.type === 'FOLDER'">
             <div style="width: 100%;">
                 <button mat-icon-button matTreeNodeToggle

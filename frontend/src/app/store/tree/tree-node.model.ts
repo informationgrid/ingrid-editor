@@ -2,6 +2,7 @@ import {DocumentState} from '../../models/ige-document';
 
 export class TreeNode {
   isExpanded?: boolean;
+  afterExpanded?: boolean;
 
   constructor(public _id: string,
               public title: string = 'Kein Titel',

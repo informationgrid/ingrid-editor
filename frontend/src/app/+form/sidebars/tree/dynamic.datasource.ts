@@ -88,6 +88,9 @@ export class DynamicDataSource {
       .subscribe(children => {
 
         if (children) {
+          // mark node after children to set border-top correctly
+          this.data[index + 1].afterExpanded = true;
+
           this.data.splice(index + 1, 0, ...children);
           node.isLoading = false;
           node.isExpanded = true;
@@ -103,6 +106,10 @@ export class DynamicDataSource {
     for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {
     }
     this.data.splice(index + 1, count);
+
+    // remove mark of node when upper children have been removed to set border-top correctly
+    this.data[index + 1].afterExpanded = false;
+
     this.dataChange.next(this.data);
     node.isExpanded = false;
   }
