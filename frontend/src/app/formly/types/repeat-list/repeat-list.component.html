@@ -1,0 +1,10 @@
+<mat-list *ngIf="field.fieldGroup.length > 0" dense>
+    <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" class="clickable">
+        <h3 matLine>Neuer Eintrag</h3>
+        <button mat-icon-button class="context-button" (click)="remove(i)">
+            <mat-icon svgIcon="Entfernen"></mat-icon>
+        </button>
+    </mat-list-item>
+</mat-list>
+
+<ige-add-button (click)="add()"></ige-add-button>

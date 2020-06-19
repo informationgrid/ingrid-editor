@@ -69,27 +69,52 @@ export class TestDoctype extends BaseDoctype {
           indeterminate: false,
           required: true
         }
+      }]
+    }, {
+      wrappers: ['section'],
+      templateOptions: {
+        label: 'Repeatables'
       },
-        {
-          wrappers: ['section'],
-          templateOptions: {
-            label: 'Raumbezüge'
-          },
-          fieldGroup: [{
-            key: 'map',
-            type: 'leaflet',
-            wrappers: [],
-            templateOptions: {
-              mapOptions: {},
-              height: 386
+      fieldGroup: [{
+        key: 'repeatList',
+        type: 'repeatList',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Repeatable List',
+          addText: 'Noch einen hinzufügen'
+        },
+        fieldArray: {
+          fieldGroup: [
+            {
+              type: 'input',
+              key: 'value',
+              templateOptions: {
+                label: 'Wert',
+                required: true,
+                appearance: 'outline'
+              }
             }
-          }]
+          ]
         }
-      ]
+      }]
+    }, {
+      wrappers: ['section'],
+      templateOptions: {
+        label: 'Raumbezüge'
+      },
+      fieldGroup: [{
+        key: 'map',
+        type: 'leaflet',
+        wrappers: [],
+        templateOptions: {
+          mapOptions: {},
+          height: 386
+        }
+      }]
     }
   ];
 
-  constructor(storageService?: DocumentService, codelistService?: CodelistService, codelistQuery?: CodelistQuery) {
+  constructor(storageService ?: DocumentService, codelistService ?: CodelistService, codelistQuery ?: CodelistQuery) {
 
     super(codelistService, codelistQuery);
 
