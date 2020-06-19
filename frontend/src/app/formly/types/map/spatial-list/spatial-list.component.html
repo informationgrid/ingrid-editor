@@ -1,37 +1,42 @@
 <mat-list>
 
-    <h3 matSubheader>Freie Raumbezüge</h3>
-    <mat-list-item *ngFor="let location of locations; let pos = index;" class="clickable"
-                   (click)="selectLocation.next(pos)">
+    <ng-container *ngFor="let type of types">
 
-        <mat-icon matListIcon
-                  [style.background-color]="location.color + '33'"
-                  [style.color]="location.color">crop_din
-        </mat-icon>
+        <h3 matSubheader>{{type}}</h3>
 
-        <h4 matLine>
-            <span>{{location.title}}</span>
-            <div fxFlex></div>
-            <button mat-icon-button class="menu" [matMenuTriggerFor]="spatialRef">
-                <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #spatialRef="matMenu">
-                <button mat-menu-item (click)="edit.next(pos)">Bearbeiten</button>
-                <button mat-menu-item (click)="remove.next(pos)">Löschen</button>
-            </mat-menu>
-        </h4>
+        <mat-list-item *ngFor="let location of typedLocations[type]" class="clickable"
+                       (click)="selectLocation.next(location.indexNumber)">
 
-        <div *ngIf="location.type === 'free' && location.value" matLine class="coordinates">
-            <span>L1: {{location.value.lat1 | number:'.6'}}°</span>
-            <span>B1: {{location.value.lon1 | number:'.6'}}°</span>
-            <span>L2: {{location.value.lat2 | number:'.6'}}°</span>
-            <span>B2: {{location.value.lon2 | number:'.6'}}°</span>
-        </div>
+            <mat-icon matListIcon
+                      [style.background-color]="location.color + '33'"
+                      [style.color]="location.color">crop_din
+            </mat-icon>
 
-        <div *ngIf="location.type === 'wkt'" matLine>
-            {{location.value}}
-        </div>
+            <h4 matLine>
+                <span>{{location.title}}</span>
+                <div fxFlex></div>
+                <button mat-icon-button class="menu" [matMenuTriggerFor]="spatialRef">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #spatialRef="matMenu">
+                    <button mat-menu-item (click)="edit.next(location.indexNumber)">Bearbeiten</button>
+                    <button mat-menu-item (click)="remove.next(location.indexNumber)">Löschen</button>
+                </mat-menu>
+            </h4>
 
-    </mat-list-item>
+            <div *ngIf="location.type === 'free' && location.value" matLine class="coordinates">
+                <span>L1: {{location.value.lat1 | number:'.6'}}°</span>
+                <span>B1: {{location.value.lon1 | number:'.6'}}°</span>
+                <span>L2: {{location.value.lat2 | number:'.6'}}°</span>
+                <span>B2: {{location.value.lon2 | number:'.6'}}°</span>
+            </div>
+
+            <div *ngIf="location.type === 'wkt'" matLine>
+                {{location.value}}
+            </div>
+
+        </mat-list-item>
+
+    </ng-container>
 
 </mat-list>

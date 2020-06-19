@@ -1,7 +1,7 @@
-<div #leaflet [class.passive]="locationsWithColor.length === 0"></div>
+<div #leaflet [class.passive]="!hasAnyLocations"></div>
 
-<div class="button-wrapper text-center" [class.has-spatial]="locationsWithColor.length > 0">
-    <div *ngIf="locationsWithColor.length === 0" class="spatialBtnText">Erstellen Sie einen Raumbezug<span
+<div class="button-wrapper text-center" [class.has-spatial]="hasAnyLocations">
+    <div *ngIf="!hasAnyLocations" class="spatialBtnText">Erstellen Sie einen Raumbezug<span
         *ngIf="to.required">*</span></div>
     <button mat-fab class="spatialBtn" color="primary" (click)="openSpatialDialog()">
         <mat-icon svgIcon="spatial-rect"></mat-icon>
@@ -12,7 +12,7 @@
     <button mat-flat-button (click)="highlightLocation(null)">Zurücksetzen</button>
 </div>
 
-<ige-spatial-list [locations]="locationsWithColor"
+<ige-spatial-list [locations]="locationsWithColor$"
                   (selectLocation)="highlightLocation($event)"
                   (edit)="openSpatialDialog($event)"
                   (remove)="removeLocation($event)"></ige-spatial-list>

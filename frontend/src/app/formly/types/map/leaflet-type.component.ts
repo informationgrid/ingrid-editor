@@ -8,6 +8,7 @@ import {SpatialDialogComponent} from './spatial-dialog/spatial-dialog.component'
 import {LeafletService} from './leaflet.service';
 import {SpatialLocation, SpatialLocationWithColor} from './spatial-list/spatial-list.component';
 import {distinctUntilChanged, tap} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -19,12 +20,12 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
 
   @ViewChild('leaflet') leaflet: ElementRef;
 
-  locationsWithColor: SpatialLocationWithColor[] = [];
+  locationsWithColor$ = new Subject<SpatialLocationWithColor[]>();
+  hasAnyLocations = false;
 
   private leafletReference: L.Map;
   private locations: SpatialLocation[] = [];
   private drawnSpatialRefs: Rectangle[] = [];
-  private highlightedLayer: Rectangle;
   isHighlighted = false;
 
   constructor(private modalService: ModalService,
@@ -58,23 +59,29 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       this.updateBoundingBox();
     } catch (e) {
       console.error('Problem initializing the map component.', e);
-      this.locationsWithColor = [];
+      this.updateLocations([]);
       this.formControl.setValue([]);
       throw Error('Problem initializing the map component: ' + e.message);
     }
 
   }
 
+  private updateLocations(locations: SpatialLocationWithColor[]) {
+    this.hasAnyLocations = locations.length > 0;
+    this.locationsWithColor$.next(locations);
+  }
+
   private updateBoundingBox() {
 
-    this.locationsWithColor = [];
+    this.updateLocations([]);
     this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.drawnSpatialRefs);
 
     if (this.locations.length === 0) {
       this.leafletService.zoomToInitialBox(this.leafletReference);
     } else {
-      this.locationsWithColor = this.extendLocationsWithColor(this.locations);
-      this.drawnSpatialRefs = this.leafletService.drawSpatialRefs(this.leafletReference, this.locationsWithColor);
+      const locationsWithColor = this.extendLocationsWithColor(this.locations);
+      this.updateLocations(locationsWithColor);
+      this.drawnSpatialRefs = this.leafletService.drawSpatialRefs(this.leafletReference, locationsWithColor);
     }
 
   }
