@@ -16,11 +16,14 @@
     text-align: left;
   }
 
+  ::ng-deep .mat-form-field-flex {
+    align-items: center;
+  }
+
   ::ng-deep .mat-form-field-outline {
     background-color: #ffffff;
     top: 0.35em;
     border-radius: 4px;
-    height: 44px;
 
     &:not(.mat-form-field-outline-thick) > div {
       border: none;
@@ -29,7 +32,7 @@
 
   ::ng-deep .mat-form-field-suffix {
     margin-right: -5px;
-    top: 10px;
+    height: 24px
 
     button {
       height: 0 !important;

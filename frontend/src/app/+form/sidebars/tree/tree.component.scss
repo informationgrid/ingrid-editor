@@ -75,11 +75,10 @@ mat-tree-node {
   }
 
   &.rootNode.folder,
-  &.rootNode.folder + &.rootNode:not(.folder),
-  &:not(.rootNode):not(.folder) + &:not(.rootNode).folder > div,
-  &[aria-level='3'] + &[aria-level='2'] > div,
-  &[aria-level='4'] + &[aria-level='3'] > div,
-  &[aria-level='5'] + &[aria-level='4'] > div { /* Add more levels if necessary */
+  &.rootNode.folder + &.rootNode:not(.folder), /* Line above records in root */
+  &:not(.rootNode).expanded + &:not(.rootNode) > div, /* Within folder: folder or record below expanded folder */
+  &:not(.rootNode):not(.folder) + &:not(.rootNode).folder > div, /* Within folder: folder below record */
+  &:not(.rootNode):not(.folder).afterExpanded > div { /* Within folder: record (of upper folder) below expanded folder's record */
     border-top: 1px solid $ige-background-bar;
   }
 
@@ -89,12 +88,12 @@ mat-tree-node {
     padding-top: 10px;
   }
 
-  &:not(.rootNode).expanded + &:not(.rootNode):not(.folder) {
-    /* Cover bottom border of parent item above within submenu */
+  &:not(.rootNode).expanded + &:not(.rootNode) {
+    /* Cover bottom border of parent item above */
     position: relative;
     z-index: 1;
     margin-top: -1px;
-    background-color: lighten($ige-background, 10%);
+    background-color: lighten($ige-background, 10%); /* Other states' background colors have to be set important */
   }
 
   .label {
@@ -117,15 +116,15 @@ mat-tree-node {
   }
 
   &.selected {
-    background-color: darken($ige-background, 5%);
+    background-color: darken($ige-background, 5%) !important;
   }
 
   &:hover {
-    background-color: darken(#FFFFFF, 5%);
+    background-color: darken(#FFFFFF, 5%) !important;
   }
 
   &.active {
-    background-color: $ige-mark-color;
+    background-color: $ige-mark-color !important;
   }
 
   &.disabled {
