@@ -1,305 +1,82 @@
-package de.ingrid.igeserver.migrations;
+package de.ingrid.igeserver.migrations
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import de.ingrid.igeserver.api.ApiException;
-import de.ingrid.igeserver.db.DBApi;
-import de.ingrid.igeserver.db.DBFindAllResults;
-import de.ingrid.igeserver.db.FindOptions;
-import de.ingrid.igeserver.db.QueryType;
-import de.ingrid.igeserver.documenttypes.AbstractDocumentType;
-import de.ingrid.igeserver.documenttypes.DocumentType;
-import de.ingrid.igeserver.profiles.TestType;
-import de.ingrid.igeserver.services.DocumentService;
-import de.ingrid.igeserver.services.MapperService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static de.ingrid.igeserver.db.OrientDBDatabase.DB_ID;
-import static de.ingrid.igeserver.documenttypes.DocumentWrapperType.TYPE;
-import static de.ingrid.igeserver.services.ConstantsKt.*;
-import static de.ingrid.igeserver.services.MapperService.*;
+import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.db.OrientDBDatabase
+import org.apache.logging.log4j.kotlin.logger
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import java.util.function.Consumer
+import java.util.stream.Collectors
+import javax.annotation.PostConstruct
 
 @Service
-public class Migration {
+class Migration {
 
-    private static final Logger log = LogManager.getLogger(Migration.class);
-
-    @Autowired
-    private DBApi dbService;
+    private var log = logger()
 
     @Autowired
-    private DocumentService documentService;
+    private lateinit var dbService: DBApi
 
     @Autowired
-    List<AbstractDocumentType> documentTypes;
+    lateinit var migrationStrategies: List<MigrationStrategy>
 
-    private int migratedDocs = 0;
 
     @PostConstruct
-    public void init() {
-
-        update();
-
+    fun init() {
+        update()
     }
 
-    private void update() {
+    private fun update() {
+        val databases = dbService.databases
+        for (database in databases) {
+            executeMigrationsForDatabase(database)
+        }
+    }
 
-        String[] databases = this.dbService.getDatabases();
+    private fun executeMigrationsForDatabase(database: String) {
+        val version = getVersion(database)
 
-        for (String database : databases) {
-            String version = getVersion(database);
-            if (version.compareTo("0.1") < 0) {
-                addTestDocClass(database);
-                migrateProfileToDoctypes(database);
-                migrateDocumentClasses(database);
-                setVersion(database, "0.1");
-            }
-            if (version.compareTo("0.16") < 0) {
-                log.info("Migrate to version 0.16");
-                removeLocations(database);
-                setVersion(database, "0.16");
-            }
+        val strategies = getStrategiesAfter(version)
+
+        if (strategies.isEmpty()) {
+            return
         }
 
+        strategies.forEach(Consumer { strategy: MigrationStrategy -> strategy.exec(database) })
+
+        val latestVersion = strategies[strategies.size - 1].version
+        setVersion(database, latestVersion.version);
     }
 
-    private void removeLocations(String database) {
+    private fun getStrategiesAfter(version: String): List<MigrationStrategy> {
+        return migrationStrategies
+                .filter { it.compareWithVersion(version) == VersionCompare.HIGHER }
+                .sortedBy { it.version }
+    }
 
-        try (ODatabaseSession ignored = dbService.acquire(database)) {
 
-            documentTypes.forEach(type -> {
-
-                if (type.getTypeName().equals("mCloudDoc")) {
-                    Map<String, String> query = new HashMap<>();
-                    query.put(FIELD_DOCUMENT_TYPE, type.getTypeName());
-
-                    FindOptions findOptions = new FindOptions();
-                    findOptions.queryType = QueryType.exact;
-
-                    DBFindAllResults docs = null;
-                    try {
-                        docs = dbService.findAll(DocumentType.TYPE, query, findOptions);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (docs != null && docs.totalHits > 0) {
-                        docs.hits.forEach( doc -> {
-
-                            if (doc.has("geoReferenceVisual") && doc.get("geoReferenceVisual") != null) {
-                                String dbId = doc.get(DB_ID).asText();
-                                ((ObjectNode) doc).remove("geoReferenceVisual");
-                                removeDBManagementFields((ObjectNode) doc);
-                                try {
-                                    dbService.save(DocumentType.TYPE, dbId, doc.toString());
-                                } catch (ApiException e) {
-                                    log.error(e);
-                                }
-                            }
-
-                        });
-
-                    }
-                }
-
-            });
+    private fun getVersion(database: String): String {
+        dbService.acquire(database).use {
+            val info = dbService.findAll("Info")
+            val infoDoc = info!![0]
+            val version = infoDoc!!["version"]
+            return if (version == null) "0" else version.asText()
         }
-
     }
 
-    private String getVersion(String database) {
-
-        try (ODatabaseSession ignored = dbService.acquire(database)) {
-            List<JsonNode> info = dbService.findAll("Info");
-            JsonNode infoDoc = info.get(0);
-            JsonNode version = infoDoc.get("version");
-            return version == null ? "0" : version.asText();
-        }
-
-    }
-
-    private void setVersion(String database, String version) {
-
-        try (ODatabaseSession ignored = dbService.acquire(database)) {
-            List<JsonNode> info = dbService.findAll("Info");
-            JsonNode infoDoc = info.get(0);
-            ((ObjectNode)infoDoc).put("version", version);
-
-            dbService.save("Info", infoDoc.get(DB_ID).asText(), infoDoc.toString());
-        } catch (ApiException e) {
-            log.error(e);
-        }
-
-    }
-
-    private void migrateDocumentClasses(String database) {
-
-        this.addDocumentClass(database);
-
-        try (ODatabaseSession ignored = dbService.acquire(database)) {
-
-            documentTypes.forEach(type -> {
-
-                if (type.getTypeName().equals("Document") || type.getTypeName().equals("DocumentWrapper")) {
-                    return;
-                }
-
-                List<JsonNode> docs = dbService.findAll(type.getTypeName());
-                if (docs != null && docs.size() > 0) {
-                    for (JsonNode doc : docs) {
-                        try {
-                            handleDocumentClassesMigration(type, doc);
-                        } catch (Exception e) {
-                            log.error(e);
-                        }
-                    }
-                }
-
-                dbService.remove(type.getTypeName(), new HashMap<>());
-
-            });
-
-            dbService.remove("AddressWrapper", new HashMap<>());
-            dbService.remove("OrganizationDoc", new HashMap<>());
-
-            log.info("Migrated docs of: " + database + " => " + migratedDocs);
-
-        }
-
-    }
-
-    private void migrateProfileToDoctypes(String database) {
-
-        migratedDocs = 0;
-
-        try (ODatabaseSession ignored = dbService.acquire(database)) {
-
-            documentTypes.forEach(type -> {
-
-                List<JsonNode> docs = dbService.findAll(type.getTypeName());
-                if (docs != null && docs.size() > 0) {
-                    for (JsonNode doc : docs) {
-                        handleDoctypeMigration(type, doc);
-                    }
-                }
-
-            });
-
-            log.info("Migrated docs of: " + database + " => " + migratedDocs);
-
-        }
-
-    }
-
-    public void handleDoctypeMigration(AbstractDocumentType type, JsonNode doc) {
-
-        JsonNode doctype = doc.get("_profile");
-        if (doctype != null && !doctype.asText().isEmpty()) {
-            ((ObjectNode) doc).put(FIELD_DOCUMENT_TYPE, doctype.asText());
-            ((ObjectNode) doc).remove("_profile");
-            String recordId = doc.get("@rid").asText();
-            try {
-                dbService.save(type.getTypeName(), recordId, doc.toString());
-                migratedDocs++;
-            } catch (ApiException e) {
-                log.error("Error migrating document", e);
-            }
-        }
-
-    }
-
-    public void handleDocumentClassesMigration(AbstractDocumentType type, JsonNode doc) throws Exception {
-
-        String recordId = doc.get("@rid").asText();
-        String id = doc.get(FIELD_ID).asText();
-        String docType = doc.get(FIELD_DOCUMENT_TYPE).asText();
-
-        ObjectNode docWrapper;
-        boolean isAddress = false;
-
+    private fun setVersion(database: String, version: String) {
         try {
-            docWrapper = (ObjectNode) this.documentService.getByDocId(id, TYPE, false);
-        } catch (Exception e) {
-            try {
-                docWrapper = (ObjectNode) this.documentService.getByDocId(id, "AddressWrapper", false);
-                isAddress = true;
-            } catch (Exception e2) {
-                log.warn("No wrapper found. Deleting entry");
-                this.dbService.remove(docType, id);
-                return;
+            dbService.acquire(database).use {
+                val info = dbService.findAll("Info")
+                val infoDoc = info!![0]
+                (infoDoc as ObjectNode).put("version", version)
+                dbService.save("Info", infoDoc[OrientDBDatabase.DB_ID].asText(), infoDoc.toString())
             }
+        } catch (e: ApiException) {
+            log.error(e)
         }
-
-        String newRecordId;
-        try {
-            removeDBManagementFields((ObjectNode) doc);
-            JsonNode result = dbService.save(DocumentType.TYPE, null, doc.toString());
-            newRecordId = result.get(DB_ID).asText();
-        } catch (ApiException e) {
-            log.error("Error migrating document", e);
-            return;
-        }
-
-        if (isAddress) {
-            removeDBManagementFields(docWrapper);
-            docWrapper.put("@class", TYPE);
-        }
-        docWrapper.put(FIELD_DOCUMENT_TYPE, docType);
-        docWrapper.put(FIELD_CATEGORY, isAddress ? "address" : "data");
-        docWrapper.withArray(FIELD_ARCHIVE).removeAll();
-
-        JsonNode draft = docWrapper.get(FIELD_DRAFT);
-        JsonNode published = docWrapper.get(FIELD_PUBLISHED);
-        if (draft != null && draft.textValue().equals(recordId)) {
-            docWrapper.put(FIELD_DRAFT, newRecordId);
-        } else if (published != null && published.textValue().equals(recordId)){
-            docWrapper.put(FIELD_PUBLISHED, newRecordId);
-        } else {
-            log.error("Could not find reference of: " + recordId);
-            return;
-        }
-
-        try {
-            dbService.save(TYPE, isAddress ? null : docWrapper.get("@rid").asText(), docWrapper.toString());
-        } catch (ApiException e) {
-            log.error("Error migrating document", e);
-        }
-
-    }
-
-    /**
-     * Add TestDoc class to databases that is using them
-     *
-     * @param database
-     */
-    private void addTestDocClass(String database) {
-
-        try (ODatabaseSession session = dbService.acquire(database)) {
-            List<JsonNode> docs = dbService.findAll("TestDoc");
-            if (docs == null) {
-                new TestType().initialize(session);
-            }
-        }
-
-    }
-
-    private void addDocumentClass(String database) {
-
-        try (ODatabaseSession session = dbService.acquire(database)) {
-            List<JsonNode> docs = dbService.findAll("Document");
-            if (docs == null) {
-                new DocumentType().initialize(session);
-            }
-        }
-
     }
 
 }
