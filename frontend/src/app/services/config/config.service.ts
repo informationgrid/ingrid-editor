@@ -53,10 +53,6 @@ export class ConfigService {
         this.$userInfo.next(userInfo);
         this.isAdministrator = userInfo.roles && userInfo.roles.indexOf('admin') !== -1;
         return userInfo;
-      })
-      .catch(e => {
-        console.error(e);
-        return <UserInfo>{};
       });
   }
 

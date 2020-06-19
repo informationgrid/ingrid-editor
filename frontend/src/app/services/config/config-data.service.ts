@@ -29,6 +29,9 @@ export class ConfigDataService {
         if (e.indexOf('Cannot GET /sso/login') !== -1) {
           console.error('Not logged in to keycloak. Please login first from IgeServer (localhost:8550)');
           return null;
+        } else if (e.indexOf('Error occured while trying to proxy to') !== -1) {
+          console.error('No running backend');
+          throw new Error('Backend does not seem to run');
         } else {
           console.error('Could not get current user info', e);
         }
