@@ -74,29 +74,32 @@ export class TestDoctype extends BaseDoctype {
       wrappers: ['section'],
       templateOptions: {
         label: 'Repeatables'
-      },
-      fieldGroup: [{
-        key: 'repeatList',
-        type: 'repeatList',
-        wrappers: ['panel'],
-        templateOptions: {
-          externalLabel: 'Repeatable List',
-          addText: 'Noch einen hinzufügen'
-        },
-        fieldArray: {
-          fieldGroup: [
-            {
-              type: 'input',
-              key: 'value',
+      }
+      /*
+            fieldGroup: [{
+              key: 'repeatList',
+              type: 'repeatList',
+              wrappers: ['panel'],
               templateOptions: {
-                label: 'Wert',
-                required: true,
-                appearance: 'outline'
+                externalLabel: 'Repeatable List',
+                addText: 'Noch einen hinzufügen'
+              },
+              fieldArray: {
+                fieldGroup: [
+                  {
+                    type: 'input',
+                    key: 'value',
+                    templateOptions: {
+                      label: 'Wert',
+                      required: true,
+                      appearance: 'outline'
+                    }
+                  }
+                ]
               }
-            }
-          ]
-        }
-      }]
+            }]
+      */
+
     }, {
       wrappers: ['section'],
       templateOptions: {
