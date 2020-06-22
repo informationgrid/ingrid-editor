@@ -108,7 +108,8 @@ export class TestDoctype extends BaseDoctype {
         wrappers: [],
         templateOptions: {
           mapOptions: {},
-          height: 386
+          height: 386,
+          required: true
         }
       }]
     }

@@ -42,7 +42,6 @@ import {FormComponent} from '../form/form.component';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {formPluginProvider} from '../../form-plugin.provider';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { IgeFormErrorComponent } from './ige-form-error/ige-form-error.component';
 
 
 @NgModule({
@@ -50,26 +49,26 @@ import { IgeFormErrorComponent } from './ige-form-error/ige-form-error.component
     FormToolbarComponent, BreadcrumbComponent, FormComponent,
     FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent, HeaderTitleRowMinComponent,
     FormMessageComponent, DestinationSelectionComponent,
-    DynamicFormComponent, SidebarComponent, FormDashboardComponent, IgeFormErrorComponent
+    DynamicFormComponent, SidebarComponent, FormDashboardComponent
   ],
-    imports: [
-        CommonModule,
-        AngularSplitModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatMenuModule,
-        MatDividerModule,
-        MatInputModule,
-        MatButtonModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        FlexLayoutModule,
-        IgeFormlyModule,
-        MatTabsModule,
-        SharedModule,
-        MatTooltipModule,
-        MatProgressSpinnerModule
-    ],
+  imports: [
+    CommonModule,
+    AngularSplitModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    FlexLayoutModule,
+    IgeFormlyModule,
+    MatTabsModule,
+    SharedModule,
+    MatTooltipModule,
+    MatProgressSpinnerModule
+  ],
   providers: [FormToolbarService, FormPluginsService, CreateDocumentPlugin, SavePlugin, CreateFolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService, HistoryPlugin,
 

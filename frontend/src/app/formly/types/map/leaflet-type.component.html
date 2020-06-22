@@ -12,7 +12,10 @@
     <button mat-flat-button (click)="highlightLocation(null)">Zurücksetzen</button>
 </div>
 
-<ige-spatial-list [locations]="locationsWithColor$"
+<ige-form-error *ngIf="formFieldControl.errorState && formControl.errors?.required">Bitte erstellen Sie einen Raumbezug</ige-form-error>
+
+<ige-spatial-list *ngIf="hasAnyLocations"
+                  [locations]="locationsWithColor$"
                   (selectLocation)="highlightLocation($event)"
                   (edit)="openSpatialDialog($event)"
                   (remove)="removeLocation($event)"></ige-spatial-list>

@@ -37,6 +37,7 @@ import {WktSpatialComponent} from './types/map/spatial-dialog/wkt-spatial/wkt-sp
 import {DrawSpatialComponent} from './types/map/spatial-dialog/draw-spatial/draw-spatial.component';
 import {NameSpatialComponent} from './types/map/spatial-dialog/name-spatial/name-spatial.component';
 import {RepeatListComponent} from './types/repeat-list/repeat-list.component';
+import {FormErrorComponent} from '../+form/form-shared/ige-form-error/form-error.component';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -95,7 +96,8 @@ export function IpValidator(control: FormControl): ValidationErrors {
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent,
     TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
     AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent, FreeSpatialComponent,
-    WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent
+    WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent,
+    FormErrorComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [
