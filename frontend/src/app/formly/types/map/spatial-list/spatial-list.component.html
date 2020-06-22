@@ -2,15 +2,16 @@
 
     <ng-container *ngFor="let type of types">
 
-        <h3 matSubheader>{{type}}</h3>
+        <h3 matSubheader>{{getTypeName(type)}}</h3>
 
         <mat-list-item *ngFor="let location of typedLocations[type]" class="clickable"
                        (click)="selectLocation.next(location.indexNumber)">
 
-            <mat-icon matListIcon
+            <mat-icon *ngIf="type !== 'geo-name'" matListIcon
                       [style.background-color]="location.color + '33'"
                       [style.color]="location.color">crop_din
             </mat-icon>
+            <mat-icon *ngIf="type === 'geo-name'" matListIcon svgIcon="tag"></mat-icon>
 
             <h4 matLine>
                 <span>{{location.title}}</span>

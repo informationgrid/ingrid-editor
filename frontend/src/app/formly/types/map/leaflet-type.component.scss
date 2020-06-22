@@ -89,3 +89,7 @@ mat-selection-list {
   height: 14px;
   cursor: move;
 }
+
+.passive ::ng-deep .leaflet-control-zoom {
+  visibility: hidden;
+}

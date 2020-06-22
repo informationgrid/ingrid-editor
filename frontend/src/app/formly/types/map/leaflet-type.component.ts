@@ -26,7 +26,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
   private leafletReference: L.Map;
   private locations: SpatialLocation[] = [];
   private drawnSpatialRefs: Rectangle[] = [];
-  isHighlighted = false;
+  mapHasMoved = false;
 
   constructor(private modalService: ModalService,
               private dialog: MatDialog,
@@ -51,9 +51,11 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
     try {
       const options: MapOptions = this.to.mapOptions;
       this.leafletReference = this.leafletService.initMap(
-        this.leaflet.nativeElement, {...options, ...LeafletService.optionsNonInteractive});
+        this.leaflet.nativeElement, {...options, scrollWheelZoom: false});
 
       // (<MyMap>this.leafletReference)._onResize();
+      this.leafletReference.on('dragend', () => this.mapHasMoved = true)
+
 
       this.locations = this.formFieldControl.value || [];
       this.updateBoundingBox();
@@ -78,10 +80,14 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
 
     if (this.locations.length === 0) {
       this.leafletService.zoomToInitialBox(this.leafletReference);
+      this.leafletReference.dragging.disable();
+      this.leafletReference.doubleClickZoom.disable();
     } else {
       const locationsWithColor = this.extendLocationsWithColor(this.locations);
       this.updateLocations(locationsWithColor);
       this.drawnSpatialRefs = this.leafletService.drawSpatialRefs(this.leafletReference, locationsWithColor);
+      this.leafletReference.dragging.enable();
+      this.leafletReference.doubleClickZoom.enable();
     }
 
   }
@@ -152,6 +158,10 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
   highlightLocation(index: number) {
 
     if (index !== null) {
+      if (this.locations[index].type === 'geo-name') {
+        return;
+      }
+
       const bounds = this.leafletService.getBoundingBoxFromLayers([this.drawnSpatialRefs[index]]);
       this.leafletReference.fitBounds(bounds);
 
@@ -159,7 +169,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       this.updateBoundingBox();
     }
 
-    this.isHighlighted = index != null;
+    this.mapHasMoved = index != null;
 
   }
 

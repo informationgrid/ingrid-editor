@@ -3,7 +3,7 @@ import {SpatialBoundingBox} from '../spatial-dialog/spatial-result.model';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
 
-export type SpatialLocationType = 'free' | 'wkt';
+export type SpatialLocationType = 'free' | 'wkt' | 'geo-name';
 
 export interface SpatialLocation {
   title: string;
@@ -49,10 +49,21 @@ export class SpatialListComponent implements OnInit {
       .reduce((prev, curr) => {
         prev[curr.type].push(curr);
         return prev;
-      }, {wkt: [], free: []});
+      }, {wkt: [], free: [], 'geo-name': []});
 
     this.types = Object.keys(this.typedLocations)
       .filter(type => this.typedLocations[type].length > 0);
 
+  }
+
+  getTypeName(type: SpatialLocationType) {
+    switch (type) {
+      case 'free':
+        return 'Freier Raumbezug';
+      case 'wkt':
+        return 'WKT';
+      case 'geo-name':
+        return 'Geographischer Name';
+    }
   }
 }

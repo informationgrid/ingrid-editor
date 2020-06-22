@@ -8,7 +8,7 @@
     </button>
 </div>
 
-<div *ngIf="isHighlighted" class="resetBtn">
+<div *ngIf="mapHasMoved" class="resetBtn">
     <button mat-flat-button (click)="highlightLocation(null)">Zurücksetzen</button>
 </div>
 

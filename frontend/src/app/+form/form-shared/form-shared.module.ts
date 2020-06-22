@@ -42,6 +42,7 @@ import {FormComponent} from '../form/form.component';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {formPluginProvider} from '../../form-plugin.provider';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { IgeFormErrorComponent } from './ige-form-error/ige-form-error.component';
 
 
 @NgModule({
@@ -49,7 +50,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     FormToolbarComponent, BreadcrumbComponent, FormComponent,
     FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent, HeaderTitleRowMinComponent,
     FormMessageComponent, DestinationSelectionComponent,
-    DynamicFormComponent, SidebarComponent, FormDashboardComponent
+    DynamicFormComponent, SidebarComponent, FormDashboardComponent, IgeFormErrorComponent
   ],
     imports: [
         CommonModule,

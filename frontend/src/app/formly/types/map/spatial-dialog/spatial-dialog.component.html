@@ -44,7 +44,7 @@
     </mat-menu>
     <div fxFlex></div>
     <button mat-stroked-button color="primary"
-            [disabled]="!result.value"
+            [disabled]="(view !== 'geo-name' && !result.value) || (view === 'geo-name' && !titleInput.value)"
             (click)="returnResult()">Übernehmen
     </button>
 

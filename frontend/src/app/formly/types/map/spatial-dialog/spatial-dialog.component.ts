@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {LeafletService} from '../leaflet.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {SpatialLocation} from '../spatial-list/spatial-list.component';
+import {SpatialLocation, SpatialLocationType} from '../spatial-list/spatial-list.component';
 import {FormControl} from '@angular/forms';
 import {SpatialBoundingBox} from './spatial-result.model';
 
@@ -34,11 +34,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     // {id: 'draw', label: 'Auf Karte zeichnen'},
     {id: 'geo-name', label: 'Geografischer Name'}
   ];
-  view: 'free' | 'wkt';
-
-  get bbox(): any {
-    return this._bbox;
-  }
+  view: SpatialLocationType;
 
   constructor(private dialogRef: MatDialogRef<SpatialDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: SpatialLocation,
@@ -70,7 +66,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     this.result.value = result;
   }
 
-  updateView(id: 'free' | 'wkt') {
+  updateView(id: SpatialLocationType) {
 
     this.view = id;
     this.result.type = id;
