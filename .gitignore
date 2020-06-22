@@ -56,3 +56,4 @@ server/logs
 /api/build/
 frontend/cypress/mochawesome-reports/
 /frontend/e2e/cypress/mochawesome-reports/
+/server/.gradle/
