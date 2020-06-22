@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {ImportExportService} from '../import-export-service';
 import {ConfigService} from '../../services/config/config.service';
-import {TextboxField} from '../../+form/controls';
 import {ErrorService} from '../../services/error.service';
 
 @Component({
@@ -35,16 +34,6 @@ export class ImportComponent implements OnInit {
 
     // this.uploader = new FileUploader({url: config.getConfiguration().backendUrl + '/upload'});
     this.uploadUrl = config.getConfiguration().backendUrl + '/upload';
-
-    // new FormControl()
-    this.formFields = [
-      new TextboxField({
-        key: 'title',
-        label: 'Titel',
-        help: 'Hier wird der Titel für das Dokument eingetragen'
-        // domClass: 'half'
-      })
-    ];
 
     const ctrl = new FormControl('xxx');
     this.form = new FormGroup({title: ctrl});

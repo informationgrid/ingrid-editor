@@ -8,7 +8,6 @@ import {TreeQuery} from '../store/tree/tree.query';
 import {TreeStore} from '../store/tree/tree.store';
 import {SessionStore} from '../store/session.store';
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {IFieldBase} from './controls';
 import {MessageService} from '../services/message.service';
 import {ProfileQuery} from '../store/profile/profile.query';
 
@@ -41,7 +40,7 @@ export class FormularService {
   }
 
   getFields(profile: string): FormlyFieldConfig[] {
-    let fields: IFieldBase<any>[];
+    let fields: FormlyFieldConfig[];
 
     const nextProfile = this.getProfile(profile);
 
@@ -51,7 +50,7 @@ export class FormularService {
       this.currentProfile = profile;
 
       // return a copy of our fields (immutable data!)
-      return fields.sort((a, b) => a.order - b.order);
+      return fields; // .sort((a, b) => a.order - b.order);
     } else {
       throw new Error('Document type not found: ' + profile);
     }
