@@ -8,7 +8,7 @@ import {SpatialDialogComponent} from './spatial-dialog/spatial-dialog.component'
 import {LeafletService} from './leaflet.service';
 import {SpatialLocation, SpatialLocationWithColor} from './spatial-list/spatial-list.component';
 import {distinctUntilChanged, tap} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -20,7 +20,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
 
   @ViewChild('leaflet') leaflet: ElementRef;
 
-  locationsWithColor$ = new Subject<SpatialLocationWithColor[]>();
+  locationsWithColor$ = new BehaviorSubject<SpatialLocationWithColor[]>([]);
   hasAnyLocations = false;
 
   private leafletReference: L.Map;
