@@ -17,17 +17,20 @@
      [class.sticky]="showScrollHeader"
      [style.left]="scrollHeaderOffsetLeft + 'px'">
 
-    <div class="document-type">
-        <mat-icon [svgIcon]="getIcon()"
-                  [title]="form?.get('title')?.value"
-                  [ngClass]="['document-icon',getStateClass()]"></mat-icon>
+    <div>
+        <div class="document-type">
+            <mat-icon [svgIcon]="getIcon()"
+                      [title]="form?.get('title')?.value"
+                      [ngClass]="['document-icon',getStateClass()]"></mat-icon>
+        </div>
+
+        <ige-header-navigation fxFlex [sections]="sections"></ige-header-navigation>
+
+        <button mat-icon-button mat-flat-button class="menu clickable dark">
+            <mat-icon>more_vert</mat-icon>
+        </button>
     </div>
 
-    <ige-header-navigation fxFlex [sections]="sections"></ige-header-navigation>
-
-    <button mat-icon-button mat-flat-button class="menu clickable dark">
-        <mat-icon>more_vert</mat-icon>
-    </button>
+    <ige-form-message></ige-form-message>
 </div>
 
-<ige-form-message></ige-form-message>
