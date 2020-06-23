@@ -5,7 +5,6 @@
 }
 
 .search-content {
-
   padding-bottom: 24px;
 
   .search {
@@ -18,6 +17,7 @@
 
   ::ng-deep .mat-form-field-flex {
     align-items: center;
+    margin-top: 0;
   }
 
   ::ng-deep .mat-form-field-outline {
@@ -32,7 +32,7 @@
 
   ::ng-deep .mat-form-field-suffix {
     margin-right: -5px;
-    height: 24px
+    height: 34px;
 
     button {
       height: 0 !important;
@@ -41,19 +41,18 @@
 
   ::ng-deep .mat-form-field-wrapper {
     padding-bottom: 0;
-    margin: 0;
   }
 
   ::ng-deep .mat-form-field-infix {
-    padding: 0 0 0.8em;
-    margin: 0.3em 0 0.1em;
+    padding: 0.25em 0 0.75em;
+    margin: 0;
     border-top: 0.84375em solid transparent;
   }
 
   button {
-    height: 44px;
-    padding-top: 1px;
-    padding-bottom: 1px;
+    height: 42px;
+    padding-top: 0.2em;
+    padding-bottom: 0.1em;
 
     ::ng-deep .mat-button-wrapper {
       letter-spacing: 1.25px;
@@ -68,9 +67,9 @@
 }
 
 ::ng-deep .quicksearch-auto {
-
   max-height: unset !important;
-  padding: 24px;
+  width: 510px !important;
+  padding: 24px 24px 12px;
 
   &.option-no-padding mat-option {
     padding: 0 !important;
@@ -78,7 +77,8 @@
 
   &.option-no-padding mat-option, &.option-no-padding .doc-item {
     height: 40px !important;
-    &.multiline{
+
+    &.multiline {
       height: auto !important;
       white-space: normal;
       padding-top: 6px;
@@ -89,6 +89,21 @@
 
   &.mat-autocomplete-hidden {
     display: none !important;
+  }
+
+  .doc-item {
+    .mat-icon {
+      margin-top: -2px !important;
+    }
+
+    .mat-line {
+      line-height: 22px !important;
+    }
+  }
+
+  .show-all-link + .spacing,
+  .mat-option + .spacing {
+    padding-bottom: 13px;
   }
 }
 
