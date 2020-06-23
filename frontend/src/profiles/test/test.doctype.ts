@@ -80,36 +80,32 @@ export class TestDoctype extends BaseDoctype {
         type: 'repeat',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Multi-Repeat',
+          externalLabel: 'Multi-Repeat'
         },
         fieldArray: {
           fieldGroupClassName: 'display-flex',
           fieldGroup: [
             {
-              /*fieldGroupClassName: 'display-flex',
-              fieldGroup: [{*/
-                key: 'date',
-                type: 'datepicker',
-                className: 'flex-1',
-                templateOptions: {
-                  label: 'Datum',
-                  appearance: 'outline',
-                  required: true
-                }
-              },
-                {
-                  key: 'text',
-                  type: 'input',
-                  className: 'flex-1',
-                  templateOptions: {
-                    label: 'Typ',
-                    appearance: 'outline',
-                    required: true
-                  }
-                }]
-            }
-          // ]
-        // }
+              key: 'date',
+              type: 'datepicker',
+              className: 'flex-1',
+              templateOptions: {
+                label: 'Datum',
+                appearance: 'outline',
+                required: true
+              }
+            },
+            {
+              key: 'text',
+              type: 'input',
+              className: 'flex-1',
+              templateOptions: {
+                label: 'Typ',
+                appearance: 'outline',
+                required: true
+              }
+            }]
+        }
       }, {
         key: 'table',
         type: 'table',

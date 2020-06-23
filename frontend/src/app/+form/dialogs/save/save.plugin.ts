@@ -4,7 +4,6 @@ import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {TreeQuery} from '../../../store/tree/tree.query';
-import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {MessageService} from '../../../services/message.service';
 import {IgeDocument} from '../../../models/ige-document';
 import {MatDialog} from '@angular/material/dialog';
@@ -12,6 +11,7 @@ import {merge} from 'rxjs';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/operators';
+import {NgFormsManager} from '@ngneat/forms-manager';
 
 @UntilDestroy()
 @Injectable()
@@ -30,7 +30,7 @@ export class SavePlugin extends Plugin {
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
               private dialog: MatDialog,
-              private formsManager: AkitaNgFormsManager,
+              private formsManager: NgFormsManager,
               private documentService: DocumentService) {
     super();
     this.isActive = true;
@@ -82,7 +82,7 @@ export class SavePlugin extends Plugin {
 
   private getForm() {
     const formDoc = this.forAddress ? 'address' : 'document';
-    return this.formsManager.getForm(formDoc);
+    return this.formsManager.getControl(formDoc);
   }
 
   save(formData: IgeDocument) {

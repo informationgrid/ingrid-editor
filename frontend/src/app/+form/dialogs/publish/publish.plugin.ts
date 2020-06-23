@@ -4,11 +4,11 @@ import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {TreeQuery} from '../../../store/tree/tree.query';
-import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {MessageService} from '../../../services/message.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {merge} from 'rxjs';
 import {IgeDocument} from '../../../models/ige-document';
+import {NgFormsManager} from '@ngneat/forms-manager';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -30,7 +30,7 @@ export class PublishPlugin extends Plugin {
               private messageService: MessageService,
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
-              private formsManager: AkitaNgFormsManager,
+              private formsManager: NgFormsManager,
               private storageService: DocumentService) {
     super();
     this.isActive = true;
@@ -50,7 +50,8 @@ export class PublishPlugin extends Plugin {
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
-      id: 'toolBtnRevert', tooltip: 'Auf letzte Veröffentlichung zurücksetzen', matSvgVariable: 'Aenderungen-verwerfen', eventId: this.eventRevertId, pos: 90, active: false
+      id: 'toolBtnRevert', tooltip: 'Auf letzte Veröffentlichung zurücksetzen', matSvgVariable: 'Aenderungen-verwerfen',
+      eventId: this.eventRevertId, pos: 90, active: false
     });
 
     // add event handler for revert
@@ -62,7 +63,7 @@ export class PublishPlugin extends Plugin {
       }
     });
 
-    this.formsManager.selectValid('document').subscribe(value => {
+    this.formsManager.validityChanges('document').subscribe(value => {
       this.formIsValid = value;
     });
 
@@ -90,12 +91,12 @@ export class PublishPlugin extends Plugin {
 
   private getFormValue(): IgeDocument {
     const formDoc = this.forAddress ? 'address' : 'document';
-    const form = this.formsManager.getForm(formDoc);
+    const form = this.formsManager.getControl(formDoc);
     return form?.value;
   }
 
   revert() {
-    const doc = this.formsManager.getForm('document').value;
+    const doc = this.formsManager.getControl('document').value;
 
     const message = 'Wollen Sie diesen Datensatz wirklich auf die letzte Veröffentlichungsversion zurücksetzen?';
     this.modalService.confirm('Zurücksetzen', message).subscribe(doRevert => {

@@ -46,8 +46,6 @@ import {MatMenuModule} from '@angular/material/menu';
 import {AuthInterceptor} from './security/keycloak/auth.interceptor';
 import {SharedDocumentItemModule} from './shared/shared-document-item.module';
 import {pluginProvider} from './plugin.provider';
-import {formPluginProvider} from './form-plugin.provider';
-import {CodelistPipe} from './directives/codelist.pipe';
 import {InlineHelpWrapperComponent} from './formly/wrapper/inline-help-wrapper/inline-help-wrapper.component';
 
 registerLocaleData(de);

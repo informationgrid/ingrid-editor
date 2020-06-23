@@ -10,8 +10,11 @@
 }
 
 
-.table-header {
+.table-header, .title {
   padding-top: 17px;
+}
+
+.table-header {
   border-bottom: 1px solid $ige-background-bar;
 }
 

@@ -135,7 +135,7 @@ export class DocumentService {
         // TODO: this should be controlled by dynamic-form component
         this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 
-        this.afterSave$.next(data);
+        this.afterSave$.next(json);
 
         store.upsert(info.id, info);
 

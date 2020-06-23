@@ -33,7 +33,7 @@
     "@angular/platform-browser-dynamic": "^9.1.11",
     "@angular/router": "^9.1.11",
     "@datorama/akita": "^5.0.5",
-    "@datorama/akita-ng-forms-manager": "^5.0.2",
+    "@ngneat/forms-manager": "^2.1.2",
     "@ngneat/until-destroy": "^7.2.0",
     "@ngx-formly/core": "5.7.2",
     "@ngx-formly/material": "5.7.2",

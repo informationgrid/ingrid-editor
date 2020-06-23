@@ -4,29 +4,29 @@ import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/conf
 import {MatDialog} from '@angular/material/dialog';
 import {Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {FormComponent} from '../+form/form/form.component';
 import {TreeStore} from '../store/tree/tree.store';
 import {AddressTreeStore} from '../store/address-tree/address-tree.store';
 import {AddressComponent} from '../+address/address/address.component';
 import {ShortTreeNode} from '../+form/sidebars/tree/tree.component';
+import {NgFormsManager} from '@ngneat/forms-manager';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
 
-  constructor(private dialog: MatDialog, private formsManager: AkitaNgFormsManager,
+  constructor(private dialog: MatDialog, private formsManager: NgFormsManager,
               private treeStore: TreeStore, private addressTreeStore: AddressTreeStore) {
   }
 
   canDeactivate(target: FormComponent | AddressComponent): Observable<boolean> {
 
     const type = target instanceof FormComponent ? 'document' : 'address';
-    const formHasChanged = this.formsManager.getForm(type)?.dirty;
+    const formHasChanged = this.formsManager.getControl(type)?.dirty;
 
     if (formHasChanged) {
-      const currentId = this.formsManager.getForm(type).value._id;
+      const currentId = this.formsManager.getControl(type).value._id;
       return this.dialog.open(ConfirmDialogComponent, {
         data: {
           title: 'Änderungen verwerfen?',

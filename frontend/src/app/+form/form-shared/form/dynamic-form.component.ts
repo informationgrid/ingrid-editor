@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
@@ -9,7 +9,6 @@ import {IgeDocument} from '../../../models/ige-document';
 import {FormUtils} from '../../form.utils';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
-import {AkitaNgFormsManager} from '@datorama/akita-ng-forms-manager';
 import {SessionQuery} from '../../../store/session.query';
 import {FormularService} from '../../formular.service';
 import {FormPluginsService} from '../form-plugins.service';
@@ -20,6 +19,7 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {ProfileQuery} from '../../../store/profile/profile.query';
 import {Behaviour} from '../../../services/behavior/behaviour';
+import {NgFormsManager} from '@ngneat/forms-manager';
 
 @UntilDestroy()
 @Component({
@@ -67,7 +67,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
               private documentService: DocumentService, private modalService: ModalService,
-              private formsManager: AkitaNgFormsManager,
+              private formsManager: NgFormsManager,
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
               private session: SessionQuery,
@@ -171,7 +171,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset dirty flag after save
     this.documentService.afterSave$
       .pipe(untilDestroyed(this))
-      .subscribe(() => this.resetForm());
+      .subscribe(data => this.updateFormWithData(data));
   }
 
   @HostListener('window: keydown', ['$event'])
@@ -195,7 +195,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.fields = [];
         // this.form = new FormGroup({});
-        this.formsManager.remove(this.formStateName);
+        this.formsManager.destroy(this.formStateName);
         this.activeId.next(null);
         this.documentService.updateOpenedDocumentInTreestore(null, this.address, true);
         return;
@@ -287,27 +287,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private resetForm() {
+
     this.form.markAsPristine();
     this.form.markAsUntouched();
 
     // FIXME: form does not seem to be updated automatically and we have to force update event
-    const arrayControlFactory = this.createArrayControlFactory(this.form);
-    this.formsManager.upsert(this.formStateName, this.form, {
-      emitEvent: true,
-      arrControlFactory: arrayControlFactory
-    });
-  }
-
-  private createArrayControlFactory(form: FormGroup) {
-
-    const result = {};
-    Object.keys(form.value).forEach(controlName => {
-      const value = form.value[controlName];
-      if (Array.isArray(value) && form.get(controlName) instanceof FormArray) {
-        result[controlName] = val => new FormControl(val);
-      }
-    });
-    return result;
+    this.formsManager.upsert(this.formStateName, this.form);
 
   }
 }
