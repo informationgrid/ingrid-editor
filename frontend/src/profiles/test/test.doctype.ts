@@ -74,9 +74,40 @@ export class TestDoctype extends BaseDoctype {
       wrappers: ['section'],
       templateOptions: {
         label: 'Repeatables'
-      }
+      },
+      fieldGroup: [{
+        key: 'table',
+        type: 'table',
+        templateOptions: {
+          externalLabel: 'Table',
+          required: true,
+          columns: [{
+            key: 'col1',
+            type: 'input',
+            label: 'Spalte 1',
+            templateOptions: {
+              label: 'Spalte 1',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'col2',
+            type: 'input',
+            label: 'Spalte 2',
+            templateOptions: {
+              label: 'Spalte 2',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'col3',
+            type: 'input',
+            label: 'Spalte 3',
+            templateOptions: {
+              label: 'Spalte 3',
+              appearance: 'outline'
+            }
+          }]
+        }
       /*
-            fieldGroup: [{
               key: 'repeatList',
               type: 'repeatList',
               wrappers: ['panel'],
@@ -97,8 +128,8 @@ export class TestDoctype extends BaseDoctype {
                   }
                 ]
               }
-            }]
       */
+      }]
 
     }, {
       wrappers: ['section'],

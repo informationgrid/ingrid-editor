@@ -1,0 +1,93 @@
+<div *ngIf="dataSource?.data?.length > 0; else simpleTableHeader;" class="table-header" fxLayoutAlign="center center">
+    <div>{{to.externalLabel}}</div>
+    <div fxFlex></div>
+    <button *ngIf="!batchMode" mat-button (click)="toggleBatchMode()">Bearbeiten</button>
+    <button *ngIf="batchMode" mat-button (click)="toggleBatchMode()">
+        <mat-icon>done</mat-icon>
+        Fertig
+    </button>
+</div>
+
+<ng-template #simpleTableHeader>
+    <div>{{to.externalLabel}}</div>
+</ng-template>
+
+<div *ngIf="batchMode" class="table-batch-edit-row">
+    <mat-checkbox (change)="$event ? masterToggle() : null"
+                  [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()">
+    </mat-checkbox>
+
+    <button mat-button>
+        <mat-icon svgIcon="outline-delete-24px"></mat-icon>
+        Löschen
+    </button>
+    <button mat-button>Mehr</button>
+
+</div>
+
+<ige-form-error *ngIf="formFieldControl.errorState && !formControl.errors?.required">{{formControl.errors}}</ige-form-error>
+
+<table mat-table *ngIf="dataSource?.data?.length > 0" fxLayout="column" [dataSource]="dataSource" [class.edit-mode]="batchMode">
+
+    <ng-container *ngFor="let column of displayedColumns; let i = index" [matColumnDef]="column" [ngSwitch]="column">
+
+        <!-- Select Column -->
+        <ng-container *ngSwitchCase="'_select_'">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let element; let rowIndex = index">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                              (change)="$event ? selection.toggle(element) : null"
+                              [checked]="selection.isSelected(element)">
+                    <!--[aria-label]="checkboxLabel(row)"-->
+                </mat-checkbox>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container *ngSwitchCase="'_actions_'">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let element; let rowIndex = index">
+                <button mat-icon-button [matMenuTriggerFor]="tableRowAction">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #tableRowAction="matMenu">
+                    <button mat-menu-item (click)="editRow(rowIndex)">Bearbeiten</button>
+                    <button mat-menu-item (click)="removeRow(rowIndex)">Löschen</button>
+                </mat-menu>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Normal column-->
+        <ng-container *ngSwitchDefault>
+            <mat-header-cell *matHeaderCellDef> {{to.columns[batchMode ? i - 1 : i].label}} </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
+                {{element[column]}}
+                <!-- This edit is defined in the cell and can implicitly access element -->
+                <!--<ng-template #nameEdit>
+                  <form #f="ngForm"
+                        matEditLens
+                        matEditLensClickOutBehavior="submit"
+                        (ngSubmit)="onSubmitName(element, f)"
+                        [matEditLensPreservedFormValue]="preservedValues[column].get(element)"
+                        (matEditLensPreservedFormValueChange)="preservedValues[column].set(element, $event)">
+                    <div mat-edit-content>
+                      <mat-form-field class="full-width">
+                        <input matInput [ngModel]="element[column]" name="name" required>
+                      </mat-form-field>
+                    </div>
+                  </form>
+                </ng-template>-->
+            </mat-cell>
+        </ng-container>
+
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"
+             (click)="batchMode ? selection.toggle(row) : null"></mat-row>
+
+</table>
+
+<ige-add-button (add)="addRow()" [showRequiredError]="formFieldControl.errorState && formControl.errors?.required"></ige-add-button>

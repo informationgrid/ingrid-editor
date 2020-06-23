@@ -17,7 +17,7 @@ import {ContextHelpComponent} from '../+demo-layout/form/context-help/context-he
 import {AutocompleteTypeComponent} from './types/autocomplete-type.component';
 import {LeafletTypeComponent} from './types/map/leaflet-type.component';
 import {FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';
-import {TableTypeComponent} from './types/table-type.component';
+import {TableTypeComponent} from './types/table/table-type.component';
 import {CommonModule} from '@angular/common';
 import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
@@ -38,6 +38,8 @@ import {DrawSpatialComponent} from './types/map/spatial-dialog/draw-spatial/draw
 import {NameSpatialComponent} from './types/map/spatial-dialog/name-spatial/name-spatial.component';
 import {RepeatListComponent} from './types/repeat-list/repeat-list.component';
 import {FormErrorComponent} from '../+form/form-shared/ige-form-error/form-error.component';
+import { FormDialogComponent } from './types/table/form-dialog/form-dialog.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -83,7 +85,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
         { name: 'panel', component: OneColumnWrapperComponent },
       ]*/
     }), FormFieldsModule,
-    SharedModule, MatMenuModule
+    SharedModule, MatMenuModule, MatCheckboxModule
   ],
   providers: [
     {
@@ -97,7 +99,8 @@ export function IpValidator(control: FormControl): ValidationErrors {
     TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
     AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent, FreeSpatialComponent,
     WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent,
-    FormErrorComponent
+    FormErrorComponent,
+    FormDialogComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [

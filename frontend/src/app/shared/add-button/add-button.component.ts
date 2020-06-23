@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'ige-add-button',
@@ -6,6 +6,7 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
   styleUrls: ['./add-button.component.scss']
 })
 export class AddButtonComponent implements OnInit {
+  @Input() showRequiredError = false;
   @Output() add = new EventEmitter();
 
   constructor() { }

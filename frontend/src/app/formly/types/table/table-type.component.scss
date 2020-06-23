@@ -1,0 +1,53 @@
+@import "src/variables";
+
+.mat-table {
+  padding-bottom: 12px;
+}
+
+.mat-column-_actions_, .mat-column-_select_ {
+  width: 36px;
+  flex: unset;
+}
+
+
+.table-header {
+  border-bottom: 1px solid $ige-background-bar;
+}
+
+.table-batch-edit-row {
+  padding-left: 12px;
+}
+
+ige-add-button {
+  display: block;
+  padding-left: 296px;
+}
+
+:host {
+  ::ng-deep .mat-checkbox .mat-checkbox-ripple {
+    height: 32px;
+    width: 32px;
+    left: calc(50% - 16px);
+    top: calc(50% - 16px);
+  }
+
+  .edit-mode ::ng-deep mat-header-cell:first-of-type, .edit-mode ::ng-deep mat-cell:first-of-type {
+    padding-left: 12px;
+  }
+}
+
+/*      table, .full-width {
+          width: 100%;
+      }
+
+      ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix:first-of-type {
+          padding: 0 0 0 24px;
+      }
+      ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix {
+          padding: 0;
+      }
+
+      ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-wrapper {
+          padding-bottom: 0;
+      }*/
+
