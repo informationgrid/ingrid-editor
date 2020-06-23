@@ -16,11 +16,15 @@ export class WktTools {
   private wkt = new Wkt.Wkt();
 
   constructor() {
-    console.log('wicket-leaflet:', Wktleaflet);
+    // use lib so that IDE does not remove import statement above
+    Wktleaflet.toString();
   }
 
   /**
    * Maps the current contents of the textarea.
+   * @param map
+   * @param wktString
+   * @param overrideConfig
    * @param   editable    {Boolean}   Indicates that the feature drawn should be editable
    * @param   focus       {Boolean}   Indicates that the map should pan and/or zoom to new features
    * @return              {Object}    Some sort of geometry object

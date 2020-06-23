@@ -76,6 +76,41 @@ export class TestDoctype extends BaseDoctype {
         label: 'Repeatables'
       },
       fieldGroup: [{
+        key: 'multiInputs',
+        type: 'repeat',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Multi-Repeat',
+        },
+        fieldArray: {
+          fieldGroupClassName: 'display-flex',
+          fieldGroup: [
+            {
+              /*fieldGroupClassName: 'display-flex',
+              fieldGroup: [{*/
+                key: 'date',
+                type: 'datepicker',
+                className: 'flex-1',
+                templateOptions: {
+                  label: 'Datum',
+                  appearance: 'outline',
+                  required: true
+                }
+              },
+                {
+                  key: 'text',
+                  type: 'input',
+                  className: 'flex-1',
+                  templateOptions: {
+                    label: 'Typ',
+                    appearance: 'outline',
+                    required: true
+                  }
+                }]
+            }
+          // ]
+        // }
+      }, {
         key: 'table',
         type: 'table',
         templateOptions: {
@@ -107,30 +142,30 @@ export class TestDoctype extends BaseDoctype {
             }
           }]
         }
-      /*
-              key: 'repeatList',
-              type: 'repeatList',
-              wrappers: ['panel'],
-              templateOptions: {
-                externalLabel: 'Repeatable List',
-                addText: 'Noch einen hinzufügen'
-              },
-              fieldArray: {
-                fieldGroup: [
-                  {
-                    type: 'input',
-                    key: 'value',
-                    templateOptions: {
-                      label: 'Wert',
-                      required: true,
-                      appearance: 'outline'
+      }
+        /*
+                key: 'repeatList',
+                type: 'repeatList',
+                wrappers: ['panel'],
+                templateOptions: {
+                  externalLabel: 'Repeatable List',
+                  addText: 'Noch einen hinzufügen'
+                },
+                fieldArray: {
+                  fieldGroup: [
+                    {
+                      type: 'input',
+                      key: 'value',
+                      templateOptions: {
+                        label: 'Wert',
+                        required: true,
+                        appearance: 'outline'
+                      }
                     }
-                  }
-                ]
-              }
-      */
-      }]
-
+                  ]
+                }
+        */
+      ]
     }, {
       wrappers: ['section'],
       templateOptions: {

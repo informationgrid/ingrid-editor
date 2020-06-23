@@ -40,6 +40,7 @@ import {RepeatListComponent} from './types/repeat-list/repeat-list.component';
 import {FormErrorComponent} from '../+form/form-shared/ige-form-error/form-error.component';
 import { FormDialogComponent } from './types/table/form-dialog/form-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {RepeatComponent} from './types/repeat/repeat.component';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -72,6 +73,9 @@ export function IpValidator(control: FormControl): ValidationErrors {
         name: 'doc-reference',
         component: DocReferenceTypeComponent
       }, {
+        name: 'repeat',
+        component: RepeatComponent
+      }, {
         name: 'repeatList',
         component: RepeatListComponent
       }],
@@ -98,7 +102,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent,
     TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
     AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent, FreeSpatialComponent,
-    WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent,
+    WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent, RepeatComponent,
     FormErrorComponent,
     FormDialogComponent
   ],
