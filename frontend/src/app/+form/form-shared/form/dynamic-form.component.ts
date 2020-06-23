@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
@@ -289,8 +289,25 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private resetForm() {
     this.form.markAsPristine();
     this.form.markAsUntouched();
+
     // FIXME: form does not seem to be updated automatically and we have to force update event
-    this.formsManager.upsert(this.formStateName, this.form, {emitEvent: true});
+    const arrayControlFactory = this.createArrayControlFactory(this.form);
+    this.formsManager.upsert(this.formStateName, this.form, {
+      emitEvent: true,
+      arrControlFactory: arrayControlFactory
+    });
   }
 
+  private createArrayControlFactory(form: FormGroup) {
+
+    const result = {};
+    Object.keys(form.value).forEach(controlName => {
+      const value = form.value[controlName];
+      if (Array.isArray(value) && form.get(controlName) instanceof FormArray) {
+        result[controlName] = val => new FormControl(val);
+      }
+    });
+    return result;
+
+  }
 }
