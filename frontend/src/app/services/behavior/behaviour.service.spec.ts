@@ -1,9 +1,10 @@
-import {Behaviour, BehaviourService} from './behaviour.service';
+import {BehaviourService} from './behaviour.service';
 import {inject, TestBed} from '@angular/core/testing';
 import {OpenDataBehaviour} from '../../+catalog/+behaviours/form/OpenData/open-data.behaviour';
 import {AuthService} from '../security/auth.service';
 import {RouterTestingModule} from '@angular/router/testing';
 import {routes} from '../../app.router';
+import {Behaviour} from './behaviour';
 
 // const behaviourService: BehaviourService;
 

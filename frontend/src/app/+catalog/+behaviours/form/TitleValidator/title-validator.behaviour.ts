@@ -1,7 +1,7 @@
 import {BaseBehaviour} from '../../base.behaviour';
-import {Behaviour} from '../../behaviours';
 import {FormGroup, FormControl} from '@angular/forms';
 import {EventManager} from '@angular/platform-browser';
+import {Behaviour} from '../../../../services/behavior/behaviour';
 
 /**
  * OpenDataBehaviour

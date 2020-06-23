@@ -3,7 +3,7 @@ import {Inject} from '@angular/core';
 import {DocumentService} from '../../../../services/document/document.service';
 import {FormGroup} from '@angular/forms';
 import {EventManager} from '@angular/platform-browser';
-import {Behaviour} from '../../../../services/behavior/behaviour.service';
+import {Behaviour} from '../../../../services/behavior/behaviour';
 
 /**
  *

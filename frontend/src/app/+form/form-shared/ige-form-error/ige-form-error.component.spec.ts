@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IgeFormErrorComponent } from './form-error.component';
+import { FormErrorComponent } from './form-error.component';
 
 describe('IgeFormErrorComponent', () => {
-  let component: IgeFormErrorComponent;
-  let fixture: ComponentFixture<IgeFormErrorComponent>;
+  let component: FormErrorComponent;
+  let fixture: ComponentFixture<FormErrorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IgeFormErrorComponent ]
+      declarations: [ FormErrorComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IgeFormErrorComponent);
+    fixture = TestBed.createComponent(FormErrorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

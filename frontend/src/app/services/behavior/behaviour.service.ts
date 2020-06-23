@@ -10,26 +10,12 @@ import {ProfileQuery} from '../../store/profile/profile.query';
 import {SessionQuery} from '../../store/session.query';
 import {PluginToken} from '../../tokens/plugin.token';
 import {ConfigService} from '../config/config.service';
+import {Behaviour} from './behaviour';
 
 export interface BehaviourFormatBackend {
   _id: string;
   active: boolean;
   data?: any;
-}
-
-export interface Behaviour {
-  id: string;
-  title: string;
-  description: string;
-  defaultActive: boolean;
-  forProfile?: string;
-  isActive?: boolean;
-  register: (form: FormGroup, eventManager: EventManager) => void;
-  unregister: () => void;
-  controls?: any[];
-  outer?: any;
-  isProfileBehaviour?: boolean;
-  _state?: string;
 }
 
 @Injectable({

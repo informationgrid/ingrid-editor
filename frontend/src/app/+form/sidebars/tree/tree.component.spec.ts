@@ -1,7 +1,7 @@
 import {TreeComponent} from './tree.component';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatIconModule, MatIconRegistry} from '@angular/material/icon';
+import {MatIconModule} from '@angular/material/icon';
 import {MatTreeModule} from '@angular/material/tree';
 import {createComponentFactory, Spectator, SpyObject} from '@ngneat/spectator';
 import {
@@ -241,7 +241,8 @@ describe('TreeComponent', () => {
     });
 
     spectator.component.activeNodeId = '4';
-    spectator.component.expandNodeIds = of(['1', '2', '3']).pipe(delay(0));
+    spectator.component.expandNodeIds = new Subject<string[]>();
+    setTimeout(() => spectator.component.expandNodeIds.next(['1', '2', '3']));
     spectator.detectChanges();
 
     tick();

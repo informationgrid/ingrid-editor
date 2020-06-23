@@ -17,9 +17,9 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {StickyHeaderInfo} from '../../form-info/form-info.component';
 import {filter} from 'rxjs/operators';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {Behaviour} from '../../../services/behavior/behaviour.service';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {ProfileQuery} from '../../../store/profile/profile.query';
+import {Behaviour} from '../../../services/behavior/behaviour';
 
 @UntilDestroy()
 @Component({
