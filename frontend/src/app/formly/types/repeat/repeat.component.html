@@ -2,7 +2,7 @@
 
 <div *ngFor="let field of field.fieldGroup; let i = index;" class="display-flex">
     <formly-field [field]="field" class="flex-1"></formly-field>
-    <button [class.invisible]="to.minLength && i < to.minLength" mat-icon-button class="gray" (click)="remove(i)">
+    <button [class.invisible]="to.minLength && i < to.minLength" mat-icon-button class="gray menu-button" (click)="remove(i)">
         <mat-icon svgIcon="Entfernen"></mat-icon>
     </button>
 </div>

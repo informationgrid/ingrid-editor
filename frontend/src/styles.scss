@@ -430,20 +430,22 @@ svg {
     }
   }*/
 
-  &.close, &.context-button {
+  &.close, &.menu-button {
     width: 26px;
     height: 26px;
     line-height: 24px;
   }
 
-  &.context-button {
-    background-color: $ige-background-bar;
-
+  &.menu-button {
     &:hover {
-      cursor: pointer;
-      background: rgba(0, 0, 0, 0.04) !important;
+      background-color: $ige-background-bar;
+    }
 
-      &.dark {
+    &.dark {
+
+      background-color: $ige-background-bar;
+
+      &:hover {
         background-color: darken($ige-background-bar, 5%) !important;
       }
     }

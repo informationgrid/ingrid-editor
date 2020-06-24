@@ -2,6 +2,6 @@
     <ige-address-card *ngFor="let address of addresses" fxFlex="50"
                       (remove)="removeAddress(address)"
                       [address]="address"></ige-address-card>
-
-    <ige-add-button (add)="addAddress()"></ige-add-button>
 </div>
+
+<ige-add-button (add)="addAddress()"></ige-add-button>

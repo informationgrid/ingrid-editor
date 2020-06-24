@@ -38,11 +38,13 @@ import {DrawSpatialComponent} from './types/map/spatial-dialog/draw-spatial/draw
 import {NameSpatialComponent} from './types/map/spatial-dialog/name-spatial/name-spatial.component';
 import {RepeatListComponent} from './types/repeat-list/repeat-list.component';
 import {FormErrorComponent} from '../+form/form-shared/ige-form-error/form-error.component';
-import { FormDialogComponent } from './types/table/form-dialog/form-dialog.component';
+import {FormDialogComponent} from './types/table/form-dialog/form-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {RepeatComponent} from './types/repeat/repeat.component';
 import {SelectOptionPipe} from '../directives/selectOption.pipe';
-import { FormLabelComponent } from './wrapper/form-label/form-label.component';
+import {FormLabelComponent} from './wrapper/form-label/form-label.component';
+import {RepeatChipComponent} from './types/repeat-chip/repeat-chip.component';
+import {MatChipsModule} from '@angular/material/chips';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -80,6 +82,9 @@ export function IpValidator(control: FormControl): ValidationErrors {
       }, {
         name: 'repeatList',
         component: RepeatListComponent
+      }, {
+        name: 'repeatChip',
+        component: RepeatChipComponent
       }],
       validators: [
         {name: 'ip', validation: IpValidator}
@@ -91,7 +96,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
         { name: 'panel', component: OneColumnWrapperComponent },
       ]*/
     }), FormFieldsModule,
-    SharedModule, MatMenuModule, MatCheckboxModule
+    SharedModule, MatMenuModule, MatCheckboxModule, MatChipsModule
   ],
   providers: [
     {
@@ -107,7 +112,8 @@ export function IpValidator(control: FormControl): ValidationErrors {
     WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent, RepeatComponent,
     FormErrorComponent,
     FormDialogComponent,
-    FormLabelComponent
+    FormLabelComponent,
+    RepeatChipComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [

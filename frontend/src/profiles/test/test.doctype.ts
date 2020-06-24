@@ -77,6 +77,14 @@ export class TestDoctype extends BaseDoctype {
         label: 'Repeatables'
       },
       fieldGroup: [{
+        key: 'multiChips',
+        type: 'repeatChip',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Chips',
+          required: true
+        }
+      }, {
         key: 'multiInputs',
         type: 'repeat',
         wrappers: ['panel'],

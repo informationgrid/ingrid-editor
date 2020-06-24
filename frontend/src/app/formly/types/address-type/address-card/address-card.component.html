@@ -4,7 +4,7 @@
         <mat-card-title fxFlex>{{address.type | codelist:"505" | async}}</mat-card-title>
         <div fxFlex></div>
         <div>
-            <button mat-icon-button class="menu dark context-button" [matMenuTriggerFor]="linkedAddressMenu">
+            <button mat-icon-button class="menu-button" [matMenuTriggerFor]="linkedAddressMenu">
                 <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #linkedAddressMenu="matMenu">
