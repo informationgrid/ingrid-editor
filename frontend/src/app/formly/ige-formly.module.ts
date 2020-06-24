@@ -41,6 +41,7 @@ import {FormErrorComponent} from '../+form/form-shared/ige-form-error/form-error
 import { FormDialogComponent } from './types/table/form-dialog/form-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {RepeatComponent} from './types/repeat/repeat.component';
+import {SelectOptionPipe} from '../directives/selectOption.pipe';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -98,7 +99,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
     }
   ],
   declarations: [
-    CodelistPipe,
+    CodelistPipe, SelectOptionPipe,
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent,
     TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
     AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent, FreeSpatialComponent,

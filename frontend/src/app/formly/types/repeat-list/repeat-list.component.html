@@ -1,13 +1,17 @@
 <mat-list *ngIf="field.fieldGroup.length > 0" dense>
     <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" class="clickable">
-        <h3 matLine>{{model[i] | codelist:'100' | async}}</h3>
+
+        <h3 *ngIf="to.withCodelist" matLine>{{model[i] | codelist:'100' | async}}</h3>
+        <h3 *ngIf="!to.withCodelist" matLine>{{model[i] | selectOption:to.options | async}}</h3>
+
         <button mat-icon-button class="close gray" (click)="remove(i)">
             <mat-icon svgIcon="Entfernen"></mat-icon>
         </button>
+
     </mat-list-item>
 </mat-list>
 
-<mat-form-field appearance="outline" class="width-100">
+<mat-form-field *ngIf="to.asSelect; else templateAutocomplete" appearance="outline" class="width-100">
     <mat-select [placeholder]="to.placeholder" (valueChange)="addToList($event)" [(ngModel)]="selectionModel">
         <mat-option *ngFor="let option of to.options | async" [value]="option.value">
             {{option.label}}
@@ -15,4 +19,18 @@
     </mat-select>
 </mat-form-field>
 
-<!--<ige-add-button (click)="add()"></ige-add-button>-->
+<ng-template #templateAutocomplete>
+    <mat-form-field appearance="outline" class="width-100">
+        <input type="text" #repeatListInput
+               [placeholder]="to.placeholder"
+               matInput
+               [(ngModel)]="selectionModel"
+               (keydown.enter)="addToList(repeatListInput.value)"
+               [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addToList($event.option.value)">
+            <mat-option *ngFor="let option of to.options | async" [value]="option.value">
+                {{option.label}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+</ng-template>

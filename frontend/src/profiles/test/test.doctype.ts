@@ -1,9 +1,10 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {DocumentService} from '../../app/services/document/document.service';
-import {CodelistService} from '../../app/services/codelist/codelist.service';
+import {CodelistService, SelectOption} from '../../app/services/codelist/codelist.service';
 import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {Injectable} from '@angular/core';
+import {of} from 'rxjs';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -141,13 +142,49 @@ export class TestDoctype extends BaseDoctype {
           }]
         }
       }, {
-        key: 'repeatList',
+        key: 'repeatListSimple',
         type: 'repeatList',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Repeatable List',
+          externalLabel: 'Repeatable List (Simple)',
+          placeholder: 'Bitte etwas eingeben'
+        }
+      }, {
+        key: 'repeatListCodelist',
+        type: 'repeatList',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Repeatable List (Codelist)',
           placeholder: 'Raumbezugssystem wählen...',
-          options: this.getCodelistForSelect(100)
+          options: this.getCodelistForSelect(100),
+          withCodelist: true
+        }
+      }, {
+        key: 'repeatListStatic',
+        type: 'repeatList',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Repeatable List (Statisch)',
+          placeholder: 'Wert wählen...',
+          options: of(<SelectOption[]>[
+            {label: 'Wert 1', value: '1'},
+            {label: 'Wert 2', value: '2'},
+            {label: 'Wert 3', value: '3'}
+          ])
+        }
+      }, {
+        key: 'repeatListStaticSelect',
+        type: 'repeatList',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Repeatable List (Select)',
+          placeholder: 'Wert wählen...',
+          options: of(<SelectOption[]>[
+            {label: 'Wert 1', value: '1'},
+            {label: 'Wert 2', value: '2'},
+            {label: 'Wert 3', value: '3'}
+          ]),
+          asSelect: true
         }
       }]
     }, {

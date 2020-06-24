@@ -43,7 +43,7 @@ export class CodelistPipe implements PipeTransform {
       return entries[0].value;
     } else {
       console.error(`Codelist entry ${value} not found for codelise ${id}`);
-      return `${value} (Not found)`;
+      return `${value} (Freier Eintrag)`;
     }
 
   }
