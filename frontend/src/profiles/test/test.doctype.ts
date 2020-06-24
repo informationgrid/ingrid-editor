@@ -140,30 +140,16 @@ export class TestDoctype extends BaseDoctype {
             }
           }]
         }
-      }
-        /*
-                key: 'repeatList',
-                type: 'repeatList',
-                wrappers: ['panel'],
-                templateOptions: {
-                  externalLabel: 'Repeatable List',
-                  addText: 'Noch einen hinzufügen'
-                },
-                fieldArray: {
-                  fieldGroup: [
-                    {
-                      type: 'input',
-                      key: 'value',
-                      templateOptions: {
-                        label: 'Wert',
-                        required: true,
-                        appearance: 'outline'
-                      }
-                    }
-                  ]
-                }
-        */
-      ]
+      }, {
+        key: 'repeatList',
+        type: 'repeatList',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Repeatable List',
+          placeholder: 'Raumbezugssystem wählen...',
+          options: this.getCodelistForSelect(100)
+        }
+      }]
     }, {
       wrappers: ['section'],
       templateOptions: {

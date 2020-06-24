@@ -1,10 +1,18 @@
 <mat-list *ngIf="field.fieldGroup.length > 0" dense>
     <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" class="clickable">
-        <h3 matLine>Neuer Eintrag</h3>
-        <button mat-icon-button class="context-button" (click)="remove(i)">
+        <h3 matLine>{{model[i] | codelist:'100' | async}}</h3>
+        <button mat-icon-button class="close gray" (click)="remove(i)">
             <mat-icon svgIcon="Entfernen"></mat-icon>
         </button>
     </mat-list-item>
 </mat-list>
 
-<ige-add-button (click)="add()"></ige-add-button>
+<mat-form-field appearance="outline" class="width-100">
+    <mat-select [placeholder]="to.placeholder" (valueChange)="addToList($event)" [(ngModel)]="selectionModel">
+        <mat-option *ngFor="let option of to.options | async" [value]="option.value">
+            {{option.label}}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
+
+<!--<ige-add-button (click)="add()"></ige-add-button>-->

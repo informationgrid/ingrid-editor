@@ -43,6 +43,7 @@ h1 {
 .medium-spacing {
   letter-spacing: 0.4px;
 }
+
 .extra-large-spacing {
   letter-spacing: 1.25px;
 }
@@ -90,6 +91,7 @@ h1 {
 .width-50 {
   width: 50%;
 }
+
 .width-100 {
   width: 100%;
 }
@@ -375,6 +377,7 @@ ige-root .mat-drawer-container {
 
   &.passive {
     color: $ige-background-bar;
+
     svg path {
       fill: $ige-background-bar;
     }
@@ -402,13 +405,17 @@ ige-root .mat-drawer-container {
 
 }
 
-svg  {
+svg {
   .coloring {
     fill: #333333;
   }
   .coloring-stroke {
     stroke: #333333;
   }
+}
+
+.gray .coloring {
+  fill: $ige-comment-color;
 }
 
 #form {
@@ -461,10 +468,13 @@ svg  {
     }
   }*/
 
-  &.context-button {
+  &.close, &.context-button {
     width: 26px;
     height: 26px;
     line-height: 24px;
+  }
+
+  &.context-button {
     background-color: $ige-background-bar;
 
     &:hover {
