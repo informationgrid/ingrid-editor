@@ -80,7 +80,9 @@ export class TestDoctype extends BaseDoctype {
         type: 'repeat',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Multi-Repeat'
+          externalLabel: 'Multi-Repeat',
+          required: true,
+          minLength: 1
         },
         fieldArray: {
           fieldGroupClassName: 'display-flex',

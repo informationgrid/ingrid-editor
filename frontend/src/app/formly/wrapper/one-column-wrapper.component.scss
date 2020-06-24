@@ -1,31 +1,5 @@
 @import "src/variables";
 
-/* validation error hide conditionally */
-
-::ng-deep .hide-validation {
-
-  .mat-error {
-    opacity: 0;
-  }
-
-  .mat-form-field-invalid .mat-input-element {
-    caret-color: initial;
-  }
-
-  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline {
-    opacity: 1;
-  }
-
-  .mat-form-field-appearance-outline:not(.mat-form-field-disabled) .mat-form-field-flex:hover .mat-form-field-outline-thick {
-    opacity: 1;
-  }
-
-  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick {
-    color: initial;
-    opacity: 0;
-  }
-}
-
 /*-------------------*/
 
 .section {

@@ -1,9 +1,10 @@
+<ige-form-error *ngIf="formControl.invalid">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
+
 <div *ngFor="let field of field.fieldGroup; let i = index;" class="display-flex">
     <formly-field [field]="field" class="flex-1"></formly-field>
-    <button mat-icon-button (click)="remove(i)">
+    <button [class.invisible]="to.minLength && i < to.minLength" mat-icon-button (click)="remove(i)">
         <mat-icon class="passive" svgIcon="Entfernen"></mat-icon>
     </button>
 </div>
-<!--<formly-form [form]="form" [model]="model" [fields]="field.fieldGroup"></formly-form>-->
 
-<ige-add-button (click)="add()"></ige-add-button>
+<ige-add-button (add)="add()"></ige-add-button>
