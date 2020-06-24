@@ -1,0 +1,44 @@
+@import "src/variables";
+
+.label-wrapper {
+  min-width: 272px;
+  padding-right: 24px;
+  padding-top: 17px;
+}
+
+:host {
+  display: flex;
+}
+
+:host-context(.required) .label-wrapper label {
+  font-weight: 500;
+}
+
+:host-context(.hasContextHelp) {
+
+  &:hover {
+    .contextHelpIcon {
+      display: inline-block;
+    }
+
+    label {
+      color: $ige-primary;
+      cursor: pointer;
+    }
+  }
+
+  .contextHelpIcon {
+    display: none;
+    background-color: $ige-background;
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+    margin-left: -28px;
+    margin-right: 4px;
+    margin-top: 14px;
+
+    ::ng-deep .mat-icon svg rect {
+      fill: $ige-secondary;
+    }
+  }
+}

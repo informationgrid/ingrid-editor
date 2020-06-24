@@ -1,0 +1,8 @@
+<div *ngIf="hasContextHelp" class="contextHelpIcon">
+    <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
+</div>
+<div class="label-wrapper">
+    <label (click)="showContextHelp($event)">
+        <ng-content></ng-content>
+    </label>
+</div>

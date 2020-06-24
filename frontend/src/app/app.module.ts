@@ -47,6 +47,7 @@ import {AuthInterceptor} from './security/keycloak/auth.interceptor';
 import {SharedDocumentItemModule} from './shared/shared-document-item.module';
 import {pluginProvider} from './plugin.provider';
 import {InlineHelpWrapperComponent} from './formly/wrapper/inline-help-wrapper/inline-help-wrapper.component';
+import {FullWidthWrapperComponent} from './formly/wrapper/full-width-wrapper.component';
 
 registerLocaleData(de);
 
@@ -86,7 +87,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
     ConfirmDialogComponent, CreateNodeComponent,
-    OneColumnWrapperComponent, SectionWrapper, InlineHelpWrapperComponent,
+    OneColumnWrapperComponent, FullWidthWrapperComponent, SectionWrapper, InlineHelpWrapperComponent,
     SideMenuComponent,
     MainHeaderComponent,
     InfoDialogComponent],
@@ -102,6 +103,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       wrappers: [
         {name: 'inline-help', component: InlineHelpWrapperComponent},
         {name: 'panel', component: OneColumnWrapperComponent},
+        {name: 'full-panel', component: FullWidthWrapperComponent},
         {name: 'section', component: SectionWrapper}
       ]
     }),

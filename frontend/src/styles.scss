@@ -214,34 +214,6 @@ form-toolbar + div {
   padding-top: 10px;
 }
 
-.half, .full, .quarter, .three-quarter, .third, .two-third {
-  float: left;
-}
-
-.full {
-  width: 100% !important;
-}
-
-.half {
-  width: 50% !important;
-}
-
-.quarter {
-  width: 25% !important;
-}
-
-.third {
-  width: 33% !important;
-}
-
-.three-quarter {
-  width: 75% !important;
-}
-
-.two-third {
-  width: 67% !important;
-}
-
 .padding {
   padding: 10px;
 }
@@ -419,23 +391,13 @@ svg {
 }
 
 #form {
-  .label-wrapper + * {
+  ige-form-label + * {
     flex: 1;
   }
 
-  .label-wrapper + formly-wrapper-mat-form-field {
+  ige-form-label + formly-wrapper-mat-form-field {
     display: contents;
   }
-
-  &.form-content {
-
-  }
-
-  /*.mat-button-wrapper {
-    vertical-align: middle;
-  }*/
-
-
 }
 
 .mat-form-field-appearance-outline .mat-form-field-outline {

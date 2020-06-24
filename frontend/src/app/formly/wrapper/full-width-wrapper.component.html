@@ -1,8 +1,7 @@
 <div [class.hasContextHelp]="to.hasContextHelp" fxLayout="row" [class.required]="to.required">
-
     <ige-form-label [hasContextHelp]="to.hasContextHelp" (contextHelp)="showContextHelp($event)">
         {{ to.externalLabel }}<span *ngIf="to.required">*</span>
     </ige-form-label>
-
     <ng-container #fieldComponent></ng-container>
+
 </div>

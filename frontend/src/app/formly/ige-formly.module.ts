@@ -42,6 +42,7 @@ import { FormDialogComponent } from './types/table/form-dialog/form-dialog.compo
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {RepeatComponent} from './types/repeat/repeat.component';
 import {SelectOptionPipe} from '../directives/selectOption.pipe';
+import { FormLabelComponent } from './wrapper/form-label/form-label.component';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -105,13 +106,14 @@ export function IpValidator(control: FormControl): ValidationErrors {
     AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent, FreeSpatialComponent,
     WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent, RepeatComponent,
     FormErrorComponent,
-    FormDialogComponent
+    FormDialogComponent,
+    FormLabelComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [
     ReactiveFormsModule, FormsModule,
     FormlyModule,
-    ContextHelpComponent
+    ContextHelpComponent, FormLabelComponent
   ]
 })
 export class IgeFormlyModule {

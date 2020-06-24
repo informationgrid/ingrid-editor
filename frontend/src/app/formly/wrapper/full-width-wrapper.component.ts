@@ -1,14 +1,14 @@
-import {AfterViewInit, Component, ElementRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {FieldWrapper} from '@ngx-formly/core';
 import {ConfigService} from '../../services/config/config.service';
 import {ContextHelpService} from '../../services/context-help/context-help.service';
 
 @Component({
-  selector: 'ige-one-column-wrapper',
-  templateUrl: './one-column-wrapper.component.html',
-  styleUrls: ['./one-column-wrapper.component.scss']
+  selector: 'ige-full-width-wrapper',
+  templateUrl: './full-width-wrapper.component.html',
+  styleUrls: ['./full-width-wrapper.component.scss']
 })
-export class OneColumnWrapperComponent extends FieldWrapper implements AfterViewInit {
+export class FullWidthWrapperComponent extends FieldWrapper implements AfterViewInit {
 
   @ViewChild('fieldComponent', {read: ViewContainerRef, static: true}) fieldComponent: ViewContainerRef;
 

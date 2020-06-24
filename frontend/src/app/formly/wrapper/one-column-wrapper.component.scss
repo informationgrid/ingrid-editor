@@ -31,55 +31,12 @@
   padding-right: 20px;
 }
 
-/*.form-content {
-  min-width: 400px;
-  max-width: 1200px;
-  width: 100%;
-  padding-top: 15px;
-  padding-left: 40px;
-}*/
-
 .example-margin {
   margin: 0 40px 0 0;
 }
 
 .anchor-navigation {
   text-align: center;
-}
-
-.label-wrapper {
-  min-width: 272px;
-  padding-right: 24px;
-  padding-top: 17px;
-}
-
-.hasContextHelp {
-
-  &:hover {
-    .contextHelpIcon {
-      display: inline-block;
-    }
-
-    label {
-      color: $ige-primary;
-      cursor: pointer;
-    }
-  }
-
-  .contextHelpIcon {
-    display: none;
-    background-color: $ige-background;
-    border-radius: 50%;
-    height: 24px;
-    width: 24px;
-    margin-left: -28px;
-    margin-right: 4px;
-    margin-top: 14px;
-
-    ::ng-deep .mat-icon svg rect {
-      fill: $ige-secondary;
-    }
-  }
 }
 
 .checkbox-row {
