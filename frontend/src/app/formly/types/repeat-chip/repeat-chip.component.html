@@ -1,0 +1,13 @@
+<ige-form-error *ngIf="formControl.invalid">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
+
+<mat-chip-list>
+    <mat-chip *ngFor="let field of field.fieldGroup; let i = index;"
+              [removable]="true"
+              [selectable]="false"
+              (removed)="remove(i)">
+        {{model[i]}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+</mat-chip-list>
+
+<ige-add-button (add)="add(null, 'demo')"></ige-add-button>
