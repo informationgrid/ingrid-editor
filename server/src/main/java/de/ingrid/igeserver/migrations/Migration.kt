@@ -3,7 +3,6 @@ package de.ingrid.igeserver.migrations
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.db.DBApi
-import de.ingrid.igeserver.db.OrientDBDatabase
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -72,7 +71,7 @@ class Migration {
                 val info = dbService.findAll("Info")
                 val infoDoc = info!![0]
                 (infoDoc as ObjectNode).put("version", version)
-                dbService.save("Info", infoDoc[OrientDBDatabase.DB_ID].asText(), infoDoc.toString())
+                dbService.save("Info", dbService.getRecordId(infoDoc), infoDoc.toString())
             }
         } catch (e: ApiException) {
             log.error(e)

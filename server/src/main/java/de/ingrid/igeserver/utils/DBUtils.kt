@@ -8,7 +8,6 @@ import com.orientechnologies.orient.core.exception.OStorageException
 import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.db.FindOptions
-import de.ingrid.igeserver.db.OrientDBDatabase
 import de.ingrid.igeserver.db.QueryType
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException
 import de.ingrid.igeserver.model.Catalog
@@ -133,7 +132,7 @@ class DBUtils @Autowired constructor(private val dbService: DBApi, private val a
                 val list = dbService.findAll("Info", query, findOptions)
                 val catUserRef = list.hits[0] as ObjectNode
                 catUserRef.putPOJO("catalogIds", assignedCatalogs)
-                val id = catUserRef[OrientDBDatabase.DB_ID].asText()
+                val id = dbService.getRecordId(catUserRef)
                 removeDBManagementFields(catUserRef)
                 dbService.save("Info", id, catUserRef.toString())
             }

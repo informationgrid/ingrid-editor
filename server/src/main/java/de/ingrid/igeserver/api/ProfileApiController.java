@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
 import de.ingrid.igeserver.db.DBApi;
 import de.ingrid.igeserver.utils.AuthUtils;
 import de.ingrid.igeserver.utils.DBUtils;
@@ -16,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Generated;
+import java.io.Closeable;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -44,7 +44,7 @@ public class ProfileApiController implements ProfileApi {
 
         String dbId = dbUtils.getCurrentCatalogForPrincipal(principal);
 
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
+        try (Closeable session = dbService.acquire(dbId)) {
             List<JsonNode> allFrom = dbService.findAll(DBApi.DBClass.Info.name());
             if (allFrom.size() > 0) {
                 JsonNode map = allFrom.get(0);
@@ -60,7 +60,7 @@ public class ProfileApiController implements ProfileApi {
 
     @Override
     public ResponseEntity<String> uploadProfile(Principal principal, MultipartFile file,
-                                                RedirectAttributes redirectAttributes) throws ApiException {
+                                                RedirectAttributes redirectAttributes) throws IOException, ApiException {
 
         String dbId = dbUtils.getCurrentCatalogForPrincipal(principal);
 
@@ -82,8 +82,7 @@ public class ProfileApiController implements ProfileApi {
         // Map<String, Object> dbFields = new HashMap<String, Object>();
         // dbFields.put( key, value )
         // dbFields.put( "fileContent", fileContent );
-        try (ODatabaseSession session = dbService.acquire(dbId)) {
-
+        try (Closeable session = dbService.acquire(dbId)) {
             List<JsonNode> infos = dbService.findAll(DBApi.DBClass.Info.name());
             if (infos.size() > 0) {
                 String rid;

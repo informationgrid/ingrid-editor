@@ -54,7 +54,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 val result = dbService.save(DocumentType.TYPE, null, dataJson.toString())
 
                 // create DocumentWrapper
-                val recordId = result[OrientDBDatabase.DB_ID].asText()
+                val recordId = dbService.getRecordId(result)
                 val category = if (address) "address" else "data"
                 val documentWrapper = createWrapper(dataJson, recordId, category)
 
@@ -109,7 +109,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 // TODO: use document id instead of DB-ID
                 val savedDoc = dbService.save(DocumentType.TYPE, recordId, updatedDocument.toString())
 
-                val dbID = savedDoc[OrientDBDatabase.DB_ID].asText()
+                val dbID = dbService.getRecordId(savedDoc)
                 saveDocumentWrapper(publish, docWrapper, dbID)
                 val wrapper = documentService.getByDocId(id, DocumentWrapperType.TYPE, true)
                 val result = documentService.getLatestDocument(wrapper!!)
@@ -368,7 +368,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         if (docWrapper[FIELD_DRAFT].isNull) {
             // TODO: db_id is ORecord!
             docWrapper.put(FIELD_DRAFT, dbID)
-            return dbService.save(DocumentWrapperType.TYPE, docWrapper[OrientDBDatabase.DB_ID].asText(), docWrapper.toString())
+            return dbService.save(DocumentWrapperType.TYPE, dbService.getRecordId(docWrapper), docWrapper.toString())
         }
         return docWrapper
     }
@@ -385,6 +385,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         // remove draft version
         docWrapper.put(FIELD_DRAFT, null as String?)
-        return dbService.save(DocumentWrapperType.TYPE, docWrapper[OrientDBDatabase.DB_ID].asText(), docWrapper.toString())
+        return dbService.save(DocumentWrapperType.TYPE, dbService.getRecordId(docWrapper), docWrapper.toString())
     }
 }

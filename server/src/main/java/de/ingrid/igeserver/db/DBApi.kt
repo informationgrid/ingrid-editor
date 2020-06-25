@@ -1,14 +1,19 @@
 package de.ingrid.igeserver.db
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.orientechnologies.orient.core.db.ODatabaseSession
 import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.model.Catalog
+import java.io.Closeable
 
 interface DBApi {
     @Throws(ApiException::class)
     fun getRecordId(dbClass: String, docUuid: String): String?
     fun countChildrenFromNode(id: String?, type: String): Map<String, Long>
+
+    /**
+     * Get the ID of a document.
+     */
+    fun getRecordId(doc: JsonNode): String
 
     /**
      * Count number of documents found with findAll method
@@ -90,5 +95,5 @@ interface DBApi {
      * Open a session to a database with name dbName. With that it's possible to
      * begin, commit and rollback transactions.
      */
-    fun acquire(dbName: String?): ODatabaseSession?
+    fun acquire(dbName: String?): Closeable?
 }

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.db.FindOptions
-import de.ingrid.igeserver.db.OrientDBDatabase
 import de.ingrid.igeserver.db.QueryType
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.services.UserManagementService
@@ -239,7 +238,7 @@ class UsersApiController : UsersApi {
                 }
                 val map = info.hits[0] as ObjectNode
                 map.put("currentCatalogId", catalogId)
-                dbService.save("Info", map[OrientDBDatabase.DB_ID].asText(), map.toString())
+                dbService.save("Info", dbService.getRecordId(map), map.toString())
                 return ResponseEntity.ok().build()
             }
         } catch (e: Exception) {

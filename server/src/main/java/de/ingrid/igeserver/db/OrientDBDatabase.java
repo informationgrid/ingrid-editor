@@ -24,7 +24,6 @@ import de.ingrid.igeserver.documenttypes.AbstractDocumentType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
 import de.ingrid.igeserver.model.Catalog;
 import de.ingrid.igeserver.services.MapperService;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.Closeable;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,7 +41,7 @@ import static de.ingrid.igeserver.services.ConstantsKt.FIELD_PARENT;
 @Service
 public class OrientDBDatabase implements DBApi {
 
-    public static String DB_ID = "@rid";
+    private static String DB_ID = "@rid";
 
     private static Logger log = LogManager.getLogger(OrientDBDatabase.class);
 
@@ -65,7 +65,7 @@ public class OrientDBDatabase implements DBApi {
 
             server.createDatabase("IgeUsers", ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
 
-            try (ODatabaseSession session = acquire("IgeUsers")) {
+            try (ODatabaseSession session = acquireImpl("IgeUsers")) {
                 // after creation the database is already connected to and can be used
                 OClass info = session.getMetadata().getSchema().createClass("Info");
                 info.createProperty("userId", OType.STRING);
@@ -92,7 +92,7 @@ public class OrientDBDatabase implements DBApi {
     private void initDocumentTypes(Catalog... settings) {
 
         for (Catalog dbSetting : settings) {
-            try (ODatabaseSession session = acquire(dbSetting.getId())) {
+            try (ODatabaseSession session = acquireImpl(dbSetting.getId())) {
                 documentTypes.stream()
                         .filter(docType -> docType.usedInProfile(dbSetting.getType()))
                         .forEach(type -> type.initialize(session));
@@ -260,6 +260,11 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
+    public String getRecordId(JsonNode doc) {
+        return doc.get(DB_ID).asText();
+    }
+
+    @Override
     public Map<String, Long> countChildrenFromNode(String id, String type) {
 
         Map<String, Long> response = new HashMap<>();
@@ -383,7 +388,7 @@ public class OrientDBDatabase implements DBApi {
         catalog.setId(id);
 
         server.createDatabase(id, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig());
-        try (ODatabaseSession session = acquire(id)) {
+        try (ODatabaseSession session = acquireImpl(id)) {
 
             initNewDatabase(catalog, session);
             JsonNode catInfo = getMapFromCatalogSettings(catalog);
@@ -397,7 +402,7 @@ public class OrientDBDatabase implements DBApi {
 
     public void updateDatabase(Catalog settings) throws ApiException {
 
-        try (ODatabaseSession ignored = acquire(settings.getId())) {
+        try (ODatabaseSession ignored = acquireImpl(settings.getId())) {
 
             List<JsonNode> list = this.findAll(DBClass.Info.name());
             ObjectNode map = (ObjectNode) list.get(0);
@@ -445,12 +450,8 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
-    public ODatabaseSession acquire(String dbName) {
-
-        if (!server.existsDatabase(dbName)) {
-            throw new DatabaseDoesNotExistException("Database does not exist: " + dbName);
-        }
-        return server.openDatabase(dbName);
+    public Closeable acquire(String dbName) {
+        return acquireImpl(dbName);
     }
 
     /**
@@ -459,6 +460,13 @@ public class OrientDBDatabase implements DBApi {
     private ODatabaseSession getDBFromThread() {
 
         return ODatabaseRecordThreadLocal.instance().get();
+    }
+
+    private ODatabaseSession acquireImpl(String dbName) {
+        if (!server.existsDatabase(dbName)) {
+            throw new DatabaseDoesNotExistException("Database does not exist: " + dbName);
+        }
+        return server.openDatabase(dbName);
     }
 
     private List<JsonNode> mapODocumentsToJsonNode(ORecordIteratorClass<ODocument> oDocsIterator) throws Exception {
