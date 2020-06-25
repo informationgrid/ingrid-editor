@@ -1,7 +1,7 @@
 import {HTTP_INTERCEPTORS, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {environment} from '../../environments/environment';
-import {mergeMap} from 'rxjs/internal/operators';
+import {mergeMap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 
 

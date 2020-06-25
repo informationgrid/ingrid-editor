@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {ErrorService} from '../error.service';
 import {Role} from '../../models/user-role';
-import {map} from 'rxjs/internal/operators';
 import {Observable} from 'rxjs';
 import {RoleDataService} from './role-data.service';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'

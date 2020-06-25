@@ -4,13 +4,13 @@ import {EventManager} from '@angular/platform-browser';
 import {Plugin} from '../../+catalog/+behaviours/plugin';
 import {ProfileService} from '../profile.service';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {catchError, tap} from 'rxjs/internal/operators';
 import {BehaviorDataService} from './behavior-data.service';
 import {ProfileQuery} from '../../store/profile/profile.query';
 import {SessionQuery} from '../../store/session.query';
 import {PluginToken} from '../../tokens/plugin.token';
 import {ConfigService} from '../config/config.service';
 import {Behaviour} from './behaviour';
+import {catchError, tap} from 'rxjs/operators';
 
 export interface BehaviourFormatBackend {
   _id: string;

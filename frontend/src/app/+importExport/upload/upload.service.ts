@@ -1,9 +1,8 @@
-import {Injectable} from "@angular/core";
-import {HttpClient, HttpErrorResponse, HttpEventType, HttpRequest} from "@angular/common/http";
-import {catchError, last, map} from "rxjs/operators";
-import {of} from "rxjs/observable/of";
-import {FileUploadModel} from "./upload.component";
-import {throwError} from "rxjs";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpEventType, HttpRequest} from '@angular/common/http';
+import {catchError, last, map} from 'rxjs/operators';
+import {FileUploadModel} from './upload.component';
+import {of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

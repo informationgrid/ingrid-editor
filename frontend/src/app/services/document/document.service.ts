@@ -3,7 +3,7 @@ import {ModalService} from '../modal/modal.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {map, tap} from 'rxjs/internal/operators';
+import {map, tap} from 'rxjs/operators';
 import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';

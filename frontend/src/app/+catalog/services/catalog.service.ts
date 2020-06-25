@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {ConfigService, Configuration} from '../../services/config/config.service';
 import {Observable} from 'rxjs';
-import {map, tap} from 'rxjs/internal/operators';
+import {map, tap} from 'rxjs/operators';
 import {CatalogDataService} from './catalog-data.service';
 import {HttpClient} from '@angular/common/http';
 import {Catalog} from './catalog.model';
