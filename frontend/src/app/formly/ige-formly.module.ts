@@ -45,6 +45,7 @@ import {SelectOptionPipe} from '../directives/selectOption.pipe';
 import {FormLabelComponent} from './wrapper/form-label/form-label.component';
 import {RepeatChipComponent} from './types/repeat-chip/repeat-chip.component';
 import {MatChipsModule} from '@angular/material/chips';
+import {ChipDialogComponent} from './types/repeat-chip/chip-dialog/chip-dialog.component';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -113,7 +114,8 @@ export function IpValidator(control: FormControl): ValidationErrors {
     FormErrorComponent,
     FormDialogComponent,
     FormLabelComponent,
-    RepeatChipComponent
+    RepeatChipComponent,
+    ChipDialogComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [

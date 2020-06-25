@@ -1,0 +1,24 @@
+@import "src/variables";
+
+.mat-chip-list {
+  display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.mat-chip {
+  border-radius: 4px;
+  background-color: $ige-background;
+
+  &:hover {
+    background-color: #EAEAEA;
+  }
+}
+
+.avatar {
+  padding-right: 10px;
+}
+
+.simpleInput {
+  padding-top: 5px;
+}

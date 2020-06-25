@@ -1,13 +1,30 @@
 <ige-form-error *ngIf="formControl.invalid">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
 
 <mat-chip-list>
-    <mat-chip *ngFor="let field of field.fieldGroup; let i = index;"
+    <mat-chip *ngFor="let field of field.fieldGroup; let i = index"
               [removable]="true"
               [selectable]="false"
               (removed)="remove(i)">
-        {{model[i]}}
+        <mat-icon *ngIf="to.showLanguage" class="avatar gray" svgIcon="language-24px"></mat-icon>
+
+        <ng-container *ngIf="to.codelistId > -1; else simpleLabel">
+            {{model[i] | codelist:to.codelistId | async}}
+        </ng-container>
+
+        <ng-template #simpleLabel>{{model[i]}}</ng-template>
+
         <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
 </mat-chip-list>
 
-<ige-add-button (add)="add(null, 'demo')"></ige-add-button>
+<ige-add-button *ngIf="to.useDialog; else simpleInput" (add)="openDialog()"></ige-add-button>
+
+<ng-template #simpleInput>
+    <mat-form-field class="width-100 simpleInputX" appearance="outline">
+        <input #input matInput placeholder="Eintragen..."
+               autocomplete="off"
+               [(ngModel)]="inputModel"
+               (keydown.enter)="addValues(input.value)">
+        <mat-hint>Mehrere Schlagworte durch Komma trennen und mit Return bestätigen</mat-hint>
+    </mat-form-field>
+</ng-template>

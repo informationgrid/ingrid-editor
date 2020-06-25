@@ -80,7 +80,18 @@ export class TestDoctype extends BaseDoctype {
         type: 'repeatChip',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Chips',
+          externalLabel: 'Chips (Dialog)',
+          required: true,
+          useDialog: true,
+          options: this.getCodelistForSelect(100),
+          codelistId: 100
+        }
+      }, {
+        key: 'multiChipsSimple',
+        type: 'repeatChip',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Chips (Input)',
           required: true
         }
       }, {
