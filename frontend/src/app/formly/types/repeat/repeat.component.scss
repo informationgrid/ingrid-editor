@@ -1,16 +1,3 @@
-mat-list {
-  padding-bottom: 12px;
-
-  .mat-list-item {
-    .context-button {
-      display: none;
-    }
-
-    &:hover {
-      .context-button {
-        display: block;
-      }
-    }
-  }
-
+.menu-button {
+  margin-top: 10px;
 }

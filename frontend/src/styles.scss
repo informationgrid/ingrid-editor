@@ -349,10 +349,6 @@ ige-root .mat-drawer-container {
 
   &.passive {
     color: $ige-background-bar;
-
-    svg path {
-      fill: $ige-background-bar;
-    }
   }
 
   &.document-icon {
@@ -388,6 +384,10 @@ svg {
 
 .gray .coloring {
   fill: $ige-comment-color;
+}
+
+ige-side-menu .coloring {
+  fill: #ffffff;
 }
 
 #form {

@@ -1,3 +1,14 @@
+# Add new SVG
+
+* clean up SVG here: https://jakearchibald.github.io/svgomg/
+* add `class='coloring'` to foreground path element
+* replace svg-tag with symbol-tag
+* add symbol to svg-library-file
+* change color by using css class `coloring` via fill- and stroke-attribute
+
+
+# Overlays
+
 This snippet shows how to overlay two material icons:
 
 ```css

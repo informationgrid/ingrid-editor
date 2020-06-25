@@ -4,7 +4,7 @@
                [formControl]="query"
                [matAutocomplete]="auto">
         <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="field-close" (click)="query.reset('')">
-            <mat-icon class="passive" svgIcon="Entfernen"></mat-icon>
+            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
     </mat-form-field>
     <mat-autocomplete #auto="matAutocomplete" class="quicksearch-auto dense option-no-padding">

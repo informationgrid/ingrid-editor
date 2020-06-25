@@ -13,10 +13,6 @@
   background-color: $ige-secondary-dark;
   height: 100%;
   letter-spacing: 0.67px;
-
-  ::ng-deep .mat-icon svg path {
-    fill: #ffffff;
-  }
 }
 
 .active {

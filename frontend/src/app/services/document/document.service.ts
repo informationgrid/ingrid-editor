@@ -167,7 +167,7 @@ export class DocumentService {
       .toPromise().then(json => {
           const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
-          this.afterSave$.next(data);
+          this.afterSave$.next(json);
           this.datasetsChanged$.next({
             type: UpdateType.Update,
             data: [info]

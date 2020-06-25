@@ -15,7 +15,7 @@
                [matAutocomplete]="searchAuto">
         <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix>search</mat-icon>
         <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="button" (click)="query.reset('')">
-            <mat-icon class="passive" svgIcon="Entfernen"></mat-icon>
+            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
         <mat-autocomplete #searchAuto="matAutocomplete" class="quicksearch-auto dense">
             <mat-option *ngFor="let doc of searchResult | async"
