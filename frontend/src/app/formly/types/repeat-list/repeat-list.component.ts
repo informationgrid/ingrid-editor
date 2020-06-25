@@ -18,7 +18,6 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   @ViewChild('repeatListInput', {read: ElementRef}) autoCompleteEl: ElementRef;
   @ViewChild(MatAutocompleteTrigger) autoComplete: MatAutocompleteTrigger;
 
-  selectionModel = null;
   filteredOptions: Observable<SelectOption[]>;
   parameterOptions: SelectOption[];
   inputControl = new FormControl();
@@ -60,8 +59,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     this.add(null, value);
 
-    // reset selectbox value and detect changes by using setTimeout
-    setTimeout(() => this.selectionModel = '');
+    this.inputControl.setValue('');
 
     if (!this.to.asSelect) {
       this.autoCompleteEl.nativeElement.blur();

@@ -175,7 +175,7 @@ export class TestDoctype extends BaseDoctype {
           externalLabel: 'Repeatable List (Codelist)',
           placeholder: 'Raumbezugssystem wählen...',
           options: this.getCodelistForSelect(100),
-          withCodelist: true
+          codelistId: 100
         }
       }, {
         key: 'repeatListStatic',
