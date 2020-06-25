@@ -30,7 +30,6 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Beschreibung',
-          hasContextHelp: this.hasHelp('description'),
           autosize: true,
           autosizeMinRows: 3,
           autosizeMaxRows: 8,
@@ -52,8 +51,7 @@ export class McloudDoctype extends BaseDoctype {
         type: 'address-card',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Adressen',
-          hasContextHelp: this.hasHelp('addresses')
+          externalLabel: 'Adressen'
         }
       }]
     }, {
@@ -67,7 +65,6 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Nutzungshinweise',
-          hasContextHelp: this.hasHelp('usage'),
           rows: 3,
           appearance: 'outline'
         }
@@ -75,8 +72,7 @@ export class McloudDoctype extends BaseDoctype {
         fieldGroupClassName: 'display-flex',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Kategorien',
-          hasContextHelp: this.hasHelp('categories')
+          externalLabel: 'Kategorien'
         },
         fieldGroup: [{
           key: 'mCloudCategories',
@@ -111,7 +107,6 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Downloads',
-          hasContextHelp: this.hasHelp('downloads'),
           appearance: 'outline',
           click: () => {
             console.log('downloads clicked');
@@ -123,7 +118,6 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Lizenz',
-          hasContextHelp: this.hasHelp('license'),
           placeholder: 'Bitte wählen',
           appearance: 'outline',
           options: this.getCodelistForSelect(6500)
@@ -134,7 +128,6 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Quellenvermerk',
-          hasContextHelp: this.hasHelp('origin'),
           rows: 3,
           appearance: 'outline'
         }
@@ -142,8 +135,7 @@ export class McloudDoctype extends BaseDoctype {
         fieldGroupClassName: 'display-flex',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'mFUND',
-          hasContextHelp: this.hasHelp('mfund')
+          externalLabel: 'mFUND'
         },
         fieldGroup: [{
           key: 'mfundProject',
@@ -175,7 +167,6 @@ export class McloudDoctype extends BaseDoctype {
         type: 'leaflet',
         wrappers: [],
         templateOptions: {
-          // hasContextHelp: this.hasHelp('geoReference'),
           mapOptions: {},
           height: 386
         }
@@ -192,15 +183,13 @@ export class McloudDoctype extends BaseDoctype {
           wrappers: ['panel', 'form-field'],
           templateOptions: {
             externalLabel: 'Zeitbezug',
-            hasContextHelp: this.hasHelp('temporalReference'),
             appearance: 'outline'
           }
         }, {
           fieldGroupClassName: 'display-flex',
           wrappers: ['panel'],
           templateOptions: {
-            externalLabel: 'Zeitspanne',
-            hasContextHelp: this.hasHelp('dateRange')
+            externalLabel: 'Zeitspanne'
           },
           fieldGroup: [{
             key: 'rangeType',

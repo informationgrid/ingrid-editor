@@ -56,11 +56,23 @@ export abstract class BaseDoctype implements Doctype {
   init(help: string[]) {
     this.helpIds = help;
     this.fields.push(...this.documentFields());
+
+    this.addContextHelp(this.fields);
     console.log('Profile initialized');
   }
 
-  hasHelp(fieldId: string): boolean {
-    return this.helpIds.indexOf(fieldId) > -1;
+  private addContextHelp(fields: FormlyFieldConfig[], previousKey?: string) {
+    fields.forEach(field => {
+      if (field.fieldGroup) {
+        this.addContextHelp(field.fieldGroup, field.key);
+      }
+      if (this.helpIds.indexOf(field.key) > -1) {
+        if (field.type === 'checkbox') {
+          field.templateOptions.hasInlineContextHelp = true;
+        } else {
+          field.templateOptions.hasContextHelp = true;
+        }
+      }
+    });
   }
-
 }

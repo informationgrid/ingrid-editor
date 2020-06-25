@@ -66,7 +66,6 @@ export class TestDoctype extends BaseDoctype {
         templateOptions: {
           externalLabel: 'Checkbox',
           label: 'Open Data',
-          hasInlineContextHelp: this.hasHelp('checkbox'),
           indeterminate: false,
           required: true
         }
