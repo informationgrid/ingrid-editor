@@ -1,7 +1,13 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FieldArrayType} from '@ngx-formly/core';
-import {MatAutocomplete, MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {filter, map, startWith, take, tap} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {SelectOption} from '../../../services/codelist/codelist.service';
+import {FormControl} from '@angular/forms';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-repeat-list',
   templateUrl: './repeat-list.component.html',
@@ -13,16 +19,49 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   @ViewChild(MatAutocompleteTrigger) autoComplete: MatAutocompleteTrigger;
 
   selectionModel = null;
+  filteredOptions: Observable<SelectOption[]>;
+  parameterOptions: SelectOption[];
+  inputControl = new FormControl();
 
   ngOnInit(): void {
+
+
+    if (this.to.options instanceof Observable) {
+      this.to.options
+        .pipe(
+          untilDestroyed(this),
+          filter(data => data !== undefined && data.length > 0),
+          take(1),
+          tap(data => this.initInputListener(data))
+        )
+        .subscribe();
+    } else {
+      this.initInputListener(this.to.options);
+    }
+  }
+
+  private initInputListener(options: SelectOption[]) {
+    this.parameterOptions = options;
+
+    this.filteredOptions = this.inputControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
+
   }
 
   addToList(value: any) {
 
+    // ignore duplicate entries
+    if (this.model.indexOf(value) !== -1) {
+      return;
+    }
+
     this.add(null, value);
 
     // reset selectbox value and detect changes by using setTimeout
-    setTimeout(() => this.selectionModel = null);
+    setTimeout(() => this.selectionModel = '');
 
     if (!this.to.asSelect) {
       this.autoCompleteEl.nativeElement.blur();
@@ -30,4 +69,13 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     }
 
   }
+
+  private _filter(value: string): SelectOption[] {
+    const filterValue = value.toLowerCase();
+
+    return this.parameterOptions
+      ?.filter(option => this.model.indexOf(option.value) === -1)
+      ?.filter(option => option.label.toLowerCase().includes(filterValue));
+  }
+
 }

@@ -25,12 +25,14 @@
                [placeholder]="to.placeholder"
                matInput
                [(ngModel)]="selectionModel"
+               [formControl]="inputControl"
                (keydown.enter)="addToList(repeatListInput.value)"
                [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addToList($event.option.value)">
-            <mat-option *ngFor="let option of to.options | async" [value]="option.value">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option.value">
                 {{option.label}}
             </mat-option>
         </mat-autocomplete>
+        <mat-hint *ngIf="!parameterOptions">Mit Return hinzufügen</mat-hint>
     </mat-form-field>
 </ng-template>
