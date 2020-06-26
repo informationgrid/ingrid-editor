@@ -2,4 +2,12 @@
 
 mat-card {
   background-color: $ige-background;
+
+  &:hover {
+
+  }
+}
+
+.mat-card-avatar {
+  width: 24px;
 }

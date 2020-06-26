@@ -1,4 +1,6 @@
-<mat-card class="no-box-shadow">
+<mat-card [ngClass]="cardClass"
+          (mouseover)="cardClass = 'mat-elevation-z3'"
+          (mouseout)="cardClass = 'no-box-shadow'">
     <mat-card-header>
         <div mat-card-avatar><mat-icon [svgIcon]="'Institution'"></mat-icon></div>
         <mat-card-title fxFlex>{{address.type | codelist:"505" | async}}</mat-card-title>
@@ -8,7 +10,7 @@
                 <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #linkedAddressMenu="matMenu">
-                <button mat-menu-item disabled>Bearbeiten</button>
+                <button mat-menu-item (click)="edit.next()">Bearbeiten</button>
                 <button mat-menu-item (click)="remove.next()">Löschen</button>
             </mat-menu>
         </div>

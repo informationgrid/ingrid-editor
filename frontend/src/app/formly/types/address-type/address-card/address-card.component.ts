@@ -16,6 +16,8 @@ export class AddressCardComponent implements OnInit {
 
   @Input() address: AddressRef;
   @Output() remove = new EventEmitter();
+  @Output() edit = new EventEmitter();
+  cardClass = 'no-box-shadow';
 
   constructor() {
   }

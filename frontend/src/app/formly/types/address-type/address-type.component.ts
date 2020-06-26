@@ -35,15 +35,21 @@ export class AddressTypeComponent extends FieldType implements OnInit {
 
   addAddress() {
 
-    this.dialog.open(ChooseAddressDialogComponent, {minWidth: 400})
-      .afterClosed()
-      .pipe(filter(data => data))
+    this.callEditDialog()
       .subscribe((data: ChooseAddressResponse) => {
-        console.log('Data-info', data);
         this.addresses.push(this.convertDataForBackend(data));
         this.updateFormControl(this.addresses);
       });
 
+  }
+
+  private callEditDialog(address?: AddressRef) {
+    return this.dialog.open(ChooseAddressDialogComponent, {
+      minWidth: 400,
+      data: address
+    })
+      .afterClosed()
+      .pipe(filter(data => data));
   }
 
   convertDataForBackend(response: ChooseAddressResponse): AddressRef {
@@ -66,4 +72,11 @@ export class AddressTypeComponent extends FieldType implements OnInit {
     this.formControl.markAsDirty();
   }
 
+  editAddress(address: AddressRef, index: number) {
+    this.callEditDialog(address)
+      .subscribe((data: ChooseAddressResponse) => {
+        this.addresses.splice(index, 1, this.convertDataForBackend(data));
+        this.updateFormControl(this.addresses);
+      });
+  }
 }

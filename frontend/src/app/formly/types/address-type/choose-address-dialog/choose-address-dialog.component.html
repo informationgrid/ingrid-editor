@@ -21,6 +21,7 @@
 
     <div class="side-padding place-title">Adresse wählen</div>
     <ige-tree (selected)="updateAddress($event[0], 'Tree')"
+              [setActiveNode]="selectedNode"
               [forAddresses]="true"
               [disabledCondition]="disabledCondition"
               [showReloadButton]="false"></ige-tree>
