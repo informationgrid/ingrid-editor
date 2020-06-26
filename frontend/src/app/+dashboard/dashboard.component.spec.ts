@@ -4,19 +4,26 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {ConfigService} from '../services/config/config.service';
 import {of} from 'rxjs';
 import {recentDocuments} from '../_test-data/documents';
-import {DocumentDataService} from '../services/document/document-data.service';
 import {ModalService} from '../services/modal/modal.service';
 import {FormularService} from '../+form/formular.service';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {MatDialogModule} from '@angular/material/dialog';
+import {DocumentService} from '../services/document/document.service';
+import {QuickSearchComponent} from './quick-search/quick-search.component';
+import {ChartComponent} from './chart/chart.component';
+import {DocumentListItemComponent} from '../shared/document-list-item/document-list-item.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {CardBoxComponent} from '../shared/card-box/card-box.component';
 
 
 describe('DashboardComponent', () => {
   let spectator: Spectator<DashboardComponent>;
   const createComponent = createComponentFactory({
     component: DashboardComponent,
-    imports: [RouterTestingModule, MatDialogModule],
-    mocks: [ConfigService, DocumentDataService, FormularService, ModalService],
+    imports: [RouterTestingModule, MatDialogModule, MatFormFieldModule],
+    declarations: [ChartComponent, DocumentListItemComponent, CardBoxComponent],
+    componentMocks: [QuickSearchComponent],
+    mocks: [ConfigService, DocumentService, FormularService, ModalService],
     detectChanges: false
   });
 
@@ -27,13 +34,13 @@ describe('DashboardComponent', () => {
   });
 
   it('should show last recent documents', () => {
-    const dataService = spectator.get<DocumentDataService>(DocumentDataService);
-    dataService.find.and.returnValue(of(recentDocuments));
+    const dataService = spectator.get<DocumentService>(DocumentService);
+    dataService.find.and.returnValue(of({ totalHits: 3, hits: recentDocuments}));
     const formService = spectator.get<FormularService>(FormularService);
 
     spectator.detectChanges();
 
-    const recentDocs = spectator.queryAll('.recentDocs li');
+    const recentDocs = spectator.queryAll('ige-card-box[data-cy="card-latest-docs"] .card-title');
     expect(recentDocs[0].textContent.trim()).toEqual('Test Document 1');
     expect(recentDocs[1].textContent.trim()).toEqual('Test Document 2');
     expect(recentDocs[2].textContent.trim()).toEqual('Test Document 3');

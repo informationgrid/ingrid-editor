@@ -1,13 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ChipDialogComponent } from './chip-dialog.component';
+import {ChipDialogComponent} from './chip-dialog.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {RepeatListComponent} from '../../repeat-list/repeat-list.component';
+import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {MatSelectModule} from '@angular/material/select';
+import {MatListModule} from '@angular/material/list';
 
 describe('ChipDialogComponent', () => {
   let spectator: Spectator<ChipDialogComponent>;
   const createHost = createComponentFactory({
     component: ChipDialogComponent,
+    imports: [
+      MatDialogModule, MatSelectModule, MatListModule
+    ],
+    providers: [
+      {provide: MAT_DIALOG_DATA, useValue: []}
+    ],
     detectChanges: false
   });
 

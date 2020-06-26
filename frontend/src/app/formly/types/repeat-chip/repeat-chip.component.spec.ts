@@ -1,13 +1,13 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { RepeatChipComponent } from './repeat-chip.component';
+import {RepeatChipComponent} from './repeat-chip.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {RepeatListComponent} from '../repeat-list/repeat-list.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatChipsModule} from '@angular/material/chips';
 
 describe('RepeatChipComponent', () => {
   let spectator: Spectator<RepeatChipComponent>;
   const createHost = createComponentFactory({
     component: RepeatChipComponent,
+    imports: [MatDialogModule, MatChipsModule],
     detectChanges: false
   });
 
