@@ -1,25 +1,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChooseAddressDialogComponent } from './choose-address-dialog.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {RepeatListComponent} from '../../repeat-list/repeat-list.component';
 
 describe('ChooseAddressDialogComponent', () => {
-  let component: ChooseAddressDialogComponent;
-  let fixture: ComponentFixture<ChooseAddressDialogComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ChooseAddressDialogComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ChooseAddressDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<ChooseAddressDialogComponent>;
+  const createHost = createComponentFactory({
+    component: ChooseAddressDialogComponent,
+    detectChanges: false
   });
 
+  beforeEach(() => {
+    spectator = createHost();
+  })
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });

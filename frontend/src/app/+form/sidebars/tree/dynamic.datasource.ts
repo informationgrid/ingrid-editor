@@ -89,9 +89,12 @@ export class DynamicDataSource {
 
         if (children) {
           // mark node after children to set border-top correctly
-          this.data[index + 1].afterExpanded = true;
+          const nextIndex = index + 1;
+          if (this.data.length > nextIndex) {
+            this.data[nextIndex].afterExpanded = true;
+          }
 
-          this.data.splice(index + 1, 0, ...children);
+          this.data.splice(nextIndex, 0, ...children);
           node.isLoading = false;
           node.isExpanded = true;
           // notify the change
@@ -103,12 +106,15 @@ export class DynamicDataSource {
 
   private collapseNode(node: TreeNode, index: number) {
     let count = 0;
-    for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {
+    const nextIndex = index + 1;
+    for (let i = nextIndex; i < this.data.length && this.data[i].level > node.level; i++, count++) {
     }
-    this.data.splice(index + 1, count);
+    this.data.splice(nextIndex, count);
 
     // remove mark of node when upper children have been removed to set border-top correctly
-    this.data[index + 1].afterExpanded = false;
+    if (this.data.length > nextIndex) {
+      this.data[nextIndex].afterExpanded = false;
+    }
 
     this.dataChange.next(this.data);
     node.isExpanded = false;

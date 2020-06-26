@@ -31,7 +31,6 @@ import {FormMessageComponent} from '../form-info/form-message/form-message.compo
 import {MatTabsModule} from '@angular/material/tabs';
 import {SharedModule} from '../../shared/shared.module';
 import {DestinationSelectionComponent} from '../dialogs/create/destination-selection/destination-selection.component';
-import {HeaderTitleRowMinComponent} from '../form-info/header-title-row-min/header-title-row-min.component';
 import {HistoryPlugin} from '../dialogs/history/history.plugin';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {DynamicFormComponent} from './form/dynamic-form.component';
@@ -47,7 +46,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 @NgModule({
   declarations: [
     FormToolbarComponent, BreadcrumbComponent, FormComponent,
-    FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent, HeaderTitleRowMinComponent,
+    FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent,
     FormMessageComponent, DestinationSelectionComponent,
     DynamicFormComponent, SidebarComponent, FormDashboardComponent
   ],

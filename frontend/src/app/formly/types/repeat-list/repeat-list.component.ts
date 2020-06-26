@@ -24,7 +24,6 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   ngOnInit(): void {
 
-
     if (this.to.options instanceof Observable) {
       this.to.options
         .pipe(
@@ -37,6 +36,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     } else {
       this.initInputListener(this.to.options);
     }
+
   }
 
   private initInputListener(options: SelectOption[]) {

@@ -1,25 +1,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChartComponent } from './chart.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {RepeatListComponent} from '../../formly/types/repeat-list/repeat-list.component';
 
 describe('ChartComponent', () => {
-  let component: ChartComponent;
-  let fixture: ComponentFixture<ChartComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ChartComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ChartComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<ChartComponent>;
+  const createHost = createComponentFactory({
+    component: ChartComponent,
+    detectChanges: false
   });
 
+  beforeEach(() => {
+    spectator = createHost();
+  })
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });

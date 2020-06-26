@@ -1,25 +1,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DocumentTileComponent } from './document-tile.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {RepeatListComponent} from '../../formly/types/repeat-list/repeat-list.component';
 
 describe('DocumentTileComponent', () => {
-  let component: DocumentTileComponent;
-  let fixture: ComponentFixture<DocumentTileComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DocumentTileComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DocumentTileComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<DocumentTileComponent>;
+  const createHost = createComponentFactory({
+    component: DocumentTileComponent,
+    detectChanges: false
   });
 
+  beforeEach(() => {
+    spectator = createHost();
+  })
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });

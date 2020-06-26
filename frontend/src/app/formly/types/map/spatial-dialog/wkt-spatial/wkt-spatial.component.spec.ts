@@ -1,25 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { WktSpatialComponent } from './wkt-spatial.component';
+import {WktSpatialComponent} from './wkt-spatial.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
 
 describe('WktSpatialComponent', () => {
-  let component: WktSpatialComponent;
-  let fixture: ComponentFixture<WktSpatialComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ WktSpatialComponent ]
-    })
-    .compileComponents();
-  }));
+  let spectator: Spectator<WktSpatialComponent>;
+  const createHost = createComponentFactory({
+    component: WktSpatialComponent,
+    detectChanges: false
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WktSpatialComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    spectator = createHost();
+  })
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
+
 });

@@ -1,25 +1,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FormInfoComponent } from './form-info.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {RepeatListComponent} from '../../formly/types/repeat-list/repeat-list.component';
 
 describe('FormInfoComponent', () => {
-  let component: FormInfoComponent;
-  let fixture: ComponentFixture<FormInfoComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FormInfoComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FormInfoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<FormInfoComponent>;
+  const createHost = createComponentFactory({
+    component: FormInfoComponent,
+    detectChanges: false
   });
 
+  beforeEach(() => {
+    spectator = createHost();
+  })
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });

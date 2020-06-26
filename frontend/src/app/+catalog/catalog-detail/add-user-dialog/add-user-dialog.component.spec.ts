@@ -1,25 +1,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddUserDialogComponent } from './add-user-dialog.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {RepeatListComponent} from '../../../formly/types/repeat-list/repeat-list.component';
 
 describe('AddUserDialogComponent', () => {
-  let component: AddUserDialogComponent;
-  let fixture: ComponentFixture<AddUserDialogComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AddUserDialogComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AddUserDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<AddUserDialogComponent>;
+  const createHost = createComponentFactory({
+    component: AddUserDialogComponent,
+    detectChanges: false
   });
 
+  beforeEach(() => {
+    spectator = createHost();
+  })
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });

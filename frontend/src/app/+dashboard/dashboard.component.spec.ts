@@ -8,13 +8,14 @@ import {DocumentDataService} from '../services/document/document-data.service';
 import {ModalService} from '../services/modal/modal.service';
 import {FormularService} from '../+form/formular.service';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {MatDialogModule} from '@angular/material/dialog';
 
 
 describe('DashboardComponent', () => {
   let spectator: Spectator<DashboardComponent>;
   const createComponent = createComponentFactory({
     component: DashboardComponent,
-    imports: [RouterTestingModule],
+    imports: [RouterTestingModule, MatDialogModule],
     mocks: [ConfigService, DocumentDataService, FormularService, ModalService],
     detectChanges: false
   });

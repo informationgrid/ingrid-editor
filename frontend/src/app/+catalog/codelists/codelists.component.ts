@@ -11,13 +11,13 @@ import {catchError} from 'rxjs/operators';
   styleUrls: ['./codelists.component.scss']
 })
 export class CodelistsComponent implements OnInit {
+
   codelists = this.codelistService.getAll();
   entries: CodelistEntry[];
   selectedCodelist: Codelist;
   disableSyncButton = false;
 
-  constructor(private codelistService: CodelistService,
-              private codelistQuery: CodelistQuery) {
+  constructor(private codelistService: CodelistService) {
   }
 
   ngOnInit(): void {

@@ -1,25 +1,25 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FormLabelComponent } from './form-label.component';
+import {createComponentFactory, mockProvider, Spectator} from '@ngneat/spectator';
+import {RepeatListComponent} from '../../types/repeat-list/repeat-list.component';
+import {MatDialog} from '@angular/material/dialog';
 
 describe('FormLabelComponent', () => {
-  let component: FormLabelComponent;
-  let fixture: ComponentFixture<FormLabelComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FormLabelComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FormLabelComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<FormLabelComponent>;
+  const createHost = createComponentFactory({
+    component: FormLabelComponent,
+    providers: [
+      mockProvider(MatDialog)
+    ],
+    detectChanges: false
   });
 
+  beforeEach(() => {
+    spectator = createHost();
+  })
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });

@@ -28,7 +28,6 @@ class BehaviourMock {
     new OpenDataBehaviour(null)
   ];
 }
-console.log( 'start' );
 describe( 'Behaviour', () => {
 
   /*beforeEach( () => addProviders( [

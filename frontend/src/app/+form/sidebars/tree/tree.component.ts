@@ -268,7 +268,6 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private async addNewNode(updateInfo: UpdateDatasetInfo) {
-    console.log('addnewNode');
 
     this.activeNodeId = updateInfo.data[0].id + '';
 

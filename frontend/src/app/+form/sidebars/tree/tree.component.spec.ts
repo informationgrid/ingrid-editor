@@ -24,6 +24,18 @@ import {createDocument, DocumentAbstract} from '../../../store/document/document
 import {delay} from 'rxjs/operators';
 import {DynamicDatabase} from './dynamic.database';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {EmptyNavigationComponent} from './empty-navigation/empty-navigation.component';
+import {TreeNode} from '../../../store/tree/tree-node.model';
+import {ReactiveFormsModule} from '@angular/forms';
+
+function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
+  return docs.map(doc =>
+    new TreeNode(
+      doc.id.toString(), doc.title, doc._type, doc._state, level, doc._hasChildren, doc._parent,
+      doc.icon)
+  );
+}
 
 describe('TreeComponent', () => {
 
@@ -31,18 +43,20 @@ describe('TreeComponent', () => {
   let db: SpyObject<DynamicDatabase>;
   const createHost = createComponentFactory({
     component: TreeComponent,
-    imports: [MatTreeModule, MatIconModule, MatDialogModule, MatButtonModule, MatSlideToggleModule,
+    imports: [MatTreeModule, MatIconModule, MatDialogModule, MatButtonModule, MatSlideToggleModule, ReactiveFormsModule,
       MatFormFieldModule, MatAutocompleteModule, FormFieldsModule],
-    declarations: [TreeHeaderComponent],
+    declarations: [TreeHeaderComponent, EmptyNavigationComponent],
     componentMocks: [DynamicDatabase],
     detectChanges: false
   });
 
   beforeEach(() => {
+    UntilDestroy()(TreeComponent);
     spectator = createHost();
     db = spectator.inject(DynamicDatabase, true);
     db.initialData.and.returnValue(of(recentDocuments));
     db.treeUpdates = new Subject();
+    db.mapDocumentsToTreeNodes.andCallFake(mapDocumentsToTreeNodes);
     // by default return no children when requested (can be overridden)
     db.getChildren.and.returnValue(of([]));
   });
@@ -87,14 +101,14 @@ describe('TreeComponent', () => {
     const doc = createDocument({id: '12345', _type: 'A', title: 'initial node', _state: 'W'});
     sendTreeEvent(UpdateType.New, [doc]);
     hasNumberOfTreeNodes(4);
-    nodeContainsTitle(0, 'initial node');
+    nodeContainsTitle(2, 'initial node');
 
     // update document with a new id
     const docUpdate = createDocument({id: '12345', _type: 'A', title: 'modified node', _state: 'W'});
     sendTreeEvent(UpdateType.Update, [docUpdate]);
 
     // new/modified node should be placed correctly (alphabetically)
-    nodeContainsTitle(0, 'modified node');
+    nodeContainsTitle(2, 'modified node');
 
   }));
 
@@ -127,8 +141,6 @@ describe('TreeComponent', () => {
     // add a new document via the storage service
     const doc = createDocument(newChildDocOf3);
     sendTreeEvent(UpdateType.New, [doc], doc._parent);
-
-    // tick();
 
     // tree node should be expanded and show new node
     hasNumberOfTreeNodes(4);
@@ -306,6 +318,9 @@ describe('TreeComponent', () => {
     selectNode(1);
     nodeIsSelected(1);
     selectNode(2);
+    spectator.detectChanges();
+
+    tick(10000);
     nodeIsSelected(2);
   }));
 
@@ -346,6 +361,9 @@ describe('TreeComponent', () => {
 
   function sendTreeEvent(type: UpdateType, docs: DocumentAbstract[], parent?: string) {
     db.treeUpdates.next({type: type, data: docs, parent: parent});
+
+    // Fixme: why this timer? Analyze!
+    tick(1000);
   }
 
   const nodeAtIndex = (index) => spectator.queryAll('.mat-tree-node .mat-icon')[index];

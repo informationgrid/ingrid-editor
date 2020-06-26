@@ -8,7 +8,7 @@ import { throwError } from 'rxjs';
 })
 export class ErrorService {
 
-    constructor(private modalService: ModalService, private router: Router) { }
+    constructor() { }
 
     handle(error: any) {
       // on logout or jwt expired

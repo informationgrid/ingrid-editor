@@ -10,6 +10,7 @@ export class IsoBaseDoctype extends BaseDoctype {
   label = 'no-name';
 
   documentFields = () => {
+    return [];
   }
 
   constructor(storageService: DocumentService, codelistService: CodelistService, codelistQuery: CodelistQuery) {

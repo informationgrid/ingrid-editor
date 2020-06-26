@@ -35,7 +35,7 @@ export abstract class BaseDoctype implements Doctype {
               private codelistQuery: CodelistQuery) {
   }
 
-  abstract documentFields();
+  abstract documentFields(): FormlyFieldConfig[];
 
   getFields(): FormlyFieldConfig[] {
     return this.fields;
