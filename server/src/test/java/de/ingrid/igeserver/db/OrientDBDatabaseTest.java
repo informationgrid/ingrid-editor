@@ -7,6 +7,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.server.OServerMain;
 import de.ingrid.igeserver.api.ApiException;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -51,9 +52,9 @@ public class OrientDBDatabaseTest {
     }
 
     @Test
-    public void findAll() throws ApiException {
+    public void findAll() throws Exception {
 
-        try (ODatabaseSession session = dbService.acquire("test")) {
+        try (ODatabaseSession session = acquire("test")) {
             session.begin();
 
             OElement person1 = session.newElement("User");
@@ -62,7 +63,7 @@ public class OrientDBDatabaseTest {
             session.save(person1);
 
             // new person is not yet visible outside of session
-            ODatabaseSession session2 = dbService.acquire("test");
+            ODatabaseSession session2 = acquire("test");
             assertEquals(0, session2.countClass("User"));
 
             List<JsonNode> persons = dbService.findAll(DBApi.DBClass.User.name());
@@ -74,7 +75,7 @@ public class OrientDBDatabaseTest {
             session.commit();
 
             // change session
-            ODatabaseSession session3 = dbService.acquire("test");
+            ODatabaseSession session3 = acquire("test");
             persons = dbService.findAll(DBApi.DBClass.User.name());
             assertEquals(1, persons.size());
 
@@ -84,10 +85,11 @@ public class OrientDBDatabaseTest {
     }
 
     @Test
-    public void findAllWithInitData() throws ApiException {
+    public void findAllWithInitData() throws Exception {
+
         addTestData();
 
-        try (ODatabaseSession session = dbService.acquire("test")) {
+        try (ODatabaseSession session = acquire("test")) {
 
             List<JsonNode> persons = dbService.findAll(DBApi.DBClass.User.name());
 
@@ -98,10 +100,11 @@ public class OrientDBDatabaseTest {
 
 
     @Test
-    public void findAllByQuery() throws ApiException {
+    public void findAllByQuery() throws Exception {
+
         addTestData();
 
-        try (ODatabaseSession session = dbService.acquire("test")) {
+        try (ODatabaseSession session = acquire("test")) {
 
             Map<String, String> query = new HashMap<>();
             query.put("age", "48");
@@ -120,13 +123,14 @@ public class OrientDBDatabaseTest {
 
     @Test
     public void updateDocument() throws Exception {
+
         addTestData();
 
         String id;
         Map<String, String> query = new HashMap<>();
         query.put("age", "48");
 
-        try (ODatabaseSession session = dbService.acquire("test")) {
+        try (ODatabaseSession session = acquire("test")) {
             FindOptions options = new FindOptions();
             options.queryType = QueryType.like;
             options.resolveReferences = false;
@@ -138,7 +142,7 @@ public class OrientDBDatabaseTest {
             assertNotNull(save);
         }
 
-        try (ODatabaseSession session = dbService.acquire("test")) {
+        try (ODatabaseSession session = acquire("test")) {
             FindOptions options = new FindOptions();
             options.queryType = QueryType.like;
             options.resolveReferences = false;
@@ -154,7 +158,7 @@ public class OrientDBDatabaseTest {
     public void saveReferences() throws Exception {
 //        addTestData();
 
-        try (ODatabaseSession session = dbService.acquire("test")) {
+        try (ODatabaseSession session = acquire("test")) {
 
             // create document class with linked list property to address-references
             OClass docClass = session.createClass(DBApi.DBClass.Documents.name());
@@ -172,7 +176,7 @@ public class OrientDBDatabaseTest {
 
         }
 
-        try (ODatabaseSession session = dbService.acquire("test")) {
+        try (ODatabaseSession session = acquire("test")) {
             List<JsonNode> docs = dbService.findAll(DBApi.DBClass.Documents.name());
             assertEquals(2, docs.size());
             assertEquals("my document", ((ODocument) ((List) docs.get(1).get("addresses")).get(0)).field("title"));
@@ -184,13 +188,14 @@ public class OrientDBDatabaseTest {
     public void updateDocument1() throws Exception {
 //        addTestData();
 
-        try (ODatabaseSession session = dbService.acquire("test")) {
+        try (ODatabaseSession session = acquire("test")) {
 
         }
     }
 
-    private void addTestData() throws ApiException {
-        try (ODatabaseSession session = dbService.acquire("test")) {
+    private void addTestData() throws Exception {
+
+        try (ODatabaseSession session = acquire("test")) {
 
             String person1Map = "{ \"name\": \"John\", \"age\": \"35\"}";
             dbService.save("User", null, person1Map);
@@ -199,5 +204,10 @@ public class OrientDBDatabaseTest {
             dbService.save("User", null, person2Map);
 
         }
+    }
+
+    private ODatabaseSession acquire(String dbName) throws Exception {
+
+        return OServerMain.create(true).openDatabase(dbName);
     }
 }
