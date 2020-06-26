@@ -114,11 +114,11 @@
   .mat-icon {
     height: 16px;
     vertical-align: middle;
-
-    ::ng-deep svg path {
-      fill: $ige-secondary;
-    }
   }
+}
+
+.research-icon svg .coloring-stroke {
+  stroke: $ige-secondary;
 }
 
 .result-title {
@@ -133,16 +133,6 @@
   .mat-icon {
     vertical-align: middle;
     padding-bottom: 4px;
-  }
-}
-
-.research-icon ::ng-deep svg {
-  circle {
-    stroke: $ige-secondary;
-  }
-
-  rect {
-    fill: $ige-secondary;
   }
 }
 

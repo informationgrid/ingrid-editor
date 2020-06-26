@@ -358,15 +358,15 @@ ige-root .mat-drawer-container {
       width: 24px;
     }
 
-    svg path {
+    svg .coloring {
       fill: #333333;
     }
 
-    &.working svg path {
+    &.working svg .coloring {
       fill: $state-working-color;
     }
 
-    &.workingWithPublished svg path {
+    &.workingWithPublished svg .coloring {
       fill: url("#myGradient");
     }
   }
@@ -377,6 +377,7 @@ svg {
   .coloring {
     fill: #333333;
   }
+
   .coloring-stroke {
     stroke: #333333;
   }
@@ -386,8 +387,15 @@ svg {
   fill: $ige-comment-color;
 }
 
-ige-side-menu .coloring {
-  fill: #ffffff;
+ige-side-menu {
+
+  .coloring {
+    fill: #ffffff;
+  }
+
+  .coloring-stroke {
+    stroke: #ffffff;
+  }
 }
 
 #form {
