@@ -13,7 +13,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {FormlyModule} from '@ngx-formly/core';
-import {ContextHelpComponent} from '../+demo-layout/form/context-help/context-help.component';
+import {ContextHelpComponent} from '../shared/context-help/context-help.component';
 import {AutocompleteTypeComponent} from './types/autocomplete-type.component';
 import {LeafletTypeComponent} from './types/map/leaflet-type.component';
 import {FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';

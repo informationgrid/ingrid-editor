@@ -41,6 +41,8 @@ describe('DashboardComponent', () => {
     spectator.detectChanges();
 
     const recentDocs = spectator.queryAll('ige-card-box[data-cy="card-latest-docs"] .card-title');
+    console.log(recentDocs.length);
+    console.log(recentDocs[0]);
     expect(recentDocs[0].textContent.trim()).toEqual('Test Document 1');
     expect(recentDocs[1].textContent.trim()).toEqual('Test Document 2');
     expect(recentDocs[2].textContent.trim()).toEqual('Test Document 3');

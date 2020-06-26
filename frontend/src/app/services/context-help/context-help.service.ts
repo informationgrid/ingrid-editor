@@ -6,7 +6,7 @@ import {ContextHelpStore} from '../../store/context-help/context-help.store';
 import {ContextHelpQuery} from '../../store/context-help/context-help.query';
 import {Observable, of} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
-import {ContextHelpComponent} from '../../+demo-layout/form/context-help/context-help.component';
+import {ContextHelpComponent} from '../../shared/context-help/context-help.component';
 import {MatDialog} from '@angular/material/dialog';
 import {ContextHelpAbstract} from '../../store/context-help/context-help.model';
 

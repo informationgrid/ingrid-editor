@@ -1,15 +1,32 @@
-import { TestBed, inject } from '@angular/core/testing';
-
-import { CatalogService } from './services/catalog.service';
+import {CatalogService} from './services/catalog.service';
+import {createServiceFactory, mockProvider, SpectatorService} from '@ngneat/spectator';
+import {Router} from '@angular/router';
+import {CatalogDataService} from './services/catalog-data.service';
+import {HttpClient} from '@angular/common/http';
+import {ConfigService, Configuration} from '../services/config/config.service';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 describe('CatalogService', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [CatalogService]
-    });
+  let spectator: SpectatorService<CatalogService>;
+  const createService = createServiceFactory({
+    service: CatalogService,
+    imports: [HttpClientTestingModule],
+    providers: [
+      mockProvider(ConfigService, {
+        getConfiguration: () => new Configuration('/keycloak', '/api', null)
+      })
+    ],
+    mocks: [Router, CatalogDataService]
   });
 
-  it('should be created', inject([CatalogService], (service: CatalogService) => {
-    expect(service).toBeTruthy();
-  }));
+  beforeEach(() => {
+    spectator = createService();
+  });
+
+  it('should get catalogs', () => {
+
+    spectator.service.getCatalogs()
+      .subscribe(catalogs => expect(catalogs.length).toBeEmpty());
+
+  });
 });

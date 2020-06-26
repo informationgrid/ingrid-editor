@@ -5,8 +5,6 @@ import {TestDoctype} from './test/test.doctype';
 import {Component, NgModule} from '@angular/core';
 import {ProfileService} from '../app/services/profile.service';
 import {ContextHelpService} from '../app/services/context-help/context-help.service';
-import {forkJoin} from 'rxjs';
-import {delay, tap} from 'rxjs/operators';
 
 
 @Component({

@@ -1,13 +1,14 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { FreeSpatialComponent } from './free-spatial.component';
-import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {RepeatListComponent} from '../../../repeat-list/repeat-list.component';
+import {FreeSpatialComponent} from './free-spatial.component';
+import {createComponentFactory, mockProvider, Spectator} from '@ngneat/spectator';
+import {NominatimService} from '../../nominatim.service';
 
 describe('FreeSpatialComponent', () => {
   let spectator: Spectator<FreeSpatialComponent>;
   const createHost = createComponentFactory({
     component: FreeSpatialComponent,
+    providers: [
+      mockProvider(NominatimService)
+    ],
     detectChanges: false
   });
 

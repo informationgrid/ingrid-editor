@@ -1,25 +1,24 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {RepeatComponent} from './repeat.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {SharedModule} from '../../../shared/shared.module';
+import {AddButtonComponent} from '../../../shared/add-button/add-button.component';
 
 
-describe('RepeatListComponent', () => {
-  let component: RepeatComponent;
-  let fixture: ComponentFixture<RepeatComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ RepeatComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RepeatComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+describe('RepeatComponent', () => {
+  let spectator: Spectator<RepeatComponent>;
+  const createHost = createComponentFactory({
+    component: RepeatComponent,
+    imports: [SharedModule],
+    declarations: [AddButtonComponent],
+    detectChanges: false
   });
 
+  beforeEach(() => {
+    spectator = createHost();
+    spectator.component.field = {};
+  })
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });

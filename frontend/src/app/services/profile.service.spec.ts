@@ -1,15 +1,29 @@
-import { TestBed, inject } from '@angular/core/testing';
-
-import { ProfileService } from './profile.service';
+import {ProfileService} from './profile.service';
+import {createServiceFactory, mockProvider, SpectatorService} from '@ngneat/spectator';
+import {ConfigService} from './config/config.service';
+import {BehaviorSubject} from 'rxjs';
+import {ContextHelpService} from './context-help/context-help.service';
+import {ModalService} from './modal/modal.service';
 
 describe('ProfileService', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [ProfileService]
-    });
+  let spectator: SpectatorService<ProfileService>;
+  const createService = createServiceFactory({
+    service: ProfileService,
+    providers: [
+      mockProvider(ConfigService, {
+        $userInfo: new BehaviorSubject({})
+      })
+    ],
+    mocks: [ContextHelpService, ModalService]
   });
 
-  it('should be created', inject([ProfileService], (service: ProfileService) => {
-    expect(service).toBeTruthy();
-  }));
+  beforeEach(() => {
+    spectator = createService();
+  });
+
+  it('should get catalogs', () => {
+
+    expect(spectator.service.getProfiles().length).toBe(0);
+
+  });
 });
