@@ -238,6 +238,8 @@ describe('TreeComponent', () => {
   }));
 
   it('should initially expand to a deeply nested node', fakeAsync(() => {
+
+    db.getPath.and.returnValue(['1', '2', '3']);
     db.initialData.and.returnValue(of(deeplyNestedDocumentsRoot));
     db.getChildren.and.callFake(id => {
       switch (id) {
