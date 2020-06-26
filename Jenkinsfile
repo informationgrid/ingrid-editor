@@ -33,11 +33,13 @@ pipeline {
 
         stage ('Frontend-Tests') {
             steps {
-                nodejs(nodeJSInstallationName: 'nodejs') {
-                    script {
-                        try {
-                            sh './gradlew :frontend:test'
-                        } catch(error) {}
+                withEnv(["JAVA_HOME=${ tool 'jdk11' }/jdk-11"]) {
+                    nodejs(nodeJSInstallationName: 'nodejs') {
+                        script {
+                            try {
+                                sh './gradlew :frontend:test'
+                            } catch(error) {}
+                        }
                     }
                 }
             }
