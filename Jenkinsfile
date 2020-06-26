@@ -72,6 +72,7 @@ pipeline {
     post {
         always {
             junit 'server/build/test-results/**/*.xml'
+            junit 'frontend/target/surefire-reports/**/*.xml'
         }
         /*changed {
             // send Email with Jenkins' default configuration
