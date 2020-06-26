@@ -34,6 +34,10 @@ h1 {
   visibility: hidden;
 }
 
+.highlight {
+  background-color: $ige-mark-color;
+}
+
 .mat-card.no-box-shadow {
   box-shadow: none !important;
   -webkit-box-shadow: none !important;

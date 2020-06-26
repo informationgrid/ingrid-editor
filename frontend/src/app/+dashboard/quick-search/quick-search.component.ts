@@ -39,12 +39,12 @@ export class QuickSearchComponent implements OnInit {
   search(value: string) {
     this.documentService.find(value, 5)
       .subscribe(result => {
-        this.docs = result.hits;
+        this.docs = this.highlightResult(result.hits, value);
         this.numDocs = result.totalHits;
       });
     this.documentService.find(value, 5, true)
       .subscribe(result => {
-        this.addresses = result.hits;
+        this.addresses = this.highlightResult(result.hits, value);
         this.numAddresses = result.totalHits;
       });
   }
@@ -52,5 +52,16 @@ export class QuickSearchComponent implements OnInit {
   openResearchPage(event: Event) {
     event.preventDefault();
     this.router.navigate(['/research']);
+  }
+
+  private highlightResult(hits: DocumentAbstract[], textHighlight: string): DocumentAbstract[] {
+
+    return hits.map(hit => {
+      hit.title = hit.title
+        .replace(new RegExp(textHighlight, 'ig'), match => `<span class="highlight">${match}</span>`);
+
+      return hit;
+    });
+
   }
 }

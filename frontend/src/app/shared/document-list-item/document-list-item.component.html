@@ -24,7 +24,8 @@
               [svgIcon]="doc.icon || doc.iconClass"></mat-icon>
 
     <span matLine>
-        {{doc.title}}
+        <!-- in case we want to style title, we need to add it as innerHTML -->
+        <span [innerHTML]="doc.title"></span>
         <span  *ngIf="!hideDate" class="date" matTooltipClass="tooltip-medium" [matTooltip]='doc._modified | date:"dd.LL.yyyy HH:mm"'>{{doc._modified | dateAgo: "DE"}}</span>
     </span>
 </div>
