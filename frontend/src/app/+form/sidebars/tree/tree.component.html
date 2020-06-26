@@ -30,7 +30,7 @@
         <!-- This is the tree node template for expandable nodes -->
         <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
                        matTreeNodePadding matTreeNodePaddingIndent="24"
-                       (click)="!disabledCondition(node) && selectNode(node, $event)"
+                       (click)="handleFolderClick(node, $event)"
                        [class.selected]="selectionModel.isSelected(node)"
                        [class.active]="node._id === activeNodeId"
                        [class.expanded]="treeControl.isExpanded(node)"

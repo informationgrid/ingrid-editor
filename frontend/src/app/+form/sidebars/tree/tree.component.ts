@@ -451,4 +451,14 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.reloadTree().subscribe(() => this.handleActiveNodeSubscription());
     }
   }
+
+  handleFolderClick(node: TreeNode, $event: MouseEvent) {
+    if (this.disabledCondition(node)) {
+      if (node.hasChildren) {
+        this.treeControl.toggle(node);
+      }
+    } else {
+      this.selectNode(node, $event)
+    }
+  }
 }
