@@ -12,7 +12,7 @@
     "prod-stats": "ng build ige-ng --prod --stats-json",
     "update": "ng update @angular/cli @angular/core @angular/material @datorama/akita --allow-dirty --force",
     "test": "ng test",
-    "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
+    "test-headless": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
     "lint": "ng lint",
     "wba": "webpack-bundle-analyzer dist/stats.json",
     "sme": "source-map-explorer"
