@@ -1,13 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { SideMenuComponent } from './side-menu.component';
+import {SideMenuComponent} from './side-menu.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {RepeatListComponent} from '../formly/types/repeat-list/repeat-list.component';
+import {RouterTestingModule} from '@angular/router/testing';
+import {ConfigService} from '../services/config/config.service';
+import {MenuService} from '../menu/menu.service';
 
 describe('SideMenuComponent', () => {
   let spectator: Spectator<SideMenuComponent>;
   const createHost = createComponentFactory({
     component: SideMenuComponent,
+    imports: [RouterTestingModule],
+    mocks: [ConfigService, MenuService],
     detectChanges: false
   });
 

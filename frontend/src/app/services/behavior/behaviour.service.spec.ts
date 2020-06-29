@@ -1,10 +1,8 @@
 import {BehaviourService} from './behaviour.service';
-import {inject, TestBed} from '@angular/core/testing';
+import {inject} from '@angular/core/testing';
 import {OpenDataBehaviour} from '../../+catalog/+behaviours/form/OpenData/open-data.behaviour';
-import {AuthService} from '../security/auth.service';
-import {RouterTestingModule} from '@angular/router/testing';
-import {routes} from '../../app.router';
 import {Behaviour} from './behaviour';
+import {createServiceFactory, SpectatorService} from '@ngneat/spectator';
 
 // const behaviourService: BehaviourService;
 
@@ -28,43 +26,23 @@ class BehaviourMock {
     new OpenDataBehaviour(null)
   ];
 }
-describe( 'Behaviour', () => {
 
-  /*beforeEach( () => addProviders( [
-    FormularService,
-    BehaviourService,
-    {provide: BehavioursDefault, useClass: BehaviourMock}
-  ] ) );*/
-  beforeEach(() => {
-    // console.log('service:', behaviourService);
+describe('Behaviour', () => {
 
-    // behaviourService = TestBed.get( BehaviourService );
-    TestBed.resetTestingModule();
-    TestBed.configureTestingModule({
-      // declarations: [BehaviourService],
-      imports: [RouterTestingModule.withRoutes(routes)],
-      providers: [BehaviourService, AuthService]
-    });
+  let spectator: SpectatorService<BehaviourService>;
+  const createService = createServiceFactory(BehaviourService);
 
-    console.log( 'configured test module' );
-
-    // refine the test module by declaring the test component
-    /*TestBed.configureTestingModule({
-      declarations: [ BehaviourService ],
-    });*/
-    // this.behaviourService = new BehaviourService((new BehaviourMock()).behaviours, new EventManager());
-
-  });
+  beforeEach(() => spectator = createService());
 
 
-  it( 'should have a bunch of defined behaviours on startup', inject( [BehaviourService], (behaviourService: BehaviourService) => {
-    console.log( 'in test' );
+  xit('should have a bunch of defined behaviours on startup', inject([BehaviourService], (behaviourService: BehaviourService) => {
+    console.log('in test');
     // fixture.detectChanges();
 
     // behaviourService = TestBed.get( BehaviourService );
-    expect( behaviourService.behaviours.length ).toEqual( 2 );
-    expect( behaviourService.behaviours[0].id ).toEqual( 'xxx' );
-    expect( behaviourService.behaviours[1].id ).toEqual( 'open-data' );
+    expect(behaviourService.behaviours.length).toEqual(2);
+    expect(behaviourService.behaviours[0].id).toEqual('xxx');
+    expect(behaviourService.behaviours[1].id).toEqual('open-data');
   }));
 
 
@@ -84,4 +62,4 @@ describe( 'Behaviour', () => {
   });
 
 
-} );
+});

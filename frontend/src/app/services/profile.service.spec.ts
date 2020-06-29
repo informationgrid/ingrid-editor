@@ -1,9 +1,10 @@
 import {ProfileService} from './profile.service';
 import {createServiceFactory, mockProvider, SpectatorService} from '@ngneat/spectator';
-import {ConfigService} from './config/config.service';
+import {ConfigService, UserInfo} from './config/config.service';
 import {BehaviorSubject} from 'rxjs';
 import {ContextHelpService} from './context-help/context-help.service';
 import {ModalService} from './modal/modal.service';
+import {Catalog} from '../+catalog/services/catalog.model';
 
 describe('ProfileService', () => {
   let spectator: SpectatorService<ProfileService>;
@@ -11,7 +12,13 @@ describe('ProfileService', () => {
     service: ProfileService,
     providers: [
       mockProvider(ConfigService, {
-        $userInfo: new BehaviorSubject({})
+        $userInfo: new BehaviorSubject<UserInfo>({
+          assignedCatalogs: [],
+          currentCatalog: new Catalog({}),
+          name: 'x',
+          roles: [],
+          userId: 'y'
+        })
       })
     ],
     mocks: [ContextHelpService, ModalService]
