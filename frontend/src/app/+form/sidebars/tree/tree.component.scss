@@ -50,7 +50,7 @@ mat-tree-node {
     background-color: $ige-background;
 
     &:hover {
-      background-color: darken($ige-background, 5%);
+      background-color: darken($ige-background, 5%) !important;
     }
 
     &.selected {
