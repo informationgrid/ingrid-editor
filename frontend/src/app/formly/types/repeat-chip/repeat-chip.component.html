@@ -1,6 +1,6 @@
 <ige-form-error *ngIf="formControl.invalid">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
 
-<mat-chip-list>
+<mat-chip-list *ngIf="field.fieldGroup.length > 0">
     <mat-chip *ngFor="let field of field.fieldGroup; let i = index"
               [removable]="true"
               [selectable]="false"
