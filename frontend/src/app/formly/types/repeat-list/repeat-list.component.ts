@@ -2,7 +2,7 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FieldArrayType} from '@ngx-formly/core';
 import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {filter, map, startWith, take, tap} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {merge, Observable, Subject} from 'rxjs';
 import {SelectOption} from '../../../services/codelist/codelist.service';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -21,6 +21,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   filteredOptions: Observable<SelectOption[]>;
   parameterOptions: SelectOption[];
   inputControl = new FormControl();
+  private manualUpdate = new Subject<string>();
 
   ngOnInit(): void {
 
@@ -42,18 +43,23 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private initInputListener(options: SelectOption[]) {
     this.parameterOptions = options;
 
-    this.filteredOptions = this.inputControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value))
-      );
+    this.filteredOptions =
+      merge(
+        this.inputControl.valueChanges,
+        this.manualUpdate.asObservable()
+      )
+        .pipe(
+          untilDestroyed(this),
+          startWith(''),
+          map(value => this._filter(<string>value))
+        );
 
   }
 
   addToList(value: any) {
 
     // ignore duplicate entries
-    if (this.model.indexOf(value) !== -1) {
+    if (value === '' || this.model.indexOf(value) !== -1) {
       return;
     }
 
@@ -64,6 +70,11 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     if (!this.to.asSelect) {
       this.autoCompleteEl.nativeElement.blur();
       this.autoComplete.closePanel();
+    } else {
+      if (this._filter('').length === 0) {
+        this.inputControl.disable();
+      }
+      setTimeout(() => this.inputControl.setValue(''));
     }
 
   }
@@ -76,4 +87,14 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       ?.filter(option => option.label.toLowerCase().includes(filterValue));
   }
 
+  removeItem(index: number) {
+
+    this.remove(index);
+    this.manualUpdate.next('');
+
+    if (this.to.asSelect && this.inputControl.disabled) {
+      this.inputControl.enable();
+    }
+
+  }
 }

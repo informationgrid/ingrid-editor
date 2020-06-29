@@ -4,7 +4,7 @@
         <h3 *ngIf="to.codelistId" matLine>{{model[i] | codelist:to.codelistId | async}}</h3>
         <h3 *ngIf="!to.codelistId" matLine>{{model[i] | selectOption:to.options | async}}</h3>
 
-        <button mat-icon-button class="close gray" (click)="remove(i)">
+        <button mat-icon-button class="close gray" (click)="removeItem(i)">
             <mat-icon svgIcon="Entfernen"></mat-icon>
         </button>
 
@@ -13,7 +13,7 @@
 
 <mat-form-field *ngIf="to.asSelect; else templateAutocomplete" appearance="outline" class="width-100">
     <mat-select [placeholder]="to.placeholder" (valueChange)="addToList($event)" [formControl]="inputControl">
-        <mat-option *ngFor="let option of to.options | async" [value]="option.value">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.value">
             {{option.label}}
         </mat-option>
     </mat-select>
