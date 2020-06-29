@@ -1,13 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { AddUserDialogComponent } from './add-user-dialog.component';
+import {AddUserDialogComponent} from './add-user-dialog.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {RepeatListComponent} from '../../../formly/types/repeat-list/repeat-list.component';
+import {UserService} from '../../../services/user/user.service';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {MatListModule} from '@angular/material/list';
 
 describe('AddUserDialogComponent', () => {
   let spectator: Spectator<AddUserDialogComponent>;
   const createHost = createComponentFactory({
     component: AddUserDialogComponent,
+    imports: [MatTabsModule, MatDialogModule, MatListModule],
+    providers: [
+      {provide: MAT_DIALOG_DATA, useValue: []}
+    ],
+    mocks: [UserService],
     detectChanges: false
   });
 

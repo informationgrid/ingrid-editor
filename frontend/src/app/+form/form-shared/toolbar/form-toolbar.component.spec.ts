@@ -1,4 +1,4 @@
-import {createComponentFactory, mockProvider, Spectator, SpyObject} from '@ngneat/spectator';
+import {createComponentFactory, mockProvider, Spectator} from '@ngneat/spectator';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -9,16 +9,18 @@ import {FormToolbarService, Separator, ToolbarItem} from './form-toolbar.service
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormToolbarComponent} from './form-toolbar.component';
 import {Subject} from 'rxjs';
-import {DynamicDatabase} from '../../sidebars/tree/dynamic.database';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 let spectator: Spectator<FormToolbarComponent>;
 const buttonSubject = new Subject<Array<ToolbarItem | Separator>>();
 
 const createHost = createComponentFactory({
   component: FormToolbarComponent,
-  imports: [MatIconModule, MatDividerModule, MatButtonModule, MatMenuModule, MatToolbarModule, FlexLayoutModule, BrowserAnimationsModule],
+  imports: [MatIconModule, MatDividerModule, MatButtonModule, MatMenuModule, MatToolbarModule, FlexLayoutModule, BrowserAnimationsModule,
+    MatTabsModule, MatFormFieldModule],
   providers: [mockProvider(FormToolbarService, {
-    toolbar$: buttonSubject,
+    toolbar$: buttonSubject
   })],
   detectChanges: false
 });
@@ -60,7 +62,7 @@ describe('Form-Toolbar', () => {
       id: 'btnPublish', tooltip: 'TEST_TOOLBAR_ITEM', matIconVariable: 'remove', pos: 100, eventId: 'TEST_EVENT',
       isPrimary: true, label: 'Veröffentlichen', align: 'right'
     };
-    // service.addButton(item);
+    buttonSubject.next([item]);
 
     spectator.detectChanges();
 
@@ -68,6 +70,6 @@ describe('Form-Toolbar', () => {
     const buttons = spectator.queryAll('button');
 
     // confirm the element's content
-    expect(buttons.length).toBe(3);
+    expect(buttons.length).toBe(1);
   });
 });

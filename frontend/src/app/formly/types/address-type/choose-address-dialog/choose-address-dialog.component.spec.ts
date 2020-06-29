@@ -1,12 +1,21 @@
 import {ChooseAddressDialogComponent} from './choose-address-dialog.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {MatDialogModule} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {CodelistService} from '../../../../services/codelist/codelist.service';
+import {MatSelectModule} from '@angular/material/select';
 
 describe('ChooseAddressDialogComponent', () => {
   let spectator: Spectator<ChooseAddressDialogComponent>;
   const createHost = createComponentFactory({
     component: ChooseAddressDialogComponent,
-    imports: [MatDialogModule],
+    providers: [
+      {provide: MAT_DIALOG_DATA, useValue: {}}
+    ],
+    imports: [MatDialogModule, MatTabsModule, MatRadioModule, MatFormFieldModule, MatSelectModule],
+    mocks: [CodelistService],
     detectChanges: false
   });
 

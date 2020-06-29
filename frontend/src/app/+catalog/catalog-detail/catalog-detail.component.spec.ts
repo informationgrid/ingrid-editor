@@ -3,8 +3,6 @@ import {async} from '@angular/core/testing';
 import {CatalogDetailComponent} from './catalog-detail.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {RouterTestingModule} from '@angular/router/testing';
 import {UserService} from '../../services/user/user.service';
 import {CatalogService} from '../services/catalog.service';
 import {MatFormFieldModule} from '@angular/material/form-field';

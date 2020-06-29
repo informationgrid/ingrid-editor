@@ -1,13 +1,18 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { HeaderTitleRowComponent } from './header-title-row.component';
+import {HeaderTitleRowComponent} from './header-title-row.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {RepeatListComponent} from '../../../formly/types/repeat-list/repeat-list.component';
+import {ProfileService} from '../../../services/profile.service';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {TextFieldModule} from '@angular/cdk/text-field';
 
 describe('HeaderTitleRowComponent', () => {
   let spectator: Spectator<HeaderTitleRowComponent>;
   const createHost = createComponentFactory({
     component: HeaderTitleRowComponent,
+    imports: [MatTabsModule, MatRadioModule, MatFormFieldModule, MatDatepickerModule, TextFieldModule],
+    mocks: [ProfileService],
     detectChanges: false
   });
 

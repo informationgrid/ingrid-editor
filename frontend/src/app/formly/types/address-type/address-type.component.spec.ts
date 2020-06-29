@@ -1,13 +1,13 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { AddressTypeComponent } from './address-type.component';
+import {AddressTypeComponent} from './address-type.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {RepeatListComponent} from '../repeat-list/repeat-list.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatTabsModule} from '@angular/material/tabs';
 
 describe('AddressTypeComponent', () => {
   let spectator: Spectator<AddressTypeComponent>;
   const createHost = createComponentFactory({
     component: AddressTypeComponent,
+    imports: [MatDialogModule, MatTabsModule],
     detectChanges: false
   });
 
