@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {CdkTextareaAutosize} from "@angular/cdk/text-field";
+import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {FormGroup} from '@angular/forms';
 import {ProfileService} from '../../../services/profile.service';
 import {IgeDocument} from '../../../models/ige-document';
+import {DocumentUtils} from '../../../services/document.utils';
 
 @Component({
   selector: 'ige-header-title-row',
@@ -43,18 +44,7 @@ export class HeaderTitleRowComponent implements OnInit {
     return this.profileService.getDocumentIcon(this.form.value);
   }
 
-  // TODO: refactor since it's used in tree-component also
   getStateClass() {
-    switch (this.model._state) {
-      case 'W':
-        return 'working';
-      case 'PW':
-        return 'workingWithPublished';
-      case 'P':
-        return 'published';
-      default:
-        console.error('State is not supported: ' + this.model._state);
-        throw new Error('State is not supported: ' + this.model._state);
-    }
+    return DocumentUtils.getStateClass(this.model._state, this.model._type);
   }
 }

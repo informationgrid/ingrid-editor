@@ -3,6 +3,7 @@ import {DocumentAbstract} from '../../store/document/document.model';
 import {Observable, Subject} from 'rxjs';
 import {TreeNode} from '../../store/tree/tree-node.model';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {DocumentUtils} from '../../services/document.utils';
 
 @UntilDestroy()
 @Component({
@@ -43,23 +44,10 @@ export class DocumentListItemComponent implements OnInit {
     this.currentSelection = doc;
   }
 
-  /**
-   * TODO: Refactor since this functionality is also in tree.component.ts
-   * @param doc
-   */
   getStateClass(doc: DocumentAbstract | TreeNode) {
     const state = (<DocumentAbstract>doc)._state || (<TreeNode>doc).state;
+    const type = (<DocumentAbstract>doc)._type || (<TreeNode>doc).type;
 
-    switch (state) {
-      case 'W':
-        return 'working';
-      case 'PW':
-        return 'workingWithPublished';
-      case 'P':
-        return 'published';
-      default:
-        console.error('State is not supported: ' + state, doc);
-        throw new Error('State is not supported: ' + state);
-    }
+    return DocumentUtils.getStateClass(state, type);
   }
 }

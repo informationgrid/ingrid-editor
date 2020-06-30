@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {DocumentState, IgeDocument} from '../../../models/ige-document';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {DocumentUtils} from '../../../services/document.utils';
 
 @Component({
   selector: 'ige-header-more',
@@ -32,15 +33,8 @@ export class HeaderMoreComponent implements OnInit {
   }
 
   getState(state: DocumentState) {
-    switch (state) {
-      case 'P':
-        return 'Veröffentlicht';
-      case 'W':
-        return 'In Bearbeitung';
-      case 'PW':
-        return 'In Bearbeitung mit Veröffentlichung';
-      default:
-        throw new Error('State unknown: ' + state);
-    }
+
+    return DocumentUtils.getStateName(state);
+
   }
 }

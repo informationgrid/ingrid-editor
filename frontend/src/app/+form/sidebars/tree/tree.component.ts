@@ -10,6 +10,7 @@ import {DynamicDataSource} from './dynamic.datasource';
 import {DynamicDatabase} from './dynamic.database';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TreeService} from './tree.service';
+import {DocumentUtils} from '../../../services/document.utils';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -346,17 +347,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   getStateClass(node: TreeNode) {
-    switch (node.state) {
-      case 'W':
-        return 'working';
-      case 'PW':
-        return 'workingWithPublished';
-      case 'P':
-        return 'published';
-      default:
-        console.error('State is not supported: ' + node.state, node);
-        throw new Error('State is not supported: ' + node.state);
-    }
+    return DocumentUtils.getStateClass(node.state, node.type);
   }
 
   jumpToNode(id: string): Promise<void> {

@@ -23,6 +23,7 @@ import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE} from '../../store/document/docume
 import {ShortTreeNode} from '../sidebars/tree/tree.component';
 import {TreeStore} from '../../store/tree/tree.store';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
+import {DocumentUtils} from '../../services/document.utils';
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -158,17 +159,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
 
   // TODO: refactor since it's used in tree-component also
   getStateClass() {
-    switch (this.model._state) {
-      case 'W':
-        return 'working';
-      case 'PW':
-        return 'workingWithPublished';
-      case 'P':
-        return 'published';
-      default:
-        console.error('State is not supported: ' + this.model._state);
-        throw new Error('State is not supported: ' + this.model._state);
-    }
+    return DocumentUtils.getStateClass(this.model._state, this.model._type);
   }
 
   scrollToTreeNode(nodeId: string) {
