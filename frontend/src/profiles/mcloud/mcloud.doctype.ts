@@ -1,5 +1,5 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {CodelistService} from '../../app/services/codelist/codelist.service';
+import {CodelistService, SelectOption} from '../../app/services/codelist/codelist.service';
 import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {Injectable} from '@angular/core';
@@ -83,11 +83,14 @@ export class McloudDoctype extends BaseDoctype {
             label: 'mCLOUD Kategorie',
             placeholder: 'Bitte wählen',
             appearance: 'outline',
-            options: this.getCodelistForSelect(8000)
-            /*options: [
-              {label: 'male', value: 'm'},
-              {label: 'female', value: 'f'}
-            ]*/
+            options: <SelectOption[]>[
+              {label: 'Bahn', value: 'railway'},
+              {label: 'Wasserstraßen und Gewässer', value: 'waters'},
+              {label: 'Infrastruktur', value: 'infrastructure'},
+              {label: 'Klima und Wetter', value: 'climate'},
+              {label: 'Luft- und Raumfahrt', value: 'aviation'},
+              {label: 'Straßen', value: 'roads'}
+            ]
           }
         }, {
           key: 'openDataCategories',
@@ -98,19 +101,64 @@ export class McloudDoctype extends BaseDoctype {
             label: 'OpenData Kategorie',
             placeholder: 'Bitte wählen',
             appearance: 'outline',
-            options: this.getCodelistForSelect(100)
+            options: <SelectOption[]>[
+              {label: 'Bevölkerung und Gesellschaft', value: 'SOCI'},
+              {label: 'Bildung, Kultur und Sport', value: 'EDUC'},
+              {label: 'Energie', value: 'ENER'},
+              {label: 'Gesundheit', value: 'HEAL'},
+              {label: 'Internationale Themen', value: 'INTR'},
+              {label: 'Justiz, Rechtssystem und öffentliche Sicherheit', value: 'JUST'},
+              {label: 'Landwirtschaft, Fischerei, Forstwirtschaft und Nahrungsmittel', value: 'AGRI'},
+              {label: 'Regierung und öffentlicher Sektor', value: 'GOVE'},
+              {label: 'Regionen und Städte', value: 'REGI'},
+              {label: 'Umwelt', value: 'ENVI'},
+              {label: 'Verkehr', value: 'TRAN'},
+              {label: 'Wirtschaft und Finanzen', value: 'ECON'},
+              {label: 'Wissenschaft und Technologie', value: 'TECH'}
+            ]
           }
         }]
       }, {
         key: 'downloads',
-        type: 'input',
-        wrappers: ['panel', 'form-field'],
+        type: 'table',
         templateOptions: {
           externalLabel: 'Downloads',
-          appearance: 'outline',
-          click: () => {
-            console.log('downloads clicked');
-          }
+          required: true,
+          columns: [{
+            key: 'title',
+            type: 'input',
+            label: 'Titel',
+            templateOptions: {
+              label: 'Titel',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'link',
+            type: 'input',
+            label: 'Link',
+            templateOptions: {
+              label: 'Link',
+              appearance: 'outline',
+              required: true
+            }
+          }, {
+            key: 'type',
+            type: 'input',
+            label: 'Typ',
+            templateOptions: {
+              label: 'Typ',
+              appearance: 'outline',
+              required: true
+            }
+          }, {
+            key: 'format',
+            type: 'input',
+            label: 'Datenformat',
+            templateOptions: {
+              label: 'Datenformat',
+              appearance: 'outline'
+            }
+          }]
         }
       }, {
         key: 'license',
@@ -178,12 +226,35 @@ export class McloudDoctype extends BaseDoctype {
       },
       fieldGroup: [
         {
-          key: 'temporalReference',
-          type: 'input',
-          wrappers: ['panel', 'form-field'],
+          key: 'events',
+          type: 'repeat',
+          wrappers: ['panel'],
           templateOptions: {
-            externalLabel: 'Zeitbezug',
-            appearance: 'outline'
+            externalLabel: 'Zeitbezug der Ressource'
+          },
+          fieldArray: {
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [
+              {
+                key: 'date',
+                type: 'datepicker',
+                className: 'flex-1',
+                templateOptions: {
+                  label: 'Datum',
+                  appearance: 'outline',
+                  required: true
+                }
+              },
+              {
+                key: 'text',
+                type: 'input',
+                className: 'flex-1',
+                templateOptions: {
+                  label: 'Typ',
+                  appearance: 'outline',
+                  required: true
+                }
+              }]
           }
         }, {
           fieldGroupClassName: 'display-flex',
@@ -197,40 +268,35 @@ export class McloudDoctype extends BaseDoctype {
             className: 'flex-1 smallField',
             wrappers: ['form-field'],
             templateOptions: {
-              // label: 'Zeitspanne',
               placeholder: 'wählen',
               appearance: 'outline',
               options: [
                 {label: 'am', value: 'at'},
                 {label: 'seit', value: 'since'},
+                {label: 'bis', value: 'till'},
                 {label: 'von - bis', value: 'range'}
               ]
             }
           }, {
-            key: 'rangeFrom',
+            key: 'timeSpanDate',
             type: 'datepicker',
-            className: 'flex-1',
+            className: 'date-field',
             wrappers: ['form-field'],
             templateOptions: {
-              label: 'am / von',
-              appearance: 'outline'
-            }
-          }, {
-            key: 'rangeTo',
-            type: 'datepicker',
-            className: 'flex-1',
-            wrappers: ['form-field'],
-            templateOptions: {
-              label: 'bis',
+              placeholder: 'Datum eingeben ...',
               appearance: 'outline'
             },
-            hideExpression: (model: any, formState: any, field: FormlyFieldConfig) => {
-              // access to the main model can be through `this.model` or `formState` or `model\n' +
-              if (model && model.rangeType) {
-                return model.rangeType !== 'range';
-              }
-              return true;
-            }
+            hideExpression: (model: any) => model && model.rangeType === 'range'
+          }, {
+            key: 'timeSpanRange',
+            type: 'date-range',
+            className: 'date-field',
+            wrappers: ['form-field'],
+            templateOptions: {
+              placeholder: 'Zeitraum eingeben ...',
+              appearance: 'outline'
+            },
+            hideExpression: (model: any) => model && model.rangeType !== 'range'
           }]
         }
       ]
