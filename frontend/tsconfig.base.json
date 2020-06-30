@@ -18,21 +18,7 @@
     "lib": [
       "es2017",
       "dom"
-    ],
-    "paths": {
-      "uvp-profile": [
-        "dist/uvp-profile"
-      ],
-      "uvp-profile/*": [
-        "dist/uvp-profile/*"
-      ],
-      "api": [
-        "dist/api"
-      ],
-      "api/*": [
-        "dist/api/*"
-      ]
-    }
+    ]
   },
   "exclude": [
     "server/*",
