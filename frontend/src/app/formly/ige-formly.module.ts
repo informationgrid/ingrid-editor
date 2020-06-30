@@ -46,6 +46,8 @@ import {FormLabelComponent} from './wrapper/form-label/form-label.component';
 import {RepeatChipComponent} from './types/repeat-chip/repeat-chip.component';
 import {MatChipsModule} from '@angular/material/chips';
 import {ChipDialogComponent} from './types/repeat-chip/chip-dialog/chip-dialog.component';
+import {DateRangeTypeComponent} from './types/date-range-type/date-range-type.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -86,6 +88,9 @@ export function IpValidator(control: FormControl): ValidationErrors {
       }, {
         name: 'repeatChip',
         component: RepeatChipComponent
+      }, {
+        name: 'date-range',
+        component: DateRangeTypeComponent
       }],
       validators: [
         {name: 'ip', validation: IpValidator}
@@ -97,7 +102,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
         { name: 'panel', component: OneColumnWrapperComponent },
       ]*/
     }), FormFieldsModule,
-    SharedModule, MatMenuModule, MatCheckboxModule, MatChipsModule
+    SharedModule, MatMenuModule, MatCheckboxModule, MatChipsModule, MatDatepickerModule
   ],
   providers: [
     {
@@ -115,7 +120,8 @@ export function IpValidator(control: FormControl): ValidationErrors {
     FormDialogComponent,
     FormLabelComponent,
     RepeatChipComponent,
-    ChipDialogComponent
+    ChipDialogComponent,
+    DateRangeTypeComponent
   ],
   entryComponents: [ContextHelpComponent, TreeSelectDialog],
   exports: [
