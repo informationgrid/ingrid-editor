@@ -8,7 +8,7 @@ describe('General create addresses/folders', () => {
   const dialog = AddressPage.CreateDialog;
 
   beforeEach(() => {
-    // cy.kcLogin('user');
+    cy.kcLogin('user');
     AddressPage.visit();
   });
 
