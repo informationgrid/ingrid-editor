@@ -387,8 +387,16 @@ svg {
   }
 }
 
-.gray .coloring {
-  fill: $ige-comment-color;
+.gray {
+
+  &:hover .coloring {
+    fill: darken($ige-comment-color, 5%);
+  }
+
+  .coloring {
+    fill: $ige-comment-color;
+  }
+
 }
 
 ige-side-menu {
@@ -432,23 +440,13 @@ ige-side-menu {
 // Context Buttons
 .mat-icon-button {
 
-  /*&.big {
-    width: 56px;
-    height: 56px;
-
-    .mat-icon {
-      width: 36px;
-      height: 36px;
-    }
-  }*/
-
-  &.close, &.menu-button {
+  &.menu-button {
     width: 26px;
     height: 26px;
     line-height: 24px;
   }
 
-  &.menu-button {
+  &.menu-button:enabled {
     &:hover {
       background-color: $ige-background-bar;
     }
@@ -474,7 +472,7 @@ ige-side-menu {
   margin-right: 4px;
   margin-top: 0;
 
-  ::ng-deep .mat-icon svg rect {
+  .mat-icon svg rect {
     fill: $ige-secondary;
   }
 }
@@ -507,4 +505,8 @@ ige-side-menu {
     color: initial;
     opacity: 0;
   }
+}
+
+.date-field {
+  width: 160px;
 }
