@@ -35,7 +35,7 @@ interface DatasetsApi {
     @Throws(ApiException::class)
     fun createDataset(
             principal: Principal?,
-            @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid String,
+            @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
             @Parameter(description = "Is this an address document") @RequestParam(required = false) address: @Valid Boolean,
             @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean): ResponseEntity<JsonNode>
 

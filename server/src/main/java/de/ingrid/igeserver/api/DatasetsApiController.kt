@@ -38,7 +38,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     @Throws(ApiException::class)
     override fun createDataset(
             principal: Principal?,
-            data: String,
+            data: JsonNode,
             address: Boolean,
             publish: Boolean): ResponseEntity<JsonNode> {
 
@@ -46,21 +46,10 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         try {
             dbService.acquire(dbId).use {
-                val dataJson = data.toJsonNode() as ObjectNode
+                val dataJson = data
 
-                addCreationInfo(dataJson)
+                val resultDoc = documentService.createDocument(dataJson, address)
 
-                // save document
-                val result = dbService.save(DocumentType.TYPE, null, dataJson.toString())
-
-                // create DocumentWrapper
-                val recordId = dbService.getRecordId(result)
-                val category = if (address) "address" else "data"
-                val documentWrapper = createWrapper(dataJson, recordId, category)
-
-                // save wrapper
-                val resultWrapper = dbService.save(DocumentWrapperType.TYPE, null, documentWrapper.toString())
-                val resultDoc = documentService.getLatestDocument(resultWrapper)
                 return ResponseEntity.ok(resultDoc)
             }
         } catch (e: Exception) {
@@ -315,37 +304,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         return ResponseEntity.ok(path.reversed())
 
     }
-
-
-    private fun createWrapper(node: ObjectNode, recordId: String, category: String): ObjectNode {
-
-        val nodeParentId = node[PARENT_ID]
-        val parentId = nodeParentId?.textValue()
-        val documentType = node[FIELD_DOCUMENT_TYPE].asText()
-
-        return documentService.documentWrapper
-                .put(FIELD_ID, node[FIELD_ID].asText())
-                .put(FIELD_DRAFT, recordId)
-                .put(FIELD_PARENT, parentId)
-                .put(FIELD_DOCUMENT_TYPE, documentType)
-                .put(FIELD_CATEGORY, category)
-
-    }
-
-    private fun addCreationInfo(dataJson: ObjectNode) {
-
-        val uuid = UUID.randomUUID()
-        val now = OffsetDateTime.now().toString()
-
-        with(dataJson) {
-            put(FIELD_ID, uuid.toString())
-            put(FIELD_HAS_CHILDREN, false)
-            put(FIELD_CREATED, now)
-            put(FIELD_MODIFIED, now)
-        }
-
-    }
-
 
     private fun saveDocumentWrapper(publish: Boolean, docWrapper: ObjectNode, dbID: String): JsonNode {
         if (publish) {

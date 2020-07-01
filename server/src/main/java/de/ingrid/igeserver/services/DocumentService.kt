@@ -7,13 +7,19 @@ import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.db.FindOptions
 import de.ingrid.igeserver.db.QueryType
 import de.ingrid.igeserver.documenttypes.AbstractDocumentType
-import org.apache.logging.log4j.LogManager
+import de.ingrid.igeserver.documenttypes.DocumentType
+import de.ingrid.igeserver.documenttypes.DocumentWrapperType
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.OffsetDateTime
 import java.util.*
 
 @Service
 class DocumentService : MapperService() {
+
+    private val log = logger()
+
     @Autowired
     private lateinit var documentTypes: List<AbstractDocumentType>
 
@@ -117,7 +123,54 @@ class DocumentService : MapperService() {
         return refType
     }
 
-    companion object {
-        private val log = LogManager.getLogger(DocumentService::class.java)
+    fun createDocument(data: JsonNode, address: Boolean = false): JsonNode {
+
+        val dataJson = data as ObjectNode
+
+        addCreationInfo(dataJson)
+
+        // save document
+        val result = dbService.save(DocumentType.TYPE, null, dataJson.toString())
+
+        // create DocumentWrapper
+        val recordId = dbService.getRecordId(result)
+        val category = if (address) "address" else "data"
+        val documentWrapper = createWrapper(dataJson, recordId, category)
+
+        // save wrapper
+        val resultWrapper = dbService.save(DocumentWrapperType.TYPE, null, documentWrapper.toString())
+        return getLatestDocument(resultWrapper)
+
     }
+
+
+    private fun addCreationInfo(dataJson: ObjectNode) {
+
+        val uuid = UUID.randomUUID()
+        val now = OffsetDateTime.now().toString()
+
+        with(dataJson) {
+            put(FIELD_ID, uuid.toString())
+            put(FIELD_HAS_CHILDREN, false)
+            put(FIELD_CREATED, now)
+            put(FIELD_MODIFIED, now)
+        }
+
+    }
+
+    private fun createWrapper(node: ObjectNode, recordId: String, category: String): ObjectNode {
+
+        val nodeParentId = node[PARENT_ID]
+        val parentId = nodeParentId?.textValue()
+        val documentType = node[FIELD_DOCUMENT_TYPE].asText()
+
+        return documentWrapper
+                .put(FIELD_ID, node[FIELD_ID].asText())
+                .put(FIELD_DRAFT, recordId)
+                .put(FIELD_PARENT, parentId)
+                .put(FIELD_DOCUMENT_TYPE, documentType)
+                .put(FIELD_CATEGORY, category)
+
+    }
+
 }
