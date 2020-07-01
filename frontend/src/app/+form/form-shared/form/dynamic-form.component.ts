@@ -194,12 +194,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         setTimeout(() => this.scrollForm.nativeElement.scrollTop = this.treeQuery.getValue().scrollPosition, 1000);
       } else {
         this.fields = [];
-        // this.form = new FormGroup({});
         this.formsManager.destroy(this.formStateName);
         this.activeId.next(null);
         this.documentService.updateOpenedDocumentInTreestore(null, this.address, true);
         return;
       }
+    } else {
+      setTimeout(() => this.scrollForm.nativeElement.scrollTop = 0);
     }
 
     this.showValidationErrors = false;
