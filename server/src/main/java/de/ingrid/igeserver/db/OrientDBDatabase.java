@@ -23,6 +23,7 @@ import de.ingrid.igeserver.api.ApiException;
 import de.ingrid.igeserver.documenttypes.AbstractDocumentType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
 import de.ingrid.igeserver.model.Catalog;
+import de.ingrid.igeserver.model.QueryField;
 import de.ingrid.igeserver.services.MapperService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -154,6 +155,55 @@ public class OrientDBDatabase implements DBApi {
     }
 
     @Override
+    public DBFindAllResults findAll(String type, List<QueryField> query, FindOptions options) throws Exception {
+
+        String queryString;
+        String countQuery;
+
+        if (query == null || query.isEmpty()) {
+            queryString = "SELECT * FROM " + type;
+            countQuery = "SELECT count(*) FROM " + type;
+        } else {
+            // TODO: try to use Elasticsearch as an alternative!
+            List<String> where = createWhereClause(query, options);
+            String whereString = String.join(" " + options.queryOperator + " ", where);
+
+            String fetchPlan = options.resolveReferences ? ",fetchPlan:*:-1" : "";
+
+            if (options.sortField != null) {
+                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " LET $temp = max( draft." + options.sortField + ", published." + options.sortField + " ) WHERE (" + whereString + ")";
+            } else {
+                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " WHERE (" + whereString + ")";
+            }
+            countQuery = "SELECT count(*) FROM " + type + " WHERE (" + whereString + ")";
+            /*} else {
+                String draftWhere = attachFieldToWhereList(where, "draft.");
+                String publishedWhere = attachFieldToWhereList(where, "published.");
+                queryString = "SELECT FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
+                countQuery = "SELECT count(*) FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
+            }*/
+
+        }
+
+        if (options.sortField != null) {
+            queryString += " ORDER BY $temp " + options.sortOrder;
+        }
+        if (options.size != null) {
+            queryString += " LIMIT " + options.size;
+        }
+        log.debug("Query-String: " + queryString);
+
+        OResultSet docs = getDBFromThread().query(queryString);
+        OResultSet countDocs = getDBFromThread().query(countQuery);
+
+        docs.close();
+        countDocs.close();
+
+        return mapFindAllResults(docs, countDocs);
+
+    }
+
+    @Override
     public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) throws Exception {
 
         String queryString;
@@ -220,6 +270,36 @@ public class OrientDBDatabase implements DBApi {
                     case contains:
                         where.add(key + " contains '" + value + "'");
                         break;
+                }
+            }
+        }
+        return where;
+    }
+
+    private List<String> createWhereClause(List<QueryField> query, FindOptions options) {
+
+        List<String> where = new ArrayList<>();
+
+        for (QueryField field: query) {
+            String key = field.getField();
+            String value = field.getValue();
+            boolean invert = field.getInvert();
+
+            if (value == null) {
+                where.add(key + ".toLowerCase() IS " + (invert ? "NOT " : "") + "NULL");
+            } else {
+                switch (options.queryType) {
+                    case like:
+                        where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
+                        break;
+                    case exact:
+                        where.add(key + " == '" + value + "'");
+                        break;
+                    case contains:
+                        where.add(key + " contains '" + value + "'");
+                        break;
+                    default:
+                        where.add(key + " == '" + value + "'");
                 }
             }
         }

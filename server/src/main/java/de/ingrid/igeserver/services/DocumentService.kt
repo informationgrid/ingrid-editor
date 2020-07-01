@@ -10,6 +10,8 @@ import de.ingrid.igeserver.db.QueryType
 import de.ingrid.igeserver.documenttypes.AbstractDocumentType
 import de.ingrid.igeserver.documenttypes.DocumentType
 import de.ingrid.igeserver.documenttypes.DocumentWrapperType
+import de.ingrid.igeserver.model.QueryField
+import de.ingrid.igeserver.model.StatisticResponse
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -128,7 +130,7 @@ class DocumentService : MapperService() {
 
     fun getDocumentType(docType: String): AbstractDocumentType {
 
-        return checkNotNull(documentTypes.find {it.typeName == docType})
+        return checkNotNull(documentTypes.find { it.typeName == docType })
 
     }
 
@@ -182,4 +184,36 @@ class DocumentService : MapperService() {
 
     }
 
+    fun getDocStatistic(): StatisticResponse {
+
+        // TODO: filter by not marked deleted
+
+        val allDocumentPublishedQuery = listOf(
+                QueryField("_category", "data"),
+                QueryField("published", null, true)
+        )
+
+        val allDocumentDraftsQuery = listOf(
+                QueryField("_category", "data"),
+                QueryField("draft", null, true)
+        )
+
+        val allDocumentQuery = listOf(
+                QueryField("_category", "data")
+        )
+
+        val options = FindOptions()
+        options.queryOperator = "AND"
+        options.queryType = QueryType.exact
+
+        val allData = dbService.findAll(DocumentWrapperType.TYPE, allDocumentQuery, options)
+        val allDataDrafts = dbService.findAll(DocumentWrapperType.TYPE, allDocumentDraftsQuery, options)
+        val allDataPublished = dbService.findAll(DocumentWrapperType.TYPE, allDocumentPublishedQuery, options)
+
+        return StatisticResponse(
+                totalNum = allData.totalHits,
+                numDrafts = allDataDrafts.totalHits,
+                numPublished = allDataPublished.totalHits
+        )
+    }
 }

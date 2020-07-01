@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ConfigService, Configuration} from '../services/config/config.service';
 import {DocumentService} from '../services/document/document.service';
 import {DocumentAbstract} from '../store/document/document.model';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {SessionQuery} from '../store/session.query';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
@@ -18,6 +18,7 @@ export class DashboardComponent implements OnInit {
 
   private configuration: Configuration;
   recentDocs$: Observable<DocumentAbstract[]>;
+  chartDataPublished = new Subject<number[]>();
 
   constructor(configService: ConfigService,
               private router: Router,
@@ -36,6 +37,10 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchStatistic() {
+
+    this.docService.getStatistic().subscribe(response => {
+      this.chartDataPublished.next([response.numDrafts, response.numPublished]);
+    });
 
   }
 

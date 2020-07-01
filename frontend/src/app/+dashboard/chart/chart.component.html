@@ -1,7 +1,7 @@
 <div fxFlex fxLayout="column">
     <svg viewBox="0 0 160 160" class="circular-chart">
 
-        <circle *ngFor="let item of data; let i = index;" cx="80" cy="80"
+        <circle *ngFor="let item of data | async; let i = index;" cx="80" cy="80"
                 attr.r="{{radius}}"
                 attr.stroke="{{colors[i]}}"
                 attr.stroke-width="{{strokeWidth}}"

@@ -17,6 +17,7 @@ import {ConfigService, Configuration} from '../config/config.service';
 import {SearchResult} from '../../models/search-result.model';
 import {ServerSearchResult} from '../../models/server-search-result.model';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
+import {StatisticResponse} from '../../models/statistic.model';
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -281,5 +282,9 @@ export class DocumentService {
 
   getDocumentIcon(doc: IgeDocument): string {
     return this.profileService.getDocumentIcon(doc);
+  }
+
+  getStatistic(): Observable<StatisticResponse> {
+    return this.http.get<StatisticResponse>(`${this.configuration.backendUrl}statistic`);
   }
 }

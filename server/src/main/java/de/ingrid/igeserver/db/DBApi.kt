@@ -3,6 +3,8 @@ package de.ingrid.igeserver.db
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.model.Catalog
+import de.ingrid.igeserver.model.QueryField
+import de.ingrid.igeserver.model.StatisticResponse
 import java.io.Closeable
 
 interface DBApi {
@@ -45,6 +47,9 @@ interface DBApi {
      */
     @Throws(Exception::class)
     fun findAll(type: String, query: Map<String, String?>?, options: FindOptions?): DBFindAllResults
+
+    @Throws(Exception::class)
+    fun findAll(type: String, query: List<QueryField>?, options: FindOptions?): DBFindAllResults
 
     /**
      * Save a raw object with a given ID (like file uploads).

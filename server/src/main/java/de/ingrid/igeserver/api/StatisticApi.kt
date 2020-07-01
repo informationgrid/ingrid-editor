@@ -3,25 +3,26 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.model.StatisticResponse
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
+import java.security.Principal
 
 @Tag(name = "Statistic", description = "the statistic API")
-public interface StatisticApi {
+interface StatisticApi {
 
-    @Operation()
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = ""),
-            @ApiResponse(responseCode = "200", description = "Unexpected error")})
-
-    @RequestMapping(value = "/statistic", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<String> getStatistic() throws ApiException;
+    @Operation
+    @RequestMapping(value = ["/statistic"], produces = ["application/json"], method = [RequestMethod.GET])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
+    @Throws(ApiException::class)
+    fun getStatistic(principal: Principal?): ResponseEntity<StatisticResponse>
 
 }
