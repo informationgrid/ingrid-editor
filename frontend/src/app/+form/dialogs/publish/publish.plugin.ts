@@ -63,10 +63,6 @@ export class PublishPlugin extends Plugin {
       }
     });
 
-    this.formsManager.validityChanges('document').subscribe(value => {
-      this.formIsValid = value;
-    });
-
     // add behaviour to set active states for toolbar buttons
     this.addBehaviour();
 
@@ -74,8 +70,9 @@ export class PublishPlugin extends Plugin {
 
   publish() {
     this.storageService.publishState$.next(true);
+    const formIsValid = this.formsManager.isValid(this.forAddress ? 'address' : 'document');
 
-    if (this.formIsValid) {
+    if (formIsValid) {
       // show confirm dialog
       const message = 'Wollen Sie diesen Datensatz wirklich veröffentlichen?';
       this.modalService.confirm('Veröffentlichen', message).subscribe(doPublish => {
