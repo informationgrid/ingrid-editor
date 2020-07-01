@@ -5,7 +5,6 @@
  */
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.model.ImportAnalyzeInfo
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
+import java.security.Principal
 import javax.validation.Valid
 
 @Tag(name = "Import", description = "the import API")
@@ -26,5 +26,7 @@ interface ImportApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @RequestMapping(value = ["/import"], produces = ["application/json"], method = [RequestMethod.POST])
     @Throws(IOException::class, ApiException::class)
-    fun importDataset(@Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile): ResponseEntity<ImportAnalyzeInfo>
+    fun importDataset(
+            principal: Principal?,
+            @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile): ResponseEntity<ImportAnalyzeInfo>
 }

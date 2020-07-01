@@ -1,28 +1,43 @@
-package de.ingrid.igeserver.imports;
+package de.ingrid.igeserver.imports
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.services.DocumentService
+import org.apache.logging.log4j.kotlin.logger
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
+import java.nio.charset.Charset
 
 @Service
-public class ImportService {
+class ImportService {
+    private val log = logger()
 
-    private static Logger log = LogManager.getLogger(ImportService.class);
+    @Autowired
+    lateinit var factory: ImporterFactory
 
-    public String determineImportFormat(String fileType, String fileContent) {
+    @Autowired
+    lateinit var documentService: DocumentService
+
+    @Autowired
+    lateinit var dbService: DBApi
+
+    fun importFile(dbId: String?, file: MultipartFile): Pair<JsonNode, String> {
+        val type = file.contentType
+        val fileContent = String(file.bytes, Charset.defaultCharset())
+        val importer = factory.getImporter(type, fileContent)
 
 
-         /*
-            XML  => text/xml
-            TEXT => application/octet-stream
-            JSON => application/json
-            ZIP  => application/x-zip-compressed
-        */
+        val importedDoc = importer.run(fileContent)
 
+        log.debug("Transformed document: $importedDoc")
 
-        log.info("Type: " + fileType);
+        dbService.acquire(dbId).use {
+            documentService.createDocument(importedDoc)
+        }
 
-        return "???";
-
+        // TODO: return created document instead of transformed JSON
+        return Pair(importedDoc, importer.name)
     }
+
 }
