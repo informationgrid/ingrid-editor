@@ -37,10 +37,20 @@ export class ExportComponent implements OnInit {
   }
 
   runExport() {
-    let options = ImportExportService.prepareExportInfo(this.selectedIds[0], this.formatSelection);
+    const options = ImportExportService.prepareExportInfo(this.selectedIds[0], this.formatSelection);
     this.exportService.export(options).subscribe(response => {
       console.log('Export-Result:', response);
-      this.exportResult = response;
+      response.text().then(text => this.exportResult = text);
+      this.downloadFile(response);
     });
+  }
+
+  downloadFile(data: Blob) {
+    const downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+    downloadLink.setAttribute('download', 'export.json');
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
   }
 }

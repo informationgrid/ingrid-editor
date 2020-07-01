@@ -40,8 +40,8 @@ export class ImportExportService {
       );
   }
 
-  export(options: ExportOptions) {
-    return this.http.post( this.configuration.backendUrl + 'export?draft=', options, {responseType: 'text'} );
+  export(options: ExportOptions): Observable<Blob> {
+    return this.http.post( this.configuration.backendUrl + 'export?draft=', options, {responseType: 'blob'} );
   }
 
   getExportTypes(): Observable<ExportTypeInfo[]> {
