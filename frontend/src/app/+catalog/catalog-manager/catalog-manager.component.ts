@@ -1,12 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {CatalogService} from '../services/catalog.service';
-import {ConfigService} from '../../services/config/config.service';
-import {Router} from '@angular/router';
-import {MatDialog} from '@angular/material/dialog';
-import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
-import {CatalogDetailComponent, CatalogDetailResponse} from '../catalog-detail/catalog-detail.component';
-import {Catalog} from '../services/catalog.model';
-import {CatalogQuery} from '../../store/catalog/catalog.query';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {BehavioursComponent} from '../+behaviours/behaviours.component';
 
 @Component({
   selector: 'ige-catalog-manager',
@@ -14,6 +7,8 @@ import {CatalogQuery} from '../../store/catalog/catalog.query';
   styleUrls: ['./catalog-manager.component.scss']
 })
 export class CatalogManagerComponent implements OnInit {
+
+  @ViewChild('behaviours') behaviourComponent: BehavioursComponent;
 
   ngOnInit(): void {
   }

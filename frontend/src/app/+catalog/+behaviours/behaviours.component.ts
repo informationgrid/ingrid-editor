@@ -103,6 +103,11 @@ export class BehavioursComponent implements OnInit {
       .some(key => this.behaviourFields[key].form.invalid);
   }
 
+  hasDirtyForm() {
+    return Object.keys(this.behaviourFields)
+      .some(key => this.behaviourFields[key].active.dirty || this.behaviourFields[key].form.dirty);
+  }
+
   updateFieldState(plugin: Plugin, checked: boolean) {
     const form = this.behaviourFields[plugin.id].form;
     checked ? form.enable() : form.disable();
