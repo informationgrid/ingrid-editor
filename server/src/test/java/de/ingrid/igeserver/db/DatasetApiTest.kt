@@ -1,45 +1,86 @@
-package de.ingrid.igeserver.db;
+package de.ingrid.igeserver.db
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.orientechnologies.orient.core.db.OrientDB;
-import de.ingrid.igeserver.api.ApiException;
-import de.ingrid.igeserver.api.DatasetsApiController;
-import de.ingrid.igeserver.services.DocumentService;
-import de.ingrid.igeserver.utils.AuthUtils;
-import de.ingrid.igeserver.utils.DBUtils;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.*;
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.orientechnologies.orient.core.db.OrientDB
+import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.api.DatasetsApiController
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.DBUtils
+import org.junit.Assert
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Test
+import org.mockito.*
+import java.io.IOException
+import java.util.*
 
-import java.io.IOException;
-import java.util.HashSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.any;
-
-public class DatasetApiTest {
-
-    private static OrientDB db;
+class DatasetApiTest {
     @Mock
-    private AuthUtils authUtils;
+    private val authUtils: AuthUtils? = null
 
     @Mock
-    private DBUtils dbUtils;
+    private val dbUtils: DBUtils? = null
 
     @Spy
-    private DBApi dbService;
+    private val dbService: DBApi? = null
 
     @Mock
-    private DocumentService documentService;
+    private val documentService: DocumentService? = null
 
-    @BeforeClass
-    public static void before() {
+    @Before
+    @Throws(ApiException::class)
+    fun prepare() {
+        MockitoAnnotations.initMocks(this)
+        Mockito.`when`(authUtils!!.getUsernameFromPrincipal(ArgumentMatchers.any())).thenReturn("user1")
+        val dbIds = HashSet<String>()
+        dbIds.add("test")
 
-        /*db = new OrientDB("memory:test", OrientDBConfig.defaultConfig());
+        //dbUtils = new DBUtils(dbService);
+        Mockito.`when`(dbUtils!!.getCatalogsForUser("user1")).thenReturn(dbIds)
+    }
+
+    @Test
+    @Throws(ApiException::class, IOException::class)
+    fun createDataset() {
+        val controller = DatasetsApiController(authUtils!!, dbUtils!!, dbService!!, documentService!!)
+        val node = ObjectMapper().createObjectNode()
+        node.put("title", "Document 1")
+        controller.createDataset(null, node, false, false)
+
+        // ASSERTIONS
+        val arg = ArgumentCaptor.forClass(String::class.java)
+        val arg2 = ArgumentCaptor.forClass(String::class.java)
+        Mockito.verify(dbService).save(ArgumentMatchers.eq("Documents"), ArgumentMatchers.any(), arg.capture())
+        val jsonNode = ObjectMapper().readTree(arg.value) as ObjectNode
+        Assert.assertTrue(jsonNode["_id"].asText().length > 0)
+        jsonNode.remove("_id")
+        Assert.assertEquals("""{
+  "uuid": "123",
+  "title": "Document 1"
+}""", jsonNode.toString())
+        Mockito.verify(dbService).save(ArgumentMatchers.eq("DocumentWrapper"), ArgumentMatchers.any(), arg2.capture())
+        val jsonNode2 = ObjectMapper().readTree(arg.value) as ObjectNode
+        Assert.assertTrue(jsonNode2["_id"].asText().length > 0)
+        jsonNode2.remove("_id")
+        Assert.assertEquals("""{
+  "_id": "2",
+  "_parent": null,
+  "_hasChildren":false,
+  "draft": "123",
+  "published": null,
+  "archive": []
+}""", jsonNode2.toString())
+    }
+
+    companion object {
+        private val db: OrientDB? = null
+
+        @BeforeClass
+        fun before() {
+
+            /*db = new OrientDB("memory:test", OrientDBConfig.defaultConfig());
 
         db.create("test", ODatabaseType.MEMORY);
 
@@ -50,55 +91,6 @@ public class DatasetApiTest {
 
         OrientDBDatabase orientDBDatabase = new OrientDBDatabase();
         orientDBDatabase.*/
-    }
-
-    @Before
-    public void prepare() throws ApiException {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(authUtils.getUsernameFromPrincipal(any())).thenReturn("user1");
-        HashSet<String> dbIds = new HashSet<>();
-        dbIds.add("test");
-
-        //dbUtils = new DBUtils(dbService);
-        Mockito.when(dbUtils.getCatalogsForUser("user1")).thenReturn(dbIds);
-
-    }
-
-    @Test
-    public void createDataset() throws ApiException, IOException {
-
-        DatasetsApiController controller = new DatasetsApiController(authUtils, dbUtils, dbService, documentService);
-
-        //language=JSON
-        String data = "{\"title\": \"Document 1\"}";
-        controller.createDataset(null, data, false, false);
-
-        // ASSERTIONS
-        ArgumentCaptor<String> arg = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> arg2 = ArgumentCaptor.forClass(String.class);
-
-        Mockito.verify(dbService).save(eq("Documents"), any(), arg.capture());
-        ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree(arg.getValue());
-        assertTrue(jsonNode.get("_id").asText().length() > 0);
-        jsonNode.remove("_id");
-        assertEquals("{\n" +
-                "  \"uuid\": \"123\",\n" +
-                "  \"title\": \"Document 1\"\n" +
-                "}", jsonNode.toString());
-
-        Mockito.verify(dbService).save(eq("DocumentWrapper"), any(), arg2.capture());
-        ObjectNode jsonNode2 = (ObjectNode) new ObjectMapper().readTree(arg.getValue());
-        assertTrue(jsonNode2.get("_id").asText().length() > 0);
-        jsonNode2.remove("_id");
-        assertEquals("{\n" +
-                "  \"_id\": \"2\",\n" +
-                "  \"_parent\": null,\n" +
-                "  \"_hasChildren\":false,\n" +
-                "  \"draft\": \"123\",\n" +
-                "  \"published\": null,\n" +
-                "  \"archive\": []\n" +
-                "}", jsonNode2.toString());
-
-
+        }
     }
 }
