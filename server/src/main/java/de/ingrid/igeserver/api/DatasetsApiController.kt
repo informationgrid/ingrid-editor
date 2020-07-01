@@ -6,6 +6,7 @@ import de.ingrid.igeserver.db.*
 import de.ingrid.igeserver.documenttypes.DocumentType
 import de.ingrid.igeserver.documenttypes.DocumentWrapperType
 import de.ingrid.igeserver.model.Data1
+import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
@@ -196,9 +197,10 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         try {
             dbService.acquire(dbId).use {
-                val queryMap: MutableMap<String, String?> = HashMap()
-                queryMap[FIELD_PARENT] = parentId
-                queryMap[FIELD_CATEGORY] = if (isAddress) "address" else "data"
+                val queryMap = listOf(
+                        QueryField(FIELD_PARENT, parentId),
+                        QueryField(FIELD_CATEGORY, if (isAddress) "address" else "data")
+                )
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = true
@@ -227,10 +229,11 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            val queryMap: MutableMap<String, String> = HashMap()
             val cat = FIELD_CATEGORY + " == " + if (forAddress) "\"address\"" else "\"data\""
-            queryMap["$cat AND draft.title"] = query
-            queryMap["$cat AND draft IS NULL AND published.title"] = query
+            val queryMap = listOf(
+                    QueryField("$cat AND draft.title", query),
+                    QueryField("$cat AND draft IS NULL AND published.title", query)
+            )
             val findOptions = FindOptions()
             findOptions.size = size
             findOptions.queryType = QueryType.like
@@ -256,8 +259,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            val query: MutableMap<String, String> = HashMap()
-            query["_id"] = id
+            val query = listOf(QueryField(FIELD_ID, id))
             val findOptions = FindOptions()
             findOptions.queryType = QueryType.exact
             findOptions.resolveReferences = true

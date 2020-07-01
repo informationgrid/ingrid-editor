@@ -11,6 +11,7 @@ import de.ingrid.igeserver.db.FindOptions
 import de.ingrid.igeserver.db.QueryType
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException
 import de.ingrid.igeserver.model.Catalog
+import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.services.MapperService.Companion.removeDBManagementFields
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,8 +30,7 @@ class DBUtils @Autowired constructor(private val dbService: DBApi, private val a
     }
 
     fun getCurrentCatalogForUser(userId: String): String? {
-        val query: MutableMap<String, String> = HashMap()
-        query["userId"] = userId
+        val query = listOf(QueryField("userId", userId))
 
         // TODO: use cache!
         try {
@@ -64,8 +64,7 @@ class DBUtils @Autowired constructor(private val dbService: DBApi, private val a
     }
 
     fun getCatalogsForUser(userId: String): Set<String> {
-        val query: MutableMap<String, String> = HashMap()
-        query["userId"] = userId
+        val query = listOf(QueryField("userId", userId))
 
         // TODO: use cache!
         try {
@@ -124,8 +123,8 @@ class DBUtils @Autowired constructor(private val dbService: DBApi, private val a
     }
 
     fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String?>?) {
-        val query: MutableMap<String, String> = HashMap()
-        query["userId"] = userId
+        val query = listOf(QueryField("userId", userId))
+
         try {
             dbService.acquire("IgeUsers").use {
                 val findOptions = FindOptions()

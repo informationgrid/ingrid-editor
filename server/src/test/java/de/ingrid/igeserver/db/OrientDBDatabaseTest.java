@@ -9,6 +9,7 @@ import com.orientechnologies.orient.core.record.OElement;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.server.OServerMain;
 import de.ingrid.igeserver.api.ApiException;
+import de.ingrid.igeserver.model.QueryField;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -106,8 +107,8 @@ public class OrientDBDatabaseTest {
 
         try (ODatabaseSession session = acquire("test")) {
 
-            Map<String, String> query = new HashMap<>();
-            query.put("age", "48");
+            List<QueryField> query = new ArrayList<>();
+            query.add(new QueryField("age", "48", false));
             FindOptions options = new FindOptions();
             options.queryType = QueryType.like;
             options.resolveReferences = false;
@@ -127,8 +128,8 @@ public class OrientDBDatabaseTest {
         addTestData();
 
         String id;
-        Map<String, String> query = new HashMap<>();
-        query.put("age", "48");
+        List<QueryField> query = new ArrayList<>();
+        query.add(new QueryField("age", "48", false));
 
         try (ODatabaseSession session = acquire("test")) {
             FindOptions options = new FindOptions();

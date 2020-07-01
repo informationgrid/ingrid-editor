@@ -51,8 +51,7 @@ class DocumentService : MapperService() {
     @Throws(Exception::class)
     fun getByDocId(id: String, type: String, withReferences: Boolean): JsonNode? {
 
-        val query: MutableMap<String, String> = HashMap()
-        query[FIELD_ID] = id
+        val query = listOf(QueryField(FIELD_ID, id))
         val findOptions = FindOptions()
         findOptions.queryType = QueryType.exact
         findOptions.resolveReferences = withReferences

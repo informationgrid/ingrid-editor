@@ -203,84 +203,11 @@ public class OrientDBDatabase implements DBApi {
 
     }
 
-    @Override
-    public DBFindAllResults findAll(String type, Map<String, String> query, FindOptions options) throws Exception {
-
-        String queryString;
-        String countQuery;
-
-        if (query == null || query.isEmpty()) {
-            queryString = "SELECT * FROM " + type;
-            countQuery = "SELECT count(*) FROM " + type;
-        } else {
-            // TODO: try to use Elasticsearch as an alternative!
-            List<String> where = createWhereClause(query, options);
-            String whereString = String.join(" " + options.queryOperator + " ", where);
-
-            String fetchPlan = options.resolveReferences ? ",fetchPlan:*:-1" : "";
-
-            if (options.sortField != null) {
-                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " LET $temp = max( draft." + options.sortField + ", published." + options.sortField + " ) WHERE (" + whereString + ")";
-            } else {
-                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " WHERE (" + whereString + ")";
-            }
-            countQuery = "SELECT count(*) FROM " + type + " WHERE (" + whereString + ")";
-            /*} else {
-                String draftWhere = attachFieldToWhereList(where, "draft.");
-                String publishedWhere = attachFieldToWhereList(where, "published.");
-                queryString = "SELECT FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
-                countQuery = "SELECT count(*) FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
-            }*/
-
-        }
-
-        if (options.sortField != null) {
-            queryString += " ORDER BY $temp " + options.sortOrder;
-        }
-        if (options.size != null) {
-            queryString += " LIMIT " + options.size;
-        }
-        log.debug("Query-String: " + queryString);
-
-        OResultSet docs = getDBFromThread().query(queryString);
-        OResultSet countDocs = getDBFromThread().query(countQuery);
-
-        docs.close();
-        countDocs.close();
-
-        return mapFindAllResults(docs, countDocs);
-
-    }
-
-    private List<String> createWhereClause(Map<String, String> query, FindOptions options) {
-
-        List<String> where = new ArrayList<>();
-        for (String key : query.keySet()) {
-            String value = query.get(key);
-            if (value == null) {
-                where.add(key + ".toLowerCase() IS NULL");
-            } else {
-                switch (options.queryType) {
-                    case like:
-                        where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
-                        break;
-                    case exact:
-                        where.add(key + " == '" + value + "'");
-                        break;
-                    case contains:
-                        where.add(key + " contains '" + value + "'");
-                        break;
-                }
-            }
-        }
-        return where;
-    }
-
     private List<String> createWhereClause(List<QueryField> query, FindOptions options) {
 
         List<String> where = new ArrayList<>();
 
-        for (QueryField field: query) {
+        for (QueryField field : query) {
             String key = field.getField();
             String value = field.getValue();
             boolean invert = field.getInvert();
@@ -341,6 +268,7 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public String getRecordId(JsonNode doc) {
+
         return doc.get(DB_ID).asText();
     }
 
@@ -531,6 +459,7 @@ public class OrientDBDatabase implements DBApi {
 
     @Override
     public Closeable acquire(String dbName) {
+
         return acquireImpl(dbName);
     }
 
@@ -543,6 +472,7 @@ public class OrientDBDatabase implements DBApi {
     }
 
     private ODatabaseSession acquireImpl(String dbName) {
+
         if (!server.existsDatabase(dbName)) {
             throw new DatabaseDoesNotExistException("Database does not exist: " + dbName);
         }

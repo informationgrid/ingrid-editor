@@ -46,9 +46,6 @@ interface DBApi {
      * @return
      */
     @Throws(Exception::class)
-    fun findAll(type: String, query: Map<String, String?>?, options: FindOptions?): DBFindAllResults
-
-    @Throws(Exception::class)
     fun findAll(type: String, query: List<QueryField>?, options: FindOptions?): DBFindAllResults
 
     /**

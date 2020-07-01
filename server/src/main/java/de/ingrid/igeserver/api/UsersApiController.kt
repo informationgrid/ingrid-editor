@@ -161,7 +161,7 @@ class UsersApiController : UsersApi {
     @Throws(Exception::class)
     private fun addOrUpdateCatalogAdmin(catalogName: String, userId: String) {
 
-        val query = mapOf("userId" to userId);
+        val query = listOf(QueryField("userId", userId));
         val findOptions = FindOptions()
         findOptions.queryType = QueryType.exact
         findOptions.resolveReferences = false
@@ -206,7 +206,7 @@ class UsersApiController : UsersApi {
         val result: MutableList<String> = ArrayList()
         try {
             dbService.acquire("IgeUsers").use { _ ->
-                val query = mapOf("catalogIds" to id)
+                val query = listOf(QueryField("catalogIds", id))
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.contains
                 findOptions.resolveReferences = false
@@ -226,7 +226,7 @@ class UsersApiController : UsersApi {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         try {
             dbService.acquire("IgeUsers").use { _ ->
-                val query = mapOf("userId" to userId)
+                val query = listOf(QueryField("userId", userId))
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = false
