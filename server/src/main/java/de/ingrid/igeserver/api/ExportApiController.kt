@@ -1,13 +1,11 @@
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.documenttypes.DocumentWrapperType
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.model.ExportRequestParameter
-import de.ingrid.igeserver.services.*
-import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ExportService
 import de.ingrid.igeserver.utils.DBUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -30,9 +28,6 @@ class ExportApiController : ExportApi {
     @Autowired
     private lateinit var dbUtils: DBUtils
 
-    @Autowired
-    private lateinit var authUtils: AuthUtils
-
     @Throws(Exception::class)
     override fun export(principal: Principal?, data: ExportRequestParameter): ResponseEntity<String> {
 
@@ -43,26 +38,12 @@ class ExportApiController : ExportApi {
         dbService.acquire(dbId).use {
             val doc = documentService.getByDocId(data.id, DocumentWrapperType.TYPE, true)
             if (doc != null) {
-                var docVersion: JsonNode? = getDocumentVersion(doc, data.isUseDraft)
+                val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
 
                 result = exportService.doExport(docVersion, data.exportFormat)
             }
         }
         return ResponseEntity.ok(result)
-    }
-
-    private fun getDocumentVersion(doc: JsonNode, useDraft: Boolean): JsonNode? {
-        var docVersion: JsonNode? = null
-        if (useDraft) {
-            docVersion = doc.get(FIELD_DRAFT)
-        }
-        if (docVersion == null || docVersion.isNull) {
-            docVersion = doc.get(FIELD_PUBLISHED)
-        }
-        MapperService.removeDBManagementFields(docVersion as ObjectNode)
-        val state = documentService.determineState(doc)
-        docVersion.put(FIELD_STATE, state)
-        return docVersion
     }
 
     @Throws(Exception::class)

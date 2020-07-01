@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.db.FindOptions
 import de.ingrid.igeserver.db.QueryType
@@ -84,43 +85,51 @@ class DocumentService : MapperService() {
         } else false
     }
 
-    fun getLatestDocument(doc: JsonNode): ObjectNode {
-        val state = determineState(doc)
-        val jsonNode = doc[FIELD_DRAFT]
-        val docData: ObjectNode
-        docData = if (jsonNode.isNull) {
-            doc[FIELD_PUBLISHED] as ObjectNode
-        } else {
-            jsonNode as ObjectNode
-        }
-        docData.put(FIELD_STATE, state)
+    fun getLatestDocument(doc: JsonNode, onlyPublished: Boolean = false): ObjectNode {
+
+        val docData: ObjectNode = getDocumentVersion(doc, onlyPublished)
+
+        // set empty parent fields explicitly to null
         if (!docData.has(FIELD_PARENT)) {
             docData.put(FIELD_PARENT, null as String?)
         }
         removeDBManagementFields(docData)
 
         // get latest references from links
-        handleLatestLinkedDocs(docData)
+        handleLatestLinkedDocs(docData, onlyPublished)
         return docData
     }
 
-    private fun handleLatestLinkedDocs(doc: ObjectNode) {
-        val docType = doc[FIELD_DOCUMENT_TYPE].asText()
-        val refType = getDocumentType(docType)
-        refType!!.mapLatestDocReference(doc, this)
+    private fun getDocumentVersion(doc: JsonNode, onlyPublished: Boolean): ObjectNode {
+        val draft = doc[FIELD_DRAFT]
+        val published = doc[FIELD_PUBLISHED]
+
+        if (onlyPublished && published.isNull) {
+            throw ApiException("No published version available of ${doc.get(FIELD_ID)}")
+        }
+
+        val objectNode = if (draft.isNull || onlyPublished) {
+            published as ObjectNode
+        } else {
+            draft as ObjectNode
+        }
+
+        objectNode.put(FIELD_STATE, if (onlyPublished) "P" else determineState(doc))
+
+        return objectNode
     }
 
-    fun getDocumentType(docType: String): AbstractDocumentType? {
-        var refType: AbstractDocumentType? = null
+    private fun handleLatestLinkedDocs(doc: ObjectNode, onlyPublished: Boolean) {
+        val docType = doc[FIELD_DOCUMENT_TYPE].asText()
+        val refType = getDocumentType(docType)
 
-        // get linked fields
-        for (type in documentTypes) {
-            if (type.typeName == docType) {
-                refType = type
-                break
-            }
-        }
-        return refType
+        refType.mapLatestDocReference(doc, onlyPublished, this)
+    }
+
+    fun getDocumentType(docType: String): AbstractDocumentType {
+
+        return checkNotNull(documentTypes.find {it.typeName == docType})
+
     }
 
     fun createDocument(data: JsonNode, address: Boolean = false): JsonNode {

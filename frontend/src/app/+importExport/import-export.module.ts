@@ -14,16 +14,18 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatInputModule} from '@angular/material/input';
 import {SharedModule} from '../shared/shared.module';
-import {MatSelectModule} from "@angular/material/select";
-import {OverviewComponent} from "./overview.component";
-import {UploadComponent} from "./upload/upload.component";
-import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {MatSelectModule} from '@angular/material/select';
+import {OverviewComponent} from './overview.component';
+import {UploadComponent} from './upload/upload.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   imports: [CommonModule, routing, FormsModule,
     MatExpansionModule, MatTabsModule, MatRadioModule, MatButtonModule,
     MatStepperModule,
-    FlexLayoutModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, SharedModule, MatSelectModule, MatProgressBarModule
+    FlexLayoutModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, SharedModule,
+    MatSelectModule, MatProgressBarModule, MatCheckboxModule
   ],
   declarations: [OverviewComponent, ImportComponent, ExportComponent, UploadComponent],
   providers: [ImportExportService]

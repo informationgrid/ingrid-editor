@@ -24,10 +24,11 @@ abstract class AbstractDocumentType(val typeName: String, private val forProfile
     abstract fun initialize(session: ODatabaseSession)
 
     @Throws(ApiException::class)
-    open fun handleLinkedFields(doc: JsonNode?, dbService: DBApi?) {
+    open fun handleLinkedFields(doc: JsonNode, dbService: DBApi) {
     }
 
-    open fun mapLatestDocReference(doc: JsonNode, docService: DocumentService) {}
+    open fun mapLatestDocReference(doc: JsonNode, onlyPublished: Boolean, docService: DocumentService) {}
+
     fun usedInProfile(profileId: String): Boolean {
         return forProfiles.isEmpty() || Arrays.asList(*forProfiles).contains(profileId)
     }

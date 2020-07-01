@@ -317,7 +317,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     private fun handleLinkedDocs(doc: ObjectNode) {
         val docType = doc[FIELD_DOCUMENT_TYPE].asText()
         val refType = documentService.getDocumentType(docType)
-        refType?.handleLinkedFields(doc, dbService)
+        refType.handleLinkedFields(doc, dbService)
     }
 
     @Throws(ApiException::class)

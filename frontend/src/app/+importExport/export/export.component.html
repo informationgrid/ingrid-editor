@@ -9,11 +9,15 @@
     <mat-step [stepControl]="secondFormGroup">
         <form [formGroup]="secondFormGroup">
             <ng-template matStepLabel>Optionen</ng-template>
-            <mat-radio-group formControlName="option" fxLayout="column" fxLayoutGap="10px">
+            <mat-radio-group formControlName="tree" fxLayout="column" fxLayoutGap="10px">
                 <mat-radio-button name="exportOption" value="dataset">nur diesen Datensatz</mat-radio-button>
                 <mat-radio-button name="exportOption" value="sub">alle untergeordneten</mat-radio-button>
                 <mat-radio-button name="exportOption" value="thisAndSub">dieser und alle untergeordneten</mat-radio-button>
             </mat-radio-group>
+
+            <mat-checkbox formControlName="drafts">
+                Auch Entwürfe exportieren
+            </mat-checkbox>
             <div class="wizard-footer">
                 <button mat-button matStepperPrevious>Zurück</button>
                 <button mat-button matStepperNext>Weiter</button>

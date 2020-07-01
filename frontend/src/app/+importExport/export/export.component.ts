@@ -22,7 +22,8 @@ export class ExportComponent implements OnInit {
 
   ngOnInit() {
     this.secondFormGroup = this._formBuilder.group({
-      option: ['dataset', Validators.required]
+      tree: ['dataset', Validators.required],
+      drafts: [false]
     });
 
   }
@@ -37,7 +38,7 @@ export class ExportComponent implements OnInit {
   }
 
   runExport() {
-    const options = ImportExportService.prepareExportInfo(this.selectedIds[0], this.formatSelection);
+    const options = ImportExportService.prepareExportInfo(this.selectedIds[0], this.formatSelection, this.secondFormGroup.value);
     this.exportService.export(options).subscribe(response => {
       console.log('Export-Result:', response);
       response.text().then(text => this.exportResult = text);
