@@ -12,7 +12,7 @@ import de.ingrid.igeserver.db.QueryType
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.services.MapperService.Companion.removeDBManagementFields
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.security.Principal
@@ -20,6 +20,8 @@ import java.util.*
 
 @Service
 class DBUtils @Autowired constructor(private val dbService: DBApi, private val authUtils: AuthUtils) {
+
+    private val log = logger()
 
     fun getCurrentCatalogForPrincipal(principal: Principal?): String? {
         val userId = authUtils.getUsernameFromPrincipal(principal)
@@ -142,8 +144,6 @@ class DBUtils @Autowired constructor(private val dbService: DBApi, private val a
     }
 
     companion object {
-        private val log = LogManager.getLogger(DBUtils::class.java)
-
         @Throws(Exception::class)
         fun toJsonString(map: Any?): String {
             val mapper = ObjectMapper()

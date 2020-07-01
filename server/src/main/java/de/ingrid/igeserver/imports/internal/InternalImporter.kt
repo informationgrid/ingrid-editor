@@ -1,37 +1,35 @@
-package de.ingrid.igeserver.imports.internal;
+package de.ingrid.igeserver.imports.internal
 
-import com.fasterxml.jackson.databind.JsonNode;
-import de.ingrid.ige.api.IgeImporter;
-import de.ingrid.igeserver.services.MapperService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.ige.api.IgeImporter
+import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.services.MapperService.Companion.getJsonNode
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
+import org.springframework.stereotype.Service
 
 @Service
-public class InternalImporter implements IgeImporter {
+class InternalImporter : IgeImporter {
 
-    private static Logger log = LogManager.getLogger(InternalImporter.class);
+    private val log = logger()
 
-    @Override
-    public JsonNode run(Object data) {
+    override fun run(data: Any): JsonNode {
         try {
-            return MapperService.getJsonNode((String) data);
-        } catch (Exception e) {
-            log.error("Error during conversion of document to JsonNode", e);
+            return getJsonNode((data as String))
+        } catch (e: Exception) {
+            log.error("Error during conversion of document to JsonNode", e)
+            throw ApiException("Error during conversion of document to JsonNode: " + e.message)
         }
-        return null;
     }
 
-    @Override
-    public boolean canHandleImportFile(String contentType, String fileContent) {
-        boolean isJson = "application/json".equals(contentType) || "text/plain".equals(contentType);
-        boolean hasNecessaryFields = fileContent.contains("\"_id\"") && fileContent.contains("\"_profile\"") && fileContent.contains("\"_state\"");
-
-        return isJson && hasNecessaryFields;
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
+        val isJson = "application/json" == contentType || "text/plain" == contentType
+        val hasNecessaryFields = fileContent.contains("\"_id\"") && fileContent.contains("\"_type\"") && fileContent.contains("\"_state\"")
+        return isJson && hasNecessaryFields
     }
 
-    @Override
-    public String getName() {
-        return "Internes Format";
+    override fun getName(): String {
+        return "Internes Format"
     }
+
 }

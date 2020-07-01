@@ -1,38 +1,20 @@
-package de.ingrid.igeserver.api;
+package de.ingrid.igeserver.api
 
+open class ApiException : Exception {
+    private var code: Int
+    var isHideStacktrace = false
 
-public class ApiException extends Exception {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3021618705523682976L;
-    
-    private int code;
-
-    private boolean hideStacktrace = false;
-
-    public ApiException(String msg) {
-        super(msg);
-        this.code = 500;
+    constructor(msg: String?) : super(msg) {
+        code = 500
     }
 
-    public ApiException(String msg, boolean doNotShowStacktrace) {
-        super(msg);
-        this.code = 500;
-        this.hideStacktrace = doNotShowStacktrace;
+    constructor(msg: String?, doNotShowStacktrace: Boolean) : super(msg) {
+        code = 500
+        isHideStacktrace = doNotShowStacktrace
     }
 
-
-    public ApiException(int code, String msg) {
-        super( msg );
-        this.code = code;
+    constructor(code: Int, msg: String?) : super(msg) {
+        this.code = code
     }
 
-    public boolean isHideStacktrace() {
-        return hideStacktrace;
-    }
-
-    public void setHideStacktrace(boolean hideStacktrace) {
-        this.hideStacktrace = hideStacktrace;
-    }
 }

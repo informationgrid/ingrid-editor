@@ -42,17 +42,27 @@ class ExportApiController : ExportApi {
         var result = ""
         dbService.acquire(dbId).use {
             val doc = documentService.getByDocId(data.id, DocumentWrapperType.TYPE, true)
-            var docVersion: JsonNode? = null
-            if (data.isUseDraft) {
-                docVersion = doc?.get(FIELD_DRAFT)
+            if (doc != null) {
+                var docVersion: JsonNode? = getDocumentVersion(doc, data.isUseDraft)
+
+                result = exportService.doExport(docVersion, data.exportFormat)
             }
-            if (docVersion == null) {
-                docVersion = doc?.get(FIELD_PUBLISHED)
-            }
-            MapperService.removeDBManagementFields(docVersion as ObjectNode)
-            result = exportService.doExport(docVersion, data.exportFormat)
         }
         return ResponseEntity.ok(result)
+    }
+
+    private fun getDocumentVersion(doc: JsonNode, useDraft: Boolean): JsonNode? {
+        var docVersion: JsonNode? = null
+        if (useDraft) {
+            docVersion = doc.get(FIELD_DRAFT)
+        }
+        if (docVersion == null || docVersion.isNull) {
+            docVersion = doc.get(FIELD_PUBLISHED)
+        }
+        MapperService.removeDBManagementFields(docVersion as ObjectNode)
+        val state = documentService.determineState(doc)
+        docVersion.put(FIELD_STATE, state)
+        return docVersion
     }
 
     @Throws(Exception::class)

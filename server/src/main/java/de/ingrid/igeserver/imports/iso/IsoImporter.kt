@@ -1,60 +1,48 @@
-package de.ingrid.igeserver.imports.iso;
+package de.ingrid.igeserver.imports.iso
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.ingrid.ige.api.IgeImporter;
-import de.ingrid.igeserver.exports.iso.Metadata;
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import de.ingrid.ige.api.IgeImporter
+import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.exports.iso.Metadata
+import org.apache.logging.log4j.kotlin.logger
+import java.io.StringReader
+import javax.xml.bind.JAXBContext
+import javax.xml.bind.JAXBException
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
+class IsoImporter : IgeImporter {
 
-public class IsoImporter implements IgeImporter {
+    private val log = logger()
 
-	@Override
-	public JsonNode run(Object data) {
-		
-		// input is XML
-		JAXBContext context;
-		try {
-			context = JAXBContext.newInstance(Metadata.class);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			StringReader reader = new StringReader((String) data);
-			Metadata md = (Metadata) unmarshaller.unmarshal(reader);
-			
-			JsonNode json = mapToJson(md);
-			return json;
-		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
+    override fun run(data: Any): JsonNode {
 
-	@Override
-	public boolean canHandleImportFile(String contentType, String fileContent) {
-		if ("text/xml".equals(contentType)) {
-			return true;
-		}
-		return false;
-	}
+        // input is XML
+        val context: JAXBContext
+        try {
+            context = JAXBContext.newInstance(Metadata::class.java)
+            val unmarshaller = context.createUnmarshaller()
+            val reader = StringReader(data as String)
+            val md = unmarshaller.unmarshal(reader) as Metadata
+            return mapToJson(md)
+        } catch (e: JAXBException) {
+            log.error("Error importing ISO document", e);
+            throw ApiException("Error importing ISO document: " + e.message)
+        }
+    }
 
-	@Override
-	public String getName() {
-		return "ISO";
-	}
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
+        return "text/xml" == contentType
+    }
 
-	private JsonNode mapToJson(Metadata md) {
+    override fun getName(): String {
+        return "ISO"
+    }
 
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode node = mapper.createObjectNode();
-		
-		node.put("_id", md.getFieldIdentifier());
-		node.put("metadataLanguage", md.getLanguage());
-		
-		return node;
-	}
-
+    private fun mapToJson(md: Metadata): JsonNode {
+        val mapper = ObjectMapper()
+        val node = mapper.createObjectNode()
+        node.put("_id", md.fieldIdentifier)
+        node.put("metadataLanguage", md.language)
+        return node
+    }
 }
