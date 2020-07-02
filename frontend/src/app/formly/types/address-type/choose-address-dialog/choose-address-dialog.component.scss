@@ -3,13 +3,17 @@
 :host {
 
   .mat-dialog-content {
-    padding: 24px 0;
+    padding: 24px 0 8px;
     display: flex;
     flex-direction: column;
 
     .side-padding {
       padding-left: 24px;
       padding-right: 24px;
+    }
+
+    .top-padding {
+      padding-top: 24px;
     }
   }
 
