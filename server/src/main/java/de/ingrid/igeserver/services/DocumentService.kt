@@ -188,17 +188,19 @@ class DocumentService : MapperService() {
         // TODO: filter by not marked deleted
 
         val allDocumentPublishedQuery = listOf(
-                QueryField("_category", "data"),
-                QueryField("published", null, true)
+                QueryField(FIELD_CATEGORY, "data"),
+                QueryField(FIELD_PUBLISHED, null, true)
         )
 
         val allDocumentDraftsQuery = listOf(
-                QueryField("_category", "data"),
-                QueryField("draft", null, true)
+                QueryField(FIELD_CATEGORY, "data"),
+                QueryField(FIELD_DOCUMENT_TYPE, "FOLDER", true),
+                QueryField(FIELD_DRAFT, null, true)
         )
 
         val allDocumentQuery = listOf(
-                QueryField("_category", "data")
+                QueryField(FIELD_CATEGORY, "data"),
+                QueryField(FIELD_DOCUMENT_TYPE, "FOLDER", true)
         )
 
         val options = FindOptions()

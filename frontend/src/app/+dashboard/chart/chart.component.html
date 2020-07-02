@@ -1,7 +1,7 @@
-<div fxFlex fxLayout="column">
+<div fxFlex fxLayout="column" *ngIf="data | async as chartData">
     <svg viewBox="0 0 160 160" class="circular-chart">
 
-        <circle *ngFor="let item of data | async; let i = index;" cx="80" cy="80"
+        <circle *ngFor="let item of chartData; let i = index;" cx="80" cy="80"
                 attr.r="{{radius}}"
                 attr.stroke="{{colors[i]}}"
                 attr.stroke-width="{{strokeWidth}}"
@@ -14,12 +14,12 @@
 
     <div class="wrapper" fxFlex fxLayout="row" fxLayoutAlign="space-between">
         <div class="box working">
-            <div class="count">{{data[0]}}</div>
+            <div class="count">{{chartData[0]}}</div>
             <div>In Bearbeitung</div>
         </div>
 
         <div class="box">
-            <div class="count">{{data[1]}}</div>
+            <div class="count">{{chartData[1]}}</div>
             <div>Veröffentlicht</div>
         </div>
     </div>

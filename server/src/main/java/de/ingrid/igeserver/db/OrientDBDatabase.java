@@ -215,15 +215,19 @@ public class OrientDBDatabase implements DBApi {
             if (value == null) {
                 where.add(key + ".toLowerCase() IS " + (invert ? "NOT " : "") + "NULL");
             } else {
+                String operator;
                 switch (options.queryType) {
                     case like:
-                        where.add(key + ".toLowerCase() like '%" + value.toLowerCase() + "%'");
+                        operator = invert ? "not like" : "like";
+                        where.add(key + ".toLowerCase() " + operator + " '%" + value.toLowerCase() + "%'");
                         break;
                     case exact:
-                        where.add(key + " == '" + value + "'");
+                        operator = invert ? " !=" : " ==";
+                        where.add(key + operator + " '" + value + "'");
                         break;
                     case contains:
-                        where.add(key + " contains '" + value + "'");
+                        operator = invert ? " not contains" : " contains";
+                        where.add(key + operator + " '" + value + "'");
                         break;
                     default:
                         where.add(key + " == '" + value + "'");
