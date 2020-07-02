@@ -26,22 +26,23 @@ export class ChartComponent implements OnInit {
   private angleOffset = -90;
   total: number;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
 
     this.data
       .pipe(untilDestroyed(this))
       .subscribe(values => {
-      this.total = this.calculateTotal(values);
-      values.forEach((dataVal, index) => {
-        const data = {
-          degrees: this.angleOffset
-        };
-        this.chartData.push(data);
-        this.angleOffset = this.dataPercentage(dataVal) * 360 + this.angleOffset;
+        this.total = this.calculateTotal(values);
+        this.chartData = [];
+        values.forEach((dataVal, index) => {
+          this.chartData.push({
+            degrees: this.angleOffset
+          });
+          this.angleOffset = this.dataPercentage(dataVal) * 360 + this.angleOffset;
+        });
       });
-    });
 
   }
 
