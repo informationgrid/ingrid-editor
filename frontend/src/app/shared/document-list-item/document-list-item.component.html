@@ -10,7 +10,7 @@
         <mat-icon *ngIf="showSelection && currentSelection && currentSelection.id === doc.id" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
         <h3 matLine>
             <span class="card-title">{{doc.title}}</span>
-            <span *ngIf="!hideDate" class="date" matTooltipClass="tooltip-medium" [matTooltip]='doc._modified | date:"dd.LL.yyyy HH:mm"'>{{doc._modified | dateAgo:"DE"}}</span>
+            <span *ngIf="!hideDate" class="date" [matTooltip]='doc._modified | date:"dd.LL.yyyy HH:mm"'>{{doc._modified | dateAgo:"DE"}}</span>
         </h3>
         <mat-divider></mat-divider>
     </mat-list-option>
@@ -26,6 +26,6 @@
     <span matLine>
         <!-- in case we want to style title, we need to add it as innerHTML -->
         <span [innerHTML]="doc.title"></span>
-        <span  *ngIf="!hideDate" class="date" matTooltipClass="tooltip-medium" [matTooltip]='doc._modified | date:"dd.LL.yyyy HH:mm"'>{{doc._modified | dateAgo: "DE"}}</span>
+        <span  *ngIf="!hideDate" class="date" [matTooltip]='doc._modified | date:"dd.LL.yyyy HH:mm"'>{{doc._modified | dateAgo: "DE"}}</span>
     </span>
 </div>

@@ -3,7 +3,7 @@
        [matTooltip]="item.data?.title"
        matTooltipPosition="right"
        [matTooltipDisabled]="menuIsExpanded"
-       matTooltipClass="tooltip-big"
+       [matTooltipShowDelay]="1000"
        [class.light]="!item.data?.onlyAdmin"
        [class.active]="item.path === currentRoute">
         <mat-icon mat-list-icon
@@ -17,7 +17,7 @@
     <a *ngIf="showDrawer | async" mat-list-item class="menu-toggle"
        (click)="toggleSidebar(!menuIsExpanded)"
        matTooltip="Vergrößern"
-       matTooltipClass="tooltip-big"
+       [matTooltipShowDelay]="1000"
        matTooltipPosition="right">
         <mat-icon *ngIf="!menuIsExpanded" mat-list-icon svgIcon="Nav-auf"></mat-icon>
         <mat-icon *ngIf="menuIsExpanded" mat-list-icon svgIcon="Nav-zu"></mat-icon>

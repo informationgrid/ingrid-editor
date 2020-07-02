@@ -4,6 +4,7 @@
             <button *ngIf="!button.isSeparator && !button.menu" mat-icon-button
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     [matTooltip]="button.tooltip"
+                    [matTooltipShowDelay]="1000"
                     (click)="sendEvent(button.eventId)"
                     [disabled]="!button.active">
                 <mat-icon class="material-icons-outlined" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
@@ -15,6 +16,7 @@
                         [matMenuTriggerFor]="copyMenu"
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         [matTooltip]="button.tooltip"
+                        [matTooltipShowDelay]="1000"
                         [disabled]="!button.active"
                         (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
                     <mat-icon class="material-icons-outlined" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
@@ -34,6 +36,7 @@
             <ng-container *ngFor="let button of buttons_right">
                 <button *ngIf="!button.isSeparator && !button.label" mat-icon-button
                         [matTooltip]="button.tooltip"
+                        [matTooltipShowDelay]="1000"
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         (click)="sendEvent(button.eventId)"
                         [disabled]="!button.active">
@@ -43,6 +46,7 @@
                 <button *ngIf="button.label && !button.isPrimary" mat-stroked-button
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         [matTooltip]="button.tooltip"
+                        [matTooltipShowDelay]="1000"
                         [disabled]="!button.active"
                         (click)="sendEvent(button.eventId)">
                     {{button.label}}
@@ -51,6 +55,7 @@
                     <button class="btnPublish" mat-flat-button color="primary" [matMenuTriggerFor]="publishMenu"
                             [attr.data-cy]="'toolbar_' + button.eventId"
                             [matTooltip]="button.tooltip"
+                            [matTooltipShowDelay]="1000"
                             [disabled]="!button.active"
                             (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
                         {{button.label}}
