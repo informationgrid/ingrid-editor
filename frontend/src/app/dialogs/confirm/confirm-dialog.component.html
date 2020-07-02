@@ -13,7 +13,7 @@
     </ul>
     <div *ngIf="data.confirmText">
         <mat-form-field class="width-100">
-            <input matInput
+            <input matInput igeFocus
                    [placeholder]="'Geben Sie das Wort \'' + data.confirmText + '\' ein'"
                    [(ngModel)]="textConfirmed">
         </mat-form-field>
