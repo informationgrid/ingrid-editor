@@ -6,14 +6,21 @@
         <span class="text">Raumbezug hinzufügen</span>
     </h2>
 </div>
-<mat-dialog-content class="nominatimContainer">
+<mat-dialog-content>
 
-    <div fxLayout="row" fxLayoutGap="24px" [ngSwitch]="view">
+    <div class="place-title small-bottom">Art des Raumbezugs</div>
+
+    <div fxLayout="row" fxLayoutGap="24px" class="spatial-wrapper" [ngSwitch]="view">
 
         <div fxLayout="column">
+
+            <div class="dlg-field-label">Typ</div>
             <mat-form-field appearance="outline">
-                <mat-label>Titel</mat-label>
-                <input matInput [formControl]="titleInput">
+                <mat-select (selectionChange)="updateView($event.value)" [value]="result.type">
+                    <mat-option *ngFor="let menuItem of types" [value]="menuItem.id">
+                        {{menuItem.label}}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
 
             <ige-free-spatial *ngSwitchCase="'free'"
@@ -29,19 +36,21 @@
             <ige-name-spatial *ngSwitchCase="'geo-name'"></ige-name-spatial>
         </div>
 
-        <div #leafletDlg></div>
+        <div fxLayout="column" fxFlex>
+            <div class="dlg-field-label">Titel</div>
+            <mat-form-field appearance="outline">
+                <input matInput [formControl]="titleInput">
+            </mat-form-field>
+
+            <div #leafletDlg fxFlex></div>
+        </div>
     </div>
 
 
 </mat-dialog-content>
 <mat-dialog-actions>
 
-    <button mat-button [matMenuTriggerFor]="chooseType">Typ ändern</button>
-    <mat-menu #chooseType="matMenu">
-        <button *ngFor="let menuItem of types" mat-menu-item (click)="updateView(menuItem.id)">
-            <span>{{menuItem.label}}</span>
-        </button>
-    </mat-menu>
+    <button mat-button color="primary" mat-dialog-close>Abbrechen</button>
     <div fxFlex></div>
     <button mat-stroked-button color="primary"
             [disabled]="(view !== 'geo-name' && !result.value) || (view === 'geo-name' && !titleInput.value)"

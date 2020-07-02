@@ -113,9 +113,10 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
     this.dialog.open(SpatialDialogComponent, {
       width: '90%',
       disableClose: true,
+      hasBackdrop: true,
       maxWidth: 1200,
       minWidth: 600,
-      minHeight: 'calc(100vh - 90px)',
+      minHeight: '80vh',
       height: 'auto',
       data: this.locations[locationIndex]
     }).afterClosed()
@@ -170,7 +171,7 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       this.updateBoundingBox();
     }
 
-    this.mapHasMoved = index != null;
+    this.mapHasMoved = this.locations.length === 1 ? false : index != null;
 
   }
 

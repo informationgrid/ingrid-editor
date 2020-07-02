@@ -2,6 +2,13 @@
   width: 100%;
 }
 
-.mat-dialog-content {
-  max-height: none;
+:host {
+  .mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .spatial-wrapper {
+    flex: 1;
+  }
 }

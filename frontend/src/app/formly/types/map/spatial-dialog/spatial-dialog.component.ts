@@ -46,14 +46,15 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
       this._bbox = this.data.value;
       this.titleInput = new FormControl(this.data.title);
     } else {
-      this.titleInput = new FormControl();
+      this.titleInput = new FormControl('Neuer Raumbezug');
     }
   }
 
   ngAfterViewInit() {
 
-    this.leaflet.nativeElement.style.height = 'auto';
-    this.leaflet.nativeElement.style.minHeight = 'calc(100vh - 235px)';
+    // this.leaflet.nativeElement.style.height = 'auto';
+    // this.leaflet.nativeElement.style.minHeight = 'calc(100vh - 235px)';
+    this.leaflet.nativeElement.style.minHeight = '300px';
     this.leaflet.nativeElement.style.width = '100%';
     this.leaflet.nativeElement.style.minWidth = '400px';
     // const options: MapOptions = this.to.mapOptions;

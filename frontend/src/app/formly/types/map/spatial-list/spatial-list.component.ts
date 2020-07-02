@@ -30,7 +30,7 @@ export class SpatialListComponent implements OnInit {
   @Output() remove = new EventEmitter<number>();
 
   typedLocations: { [x: string]: SpatialLocationWithColor[] };
-  types: string[];
+  types: SpatialLocationType[];
 
   constructor() {
   }
@@ -51,6 +51,7 @@ export class SpatialListComponent implements OnInit {
         return prev;
       }, {wkt: [], free: [], 'geo-name': []});
 
+    // @ts-ignore
     this.types = Object.keys(this.typedLocations)
       .filter(type => this.typedLocations[type].length > 0);
 

@@ -5,3 +5,27 @@
 h4 > span {
   line-height: 40px;
 }
+
+.list-item-wrapper, .list-item-content {
+  flex: 1;
+}
+
+.list-item-content {
+  padding-left: 24px;
+
+  > div {
+    line-height: 22px;
+  }
+}
+
+.spatial-type {
+  font-size: 14px;
+}
+
+.spatial-title, .coordinates {
+  font-size: 16px !important;
+}
+
+.spatial-title {
+  font-weight: 500;
+}

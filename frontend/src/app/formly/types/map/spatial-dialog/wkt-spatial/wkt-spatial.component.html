@@ -1,8 +1,19 @@
-<p>Begrenzungspolygon als WKT</p>
-<p>Unterstützt werden momentan nur Polygone mit einer Außengrenze und Innengrenzen (Löcher), Points und Linestrings.</p>
+<div fxLayout="column" style="width: 400px">
 
-<mat-form-field class="width-100" appearance="outline">
-    <mat-label>WKT</mat-label>
-    <textarea #wkt matInput rows="10" [value]="wktString" igeFocus placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))"></textarea>
-</mat-form-field>
-<button mat-flat-button (click)="validateWKT(wkt.value)">Prüfen</button>
+    <div class="place-title small-bottom">Raumbezug herstellen</div>
+
+    <div class="dlg-field-label">Begrenzungspolygon als WKT</div>
+
+    <mat-form-field class="width-100" appearance="outline">
+        <mat-label>WKT</mat-label>
+        <textarea #wkt matInput rows="5" [value]="wktString" igeFocus
+                  placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))"></textarea>
+        <mat-hint>Unterstützt werden Polygone mit einer Außen- und Innengrenzen (Löcher), Points und Linestrings
+        </mat-hint>
+    </mat-form-field>
+
+    <div>
+        <button mat-button color="primary" (click)="validateWKT(wkt.value)">Anzeigen</button>
+    </div>
+
+</div>

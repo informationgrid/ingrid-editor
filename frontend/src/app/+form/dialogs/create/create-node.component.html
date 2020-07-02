@@ -13,7 +13,7 @@
             <div class="first-tab-wrapper" fxFlex fxLayout="column" [formGroup]="formGroup">
 
                 <ng-container *ngIf="isFolder || !forAddress; else addressForm">
-                    <div class="dlg-create-title">Titel</div>
+                    <div class="dlg-field-label">Titel</div>
                     <mat-form-field appearance="outline">
                         <input matInput
                                formControlName="title"
@@ -38,7 +38,7 @@
 
                 <ng-template #addressForm>
 
-                    <div class="dlg-create-title">Legen Sie eine Person/Organisation an</div>
+                    <div class="dlg-field-label">Legen Sie eine Person/Organisation an</div>
                     <div fxFlex fxLayout="row" fxLayoutGap="24px">
 
                         <mat-form-field appearance="outline" class="width-100">
@@ -71,7 +71,7 @@
 
                 </ng-template>
 
-                <div class="dlg-create-place">Ort</div>
+                <div class="dlg-field-label dlg-create-place">Ort</div>
                 <ige-breadcrumb [path]="path"
                                 [rootName]="rootTreeName"
                                 [selectable]="true"
