@@ -16,6 +16,8 @@ import java.util.*
  */
 abstract class AbstractDocumentType(val typeName: String, private val forProfiles: Array<String>) {
 
+    open val category = "data";
+
     /**
      * Initialize a database session with this DocumentType.
      *
@@ -23,8 +25,12 @@ abstract class AbstractDocumentType(val typeName: String, private val forProfile
      */
     abstract fun initialize(session: ODatabaseSession)
 
+    /**
+     * Extract referenced documents/addresses and replaces them with their ID
+     */
     @Throws(ApiException::class)
-    open fun handleLinkedFields(doc: JsonNode, dbService: DBApi) {
+    open fun handleLinkedFields(doc: JsonNode, dbService: DBApi): List<JsonNode> {
+        return emptyList()
     }
 
     open fun mapLatestDocReference(doc: JsonNode, onlyPublished: Boolean, docService: DocumentService) {}

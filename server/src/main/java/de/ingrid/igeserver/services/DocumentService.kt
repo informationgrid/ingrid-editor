@@ -144,7 +144,7 @@ class DocumentService : MapperService() {
 
         // create DocumentWrapper
         val recordId = dbService.getRecordId(result)
-        val category = if (address) "address" else "data"
+        val category = getCategoryFromType(data.get(FIELD_DOCUMENT_TYPE).asText(), address)
         val documentWrapper = createWrapper(dataJson, recordId, category)
 
         // save wrapper
@@ -153,14 +153,29 @@ class DocumentService : MapperService() {
 
     }
 
+    /**
+     * Every document type belongs to a category(data or address). However a folder can belong to multiple categories
+     */
+    private fun getCategoryFromType(docType: String, defaultIsAddress: Boolean): String {
+
+        if (docType == "FOLDER") {
+            return if (defaultIsAddress) "address" else "data"
+        }
+
+        return documentTypes
+                .find { it.typeName == docType }!!
+                .category
+
+    }
+
 
     private fun addCreationInfo(dataJson: ObjectNode) {
 
-        val uuid = UUID.randomUUID()
+        val uuid = dataJson.get(FIELD_ID)?.textValue() ?: UUID.randomUUID().toString()
         val now = OffsetDateTime.now().toString()
 
         with(dataJson) {
-            put(FIELD_ID, uuid.toString())
+            put(FIELD_ID, uuid)
             put(FIELD_HAS_CHILDREN, false)
             put(FIELD_CREATED, now)
             put(FIELD_MODIFIED, now)

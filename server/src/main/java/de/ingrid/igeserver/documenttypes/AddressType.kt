@@ -14,6 +14,8 @@ class AddressType : AbstractDocumentType(TYPE, profiles) {
         private val profiles = arrayOf<String>()
     }
 
+    override val category = "address"
+
     override fun initialize(session: ODatabaseSession) {
     }
 

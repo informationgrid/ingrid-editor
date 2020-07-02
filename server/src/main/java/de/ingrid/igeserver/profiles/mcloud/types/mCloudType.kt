@@ -8,6 +8,7 @@ import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.documenttypes.AbstractDocumentType
 import de.ingrid.igeserver.documenttypes.DocumentWrapperType
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.FIELD_ID
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
@@ -25,8 +26,8 @@ class mCloudType : AbstractDocumentType(TYPE, profiles) {
     }
 
     @Throws(ApiException::class)
-    override fun handleLinkedFields(doc: JsonNode, dbService: DBApi) {
-        handleLinkedAddresses(doc)
+    override fun handleLinkedFields(doc: JsonNode, dbService: DBApi): List<JsonNode> {
+        return handleLinkedAddresses(doc)
     }
 
     override fun mapLatestDocReference(doc: JsonNode, onlyPublished: Boolean, docService: DocumentService) {
@@ -53,13 +54,20 @@ class mCloudType : AbstractDocumentType(TYPE, profiles) {
     }
 
     @Throws(ApiException::class)
-    private fun handleLinkedAddresses(doc: JsonNode) {
+    private fun handleLinkedAddresses(doc: JsonNode): MutableList<JsonNode> {
+
+        val addressDocs = mutableListOf<JsonNode>()
 
         val addresses = doc.path("addresses")
         for (address in addresses) {
-            val id = address.path("ref").path("_id").textValue()
+            val addressDoc = address.path("ref")
+            val id = addressDoc.path(FIELD_ID).textValue()
+
+            addressDocs.add(addressDoc)
             (address as ObjectNode).put("ref", id)
         }
+
+        return addressDocs
 
     }
 

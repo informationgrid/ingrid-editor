@@ -28,8 +28,8 @@ class StatisticApiController : StatisticApi {
         val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
 
         dbApi.acquire(dbId).use {
-            val statistic = this.dbService.getDocStatistic();
-            return ResponseEntity.ok(statistic);
+            val statistic = this.dbService.getDocStatistic()
+            return ResponseEntity.ok(statistic)
         }
 
     }

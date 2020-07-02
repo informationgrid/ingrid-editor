@@ -2,7 +2,10 @@ package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.documenttypes.DocumentType
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
+import de.ingrid.igeserver.services.FIELD_ID
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -33,11 +36,42 @@ class ImportService {
         log.debug("Transformed document: $importedDoc")
 
         dbService.acquire(dbId).use {
-            documentService.createDocument(importedDoc)
+            extractAndSaveReferences(importedDoc)
         }
 
         // TODO: return created document instead of transformed JSON
         return Pair(importedDoc, importer.name)
+    }
+
+    private fun extractAndSaveReferences(doc: JsonNode) {
+
+        val docType = doc[FIELD_DOCUMENT_TYPE].asText()
+        val refType = documentService.getDocumentType(docType)
+
+        val references = refType.handleLinkedFields(doc, dbService)
+
+        // save references
+        references
+                .filter { !referenceAlreadyExists(it) }
+                .forEach { documentService.createDocument(it) }
+
+        // save imported document
+        documentService.createDocument(doc)
+
+    }
+
+    private fun referenceAlreadyExists(ref: JsonNode): Boolean {
+
+        // TODO: optimize by caching reference information
+
+        val id = ref.path(FIELD_ID).textValue()
+        try {
+            documentService.getByDocId(id, DocumentType.TYPE, false)
+            return true
+        } catch (e: RuntimeException) {
+            return false
+        }
+
     }
 
 }
