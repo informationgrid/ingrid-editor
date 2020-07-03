@@ -34,7 +34,6 @@
                        [class.selected]="selectionModel.isSelected(node)"
                        [class.active]="node._id === activeNodeId"
                        [class.expanded]="treeControl.isExpanded(node)"
-                       [class.disabled]="disabledCondition(node)"
                        [class.rootNode]="node.level === 0"
                        [class.afterExpanded]="node.afterExpanded"
                        [class.folder]="node.type === 'FOLDER'">

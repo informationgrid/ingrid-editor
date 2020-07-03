@@ -45,7 +45,7 @@ export class AddressTypeComponent extends FieldType implements OnInit {
 
   private callEditDialog(address?: AddressRef) {
     return this.dialog.open(ChooseAddressDialogComponent, {
-      minWidth: 400,
+      minWidth: 500,
       data: address
     })
       .afterClosed()
