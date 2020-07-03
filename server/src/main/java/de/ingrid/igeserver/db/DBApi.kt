@@ -53,7 +53,7 @@ interface DBApi {
      * @return
      */
     @Throws(ApiException::class)
-    fun save(type: String, dbDocId: String?, data: String): JsonNode
+    fun save(type: String, dbDocId: String?, data: String, version: String? = null): JsonNode
 
     /**
      * Delete a document with a given ID.

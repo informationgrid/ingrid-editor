@@ -12,6 +12,8 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/operators';
 import {NgFormsManager} from '@ngneat/forms-manager';
+import {VersionConflictChoice, VersionConflictDialogComponent} from '../version-conflict-dialog/version-conflict-dialog.component';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @UntilDestroy()
 @Injectable()
@@ -85,14 +87,54 @@ export class SavePlugin extends Plugin {
     return this.formsManager.getControl(formDoc);
   }
 
-  save(formData: IgeDocument) {
+  private save(formData: IgeDocument) {
     this.documentService.publishState$.next(false);
 
-    return this.documentService.save(formData, false, this.forAddress);
+    return this.documentService.save(formData, false, this.forAddress)
+      .catch(error => this.handleSaveError(error));
   }
 
   unregister() {
     super.unregister();
   }
 
+  /**
+   * Handle version conflict errors during save
+   *
+   * @param error
+   * @private
+   */
+  private handleSaveError(error: HttpErrorResponse) {
+    if (error?.status === 409) {
+      this.dialog.open(VersionConflictDialogComponent).afterClosed()
+        .subscribe(choice => this.handleAfterConflictChoice(choice));
+    } else {
+      throw error;
+    }
+  }
+
+  private handleAfterConflictChoice(choice: VersionConflictChoice) {
+    switch (choice) {
+      case 'cancel':
+        break;
+      case 'force':
+        const formData = this.getFormDataWithoutVersionInfo();
+        this.save(formData);
+        break;
+      case 'reload':
+        this.documentService.reload$.next(this.getIdFromFormData())
+        break;
+
+    }
+  }
+
+  private getFormDataWithoutVersionInfo() {
+    const data = this.getForm()?.value;
+    delete data['_version'];
+    return data;
+  }
+
+  private getIdFromFormData() {
+    return this.getForm()?.value['_id'];
+  }
 }

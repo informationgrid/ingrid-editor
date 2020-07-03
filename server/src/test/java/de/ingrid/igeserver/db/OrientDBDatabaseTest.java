@@ -139,7 +139,7 @@ public class OrientDBDatabaseTest {
             id = docToUpdate.hits.get(0).get("@rid").asText();
 
             String data = "{\"name\": \"Johann\", \"@rid\": " + id + "}";
-            JsonNode save = dbService.save("User", null, data);
+            JsonNode save = dbService.save("User", null, data, null);
             assertNotNull(save);
         }
 
@@ -167,13 +167,13 @@ public class OrientDBDatabaseTest {
 
             // add first document
             String doc1 = "{\"title\": \"my document\"}";
-            JsonNode doc1Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc1);
+            JsonNode doc1Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc1, null);
 
             // add second document with reference to doc1
             List<ORecordId> addressReferences = new ArrayList<>();
             addressReferences.add(new ORecordId(doc1Result.get("@rid").asText()));
             String doc2 = "{\"title\": \"my other document with reference\", \"addresses\": " + addressReferences + "}";
-            JsonNode doc2Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc2);
+            JsonNode doc2Result = dbService.save(DBApi.DBClass.Documents.name(), null, doc2, null);
 
         }
 
@@ -199,10 +199,10 @@ public class OrientDBDatabaseTest {
         try (ODatabaseSession session = acquire("test")) {
 
             String person1Map = "{ \"name\": \"John\", \"age\": \"35\"}";
-            dbService.save("User", null, person1Map);
+            dbService.save("User", null, person1Map, null);
 
             String person2Map = "{ \"name\": \"Mike\", \"age\": \"48\"}";
-            dbService.save("User", null, person2Map);
+            dbService.save("User", null, person2Map, null);
 
         }
     }

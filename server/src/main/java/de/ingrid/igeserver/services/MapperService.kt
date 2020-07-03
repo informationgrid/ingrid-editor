@@ -37,6 +37,9 @@ open class MapperService {
             node.remove("@rid")
             node.remove("@class")
             node.remove("@type")
+
+            // map version info to our own model
+            node.put(FIELD_VERSION, node.get("@version").asText())
             node.remove("@version")
         }
     }

@@ -11,13 +11,15 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {CardBoxComponent} from './card-box/card-box.component';
 import {MatCardModule} from '@angular/material/card';
 import {EmptyNavigationComponent} from '../+form/sidebars/tree/empty-navigation/empty-navigation.component';
 import {SharedDocumentItemModule} from './shared-document-item.module';
 import {AddButtonComponent} from './add-button/add-button.component';
+import {OptionListComponent} from './option-list/option-list.component';
+import {MatRadioModule} from '@angular/material/radio';
 
 @NgModule({
   imports: [
@@ -25,9 +27,11 @@ import {AddButtonComponent} from './add-button/add-button.component';
     MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule,
     MatSlideToggleModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
     MatCardModule,
-    SharedDocumentItemModule],
-  declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent, AddButtonComponent],
-  exports: [TreeComponent, MatIconModule, MatInputModule, MatButtonModule, CardBoxComponent, AddButtonComponent, SharedDocumentItemModule]
+    SharedDocumentItemModule, MatRadioModule, FormsModule],
+  declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent, AddButtonComponent,
+    OptionListComponent],
+  exports: [TreeComponent, MatIconModule, MatInputModule, MatButtonModule, CardBoxComponent, AddButtonComponent,
+    OptionListComponent, SharedDocumentItemModule]
 })
 export class SharedModule {
 }

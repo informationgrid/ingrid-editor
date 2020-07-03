@@ -1,5 +1,6 @@
 package de.ingrid.igeserver
 
+import com.orientechnologies.orient.core.exception.OConcurrentModificationException
 import de.ingrid.igeserver.api.ApiException
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.logging.log4j.kotlin.logger
@@ -51,6 +52,13 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
         log.error("Exception happened:", ex)
         val bodyOfResponse = ex.message
         return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request)
+    }
+
+    @ExceptionHandler(value = [OConcurrentModificationException::class])
+    protected fun handleConcurrentModificationErrors(ex: RuntimeException, request: WebRequest): ResponseEntity<Any> {
+        log.error("Concurrent update happened:", ex)
+        val bodyOfResponse = ex.message
+        return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.CONFLICT, request)
     }
 
 }
