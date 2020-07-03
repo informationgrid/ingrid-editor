@@ -9,6 +9,9 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {merge} from 'rxjs';
 import {IgeDocument} from '../../../models/ige-document';
 import {NgFormsManager} from '@ngneat/forms-manager';
+import {HttpErrorResponse} from '@angular/common/http';
+import {VersionConflictChoice, VersionConflictDialogComponent} from '../version-conflict-dialog/version-conflict-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -26,6 +29,7 @@ export class PublishPlugin extends Plugin {
   }
 
   constructor(private formToolbarService: FormToolbarService,
+              private dialog: MatDialog,
               private modalService: ModalService,
               private messageService: MessageService,
               private treeQuery: TreeQuery,
@@ -77,13 +81,18 @@ export class PublishPlugin extends Plugin {
       const message = 'Wollen Sie diesen Datensatz wirklich veröffentlichen?';
       this.modalService.confirm('Veröffentlichen', message).subscribe(doPublish => {
         if (doPublish) {
-          this.storageService.publish(this.getFormValue())
-            .then(() => this.messageService.sendInfo('Das Dokument wurde veröffentlicht.'));
+          this.publishWithData(this.getFormValue());
         }
       });
     } else {
       this.modalService.showJavascriptError('Es müssen alle Felder korrekt ausgefüllt werden.');
     }
+  }
+
+  private publishWithData(data) {
+    this.storageService.publish(data)
+      .then(() => this.messageService.sendInfo('Das Dokument wurde veröffentlicht.'))
+      .catch(error => this.handleSaveError(error));
   }
 
   private getFormValue(): IgeDocument {
@@ -129,5 +138,46 @@ export class PublishPlugin extends Plugin {
       this.formToolbarService.setButtonState('toolBtnRevert', loadedDocument !== null && loadedDocument._state === 'PW');
     });
 
+  }
+
+  // TODO: refactor in base class to prevent duplicate code (see save.plugin.ts)
+  /**
+   * Handle version conflict errors during save
+   *
+   * @param error
+   * @private
+   */
+  private handleSaveError(error: HttpErrorResponse) {
+    if (error?.status === 409) {
+      this.dialog.open(VersionConflictDialogComponent).afterClosed()
+        .subscribe(choice => this.handleAfterConflictChoice(choice, error.error));
+    } else {
+      throw error;
+    }
+  }
+
+  private handleAfterConflictChoice(choice: VersionConflictChoice, latestVersion: number) {
+    switch (choice) {
+      case 'cancel':
+        break;
+      case 'force':
+        const formData = this.getFormDataWithVersionInfo(latestVersion);
+        this.publishWithData(formData);
+        break;
+      case 'reload':
+        this.storageService.reload$.next(this.getIdFromFormData())
+        break;
+
+    }
+  }
+
+  private getFormDataWithVersionInfo(version: number) {
+    const data = this.getFormValue();
+    data['_version'] = version;
+    return data;
+  }
+
+  private getIdFromFormData() {
+    return this.getFormValue()['_id'];
   }
 }

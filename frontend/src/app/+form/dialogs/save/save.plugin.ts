@@ -107,18 +107,18 @@ export class SavePlugin extends Plugin {
   private handleSaveError(error: HttpErrorResponse) {
     if (error?.status === 409) {
       this.dialog.open(VersionConflictDialogComponent).afterClosed()
-        .subscribe(choice => this.handleAfterConflictChoice(choice));
+        .subscribe(choice => this.handleAfterConflictChoice(choice, error.error));
     } else {
       throw error;
     }
   }
 
-  private handleAfterConflictChoice(choice: VersionConflictChoice) {
+  private handleAfterConflictChoice(choice: VersionConflictChoice, latestVersion: number) {
     switch (choice) {
       case 'cancel':
         break;
       case 'force':
-        const formData = this.getFormDataWithoutVersionInfo();
+        const formData = this.getFormDataWithVersionInfo(latestVersion);
         this.save(formData);
         break;
       case 'reload':
@@ -128,9 +128,9 @@ export class SavePlugin extends Plugin {
     }
   }
 
-  private getFormDataWithoutVersionInfo() {
+  private getFormDataWithVersionInfo(version: number) {
     const data = this.getForm()?.value;
-    delete data['_version'];
+    data['_version'] = version;
     return data;
   }
 
