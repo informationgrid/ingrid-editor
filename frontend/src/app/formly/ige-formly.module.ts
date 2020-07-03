@@ -48,62 +48,63 @@ import {MatChipsModule} from '@angular/material/chips';
 import {ChipDialogComponent} from './types/repeat-chip/chip-dialog/chip-dialog.component';
 import {DateRangeTypeComponent} from './types/date-range-type/date-range-type.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatRadioModule} from '@angular/material/radio';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
 }
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatInputModule, ReactiveFormsModule, FormsModule,
-    FlexLayoutModule,
-    MatDialogModule, MatButtonModule, MatAutocompleteModule, MatIconModule, MatSelectModule, MatDividerModule, MatListModule,
-    MatTableModule, MatPopoverEditModule, MatCardModule,
-    FormlyMaterialModule, FormlyMatDatepickerModule,
-    FormlyModule.forChild({
-      types: [{
-        name: 'autocomplete',
-        component: AutocompleteTypeComponent,
-        wrappers: ['form-field']
-      }, {
-        name: 'leaflet',
-        component: LeafletTypeComponent/*,
+    imports: [
+        CommonModule,
+        MatInputModule, ReactiveFormsModule, FormsModule,
+        FlexLayoutModule,
+        MatDialogModule, MatButtonModule, MatAutocompleteModule, MatIconModule, MatSelectModule, MatDividerModule, MatListModule,
+        MatTableModule, MatPopoverEditModule, MatCardModule,
+        FormlyMaterialModule, FormlyMatDatepickerModule,
+        FormlyModule.forChild({
+            types: [{
+                name: 'autocomplete',
+                component: AutocompleteTypeComponent,
+                wrappers: ['form-field']
+            }, {
+                name: 'leaflet',
+                component: LeafletTypeComponent/*,
         wrappers: ['form-field']*/
-      }, {
-        name: 'table',
-        component: TableTypeComponent
-      }, {
-        name: 'address-card',
-        component: AddressTypeComponent
-      }, {
-        name: 'doc-reference',
-        component: DocReferenceTypeComponent
-      }, {
-        name: 'repeat',
-        component: RepeatComponent
-      }, {
-        name: 'repeatList',
-        component: RepeatListComponent
-      }, {
-        name: 'repeatChip',
-        component: RepeatChipComponent
-      }, {
-        name: 'date-range',
-        component: DateRangeTypeComponent
-      }],
-      validators: [
-        {name: 'ip', validation: IpValidator}
-      ],
-      validationMessages: [
-        {name: 'required', message: 'Dieses Feld muss ausgefüllt sein'}
-      ]/*,
+            }, {
+                name: 'table',
+                component: TableTypeComponent
+            }, {
+                name: 'address-card',
+                component: AddressTypeComponent
+            }, {
+                name: 'doc-reference',
+                component: DocReferenceTypeComponent
+            }, {
+                name: 'repeat',
+                component: RepeatComponent
+            }, {
+                name: 'repeatList',
+                component: RepeatListComponent
+            }, {
+                name: 'repeatChip',
+                component: RepeatChipComponent
+            }, {
+                name: 'date-range',
+                component: DateRangeTypeComponent
+            }],
+            validators: [
+                {name: 'ip', validation: IpValidator}
+            ],
+            validationMessages: [
+                {name: 'required', message: 'Dieses Feld muss ausgefüllt sein'}
+            ]/*,
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
       ]*/
-    }), FormFieldsModule,
-    SharedModule, MatMenuModule, MatCheckboxModule, MatChipsModule, MatDatepickerModule
-  ],
+        }), FormFieldsModule,
+        SharedModule, MatMenuModule, MatCheckboxModule, MatChipsModule, MatDatepickerModule, MatRadioModule
+    ],
   providers: [
     {
       provide: MAT_DATE_LOCALE,

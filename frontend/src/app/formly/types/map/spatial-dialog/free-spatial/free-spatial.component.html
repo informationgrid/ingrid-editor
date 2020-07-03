@@ -17,14 +17,15 @@
 
     <div class="result-wrapper">
         <div class="list-wrapper">
-            <mat-selection-list dense (selectionChange)="handleSelection($event)" style="overflow: auto">
+            <mat-list dense style="overflow: auto" ngDefaultControl>
                 <ng-container *ngFor="let entry of nominatimResult">
-                    <mat-list-option [value]="entry">
+                    <mat-list-item (click)="handleSelection(entry)" class="clickable">
+                        <mat-radio-button matListIcon [value]="entry" [checked]="spatialSelection === entry"></mat-radio-button>
                         <p matLine>{{entry.display_name}}</p>
-                    </mat-list-option>
+                    </mat-list-item>
                     <mat-divider></mat-divider>
                 </ng-container>
-            </mat-selection-list>
+            </mat-list>
         </div>
     </div>
 

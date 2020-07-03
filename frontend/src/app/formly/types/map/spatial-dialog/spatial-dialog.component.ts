@@ -53,8 +53,8 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
     // this.leaflet.nativeElement.style.height = 'auto';
-    // this.leaflet.nativeElement.style.minHeight = 'calc(100vh - 235px)';
-    this.leaflet.nativeElement.style.minHeight = '300px';
+    this.leaflet.nativeElement.style.minHeight = 'calc(100vh - 500px)';
+    // this.leaflet.nativeElement.style.minHeight = '400px';
     this.leaflet.nativeElement.style.width = '100%';
     this.leaflet.nativeElement.style.minWidth = '400px';
     // const options: MapOptions = this.to.mapOptions;

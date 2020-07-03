@@ -29,6 +29,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
   private areaSelect: LeafletAreaSelect = null;
   drawnBBox: any;
+  spatialSelection: NominatimResult = null;
 
   constructor(private nominatimService: NominatimService,
               private leafletService: LeafletService) {
@@ -78,14 +79,9 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
   }
 
-  handleSelection(event: MatSelectionListChange) {
+  handleSelection(item: NominatimResult) {
 
-    if (event.option.selected) {
-      event.source.deselectAll();
-      event.option._setSelected(true);
-    }
-
-    const item: NominatimResult = event.option.value;
+    this.spatialSelection = item;
 
     const box = item.boundingbox;
     const value = {
