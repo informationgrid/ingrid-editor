@@ -72,7 +72,8 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
       this.nominatimResult = response;
       console.log('Nominatim:', response);
       this.showNoResult = response.length === 0;
-      // setTimeout(() => (<MyMap>this.leafletReference)._onResize());
+      // @ts-ignore
+      setTimeout(() => (<Map>this.map)._onResize());
     });
 
   }

@@ -1,6 +1,12 @@
 :host {
   display: flex;
   flex: 1;
+  overflow: auto;
+
+  .free-spatial-wrapper {
+    width: 400px;
+    flex: 1;
+  }
 
   .mat-form-field .mat-icon {
     padding-right: 10px;
@@ -9,6 +15,7 @@
 
 .result-wrapper {
   flex: 1;
+  overflow: auto;
 }
 
 .mat-form-field {
