@@ -18,6 +18,7 @@
        (click)="toggleSidebar(!menuIsExpanded)"
        matTooltip="Vergrößern"
        [matTooltipShowDelay]="1000"
+       [matTooltipDisabled]="menuIsExpanded"
        matTooltipPosition="right">
         <mat-icon *ngIf="!menuIsExpanded" mat-list-icon svgIcon="Nav-auf"></mat-icon>
         <mat-icon *ngIf="menuIsExpanded" mat-list-icon svgIcon="Nav-zu"></mat-icon>
