@@ -26,6 +26,10 @@
                         <span>L2: {{location.value.lat2 | number:'.6'}}°</span>
                         <span>B2: {{location.value.lon2 | number:'.6'}}°</span>
                     </div>
+
+                    <div *ngIf="location.type === 'wkt'" matLine>
+                        {{location.value}}
+                    </div>
                 </div>
                 <div>
                     <button mat-icon-button class="menu-button" [matMenuTriggerFor]="spatialRef">
@@ -36,11 +40,6 @@
                         <button mat-menu-item (click)="remove.next(location.indexNumber)">Löschen</button>
                     </mat-menu>
                 </div>
-            </div>
-<!--                <div fxFlex></div>-->
-
-            <div *ngIf="location.type === 'wkt'" matLine>
-                {{location.value}}
             </div>
 
         </mat-list-item>
