@@ -1,10 +1,9 @@
-package de.ingrid.igeserver.db
+package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.orientechnologies.orient.core.db.OrientDB
-import de.ingrid.igeserver.api.ApiException
-import de.ingrid.igeserver.api.DatasetsApiController
+import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.DBUtils

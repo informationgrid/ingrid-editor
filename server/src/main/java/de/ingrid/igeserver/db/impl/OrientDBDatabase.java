@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.db;
+package de.ingrid.igeserver.db.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +20,9 @@ import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 import com.orientechnologies.orient.server.plugin.OServerPluginManager;
 import de.ingrid.igeserver.api.ApiException;
+import de.ingrid.igeserver.db.DBApi;
+import de.ingrid.igeserver.db.DBFindAllResults;
+import de.ingrid.igeserver.db.FindOptions;
 import de.ingrid.igeserver.documenttypes.AbstractDocumentType;
 import de.ingrid.igeserver.exceptions.DatabaseDoesNotExistException;
 import de.ingrid.igeserver.model.Catalog;

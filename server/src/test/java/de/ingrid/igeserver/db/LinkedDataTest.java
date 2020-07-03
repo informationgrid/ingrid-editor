@@ -11,6 +11,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.ingrid.igeserver.api.ApiException;
+import de.ingrid.igeserver.db.impl.OrientDBDatabase;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
