@@ -5,6 +5,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {SpatialLocation, SpatialLocationType} from '../spatial-list/spatial-list.component';
 import {FormControl} from '@angular/forms';
 import {SpatialBoundingBox} from './spatial-result.model';
+import {Map} from 'leaflet';
 
 
 @UntilDestroy()
@@ -72,6 +73,9 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     this.view = id;
     this.result.type = id;
     this.result.value = null;
+
+    // @ts-ignore
+    setTimeout(() => (<Map>this.leafletReference)._onResize());
 
   }
 

@@ -12,7 +12,7 @@
 
     <div fxLayout="row" fxLayoutGap="24px" class="spatial-wrapper" [ngSwitch]="view">
 
-        <div fxLayout="column" fxFlex>
+        <div fxLayout="column">
 
             <div class="dlg-field-label">Typ</div>
             <mat-form-field appearance="outline">
@@ -37,7 +37,7 @@
         </div>
 
         <div fxLayout="column" fxFlex>
-            <div class="dlg-field-label">Titel</div>
+            <div class="dlg-field-label">Titel<span *ngIf="view === 'geo-name'">*</span></div>
             <mat-form-field appearance="outline">
                 <input matInput [formControl]="titleInput">
             </mat-form-field>
