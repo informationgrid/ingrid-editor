@@ -2,7 +2,7 @@
 
     <ng-container *ngFor="let type of types">
 
-        <mat-list-item *ngFor="let location of typedLocations[type]" class="clickable"
+        <mat-list-item *ngFor="let location of typedLocations[type]" class="clickable small-padding-right"
                        (click)="selectLocation.next(location.indexNumber)">
 
             <mat-icon *ngIf="type !== 'geo-name'" matListIcon
@@ -28,8 +28,8 @@
                     </div>
                 </div>
                 <div>
-                    <button mat-icon-button class="menu" [matMenuTriggerFor]="spatialRef">
-                        <mat-icon>more_vert</mat-icon>
+                    <button mat-icon-button class="menu-button" [matMenuTriggerFor]="spatialRef">
+                        <mat-icon svgIcon="Mehr"></mat-icon>
                     </button>
                     <mat-menu #spatialRef="matMenu">
                         <button mat-menu-item (click)="edit.next(location.indexNumber)">Bearbeiten</button>

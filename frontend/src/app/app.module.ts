@@ -140,7 +140,12 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
     },
-    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {panelClass: 'mat-dialog-override'}},
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {
+        panelClass: 'mat-dialog-override',
+        hasBackdrop: true
+      }
+    },
 
     // PLUGINS
     pluginProvider

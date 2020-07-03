@@ -113,11 +113,9 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
     this.dialog.open(SpatialDialogComponent, {
       width: '90%',
       disableClose: true,
-      hasBackdrop: true,
       maxWidth: 1200,
       minWidth: 600,
-      minHeight: '80vh',
-      height: 'auto',
+      // minHeight: '85vh',
       data: this.locations[locationIndex]
     }).afterClosed()
       .subscribe((result: SpatialLocation) => {
