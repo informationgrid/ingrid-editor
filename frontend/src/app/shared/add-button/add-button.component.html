@@ -1,8 +1,8 @@
 <div class="wrapper">
-    <button type="button" mat-flat-button class="button-square-icon" (click)="add.next()">
+    <button type="button" mat-stroked-button class="button-square-icon" [class.error-outline]="showRequiredError" (click)="add.next()">
         <mat-icon>add</mat-icon>
+        <span class="btn-title">Hinzufügen</span>
     </button>
-    <span>Hinzufügen</span>
 
     <mat-error [class.invisible]="!showRequiredError" class="error">Bitte erstellen Sie mindestens einen Eintrag</mat-error>
 </div>

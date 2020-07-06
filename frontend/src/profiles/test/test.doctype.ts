@@ -165,7 +165,8 @@ export class TestDoctype extends BaseDoctype {
         wrappers: ['panel'],
         templateOptions: {
           externalLabel: 'Repeatable List (Simple)',
-          placeholder: 'Bitte etwas eingeben'
+          placeholder: 'Bitte etwas eingeben',
+          required: true
         }
       }, {
         key: 'repeatListCodelist',

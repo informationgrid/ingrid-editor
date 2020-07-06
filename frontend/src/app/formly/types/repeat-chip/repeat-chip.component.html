@@ -1,4 +1,4 @@
-<ige-form-error *ngIf="formControl.invalid">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
+<ige-form-error *ngIf="formControl.invalid && !formControl.hasError('required')">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
 
 <mat-chip-list *ngIf="field.fieldGroup.length > 0">
     <mat-chip disableRipple *ngFor="let field of field.fieldGroup; let i = index"
@@ -17,7 +17,9 @@
     </mat-chip>
 </mat-chip-list>
 
-<ige-add-button *ngIf="to.useDialog; else simpleInput" (add)="openDialog()"></ige-add-button>
+<ige-add-button *ngIf="to.useDialog; else simpleInput"
+                (add)="openDialog()"
+                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
 
 <ng-template #simpleInput>
     <mat-form-field class="width-100 simpleInputX" appearance="outline">
