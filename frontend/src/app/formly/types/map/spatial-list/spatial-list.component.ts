@@ -49,7 +49,7 @@ export class SpatialListComponent implements OnInit {
       .reduce((prev, curr) => {
         prev[curr.type].push(curr);
         return prev;
-      }, {wkt: [], free: [], 'geo-name': []});
+      }, {free: [], wkt: [], 'geo-name': []});
 
     // @ts-ignore
     this.types = Object.keys(this.typedLocations)

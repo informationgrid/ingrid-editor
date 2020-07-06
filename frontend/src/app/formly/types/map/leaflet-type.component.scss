@@ -9,7 +9,7 @@
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 12px;
-  background-color: #FFFFFFAA;
+  background: transparent;
 }
 
 .button-wrapper {
@@ -39,6 +39,10 @@
     }
     ::ng-deep .coloring-stroke {
       stroke: #cccccc;
+    }
+
+    &:hover {
+      background-color: #30296e;
     }
   }
 }
