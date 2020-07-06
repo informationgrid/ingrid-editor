@@ -1,7 +1,7 @@
 <ige-form-error *ngIf="formControl.invalid">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
 
 <mat-chip-list *ngIf="field.fieldGroup.length > 0">
-    <mat-chip *ngFor="let field of field.fieldGroup; let i = index"
+    <mat-chip disableRipple *ngFor="let field of field.fieldGroup; let i = index"
               [removable]="true"
               [selectable]="false"
               (removed)="remove(i)">
@@ -25,6 +25,6 @@
                autocomplete="off"
                [(ngModel)]="inputModel"
                (keydown.enter)="addValues(input.value)">
-        <mat-hint>Mehrere Schlagworte durch Komma trennen und mit Return bestätigen</mat-hint>
+        <mat-hint>Eintrag mit Return bestätigen, mehrere Schlagworte durch Komma trennen</mat-hint>
     </mat-form-field>
 </ng-template>
