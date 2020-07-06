@@ -18,6 +18,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '2.3.0'
+    id "com.gorylenko.gradle-git-properties" version "2.2.2"
 //    id 'io.kotest' version '1.1.0'
 }
 
@@ -41,13 +42,14 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     compile "org.apache.logging.log4j:log4j-api-kotlin:1.0.0"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
-    runtimeOnly project(':frontend')
+    // for faster development ignore frontend project and its long build time
+    if (hasProperty('buildProfile')) runtimeOnly project(':frontend')
 
     // Spring
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
-    implementation "io.pebbletemplates:pebble-spring-boot-starter:3.1.2"
+    implementation "io.pebbletemplates:pebble-spring-boot-starter:3.1.4"
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation('org.springframework.boot:spring-boot-starter-security') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
@@ -89,6 +91,10 @@ group = 'de.ingrid'
 description = 'IGE-NG Server'
 sourceCompatibility = '11.0'
 
+springBoot {
+    buildInfo()
+}
+
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
         jvmTarget = "1.8"
@@ -124,8 +130,10 @@ jib {
     }
 }
 
-//tasks.assemble.dependsOn tasks.jibDockerBuild
-tasks.assemble.dependsOn tasks.jib
+if (hasProperty('buildProfile')) {
+    //tasks.assemble.dependsOn tasks.jibDockerBuild
+    tasks.assemble.dependsOn tasks.jib
+}
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'

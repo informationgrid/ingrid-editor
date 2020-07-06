@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {ConfigService, Version} from '../../services/config/config.service';
 
 @Component({
   selector: 'ige-info-dialog',
@@ -6,10 +7,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./info-dialog.component.scss']
 })
 export class InfoDialogComponent implements OnInit {
+  version: Version;
 
-  constructor() { }
+  constructor(private config: ConfigService) { }
 
   ngOnInit() {
+    this.version = this.config.$userInfo.getValue().version;
   }
 
 }
