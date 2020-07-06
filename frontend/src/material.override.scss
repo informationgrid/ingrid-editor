@@ -49,6 +49,7 @@
   display: flex !important;
   flex-direction: column;
   flex: 1;
+  margin: -9px 0 0 -10px;
 
   ng-component, ige-new-document {
     display: flex;
@@ -116,8 +117,12 @@ ige-root .mat-card {
 }
 
 /* Checkboxes, radio btns */
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
+.mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+.mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
 .mat-pseudo-checkbox-checked {
-  background: #398C32 !important;
+  background-color: #398C32 !important;
 }
 
 .mat-radio-button.mat-accent .mat-radio-inner-circle,
