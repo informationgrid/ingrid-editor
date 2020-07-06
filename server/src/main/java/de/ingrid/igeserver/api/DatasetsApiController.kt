@@ -2,6 +2,8 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.orientechnologies.orient.core.exception.OConcurrentModificationException
+import com.orientechnologies.orient.core.id.ORecordId
 import de.ingrid.igeserver.db.*
 import de.ingrid.igeserver.documenttypes.DocumentType
 import de.ingrid.igeserver.documenttypes.DocumentWrapperType
@@ -11,7 +13,6 @@ import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.DBUtils
-import de.ingrid.igeserver.utils.toJsonNode
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -66,7 +67,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     override fun updateDataset(
             principal: Principal?,
             id: String,
-            data: String,
+            data: JsonNode,
             publish: Boolean,
             revert: Boolean): ResponseEntity<JsonNode> {
 
@@ -83,15 +84,13 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
             val docWrapper = documentService.getByDocId(id, DocumentWrapperType.TYPE, false) as ObjectNode
 
+            checkForPublishedConcurrency(docWrapper, data.get(FIELD_VERSION)?.asInt())
+
             // just update document by using new data and adding database ID
-            val recordId = if (docWrapper[FIELD_DRAFT].isNull) {
-                null
-            } else {
-                docWrapper[FIELD_DRAFT].asText()
-            }
+            val recordId = determineRecordId(docWrapper)
 
             // save document with same ID or new one, if no draft version exists
-            val updatedDocument = data.toJsonNode() as ObjectNode
+            val updatedDocument = data as ObjectNode
             updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString())
             val version = updatedDocument.get(FIELD_VERSION)?.asText();
             handleLinkedDocs(updatedDocument)
@@ -105,6 +104,36 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             val result = documentService.getLatestDocument(wrapper!!)
 
             return ResponseEntity.ok(result)
+        }
+    }
+
+    private fun determineRecordId(docWrapper: ObjectNode): String? {
+        return if (docWrapper[FIELD_DRAFT].isNull) {
+            null
+        } else {
+            docWrapper[FIELD_DRAFT].asText()
+        }
+    }
+
+    /**
+     * Throw an exception if we want to save a draft version with a version number lower than
+     * the current published version.
+     */
+    private fun checkForPublishedConcurrency(wrapper: ObjectNode, version: Int?) {
+
+        val draft = wrapper.get(FIELD_DRAFT)
+        val publishedDBID = wrapper.get(FIELD_PUBLISHED).asText()
+
+        if (draft.isNull && publishedDBID != null) {
+            val publishedDoc = dbService.find(DocumentType.TYPE, publishedDBID)
+            val publishedVersion = publishedDoc?.get("@version")?.asInt()
+            if (version != null && publishedVersion != null && publishedVersion > version) {
+                throw OConcurrentModificationException(
+                        ORecordId(publishedDBID),
+                        publishedDoc.get("@version").asInt(),
+                        version,
+                        0)
+            }
         }
     }
 

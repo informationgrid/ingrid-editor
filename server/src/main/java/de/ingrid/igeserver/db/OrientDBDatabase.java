@@ -303,8 +303,7 @@ public class OrientDBDatabase implements DBApi {
     @Override
     public JsonNode find(String type, String id) throws Exception {
 
-        String query = "SELECT @this.toJSON('rid,class') as jsonDoc FROM " + type + " WHERE @rid = " + id;
-//        String query = "SELECT * FROM " + type + " WHERE _id = " + id;
+        String query = "SELECT @this.toJSON('rid,class,version') as jsonDoc FROM " + type + " WHERE @rid = " + id;
 
         OResultSet result = getDBFromThread().query(query);
         List<JsonNode> list = mapODocumentsToJSON(result);
