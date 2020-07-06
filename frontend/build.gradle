@@ -4,7 +4,7 @@
 
 plugins {
   id 'base'
-  id "com.github.node-gradle.node" version "2.2.3"
+  id "com.github.node-gradle.node" version "2.2.4"
 }
 
 repositories {
@@ -22,9 +22,9 @@ node {
 }
 
 task bundle(type: YarnTask) {
-  //inputs.files(fileTree('node_modules'))
-  inputs.files(fileTree('src'))
-  inputs.file('package.json')
+  inputs.dir(fileTree("node_modules").exclude(".cache"))
+  inputs.dir('src')
+  inputs.files('package.json', 'package-lock.json', 'angular.json', 'tsconfig.json', 'tsconfig.app.json')
 
   outputs.dir('build/dist')
 
@@ -57,10 +57,12 @@ configurations {
 }
 configurations.default.extendsFrom(configurations.npmResources)
 
-artifacts {
-  npmResources(packageNpmApp.archivePath) {
-    builtBy packageNpmApp
-    type "jar"
+if (hasProperty('buildProfile')) {
+  artifacts {
+    npmResources(packageNpmApp.archivePath) {
+      builtBy packageNpmApp
+      type "jar"
+    }
   }
 }
 
@@ -68,5 +70,3 @@ clean {
   // do nothing to improve speed
   // delete packageNpmApp.archivePath
 }
-
-assemble.dependsOn packageNpmApp

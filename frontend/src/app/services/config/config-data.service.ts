@@ -22,7 +22,8 @@ export class ConfigDataService {
           roles: json.roles,
           userId: json.userId,
           currentCatalog: json.currentCatalog ? new Catalog(json.currentCatalog) : {},
-          catalogProfile: json.catalogProfile
+          catalogProfile: json.catalogProfile,
+          version: json.version
         } as UserInfo;
       })
       .catch((e: string) => {
@@ -41,7 +42,8 @@ export class ConfigDataService {
           roles: [],
           userId: undefined,
           catalogProfile: undefined,
-          currentCatalog: undefined
+          currentCatalog: undefined,
+          version: undefined
         };
       });
   }

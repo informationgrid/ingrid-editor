@@ -3,20 +3,29 @@
 .error {
   color: $error-color;
   font-size: 12px;
+  padding-top: 4px;
 }
 
-.button-square-icon + span {
-  padding-left: 12px;
-  font-size: 18px;
+.btn-title {
+  padding: 0 4px 0 8px;
+  font-size: 16px;
   font-weight: 500;
   vertical-align: middle;
 }
 
 button {
   transition: background-color 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  color: $ige-secondary;
+  padding: 0 10px !important;
+  background-color: #ffffff !important;
+  letter-spacing: 0.74px;
 
   &:hover {
     background-color: darken($ige-background, 5%);
+  }
+
+  &.error-outline {
+    border-color: $error-color;
   }
 }
 

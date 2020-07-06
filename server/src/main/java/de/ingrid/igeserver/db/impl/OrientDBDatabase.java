@@ -174,9 +174,9 @@ public class OrientDBDatabase implements DBApi {
             String fetchPlan = options.resolveReferences ? ",fetchPlan:*:-1" : "";
 
             if (options.sortField != null) {
-                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " LET $temp = max( draft." + options.sortField + ", published." + options.sortField + " ) WHERE (" + whereString + ")";
+                queryString = "SELECT @this.toJSON('rid,class,version" + fetchPlan + "') as jsonDoc FROM " + type + " LET $temp = max( draft." + options.sortField + ", published." + options.sortField + " ) WHERE (" + whereString + ")";
             } else {
-                queryString = "SELECT @this.toJSON('rid,class" + fetchPlan + "') as jsonDoc FROM " + type + " WHERE (" + whereString + ")";
+                queryString = "SELECT @this.toJSON('rid,class,version" + fetchPlan + "') as jsonDoc FROM " + type + " WHERE (" + whereString + ")";
             }
             countQuery = "SELECT count(*) FROM " + type + " WHERE (" + whereString + ")";
             /*} else {
@@ -306,8 +306,7 @@ public class OrientDBDatabase implements DBApi {
     @Override
     public JsonNode find(String type, String id) throws Exception {
 
-        String query = "SELECT @this.toJSON('rid,class') as jsonDoc FROM " + type + " WHERE @rid = " + id;
-//        String query = "SELECT * FROM " + type + " WHERE _id = " + id;
+        String query = "SELECT @this.toJSON('rid,class,version') as jsonDoc FROM " + type + " WHERE @rid = " + id;
 
         OResultSet result = getDBFromThread().query(query);
         List<JsonNode> list = mapODocumentsToJSON(result);
@@ -335,7 +334,7 @@ public class OrientDBDatabase implements DBApi {
      * @return
      */
     @Override
-    public JsonNode save(String type, String id, String data) throws ApiException {
+    public JsonNode save(String type, String id, String data, String version) throws ApiException {
 
         // TODO: we shouldn't use DB-ID but document ID here
         Optional<OResult> doc = getById(type, id);
@@ -346,6 +345,9 @@ public class OrientDBDatabase implements DBApi {
                 .map(oResult -> (ODocument) oResult.getRecord().get())
                 .orElseGet(() -> new ODocument(type));
 
+        if (version != null) {
+            docToSave.field("@version", version);
+        }
         docToSave.fromJSON(data);
 
         ODocument savedDoc = docToSave.save();
@@ -407,7 +409,7 @@ public class OrientDBDatabase implements DBApi {
 
             initNewDatabase(catalog, session);
             JsonNode catInfo = getMapFromCatalogSettings(catalog);
-            this.save(DBClass.Info.name(), null, catInfo.toString());
+            this.save(DBClass.Info.name(), null, catInfo.toString(), null);
         }
 
         initDocumentTypes(catalog);
@@ -425,7 +427,7 @@ public class OrientDBDatabase implements DBApi {
             map.put("description", settings.getDescription());
             String id = map.get(DB_ID).asText();
             MapperService.removeDBManagementFields(map);
-            this.save(DBClass.Info.name(), id, map.toString());
+            this.save(DBClass.Info.name(), id, map.toString(), null);
         }
     }
 
@@ -514,9 +516,9 @@ public class OrientDBDatabase implements DBApi {
 
         String json;
         if (resolveReferences) {
-            json = oDoc.toJSON("rid,class,fetchPlan:*:-1");
+            json = oDoc.toJSON("rid,class,version,fetchPlan:*:-1");
         } else {
-            json = oDoc.toJSON("rid,class");
+            json = oDoc.toJSON("rid,class,version");
         }
         return MapperService.getJsonNode(json);
     }

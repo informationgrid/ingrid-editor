@@ -14,9 +14,9 @@ import {FormularService} from '../../formular.service';
 import {FormPluginsService} from '../form-plugins.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {StickyHeaderInfo} from '../../form-info/form-info.component';
-import {filter} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {BehaviorSubject, combineLatest} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge} from 'rxjs';
 import {ProfileQuery} from '../../../store/profile/profile.query';
 import {Behaviour} from '../../../services/behavior/behaviour';
 import {NgFormsManager} from '@ngneat/forms-manager';
@@ -108,15 +108,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     combineLatest([
       this.profileQuery.selectLoading()
         .pipe(filter(isLoading => !isLoading)),
-      this.route.params
+      merge(
+        this.route.params.pipe(map(param => param.id)),
+        this.documentService.reload$
+      )
     ])
       .pipe(untilDestroyed(this))
-      .subscribe(params => this.loadDocument(params[1]['id']));
-    /*
-    this.route.params
-      .pipe(untilDestroyed(this))
-      .subscribe(params => this.loadDocument(params['id']));
-*/
+      .subscribe(params => this.loadDocument(params[1]));
+
     this.formularService.currentProfile = null;
 
     this.documentService.publishState$

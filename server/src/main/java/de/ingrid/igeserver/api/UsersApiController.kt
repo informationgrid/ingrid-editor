@@ -24,6 +24,8 @@ import java.io.IOException
 import java.security.Principal
 import java.util.*
 import javax.naming.NoPermissionException
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.boot.info.GitProperties
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -42,6 +44,12 @@ class UsersApiController : UsersApi {
 
     @Autowired
     private lateinit var authUtils: AuthUtils
+
+    @Autowired(required = false)
+    private var buildInfo: BuildProperties? = null
+
+    @Autowired(required = false)
+    private var gitInfo: GitProperties? = null
 
     @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
     private val developmentMode = false
@@ -106,12 +114,10 @@ class UsersApiController : UsersApi {
         val dbIdsValid: MutableSet<String> = HashSet()
         val assignedCatalogs: MutableList<Catalog> = ArrayList()
         for (dbId in dbIds) {
-            if (dbId != null) {
-                val catalogById = dbUtils.getCatalogById(dbId)
-                if (catalogById != null) {
-                    assignedCatalogs.add(catalogById)
-                    dbIdsValid.add(dbId)
-                }
+            val catalogById = dbUtils.getCatalogById(dbId)
+            if (catalogById != null) {
+                assignedCatalogs.add(catalogById)
+                dbIdsValid.add(dbId)
             }
         }
 
@@ -126,9 +132,14 @@ class UsersApiController : UsersApi {
                 name = keycloakService.getName(principal as KeycloakAuthenticationToken?),
                 assignedCatalogs = assignedCatalogs,
                 roles = keycloakService.getRoles(principal),
-                currentCatalog = catalog)
+                currentCatalog = catalog,
+                version = getVersion())
         return ResponseEntity.ok(userInfo)
 
+    }
+
+    private fun getVersion(): Version {
+        return Version(buildInfo?.version, Date.from(buildInfo?.time), gitInfo?.commitId)
     }
 
     @Throws(ApiException::class)

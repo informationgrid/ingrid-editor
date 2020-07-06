@@ -472,6 +472,10 @@ ige-side-menu {
     display: none;
   }
 
+  button.error-outline {
+    border-color: rgba(0, 0, 0, 0.12) !important;
+  }
+
   .mat-error {
     opacity: 0;
   }
@@ -491,6 +495,14 @@ ige-side-menu {
   .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick {
     color: initial;
     opacity: 0;
+  }
+
+  .mat-form-field.mat-form-field-invalid .mat-form-field-label {
+    color: rgba(0, 0, 0, 0.6);
+
+    &.mat-accent, .mat-form-field-required-marker {
+      color: rgba(0, 0, 0, 0.6);
+    }
   }
 }
 

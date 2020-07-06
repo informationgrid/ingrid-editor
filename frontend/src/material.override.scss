@@ -61,6 +61,10 @@
     background-color: $ige-secondary;
     padding: 10px;
 
+    &.error {
+      background-color: #cd0909;
+    }
+
     .mat-dialog-title {
       margin: 0;
       color: white;
@@ -111,3 +115,7 @@ ige-root .mat-card {
   }
 }
 
+/* Checkboxes */
+.mat-pseudo-checkbox-checked {
+  background: #398C32 !important;
+}

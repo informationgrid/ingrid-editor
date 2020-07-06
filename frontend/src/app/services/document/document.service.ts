@@ -33,6 +33,8 @@ export class DocumentService {
   afterProfileSwitch$ = new Subject<any>();
   datasetsChanged$ = new Subject<UpdateDatasetInfo>();
   publishState$ = new BehaviorSubject<boolean>(false);
+  reload$ = new Subject<string>();
+
   private configuration: Configuration;
   private alternateAddressTitle: (IgeDocument) => string = null;
 

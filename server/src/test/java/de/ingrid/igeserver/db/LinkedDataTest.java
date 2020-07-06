@@ -101,7 +101,7 @@ public class LinkedDataTest {
 
         map.put("address.city", "Berlin");
 
-        dbService.save(DBApi.DBClass.Documents.name(), null, "{\"address\": { \"city\": \"Berlin\"}}");
+        dbService.save(DBApi.DBClass.Documents.name(), null, "{\"address\": { \"city\": \"Berlin\"}}", null);
 
         //docFromDb.field("address.city", "Berlin");
         //docFromDb.save();

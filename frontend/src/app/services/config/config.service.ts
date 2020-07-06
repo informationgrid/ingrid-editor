@@ -9,6 +9,12 @@ export class Configuration {
   }
 }
 
+export interface Version {
+  version: string;
+  date: string;
+  commitId: string;
+}
+
 export interface UserInfo {
   userId: string;
   name: string;
@@ -16,6 +22,8 @@ export interface UserInfo {
   assignedCatalogs: any[];
   roles: string[];
   currentCatalog: Catalog;
+
+  version: Version;
 }
 
 @Injectable({

@@ -7,11 +7,21 @@
 }
 
 .mat-chip {
+  height: 36px;
+  margin: 6px !important;
+  font-weight: normal;
+  font-size: 16px;
   border-radius: 4px;
   background-color: $ige-background;
+  pointer-events: initial !important;
 
-  &:hover {
-    background-color: #EAEAEA;
+  &:focus:after, /* press */
+  &:hover:after {
+    opacity: 0.05;
+  }
+
+  &:active { /* press */
+    box-shadow: none !important;
   }
 }
 
