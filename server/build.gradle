@@ -43,7 +43,8 @@ dependencies {
     compile "org.apache.logging.log4j:log4j-api-kotlin:1.0.0"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
     // for faster development ignore frontend project and its long build time
-    if (hasProperty('buildProfile')) runtimeOnly project(':frontend')
+//    if (hasProperty('buildProfile')) runtimeOnly project(':frontend')
+    runtimeOnly project(':frontend')
 
     // Spring
     implementation('org.springframework.boot:spring-boot-starter-web') {
@@ -130,10 +131,8 @@ jib {
     }
 }
 
-if (hasProperty('buildProfile')) {
-    //tasks.assemble.dependsOn tasks.jibDockerBuild
-    tasks.assemble.dependsOn tasks.jib
-}
+//tasks.assemble.dependsOn tasks.jibDockerBuild
+tasks.assemble.dependsOn tasks.jib
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
