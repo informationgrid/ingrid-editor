@@ -76,6 +76,14 @@ export class TestDoctype extends BaseDoctype {
         label: 'Repeatables'
       },
       fieldGroup: [{
+        key: 'addresses',
+        type: 'address-card',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Addresses',
+          required: true
+        }
+      }, {
         key: 'multiChips',
         type: 'repeatChip',
         wrappers: ['panel'],
