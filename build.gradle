@@ -5,3 +5,7 @@ plugins {
 subprojects {
     version = 'MANAGED_BY_JGITVER'
 }
+
+jgitver {
+    nonQualifierBranches = 'master,develop'
+}
