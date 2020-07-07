@@ -9,14 +9,15 @@ import {IgeDocument} from '../../../../models/ige-document';
 export class AddressTitleBehaviour extends Plugin {
   id = 'plugin.address.title';
   name = 'Template für die Generierung des Adressen-Titels';
-  description = 'Definition für den Titel, der bei einer neuen Adresse generiert wird. Verfügbare Felder sind: firstName, ' +
-    'lastName und organization';
+  description = 'Definition für den Titel, der bei einer neuen Adresse generiert wird. Z.B.: organization + ", " + lastName + ", " + firstName<br>Verfügbare Felder sind: <b>firstName</b>, ' +
+    '<b>lastName</b> und <b>organization</b>';
   defaultActive = false;
 
 
   private addressTitleFunction: AddressTitleFn = (address: IgeDocument/* IMPORTANT FOR EVALUATION! */) => {
+    const value = this.replaceVariables(this.data.template);
     // tslint:disable-next-line:no-eval
-    return eval(this.data.template);
+    return eval(value);
   };
 
   constructor(private documentService: DocumentService) {
@@ -26,32 +27,44 @@ export class AddressTitleBehaviour extends Plugin {
       key: 'template',
       type: 'input',
       templateOptions: {
-        label: 'Template',
-        placeholder: 'address.organization + ", " + address.lastName + ", " + address.firstName',
+        placeholder: 'organization + ", " + lastName + ", " + firstName',
         appearance: 'outline',
         required: true
       },
       validators: {
         template: {
-          expression: (c) => {
-            let error = false;
-            const address = {}; /* IMPORTANT FOR EVALUATION! */
-            try {
-              // tslint:disable-next-line:no-eval
-              const testString = eval(c.value);
-              if (testString && typeof (testString) !== 'string') {
-                throw new Error('Not a String');
-              }
-            } catch (e) {
-              console.log('Evaluation error');
-              error = true;
-            }
-            return !error;
-          },
+          expression: this.validateInputString(),
           message: () => 'Der Wert ist ungültig'
         }
       }
     });
+  }
+
+  private validateInputString() {
+    return (c) => {
+      let error = false;
+      const address = {}; /* IMPORTANT FOR EVALUATION! */
+      try {
+        const value = this.replaceVariables(c.value);
+
+        // tslint:disable-next-line:no-eval
+        const testString = eval(value);
+        if (testString && typeof (testString) !== 'string') {
+          throw new Error('Not a String');
+        }
+      } catch (e) {
+        console.log('Evaluation error');
+        error = true;
+      }
+      return !error;
+    };
+  }
+
+  private replaceVariables(text) {
+    return text
+      .replace('organization', 'address.organization')
+      .replace('lastName', 'address.lastName')
+      .replace('firstName', 'address.firstName');
   }
 
   register() {

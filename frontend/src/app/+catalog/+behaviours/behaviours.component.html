@@ -13,7 +13,7 @@
                 </mat-card-title>
 
                 <mat-card-content>
-                    <div>{{plugin.description}}</div>
+                    <div [innerHTML]="plugin.description"></div>
 
                     <ng-container *ngIf="behaviourFields[plugin.id].fields.length > 0">
                         <formly-form [form]="behaviourFields[plugin.id].form"
