@@ -1,4 +1,4 @@
-<div fxLayout="row wrap" fxLayoutGap="24px grid" class="address-cards">
+<div *ngIf="addresses.length > 0" fxLayout="row wrap" fxLayoutGap="24px grid" class="address-cards">
     <div *ngFor="let address of addresses; let i = index" fxFlex="50">
         <ige-address-card (edit)="editAddress(address, i)"
                           (remove)="removeAddress(address)"
@@ -6,4 +6,5 @@
     </div>
 </div>
 
-<ige-add-button (add)="addAddress()"></ige-add-button>
+<ige-add-button (add)="addAddress()"
+                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
