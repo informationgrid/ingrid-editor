@@ -312,17 +312,19 @@ sidebar .list-group-item:hover {
 
 
 //}
-[class*="flex-"] {
-  padding-left: 10px;
-  padding-right: 10px;
-}
+formly-field {
+  &[class*="flex-"] {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 
-[class*="flex-"]:first-child {
-  padding-left: 0;
-}
+  &[class*="flex-"]:first-child {
+    padding-left: 0;
+  }
 
-[class*="flex-"]:nth-last-child(1) {
-  padding-right: 0;
+  &[class*="flex-"]:nth-last-child(1) {
+    padding-right: 0;
+  }
 }
 
 .smallField {

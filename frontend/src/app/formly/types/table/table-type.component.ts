@@ -49,9 +49,9 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
 
 
   addRow() {
-    this.dataSource = new MatTableDataSource<any>([...this.dataSource.data, {}]);
-    // this.dataSource.data.push({});
-    this.updateFormControl(this.dataSource.data);
+
+    this.editRow(null)
+
   }
 
   removeRow(index: number) {
@@ -67,13 +67,17 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
     this.dialog.open(FormDialogComponent, {
       data: {
         fields: this.to.columns,
-        model: JSON.parse(JSON.stringify(this.dataSource.data[index]))
+        model: index === null ? {} : JSON.parse(JSON.stringify(this.dataSource.data[index]))
       } as FormDialogData,
     }).afterClosed()
       .subscribe(result => {
         console.log(result);
         if (result) {
-          this.dataSource.data.splice(index, 1, result);
+          if (index === null) {
+            this.dataSource.data.push(result);
+          } else {
+            this.dataSource.data.splice(index, 1, result);
+          }
           this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
           this.updateFormControl(this.dataSource.data);
         }
