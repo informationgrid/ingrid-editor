@@ -24,7 +24,8 @@ export class OneColumnWrapperComponent extends FieldWrapper implements AfterView
   ngAfterViewInit() {
 
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    this.docType = this.model._type;
+    // TODO: this.model is not the whole model!!! How to get the _type?
+    this.docType = this.model?._type;
     this.fieldId = this.field.key;
 
   }

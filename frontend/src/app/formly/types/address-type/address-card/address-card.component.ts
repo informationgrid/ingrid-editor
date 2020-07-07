@@ -46,7 +46,8 @@ export class AddressCardComponent implements OnInit {
     if (email && email.length > 0) {
       return email[0].connection;
     } else {
-      return '???';
+      const phone = address.contact?.filter(item => item.type === '1');
+      return phone && phone.length > 0 ? phone[0].connection : '???';
     }
   }
 
