@@ -1,9 +1,9 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.DBUtils
+import de.ingrid.igeserver.services.CatalogService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -21,11 +21,11 @@ class StatisticApiController : StatisticApi {
     private lateinit var dbService: DocumentService
 
     @Autowired
-    private lateinit var dbUtils: DBUtils
+    private lateinit var catalogService: CatalogService
 
     override fun getStatistic(principal: Principal?): ResponseEntity<StatisticResponse> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbApi.acquire(dbId).use {
             val statistic = this.dbService.getDocStatistic()

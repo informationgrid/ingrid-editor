@@ -1,8 +1,8 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.model.Catalog
-import de.ingrid.igeserver.utils.DBUtils
+import de.ingrid.igeserver.services.CatalogService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,13 +16,13 @@ class CatalogApiController : CatalogApi {
     private lateinit var dbService: DBApi
 
     @Autowired
-    private lateinit var dbUtils: DBUtils
+    private lateinit var catalogService: CatalogService
 
     override val catalogs: ResponseEntity<List<Catalog>>
         get() {
 
             val catalogs = dbService.databases
-                    .map { dbUtils.getCatalogById(it) }
+                    .map { catalogService.getCatalogById(it) }
                     .filterNotNull()
 
             return ResponseEntity.ok().body(catalogs)

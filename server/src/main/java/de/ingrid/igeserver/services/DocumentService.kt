@@ -4,19 +4,21 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ApiException
-import de.ingrid.igeserver.db.DBApi
-import de.ingrid.igeserver.db.FindOptions
-import de.ingrid.igeserver.db.QueryType
-import de.ingrid.igeserver.documenttypes.AbstractDocumentType
-import de.ingrid.igeserver.documenttypes.DocumentType
-import de.ingrid.igeserver.documenttypes.DocumentWrapperType
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.FindOptions
+import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.model.document.DocumentType
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
+import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.reflect.KClass
 
 @Service
 class DocumentService : MapperService() {
@@ -24,12 +26,11 @@ class DocumentService : MapperService() {
     private val log = logger()
 
     @Autowired
-    private lateinit var documentTypes: List<AbstractDocumentType>
+    private lateinit var documentTypes: List<EntityType>
 
     @Autowired
     private lateinit var dbService: DBApi
 
-    @Throws(Exception::class)
     fun updateParent(dbDoc: String, parent: String?): JsonNode {
         val map = getJsonNode(dbDoc) as ObjectNode
         map.put(FIELD_PARENT, parent)
@@ -48,8 +49,7 @@ class DocumentService : MapperService() {
         }
     }
 
-    @Throws(Exception::class)
-    fun getByDocId(id: String, type: String, withReferences: Boolean): JsonNode? {
+    fun <T : EntityType> getByDocId(id: String, type: KClass<T>, withReferences: Boolean): JsonNode? {
 
         val query = listOf(QueryField(FIELD_ID, id))
         val findOptions = FindOptions()
@@ -78,9 +78,9 @@ class DocumentService : MapperService() {
             return docWrapper
         }
 
-    fun determineHasChildren(doc: JsonNode, type: String): Boolean {
+    fun <T : EntityType> determineHasChildren(doc: JsonNode, type: KClass<T>): Boolean {
         val id = doc[FIELD_ID].asText()
-        val countMap = dbService.countChildrenFromNode(id, type)
+        val countMap = dbService.countChildrenOfType(id, type)
         return if (countMap.containsKey(id)) {
             countMap[id]!! > 0
         } else false
@@ -124,12 +124,12 @@ class DocumentService : MapperService() {
         val docType = doc[FIELD_DOCUMENT_TYPE].asText()
         val refType = getDocumentType(docType)
 
-        refType.mapLatestDocReference(doc, onlyPublished, this)
+        refType.mapLatestDocReference(doc, onlyPublished)
     }
 
-    fun getDocumentType(docType: String): AbstractDocumentType {
+    fun getDocumentType(docType: String): EntityType {
 
-        return checkNotNull(documentTypes.find { it.typeName == docType })
+        return checkNotNull(documentTypes.find { it.className == docType })
 
     }
 
@@ -140,7 +140,7 @@ class DocumentService : MapperService() {
         addCreationInfo(dataJson)
 
         // save document
-        val result = dbService.save(DocumentType.TYPE, null, dataJson.toString())
+        val result = dbService.save(DocumentType::class, null, dataJson.toString())
 
         // create DocumentWrapper
         val recordId = dbService.getRecordId(result)
@@ -148,7 +148,7 @@ class DocumentService : MapperService() {
         val documentWrapper = createWrapper(dataJson, recordId, category)
 
         // save wrapper
-        val resultWrapper = dbService.save(DocumentWrapperType.TYPE, null, documentWrapper.toString())
+        val resultWrapper = dbService.save(DocumentWrapperType::class, null, documentWrapper.toString())
         return getLatestDocument(resultWrapper)
 
     }
@@ -163,11 +163,10 @@ class DocumentService : MapperService() {
         }
 
         return documentTypes
-                .find { it.typeName == docType }!!
+                .find { it.className == docType }!!
                 .category
 
     }
-
 
     private fun addCreationInfo(dataJson: ObjectNode) {
 
@@ -222,9 +221,9 @@ class DocumentService : MapperService() {
         options.queryOperator = "AND"
         options.queryType = QueryType.exact
 
-        val allData = dbService.findAll(DocumentWrapperType.TYPE, allDocumentQuery, options)
-        val allDataDrafts = dbService.findAll(DocumentWrapperType.TYPE, allDocumentDraftsQuery, options)
-        val allDataPublished = dbService.findAll(DocumentWrapperType.TYPE, allDocumentPublishedQuery, options)
+        val allData = dbService.findAll(DocumentWrapperType::class, allDocumentQuery, options)
+        val allDataDrafts = dbService.findAll(DocumentWrapperType::class, allDocumentDraftsQuery, options)
+        val allDataPublished = dbService.findAll(DocumentWrapperType::class, allDocumentPublishedQuery, options)
 
         return StatisticResponse(
                 totalNum = allData.totalHits,
