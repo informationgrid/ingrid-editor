@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../services/ApiService';
-import {ConfigService} from '../services/config/config.service';
+import {ConfigService, Version} from '../services/config/config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
-import {InfoDialogComponent} from './info-dialog/info-dialog.component';
 
 @Component({
   selector: 'ige-main-header',
@@ -15,12 +14,16 @@ export class MainHeaderComponent implements OnInit {
   userInfo = this.configService.$userInfo;
   showShadow: boolean;
   pageTitle: string;
+  version: Version;
 
   constructor(private apiService: ApiService, private configService: ConfigService,
               private router: Router, private dialog: MatDialog) {
   }
 
   ngOnInit() {
+
+    this.version = this.configService.$userInfo.getValue().version;
+
     this.router.events.subscribe(
       (event: any) => {
         if (event instanceof NavigationEnd) {
@@ -40,14 +43,13 @@ export class MainHeaderComponent implements OnInit {
   private getPageTitleFromRoute(url: string) {
     const firstPart = url.split(';')[0];
     switch (firstPart) {
-      case('/form'): return 'Daten';
-      case('/address'): return 'Adressen';
-      default: return '';
+      case('/form'):
+        return 'Daten';
+      case('/address'):
+        return 'Adressen';
+      default:
+        return '';
     }
-  }
-
-  showInfo() {
-    this.dialog.open(InfoDialogComponent)
   }
 
   getInitials(name: string) {
