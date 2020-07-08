@@ -1,5 +1,5 @@
 <div *ngIf="addresses.length > 0" fxLayout="row wrap" fxLayoutGap="24px grid" class="address-cards">
-    <div *ngFor="let address of addresses; let i = index" fxFlex="50">
+    <div *ngFor="let address of addresses; let i = index" fxFlex="50" class="address-card-wrapper">
         <ige-address-card (edit)="editAddress(address, i)"
                           (remove)="removeAddress(address)"
                           [address]="address"></ige-address-card>
