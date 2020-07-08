@@ -1,3 +1,5 @@
+@import '../../../../variables.scss';
+
 :host {
   display: block;
   line-height: 48px;
@@ -27,7 +29,7 @@
       background-color: #F7E5E8;
 
       .mat-icon {
-        color: #B00020;
+        color: $error-color;
       }
     }
   }
