@@ -43,14 +43,18 @@ export class AddressTitleBehaviour extends Plugin {
   private validateInputString() {
     return (c) => {
       let error = false;
-      const address = {}; /* IMPORTANT FOR EVALUATION! */
+      const address = { firstName: '', lastName: '', organization: ''}; /* IMPORTANT FOR EVALUATION! */
       try {
         const value = this.replaceVariables(c.value);
 
         // tslint:disable-next-line:no-eval
         const testString = eval(value);
+        console.log('Eval string value: ', value);
+        console.log('Eval string evaluated: ', testString);
         if (testString && typeof (testString) !== 'string') {
           throw new Error('Not a String');
+        } else if (testString === undefined || testString.indexOf('undefined') !== -1) {
+          throw new Error('One or more fields are not defined');
         }
       } catch (e) {
         console.log('Evaluation error');
