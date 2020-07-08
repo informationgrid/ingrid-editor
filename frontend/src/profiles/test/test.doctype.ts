@@ -213,6 +213,85 @@ export class TestDoctype extends BaseDoctype {
           ]),
           asSelect: true
         }
+      }, {
+        key: 'repeatDetailListImage',
+        type: 'repeatDetailList',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Image List',
+          asImage: true
+        },
+        fieldArray: {
+          fieldGroup: [
+            {
+              key: 'type',
+              type: 'input',
+              templateOptions: {
+                label: 'Typ',
+                appearance: 'outline'
+              }
+            },
+            {
+              key: 'title',
+              type: 'input',
+              templateOptions: {
+                label: 'Titel',
+                appearance: 'outline',
+                required: true
+              }
+            },
+            {
+              key: 'description',
+              type: 'textarea',
+              templateOptions: {
+                label: 'Beschreibung/Link',
+                appearance: 'outline',
+                autosize: true,
+                autosizeMinRows: 3,
+                autosizeMaxRows: 5
+              }
+            }
+          ]
+        }
+      }, {
+        key: 'repeatDetailListLink',
+        type: 'repeatDetailList',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Link List'
+        },
+        fieldArray: {
+          fieldGroup: [
+            {
+              key: 'type',
+              type: 'input',
+              templateOptions: {
+                label: 'Typ',
+                appearance: 'outline'
+              }
+            },
+            {
+              key: 'title',
+              type: 'input',
+              templateOptions: {
+                label: 'Titel',
+                appearance: 'outline',
+                required: true
+              }
+            },
+            {
+              key: 'description',
+              type: 'textarea',
+              templateOptions: {
+                label: 'Beschreibung/Link',
+                appearance: 'outline',
+                autosize: true,
+                autosizeMinRows: 3,
+                autosizeMaxRows: 5
+              }
+            }
+          ]
+        }
       }]
     }, {
       wrappers: ['section'],
