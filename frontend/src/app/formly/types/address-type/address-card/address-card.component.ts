@@ -4,7 +4,7 @@ import {ProfileService} from '../../../../services/profile.service';
 
 export interface AddressRef {
   type: string;
-  ref: Partial<any>;
+  ref: Partial<IgeDocument>;
 }
 
 @Component({
@@ -18,6 +18,7 @@ export class AddressCardComponent implements OnInit {
   @Input() address: AddressRef;
   @Output() remove = new EventEmitter();
   @Output() edit = new EventEmitter();
+  @Output() gotoAddress = new EventEmitter();
 
   content: {
     iconClass: string;

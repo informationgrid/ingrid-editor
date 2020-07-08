@@ -2,6 +2,7 @@
     <div *ngFor="let address of addresses; let i = index" fxFlex="50" class="address-card-wrapper">
         <ige-address-card (edit)="editAddress(address, i)"
                           (remove)="removeAddress(address)"
+                          (gotoAddress)="gotoAddress(address)"
                           [address]="address"></ige-address-card>
     </div>
 </div>
