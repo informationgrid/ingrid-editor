@@ -7,9 +7,25 @@
         <div fxFlex></div>
 
         <span class="header-info">
-            <a class="link-button" mat-button (click)="showInfo()">
+            <button class="link-button" mat-button [matMenuTriggerFor]="menuInfo">
                 Info
-            </a>
+            </button>
+            <mat-menu #menuInfo="matMenu" class="info-menu">
+                <mat-list role="list">
+                    <mat-list-item role="listitem">
+                        <div mat-line class="label">Version</div>
+                        <div mat-line>{{version.version}}</div>
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <div mat-line class="label">Datum</div>
+                        <div mat-line>{{version.date | date:'dd.LL.yyyy HH:mm'}}</div>
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <div mat-line class="label">GIT Commit ID</div>
+                        <div mat-line>{{version.commitId}}</div>
+                    </mat-list-item>
+                </mat-list>
+            </mat-menu>
         </span>
 
         <!--<span class="catalog-title">{{(userInfo|async).currentCatalog.label}}</span>-->

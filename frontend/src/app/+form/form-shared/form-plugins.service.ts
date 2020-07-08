@@ -3,11 +3,10 @@ import {Plugin} from '../../+catalog/+behaviours/plugin';
 import {FormPluginToken} from '../../tokens/plugin.token';
 
 // TODO: Add Angular decorator.
-// TODO: Add Angular decorator.
 @Injectable()
 export class FormPluginsService implements OnDestroy {
 
-  private plugins: Plugin[] = [];
+  plugins: Plugin[] = [];
 
   constructor(@Inject(FormPluginToken) autoPlugins: Plugin[]) {
 

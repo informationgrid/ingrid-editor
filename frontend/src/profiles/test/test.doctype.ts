@@ -76,6 +76,14 @@ export class TestDoctype extends BaseDoctype {
         label: 'Repeatables'
       },
       fieldGroup: [{
+        key: 'addresses',
+        type: 'address-card',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Addresses',
+          required: true
+        }
+      }, {
         key: 'multiChips',
         type: 'repeatChip',
         wrappers: ['panel'],
@@ -174,7 +182,7 @@ export class TestDoctype extends BaseDoctype {
         wrappers: ['panel'],
         templateOptions: {
           externalLabel: 'Repeatable List (Codelist)',
-          placeholder: 'Raumbezugssystem wählen...',
+          placeholder: 'Raumbezugscode eingeben...',
           options: this.getCodelistForSelect(100),
           codelistId: 100
         }
@@ -184,7 +192,7 @@ export class TestDoctype extends BaseDoctype {
         wrappers: ['panel'],
         templateOptions: {
           externalLabel: 'Repeatable List (Statisch)',
-          placeholder: 'Wert wählen...',
+          placeholder: 'Begriff eingeben...',
           options: of(<SelectOption[]>[
             {label: 'Wert 1', value: '1'},
             {label: 'Wert 2', value: '2'},
@@ -204,6 +212,85 @@ export class TestDoctype extends BaseDoctype {
             {label: 'Wert 3', value: '3'}
           ]),
           asSelect: true
+        }
+      }, {
+        key: 'repeatDetailListImage',
+        type: 'repeatDetailList',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Image List',
+          asImage: true
+        },
+        fieldArray: {
+          fieldGroup: [
+            {
+              key: 'type',
+              type: 'input',
+              templateOptions: {
+                label: 'Typ',
+                appearance: 'outline'
+              }
+            },
+            {
+              key: 'title',
+              type: 'input',
+              templateOptions: {
+                label: 'Titel',
+                appearance: 'outline',
+                required: true
+              }
+            },
+            {
+              key: 'description',
+              type: 'textarea',
+              templateOptions: {
+                label: 'Beschreibung/Link',
+                appearance: 'outline',
+                autosize: true,
+                autosizeMinRows: 3,
+                autosizeMaxRows: 5
+              }
+            }
+          ]
+        }
+      }, {
+        key: 'repeatDetailListLink',
+        type: 'repeatDetailList',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Link List'
+        },
+        fieldArray: {
+          fieldGroup: [
+            {
+              key: 'type',
+              type: 'input',
+              templateOptions: {
+                label: 'Typ',
+                appearance: 'outline'
+              }
+            },
+            {
+              key: 'title',
+              type: 'input',
+              templateOptions: {
+                label: 'Titel',
+                appearance: 'outline',
+                required: true
+              }
+            },
+            {
+              key: 'description',
+              type: 'textarea',
+              templateOptions: {
+                label: 'Beschreibung/Link',
+                appearance: 'outline',
+                autosize: true,
+                autosizeMinRows: 3,
+                autosizeMaxRows: 5
+              }
+            }
+          ]
         }
       }]
     }, {

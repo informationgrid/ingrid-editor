@@ -5,6 +5,7 @@ import {tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Plugin} from './plugin';
 import {FormlyFormBuilder} from '@ngx-formly/core';
+import {FormPluginsService} from '../../+form/form-shared/form-plugins.service';
 
 @UntilDestroy()
 @Component({
@@ -23,20 +24,19 @@ import {FormlyFormBuilder} from '@ngx-formly/core';
 export class BehavioursComponent implements OnInit {
 
   plugins: Plugin[];
-
-  form: { [x: string]: FormGroup } = {};
+  formPlugins: Plugin[];
 
   behaviourTab: string;
   expanded: any = {};
 
-  pluginForm: FormGroup = new FormGroup({});
-
   behaviourFields: any = {};
+  formBehaviourFields: any = {};
 
 
   constructor(private formBuilder: FormBuilder,
               private builder: FormlyFormBuilder,
-              private behaviourService: BehaviourService) {
+              private behaviourService: BehaviourService,
+              private formPluginsService: FormPluginsService) {
   }
 
   ngOnInit() {
@@ -45,40 +45,12 @@ export class BehavioursComponent implements OnInit {
     this.behaviourService.theSystemBehaviours$
       .pipe(
         untilDestroyed(this),
-        tap((items: Plugin[]) => {
-          console.log('Item: ', items);
-          const initialForm = items.reduce((acc: any, val: Plugin) => {
-            acc[val.id] = false;
-            return acc;
-          }, {});
-          this.pluginForm = this.formBuilder.group(initialForm);
-          console.log(this.pluginForm.controls);
-        }),
-        tap((items: Plugin[]) => {
-
-          this.behaviourFields = items
-            .reduce((acc: any, val: Plugin) => {
-              const formGroup = new FormGroup({});
-
-              // initially set disabled state for fields
-              if (val.fields.length > 0 && !val.isActive) {
-                // we need to build form when we want to set it disabled initialially
-                this.builder.buildForm(formGroup, val.fields, val.data ? val.data : {}, {});
-                formGroup.disable();
-              }
-
-              acc[val.id] = {
-                form: formGroup,
-                active: new FormControl(val.isActive),
-                modified: val.isActive !== val.defaultActive,
-                fields: val.fields,
-                data: val.data ? val.data : {}
-              };
-              return acc;
-            }, {});
-        })
+        tap((items: Plugin[]) => this.behaviourFields = this.createModelFromPlugins(items))
       )
       .subscribe(plugins => this.plugins = plugins);
+
+    this.formBehaviourFields = this.createModelFromPlugins(this.formPluginsService.plugins);
+    this.formPlugins = this.formPluginsService.plugins;
 
   }
 
@@ -111,5 +83,27 @@ export class BehavioursComponent implements OnInit {
   updateFieldState(plugin: Plugin, checked: boolean) {
     const form = this.behaviourFields[plugin.id].form;
     checked ? form.enable() : form.disable();
+  }
+
+  private createModelFromPlugins(items: Plugin[]) {
+    return items.reduce((acc: any, val: Plugin) => {
+      const formGroup = new FormGroup({});
+
+      // initially set disabled state for fields
+      if (val.fields.length > 0 && !val.isActive) {
+        // we need to build form when we want to set it disabled initialially
+        this.builder.buildForm(formGroup, val.fields, val.data ? val.data : {}, {});
+        formGroup.disable();
+      }
+
+      acc[val.id] = {
+        form: formGroup,
+        active: new FormControl(val.isActive),
+        modified: val.isActive !== val.defaultActive,
+        fields: val.fields,
+        data: val.data ? val.data : {}
+      };
+      return acc;
+    }, {})
   }
 }

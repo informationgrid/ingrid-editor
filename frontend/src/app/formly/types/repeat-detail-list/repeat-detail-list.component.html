@@ -1,0 +1,24 @@
+<mat-list>
+    <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" class="clickable" [class.image]="to.asImage">
+
+        <div *ngIf="to.asImage" mat-list-avatar class="avatar"
+             [style.background-image]="'url(' + model[i].description + ')'">
+        </div>
+        <div *ngIf="!to.asImage" mat-list-avatar class="avatar"></div>
+
+        <div mat-line class="type">{{model[i].type}}</div>
+        <div mat-line class="title">{{model[i].title}}</div>
+        <div mat-line class="description">{{model[i].description}}</div>
+
+        <button mat-icon-button class="menu-button" [mat-menu-trigger-for]="menu">
+            <mat-icon svgIcon="Mehr"></mat-icon>
+        </button>
+        <mat-menu #menu>
+            <button mat-menu-item (click)="editItem(i)">Bearbeiten</button>
+            <button mat-menu-item (click)="remove(i)">Entfernen</button>
+        </mat-menu>
+    </mat-list-item>
+</mat-list>
+
+<ige-add-button (add)="addItem()"
+                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>

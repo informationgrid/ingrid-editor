@@ -3,8 +3,31 @@
 mat-card {
   background-color: $ige-background;
 
-  &:hover {
+  ::ng-deep .mat-card-header-text {
+    margin-left: 8px;
+  }
 
+  .mat-card-title {
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .mat-card-subtitle {
+    font-weight: 500;
+    font-size: 16px;
+    color: #181818;
+  }
+
+  .title {
+    font-weight: 500;
+  }
+
+  .title, .organization-person {
+    font-size: 16px;
+  }
+
+  .email {
+    padding-top: 8px;
   }
 }
 

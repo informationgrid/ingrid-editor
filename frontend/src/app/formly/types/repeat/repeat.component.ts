@@ -24,9 +24,12 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
 
   private handleMinimumLength(value: any[], minLength: number) {
 
-    for (let i = value.length; i < minLength; i++) {
-      this.add(null, {}, {markAsDirty: false});
-    }
+    // TODO: remove timeout without getting ExpressionHasChangedException
+    setTimeout(() => {
+      for (let i = value.length; i < minLength; i++) {
+        this.add(null, {}, {markAsDirty: false});
+      }
+    }, 0);
 
   }
 }

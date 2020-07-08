@@ -49,6 +49,7 @@
   display: flex !important;
   flex-direction: column;
   flex: 1;
+  margin: -9px 0 0 -10px;
 
   ng-component, ige-new-document {
     display: flex;
@@ -115,7 +116,30 @@ ige-root .mat-card {
   }
 }
 
-/* Checkboxes */
+/* Checkboxes, radio btns */
+.mat-checkbox-indeterminate:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-background,
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-background,
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+.mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
 .mat-pseudo-checkbox-checked {
-  background: #398C32 !important;
+  background-color: #398C32 !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle,
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple,
+.mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
+  background-color: #398C32 !important;
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #398C32 !important;
+}
+
+/* Placeholder */
+::-moz-placeholder { /* Firefox 19+ */
+  opacity: 1;
+}
+:-moz-placeholder { /* Firefox 4 - 18 */
+  opacity: 1;
 }

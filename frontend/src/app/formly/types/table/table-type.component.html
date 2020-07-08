@@ -28,7 +28,7 @@
     <ige-form-error
         *ngIf="formFieldControl.errorState && !formControl.errors?.required">{{formControl.errors}}</ige-form-error>
 
-    <table mat-table *ngIf="dataSource?.data?.length > 0" fxLayout="column" [dataSource]="dataSource"
+    <mat-table *ngIf="dataSource?.data?.length > 0" fxLayout="column" [dataSource]="dataSource"
            [class.edit-mode]="batchMode">
 
         <ng-container *ngFor="let column of displayedColumns; let i = index" [matColumnDef]="column"
@@ -62,8 +62,8 @@
 
             <!-- Normal column-->
             <ng-container *ngSwitchDefault>
-                <mat-header-cell *matHeaderCellDef> {{to.columns[batchMode ? i - 1 : i].label}} </mat-header-cell>
-                <mat-cell *matCellDef="let element">
+                <mat-header-cell *matHeaderCellDef [class]="to.columns[batchMode ? i - 1 : i].class"> {{to.columns[batchMode ? i - 1 : i].label}} </mat-header-cell>
+                <mat-cell *matCellDef="let element" [class]="to.columns[batchMode ? i - 1 : i].class">
                     <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
                     {{element[column]}}
                     <!-- This edit is defined in the cell and can implicitly access element -->
@@ -90,7 +90,7 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;"
                  (click)="batchMode ? selection.toggle(row) : null"></mat-row>
 
-    </table>
+    </mat-table>
 </div>
 
 <div class="display-flex">

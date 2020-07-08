@@ -1,8 +1,11 @@
-<div fxLayout="row" fxLayoutGap="24px" class="address-cards">
-    <ige-address-card *ngFor="let address of addresses; let i = index" fxFlex="50"
-                      (edit)="editAddress(address, i)"
-                      (remove)="removeAddress(address)"
-                      [address]="address"></ige-address-card>
+<div *ngIf="addresses.length > 0" fxLayout="row wrap" fxLayoutGap="24px grid" class="address-cards">
+    <div *ngFor="let address of addresses; let i = index" fxFlex="50" class="address-card-wrapper">
+        <ige-address-card (edit)="editAddress(address, i)"
+                          (remove)="removeAddress(address)"
+                          (gotoAddress)="gotoAddress(address)"
+                          [address]="address"></ige-address-card>
+    </div>
 </div>
 
-<ige-add-button (add)="addAddress()"></ige-add-button>
+<ige-add-button (add)="addAddress()"
+                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>

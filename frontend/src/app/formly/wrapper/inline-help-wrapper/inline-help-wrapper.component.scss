@@ -1,6 +1,19 @@
 @import "src/variables";
 
-.infoIcon {
-  background-color: $ige-background;
-  margin-left: 12px;
+::ng-deep ige-inline-help-wrapper {
+  display: flex;
+  align-items: center;
+
+  .mat-icon-button.menu-button {
+    width: 24px;
+    height: 24px;
+    margin-left: 12px;
+    background-color: $ige-background;
+
+    .mat-button-wrapper {
+      * {
+        vertical-align: unset;
+      }
+    } 
+  }
 }

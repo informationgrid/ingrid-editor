@@ -12,9 +12,9 @@
 
     <div fxLayout="row" fxLayoutGap="24px" class="spatial-wrapper" [ngSwitch]="view">
 
-        <div fxLayout="column">
+        <div fxLayout="column" style="width: 400px;">
 
-            <div class="dlg-field-label">Typ</div>
+            <div class="dlg-field-label required">Typ*</div>
             <mat-form-field appearance="outline">
                 <mat-select (selectionChange)="updateView($event.value)" [value]="result.type">
                     <mat-option *ngFor="let menuItem of types" [value]="menuItem.id">
@@ -33,16 +33,19 @@
                              [wktString]="data?.value"
                              (result)="this.result.value = $event"></ige-wkt-spatial>
             <ige-draw-spatial *ngSwitchCase="'draw'"></ige-draw-spatial>
-            <ige-name-spatial *ngSwitchCase="'geo-name'"></ige-name-spatial>
+<!--            <ige-name-spatial *ngSwitchCase="'geo-name'"></ige-name-spatial>-->
         </div>
 
         <div fxLayout="column" fxFlex>
-            <div class="dlg-field-label">Titel<span *ngIf="view === 'geo-name'">*</span></div>
+            <div class="dlg-field-label" [class.required]="view === 'geo-name'">
+                Titel<span *ngIf="view === 'geo-name'">*</span>
+            </div>
             <mat-form-field appearance="outline">
                 <input matInput [formControl]="titleInput">
+                <mat-hint *ngIf="view === 'geo-name'">Geben Sie dem Raumbezug einen geografischen Namen</mat-hint>
             </mat-form-field>
 
-            <div #leafletDlg fxFlex></div>
+            <div [class.invisible]="view === 'geo-name'" #leafletDlg fxFlex></div>
         </div>
     </div>
 

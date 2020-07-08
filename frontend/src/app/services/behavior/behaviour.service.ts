@@ -48,13 +48,7 @@ export class BehaviourService {
     return this.dataService.loadStoredBehaviours()
       .pipe(
         tap(b => console.log(`fetched behaviours`, b)),
-        tap(storedBehaviours => {
-          this.systemBehaviours.forEach((behaviour) => {
-            const stored = storedBehaviours.filter((sb: any) => sb._id === behaviour.id);
-            behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
-            behaviour.data = stored.length > 0 ? stored[0].data : null;
-          });
-        }),
+        tap(storedBehaviours => this.applyActiveStates(this.systemBehaviours, storedBehaviours)),
         catchError(e => {
           const userInfo = this.configService.$userInfo.value;
           console.error('Could not get behaviours');
@@ -67,6 +61,14 @@ export class BehaviourService {
         })
       );
 
+  }
+
+  private applyActiveStates(behaviours: Plugin[], storedBehaviours: any[]) {
+    behaviours.forEach((behaviour) => {
+      const stored = storedBehaviours.filter((sb: any) => sb._id === behaviour.id);
+      behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+      behaviour.data = stored.length > 0 ? stored[0].data : null;
+    });
   }
 
   apply(form: FormGroup, profile: string) {

@@ -128,7 +128,7 @@ export class ProfileAddress extends BaseDoctype {
         }, {
           fieldGroupClassName: 'display-flex',
           fieldGroup: [{
-            key: 'PO',
+            key: 'plz',
             className: 'flex-1',
             type: 'input',
             templateOptions: {
@@ -143,10 +143,42 @@ export class ProfileAddress extends BaseDoctype {
               label: 'Stadt',
               appearance: 'outline'
             }
+          }]
+        }, {
+          fieldGroupClassName: 'display-flex',
+          fieldGroup: [{
+            key: 'po-box',
+            className: 'flex-1',
+            type: 'input',
+            templateOptions: {
+              label: 'Postfach',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'PO',
+            className: 'flex-1',
+            type: 'input',
+            templateOptions: {
+              label: 'PLZ (Postfach)',
+              appearance: 'outline'
+            }
+          }]
+        }, {
+          fieldGroupClassName: 'display-flex',
+          fieldGroup: [{
+            key: 'administrativeArea',
+            type: 'select',
+            className: 'flex-1',
+            templateOptions: {
+              label: 'Verwaltungsgebiet',
+              appearance: 'outline',
+              placeholder: 'Bitte wählen',
+              options: this.getCodelistForSelect(6250)
+            }
           }, {
             key: 'country',
-            className: 'flex-3',
             type: 'select',
+            className: 'flex-1',
             templateOptions: {
               label: 'Land',
               appearance: 'outline',

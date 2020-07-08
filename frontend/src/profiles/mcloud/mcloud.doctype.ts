@@ -128,6 +128,8 @@ export class McloudDoctype extends BaseDoctype {
             key: 'title',
             type: 'input',
             label: 'Titel',
+            focus: true,
+            class: 'flex-2',
             templateOptions: {
               label: 'Titel',
               appearance: 'outline'
@@ -136,6 +138,7 @@ export class McloudDoctype extends BaseDoctype {
             key: 'link',
             type: 'input',
             label: 'Link',
+            class: 'flex-2',
             templateOptions: {
               label: 'Link',
               appearance: 'outline',

@@ -1,3 +1,5 @@
+@import "../../../../../variables";
+
 :host {
   .small-padding-right ::ng-deep .mat-list-item-content {
     padding-right: 12px;
@@ -12,8 +14,54 @@ h4 > span {
   line-height: 40px;
 }
 
+.mat-list-base {
+  padding-top: 40px;
+  background-color: $ige-background;
+}
+
 .list-item-wrapper, .list-item-content {
-  flex: 1;
+}
+
+.list-item-wrapper {
+  width: calc(100% - 32px);
+}
+
+.list-item-content {
+  width: calc(100% - 50px);
+}
+
+.mat-list-base .mat-list-item .mat-line {
+  width: 100%;
+}
+
+.mat-list-item {
+  background-color: $ige-background;
+  border-bottom: 2px solid #fff;
+}
+
+.mat-list-item:hover {
+  background-color: darken($ige-background, 5%);
+}
+
+.mat-list-base .mat-list-item .mat-list-icon {
+  width: 24px;
+  height: 24px;
+  margin-left: 8px;
+  padding: 0;
+  border-radius: 0;
+}
+
+.mat-list-base .mat-list-item .mat-list-icon div {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 0;
+  border: 3px solid currentColor;
+  box-sizing: border-box;
+}
+
+.mat-list-base .mat-list-item .mat-list-icon.mat-icon-no-color {
+  color: #333;
 }
 
 .list-item-content {
@@ -28,7 +76,7 @@ h4 > span {
   font-size: 14px;
 }
 
-.spatial-title, .coordinates {
+.mat-line:not(.spatial-type) {
   font-size: 16px !important;
 }
 

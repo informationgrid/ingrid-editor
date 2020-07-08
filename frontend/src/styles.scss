@@ -38,10 +38,25 @@ h1 {
   background-color: $ige-mark-color;
 }
 
-.mat-card.no-box-shadow {
-  box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-  -moz-box-shadow: none !important;
+.mat-card {
+
+  &.hover-elevate {
+    &.mat-card {
+      box-shadow: none;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+    }
+
+    &:hover {
+      box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  &.no-box-shadow {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+  }
 }
 
 .medium-spacing {
@@ -312,17 +327,19 @@ sidebar .list-group-item:hover {
 
 
 //}
-[class*="flex-"] {
-  padding-left: 10px;
-  padding-right: 10px;
-}
+formly-field {
+  &[class*="flex-"] {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 
-[class*="flex-"]:first-child {
-  padding-left: 0;
-}
+  &[class*="flex-"]:first-child {
+    padding-left: 0;
+  }
 
-[class*="flex-"]:nth-last-child(1) {
-  padding-right: 0;
+  &[class*="flex-"]:nth-last-child(1) {
+    padding-right: 0;
+  }
 }
 
 .smallField {
@@ -506,11 +523,59 @@ ige-side-menu {
   }
 }
 
+.mat-form-field.mat-form-field-invalid {
+
+  .mat-form-field-outline {
+    color: $error-color !important;
+
+    &.mat-form-field-outline-thick {
+
+      .mat-form-field-outline-start,
+      .mat-form-field-outline-end,
+      .mat-form-field-outline-gap {
+        border-width: 1px;
+      }
+    }
+  }
+
+  .mat-form-field-label {
+    color: $error-color !important;
+
+    &.mat-accent,
+    .mat-form-field-required-marker {
+      color: $error-color !important;
+    }
+  }
+
+  .mat-input-element {
+    caret-color: $error-color ;
+  }
+}
+
+.mat-error {
+  font-size: 12px;
+  color: $error-color !important;
+}
+
+.mat-form-field .mat-select.mat-select-invalid {
+
+  .mat-select-placeholder {
+    color: $error-color;
+  }
+
+  .mat-select-arrow {
+    color: inherit !important;
+  }
+}
+
 .date-field {
   width: 200px;
 }
 
 .dlg-field-label {
   padding-bottom: 4px;
-  font-weight: 500;
+
+  &.required {
+    font-weight: 500;
+  }
 }
