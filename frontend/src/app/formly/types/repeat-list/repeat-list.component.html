@@ -21,6 +21,7 @@
 
 <ng-template #templateAutocomplete>
     <mat-form-field appearance="outline" class="width-100">
+        <mat-icon *ngIf="repeatListInput.value.length === 0" class="gray" matPrefix>search</mat-icon>
         <input type="text" #repeatListInput
                [placeholder]="to.placeholder"
                matInput
@@ -32,6 +33,9 @@
                 {{option.label}}
             </mat-option>
         </mat-autocomplete>
+        <button *ngIf="repeatListInput.value.length > 0" mat-icon-button matSuffix class="field-close" (click)="repeatListInput.value = ''">
+            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+        </button>
         <mat-hint *ngIf="!parameterOptions">Mit Return hinzufügen {{formControl.errors?.required}}</mat-hint>
     </mat-form-field>
     <mat-error *ngIf="formControl.errors?.required">Bitte erstellen Sie mindestens einen Eintrag</mat-error>

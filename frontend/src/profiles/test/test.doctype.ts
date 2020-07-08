@@ -182,7 +182,7 @@ export class TestDoctype extends BaseDoctype {
         wrappers: ['panel'],
         templateOptions: {
           externalLabel: 'Repeatable List (Codelist)',
-          placeholder: 'Raumbezugssystem wählen...',
+          placeholder: 'Raumbezugscode eingeben...',
           options: this.getCodelistForSelect(100),
           codelistId: 100
         }
@@ -192,7 +192,7 @@ export class TestDoctype extends BaseDoctype {
         wrappers: ['panel'],
         templateOptions: {
           externalLabel: 'Repeatable List (Statisch)',
-          placeholder: 'Wert wählen...',
+          placeholder: 'Begriff eingeben...',
           options: of(<SelectOption[]>[
             {label: 'Wert 1', value: '1'},
             {label: 'Wert 2', value: '2'},

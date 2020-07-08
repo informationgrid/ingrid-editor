@@ -1,16 +1,50 @@
+@import "../../../../variables";
+
 mat-list {
-  padding-bottom: 12px;
+  padding-bottom: 6px;
 
   .mat-list-item {
+    font-size: 16px;
+    height: 36px;
 
-    .close {
+    .mat-icon-button {
       display: none;
+      width: 24px;
+      height: 24px;
+      margin-right: -8px;
+      line-height: 24px;
     }
 
     &:hover {
-      .close {
+      .mat-icon-button {
         display: block;
       }
+    }
+  }
+}
+
+::ng-deep .mat-form-field-flex {
+  align-items: center;
+
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    top: 0.125em;
+  }
+
+  .mat-form-field-prefix {
+    .mat-icon {
+      margin: 0 4px 0 -4px;
+      color: $ige-comment-color;
+    }
+  }
+
+  .mat-form-field-suffix {
+    .mat-icon {
+      height: 24px !important;
+    }
+
+    .mat-icon-button {
+      margin-right: -10px;
     }
   }
 }

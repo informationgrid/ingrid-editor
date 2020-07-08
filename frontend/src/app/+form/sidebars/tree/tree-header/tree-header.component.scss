@@ -46,15 +46,13 @@
 
   ::ng-deep .mat-form-field-suffix {
     top: 0;
-    height: 24px;
 
     .mat-icon {
       height: 24px;
     }
 
     .mat-icon-button {
-      width: 24px;
-      height: 0;
+      margin-right: -10px;
     }
   }
 
