@@ -9,7 +9,9 @@
     </mat-tab>
 
     <mat-tab label="Verhalten">
-        <ige-behaviours #behaviours></ige-behaviours>
+        <ng-template matTabContent>
+            <ige-behaviours #behaviours></ige-behaviours>
+        </ng-template>
     </mat-tab>
 
 </mat-tab-group>
