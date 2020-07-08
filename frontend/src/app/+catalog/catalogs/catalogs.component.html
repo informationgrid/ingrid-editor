@@ -2,8 +2,8 @@
     Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog angehören, können Sie zusätzliche Operationen ausführen.
 </p>
 
-<div fxLayout="row wrap">
-    <div *ngFor="let cat of catalogs | async; trackBy:trackByCatalogId" fxFlex="25">
+<div fxLayout="row wrap" fxLayoutGap="24px grid">
+    <div *ngFor="let cat of catalogs | async; trackBy:trackByCatalogId" fxFlex="25" class="catalog-wrapper">
         <mat-card [class.mat-elevation-z6]="cat.id === currentCatalog">
             <mat-card-title>{{cat.label}}</mat-card-title>
             <mat-card-content>
