@@ -1,11 +1,19 @@
 @import "src/variables";
 
-.mat-icon-button.menu-button {
-  width: 24px;
-  height: 24px;
-}
+::ng-deep ige-inline-help-wrapper {
+  display: flex;
+  align-items: center;
 
-.infoIcon {
-  background-color: $ige-background;
-  margin-left: 12px;
+  .mat-icon-button.menu-button {
+    width: 24px;
+    height: 24px;
+    margin-left: 12px;
+    background-color: $ige-background;
+
+    .mat-button-wrapper {
+      * {
+        vertical-align: unset;
+      }
+    } 
+  }
 }
