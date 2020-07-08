@@ -25,6 +25,6 @@
     <button mat-stroked-button color="primary"
             [mat-dialog-close]="true"
             [disabled]="data.confirmText && textConfirmed !== data.confirmText">
-        Ok
+        {{data.acceptButtonText || 'Ok'}}
     </button>
 </mat-dialog-actions>

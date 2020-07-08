@@ -6,6 +6,7 @@ export interface ConfirmDialogData {
   message: string;
   list?: string[];
   confirmText?: string;
+  acceptButtonText?: any;
 }
 
 @Component( {
