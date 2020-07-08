@@ -4,7 +4,7 @@
 
 <div fxLayout="row wrap" fxLayoutGap="24px grid">
     <div *ngFor="let cat of catalogs | async; trackBy:trackByCatalogId" fxFlex="25" class="catalog-wrapper">
-        <mat-card [class.mat-elevation-z6]="cat.id === currentCatalog">
+        <mat-card class="hover-elevate" [class.selected]="cat.id === currentCatalog">
             <mat-card-title>{{cat.label}}</mat-card-title>
             <mat-card-content>
                 Profil: {{cat.type}}

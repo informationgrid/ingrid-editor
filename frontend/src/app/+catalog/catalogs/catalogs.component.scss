@@ -1,3 +1,5 @@
+@import "src/variables";
+
 .modal-body input {
   width: 100%;
 }
@@ -10,4 +12,8 @@
 
 .catalog-wrapper {
   min-width: 320px;
+}
+
+.selected {
+  background-color: $ige-mark-color;
 }
