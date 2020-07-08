@@ -21,7 +21,7 @@
 
 <ng-template #templateAutocomplete>
     <mat-form-field appearance="outline" class="width-100">
-        <mat-icon *ngIf="repeatListInput.value.length === 0" class="gray" matPrefix>search</mat-icon>
+        <mat-icon *ngIf="parameterOptions && repeatListInput.value.length === 0" class="gray" matPrefix>search</mat-icon>
         <input type="text" #repeatListInput
                [placeholder]="to.placeholder"
                matInput
