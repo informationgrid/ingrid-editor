@@ -115,7 +115,7 @@ mat-tree-node {
     background-color: darken(#FFFFFF, 5%);
   }
 
-  &.active, &.rootNode.active {
+  &.active, &.rootNode.active, &:not(.rootNode).expanded + &.active:not(.rootNode) {
     background-color: $ige-mark-color;
 
     &:hover {
