@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 interface OrientDBEntityType : EntityType {
 
     /**
-     * The class name in the database
+     * The implemented entity type.
      */
     val entityType: KClass<out EntityType>
 
