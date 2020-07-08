@@ -117,8 +117,8 @@ ige-root .mat-card {
 }
 
 /* Checkboxes, radio btns */
-.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
-.mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-background,
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-background,
 .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
 .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
 .mat-pseudo-checkbox-checked {
