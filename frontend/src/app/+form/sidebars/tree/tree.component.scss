@@ -50,7 +50,7 @@ mat-tree-node {
     background-color: $ige-background;
 
     &:hover {
-      background-color: darken($ige-background, 5%) !important;
+      background-color: darken($ige-background, 5%);
     }
 
     &.selected {
@@ -59,14 +59,6 @@ mat-tree-node {
 
     &.selected:hover {
       background-color: darken($ige-background, 10%);
-    }
-
-    &.active {
-      background-color: $ige-mark-color;
-
-      &:hover {
-        background-color: darken($ige-mark-color, 5%);
-      }
     }
 
     &.folder {
@@ -116,15 +108,19 @@ mat-tree-node {
   }
 
   &.selected {
-    background-color: darken($ige-background, 5%) !important;
+    background-color: darken($ige-background, 5%);
   }
 
   &:hover {
-    background-color: darken(#FFFFFF, 5%) !important;
+    background-color: darken(#FFFFFF, 5%);
   }
 
-  &.active {
-    background-color: $ige-mark-color !important;
+  &.active, &.rootNode.active {
+    background-color: $ige-mark-color;
+
+    &:hover {
+      background-color: darken($ige-mark-color, 5%);
+    }
   }
 
   &.disabled {
