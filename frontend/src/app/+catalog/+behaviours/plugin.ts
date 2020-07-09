@@ -36,6 +36,9 @@ export abstract class Plugin {
     this.subscriptions = [];
   }
 
+  update(): void {
+  }
+
   setForAddress(): void {
     this.forAddress = true;
   }

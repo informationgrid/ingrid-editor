@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Plugin} from '../../plugin';
 import {TreeService, TreeSortFn} from '../../../../+form/sidebars/tree/tree.service';
 import {TreeNode} from '../../../../store/tree/tree-node.model';
-import {EventService} from '../../../../services/event/event.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +25,7 @@ export class SortTreeByTypeBehaviour extends Plugin {
     }
   };
 
-  constructor(private treeService: TreeService, private eventService: EventService) {
+  constructor(private treeService: TreeService) {
     super();
   }
 
