@@ -1,11 +1,5 @@
 @import "../../../../../variables";
 
-:host {
-  .small-padding-right ::ng-deep .mat-list-item-content {
-    padding-right: 12px;
-  }
-}
-
 .coordinates > span {
   padding-right: 16px;
 }
@@ -17,69 +11,57 @@ h4 > span {
 .mat-list-base {
   padding-top: 40px;
   background-color: $ige-background;
-}
 
-.list-item-wrapper, .list-item-content {
-}
+  .mat-list-item {
+    background-color: $ige-background;
+    border-bottom: 2px solid #fff;
 
-.list-item-wrapper {
-  width: calc(100% - 32px);
-}
+    &:hover {
+      background-color: darken($ige-background, 5%);
+    }
 
-.list-item-content {
-  width: calc(100% - 50px);
-}
+    .mat-list-icon {
+      width: 24px;
+      height: 24px;
+      margin-left: 8px;
+      padding: 0;
+      border-radius: 0;
 
-.mat-list-base .mat-list-item .mat-line {
-  width: 100%;
-}
+      &.mat-icon-no-color {
+        color: #333;
+      }
+      div {
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border-radius: 0;
+        border: 3px solid currentColor;
+        box-sizing: border-box;
+      }
+    }
 
-.mat-list-item {
-  background-color: $ige-background;
-  border-bottom: 2px solid #fff;
-}
+    .list-item-wrapper {
+      width: calc(100% - 32px);
 
-.mat-list-item:hover {
-  background-color: darken($ige-background, 5%);
-}
+      .list-item-content {
+        width: calc(100% - 50px);
+        padding-left: 24px;
 
-.mat-list-base .mat-list-item .mat-list-icon {
-  width: 24px;
-  height: 24px;
-  margin-left: 8px;
-  padding: 0;
-  border-radius: 0;
-}
+        .mat-line {
+          width: 100%;
+          line-height: 22px;
 
-.mat-list-base .mat-list-item .mat-list-icon div {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border-radius: 0;
-  border: 3px solid currentColor;
-  box-sizing: border-box;
-}
-
-.mat-list-base .mat-list-item .mat-list-icon.mat-icon-no-color {
-  color: #333;
-}
-
-.list-item-content {
-  padding-left: 24px;
-
-  > div {
-    line-height: 22px;
+          &.spatial-type {
+            font-size: 14px;
+          }
+          &:not(.spatial-type) {
+            font-size: 16px !important;
+          }
+          &.spatial-title {
+            font-weight: 500;
+          }
+        }
+      }
+    }
   }
-}
-
-.spatial-type {
-  font-size: 14px;
-}
-
-.mat-line:not(.spatial-type) {
-  font-size: 16px !important;
-}
-
-.spatial-title {
-  font-weight: 500;
 }
