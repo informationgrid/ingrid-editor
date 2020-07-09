@@ -528,32 +528,30 @@ ige-side-menu {
   }
 }
 
-.mat-form-field.mat-form-field-invalid {
+.mat-form-field-appearance-outline {
+  &.mat-form-field.mat-form-field-invalid {
 
-  .mat-form-field-outline {
-    color: $error-color !important;
+    .mat-form-field-outline {
+      color: $error-color !important;
+      opacity: 1;
 
-    &.mat-form-field-outline-thick {
-
-      .mat-form-field-outline-start,
-      .mat-form-field-outline-end,
-      .mat-form-field-outline-gap {
-        border-width: 1px;
+      &.mat-form-field-outline-thick {
+        opacity: 0;
       }
     }
-  }
 
-  .mat-form-field-label {
-    color: $error-color !important;
-
-    &.mat-accent,
-    .mat-form-field-required-marker {
+    .mat-form-field-label {
       color: $error-color !important;
-    }
-  }
 
-  .mat-input-element {
-    caret-color: $error-color ;
+      &.mat-accent,
+      .mat-form-field-required-marker {
+        color: $error-color !important;
+      }
+    }
+
+    .mat-input-element {
+      caret-color: $error-color ;
+    }
   }
 }
 
