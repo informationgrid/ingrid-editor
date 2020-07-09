@@ -32,7 +32,7 @@ export class CodelistService {
   }
 
   static getLocalisedValue(locals: any) {
-    return locals.de;
+    return locals.de || locals.name;
   }
 
   constructor(private errorService: ErrorService,
