@@ -76,7 +76,7 @@ dependencies {
     implementation 'com.orientechnologies:orientdb-core:3.0.31'
     implementation 'com.orientechnologies:orientdb-server:3.0.31'
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation('de.ingrid:ingrid-codelist-service:5.2.0') {
+    implementation('de.ingrid:ingrid-codelist-service:5.4.0') {
         exclude group: 'log4j', module: 'log4j'
     }
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.2'

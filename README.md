@@ -16,14 +16,24 @@ The profiles can be set in the startup configuration or in the application.prope
 We suggest to use the startup configuration to prevent accidentally commit of development changes. 
 
 ### Start the client and server
-Run IgeServer.java as Java Application in the server directory.
+For IntelliJ configuration see the section below.
 
-For the client just run `npm start` in the frontend directory. When developing for Internet Explorer please run `npm run start-ie11`.
+#### Server
+You can also run the server from command line:
 
-With the following command a jar is generated, which contains the whole server: 
-TBD: create an installer instead
+> ./gradlew bootRun --args='--spring.profiles.active=default,dev,mcloud'
+
+The database will be created inside the directory where the command was executed.
+
+With the following command a jar is generated, which contains the whole server including
+optimized frontend application: 
 
 > ./gradlew -PbuildProfile=prod clean build
+
+**TBD:** create an installer instead
+
+#### Client
+For the client just run `npm start` in the frontend directory. When developing for Internet Explorer please run `npm run start-ie11`.
 
 
 ### Setup IntelliJ IDEA

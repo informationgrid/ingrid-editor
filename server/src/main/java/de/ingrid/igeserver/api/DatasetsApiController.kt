@@ -231,13 +231,12 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 findOptions.resolveReferences = true
                 findOptions.queryOperator = "AND"
                 docs = dbService.findAll(DocumentWrapperType.TYPE, queryMap, findOptions)
-                val childDocs = docs.hits.stream()
+                val childDocs = docs.hits
                         .map { doc: JsonNode ->
                             val node = documentService.getLatestDocument(doc)
                             node.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc, DocumentWrapperType.TYPE))
                             node
                         }
-                        .collect(Collectors.toList())
                 return ResponseEntity.ok(childDocs)
             }
         } catch (e: Exception) {
