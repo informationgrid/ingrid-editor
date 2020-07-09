@@ -1,10 +1,13 @@
 .wrapper, .cdk-overlay-container {
   .mat-form-field-infix {
-    align-self: center;
     /*border-top: 0.2em solid transparent;*/
     border-top: 0;
     // this will be the minimum width for material form fields
     width: 75px;
+  }
+
+  .mat-form-field-suffix {
+    align-self: center;
   }
 
   .mat-form-field-appearance-outline .mat-form-field-infix {
