@@ -32,7 +32,7 @@ interface DBApi {
     /**
      * Get all documents of the given type matching the given query.
      */
-    fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions?): DBFindAllResults
+    fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions?): FindAllResults
 
     /**
      * Get the number of children of the specified type belonging to the parent with the given record ID.

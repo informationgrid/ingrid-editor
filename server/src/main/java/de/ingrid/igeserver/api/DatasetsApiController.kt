@@ -10,7 +10,7 @@ import de.ingrid.igeserver.model.Data1
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.DBFindAllResults
+import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.services.*
@@ -220,7 +220,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             isAddress: Boolean
     ): ResponseEntity<List<ObjectNode>> {
 
-        var docs: DBFindAllResults
+        var docs: FindAllResults
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         try {
@@ -253,7 +253,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     @Throws(Exception::class)
     override fun find(principal: Principal?, query: String, size: Int, sort: String, sortOrder: String, forAddress: Boolean): ResponseEntity<SearchResult> {
 
-        var docs: DBFindAllResults
+        var docs: FindAllResults
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {

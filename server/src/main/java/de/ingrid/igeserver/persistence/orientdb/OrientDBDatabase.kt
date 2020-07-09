@@ -17,7 +17,7 @@ import com.orientechnologies.orient.server.OServer
 import com.orientechnologies.orient.server.OServerMain
 import com.orientechnologies.orient.server.plugin.OServerPluginManager
 import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.DBFindAllResults
+import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
@@ -141,7 +141,7 @@ class OrientDBDatabase @Autowired constructor(val entityTypes: List<OrientDBEnti
         return mapODocumentsToJsonNode(oDocuments)
     }
 
-    override fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions?): DBFindAllResults {
+    override fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions?): FindAllResults {
         val typeImpl = getEntityTypeImpl(type)
         var queryString: String
         val countQuery: String
@@ -405,10 +405,10 @@ class OrientDBDatabase @Autowired constructor(val entityTypes: List<OrientDBEnti
                 .collect(Collectors.joining(" OR "))
     }
 
-    private fun mapFindAllResults(docs: OResultSet, countDocs: OResultSet): DBFindAllResults {
+    private fun mapFindAllResults(docs: OResultSet, countDocs: OResultSet): FindAllResults {
         val hits = mapOResultSetToJson(docs)
         val count = countDocs.next().getProperty<Long>("count(*)")
-        return DBFindAllResults(count, hits)
+        return FindAllResults(count, hits)
     }
 
     private fun mapOResultSetToJson(docs: OResultSet): List<JsonNode> {
