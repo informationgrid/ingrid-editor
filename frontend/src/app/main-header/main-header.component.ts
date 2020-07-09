@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../services/ApiService';
 import {ConfigService, Version} from '../services/config/config.service';
 import {NavigationEnd, Router} from '@angular/router';
-import {MatDialog} from '@angular/material/dialog';
+import {SessionQuery} from '../store/session.query';
 
 @Component({
   selector: 'ige-main-header',
@@ -15,9 +15,11 @@ export class MainHeaderComponent implements OnInit {
   showShadow: boolean;
   pageTitle: string;
   version: Version;
+  timeout$ = this.session.select('sessionTimeoutIn');
 
   constructor(private apiService: ApiService, private configService: ConfigService,
-              private router: Router, private dialog: MatDialog) {
+              private session: SessionQuery,
+              private router: Router) {
   }
 
   ngOnInit() {

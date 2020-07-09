@@ -493,6 +493,10 @@ ige-side-menu {
     border-color: rgba(0, 0, 0, 0.12) !important;
   }
 
+  .has-error {
+    background-color: $ige-secondary !important;
+  }
+
   .mat-error {
     opacity: 0;
   }
@@ -503,6 +507,7 @@ ige-side-menu {
 
   .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline {
     opacity: 1;
+    color: $ige-comment-color !important;
   }
 
   .mat-form-field-appearance-outline:not(.mat-form-field-disabled) .mat-form-field-flex:hover .mat-form-field-outline-thick {
@@ -515,40 +520,38 @@ ige-side-menu {
   }
 
   .mat-form-field.mat-form-field-invalid .mat-form-field-label {
-    color: rgba(0, 0, 0, 0.6);
+    color: rgba(0, 0, 0, 0.6) !important;
 
     &.mat-accent, .mat-form-field-required-marker {
-      color: rgba(0, 0, 0, 0.6);
+      color: rgba(0, 0, 0, 0.6) !important;
     }
   }
 }
 
-.mat-form-field.mat-form-field-invalid {
+.mat-form-field-appearance-outline {
+  &.mat-form-field.mat-form-field-invalid {
 
-  .mat-form-field-outline {
-    color: $error-color !important;
+    .mat-form-field-outline {
+      color: $error-color !important;
+      opacity: 1;
 
-    &.mat-form-field-outline-thick {
-
-      .mat-form-field-outline-start,
-      .mat-form-field-outline-end,
-      .mat-form-field-outline-gap {
-        border-width: 1px;
+      &.mat-form-field-outline-thick {
+        opacity: 0;
       }
     }
-  }
 
-  .mat-form-field-label {
-    color: $error-color !important;
-
-    &.mat-accent,
-    .mat-form-field-required-marker {
+    .mat-form-field-label {
       color: $error-color !important;
-    }
-  }
 
-  .mat-input-element {
-    caret-color: $error-color ;
+      &.mat-accent,
+      .mat-form-field-required-marker {
+        color: $error-color !important;
+      }
+    }
+
+    .mat-input-element {
+      caret-color: $error-color ;
+    }
   }
 }
 

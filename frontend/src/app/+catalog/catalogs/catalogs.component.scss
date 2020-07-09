@@ -1,5 +1,9 @@
 @import "src/variables";
 
+:host {
+  display: flex;
+}
+
 .modal-body input {
   width: 100%;
 }

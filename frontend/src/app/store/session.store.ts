@@ -4,6 +4,8 @@ import {DocumentAbstract} from './document/document.model';
 
 export interface SessionState {
   loggedIn: boolean,
+  sessionTimeoutIn: number,
+  sessionTimeoutDuration: number,
   ui: {
     sidebarExpanded?: boolean
     sidebarWidth?: number;
@@ -15,6 +17,8 @@ export interface SessionState {
 export function createInitialState(): SessionState {
   return {
     loggedIn: false,
+    sessionTimeoutIn: 1800,
+    sessionTimeoutDuration: 1800,
     ui: {
       sidebarExpanded: true,
       sidebarWidth: 15,

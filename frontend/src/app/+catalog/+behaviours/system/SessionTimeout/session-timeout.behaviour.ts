@@ -1,0 +1,54 @@
+import {Injectable} from '@angular/core';
+import {Plugin} from '../../plugin';
+import {SessionStore} from '../../../../store/session.store';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SessionTimeoutBehaviour extends Plugin {
+  id = 'plugin.session.timeout';
+  name = 'Session Timeout Dauer';
+  defaultActive = false;
+
+  description = 'Angabe der Dauer bis es zu einem Session Timeout kommt. Die tatsächliche' +
+    ' Dauer ist innerhalb von KeyCloak definiert und muss mit dem IGE-NG synchronisiert werden';
+
+  constructor(private session: SessionStore) {
+    super();
+
+    this.fields.push({
+      key: 'duration',
+      type: 'input',
+      templateOptions: {
+        type: 'number',
+        label: 'Timeout in ms',
+        placeholder: '1800',
+        appearance: 'outline',
+        required: true
+      }
+    });
+  }
+
+  register() {
+    console.log('Register Session Timeout');
+    super.register();
+
+    this.update();
+  }
+
+  update() {
+
+    this.session.update({
+      sessionTimeoutDuration: this.data.duration
+    });
+
+  }
+
+  unregister() {
+    super.unregister();
+
+    this.session.update({
+      sessionTimeoutDuration: null
+    });
+  }
+}

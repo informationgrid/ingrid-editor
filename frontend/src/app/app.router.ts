@@ -34,6 +34,7 @@ export const routes: Routes = [
     loadChildren: () => import('./+research/research.module').then(m => m.ResearchModule),
     data: {
       title: 'Recherche',
+      featureFlag: 'AP3',
       icon: 'Recherche'
     }
   },

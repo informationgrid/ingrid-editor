@@ -128,11 +128,14 @@ export class BehaviourService {
   private updateState(behaviours: BehaviourFormatBackend[]) {
     const activate: Plugin[] = [];
     const deactivate: Plugin[] = [];
+    const update: Plugin[] = [];
 
     behaviours.forEach(behaviour => {
       const found = this.systemBehaviours.find(sysBehaviour => sysBehaviour.id === behaviour._id);
       if (behaviour.active !== found.isActive) {
         behaviour.active ? activate.push(found) : deactivate.push(found);
+      } else if (behaviour.active) {
+        update.push(found);
       }
       found.isActive = behaviour.active;
       found.data = behaviour.data;
@@ -140,6 +143,7 @@ export class BehaviourService {
 
     activate.forEach(a => a.register());
     deactivate.forEach(a => a.unregister());
+    update.forEach(a => a.update());
 
     this.theSystemBehaviours$.next(this.systemBehaviours);
   }

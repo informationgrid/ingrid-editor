@@ -1,9 +1,11 @@
 <div #leaflet [class.passive]="!hasAnyLocations"></div>
 
 <div class="button-wrapper text-center" [class.has-spatial]="hasAnyLocations">
-    <div *ngIf="!hasAnyLocations" class="spatialBtnText">Erstellen Sie einen Raumbezug<span
-        *ngIf="to.required">*</span></div>
-    <button mat-fab class="spatialBtn" color="primary" (click)="openSpatialDialog()" [ngClass]="{ 'has-error': formFieldControl.errorState && formControl.errors?.required }">
+    <div *ngIf="!hasAnyLocations" class="spatialBtnText">
+        Erstellen Sie einen Raumbezug<span *ngIf="to.required">*</span>
+    </div>
+    <button mat-fab class="spatialBtn" color="primary" (click)="openSpatialDialog()"
+            [ngClass]="{ 'has-error': formFieldControl.errorState && formControl.errors?.required }">
         <mat-icon svgIcon="spatial-rect"></mat-icon>
     </button>
 </div>

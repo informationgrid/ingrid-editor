@@ -47,6 +47,9 @@ import {SharedDocumentItemModule} from './shared/shared-document-item.module';
 import {pluginProvider} from './plugin.provider';
 import {InlineHelpWrapperComponent} from './formly/wrapper/inline-help-wrapper/inline-help-wrapper.component';
 import {FullWidthWrapperComponent} from './formly/wrapper/full-width-wrapper.component';
+import {SessionTimeoutInterceptor} from './services/session-timeout.interceptor';
+import {SessionTimeoutInfoComponent} from './main-header/session-timeout-info/session-timeout-info.component';
+import {TimePipe} from './directives/time.pipe';
 
 registerLocaleData(de);
 
@@ -88,7 +91,9 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     ConfirmDialogComponent, CreateNodeComponent,
     OneColumnWrapperComponent, FullWidthWrapperComponent, SectionWrapper, InlineHelpWrapperComponent,
     SideMenuComponent,
-    MainHeaderComponent],
+    TimePipe,
+    MainHeaderComponent,
+    SessionTimeoutInfoComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
     AngularSplitModule.forRoot(),
@@ -131,6 +136,12 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true
+    },
+    // handle session timeouts
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: SessionTimeoutInterceptor,
       multi: true
     },
     // overwrite global error handler

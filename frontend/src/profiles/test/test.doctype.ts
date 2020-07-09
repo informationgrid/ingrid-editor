@@ -49,7 +49,6 @@ export class TestDoctype extends BaseDoctype {
       }, {
         key: 'select',
         type: 'select',
-        className: 'flex-1',
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Selectbox',
@@ -61,7 +60,6 @@ export class TestDoctype extends BaseDoctype {
       }, {
         key: 'checkbox',
         type: 'checkbox',
-        className: 'flex-1',
         wrappers: ['panel', 'form-field', 'inline-help'],
         templateOptions: {
           externalLabel: 'Checkbox',

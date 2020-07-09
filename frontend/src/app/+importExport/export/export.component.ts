@@ -15,7 +15,7 @@ export class ExportComponent implements OnInit {
   private selectedIds: string[];
   exportResult: any;
   exportFormats = this.exportService.getExportTypes();
-  formatSelection = 'portal';
+  formatSelection = 'internal';
 
   constructor(private _formBuilder: FormBuilder, private exportService: ImportExportService) {
   }

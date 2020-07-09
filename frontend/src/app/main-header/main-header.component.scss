@@ -1,5 +1,13 @@
 @import '../../variables';
 
+:host:hover ige-session-timeout-info, ige-session-timeout-info.show {
+  display: inline-block;
+}
+
+ige-session-timeout-info {
+  display: none;
+}
+
 .header-row {
   color: $ige-secondary;
 }

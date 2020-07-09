@@ -173,7 +173,7 @@ export class ProfileAddress extends BaseDoctype {
               label: 'Verwaltungsgebiet',
               appearance: 'outline',
               placeholder: 'Bitte wählen',
-              options: this.getCodelistForSelect(6250)
+              options: this.getCodelistForSelect(110)
             }
           }, {
             key: 'country',
