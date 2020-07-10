@@ -268,10 +268,10 @@ export class McloudDoctype extends BaseDoctype {
           fieldGroup: [{
             key: 'rangeType',
             type: 'select',
-            className: 'flex-1 smallField',
+            className: 'flex-1',
             wrappers: ['form-field'],
             templateOptions: {
-              placeholder: 'wählen',
+              placeholder: 'Wählen...',
               appearance: 'outline',
               options: [
                 {label: 'am', value: 'at'},
@@ -283,17 +283,17 @@ export class McloudDoctype extends BaseDoctype {
           }, {
             key: 'timeSpanDate',
             type: 'datepicker',
-            className: 'date-field',
+            className: 'flex-1',
             wrappers: ['form-field'],
             templateOptions: {
-              placeholder: 'Datum eingeben ...',
+              placeholder: 'TT.MM.JJJJ',
               appearance: 'outline'
             },
             hideExpression: (model: any) => model && model.rangeType === 'range'
           }, {
             key: 'timeSpanRange',
             type: 'date-range',
-            className: 'date-field',
+            className: 'flex-1',
             wrappers: ['form-field'],
             templateOptions: {
               placeholder: 'Zeitraum eingeben ...',

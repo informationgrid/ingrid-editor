@@ -45,11 +45,10 @@
 }
 
 .mat-dialog-container {
-
   display: flex !important;
   flex-direction: column;
   flex: 1;
-  margin: -9px 0 0 -10px;
+  margin: -10px 0 0 -10px;
 
   ng-component, ige-new-document {
     display: flex;
@@ -140,6 +139,7 @@ ige-root .mat-card {
 ::-moz-placeholder { /* Firefox 19+ */
   opacity: 1;
 }
+
 :-moz-placeholder { /* Firefox 4 - 18 */
   opacity: 1;
 }

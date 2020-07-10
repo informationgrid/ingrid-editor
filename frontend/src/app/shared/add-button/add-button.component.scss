@@ -32,3 +32,7 @@ button {
 .wrapper {
   padding-top: 10px;
 }
+
+::ng-deep ige-repeat > div + ige-add-button .wrapper {
+  padding-top: 0 !important;
+}

@@ -1,3 +1,9 @@
 .close {
   margin-top: 3px;
 }
+
+::ng-deep ige-repeat {
+  .mat-icon-button[disabled][disabled] {
+    opacity: 0;
+  }
+}

@@ -1,5 +1,5 @@
 <mat-list>
-    <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" class="clickable" [class.image]="to.asImage">
+    <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" class="clickable small-padding-right" [class.image]="to.asImage">
 
         <div *ngIf="to.asImage" mat-list-avatar class="avatar"
              [style.background-image]="'url(' + model[i].description + ')'">
