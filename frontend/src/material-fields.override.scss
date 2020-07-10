@@ -68,6 +68,23 @@
   color: $ige-comment-color !important;
 }
 
+.mat-form-field-prefix {
+  .mat-icon {
+    margin: 0 4px 0 -4px;
+    color: $ige-comment-color !important;
+  }
+}
+
+.mat-form-field-suffix {
+  .mat-icon {
+    height: 24px !important;
+  }
+
+  .mat-icon-button {
+    margin-right: -10px;
+  }
+}
+
 /* Error states */
 .mat-form-field-appearance-outline {
   &.mat-form-field.mat-form-field-invalid {
