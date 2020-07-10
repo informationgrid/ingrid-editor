@@ -39,17 +39,21 @@ mat-card {
     color: #181818;
   }
 
-  .title {
-    font-weight: 500;
-  }
-
-  .title, .organization-person {
-    font-size: 16px;
-  }
-
-  .email {
-    padding-top: 8px;
+  .mat-card-content > div {
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &.title {
+      font-weight: 500;
+    }
+
+    &.title,
+    &.organization-person {
+      font-size: 16px;
+    }
+
+    .email {
+      padding-top: 8px;
+    }
   }
 }
