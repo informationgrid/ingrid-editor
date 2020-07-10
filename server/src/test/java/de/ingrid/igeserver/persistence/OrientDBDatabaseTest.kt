@@ -22,7 +22,7 @@ class OrientDBDatabaseTest : FunSpec() {
 
     private lateinit var pool: ODatabasePool
 
-    private val dbService = OrientDBDatabase(listOf(OUserInfoType(), ODocumentType()))
+    private val dbService = OrientDBDatabase()
 
     override fun beforeTest(testCase: TestCase) {
         val db = OrientDB("memory:test", OrientDBConfig.defaultConfig())
@@ -41,6 +41,8 @@ class OrientDBDatabaseTest : FunSpec() {
     }
 
     init {
+        dbService.entityTypes = listOf(OUserInfoType(), ODocumentType())
+
         test("a document created inside a transaction should be visible to other sessions only after commit")
         {
             pool.acquire().use { session ->

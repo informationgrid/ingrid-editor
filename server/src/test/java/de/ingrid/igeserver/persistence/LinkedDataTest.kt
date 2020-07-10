@@ -18,7 +18,7 @@ class LinkedDataTest : FunSpec() {
     private val DOCUMENT_CLASS = ODocumentType().className
     private val ADDRESS_CLASS = OAddressType().className
 
-    private val dbService = OrientDBDatabase(listOf(ODocumentType(), OAddressType()))
+    private val dbService = OrientDBDatabase()
     private lateinit var testDB: ODatabaseSession
 
     override fun beforeTest(testCase: TestCase) {
@@ -37,6 +37,8 @@ class LinkedDataTest : FunSpec() {
     }
 
     init {
+        dbService.entityTypes = listOf(ODocumentType(), OAddressType())
+
         test("create link as value")
         {
             // create document with linked address

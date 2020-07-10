@@ -18,7 +18,7 @@ class ConcurrencyTest : FunSpec() {
 
     private lateinit var pool: ODatabasePool
 
-    private val dbService = OrientDBDatabase(listOf(OUserInfoType()))
+    private val dbService = OrientDBDatabase()
 
     override fun beforeTest(testCase: TestCase) {
         val db = OrientDB("memory:test", OrientDBConfig.defaultConfig())
@@ -28,6 +28,8 @@ class ConcurrencyTest : FunSpec() {
     }
 
     init {
+        dbService.entityTypes = listOf(OUserInfoType())
+
         test("documents created in different threads should be stored correctly in the database")
         {
             val numThreads = 1000

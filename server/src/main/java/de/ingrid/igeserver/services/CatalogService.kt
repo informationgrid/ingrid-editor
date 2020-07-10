@@ -37,7 +37,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
 
         // TODO: use cache!
         try {
-            dbService.acquire("IgeUsers").use {
+            dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = false
@@ -71,7 +71,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
 
         // TODO: use cache!
         try {
-            dbService.acquire("IgeUsers").use {
+            dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = false
@@ -128,7 +128,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         val query = listOf(QueryField("userId", userId))
 
         try {
-            dbService.acquire("IgeUsers").use {
+            dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = false

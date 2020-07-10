@@ -149,7 +149,7 @@ class UsersApiController : UsersApi {
             info: CatalogAdmin): ResponseEntity<UserInfo?> {
 
         try {
-            dbService.acquire("IgeUsers").use { _ ->
+            dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
                 logger.info("Parameter: $info")
                 val userIds = info.userIds
                 val catalogName = info.catalogName
@@ -217,7 +217,7 @@ class UsersApiController : UsersApi {
 
         val result: MutableList<String> = ArrayList()
         try {
-            dbService.acquire("IgeUsers").use { _ ->
+            dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
                 val query = listOf(QueryField("catalogIds", id))
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.contains
@@ -237,14 +237,14 @@ class UsersApiController : UsersApi {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         try {
-            dbService.acquire("IgeUsers").use { _ ->
+            dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
                 val query = listOf(QueryField("userId", userId))
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.exact
                 findOptions.resolveReferences = false
                 val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
                 if (info.totalHits != 1L) {
-                    val message = "User is not defined or more than once in IgeUsers-table: " + info.totalHits
+                    val message = "User is not defined or more than once in ${DBApi.DATABASE.USERS.dbName}-table: " + info.totalHits
                     logger.error(message)
                     throw ApiException(message)
                 }

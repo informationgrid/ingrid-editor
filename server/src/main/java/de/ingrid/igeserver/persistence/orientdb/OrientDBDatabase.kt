@@ -43,12 +43,14 @@ import javax.annotation.PreDestroy
 import kotlin.reflect.KClass
 
 @Service
-class OrientDBDatabase @Autowired constructor(val entityTypes: List<OrientDBEntityType>): DBApi {
+class OrientDBDatabase : DBApi {
 
     companion object {
         private const val DB_ID = "@rid"
-        private const val USERS_DB = "IgeUsers"
     }
+
+    @Autowired
+    lateinit var entityTypes: List<OrientDBEntityType>
 
     @Autowired
     lateinit var documentTypes: List<OrientDBDocumentEntityType>
@@ -243,7 +245,7 @@ class OrientDBDatabase @Autowired constructor(val entityTypes: List<OrientDBEnti
     override val databases: Array<String>
         get() {
             return server.listDatabases()
-                    .filter { item: String -> !(item == USERS_DB || item == "OSystem" || item == "management") }
+                    .filter { item: String -> !(item == DBApi.DATABASE.USERS.dbName || item == "OSystem" || item == "management") }
                     .toTypedArray()
         }
 
@@ -302,15 +304,12 @@ class OrientDBDatabase @Autowired constructor(val entityTypes: List<OrientDBEnti
         get() = ODatabaseRecordThreadLocal.instance().get()
 
     private fun acquireImpl(name: String?): ODatabaseSession? {
-        if (name == null) {
-            return null;
+        if (!server.existsDatabase(name)) {
+            throw PersistenceException("Database does not exist: $name")
         }
         if (ODatabaseRecordThreadLocal.instance().ifDefined?.name.equals(name)) {
             // this could be caused by nested acquire calls
             return dBFromThread
-        }
-        if (!server.existsDatabase(name)) {
-            throw PersistenceException("Database does not exist: $name")
         }
         return server.openDatabase(name)
     }
@@ -320,12 +319,12 @@ class OrientDBDatabase @Autowired constructor(val entityTypes: List<OrientDBEnti
      */
     private fun setup() {
         // make sure the database for storing users and catalog information is there
-        val alreadyExists = server.existsDatabase(USERS_DB)
+        val alreadyExists = server.existsDatabase(DBApi.DATABASE.USERS.dbName)
         if (!alreadyExists) {
-            server.createDatabase(USERS_DB, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig())
-            acquireImpl(USERS_DB).use { session ->
+            server.createDatabase(DBApi.DATABASE.USERS.dbName, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig())
+            acquireImpl(DBApi.DATABASE.USERS.dbName).use { session ->
                 if (session == null) {
-                    throw PersistenceException("Failed to initialize database $USERS_DB")
+                    throw PersistenceException("Failed to initialize database ${DBApi.DATABASE.USERS.dbName}")
                 }
                 OUserInfoType().initialize(session)
                 session.commit()
@@ -338,6 +337,9 @@ class OrientDBDatabase @Autowired constructor(val entityTypes: List<OrientDBEnti
      * Each document type handles creating a class and its special fields.
      */
     private fun initDocumentTypes(vararg settings: Catalog) {
+        if (!::documentTypes.isInitialized) {
+            return
+        }
         for ((id, _, _, type) in settings) {
             acquireImpl(id).use { session ->
                 if (session == null) {
@@ -351,6 +353,9 @@ class OrientDBDatabase @Autowired constructor(val entityTypes: List<OrientDBEnti
 
     private fun <T : EntityType> getEntityTypeImpl(type : KClass<T>): OrientDBEntityType {
         if (!::entityTypeMap.isInitialized) {
+            if (!::entityTypes.isInitialized) {
+                throw PersistenceException("No entity types registered")
+            }
             entityTypeMap = mutableMapOf()
             entityTypes.forEach { t: OrientDBEntityType ->
                 (entityTypeMap as MutableMap<KClass<out EntityType>, OrientDBEntityType>)[t.entityType] = t

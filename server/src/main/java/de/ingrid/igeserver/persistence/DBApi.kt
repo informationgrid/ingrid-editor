@@ -9,6 +9,10 @@ import kotlin.reflect.KClass
 
 interface DBApi {
 
+    enum class DATABASE(val dbName: String) {
+        USERS("IgeUsers")
+    }
+
     /**
      * Get the database record ID of a document of the given type and UUID.
      */
