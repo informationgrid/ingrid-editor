@@ -68,16 +68,6 @@
   color: $ige-comment-color !important;
 }
 
-/* Darken label on hover and focus
-.mat-form-field:hover .mat-form-field-label,
-.mat-form-field:hover .mat-form-field-required-marker,
-.mat-focused .mat-form-field-label,
-.mat-focused .mat-form-field-required-marker {
-  transition: all 600ms cubic-bezier(0.25, 0.8, 0.25, 1);
-  color: darken($ige-comment-color, 15%) !important;
-}
-*/
-
 /* Error states */
 .mat-form-field-appearance-outline {
   &.mat-form-field.mat-form-field-invalid {

@@ -10,10 +10,10 @@
     </div>
 
     <mat-form-field class="search" appearance="outline">
+        <mat-icon *ngIf="query.value?.length === 0" class="passive" matPrefix>search</mat-icon>
         <input matInput placeholder="Suche" aria-label="Search"
                [formControl]="query"
                [matAutocomplete]="searchAuto">
-        <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix>search</mat-icon>
         <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="close" (click)="query.reset('')">
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
