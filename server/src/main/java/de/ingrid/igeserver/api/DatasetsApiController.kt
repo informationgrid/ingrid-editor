@@ -2,8 +2,6 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.orientechnologies.orient.core.exception.OConcurrentModificationException
-import com.orientechnologies.orient.core.id.ORecordId
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.model.Data1
@@ -13,6 +11,7 @@ import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.services.CatalogService
@@ -131,11 +130,11 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             val publishedDoc = dbService.find(DocumentType::class, publishedDBID)
             val publishedVersion = publishedDoc?.get("@version")?.asInt()
             if (version != null && publishedVersion != null && publishedVersion > version) {
-                throw OConcurrentModificationException(
-                        ORecordId(publishedDBID),
+                throw ConcurrentModificationException(
+                        "Could not update object with id $publishedDBID. The database version is newer than the record version.",
+                        publishedDBID,
                         publishedDoc.get("@version").asInt(),
-                        version,
-                        0)
+                        version)
             }
         }
     }
@@ -230,7 +229,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                         QueryField(FIELD_CATEGORY, if (isAddress) "address" else "data")
                 )
                 val findOptions = FindOptions()
-                findOptions.queryType = QueryType.exact
+                findOptions.queryType = QueryType.EXACT
                 findOptions.resolveReferences = true
                 findOptions.queryOperator = "AND"
                 docs = dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
@@ -264,7 +263,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             )
             val findOptions = FindOptions()
             findOptions.size = size
-            findOptions.queryType = QueryType.like
+            findOptions.queryType = QueryType.LIKE
             findOptions.sortField = sort
             findOptions.sortOrder = sortOrder
             findOptions.resolveReferences = true
@@ -289,7 +288,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         dbService.acquire(dbId).use {
             val query = listOf(QueryField(FIELD_ID, id))
             val findOptions = FindOptions()
-            findOptions.queryType = QueryType.exact
+            findOptions.queryType = QueryType.EXACT
             findOptions.resolveReferences = true
             val docs = dbService.findAll(DocumentWrapperType::class, query, findOptions)
             return if (docs.totalHits > 0) {

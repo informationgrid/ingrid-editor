@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.orientechnologies.orient.core.db.*
 import com.orientechnologies.orient.core.id.ORecordId
 import com.orientechnologies.orient.core.metadata.schema.OType
-import com.orientechnologies.orient.core.record.ORecord
 import de.ingrid.igeserver.persistence.orientdb.OrientDBDatabase
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
@@ -16,23 +15,29 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.TestCase
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import kotlinx.coroutines.*
 import java.util.*
+import java.util.concurrent.Executors
 
 class OrientDBDatabaseTest : FunSpec() {
-
-    private lateinit var pool: ODatabasePool
 
     private val dbService = OrientDBDatabase()
 
     override fun beforeTest(testCase: TestCase) {
         val db = OrientDB("memory:test", OrientDBConfig.defaultConfig())
         db.create("test", ODatabaseType.MEMORY)
-        pool = ODatabasePool(db, "test", "admin", "admin")
-        pool.acquire().use { session -> session.newInstance<Any>(OUserInfoType().className) }
+        db.open("test", "admin", "admin").use { session ->
+            session.newInstance<Any>(OUserInfoType().className)
+
+            // create document class with linked list property to document-references
+            val docClass = session.createClass(ODocumentType().className)
+            docClass.createProperty("addresses", OType.LINKLIST, docClass)
+        }
+        dbService.orientDB = db
     }
 
     private fun addTestData() {
-        pool.acquire().use {
+        dbService.acquire("test").use {
             val person1Map = "{ \"name\": \"John\", \"age\": \"35\"}"
             dbService.save(UserInfoType::class, null, person1Map)
             val person2Map = "{ \"name\": \"Mike\", \"age\": \"48\"}"
@@ -45,41 +50,42 @@ class OrientDBDatabaseTest : FunSpec() {
 
         test("a document created inside a transaction should be visible to other sessions only after commit")
         {
-            pool.acquire().use { session ->
-                // start transaction in first session
-                session.begin()
+            Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { ctx1 ->
+                Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { ctx2 ->
+                    runBlocking(ctx1) {
+                        dbService.acquire("test").use {
+                            // start transaction in first session
+                            dbService.beginTransaction()
 
-                val userInfoType = OUserInfoType()
+                            // create new person in first session
+                            dbService.save(UserInfoType::class, null, "{ \"name\": \"Mike\", \"age\": \"48\"}")
 
-                // create new person in first session
-                val person1 = session.newElement(userInfoType.className)
-                person1.setProperty("name", "John")
-                person1.setProperty("age", "35")
-                session.save<ORecord>(person1)
+                            // new person is not yet visible outside of the session
+                            withContext(ctx2) {
+                                dbService.acquire("test").use {
+                                    dbService.findAll(UserInfoType::class)?.size shouldBe 0
+                                }
+                            }
 
-                // new person is not yet visible outside of the session
-                val session2 = pool.acquire()
-                session2.countClass(userInfoType.className) shouldBe 0
-                dbService.findAll(UserInfoType::class)?.size shouldBe 0
-                session2.close()
+                            // commit transaction in first session
+                            dbService.commitTransaction()
 
-                // commit transaction in first session
-                ODatabaseRecordThreadLocal.instance().set(session as ODatabaseDocumentInternal)
-                session.commit()
-
-                // new person is visible outside of the session
-                val session3 = pool.acquire()
-                dbService.findAll(UserInfoType::class)?.size shouldBe 1
-
-                // set correct session to close it correctly
-                ODatabaseRecordThreadLocal.instance().set(session)
+                            // new person is visible outside of the session
+                            withContext(ctx2) {
+                                dbService.acquire("test").use {
+                                    dbService.findAll(UserInfoType::class)?.size shouldBe 1
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
         test("findAll should find all documents of type")
         {
             addTestData()
-            pool.acquire().use {
+            dbService.acquire("test").use {
                 dbService.findAll(UserInfoType::class)?.size shouldBe 2
             }
         }
@@ -87,11 +93,11 @@ class OrientDBDatabaseTest : FunSpec() {
         test("findAll with query should find only documents matching the query")
         {
             addTestData()
-            pool.acquire().use {
+            dbService.acquire("test").use {
                 val query: MutableList<QueryField> = ArrayList()
                 query.add(QueryField("age", "48", false))
                 val options = FindOptions()
-                options.queryType = QueryType.like
+                options.queryType = QueryType.LIKE
                 options.resolveReferences = false
 
                 val persons = dbService.findAll(UserInfoType::class, query, options)
@@ -109,9 +115,9 @@ class OrientDBDatabaseTest : FunSpec() {
 
             // modify document in first session
             var id: String
-            id = pool.acquire().use {
+            id = dbService.acquire("test").use {
                 val options = FindOptions()
-                options.queryType = QueryType.like
+                options.queryType = QueryType.LIKE
                 options.resolveReferences = false
                 val docToUpdate = dbService.findAll(UserInfoType::class, query, options).hits[0]
                 id = docToUpdate["@rid"].asText()
@@ -125,9 +131,9 @@ class OrientDBDatabaseTest : FunSpec() {
             }
 
             // changes are visible in second session
-            pool.acquire().use {
+            dbService.acquire("test").use {
                 val options = FindOptions()
-                options.queryType = QueryType.like
+                options.queryType = QueryType.LIKE
                 options.resolveReferences = false
                 val updatedDoc = dbService.findAll(UserInfoType::class, query, options).hits[0]
 
@@ -139,12 +145,7 @@ class OrientDBDatabaseTest : FunSpec() {
 
         test("save should support creating references")
         {
-            pool.acquire().use { session ->
-
-                // create document class with linked list property to address-references
-                val docClass = session.createClass(ODocumentType().className)
-                docClass.createProperty("addresses", OType.LINKLIST, docClass)
-
+            dbService.acquire("test").use {
                 // add first document
                 val doc1 = "{\"title\": \"my document\"}"
                 val doc1Result = dbService.save(DocumentType::class, null, doc1)
@@ -158,7 +159,7 @@ class OrientDBDatabaseTest : FunSpec() {
                 doc2Result shouldNotBe null
             }
 
-            pool.acquire().use {
+            dbService.acquire("test").use {
                 // check reference in second document
                 val docs = dbService.findAll(DocumentType::class)
 

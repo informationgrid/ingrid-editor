@@ -1,7 +1,7 @@
 package de.ingrid.igeserver
 
-import com.orientechnologies.orient.core.exception.OConcurrentModificationException
 import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.HttpHeaders
@@ -54,16 +54,15 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
         return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request)
     }
 
-    @ExceptionHandler(value = [OConcurrentModificationException::class])
-    protected fun handleConcurrentModificationErrors(ex: OConcurrentModificationException, request: WebRequest): ResponseEntity<Any> {
+    @ExceptionHandler(value = [ConcurrentModificationException::class])
+    protected fun handleConcurrentModificationErrors(ex: ConcurrentModificationException, request: WebRequest): ResponseEntity<Any> {
         log.error("Concurrent update happened:", ex)
-        val version = extractLatestVersion(ex)
-        val bodyOfResponse = version
+        val bodyOfResponse = ex.databaseVersion
 
         return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.CONFLICT, request)
     }
 
-    private fun extractLatestVersion(ex: OConcurrentModificationException): String? {
+    private fun extractLatestVersion(ex: ConcurrentModificationException): String? {
 
         val message = ex.message;
         val startIndex = message?.indexOf("(db=v");

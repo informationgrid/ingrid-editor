@@ -175,7 +175,7 @@ class UsersApiController : UsersApi {
 
         val query = listOf(QueryField("userId", userId));
         val findOptions = FindOptions()
-        findOptions.queryType = QueryType.exact
+        findOptions.queryType = QueryType.EXACT
         findOptions.resolveReferences = false
         val list = dbService.findAll(CatalogInfoType::class, query, findOptions)
 
@@ -220,7 +220,7 @@ class UsersApiController : UsersApi {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
                 val query = listOf(QueryField("catalogIds", id))
                 val findOptions = FindOptions()
-                findOptions.queryType = QueryType.contains
+                findOptions.queryType = QueryType.CONTAINS
                 findOptions.resolveReferences = false
                 val infos = dbService.findAll(CatalogInfoType::class, query, findOptions)
                 infos.hits.forEach { result.add(it["userId"].asText()) }
@@ -240,7 +240,7 @@ class UsersApiController : UsersApi {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
                 val query = listOf(QueryField("userId", userId))
                 val findOptions = FindOptions()
-                findOptions.queryType = QueryType.exact
+                findOptions.queryType = QueryType.EXACT
                 findOptions.resolveReferences = false
                 val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
                 if (info.totalHits != 1L) {

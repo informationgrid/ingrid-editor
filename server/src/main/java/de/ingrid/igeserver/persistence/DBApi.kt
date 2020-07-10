@@ -84,4 +84,19 @@ interface DBApi {
      * begin, commit and rollback transactions.
      */
     fun acquire(name: String?): Closeable?
+
+    /**
+     * Start a transaction in the acquired session
+     */
+    fun beginTransaction()
+
+    /**
+     * Commit the transaction in the acquired session
+     */
+    fun commitTransaction()
+
+    /**
+     * Rollback the transaction in the acquired session
+     */
+    fun rollbackTransaction()
 }

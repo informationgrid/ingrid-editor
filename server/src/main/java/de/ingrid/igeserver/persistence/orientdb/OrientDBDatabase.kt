@@ -3,10 +3,8 @@ package de.ingrid.igeserver.persistence.orientdb
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
-import com.orientechnologies.orient.core.db.ODatabaseSession
-import com.orientechnologies.orient.core.db.ODatabaseType
-import com.orientechnologies.orient.core.db.OrientDBConfig
+import com.orientechnologies.orient.core.db.*
+import com.orientechnologies.orient.core.exception.OConcurrentModificationException
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass
 import com.orientechnologies.orient.core.record.OElement
 import com.orientechnologies.orient.core.record.ORecordAbstract
@@ -16,18 +14,16 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet
 import com.orientechnologies.orient.server.OServer
 import com.orientechnologies.orient.server.OServerMain
 import com.orientechnologies.orient.server.plugin.OServerPluginManager
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.orientdb.model.meta.OCatalogInfoType
 import de.ingrid.igeserver.persistence.orientdb.model.meta.OBehaviourType
 import de.ingrid.igeserver.persistence.orientdb.model.meta.OUserInfoType
-import de.ingrid.igeserver.exceptions.PersistenceException
+import de.ingrid.igeserver.persistence.ConcurrentModificationException
+import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
+import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.services.MapperService.Companion.getJsonNode
 import de.ingrid.igeserver.services.MapperService.Companion.removeDBManagementFields
@@ -55,25 +51,48 @@ class OrientDBDatabase : DBApi {
     @Autowired
     lateinit var documentTypes: List<OrientDBDocumentEntityType>
 
+    // mapping between entity types and implementing classes
     private lateinit var entityTypeMap: Map<KClass<out EntityType>, OrientDBEntityType>
 
+    // embedded server instance
     private lateinit var serverInternal: OServer
-    private val server: OServer
-        get() {
-            if (!::serverInternal.isInitialized) {
-                throw PersistenceException("Database server is not initialized. Did you call startServer()?")
-            }
-            return serverInternal
+
+    // database management environment (backing field for orientDB property)
+    private lateinit var orientDBInternal: OrientDB
+
+    // setter for the database management environment, if the embedded server should not be used
+    var orientDB: OrientDB
+        set(value) {
+            orientDBInternal = value
         }
+        get() {
+            if (!::orientDBInternal.isInitialized) {
+                throw PersistenceException("Database environment is not initialized")
+            }
+            return orientDBInternal
+        }
+
+    // database type for creating databases (filesystem)
+    private val dbType = ODatabaseType.PLOCAL
+
+    // orientDB uses these credentials when creating databases
+    private var serverUser: String = "admin"
+    private var serverPassword: String = "admin"
 
     private val log = logger()
 
     /**
      * Database server handling
      */
+
+    /**
+     * Start the embedded server and setup the database management environment
+     */
     fun startServer(dbConfigFile: String) {
-        log.info("Starting OrientDB Server")
         if (!::serverInternal.isInitialized) {
+            log.info("Starting embedded OrientDB server")
+
+            // setup server
             val orientDbHome = File("").absolutePath
             System.setProperty("ORIENTDB_HOME", orientDbHome)
             serverInternal = OServerMain.create(true)
@@ -83,6 +102,13 @@ class OrientDBDatabase : DBApi {
             serverInternal.activate()
             manager.startup()
             setup()
+
+            // setup management environment
+            // NOTE we could also create and access databases directly using the server instance,
+            // but setting up OrientDB instance allows us to use advanced features like connection
+            // pooling and makes this class better testable since it could also use an injected environment
+            val databasePath = serverInternal.configuration.getProperty("server.database.path")
+            orientDBInternal = OrientDB("embedded:${databasePath}", OrientDBConfig.defaultConfig())
         }
     }
 
@@ -93,8 +119,11 @@ class OrientDBDatabase : DBApi {
 
     @PreDestroy
     fun destroy() {
-        log.info("Shutdown OrientDB Server")
         if (::serverInternal.isInitialized) {
+            log.info("Shutdown OrientDB server")
+            if (orientDBInternal.isOpen) {
+                orientDBInternal.close()
+            }
             serverInternal.shutdown()
         }
     }
@@ -244,14 +273,14 @@ class OrientDBDatabase : DBApi {
 
     override val databases: Array<String>
         get() {
-            return server.listDatabases()
+            return orientDB.list()
                     .filter { item: String -> !(item == DBApi.DATABASE.USERS.dbName || item == "OSystem" || item == "management") }
                     .toTypedArray()
         }
 
     override fun createDatabase(settings: Catalog): String? {
         settings.id = settings.name.toLowerCase().replace(" ".toRegex(), "_")
-        server.createDatabase(settings.id, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig())
+        orientDB.createIfNotExists(settings.id, dbType)
         acquireImpl(settings.id).use { session ->
             if (session == null) {
                 throw PersistenceException("Failed to initialize database ${settings.id}")
@@ -260,7 +289,7 @@ class OrientDBDatabase : DBApi {
             OCatalogInfoType().initialize(session)
 
             val catInfo = ObjectMapper().createObjectNode()
-            catInfo.put("id", settings!!.id)
+            catInfo.put("id", settings.id)
             catInfo.put("name", settings.name)
             catInfo.put("description", settings.description)
             catInfo.put("type", settings.type)
@@ -287,7 +316,7 @@ class OrientDBDatabase : DBApi {
     }
 
     override fun removeDatabase(name: String): Boolean {
-        server.dropDatabase(name)
+        orientDB.drop(name)
 
         // TODO: remove database from all assigned users
         return true
@@ -297,6 +326,25 @@ class OrientDBDatabase : DBApi {
         return acquireImpl(name)
     }
 
+    override fun beginTransaction() {
+        dBFromThread.begin()
+    }
+
+    override fun commitTransaction() {
+        try {
+            dBFromThread.commit()
+        }
+        catch (ex: OConcurrentModificationException) {
+            val id = ex.rid.toString()
+            throw ConcurrentModificationException("Could not update object with id $id. The database version is newer than the record version.",
+                    id, ex.enhancedDatabaseVersion, ex.enhancedRecordVersion)
+        }
+    }
+
+    override fun rollbackTransaction() {
+        dBFromThread.rollback()
+    }
+
     /**
      * Private methods
      */
@@ -304,14 +352,14 @@ class OrientDBDatabase : DBApi {
         get() = ODatabaseRecordThreadLocal.instance().get()
 
     private fun acquireImpl(name: String?): ODatabaseSession? {
-        if (!server.existsDatabase(name)) {
+        if (!orientDB.exists(name)) {
             throw PersistenceException("Database does not exist: $name")
         }
         if (ODatabaseRecordThreadLocal.instance().ifDefined?.name.equals(name)) {
             // this could be caused by nested acquire calls
             return dBFromThread
         }
-        return server.openDatabase(name)
+        return orientDB.open(name, serverUser, serverPassword)
     }
 
     /**
@@ -319,9 +367,9 @@ class OrientDBDatabase : DBApi {
      */
     private fun setup() {
         // make sure the database for storing users and catalog information is there
-        val alreadyExists = server.existsDatabase(DBApi.DATABASE.USERS.dbName)
+        val alreadyExists = orientDB.exists(DBApi.DATABASE.USERS.dbName)
         if (!alreadyExists) {
-            server.createDatabase(DBApi.DATABASE.USERS.dbName, ODatabaseType.PLOCAL, OrientDBConfig.defaultConfig())
+            orientDB.create(DBApi.DATABASE.USERS.dbName, dbType)
             acquireImpl(DBApi.DATABASE.USERS.dbName).use { session ->
                 if (session == null) {
                     throw PersistenceException("Failed to initialize database ${DBApi.DATABASE.USERS.dbName}")
@@ -385,15 +433,15 @@ class OrientDBDatabase : DBApi {
             } else {
                 var operator: String
                 when (options?.queryType) {
-                    QueryType.like -> {
+                    QueryType.LIKE -> {
                         operator = if (invert) "not like" else "like"
                         where.add(key + ".toLowerCase() " + operator + " '%" + value.toLowerCase() + "%'")
                     }
-                    QueryType.exact -> {
+                    QueryType.EXACT -> {
                         operator = if (invert) " !=" else " =="
                         where.add("$key$operator '$value'")
                     }
-                    QueryType.contains -> {
+                    QueryType.CONTAINS -> {
                         operator = if (invert) " not contains" else " contains"
                         where.add("$key$operator '$value'")
                     }

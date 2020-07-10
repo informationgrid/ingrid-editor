@@ -11,7 +11,7 @@ import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
-import de.ingrid.igeserver.exceptions.PersistenceException
+import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.services.MapperService.Companion.removeDBManagementFields
@@ -39,7 +39,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         try {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
                 val findOptions = FindOptions()
-                findOptions.queryType = QueryType.exact
+                findOptions.queryType = QueryType.EXACT
                 findOptions.resolveReferences = false
                 val list = dbService.findAll(UserInfoType::class, query, findOptions)
                 if (list.totalHits == 0L) {
@@ -73,7 +73,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         try {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
                 val findOptions = FindOptions()
-                findOptions.queryType = QueryType.exact
+                findOptions.queryType = QueryType.EXACT
                 findOptions.resolveReferences = false
                 val list = dbService.findAll(UserInfoType::class, query, findOptions)
                 if (list.totalHits == 0L) {
@@ -113,6 +113,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
                 }
             }
         } catch (ex: OStorageException) {
+            // TODO: we don't want to catch implementation specific exceptions here. How can we handle this scenario alternativly?
             // in case catalog has been deleted but reference is still there
             // TODO: remove reference from user to deleted catalogs
             log.error("User probably has deleted catalog reference", ex)
@@ -130,7 +131,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         try {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
                 val findOptions = FindOptions()
-                findOptions.queryType = QueryType.exact
+                findOptions.queryType = QueryType.EXACT
                 findOptions.resolveReferences = false
                 val list = dbService.findAll(UserInfoType::class, query, findOptions)
                 val catUserRef = list.hits[0] as ObjectNode

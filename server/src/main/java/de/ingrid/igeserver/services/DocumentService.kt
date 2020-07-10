@@ -14,7 +14,6 @@ import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 import java.util.*
@@ -53,7 +52,7 @@ class DocumentService : MapperService() {
 
         val query = listOf(QueryField(FIELD_ID, id))
         val findOptions = FindOptions()
-        findOptions.queryType = QueryType.exact
+        findOptions.queryType = QueryType.EXACT
         findOptions.resolveReferences = withReferences
         val docs = dbService.findAll(type, query, findOptions)
         if (docs.totalHits != 1L) {
@@ -219,7 +218,7 @@ class DocumentService : MapperService() {
 
         val options = FindOptions()
         options.queryOperator = "AND"
-        options.queryType = QueryType.exact
+        options.queryType = QueryType.EXACT
 
         val allData = dbService.findAll(DocumentWrapperType::class, allDocumentQuery, options)
         val allDataDrafts = dbService.findAll(DocumentWrapperType::class, allDocumentDraftsQuery, options)
