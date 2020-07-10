@@ -1,15 +1,32 @@
 @import "src/variables";
 
 mat-card {
+  padding: 12px 12px 12px 16px;
   background-color: $ige-background;
 
-  ::ng-deep .mat-card-header-text {
-    margin-left: 8px;
-  }
+  .mat-card-header {
+    align-content: center;
+    margin-bottom: 12px;
 
-  .mat-card-title {
-    font-size: 16px;
-    font-weight: 400;
+    .mat-card-avatar {
+      width: 28px;
+      height: 28px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    ::ng-deep .mat-card-header-text {
+      margin-left: 8px;
+
+      .mat-card-title {
+        font-size: 16px;
+        font-weight: 400;
+        margin: 0;
+        align-self: center;
+      }
+    }
   }
 
   .mat-card-subtitle {
@@ -29,8 +46,4 @@ mat-card {
   .email {
     padding-top: 8px;
   }
-}
-
-.mat-card-avatar {
-  width: 24px;
 }
