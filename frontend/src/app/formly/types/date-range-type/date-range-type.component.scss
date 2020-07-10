@@ -2,14 +2,6 @@
   display: flex;
 }
 
-::ng-deep formly-field.smallField {
-  padding-right: 20px;
-}
-
-::ng-deep .date-field:last-child {
-  width: 250px;
-}
-
 ::ng-deep ige-date-range-type {
   display: flex;
   align-items: center;

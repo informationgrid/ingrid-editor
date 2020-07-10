@@ -337,14 +337,9 @@ formly-field {
     padding-left: 0;
   }
 
-  &[class*="flex-"]:nth-last-child(1) {
+  &[class*="flex-"]:not(:first-child) {
     padding-right: 0;
   }
-}
-
-.smallField {
-  width: 110px;
-  max-width: 150px;
 }
 
 /* Split gutter style */
@@ -574,10 +569,6 @@ ige-side-menu {
   .mat-select-arrow {
     color: inherit !important;
   }
-}
-
-.date-field {
-  width: 200px;
 }
 
 .dlg-field-label {
