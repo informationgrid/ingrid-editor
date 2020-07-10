@@ -19,12 +19,16 @@ mat-card {
 
     ::ng-deep .mat-card-header-text {
       margin-left: 8px;
+      overflow: hidden;
 
       .mat-card-title {
         font-size: 16px;
         font-weight: 400;
         margin: 0;
         align-self: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }
@@ -45,5 +49,7 @@ mat-card {
 
   .email {
     padding-top: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
