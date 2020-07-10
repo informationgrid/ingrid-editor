@@ -524,53 +524,6 @@ ige-side-menu {
   }
 }
 
-.mat-list-base .mat-list-item.small-padding-right .mat-list-item-content {
-  padding-right: 12px;
-}
-
-.mat-form-field-appearance-outline {
-  &.mat-form-field.mat-form-field-invalid {
-
-    .mat-form-field-outline {
-      color: $error-color !important;
-      opacity: 1;
-
-      &.mat-form-field-outline-thick {
-        opacity: 0;
-      }
-    }
-
-    .mat-form-field-label {
-      color: $error-color !important;
-
-      &.mat-accent,
-      .mat-form-field-required-marker {
-        color: $error-color !important;
-      }
-    }
-
-    .mat-input-element {
-      caret-color: $error-color ;
-    }
-  }
-}
-
-.mat-error {
-  font-size: 12px;
-  color: $error-color !important;
-}
-
-.mat-form-field .mat-select.mat-select-invalid {
-
-  .mat-select-placeholder {
-    color: $error-color;
-  }
-
-  .mat-select-arrow {
-    color: inherit !important;
-  }
-}
-
 .dlg-field-label {
   padding-bottom: 4px;
 
