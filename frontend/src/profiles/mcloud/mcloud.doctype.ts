@@ -271,7 +271,7 @@ export class McloudDoctype extends BaseDoctype {
             className: 'flex-1 smallField',
             wrappers: ['form-field'],
             templateOptions: {
-              placeholder: 'wählen',
+              placeholder: 'Wählen...',
               appearance: 'outline',
               options: [
                 {label: 'am', value: 'at'},
@@ -286,7 +286,7 @@ export class McloudDoctype extends BaseDoctype {
             className: 'date-field',
             wrappers: ['form-field'],
             templateOptions: {
-              placeholder: 'Datum eingeben ...',
+              placeholder: 'TT.MM.JJJJ',
               appearance: 'outline'
             },
             hideExpression: (model: any) => model && model.rangeType === 'range'
