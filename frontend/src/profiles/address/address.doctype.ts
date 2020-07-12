@@ -187,27 +187,6 @@ export class ProfileAddress extends BaseDoctype {
             }
           }]
         }]
-      }, {
-        key: 'tasks',
-        type: 'textarea',
-        wrappers: ['panel', 'form-field'],
-        templateOptions: {
-          externalLabel: 'Aufgaben',
-          rows: 2,
-          appearance: 'outline',
-          autosize: true,
-          autosizeMaxRows: 5
-        }
-      }, {
-        key: 'serviceTimes',
-        type: 'input',
-        wrappers: ['panel', 'form-field'],
-        templateOptions: {
-          externalLabel: 'Servicezeiten',
-          appearance: 'outline',
-          autosize: true,
-          autosizeMaxRows: 5
-        }
       }
       ]
     }];
