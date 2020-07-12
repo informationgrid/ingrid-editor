@@ -5,13 +5,13 @@
         <span class="page-title">{{pageTitle}}</span>
 
         <div fxFlex></div>
+        <ige-session-timeout-info *ngIf="timeout$ | async as timer"
+                                  [timeout]="timer"
+                                  [class.show]="timer < 300"></ige-session-timeout-info>
+        <div fxFlex></div>
 
         <span class="header-info">
 
-            <ige-session-timeout-info *ngIf="timeout$ | async as timer"
-                                      [timeout]="timer"
-                                      [matTooltip]="'Laden/Speichern Sie einen Datensatz oder wechseln Sie die Seite, um die Session zu aktualisieren'"
-                                      [class.show]="timer < 60"></ige-session-timeout-info>
 
             <button class="link-button" mat-button [matMenuTriggerFor]="menuInfo">
                 Info

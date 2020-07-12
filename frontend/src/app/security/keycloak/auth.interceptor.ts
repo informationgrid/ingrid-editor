@@ -19,7 +19,7 @@ export class AuthInterceptor implements HttpInterceptor {
     // send the newly created request
     return next.handle(req)
       .pipe(
-        catchError((error, caught) => {
+        catchError((error) => {
           // if we have been logged out during a request then redirect to the start page
           // so that the keycloak login screen is shown
           if (error.status === 403) {
@@ -29,7 +29,8 @@ export class AuthInterceptor implements HttpInterceptor {
           } else if (error.status === 401) {
             const message = 'You have been logged out. Redirecting to login page in 3 seconds.';
             this.showError(message);
-            setTimeout(() => window.location.reload(), 3000);
+            console.error(error);
+            // setTimeout(() => window.location.reload(), 3000);
           }
           // intercept the respons error and displace it to the console
           console.log('Error Occurred');
