@@ -1,8 +1,9 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {CodelistService, SelectOption} from '../../app/services/codelist/codelist.service';
+import {CodelistService} from '../../app/services/codelist/codelist.service';
 import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {Injectable} from '@angular/core';
+import {CodelistStore} from '../../app/store/codelist/codelist.store';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -51,7 +52,14 @@ export class McloudDoctype extends BaseDoctype {
         type: 'address-card',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Adressen'
+          externalLabel: 'Adressen',
+          required: true
+        },
+        validators: {
+          needPublisher: {
+            expression: ctrl => ctrl.value?.some(row => row.type === '10'),
+            message: 'Es muss ein Herausgeber als Adresse angegeben sein'
+          }
         }
       }]
     }, {
@@ -69,55 +77,31 @@ export class McloudDoctype extends BaseDoctype {
           appearance: 'outline'
         }
       }, {
-        fieldGroupClassName: 'display-flex',
+        key: 'mCloudCategories',
+        type: 'repeatChip',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Kategorien'
-        },
-        fieldGroup: [{
-          key: 'mCloudCategories',
-          type: 'select',
-          className: 'flex-1',
-          wrappers: ['form-field'],
-          templateOptions: {
-            label: 'mCLOUD Kategorie',
-            placeholder: 'Bitte wählen',
-            appearance: 'outline',
-            options: <SelectOption[]>[
-              {label: 'Bahn', value: 'railway'},
-              {label: 'Wasserstraßen und Gewässer', value: 'waters'},
-              {label: 'Infrastruktur', value: 'infrastructure'},
-              {label: 'Klima und Wetter', value: 'climate'},
-              {label: 'Luft- und Raumfahrt', value: 'aviation'},
-              {label: 'Straßen', value: 'roads'}
-            ]
-          }
-        }, {
-          key: 'openDataCategories',
-          type: 'select',
-          className: 'flex-1',
-          wrappers: ['form-field'],
-          templateOptions: {
-            label: 'OpenData Kategorie',
-            placeholder: 'Bitte wählen',
-            appearance: 'outline',
-            options: <SelectOption[]>[
-              {label: 'Bevölkerung und Gesellschaft', value: 'SOCI'},
-              {label: 'Bildung, Kultur und Sport', value: 'EDUC'},
-              {label: 'Energie', value: 'ENER'},
-              {label: 'Gesundheit', value: 'HEAL'},
-              {label: 'Internationale Themen', value: 'INTR'},
-              {label: 'Justiz, Rechtssystem und öffentliche Sicherheit', value: 'JUST'},
-              {label: 'Landwirtschaft, Fischerei, Forstwirtschaft und Nahrungsmittel', value: 'AGRI'},
-              {label: 'Regierung und öffentlicher Sektor', value: 'GOVE'},
-              {label: 'Regionen und Städte', value: 'REGI'},
-              {label: 'Umwelt', value: 'ENVI'},
-              {label: 'Verkehr', value: 'TRAN'},
-              {label: 'Wirtschaft und Finanzen', value: 'ECON'},
-              {label: 'Wissenschaft und Technologie', value: 'TECH'}
-            ]
-          }
-        }]
+          externalLabel: 'mCLOUD Kategorie',
+          placeholder: 'Bitte wählen',
+          appearance: 'outline',
+          required: true,
+          useDialog: true,
+          options: this.getCodelistForSelect(20000),
+          codelistId: 20000
+        }
+      }, {
+        key: 'openDataCategories',
+        type: 'repeatChip',
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'OpenData Kategorie',
+          placeholder: 'Bitte wählen',
+          appearance: 'outline',
+          required: true,
+          useDialog: true,
+          options: this.getCodelistForSelect(20001),
+          codelistId: 20001
+        }
       }, {
         key: 'downloads',
         type: 'table',
@@ -171,6 +155,7 @@ export class McloudDoctype extends BaseDoctype {
           externalLabel: 'Lizenz',
           placeholder: 'Bitte wählen',
           appearance: 'outline',
+          required: true,
           options: this.getCodelistForSelect(6500)
         }
       }, {
@@ -301,15 +286,57 @@ export class McloudDoctype extends BaseDoctype {
             },
             hideExpression: (model: any) => model && model.rangeType !== 'range'
           }]
+        }, {
+          key: 'periodicity',
+          type: 'select',
+          wrappers: ['panel', 'form-field'],
+          templateOptions: {
+            externalLabel: 'Periodizität',
+            appearance: 'outline',
+            options: this.getCodelistForSelect(518)
+          }
         }
       ]
     }
   ];
 
   constructor(codelistService: CodelistService,
+              codelistStore: CodelistStore,
               codelistQuery?: CodelistQuery) {
 
     super(codelistService, codelistQuery);
+
+    codelistStore.add({
+      id: '20000',
+      name: 'mCLOUD Kategorien',
+      entries: [
+        {value: 'Bahn', id: 'railway'},
+        {value: 'Wasserstraßen und Gewässer', id: 'waters'},
+        {value: 'Infrastruktur', id: 'infrastructure'},
+        {value: 'Klima und Wetter', id: 'climate'},
+        {value: 'Luft- und Raumfahrt', id: 'aviation'},
+        {value: 'Straßen', id: 'roads'}
+      ]
+    });
+    codelistStore.add({
+      id: '20001',
+      name: 'OpenData Kategorien',
+      entries: [
+        {value: 'Bevölkerung und Gesellschaft', id: 'SOCI'},
+        {value: 'Bildung, Kultur und Sport', id: 'EDUC'},
+        {value: 'Energie', id: 'ENER'},
+        {value: 'Gesundheit', id: 'HEAL'},
+        {value: 'Internationale Themen', id: 'INTR'},
+        {value: 'Justiz, Rechtssystem und öffentliche Sicherheit', id: 'JUST'},
+        {value: 'Landwirtschaft, Fischerei, Forstwirtschaft und Nahrungsmittel', id: 'AGRI'},
+        {value: 'Regierung und öffentlicher Sektor', id: 'GOVE'},
+        {value: 'Regionen und Städte', id: 'REGI'},
+        {value: 'Umwelt', id: 'ENVI'},
+        {value: 'Verkehr', id: 'TRAN'},
+        {value: 'Wirtschaft und Finanzen', id: 'ECON'},
+        {value: 'Wissenschaft und Technologie', id: 'TECH'}
+      ]
+    })
 
   }
 

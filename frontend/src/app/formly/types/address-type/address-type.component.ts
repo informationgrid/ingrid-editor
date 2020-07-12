@@ -104,4 +104,10 @@ export class AddressTypeComponent extends FieldType implements OnInit {
     return this.documentService.load(id, true);
 
   }
+
+  // TODO: let ige-form-error handle all error messages
+  getFirstError() {
+    return Object.values(this.formControl.errors)
+      .map(error => error.message)[0];
+  }
 }

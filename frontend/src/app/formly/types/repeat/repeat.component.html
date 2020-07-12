@@ -1,4 +1,4 @@
-<ige-form-error *ngIf="formControl.invalid">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
+<ige-form-error *ngIf="formControl.invalid && formControl.errors && !formControl.hasError('required')">Dieser Fehler bezieht sich auf die gesamten Einträge {{formControl.errors | json}}</ige-form-error>
 
 <div *ngFor="let field of field.fieldGroup; let i = index;" class="display-flex">
     <formly-field [field]="field" class="flex-1"></formly-field>

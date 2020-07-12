@@ -1,44 +1,82 @@
-import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
-import { FieldType } from '@ngx-formly/material';
-import { MatInput } from '@angular/material/input';
-import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
-import { Observable } from 'rxjs';
-import { startWith, switchMap } from 'rxjs/operators';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {FieldType} from '@ngx-formly/material';
+import {MatInput} from '@angular/material/input';
+import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {merge, Observable} from 'rxjs';
+import {filter, map, startWith, take, tap} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {SelectOption} from '../../services/codelist/codelist.service';
+import {FormControl} from '@angular/forms';
 
+@UntilDestroy()
 @Component({
   selector: 'formly-autocomplete-type',
   template: `
     <input matInput
            [matAutocomplete]="auto"
-           [formControl]="formControl"
+           [formControl]="inputControl"
            [formlyAttributes]="field"
            [placeholder]="to.placeholder"
            [errorStateMatcher]="errorStateMatcher">
     <mat-autocomplete #auto="matAutocomplete">
-      <mat-option *ngFor="let value of filter | async" [value]="value">
-        {{ value }}
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option.label">
+        {{ option.label }}
       </mat-option>
     </mat-autocomplete>
-  `,
+  `
 })
 export class AutocompleteTypeComponent extends FieldType implements OnInit, AfterViewInit {
   @ViewChild(MatInput, {static: true}) formFieldControl: MatInput;
   @ViewChild(MatAutocompleteTrigger, {static: true}) autocomplete: MatAutocompleteTrigger;
 
   filter: Observable<any>;
+  private parameterOptions: SelectOption[] = [];
+  filteredOptions: Observable<SelectOption[]>;
+  inputControl = new FormControl();
 
   ngOnInit() {
     super.ngOnInit();
-    this.filter = this.formControl.valueChanges
-      .pipe(
-        startWith(''),
-        switchMap(term => this.to.filter(term)),
-      );
+
+    if (this.to.options instanceof Observable) {
+      this.to.options
+        .pipe(
+          untilDestroyed(this),
+          filter(data => data !== undefined && data.length > 0),
+          take(1),
+          tap(data => this.initInputListener(data))
+        )
+        .subscribe();
+    } else {
+      this.initInputListener(this.to.options);
+    }
+  }
+
+  private initInputListener(options: SelectOption[]) {
+    this.parameterOptions = options;
+
+    this.filteredOptions =
+      // merge(
+        this.inputControl.valueChanges
+        // this.manualUpdate.asObservable()
+      // )
+        .pipe(
+          untilDestroyed(this),
+          startWith(''),
+          map(value => this._filter(<string>value))
+        );
+  }
+
+  private _filter(value: string): SelectOption[] {
+    const filterValue = value.toLowerCase();
+
+    return this.parameterOptions
+      ?.filter(option => this.model.indexOf(option.value) === -1)
+      ?.filter(option => option.label.toLowerCase().includes(filterValue));
   }
 
   ngAfterViewInit() {
     super.ngAfterViewInit();
     // temporary fix for https://github.com/angular/material2/issues/6728
-    (<any> this.autocomplete)._formField = this.formField;
+    (<any>this.autocomplete)._formField = this.formField;
   }
 }

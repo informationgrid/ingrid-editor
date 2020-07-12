@@ -47,7 +47,7 @@
         </as-split-area>
 
         <as-split-area *ngIf="showJson">
-            Form is dirty: {{ form.dirty }}
+            Form is dirty: {{ form.dirty }} valid: {{form.valid}}
             <pre>
 {{model | json}}
            </pre>

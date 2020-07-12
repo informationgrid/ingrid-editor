@@ -17,11 +17,11 @@
                       [indeterminate]="selection.hasValue() && !isAllSelected()">
         </mat-checkbox>
 
-        <button mat-button>
+        <button mat-button (click)="removeSelectedRows()" [disabled]="selection.isEmpty()">
             <mat-icon svgIcon="outline-delete-24px"></mat-icon>
             Löschen
         </button>
-        <button mat-button>Mehr</button>
+        <button mat-button disabled>Mehr</button>
 
     </div>
 

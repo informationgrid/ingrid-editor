@@ -2,7 +2,6 @@ import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {FieldType} from '@ngx-formly/material';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {distinctUntilChanged} from 'rxjs/operators';
-import {AddressRef} from '../address-type/address-card/address-card.component';
 import {MatDialog} from '@angular/material/dialog';
 import {FormDialogComponent, FormDialogData} from './form-dialog/form-dialog.component';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -57,7 +56,7 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
   removeRow(index: number) {
 
     this.dataSource = new MatTableDataSource<any>(
-      this.dataSource.data.filter((item, indexItem) => indexItem !== index ));
+      this.dataSource.data.filter((item, indexItem) => indexItem !== index));
     this.updateFormControl(this.dataSource.data);
 
   }
@@ -68,7 +67,7 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
       data: {
         fields: this.to.columns,
         model: index === null ? {} : JSON.parse(JSON.stringify(this.dataSource.data[index]))
-      } as FormDialogData,
+      } as FormDialogData
     }).afterClosed()
       .subscribe(result => {
         console.log(result);
@@ -110,7 +109,21 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
     if (this.batchMode) {
       this.displayedColumns.unshift('_select_')
     } else {
-      this.displayedColumns = this.displayedColumns.filter( item => item !== '_select_')
+      this.displayedColumns = this.displayedColumns.filter(item => item !== '_select_')
     }
+  }
+
+  removeSelectedRows() {
+
+    const updated = this.dataSource.data.filter(row => !this.selection.selected.includes(row));
+    this.dataSource = new MatTableDataSource<any>(updated);
+    this.updateFormControl(this.dataSource.data);
+
+    this.selection.clear();
+
+    if (updated.length === 0) {
+      this.batchMode = false;
+    }
+
   }
 }
