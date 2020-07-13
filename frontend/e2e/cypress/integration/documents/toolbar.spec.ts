@@ -16,11 +16,17 @@ describe('Toolbar behavior', () => {
   it('should activate specific buttons when a folder is loaded', () => {
     Tree.selectNodeWithTitle('Neue Testdokumente');
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Preview', 'Copy', 'Delete', 'Save']);
+
+    // TODO: copy/move with subtree should be enabled
+
+
   });
 
   xit('should activate specific buttons when a document is loaded', () => {
     Tree.selectNodeWithTitle('zzz');
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Preview', 'Copy', 'Delete', 'Save', 'Publish']);
+
+    // TODO: copy/move with subtree should be disabled
   });
 
   xit('should activate specific buttons when a published document is loaded', () => {
