@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "cypress-intellij-reporter": "^0.0.4",
-    "cypress-keycloak-commands": "^1.2.0"
+    "cypress-keycloak-commands": "^1.2.0",
+    "@testing-library/cypress": "^6.0.0"
   }
 }
