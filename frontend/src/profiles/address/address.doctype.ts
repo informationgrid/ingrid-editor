@@ -162,7 +162,7 @@ export class ProfileAddress extends BaseDoctype {
           fieldGroupClassName: 'display-flex',
           fieldGroup: [{
             key: 'administrativeArea',
-            type: 'select',
+            type: 'autocomplete',
             className: 'flex-1',
             templateOptions: {
               label: 'Verwaltungsgebiet',
@@ -172,7 +172,7 @@ export class ProfileAddress extends BaseDoctype {
             }
           }, {
             key: 'country',
-            type: 'select',
+            type: 'autocomplete',
             className: 'flex-1',
             templateOptions: {
               label: 'Land',
