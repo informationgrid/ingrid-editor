@@ -3,8 +3,8 @@
         {{ to.externalLabel }}<span *ngIf="to.required">*</span>
     </ige-form-label>
     <div fxFlex></div>
-    <button *ngIf="!batchMode" mat-button (click)="toggleBatchMode()">Bearbeiten</button>
-    <button *ngIf="batchMode" mat-button (click)="toggleBatchMode()">
+    <button type="button" *ngIf="!batchMode" mat-button (click)="toggleBatchMode()">Bearbeiten</button>
+    <button type="button" *ngIf="batchMode" mat-button (click)="toggleBatchMode()">
         <mat-icon>done</mat-icon>
         Fertig
     </button>
@@ -17,11 +17,11 @@
                       [indeterminate]="selection.hasValue() && !isAllSelected()">
         </mat-checkbox>
 
-        <button mat-button (click)="removeSelectedRows()" [disabled]="selection.isEmpty()">
+        <button type="button" mat-button (click)="removeSelectedRows()" [disabled]="selection.isEmpty()">
             <mat-icon svgIcon="outline-delete-24px"></mat-icon>
             Löschen
         </button>
-        <button mat-button disabled>Mehr</button>
+        <button type="button" mat-button disabled>Mehr</button>
 
     </div>
 
@@ -50,12 +50,12 @@
             <ng-container *ngSwitchCase="'_actions_'">
                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
                 <mat-cell *matCellDef="let element; let rowIndex = index">
-                    <button mat-icon-button class="menu-button" [matMenuTriggerFor]="tableRowAction">
+                    <button type="button" mat-icon-button class="menu-button" [matMenuTriggerFor]="tableRowAction">
                         <mat-icon svgIcon="Mehr"></mat-icon>
                     </button>
                     <mat-menu #tableRowAction="matMenu">
-                        <button mat-menu-item (click)="editRow(rowIndex)">Bearbeiten</button>
-                        <button mat-menu-item (click)="removeRow(rowIndex)">Löschen</button>
+                        <button type="button" mat-menu-item (click)="editRow(rowIndex)">Bearbeiten</button>
+                        <button type="button" mat-menu-item (click)="removeRow(rowIndex)">Löschen</button>
                     </mat-menu>
                 </mat-cell>
             </ng-container>

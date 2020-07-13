@@ -7,6 +7,12 @@ export interface DefaultToolbarItem {
   align?: 'right' | 'left';
 }
 
+export interface ToolbarMenuItem {
+  eventId: string;
+  label: string;
+  active?: boolean;
+}
+
 export interface ToolbarItem extends DefaultToolbarItem {
   tooltip?: string;
   matIconVariable?: string;
@@ -16,7 +22,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   active?: boolean;
   label?: string;
   isPrimary?: boolean;
-  menu?: any
+  menu?: ToolbarMenuItem[]
 }
 
 export interface Separator extends DefaultToolbarItem {
@@ -82,6 +88,17 @@ export class FormToolbarService {
     const button = <ToolbarItem>this.getButtonById(id);
     if (button) {
       button.active = active;
+    }
+  }
+
+  setMenuItemStateOfButton(id: string, eventId: string, active: boolean) {
+    const button = <ToolbarItem>this.getButtonById(id);
+    if (button) {
+      const menuButton = button.menu.find(item => item.eventId === eventId);
+
+      if (menuButton) {
+        menuButton.active = active;
+      }
     }
   }
 

@@ -23,7 +23,9 @@
                     <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
                 </button>
                 <mat-menu #copyMenu="matMenu">
-                    <button *ngFor="let menuItem of button.menu" mat-menu-item (click)="sendEvent(menuItem.eventId)">
+                    <button *ngFor="let menuItem of button.menu" mat-menu-item
+                            [disabled]="!menuItem.active"
+                            (click)="sendEvent(menuItem.eventId)">
                         <span>{{menuItem.label}}</span>
                     </button>
                 </mat-menu>

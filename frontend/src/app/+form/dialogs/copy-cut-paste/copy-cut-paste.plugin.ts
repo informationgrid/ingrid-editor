@@ -9,6 +9,7 @@ import {CopyMoveEnum} from './enums';
 import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
+import {MessageService} from '../../../services/message.service';
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -32,6 +33,7 @@ export class CopyCutPastePlugin extends Plugin {
               private storageService: DocumentService,
               private treeQuery: TreeQuery,
               private modalService: ModalService,
+              private messageService: MessageService,
               private dialog: MatDialog) {
     super();
   }
@@ -42,26 +44,21 @@ export class CopyCutPastePlugin extends Plugin {
     const buttons: Array<ToolbarItem | Separator> = [
       {id: 'toolBtnCopyCutSeparator', pos: 30, isSeparator: true},
       {
-        id: 'toolBtnCopy', tooltip: 'Kopieren / Verschieben', matSvgVariable: 'Kopieren-Ausschneiden', eventId: 'COPY', pos: 40, active: false, menu: [
-          {eventId: 'COPY', label: 'Kopieren'},
+        id: 'toolBtnCopy',
+        tooltip: 'Kopieren / Verschieben',
+        matSvgVariable: 'Kopieren-Ausschneiden',
+        eventId: 'COPY',
+        pos: 40,
+        active: false,
+        menu: [
+          {eventId: 'COPY', label: 'Kopieren', active: true},
           {eventId: 'CUT', label: 'Verschieben'},
           {eventId: 'COPYTREE', label: 'Mit Teilbaum kopieren'},
           {eventId: 'CUTTREE', label: 'Mit Teilbaum verschieben'}
         ]
       }
-      // {id: 'toolBtnCut', tooltip: 'Cut', cssClasses: 'content_cut', eventId: 'CUT', pos: 50, active: false}
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
-
-    /*this.subscription = this.storageService.afterLoadAndSet$.subscribe((data) => {
-
-      if (data === null) {
-        return;
-      }
-
-      this.toolbarService.setButtonState('toolBtnCopy', true);
-      this.toolbarService.setButtonState('toolBtnCut', true);
-    });*/
 
     // add event handler for revert
     this.toolbarService.toolbarEvent$.subscribe(eventId => {
@@ -77,10 +74,11 @@ export class CopyCutPastePlugin extends Plugin {
     this.treeQuery.selectActiveId().subscribe(data => {
       if (data.length === 0) {
         this.toolbarService.setButtonState('toolBtnCopy', false);
-        // this.toolbarService.setButtonState('toolBtnCut', false);
       } else {
         this.toolbarService.setButtonState('toolBtnCopy', true);
-        // this.toolbarService.setButtonState('toolBtnCut', true);
+
+        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPYTREE', false);
+        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'CUTTREE', false);
       }
     });
   }
@@ -94,59 +92,56 @@ export class CopyCutPastePlugin extends Plugin {
 
   copy() {
     // remove last remembered copied documents
-    // this.copiedDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
+      minWidth: '400px',
       data: {
         titleText: 'Kopieren',
-        buttonText: 'Kopieren'
+        buttonText: 'Kopieren',
+        forAddress: this.forAddress
       } as PasteDialogOptions
     }).afterClosed().subscribe(result => {
       if (result) {
         console.log('result', result);
-        this.paste(result, CopyMoveEnum.COPY);
+        this.paste(result.selection.parent, CopyMoveEnum.COPY);
       }
     });
   }
 
   cut() {
     // remove last remembered copied documents
-    // this.cutDatasets = this.formService.getSelectedDocuments().map(doc => <string>doc.id);
 
     this.dialog.open(PasteDialogComponent, {
+      minWidth: '400px',
       data: {
         titleText: 'Verschieben',
-        buttonText: 'Verschieben'
+        buttonText: 'Verschieben',
+        forAddress: this.forAddress
       } as PasteDialogOptions
     }).afterClosed().subscribe(result => {
       if (result) {
         console.log('result', result);
-        this.paste(result, CopyMoveEnum.MOVE);
+        this.paste(result.selection.parent, CopyMoveEnum.MOVE);
       }
     });
   }
 
-  paste(targetNode: any, mode: CopyMoveEnum) {
-    console.log('is paste');
+  paste(dest: string, mode: CopyMoveEnum) {
+
     // TODO: add subtree pasting
-    const dest = targetNode[0].id;
     const includeTree = false;
 
-    let result = null;
+    const selectedDatasets = this.treeQuery.getActiveId().map(id => id.toString());
+
+    let result;
     if (mode === CopyMoveEnum.COPY) {
-      result = this.storageService.copy(this.copiedDatasets, dest, includeTree);
+      result = this.storageService.copy(selectedDatasets, dest, includeTree);
     } else {
-      result = this.storageService.move(this.cutDatasets, dest, includeTree);
+      result = this.storageService.move(selectedDatasets, dest, includeTree);
 
     }
 
-    result.subscribe(
-      () => this.handleAfterPaste()
-    );
-  }
-
-  private handleAfterPaste() {
-    // TODO: this.messageService.add({severity: 'success', summary: 'Datensatz eingefügt'});
+    result.subscribe();
   }
 
   unregister() {

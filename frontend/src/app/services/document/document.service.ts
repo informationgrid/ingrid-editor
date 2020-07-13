@@ -135,7 +135,6 @@ export class DocumentService {
       .toPromise().then(json => {
         const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
-        // TODO: this should be controlled by dynamic-form component
         this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 
         this.afterSave$.next(json);
@@ -212,13 +211,27 @@ export class DocumentService {
 
   /**
    * Copy a set of documents under a specified destination document.
-   * @param copiedDatasets contains the IDs of the documents to be copied
+   * @param srcIDs contains the IDs of the documents to be copied
    * @param dest is the document, where the other docs to be copied will have as their parent
    * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
    * @returns {Observable<Response>}
    */
   copy(srcIDs: string[], dest: string, includeTree: boolean) {
-    return this.dataService.copy(srcIDs, dest, includeTree);
+    return this.dataService.copy(srcIDs, dest, includeTree).pipe(
+      tap(() => {
+
+        this.messageService.sendInfo('Datensatz wurde kopiert');
+
+        const info = this.treeStore.getValue().openedDocument;
+
+        this.datasetsChanged$.next({
+          type: UpdateType.New,
+          data: [info],
+          parent: dest
+          // path: path
+        });
+      })
+    )
   }
 
   /**

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
-import de.ingrid.igeserver.model.Data1
+import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.DBApi
@@ -161,55 +161,59 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     override fun copyDatasets(
             principal: Principal?,
             ids: List<String>,
-            data: Data1): ResponseEntity<Void> {
-
-        return try {
-            copyOrMove(CopyMoveOperation.COPY, ids, data.destId)
-            ResponseEntity(HttpStatus.OK)
-        } catch (ex: Exception) {
-            log.error("Error during copy", ex)
-            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
-        }
-
-    }
-
-    @Throws(Exception::class)
-    override fun moveDatasets(
-            principal: Principal?,
-            ids: List<String>,
-            data: Data1): ResponseEntity<Void> {
+            data: CopyOptions): ResponseEntity<Void> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            copyOrMove(CopyMoveOperation.MOVE, ids, data.destId)
+            copyOrMove(CopyMoveOperation.COPY, ids, data.destId)
             return ResponseEntity(HttpStatus.OK)
         }
 
     }
 
-    @Throws(Exception::class)
+    override fun moveDatasets(
+            principal: Principal?,
+            ids: List<String>,
+            options: CopyOptions): ResponseEntity<Void> {
+
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        dbService.acquire(dbId).use {
+            copyOrMove(CopyMoveOperation.MOVE, ids, options.destId)
+            return ResponseEntity(HttpStatus.OK)
+        }
+
+    }
+
     private fun copyOrMove(operation: CopyMoveOperation, ids: List<String>, destId: String) {
 
         for (id in ids) {
-            val doc = dbService.find(DocumentWrapperType::class, id)
+            val wrapper = documentService.getByDocId(id, DocumentWrapperType.TYPE, true) as ObjectNode
+            val isAddress = wrapper.get(FIELD_CATEGORY).asText() == "address"
+            val doc = documentService.getLatestDocument(wrapper, false, false)
 
             // add new parent to document
-            val updatedDoc = documentService.updateParent(CatalogService.toJsonString(doc), destId) as ObjectNode
-            if (operation == CopyMoveOperation.COPY) {
-                // remove internal dataset Info (TODO: this should be done by the dbService)
-                MapperService.removeDBManagementFields(updatedDoc)
+            doc.put(FIELD_PARENT, destId)
 
-                // when we copy the node, then we also have to reset the id
-                updatedDoc.set<JsonNode>(FIELD_ID, null)
+            when (operation) {
+                CopyMoveOperation.COPY -> handleCopy(doc, isAddress)
+                CopyMoveOperation.MOVE -> handleMove(doc, isAddress)
             }
-
-            // TODO: which ID?
-            // null should be fine since a new document is created when copied
-            // when moved however it should have the same ID!
-            dbService.save(DocumentType::class, null, updatedDoc.toString())
         }
 
+    }
+
+    private fun handleCopy(doc: ObjectNode, isAddress: Boolean) {
+
+        // when we copy the node, then we also have to reset the id
+        doc.put(FIELD_ID, null as String?)
+
+        documentService.createDocument(doc, isAddress)
+    }
+
+    private fun handleMove(doc: ObjectNode, isAddress: Boolean) {
+        TODO("Not yet implemented")
     }
 
     @Throws(ApiException::class)
@@ -233,13 +237,12 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 findOptions.resolveReferences = true
                 findOptions.queryOperator = "AND"
                 docs = dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
-                val childDocs = docs.hits.stream()
+                val childDocs = docs.hits
                         .map { doc: JsonNode ->
                             val node = documentService.getLatestDocument(doc)
                             node.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc, DocumentWrapperType::class))
                             node
                         }
-                        .collect(Collectors.toList())
                 return ResponseEntity.ok(childDocs)
             }
         } catch (e: Exception) {

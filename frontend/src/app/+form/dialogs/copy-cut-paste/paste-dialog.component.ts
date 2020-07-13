@@ -13,45 +13,16 @@ export interface PasteDialogOptions {
 }
 
 @Component({
-  template: `
-    <div class="dialog-title-wrapper">
-      <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close>
-          <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">{{data.titleText}}</span>
-      </h2>
-    </div>
-    <mat-dialog-content>
-      <p>{{data.contentText}}</p>
-      <ige-tree (selected)="handleSelected($event)"
-                [disabledCondition]="disabledCondition"
-                (currentPath)="setPath($event)"
-                [forAddresses]="data.forAddress"
-                [showReloadButton]="false"></ige-tree>
-    </mat-dialog-content>
-    <mat-dialog-actions>
-      <div fxFlex></div>
-      <button mat-button [mat-dialog-close]="{selection: selection, path: path}" [disabled]="!selection">
-        {{data.buttonText}}
-      </button>
-    </mat-dialog-actions>
-  `
+  templateUrl: './paste-dialog.component.html'
 })
 export class PasteDialogComponent implements OnInit {
 
   selection: any[] = null;
   path: string[];
-  query;
-  disabledCondition = () => {
-    return false;
-  };
+  query: TreeQuery | AddressTreeQuery;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions, treeQuery: TreeQuery, addressTreeQuery: AddressTreeQuery) {
     this.query = data.forAddress ? addressTreeQuery : treeQuery;
-    if (data.disabledCondition) {
-      this.disabledCondition = data.disabledCondition;
-    }
   }
 
   ngOnInit() {

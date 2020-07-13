@@ -40,7 +40,7 @@
         </button>
         <mat-menu #menu="matMenu" class="user-popup-menu">
             <div class="user-popup-header">
-                Michael Meier
+                {{(userInfo | async).name}}
                 <p>Letzte Anmeldung:</p>
             </div>
             <span mat-menu-item [disableRipple]="true" (click)="$event.stopPropagation()">

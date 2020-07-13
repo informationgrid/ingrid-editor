@@ -2,7 +2,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.model.Data1
+import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.SearchResult
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -56,7 +56,7 @@ interface DatasetsApi {
     fun copyDatasets(
             principal: Principal?,
             @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<String>,
-            @Parameter(description = "...", required = true) @RequestBody data: @Valid Data1): ResponseEntity<Void>
+            @Parameter(description = "...", required = true) @RequestBody data: @Valid CopyOptions): ResponseEntity<Void>
 
     @Operation(description = "Deletes a dataset")
     @ApiResponses(value = [ApiResponse(responseCode = "200"), ApiResponse(responseCode = "200", description = "Unexpected error")])
@@ -99,5 +99,5 @@ interface DatasetsApi {
     fun moveDatasets(
             principal: Principal?,
             @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<String>,
-            @Parameter(description = "...", required = true) @RequestBody data: @Valid Data1): ResponseEntity<Void>
+            @Parameter(description = "...", required = true) @RequestBody data: @Valid CopyOptions): ResponseEntity<Void>
 }
