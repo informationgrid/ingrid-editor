@@ -42,7 +42,7 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
     this.filteredOptions = this.formControl.valueChanges.pipe(
       untilDestroyed(this),
       startWith(''),
-      filter(item => item !== undefined),
+      filter(item => item !== undefined && item !== null),
       map(value => this._filter(<string>value))
     );
   }
