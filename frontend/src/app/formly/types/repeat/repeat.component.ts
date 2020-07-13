@@ -24,9 +24,11 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
 
   private handleMinimumLength(value: any[], minLength: number) {
 
+    // only add one repeatable since change detection of formControl adds another repeatable
+    // as long as the minimal required one is not reached
     // TODO: remove timeout without getting ExpressionHasChangedException
     setTimeout(() => {
-      for (let i = value.length; i < minLength; i++) {
+      if (value.length < minLength) {
         this.add(null, {}, {markAsDirty: false});
       }
     }, 0);
