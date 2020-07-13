@@ -26,6 +26,7 @@
                [placeholder]="to.placeholder"
                matInput
                [formControl]="inputControl"
+               [required]="to.required && formControl.invalid"
                (keydown.enter)="addToList(repeatListInput.value)"
                [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addToList($event.option.value)">

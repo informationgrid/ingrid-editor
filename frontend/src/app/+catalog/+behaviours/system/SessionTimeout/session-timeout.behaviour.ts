@@ -21,7 +21,7 @@ export class SessionTimeoutBehaviour extends Plugin {
       type: 'input',
       templateOptions: {
         type: 'number',
-        label: 'Timeout in ms',
+        label: 'Timeout in Sekunden',
         placeholder: '1800',
         appearance: 'outline',
         required: true

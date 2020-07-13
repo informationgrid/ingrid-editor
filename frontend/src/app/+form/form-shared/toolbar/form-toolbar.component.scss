@@ -40,9 +40,8 @@
 .save-buttons button.btnPublish {
   margin-right: 0;
 
-  &:hover {
+  &:not([disabled]):hover {
     background-color: lighten($ige-secondary, 5%);
-    color: #fff;
   }
 
   .mat-icon {

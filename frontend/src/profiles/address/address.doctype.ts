@@ -5,6 +5,7 @@ import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {IgeDocument} from '../../app/models/ige-document';
 import {Injectable} from '@angular/core';
+import {filter, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -86,7 +87,9 @@ export class ProfileAddress extends BaseDoctype {
                 label: 'Art',
                 appearance: 'outline',
                 required: true,
-                options: this.getCodelistForSelect(4430)
+                options: this.getCodelistForSelect(4430).pipe(
+                  map(items => items.filter(item => item.value !== '5' && item.value !== '6'))
+                )
               }
             },
             {
@@ -113,15 +116,7 @@ export class ProfileAddress extends BaseDoctype {
             className: 'flex-1',
             type: 'input',
             templateOptions: {
-              label: 'Strasse',
-              appearance: 'outline'
-            }
-          }, {
-            key: 'number',
-            className: 'flex-1',
-            type: 'input',
-            templateOptions: {
-              label: 'Hausnummer',
+              label: 'Strasse/Hausnummer',
               appearance: 'outline'
             }
           }]
@@ -187,27 +182,6 @@ export class ProfileAddress extends BaseDoctype {
             }
           }]
         }]
-      }, {
-        key: 'tasks',
-        type: 'textarea',
-        wrappers: ['panel', 'form-field'],
-        templateOptions: {
-          externalLabel: 'Aufgaben',
-          rows: 2,
-          appearance: 'outline',
-          autosize: true,
-          autosizeMaxRows: 5
-        }
-      }, {
-        key: 'serviceTimes',
-        type: 'input',
-        wrappers: ['panel', 'form-field'],
-        templateOptions: {
-          externalLabel: 'Servicezeiten',
-          appearance: 'outline',
-          autosize: true,
-          autosizeMaxRows: 5
-        }
       }
       ]
     }];

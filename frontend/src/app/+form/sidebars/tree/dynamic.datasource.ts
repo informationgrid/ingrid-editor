@@ -157,11 +157,16 @@ export class DynamicDataSource {
     }
 
     // get calculated position with only root nodes (using sort method)
-    const indexOfNewDoc = this.data
+    let indexOfNewDoc = this.data
       .filter(document => document.level === 0)
       .concat(docAsTreeNode)
       .sort(this.treeService.getSortTreeNodesFunction())
       .findIndex(document => document._id === doc.id);
+
+    // if node has children, make sure to insert AFTER those
+    while (this.data[indexOfNewDoc] && this.data[indexOfNewDoc].level > 0) {
+      indexOfNewDoc++;
+    }
 
     // get index of complete tree with eventually expanded nodes
     return this.data.indexOf(this.data[indexOfNewDoc]);

@@ -43,6 +43,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private initInputListener(options: SelectOption[]) {
     this.parameterOptions = options;
 
+    // show error immediately (on publish)
+    this.inputControl.markAllAsTouched();
+
     this.filteredOptions =
       merge(
         this.inputControl.valueChanges,

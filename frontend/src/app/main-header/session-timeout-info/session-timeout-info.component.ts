@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {ConfigService} from '../../services/config/config.service';
 
 @Component({
   selector: 'ige-session-timeout-info',
@@ -9,10 +10,13 @@ export class SessionTimeoutInfoComponent implements OnInit {
 
   @Input() timeout: number;
 
-  constructor() {
+  constructor(private config: ConfigService) {
   }
 
   ngOnInit(): void {
   }
 
+  refreshSession() {
+    this.config.getCurrentUserInfo();
+  }
 }

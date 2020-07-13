@@ -1,6 +1,7 @@
 {
   "backendUrl": "/api/",
   "featureFlags": {
-    "AP3": false
+    "AP3": false,
+    "NotForDemo": true
   }
 }

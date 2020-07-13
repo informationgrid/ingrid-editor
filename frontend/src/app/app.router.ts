@@ -55,6 +55,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: {
       title: 'Import / Export',
+      featureFlag: 'NotForDemo',
       onlyAdmin: true,
       icon: 'Im-Export'
     }
