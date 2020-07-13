@@ -101,7 +101,6 @@ class OrientDBDatabase : DBApi {
             manager.config(serverInternal)
             serverInternal.activate()
             manager.startup()
-            setup()
 
             // setup management environment
             // NOTE we could also create and access databases directly using the server instance,
@@ -109,6 +108,8 @@ class OrientDBDatabase : DBApi {
             // pooling and makes this class better testable since it could also use an injected environment
             val databasePath = serverInternal.configuration.getProperty("server.database.path")
             orientDBInternal = OrientDB("embedded:${databasePath}", OrientDBConfig.defaultConfig())
+
+            setup()
         }
     }
 
