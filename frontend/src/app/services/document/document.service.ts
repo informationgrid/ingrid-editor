@@ -133,18 +133,25 @@ export class DocumentService {
 
     return this.dataService.save(data, isAddress)
       .toPromise().then(json => {
-        const info = this.mapToDocumentAbstracts([json], json._parent)[0];
+        const parentId = json._parent;
+        const info = this.mapToDocumentAbstracts([json], parentId)[0];
 
         this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 
         this.afterSave$.next(json);
 
+        // update state by adding node and updating parent info
         store.upsert(info.id, info);
+        if (isNewDoc) {
+          store.update(parentId, {
+            _hasChildren: true
+          });
+        }
 
         this.datasetsChanged$.next({
           type: isNewDoc ? UpdateType.New : UpdateType.Update,
           data: [info],
-          parent: info._parent,
+          parent: parentId,
           path: path
         });
 
