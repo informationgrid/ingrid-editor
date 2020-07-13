@@ -2,6 +2,7 @@ package de.ingrid.igeserver
 
 import com.orientechnologies.orient.core.exception.OConcurrentModificationException
 import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.api.NotFoundException
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.HttpHeaders
@@ -26,6 +27,13 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
         log.error("No Permission handled:", ex)
         val bodyOfResponse = ex.message
         return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.FORBIDDEN, request)
+    }
+
+    @ExceptionHandler(value = [NotFoundException::class])
+    protected fun handleNotFoundErrors(ex: NotFoundException, request: WebRequest): ResponseEntity<Any> {
+        log.error("Not Found handled:", ex)
+        val bodyOfResponse = ex.message
+        return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.NOT_FOUND, request)
     }
 
     @ExceptionHandler(value = [IllegalArgumentException::class, IllegalStateException::class])

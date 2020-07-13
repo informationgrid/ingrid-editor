@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {ModalService} from '../modal/modal.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {catchError, map, tap} from 'rxjs/operators';
 import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';
@@ -12,12 +12,13 @@ import {applyTransaction, arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
 import {ProfileService} from '../profile.service';
 import {SessionStore} from '../../store/session.store';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {ConfigService, Configuration} from '../config/config.service';
 import {SearchResult} from '../../models/search-result.model';
 import {ServerSearchResult} from '../../models/server-search-result.model';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 import {StatisticResponse} from '../../models/statistic.model';
+import {IgeError} from '../../models/ige-error';
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -106,7 +107,17 @@ export class DocumentService {
 
   load(id: string, address?: boolean): Observable<IgeDocument> {
     return this.dataService.load(id).pipe(
-      tap(doc => this.updateTreeStore(doc, address))
+      tap(doc => this.updateTreeStore(doc, address)),
+      catchError( (e: HttpErrorResponse) => {
+        if (e.status === 404) {
+          const error = new IgeError();
+          error.setMessage('Der Datensatz konnte nicht gefunden werden');
+          this.modalService.showIgeError(error);
+          return of(null);
+        } else {
+          throw e;
+        }
+      })
     );
   }
 

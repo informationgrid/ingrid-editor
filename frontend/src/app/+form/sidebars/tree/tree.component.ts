@@ -362,20 +362,24 @@ export class TreeComponent implements OnInit, OnDestroy {
           this.handleExpandNodes(path)
             .then(() => {
               const node = this.dataSource.getNode(id);
-              const nodePath = this.getTitlesFromNodePath(node);
-              this.currentPath.next(nodePath);
-              this.activate.next([id]);
-              this.selectionModel.select(node);
-              this.scrollToActiveElement();
+              if (node) {
+                const nodePath = this.getTitlesFromNodePath(node);
+                this.currentPath.next(nodePath);
+                this.activate.next([id]);
+                this.selectionModel.select(node);
+                this.scrollToActiveElement();
+              }
             });
         } else {
           this.activate.next(id ? [id] : []);
           if (id) {
             const node = this.dataSource.getNode(id);
-            const nodePath = this.getTitlesFromNodePath(node);
-            this.currentPath.next(nodePath);
-            this.selectionModel.select(node);
-            this.scrollToActiveElement();
+            if (node) {
+              const nodePath = this.getTitlesFromNodePath(node);
+              this.currentPath.next(nodePath);
+              this.selectionModel.select(node);
+              this.scrollToActiveElement();
+            }
           }
         }
       });
