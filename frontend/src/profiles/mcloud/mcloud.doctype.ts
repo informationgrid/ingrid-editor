@@ -126,7 +126,8 @@ export class McloudDoctype extends BaseDoctype {
             templateOptions: {
               label: 'Link',
               appearance: 'outline',
-              required: true
+              required: true,
+              formatter: text => `<a href="${text}" target="_blank" class="no-text-transform">${text}</a>`
             }
           }, {
             key: 'type',

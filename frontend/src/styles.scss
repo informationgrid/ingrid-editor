@@ -19,6 +19,10 @@ a {
   text-decoration: none;
   text-transform: uppercase;
 
+  &.no-text-transform {
+    text-transform: unset;
+  }
+
   &:hover {
     text-decoration: none;
   }

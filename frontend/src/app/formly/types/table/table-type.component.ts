@@ -126,4 +126,8 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
     }
 
   }
+
+  formatCell(column: any, text: string) {
+    return column.templateOptions.formatter ? column.templateOptions.formatter(text) : text;
+  }
 }
