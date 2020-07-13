@@ -1,25 +1,29 @@
 import {DashboardPage} from '../../pages/dashboard.page';
 import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
+import {AddressPage} from "../../pages/address.page";
 
 describe('Load documents', () => {
   beforeEach(() => {
     cy.kcLogin('user');
   })
 
-  it('should load a document from dashboard', () => {
-    cy.visit(DashboardPage.url);
-    DashboardPage.getLatestDocTitle(1).then(text => {
-      DashboardPage.clickOnLatestDoc(1);
-      cy.url().should('include', '/form;id=');
-      cy.get(DocumentPage.title).should('have.text', text);
-    });
-  })
+  // tested in dashboard
+  // it('should load a document from dashboard', () => {
+
+  it('should show a dashboard view when no document is selected or in root element', function () {
+    DocumentPage.visit();
+    cy.get('ige-form-dashboard').should('contain','Daten').should('contain','Neuer Datensatz');
+    // expect(cy.get('ige-form-dashboard')).to.contain('text');
+    cy.visit('/form;id=a0df9837-512a-4594-b2ef-2814f7c55c81');
+    cy.get('ige-form-info ige-breadcrumb .selectable').click();
+    cy.get('ige-form-dashboard').should('contain','Daten').should('contain','Neuer Datensatz');
+  });
 
   it('should jump directly to a root folder specified by URL', () => {
     cy.visit('/form;id=a0df9837-512a-4594-b2ef-2814f7c55c81');
     cy.get(DocumentPage.title, {timeout: 10000}).should('have.text', 'Neue Testdokumente');
     cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT);
-  })
+  });
 
   it('should jump directly to a nested folder specified by URL', () => {
     cy.visit('/form;id=9b264daf-3044-441d-864c-699b44c46dc1');
@@ -27,20 +31,24 @@ describe('Load documents', () => {
     // this function waits for text to appear, but shouldHaveTrimmedText not!
     cy.get('ige-form-info ige-breadcrumb')
       .should('have.text', `${ROOT}${SEPARATOR}Testdokumente${SEPARATOR}Ordner 2. Ebene`);
-  })
+  });
 
-  it('should open a document from a quick search result', () => {
-    DashboardPage.visit();
-    DashboardPage.search('Feature-Übersicht');
-    DashboardPage.getSearchResult(1).click();
-    cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
-  })
+  // tested in dashboard
+  // it('should open a document from a quick search result', () => {
 
-  xit('should open a document from a tree search result on form page', () => {
+  it('should open a document from a tree search result on form page', () => {
     DocumentPage.visit();
-    // DocumentPage.search('Feature-Übersicht');
-    // DocumentPage.getSearchResult(1).click();
+    DocumentPage.search('Feature-Übersicht');
+    DocumentPage.getSearchResult().click();
     cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
   })
 
+  it.only('should open the previously selected document when going to another page and returning', function () {
+    DocumentPage.visitSingleDoc();
+    cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
+    cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+    cy.get(DocumentPage.Sidemenu.Adressen).click();
+    cy.get(DocumentPage.Sidemenu.Daten).click();
+    cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
+  });
 })

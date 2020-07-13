@@ -34,6 +34,8 @@ export class DocumentPage extends BasePage {
 
   }
 
+  static treeSearchBar = '[placeholder=Suchen]';
+
   static title = '.form-info-bar .title .label';
 
   static Toolbar: Record<string, string> = {
@@ -51,6 +53,10 @@ export class DocumentPage extends BasePage {
 
   static visit() {
     cy.visit('form');
+  }
+
+  static visitSingleDoc() {
+    cy.visit('form;id=7e9687e8-43f4-4b95-bdcb-27647197a8cb');
   }
 
   static createDocument(): string {
@@ -84,5 +90,15 @@ export class DocumentPage extends BasePage {
         cy.get(DocumentPage.Toolbar[key]).should('be.disabled');
       }
     })
+  }
+
+  static search(searchTerm: string) {
+    cy.get(DocumentPage.treeSearchBar).type(searchTerm);
+  }
+
+
+  static getSearchResult(number?: number) {
+    number = number == undefined ? 1 : number;
+    return cy.get('ige-document-list-item').eq(number - 1).parent();
   }
 }
