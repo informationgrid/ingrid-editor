@@ -22,13 +22,13 @@
                 [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
 
 <ng-template #simpleInput>
-    <mat-form-field class="width-100 simpleInputX" appearance="outline">
-        <input #input matInput placeholder="Eintragen..."
+    <mat-form-field class="width-100" appearance="outline">
+        <input matInput placeholder="Eintragen..."
                autocomplete="off"
-               [(ngModel)]="inputModel"
-               (keydown.enter)="addValues(input.value)"
-               [class.error-outline]="showRequiredError">
-        <button *ngIf="input.value.length > 0" mat-icon-button matSuffix class="field-close" (click)="input.value = ''">
+               [formControl]="inputControl"
+               [required]="to.required && formControl.invalid"
+               (keydown.enter)="addValues(inputControl.value)">
+        <button *ngIf="inputControl.value.length > 0" mat-icon-button matSuffix class="field-close" (click)="inputControl.setValue('')">
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
         <mat-hint>Eintrag mit Return bestätigen, mehrere Schlagworte durch Komma trennen</mat-hint>

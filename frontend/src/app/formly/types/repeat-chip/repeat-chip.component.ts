@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {FieldArrayType} from '@ngx-formly/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ChipDialogComponent, ChipDialogData} from './chip-dialog/chip-dialog.component';
+import {FormControl} from '@angular/forms';
 
 @Component({
   selector: 'ige-repeat-chip',
@@ -9,11 +10,14 @@ import {ChipDialogComponent, ChipDialogData} from './chip-dialog/chip-dialog.com
   styleUrls: ['./repeat-chip.component.scss']
 })
 export class RepeatChipComponent extends FieldArrayType {
-  inputModel = '';
-
+  inputControl = new FormControl();
 
   constructor(private dialog: MatDialog) {
     super();
+
+    // show error immediately (on publish)
+    this.inputControl.setValue('');
+    this.inputControl.markAllAsTouched();
   }
 
   openDialog() {
@@ -54,6 +58,6 @@ export class RepeatChipComponent extends FieldArrayType {
 
   addValues(value: string) {
     value.split(',').forEach(item => this.add(null, item));
-    this.inputModel = '';
+    this.inputControl.setValue('');
   }
 }
