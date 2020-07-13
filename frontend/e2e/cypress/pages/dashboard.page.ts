@@ -21,6 +21,10 @@ export class DashboardPage {
     return cy.get('ige-quick-search input').type(query);
   }
 
+  static clearSearch() {
+    return cy.get('ige-quick-search [svgicon=Entfernen]').click();
+  }
+
   static getSearchResult(position: number): Chainable {
     return cy.get(`.mat-autocomplete-panel mat-option:nth-of-type(${position})`);
   }
