@@ -66,12 +66,10 @@ export function IpValidator(control: FormControl): ValidationErrors {
     FormlyModule.forChild({
       types: [{
         name: 'autocomplete',
-        component: AutocompleteTypeComponent,
-        wrappers: ['form-field']
+        component: AutocompleteTypeComponent
       }, {
         name: 'leaflet',
-        component: LeafletTypeComponent/*,
-        wrappers: ['form-field']*/
+        component: LeafletTypeComponent
       }, {
         name: 'table',
         component: TableTypeComponent

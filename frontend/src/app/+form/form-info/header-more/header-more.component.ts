@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {DocumentState, IgeDocument} from '../../../models/ige-document';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {DocumentUtils} from '../../../services/document.utils';
+import {ProfileQuery} from '../../../store/profile/profile.query';
 
 @Component({
   selector: 'ige-header-more',
@@ -26,7 +27,7 @@ export class HeaderMoreComponent implements OnInit {
   @Input() model: IgeDocument;
   @Input() showMore = false;
 
-  constructor() {
+  constructor(private profileQuery: ProfileQuery) {
   }
 
   ngOnInit() {
@@ -35,6 +36,12 @@ export class HeaderMoreComponent implements OnInit {
   getState(state: DocumentState) {
 
     return DocumentUtils.getStateName(state);
+
+  }
+
+  mapDocumentType(type: string) {
+
+    return this.profileQuery.getEntity(type).label;
 
   }
 }

@@ -13,9 +13,6 @@ export class NewCatalogDialogComponent {
   types = [{
     id: 'mcloud',
     label: 'mCLOUD Katalog'
-  }, {
-    id: 'uvp',
-    label: 'UVP Katalog'
   }];
   model: CatalogSettings = {};
 

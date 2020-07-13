@@ -1,10 +1,11 @@
 <mat-form-field class="width-100" appearance="outline">
+    <mat-label>{{to.label}}</mat-label>
     <input matInput
            [matAutocomplete]="auto"
            [formControl]="formControl"
            [formlyAttributes]="field"
            [placeholder]="to.placeholder"
-           (keyup)="_filter(formControl.value)"
+           (keyup)="_filter(formControl.value || '')"
            [errorStateMatcher]="errorStateMatcher">
     <button *ngIf="formControl.value?.length > 0" mat-icon-button matSuffix class="field-close"
             (click)="formControl.setValue('')">
