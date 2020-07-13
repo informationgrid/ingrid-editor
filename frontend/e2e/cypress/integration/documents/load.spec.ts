@@ -5,7 +5,7 @@ import {AddressPage} from "../../pages/address.page";
 describe('Load documents', () => {
   beforeEach(() => {
     cy.kcLogin('user');
-  })
+  });
 
   // tested in dashboard
   // it('should load a document from dashboard', () => {
@@ -41,9 +41,9 @@ describe('Load documents', () => {
     DocumentPage.search('Feature-Übersicht');
     DocumentPage.getSearchResult().click();
     cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
-  })
+  });
 
-  it.only('should open the previously selected document when going to another page and returning', function () {
+  it('should open the previously selected document when going to another page and returning', function () {
     DocumentPage.visitSingleDoc();
     cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
     cy.get(DocumentPage.Sidemenu.Uebersicht).click();

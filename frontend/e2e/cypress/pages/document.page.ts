@@ -99,6 +99,11 @@ export class DocumentPage extends BasePage {
 
   static getSearchResult(number?: number) {
     number = number == undefined ? 1 : number;
-    return cy.get('ige-document-list-item').eq(number - 1).parent();
+    return this.getSearchResults().eq(number - 1).parent();
   }
+
+  static getSearchResults() {
+    return cy.get('.cdk-overlay-pane').find('ige-document-list-item');
+  }
+
 }

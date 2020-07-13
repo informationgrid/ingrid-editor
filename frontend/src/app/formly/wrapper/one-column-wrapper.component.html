@@ -1,4 +1,4 @@
-<div [class.hasContextHelp]="to.hasContextHelp" fxLayout="row" [class.required]="to.required" [attr.cy-data]="to.externalLabel">
+<div [class.hasContextHelp]="to.hasContextHelp" fxLayout="row" [class.required]="to.required" [attr.data-cy]="to.externalLabel">
 
     <ige-form-label [hasContextHelp]="to.hasContextHelp" (contextHelp)="showContextHelp($event)">
         {{ to.externalLabel }}<span *ngIf="to.required">*</span>

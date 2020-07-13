@@ -127,13 +127,27 @@ describe('General create documents/folders', () => {
 
 
   describe('Dirty checks', () => {
-    xit('should show a dialog when a document was modified and another address was clicked', () => {
+    it('should show a dialog when a document was modified and another document was clicked', () => {
+      const doc1Name = 'Leeres mCLOUD Test Objekt';
+      const doc2Name = 'Test mCLOUD Dokument';
+
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').findByText(doc2Name).click();
+      cy.get('[data-cy=Beschreibung]').type('testestest');
 
       // reject dialog
       // check selected tree node === previous selected node
+      cy.get('span').contains(doc1Name).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?')
+      cy.get('mat-dialog-actions').contains('Abbrechen').click();
+      cy.get(DocumentPage.title).should('have.text', doc2Name);
 
       // accept dialog
       // check selected tree node === newly selected node
+      cy.get('span').contains(doc1Name).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?')
+      cy.get('mat-dialog-actions').contains('Ok').click();
+      cy.get(DocumentPage.title).should('have.text', doc1Name);
 
     });
 
@@ -145,4 +159,4 @@ describe('General create documents/folders', () => {
 
     });
   });
-})
+});
