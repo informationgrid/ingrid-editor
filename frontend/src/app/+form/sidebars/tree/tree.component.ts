@@ -57,7 +57,6 @@ export class TreeComponent implements OnInit, OnDestroy {
   // signal to show that a tree node is loading
   private isLoading: TreeNode;
   activeNodeId: string = null;
-  skipNextJump = false;
 
   treeControl: FlatTreeControl<TreeNode>;
 
@@ -94,17 +93,19 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private handleActiveNodeSubscription() {
-    if (this.setActiveNode) {
-      this.setActiveNode
-        .pipe(untilDestroyed(this))
-        .subscribe(id => {
-          if (this.skipNextJump) {
-            this.skipNextJump = false;
-            return;
-          }
-          this.jumpToNode(id).then(() => this.activeNodeId = id);
-        });
+    if (!this.setActiveNode) {
+      return;
     }
+
+    this.setActiveNode
+      .pipe(untilDestroyed(this))
+      .subscribe(id => {
+        if (this.activeNodeId === id) {
+          return;
+        }
+        this.jumpToNode(id)
+          .then(() => this.activeNodeId = id);
+      });
   }
 
   private expandOnDataChange(ids: string[]): Promise<void> {
@@ -170,7 +171,6 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.selectionModel.clear();
       this.selectionModel.select(node);
       this.activeNodeId = this.selectionModel.selected[0]._id;
-      this.skipNextJump = true;
       this.activate.next([this.activeNodeId]);
 
       // set path in tree for bread crumb (extract to method)
@@ -278,7 +278,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
       // parent node seems to be nested deeper
       if (parentNodeIndex === -1) {
-        console.log('Parent not found, using path: ', updateInfo.path);
+        console.log('Parent not found, expanding tree nodes: ', updateInfo.path);
         if (this.expandNodeIds) {
           this.expandNodeIds.next(updateInfo.path);
         }

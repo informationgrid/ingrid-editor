@@ -17,31 +17,35 @@
                 <mat-spinner [diameter]="30"></mat-spinner>
             </div>
 
-            <ng-content *ngIf="!isLoading && (!(activeId | async) || fields.length === 0)"></ng-content>
+            <ng-container *ngIf="!isLoading">
 
-            <ng-container *ngIf="!isLoading && fields.length !== 0">
-                <ige-form-info [form]="form"
-                               [model]="model"
-                               [forAddress]="address"
-                               [sections]="sections"
-                               [parentContainer]="scrollForm"
-                               (showStickyHeader)="updateContentPadding($event)"></ige-form-info>
+                <ng-content *ngIf="fields.length === 0"></ng-content>
 
-                <form [formGroup]="form"
-                      [style.padding-top]="paddingWithHeader"
-                      [class.hide-validation]="!showValidationErrors"
-                      [class.hide]="model._type === 'FOLDER'">
-                    <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
+                <ng-container *ngIf="fields.length !== 0">
+                    <ige-form-info [form]="form"
+                                   [model]="model"
+                                   [forAddress]="address"
+                                   [sections]="sections"
+                                   [parentContainer]="scrollForm"
+                                   (showStickyHeader)="updateContentPadding($event)"></ige-form-info>
 
-                    <!--<pre>
-    JSON:
-    {{model | json}}
-                    </pre>-->
-                </form>
+                    <form [formGroup]="form"
+                          [style.padding-top]="paddingWithHeader"
+                          [class.hide-validation]="!showValidationErrors"
+                          [class.hide]="model._type === 'FOLDER'">
+                        <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
 
-                <div *ngIf="model._type === 'FOLDER'" class="folder-content">
-                    <ige-card-box label="Ordner-Informationen"></ige-card-box>
-                </div>
+                        <!--<pre>
+        JSON:
+        {{model | json}}
+                        </pre>-->
+                    </form>
+
+                    <div *ngIf="model._type === 'FOLDER'" class="folder-content">
+                        <ige-card-box label="Ordner-Informationen"></ige-card-box>
+                    </div>
+                </ng-container>
+
             </ng-container>
 
         </as-split-area>
