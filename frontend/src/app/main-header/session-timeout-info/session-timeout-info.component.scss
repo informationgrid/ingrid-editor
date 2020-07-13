@@ -6,6 +6,9 @@
   padding: 0 0 0 12px;
   border-radius: 4px;
   font-size: 14px;
+  height: 100%;
+  display: flex;
+  align-items: center;
 
   .label {
     opacity: 0.6;
@@ -18,12 +21,15 @@
   .separator {
     display: inline-block;
     width: 2px;
-    height: 40px;
+    height: 100%;
     background-color: white;
     vertical-align: bottom;
     margin-left: 12px;
   }
 
+  button {
+    line-height: 100%;
+  }
 }
 
 .warn {

@@ -13,8 +13,14 @@ ige-session-timeout-info {
 }
 
 .header-info {
+  height: 32px;
   font-size: 14px;
   padding-right: 32px;
+
+  .link-button {
+    height: 100%;
+    line-height: 100%;
+  }
 }
 
 .link-button ::ng-deep .mat-button-wrapper {
@@ -23,6 +29,10 @@ ige-session-timeout-info {
 
 .mat-toolbar-row {
   padding-right: 12px;
+
+  ige-session-timeout-info {
+    height: 32px;
+  }
 }
 
 .mat-toolbar-row, .mat-toolbar-single-row, .mat-toolbar-multiple-rows {
