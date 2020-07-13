@@ -4,14 +4,14 @@
     <div *ngIf="!hasAnyLocations" class="spatialBtnText">
         Erstellen Sie einen Raumbezug<span *ngIf="to.required">*</span>
     </div>
-    <button mat-fab class="spatialBtn" color="primary" (click)="openSpatialDialog()"
+    <button type="button" mat-fab class="spatialBtn" color="primary" (click)="openSpatialDialog()"
             [ngClass]="{ 'has-error': formFieldControl.errorState && formControl.errors?.required }">
         <mat-icon svgIcon="spatial-rect"></mat-icon>
     </button>
 </div>
 
 <div *ngIf="mapHasMoved" class="resetBtn">
-    <button mat-flat-button (click)="highlightLocation(null)">Zurücksetzen</button>
+    <button type="button" mat-flat-button (click)="highlightLocation(null)">Zurücksetzen</button>
 </div>
 
 <ige-form-error *ngIf="formFieldControl.errorState && formControl.errors?.required">Bitte erstellen Sie einen Raumbezug</ige-form-error>
