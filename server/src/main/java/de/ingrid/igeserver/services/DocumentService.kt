@@ -86,7 +86,7 @@ class DocumentService : MapperService() {
         } else false
     }
 
-    fun getLatestDocument(doc: JsonNode, onlyPublished: Boolean = false): ObjectNode {
+    fun getLatestDocument(doc: JsonNode, onlyPublished: Boolean = false, resolveLinks: Boolean = true): ObjectNode {
 
         val docData: ObjectNode = getDocumentVersion(doc, onlyPublished)
 
@@ -97,7 +97,10 @@ class DocumentService : MapperService() {
         removeDBManagementFields(docData)
 
         // get latest references from links
-        handleLatestLinkedDocs(docData, onlyPublished)
+        if (resolveLinks) {
+            handleLatestLinkedDocs(docData, onlyPublished)
+        }
+
         return docData
     }
 
