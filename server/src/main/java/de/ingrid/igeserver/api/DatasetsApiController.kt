@@ -189,7 +189,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     private fun copyOrMove(operation: CopyMoveOperation, ids: List<String>, destId: String) {
 
         for (id in ids) {
-            val wrapper = documentService.getByDocId(id, DocumentWrapperType.TYPE, true) as ObjectNode
+            val wrapper = documentService.getByDocId(id, DocumentWrapperType::class, true) as ObjectNode
             val isAddress = wrapper.get(FIELD_CATEGORY).asText() == "address"
             val doc = documentService.getLatestDocument(wrapper, false, false)
 
