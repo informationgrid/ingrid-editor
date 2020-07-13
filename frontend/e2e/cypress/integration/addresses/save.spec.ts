@@ -12,6 +12,26 @@ describe('General create addresses/folders', () => {
     AddressPage.visit();
   });
 
+  describe('Create Folder', () => {
+
+    xit('should show all nested folders after creation when root parent is collapsed and expanded', () => {
+
+      // create root folder "Nested"
+
+      // create another folder under "Nested" with name "More nested"
+
+      // create another folder under "More nested" with name "Even more nested"
+
+      // collapse "Nested"
+
+      // expand "Nested" and "More nested"
+
+      // assert that directory "Even more nested" exists
+
+    });
+
+  })
+
   describe('Create Addresses', () => {
 
     it('should allow creation if one of firstname, lastname or organization was filled', () => {
