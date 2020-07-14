@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.orientechnologies.orient.core.db.ODatabaseSession
 import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.documenttypes.AbstractDocumentType
 import de.ingrid.igeserver.documenttypes.DocumentWrapperType
@@ -47,6 +48,11 @@ class mCloudType : AbstractDocumentType(TYPE, profiles) {
                     log.error("Referenced Address could not be found: $wrapperId")
                 }
             } catch (e: Exception) {
+                // TODO: what to do with removed references?
+                if (e is NotFoundException) {
+                    log.error("Referenced address was not found: $wrapperId -> Should we remove it?");
+                    continue
+                }
                 log.error(e)
                 throw e
             }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.db.DBApi
 import de.ingrid.igeserver.db.FindOptions
 import de.ingrid.igeserver.db.QueryType
@@ -58,7 +59,7 @@ class DocumentService : MapperService() {
         val docs = dbService.findAll(type, query, findOptions)
         if (docs.totalHits != 1L) {
             log.error("A $type could not be found or is not unique for UUID: $id (got ${docs.totalHits})")
-            throw RuntimeException("No unique document wrapper found")
+            throw NotFoundException(404, "No unique document wrapper found")
         }
         return try {
             docs.hits[0]
