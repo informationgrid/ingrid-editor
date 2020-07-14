@@ -37,6 +37,12 @@ export class QuickSearchComponent implements OnInit {
   }
 
   search(value: string) {
+    if (value?.trim()?.length === 0) {
+      this.docs = [];
+      this.addresses = [];
+      return;
+    }
+
     this.documentService.find(value, 5)
       .subscribe(result => {
         this.docs = this.highlightResult(result.hits, value);
@@ -50,7 +56,10 @@ export class QuickSearchComponent implements OnInit {
   }
 
   openResearchPage(event: Event) {
+    // TODO: activate after research page is implemented
     event.preventDefault();
+    return;
+
     this.router.navigate(['/research']);
   }
 
