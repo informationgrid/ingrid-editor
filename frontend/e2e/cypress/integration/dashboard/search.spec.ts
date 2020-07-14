@@ -4,7 +4,7 @@ import {AddressPage} from "../../pages/address.page";
 
 describe('Search', function () {
 
-  before(function () {
+  beforeEach(() => {
     cy.kcLogin('user');
     cy.visit('');
   });

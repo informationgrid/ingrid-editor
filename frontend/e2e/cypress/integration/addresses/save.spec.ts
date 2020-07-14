@@ -30,13 +30,13 @@ describe('General create addresses/folders', () => {
 
     });
 
-  })
+  });
 
   describe('Create Addresses', () => {
 
     it('should allow creation if one of firstname, lastname or organization was filled', () => {
       dialog.open();
-      cy.get('[data-cy=create-action]').should('be.disabled')
+      cy.get('[data-cy=create-action]').should('be.disabled');
 
       dialog.fill(new Address('Thomas'));
       cy.get('[data-cy=create-action]').should('be.enabled');
@@ -92,6 +92,9 @@ describe('General create addresses/folders', () => {
 
       cy.get('.firstName input').should('have.value', 'Herbert');
       cy.get('.lastName input').should('have.value', 'Meier');
+    });
+
+    xit('should create an address folder', () => {
     });
 
     it('should generate a title from create parameters', () => {
