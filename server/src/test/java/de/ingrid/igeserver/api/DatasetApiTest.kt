@@ -9,14 +9,12 @@ import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.services.CatalogService
-import org.junit.Assert
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
+import org.junit.*
 import org.mockito.*
 import java.io.IOException
 import java.util.*
 
+@Ignore("Test needs to be migrated. Should we still write these tests, when we have e2e tests?")
 class DatasetApiTest {
     @Mock
     private val authUtils: AuthUtils? = null

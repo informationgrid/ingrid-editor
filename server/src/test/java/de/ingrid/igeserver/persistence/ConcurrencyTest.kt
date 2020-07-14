@@ -3,7 +3,6 @@ package de.ingrid.igeserver.persistence
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.orientechnologies.orient.core.db.*
-import com.orientechnologies.orient.core.exception.OConcurrentModificationException
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.persistence.orientdb.OrientDBDatabase
 import de.ingrid.igeserver.persistence.orientdb.model.meta.OUserInfoType
