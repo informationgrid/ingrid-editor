@@ -30,7 +30,8 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       return this.dialog.open(ConfirmDialogComponent, {
         data: {
           title: 'Änderungen verwerfen?',
-          message: 'Wollen Sie die Änderungen am Datensatz wirklich verwerfen?'
+          message: 'Wollen Sie die Änderungen am Datensatz wirklich verwerfen?',
+          acceptButtonText: 'Verwerfen'
         } as ConfirmDialogData
       }).afterClosed()
         .pipe(
