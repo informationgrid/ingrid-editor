@@ -108,7 +108,7 @@ export class DocumentService {
   load(id: string, address?: boolean): Observable<IgeDocument> {
     return this.dataService.load(id).pipe(
       tap(doc => this.updateTreeStore(doc, address)),
-      catchError( (e: HttpErrorResponse) => {
+      catchError((e: HttpErrorResponse) => {
         if (e.status === 404) {
           const error = new IgeError();
           error.setMessage('Der Datensatz konnte nicht gefunden werden');
@@ -198,7 +198,6 @@ export class DocumentService {
   }
 
   delete(ids: string[], isAddress: boolean): void {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     this.dataService.delete(ids)
       .subscribe(res => {
@@ -211,7 +210,8 @@ export class DocumentService {
           // @ts-ignore
           data: data
         });
-        store.remove(ids);
+
+        this.updateStoreAfterDelete(ids, isAddress);
       });
   }
 
@@ -323,5 +323,25 @@ export class DocumentService {
 
   getStatistic(): Observable<StatisticResponse> {
     return this.http.get<StatisticResponse>(`${this.configuration.backendUrl}statistic`);
+  }
+
+  private updateStoreAfterDelete(ids: string[], isAddress: boolean) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    let entities = store.getValue().entities;
+    const parents = ids.map(id => entities[id]._parent);
+
+    store.remove(ids);
+
+    // which parents do not have any children anymore?
+    entities = store.getValue().entities;
+    const parentsWithNoChildren = parents.filter(parent => !Object.values(entities).some(entity => entity._parent === parent));
+
+    parentsWithNoChildren.forEach(parent => {
+      store.update(parent, {
+        _hasChildren: false
+      });
+    });
+
   }
 }
