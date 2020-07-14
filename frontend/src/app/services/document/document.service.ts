@@ -197,7 +197,9 @@ export class DocumentService {
       );
   }
 
-  delete(ids: string[]): void {
+  delete(ids: string[], isAddress: boolean): void {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
     this.dataService.delete(ids)
       .subscribe(res => {
         console.log('ok', res);
@@ -209,7 +211,7 @@ export class DocumentService {
           // @ts-ignore
           data: data
         });
-        this.treeStore.remove(ids);
+        store.remove(ids);
       });
   }
 
