@@ -133,6 +133,9 @@ export class DynamicDataSource {
   updateNode(docs: DocumentAbstract[]) {
     docs.forEach(doc => {
       const index = this.data.findIndex(node => node._id === doc.id);
+
+      this.collapseNode(this.data[index], index);
+
       if (index !== -1) {
         this.data.splice(index, 1, ...this._database.mapDocumentsToTreeNodes([doc], this.data[index].level));
         this.dataChange.next(this.data);
