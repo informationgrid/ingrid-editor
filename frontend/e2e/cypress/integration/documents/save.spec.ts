@@ -147,7 +147,7 @@ describe('General create documents/folders', () => {
       // check selected tree node === newly selected node
       cy.get('span').contains(doc1Name).click();
       cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
-      cy.get('mat-dialog-actions').contains('Ok').click();
+      cy.get('mat-dialog-actions').contains('Verwerfen').click();
       cy.get(DocumentPage.title).should('have.text', doc1Name);
 
     });
@@ -173,7 +173,7 @@ describe('General create documents/folders', () => {
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
       cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
-      cy.get('mat-dialog-actions').contains('Ok').click();
+      cy.get('mat-dialog-actions').contains('Verwerfen').click();
 
       cy.get(DocumentPage.title).should('not.exist')
 

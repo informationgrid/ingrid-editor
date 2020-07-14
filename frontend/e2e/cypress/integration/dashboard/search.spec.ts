@@ -23,7 +23,7 @@ describe('Search', function () {
     });
     // TODO: as Unit tests and e2e tests only checks if functionality is there ("click on Alle-Link", ...)
     DashboardPage.clearSearch();
-    DashboardPage.search(" ");
+    DashboardPage.search("t");
     // result should show docs and addresses
     cy.get(".result-title").contains(/Daten \([1-9][0-9]*\)/).should('exist');
     cy.get(".result-title").contains(/Adressen \([1-9][0-9]*\)/).should('exist');
@@ -31,7 +31,7 @@ describe('Search', function () {
     // TODO does not work if at the end of this test. investigate!
     // result should show "All" link when more than 5 results for docs / addresses
     DashboardPage.clearSearch();
-    DashboardPage.search(" ");
+    DashboardPage.search("t");
     cy.get("a").contains("Alle").should('exist');
 
 
@@ -70,9 +70,10 @@ describe('Search', function () {
   });
 
   it('should switch to research page after click "Erweiterte Suche" and show all documents/addresses', () => {
-    DashboardPage.search(" ");
+    DashboardPage.search("t");
     cy.get('a').contains('Erweiterte Suche').click();
-    cy.url().should('include', '/research');
+    cy.get('div').contains('Die Suchergebnisseite ist gerade in der Entwicklung.');
+    // cy.url().should('include', '/research');
   });
 
   xit('should switch to research page and filter by all documents/addresses', () => {

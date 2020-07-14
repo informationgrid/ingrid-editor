@@ -1,6 +1,11 @@
 import {DocumentPage} from "../../../pages/document.page";
 
 describe('mCLOUD documents', function () {
+  beforeEach(() => {
+    cy.kcLogin('user');
+    DocumentPage.visit();
+  });
+
   describe('Publish documents', () => {
 
     it('should show a validation error when a required field is not filled', () => {
