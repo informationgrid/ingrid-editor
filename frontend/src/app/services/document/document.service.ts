@@ -153,7 +153,7 @@ export class DocumentService {
 
         // update state by adding node and updating parent info
         store.upsert(info.id, info);
-        if (isNewDoc) {
+        if (isNewDoc && parentId) {
           store.update(parentId, {
             _hasChildren: true
           });
