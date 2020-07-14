@@ -17,7 +17,7 @@ export const formPluginProvider = [
   {provide: FormPluginToken, useClass: SavePlugin, multi: true},
   {provide: FormPluginToken, useClass: CreateFolderPlugin, multi: true},
   {provide: FormPluginToken, useClass: CopyCutPastePlugin, multi: true},
-  {provide: FormPluginToken, useClass: PrintViewPlugin, multi: true},
+  // {provide: FormPluginToken, useClass: PrintViewPlugin, multi: true},
   {provide: FormPluginToken, useClass: DeleteDocsPlugin, multi: true},
   {provide: FormPluginToken, useClass: HistoryPlugin, multi: true},
   {provide: FormPluginToken, useClass: DeleteEmptyFoldersBehaviour, multi: true}
