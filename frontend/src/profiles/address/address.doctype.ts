@@ -37,7 +37,7 @@ export class ProfileAddress extends BaseDoctype {
             fieldGroupClassName: 'display-flex',
             fieldGroup: [{
               key: 'organization',
-              className: 'flex-1 organization',
+              className: 'width-100 organization',
               type: 'input',
               templateOptions: {
                 label: 'Organisation',
@@ -113,7 +113,7 @@ export class ProfileAddress extends BaseDoctype {
           fieldGroupClassName: 'display-flex',
           fieldGroup: [{
             key: 'street',
-            className: 'flex-1',
+            className: 'width-100',
             type: 'input',
             templateOptions: {
               label: 'Strasse/Hausnummer',
