@@ -390,13 +390,30 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   private scrollToActiveElement() {
     // TODO: wait till dom node is actually there
-    setTimeout(() => {
-      const element = this.treeContainerElement.nativeElement
-        .querySelector('.mat-tree-node.active');
+    if (!this.treeContainerElement) {
+      console.warn('treeContainerElement is not available');
+      return;
+    }
+
+    const queryFn = () => this.treeContainerElement.nativeElement.querySelector('.mat-tree-node.active');
+
+    this.waitFor(queryFn, () => {
+      const element = queryFn();
       if (element) {
-        element.scrollIntoView({behavior: 'smooth', block: 'center'});
+        // we need a timeout here to let node settle in tree so we can scroll to it
+        setTimeout(() => element.scrollIntoView({behavior: 'smooth', block: 'center'}), 100);
       }
-    }, 500);
+    })
+  }
+
+  private waitFor(elementFunction, callback, count = 3) {
+    const queryResult = elementFunction();
+    if (!queryResult && count !== 0) {
+      console.log('Waiting for tree container element', count);
+      setTimeout(() => this.waitFor(elementFunction, callback, --count), 500);
+      return;
+    }
+    callback();
   }
 
   private skipExpandedNodeIDs(ids: string[]): string[] {
