@@ -519,6 +519,10 @@ ige-side-menu {
     opacity: 0;
   }
 
+  .mat-select-invalid .mat-select-placeholder {
+    color: $ige-comment-color !important;
+  }
+
   .mat-form-field.mat-form-field-invalid .mat-form-field-label {
     color: rgba(0, 0, 0, 0.6) !important;
 
