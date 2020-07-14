@@ -238,15 +238,16 @@ export class DocumentService {
    */
   copy(srcIDs: string[], dest: string, includeTree: boolean) {
     return this.dataService.copy(srcIDs, dest, includeTree).pipe(
-      tap(() => {
+      tap((docs) => {
 
         this.messageService.sendInfo('Datensatz wurde kopiert');
 
-        const info = this.treeStore.getValue().openedDocument;
+        // const info = this.treeStore.getValue().openedDocument;
+        const infos = this.mapToDocumentAbstracts(docs, dest);
 
         this.datasetsChanged$.next({
           type: UpdateType.New,
-          data: [info],
+          data: infos,
           parent: dest
           // path: path
         });

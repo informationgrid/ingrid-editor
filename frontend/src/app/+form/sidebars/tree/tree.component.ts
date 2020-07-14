@@ -185,6 +185,9 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private getTitlesFromNodePath(node: TreeNode): ShortTreeNode[] {
+    if (!node) {
+      return null;
+    }
     const path = [new ShortTreeNode(node._id, node.title)];
     let parent = node.parent;
     while (parent !== null && parent !== undefined) {
@@ -316,7 +319,9 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   private updateNodePath(updateInfo: UpdateDatasetInfo) {
     const nodePath = this.getTitlesFromNodePath(this.dataSource.getNode(updateInfo.data[0].id + ''));
-    this.currentPath.next(nodePath);
+    if (nodePath) {
+      this.currentPath.next(nodePath);
+    }
   }
 
   private updateChildrenInfo(parentNode: TreeNode) {

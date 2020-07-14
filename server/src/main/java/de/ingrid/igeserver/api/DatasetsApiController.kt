@@ -159,13 +159,13 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     override fun copyDatasets(
             principal: Principal?,
             ids: List<String>,
-            data: CopyOptions): ResponseEntity<Void> {
+            data: CopyOptions): ResponseEntity<List<JsonNode>> {
 
         val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            copyOrMove(CopyMoveOperation.COPY, ids, data.destId)
-            return ResponseEntity(HttpStatus.OK)
+            val result = copyOrMove(CopyMoveOperation.COPY, ids, data.destId)
+            return ResponseEntity.ok(result)
         }
 
     }
@@ -184,7 +184,9 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
     }
 
-    private fun copyOrMove(operation: CopyMoveOperation, ids: List<String>, destId: String) {
+    private fun copyOrMove(operation: CopyMoveOperation, ids: List<String>, destId: String?): MutableList<JsonNode> {
+
+        val results = mutableListOf<JsonNode>()
 
         for (id in ids) {
             val wrapper = documentService.getByDocId(id, DocumentWrapperType.TYPE, true) as ObjectNode
@@ -194,23 +196,27 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             // add new parent to document
             doc.put(FIELD_PARENT, destId)
 
-            when (operation) {
+            val result = when (operation) {
                 CopyMoveOperation.COPY -> handleCopy(doc, isAddress)
                 CopyMoveOperation.MOVE -> handleMove(doc, isAddress)
             }
+
+            results.add(result)
         }
+
+        return results
 
     }
 
-    private fun handleCopy(doc: ObjectNode, isAddress: Boolean) {
+    private fun handleCopy(doc: ObjectNode, isAddress: Boolean): JsonNode {
 
         // when we copy the node, then we also have to reset the id
         doc.put(FIELD_ID, null as String?)
 
-        documentService.createDocument(doc, isAddress)
+        return documentService.createDocument(doc, isAddress)
     }
 
-    private fun handleMove(doc: ObjectNode, isAddress: Boolean) {
+    private fun handleMove(doc: ObjectNode, isAddress: Boolean): JsonNode {
         TODO("Not yet implemented")
     }
 
@@ -245,7 +251,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             }
         } catch (e: Exception) {
             log.error(e)
-            throw ApiException("Error occured getting children: " + e.message)
+            throw ApiException("Error occured getting children of " + parentId + ": " + e.message)
         }
 
     }

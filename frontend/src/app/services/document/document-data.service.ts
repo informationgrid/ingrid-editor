@@ -77,9 +77,9 @@ export class DocumentDataService {
     return this.http.get<string[]>(this.configuration.backendUrl + 'datasets/' + id + '/path');
   }
 
-  copy(srcIDs: string[], dest: string, includeTree: boolean) {
+  copy(srcIDs: string[], dest: string, includeTree: boolean): Observable<IgeDocument[]> {
     const body = this.prepareCopyCutBody(dest, includeTree);
-    return this.http.post(this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + '/copy', body);
+    return this.http.post<IgeDocument[]>(this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + '/copy', body);
   }
 
   move(srcIDs: string[], dest: string, includeTree: boolean) {
