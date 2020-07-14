@@ -153,8 +153,12 @@ export class DocumentService {
         const info = this.mapToDocumentAbstracts([json], parentId)[0];
 
         // after renaming a folder the folder must still be expandable
-        const entity = store.getValue().entities[info.id];
-        info._hasChildren = entity._hasChildren;
+        if (!isNewDoc) {
+          const entity = store.getValue().entities[info.id];
+          if (entity) {
+            info._hasChildren = entity._hasChildren;
+          }
+        }
 
         // update state by adding node and updating parent info
         store.upsert(info.id, info);
