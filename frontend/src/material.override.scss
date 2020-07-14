@@ -81,6 +81,7 @@
   }
 
   .mat-dialog-content {
+    box-sizing: border-box;
     padding-top: 24px;
     padding-bottom: 24px;
 
@@ -124,14 +125,14 @@ ige-root .mat-card {
   background-color: #398C32 !important;
 }
 
-.mat-radio-button.mat-accent .mat-radio-inner-circle,
+.mat-radio-button.mat-accent:not(.mat-radio-disabled) .mat-radio-inner-circle,
 .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple,
 .mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
   background-color: #398C32 !important;
 }
 
-.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+.mat-radio-button.mat-accent.mat-radio-checked:not(.mat-radio-disabled) .mat-radio-outer-circle {
   border-color: #398C32 !important;
 }
 

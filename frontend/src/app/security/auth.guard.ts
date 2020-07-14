@@ -48,8 +48,8 @@ export class AuthGuard implements CanActivate {
       return false;
     }*/
 
-    console.log('auth service');
-    return true;
+    // console.log('auth service');
+    // return true;
   }
 
   private containsValidPage(validPages: string[], page: string) {

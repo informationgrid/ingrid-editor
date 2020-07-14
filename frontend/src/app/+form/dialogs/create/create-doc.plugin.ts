@@ -46,8 +46,8 @@ export class CreateDocumentPlugin extends Plugin {
         eventId: 'NEW_DOC',
         pos: 10,
         active: true
-      },
-      {id: 'toolBtnNewSeparator', pos: 15, isSeparator: true}
+      }
+      // {id: 'toolBtnNewSeparator', pos: 15, isSeparator: true}
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
 

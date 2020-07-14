@@ -5,6 +5,8 @@ import {TreeQuery} from '../../../../store/tree/tree.query';
 import {AddressTreeQuery} from '../../../../store/address-tree/address-tree.query';
 import {ModalService} from '../../../../services/modal/modal.service';
 import {IgeError} from '../../../../models/ige-error';
+import {filter, map, take} from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -39,24 +41,38 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
 
     let success = true;
 
-    if (this.currentDocHasChildren()) {
-      // TODO: improve error generation
-      const error = new IgeError();
-      error.setMessage('Um den Ordner zu löschen, muss dieser leer sein');
-      this.modal.showIgeError(error);
-      success = false;
-    }
+    this.currentDocHasChildren()
+      .subscribe(hasChildren => {
+        if (hasChildren) {
+          // TODO: improve error generation
+          const error = new IgeError();
+          error.setMessage('Um den Ordner zu löschen, muss dieser leer sein');
+          this.modal.showIgeError(error);
+          success = false;
+        }
+        const responseData = this.buildResponse(success);
+        resultObserver(responseData);
 
-    const responseData = this.buildResponse(success);
-    resultObserver(responseData);
+      });
   }
 
-  private currentDocHasChildren() {
+  private currentDocHasChildren(): Observable<boolean> {
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
     // TODO: refactor openedDocument in store to another one, since it's of different format
     //       and not directly associated with tree-store
-    const docId = query.getOpenedDocument().id;
-    return query.getEntity(docId)._hasChildren;
+    const doc = query.getOpenedDocument();
+    if (doc) {
+      // TODO: this strategy is used in several toolbar plugins to prevent too early execution
+      //       when opening page and hitting a toolbar button
+      return query.selectEntity(doc.id)
+        .pipe(
+          filter(entity => entity !== undefined),
+          take(1),
+          map(entity => entity._hasChildren)
+        );
+    } else {
+      return of(false);
+    }
   }
 
   private buildResponse(isSuccess: boolean): EventData {

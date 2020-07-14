@@ -17,7 +17,7 @@ export interface PasteDialogOptions {
 })
 export class PasteDialogComponent implements OnInit {
 
-  selection: any[] = null;
+  selection = { parent: null, path: [] };
   path: string[];
   query: TreeQuery | AddressTreeQuery;
 

@@ -11,7 +11,10 @@
         <div fxFlex fxLayout="row" fxLayoutAlign="space-between" class="result-header">
             <div>Suchvorschläge</div>
             <div class="extra-large-spacing link-text">
-                <a href="#" (click)="openResearchPage($event)"><mat-icon svgIcon="Recherche" class="research-icon"></mat-icon> Erweiterte Suche</a>
+                <a href="#" (click)="openResearchPage($event)" [matMenuTriggerFor]="commingSoon">
+                    <mat-icon svgIcon="Recherche" class="research-icon"></mat-icon>
+                    Erweiterte Suche
+                </a>
             </div>
         </div>
 
@@ -22,7 +25,10 @@
         </mat-option>
 
         <div *ngIf="numDocs > 5" class="show-all-link link-text extra-large-spacing">
-            <a href="#" (click)="openResearchPage($event)"><mat-icon>keyboard_arrow_right</mat-icon> Alle</a>
+            <a href="#" (click)="openResearchPage($event)" [matMenuTriggerFor]="commingSoon">
+                <mat-icon>keyboard_arrow_right</mat-icon>
+                Alle
+            </a>
         </div>
         <div class="spacing"></div>
 
@@ -32,14 +38,20 @@
         </mat-option>
 
         <div *ngIf="numAddresses > 5" class="show-all-link link-text extra-large-spacing">
-            <a href="#" (click)="openResearchPage($event)"><mat-icon>keyboard_arrow_right</mat-icon> Alle</a>
+            <a href="#" (click)="openResearchPage($event)"[matMenuTriggerFor]="commingSoon">
+                <mat-icon>keyboard_arrow_right</mat-icon>
+                Alle
+            </a>
         </div>
 
     </mat-autocomplete>
 
-    <button mat-flat-button color="primary" class="btn-search upper-case">
+    <button mat-flat-button color="primary" class="btn-search upper-case" [matMenuTriggerFor]="commingSoon">
         <mat-icon>search</mat-icon>
         Suchen
     </button>
+    <mat-menu #commingSoon="matMenu" class="mat-typography">
+        <div style="padding: 12px">Die Suchergebnisseite ist gerade in der Entwicklung. Bitte verwenden Sie das Suchfeld für eine einfache Suche.</div>
+    </mat-menu>
 
 </div>

@@ -2,6 +2,7 @@ package de.ingrid.igeserver.profiles.mcloud.types.impl
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.orientdb.OrientDBDocumentEntityType
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
-@Component()
+@Component
 class OMCloudType : OrientDBDocumentEntityType {
 
     @Autowired
@@ -56,6 +57,11 @@ class OMCloudType : OrientDBDocumentEntityType {
                     log.error("Referenced Address could not be found: $wrapperId")
                 }
             } catch (e: Exception) {
+                // TODO: what to do with removed references?
+                if (e is NotFoundException) {
+                    log.error("Referenced address was not found: $wrapperId -> Should we remove it?");
+                    continue
+                }
                 log.error(e)
                 throw e
             }

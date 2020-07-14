@@ -6,11 +6,14 @@ import {UpdateType} from '../../../models/update-type.enum';
 import {ModalService} from '../../../services/modal/modal.service';
 import {PasteDialogComponent, PasteDialogOptions} from './paste-dialog.component';
 import {CopyMoveEnum} from './enums';
-import {Subscription} from 'rxjs';
+import {merge, Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {MessageService} from '../../../services/message.service';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
   id = 'plugin.copy.cut.paste';
@@ -32,6 +35,7 @@ export class CopyCutPastePlugin extends Plugin {
   constructor(private toolbarService: FormToolbarService,
               private storageService: DocumentService,
               private treeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery,
               private modalService: ModalService,
               private messageService: MessageService,
               private dialog: MatDialog) {
@@ -71,7 +75,12 @@ export class CopyCutPastePlugin extends Plugin {
     });
 
     // set button state according to selected documents
-    this.treeQuery.selectActiveId().subscribe(data => {
+    merge(
+      this.treeQuery.selectActiveId(),
+      this.addressTreeQuery.selectActiveId()
+    ).pipe(
+      untilDestroyed(this)
+    ).subscribe(data => {
       if (data.length === 0) {
         this.toolbarService.setButtonState('toolBtnCopy', false);
       } else {
@@ -128,10 +137,12 @@ export class CopyCutPastePlugin extends Plugin {
 
   paste(dest: string, mode: CopyMoveEnum) {
 
+    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+
     // TODO: add subtree pasting
     const includeTree = false;
 
-    const selectedDatasets = this.treeQuery.getActiveId().map(id => id.toString());
+    const selectedDatasets = query.getActiveId().map(id => id.toString());
 
     let result;
     if (mode === CopyMoveEnum.COPY) {

@@ -1,3 +1,4 @@
+import '@testing-library/cypress/add-commands';
 import "cypress-keycloak-commands";
 
 const addContext = require('mochawesome/addContext');

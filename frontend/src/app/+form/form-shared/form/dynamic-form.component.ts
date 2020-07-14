@@ -203,7 +203,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.showValidationErrors = false;
-    this.activeId.next(id);
+
+    // set activeId delayed in case of page initialization explicitActiveNode$ observable
+    // comes a bit later
+    setTimeout(() => this.activeId.next(id));
 
     this.documentService.load(id, this.address)
       .pipe(untilDestroyed(this))

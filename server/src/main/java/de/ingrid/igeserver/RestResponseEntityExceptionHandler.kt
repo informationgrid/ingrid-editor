@@ -1,6 +1,7 @@
 package de.ingrid.igeserver
 
 import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.logging.log4j.kotlin.logger
@@ -26,6 +27,13 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
         log.error("No Permission handled:", ex)
         val bodyOfResponse = ex.message
         return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.FORBIDDEN, request)
+    }
+
+    @ExceptionHandler(value = [NotFoundException::class])
+    protected fun handleNotFoundErrors(ex: NotFoundException, request: WebRequest): ResponseEntity<Any> {
+        log.error("Not Found handled:", ex)
+        val bodyOfResponse = ex.message
+        return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.NOT_FOUND, request)
     }
 
     @ExceptionHandler(value = [IllegalArgumentException::class, IllegalStateException::class])
@@ -61,18 +69,4 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 
         return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.CONFLICT, request)
     }
-
-    private fun extractLatestVersion(ex: ConcurrentModificationException): String? {
-
-        val message = ex.message;
-        val startIndex = message?.indexOf("(db=v");
-        val endIndex = message?.indexOf(" your=");
-
-        if (startIndex == null || endIndex == null) {
-            return null;
-        }
-
-        return message.substring(startIndex + 5, endIndex);
-    }
-
 }

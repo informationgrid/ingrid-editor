@@ -18,6 +18,7 @@ import {SharedModule} from '../shared/shared.module';
 import {MatListModule} from '@angular/material/list';
 import {QuickSearchComponent} from './quick-search/quick-search.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatMenuModule} from '@angular/material/menu';
 
 const routes: Routes = [
   {
@@ -29,14 +30,14 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes),
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule, SharedModule,
-    MatListModule, MatAutocompleteModule
-  ],
+    imports: [
+        RouterModule.forChild(routes),
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatButtonModule, MatIconModule, MatInputModule, MatCardModule, FlexModule, MatDividerModule, SharedModule,
+        MatListModule, MatAutocompleteModule, MatMenuModule
+    ],
   declarations: [
     DashboardComponent, ActionButtonComponent, DocumentTileComponent, FeatureFlagDirective, ChartComponent, QuickSearchComponent]
 })

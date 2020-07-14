@@ -57,7 +57,7 @@ export class McloudDoctype extends BaseDoctype {
         },
         validators: {
           needPublisher: {
-            expression: ctrl => ctrl.value?.some(row => row.type === '10'),
+            expression: ctrl => ctrl.value ? ctrl.value.some(row => row.type === '10') : false,
             message: 'Es muss ein Herausgeber als Adresse angegeben sein'
           }
         }
@@ -126,7 +126,8 @@ export class McloudDoctype extends BaseDoctype {
             templateOptions: {
               label: 'Link',
               appearance: 'outline',
-              required: true
+              required: true,
+              formatter: text => `<a href="${text}" target="_blank" class="no-text-transform">${text}</a>`
             }
           }, {
             key: 'type',

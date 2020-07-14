@@ -19,6 +19,10 @@ a {
   text-decoration: none;
   text-transform: uppercase;
 
+  &.no-text-transform {
+    text-transform: unset;
+  }
+
   &:hover {
     text-decoration: none;
   }
@@ -513,6 +517,10 @@ ige-side-menu {
   .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick {
     color: initial;
     opacity: 0;
+  }
+
+  .mat-select-invalid .mat-select-placeholder {
+    color: $ige-comment-color !important;
   }
 
   .mat-form-field.mat-form-field-invalid .mat-form-field-label {

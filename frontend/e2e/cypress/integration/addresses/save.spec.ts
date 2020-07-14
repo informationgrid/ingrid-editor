@@ -12,11 +12,31 @@ describe('General create addresses/folders', () => {
     AddressPage.visit();
   });
 
+  describe('Create Folder', () => {
+
+    xit('should show all nested folders after creation when root parent is collapsed and expanded', () => {
+
+      // create root folder "Nested"
+
+      // create another folder under "Nested" with name "More nested"
+
+      // create another folder under "More nested" with name "Even more nested"
+
+      // collapse "Nested"
+
+      // expand "Nested" and "More nested"
+
+      // assert that directory "Even more nested" exists
+
+    });
+
+  });
+
   describe('Create Addresses', () => {
 
     it('should allow creation if one of firstname, lastname or organization was filled', () => {
       dialog.open();
-      cy.get('[data-cy=create-action]').should('be.disabled')
+      cy.get('[data-cy=create-action]').should('be.disabled');
 
       dialog.fill(new Address('Thomas'));
       cy.get('[data-cy=create-action]').should('be.enabled');
@@ -72,6 +92,9 @@ describe('General create addresses/folders', () => {
 
       cy.get('.firstName input').should('have.value', 'Herbert');
       cy.get('.lastName input').should('have.value', 'Meier');
+    });
+
+    xit('should create an address folder', () => {
     });
 
     it('should generate a title from create parameters', () => {

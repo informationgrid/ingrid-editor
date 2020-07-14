@@ -57,7 +57,6 @@ export class TreeComponent implements OnInit, OnDestroy {
   // signal to show that a tree node is loading
   private isLoading: TreeNode;
   activeNodeId: string = null;
-  skipNextJump = false;
 
   treeControl: FlatTreeControl<TreeNode>;
 
@@ -94,17 +93,19 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private handleActiveNodeSubscription() {
-    if (this.setActiveNode) {
-      this.setActiveNode
-        .pipe(untilDestroyed(this))
-        .subscribe(id => {
-          if (this.skipNextJump) {
-            this.skipNextJump = false;
-            return;
-          }
-          this.jumpToNode(id).then(() => this.activeNodeId = id);
-        });
+    if (!this.setActiveNode) {
+      return;
     }
+
+    this.setActiveNode
+      .pipe(untilDestroyed(this))
+      .subscribe(id => {
+        if (this.activeNodeId === id) {
+          return;
+        }
+        this.jumpToNode(id)
+          .then(() => this.activeNodeId = id);
+      });
   }
 
   private expandOnDataChange(ids: string[]): Promise<void> {
@@ -170,7 +171,6 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.selectionModel.clear();
       this.selectionModel.select(node);
       this.activeNodeId = this.selectionModel.selected[0]._id;
-      this.skipNextJump = true;
       this.activate.next([this.activeNodeId]);
 
       // set path in tree for bread crumb (extract to method)
@@ -185,6 +185,9 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private getTitlesFromNodePath(node: TreeNode): ShortTreeNode[] {
+    if (!node) {
+      return null;
+    }
     const path = [new ShortTreeNode(node._id, node.title)];
     let parent = node.parent;
     while (parent !== null && parent !== undefined) {
@@ -270,7 +273,9 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   private async addNewNode(updateInfo: UpdateDatasetInfo) {
 
-    this.activeNodeId = updateInfo.data[0].id + '';
+    if (!updateInfo.doNotSelect) {
+      this.activeNodeId = updateInfo.data[0].id + '';
+    }
 
     if (updateInfo.parent) {
 
@@ -278,7 +283,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
       // parent node seems to be nested deeper
       if (parentNodeIndex === -1) {
-        console.log('Parent not found, using path: ', updateInfo.path);
+        console.log('Parent not found, expanding tree nodes: ', updateInfo.path);
         if (this.expandNodeIds) {
           this.expandNodeIds.next(updateInfo.path);
         }
@@ -310,13 +315,17 @@ export class TreeComponent implements OnInit, OnDestroy {
     }
 
     // remove selection from previously selected nodes
-    this.selectionModel.clear();
+    if (!updateInfo.doNotSelect) {
+      this.selectionModel.clear();
+    }
 
   }
 
   private updateNodePath(updateInfo: UpdateDatasetInfo) {
     const nodePath = this.getTitlesFromNodePath(this.dataSource.getNode(updateInfo.data[0].id + ''));
-    this.currentPath.next(nodePath);
+    if (nodePath) {
+      this.currentPath.next(nodePath);
+    }
   }
 
   private updateChildrenInfo(parentNode: TreeNode) {
@@ -362,20 +371,24 @@ export class TreeComponent implements OnInit, OnDestroy {
           this.handleExpandNodes(path)
             .then(() => {
               const node = this.dataSource.getNode(id);
-              const nodePath = this.getTitlesFromNodePath(node);
-              this.currentPath.next(nodePath);
-              this.activate.next([id]);
-              this.selectionModel.select(node);
-              this.scrollToActiveElement();
+              if (node) {
+                const nodePath = this.getTitlesFromNodePath(node);
+                this.currentPath.next(nodePath);
+                this.activate.next([id]);
+                this.selectionModel.select(node);
+                this.scrollToActiveElement();
+              }
             });
         } else {
           this.activate.next(id ? [id] : []);
           if (id) {
             const node = this.dataSource.getNode(id);
-            const nodePath = this.getTitlesFromNodePath(node);
-            this.currentPath.next(nodePath);
-            this.selectionModel.select(node);
-            this.scrollToActiveElement();
+            if (node) {
+              const nodePath = this.getTitlesFromNodePath(node);
+              this.currentPath.next(nodePath);
+              this.selectionModel.select(node);
+              this.scrollToActiveElement();
+            }
           }
         }
       });
@@ -386,13 +399,30 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   private scrollToActiveElement() {
     // TODO: wait till dom node is actually there
-    setTimeout(() => {
-      const element = this.treeContainerElement.nativeElement
-        .querySelector('.mat-tree-node.active');
+    if (!this.treeContainerElement) {
+      console.warn('treeContainerElement is not available');
+      return;
+    }
+
+    const queryFn = () => this.treeContainerElement.nativeElement.querySelector('.mat-tree-node.active');
+
+    this.waitFor(queryFn, () => {
+      const element = queryFn();
       if (element) {
-        element.scrollIntoView({behavior: 'smooth', block: 'center'});
+        // we need a timeout here to let node settle in tree so we can scroll to it
+        setTimeout(() => element.scrollIntoView({behavior: 'smooth', block: 'center'}), 100);
       }
-    }, 500);
+    })
+  }
+
+  private waitFor(elementFunction, callback, count = 3) {
+    const queryResult = elementFunction();
+    if (!queryResult && count !== 0) {
+      console.log('Waiting for tree container element', count);
+      setTimeout(() => this.waitFor(elementFunction, callback, --count), 500);
+      return;
+    }
+    callback();
   }
 
   private skipExpandedNodeIDs(ids: string[]): string[] {

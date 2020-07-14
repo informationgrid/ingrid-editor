@@ -56,7 +56,7 @@ interface DatasetsApi {
     fun copyDatasets(
             principal: Principal?,
             @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<String>,
-            @Parameter(description = "...", required = true) @RequestBody data: @Valid CopyOptions): ResponseEntity<Void>
+            @Parameter(description = "...", required = true) @RequestBody data: @Valid CopyOptions): ResponseEntity<List<JsonNode>>
 
     @Operation(description = "Deletes a dataset")
     @ApiResponses(value = [ApiResponse(responseCode = "200"), ApiResponse(responseCode = "200", description = "Unexpected error")])

@@ -10,6 +10,7 @@ export interface DocMainInfo {
 }
 
 export interface UpdateDatasetInfo {
+  doNotSelect?: boolean;
   type: UpdateType;
   data: DocumentAbstract[];
   parent?: string;

@@ -32,7 +32,7 @@ export class DocumentPage extends BasePage {
       // cy.get('.dialog-title-wrapper button').click();
     }
 
-  }
+  };
 
   static treeSearchBar = '[placeholder=Suchen]';
 
@@ -41,7 +41,7 @@ export class DocumentPage extends BasePage {
   static Toolbar: Record<string, string> = {
     NewDoc: '[data-cy=toolbar_NEW_DOC]',
     NewFolder: '[data-cy=toolbar_CREATE_FOLDER]',
-    Preview: '[data-cy=toolbar_PRINT]',
+    // Preview: '[data-cy=toolbar_PRINT]',
     Copy: '[data-cy=toolbar_COPY]',
     Revert: '[data-cy=toolbar_REVERT]',
     Delete: '[data-cy=toolbar_DELETE]',
@@ -49,7 +49,7 @@ export class DocumentPage extends BasePage {
     Next: '[data-cy=toolbar_HISTORY_NEXT]',
     Save: '[data-cy=toolbar_SAVE]',
     Publish: '[data-cy=toolbar_PUBLISH]'
-  }
+  };
 
   static visit() {
     cy.visit('form');
@@ -99,6 +99,11 @@ export class DocumentPage extends BasePage {
 
   static getSearchResult(number?: number) {
     number = number == undefined ? 1 : number;
-    return cy.get('ige-document-list-item').eq(number - 1).parent();
+    return this.getSearchResults().eq(number - 1).parent();
   }
+
+  static getSearchResults() {
+    return cy.get('.cdk-overlay-pane').find('ige-document-list-item');
+  }
+
 }

@@ -1,6 +1,7 @@
 import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
+import {AddressPage} from "../../pages/address.page";
 
 describe('General create documents/folders', () => {
 
@@ -30,24 +31,24 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.title).should('have.text', docName);
 
     });
+
+
   });
 
-  describe('Publish documents', () => {
-    it('should show a validation error when a required field is not filled', () => {
-      cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
-
-      DocumentPage.createDocument();
-
-      cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
-      DocumentPage.publishNow();
-
-      cy.hasErrorDialog('Es müssen alle Felder korrekt');
-
-      cy.fieldIsInvalid('description', 'Dieses Feld muss ausgefüllt sein');
-    });
-  });
 
   describe('Create folders', () => {
+
+    xit('should insert new folder at correct place in tree (#1990)', function () {
+
+    });
+
+    it('should not be possible to publish folders', function () {
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
+      cy.visit('/form;id=bdde3ecb-3629-489c-86df-12ffac978ef5');
+      cy.get(DocumentPage.Toolbar.Publish).should('be.disabled')
+    });
+
     it('should create a root folder', () => {
 
       const folderName = 'Root Ordner ' + Utils.randomString();
@@ -127,22 +128,58 @@ describe('General create documents/folders', () => {
 
 
   describe('Dirty checks', () => {
-    xit('should show a dialog when a document was modified and another address was clicked', () => {
+    it('should show a dialog when a document was modified and another document was clicked', () => {
+      const doc1Name = 'Leeres mCLOUD Test Objekt';
+      const doc2Name = 'Test mCLOUD Dokument';
+
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').findByText(doc2Name).click();
+      cy.get('[data-cy=Beschreibung]').type('testestest');
 
       // reject dialog
       // check selected tree node === previous selected node
+      cy.get('span').contains(doc1Name).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('mat-dialog-actions').contains('Abbrechen').click();
+      cy.get(DocumentPage.title).should('have.text', doc2Name);
 
       // accept dialog
       // check selected tree node === newly selected node
+      cy.get('span').contains(doc1Name).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('mat-dialog-actions').contains('Verwerfen').click();
+      cy.get(DocumentPage.title).should('have.text', doc1Name);
 
     });
 
-    xit('should show a dialog when a document was modified and the page was changed', () => {
+    it('should show a dialog when a document was modified and the page was changed', () => {
+      const docname = 'Test mCLOUD Dokument';
 
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').findByText(docname).click();
+      cy.get('[data-cy=Beschreibung]').type('testestest');
+
+      // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
+      cy.wait(500);
+      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('mat-dialog-actions').contains('Abbrechen').click();
+
+      cy.get(DocumentPage.title).should('have.text', docname);
+
 
       // accept -> should load new page
+      cy.wait(500);
+      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('mat-dialog-actions').contains('Verwerfen').click();
+
+      cy.get(DocumentPage.title).should('not.exist')
+
+
+
 
     });
   });
-})
+});

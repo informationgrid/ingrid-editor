@@ -65,7 +65,8 @@
                 <mat-header-cell *matHeaderCellDef [class]="to.columns[batchMode ? i - 1 : i].class"> {{to.columns[batchMode ? i - 1 : i].label}} </mat-header-cell>
                 <mat-cell *matCellDef="let element" [class]="to.columns[batchMode ? i - 1 : i].class">
                     <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
-                    {{element[column]}}
+                    <span [innerHTML]="formatCell(to.columns[batchMode ? i - 1 : i], element[column])"></span>
+
                     <!-- This edit is defined in the cell and can implicitly access element -->
                     <!--<ng-template #nameEdit>
                       <form #f="ngForm"

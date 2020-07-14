@@ -54,6 +54,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
         .pipe(
           untilDestroyed(this),
           startWith(''),
+          filter(value => value !== undefined && value !== null),
           map(value => this._filter(<string>value))
         );
 

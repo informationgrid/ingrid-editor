@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {ModalService} from '../modal/modal.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {catchError, map, tap} from 'rxjs/operators';
 import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';
@@ -12,12 +12,13 @@ import {applyTransaction, arrayAdd, arrayRemove} from '@datorama/akita';
 import {MessageService} from '../message.service';
 import {ProfileService} from '../profile.service';
 import {SessionStore} from '../../store/session.store';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {ConfigService, Configuration} from '../config/config.service';
 import {SearchResult} from '../../models/search-result.model';
 import {ServerSearchResult} from '../../models/server-search-result.model';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 import {StatisticResponse} from '../../models/statistic.model';
+import {IgeError} from '../../models/ige-error';
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -106,7 +107,17 @@ export class DocumentService {
 
   load(id: string, address?: boolean): Observable<IgeDocument> {
     return this.dataService.load(id).pipe(
-      tap(doc => this.updateTreeStore(doc, address))
+      tap(doc => this.updateTreeStore(doc, address)),
+      catchError((e: HttpErrorResponse) => {
+        if (e.status === 404) {
+          const error = new IgeError();
+          error.setMessage('Der Datensatz konnte nicht gefunden werden');
+          this.modalService.showIgeError(error);
+          return of(null);
+        } else {
+          throw e;
+        }
+      })
     );
   }
 
@@ -133,18 +144,34 @@ export class DocumentService {
 
     return this.dataService.save(data, isAddress)
       .toPromise().then(json => {
-        const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
         this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 
         this.afterSave$.next(json);
 
+        const parentId = json._parent;
+        const info = this.mapToDocumentAbstracts([json], parentId)[0];
+
+        // after renaming a folder the folder must still be expandable
+        if (!isNewDoc) {
+          const entity = store.getValue().entities[info.id];
+          if (entity) {
+            info._hasChildren = entity._hasChildren;
+          }
+        }
+
+        // update state by adding node and updating parent info
         store.upsert(info.id, info);
+        if (isNewDoc && parentId) {
+          store.update(parentId, {
+            _hasChildren: true
+          });
+        }
 
         this.datasetsChanged$.next({
           type: isNewDoc ? UpdateType.New : UpdateType.Update,
           data: [info],
-          parent: info._parent,
+          parent: parentId,
           path: path
         });
 
@@ -179,7 +206,8 @@ export class DocumentService {
       );
   }
 
-  delete(ids: string[]): void {
+  delete(ids: string[], isAddress: boolean): void {
+
     this.dataService.delete(ids)
       .subscribe(res => {
         console.log('ok', res);
@@ -191,7 +219,8 @@ export class DocumentService {
           // @ts-ignore
           data: data
         });
-        this.treeStore.remove(ids);
+
+        this.updateStoreAfterDelete(ids, isAddress);
       });
   }
 
@@ -218,16 +247,18 @@ export class DocumentService {
    */
   copy(srcIDs: string[], dest: string, includeTree: boolean) {
     return this.dataService.copy(srcIDs, dest, includeTree).pipe(
-      tap(() => {
+      tap((docs) => {
 
         this.messageService.sendInfo('Datensatz wurde kopiert');
 
-        const info = this.treeStore.getValue().openedDocument;
+        // const info = this.treeStore.getValue().openedDocument;
+        const infos = this.mapToDocumentAbstracts(docs, dest);
 
         this.datasetsChanged$.next({
           type: UpdateType.New,
-          data: [info],
-          parent: dest
+          data: infos,
+          parent: dest,
+          doNotSelect: true
           // path: path
         });
       })
@@ -301,5 +332,25 @@ export class DocumentService {
 
   getStatistic(): Observable<StatisticResponse> {
     return this.http.get<StatisticResponse>(`${this.configuration.backendUrl}statistic`);
+  }
+
+  private updateStoreAfterDelete(ids: string[], isAddress: boolean) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    let entities = store.getValue().entities;
+    const parents = ids.map(id => entities[id]._parent);
+
+    store.remove(ids);
+
+    // which parents do not have any children anymore?
+    entities = store.getValue().entities;
+    const parentsWithNoChildren = parents.filter(parent => !Object.values(entities).some(entity => entity._parent === parent));
+
+    parentsWithNoChildren.forEach(parent => {
+      store.update(parent, {
+        _hasChildren: false
+      });
+    });
+
   }
 }

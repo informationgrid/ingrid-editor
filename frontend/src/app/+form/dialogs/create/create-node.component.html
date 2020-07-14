@@ -47,15 +47,13 @@
                                    data-cy="create-address-firstName"
                                    formControlName="firstName"
                                    cdkFocusInitial
-                                   autocomplete="off"
-                                   placeholder="Vorname">
+                                   autocomplete="off">
                         </mat-form-field>
                         <mat-form-field appearance="outline" class="width-100">
                             <mat-label>Nachname</mat-label>
                             <input matInput
                                    data-cy="create-address-lastName"
                                    autocomplete="off"
-                                   placeholder="Nachname"
                                    formControlName="lastName">
                         </mat-form-field>
                     </div>
@@ -64,8 +62,7 @@
                         <input matInput
                                data-cy="create-address-organization"
                                name="organization"
-                               formControlName="organization"
-                               placeholder="Oder eine Organisation">
+                               formControlName="organization">
                         <mat-hint>Es müssen Name oder Organisation eingegeben werden.</mat-hint>
                     </mat-form-field>
 

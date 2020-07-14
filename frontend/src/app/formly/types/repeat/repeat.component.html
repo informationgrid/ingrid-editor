@@ -7,4 +7,5 @@
     </button>
 </div>
 
-<ige-add-button (add)="add()"></ige-add-button>
+<ige-add-button (add)="add()"
+                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
