@@ -15,7 +15,7 @@ describe('Toolbar behavior', () => {
 
   it('should activate specific buttons when a folder is loaded', () => {
     Tree.selectNodeWithTitle('Neue Testdokumente');
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Preview', 'Copy', 'Delete', 'Save']);
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save']);
 
     // TODO: copy/move with subtree should be enabled
 
@@ -24,19 +24,19 @@ describe('Toolbar behavior', () => {
 
   xit('should activate specific buttons when a document is loaded', () => {
     Tree.selectNodeWithTitle('zzz');
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Preview', 'Copy', 'Delete', 'Save', 'Publish']);
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish']);
 
     // TODO: copy/move with subtree should be disabled
   });
 
   xit('should activate specific buttons when a published document is loaded', () => {
     Tree.selectNodeWithTitle('ddd');
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Preview', 'Copy', 'Delete', 'Save', 'Publish']);
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish']);
   });
 
   xit('should activate specific buttons when a published document with draft is loaded', () => {
     Tree.selectNodeWithTitle('published with working');
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Preview', 'Copy', 'Revert', 'Delete', 'Save', 'Publish']);
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Revert', 'Delete', 'Save', 'Publish']);
   });
 
 })
