@@ -248,7 +248,8 @@ export class DocumentService {
         this.datasetsChanged$.next({
           type: UpdateType.New,
           data: infos,
-          parent: dest
+          parent: dest,
+          doNotSelect: true
           // path: path
         });
       })

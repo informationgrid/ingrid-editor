@@ -273,7 +273,9 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   private async addNewNode(updateInfo: UpdateDatasetInfo) {
 
-    this.activeNodeId = updateInfo.data[0].id + '';
+    if (!updateInfo.doNotSelect) {
+      this.activeNodeId = updateInfo.data[0].id + '';
+    }
 
     if (updateInfo.parent) {
 
@@ -313,7 +315,9 @@ export class TreeComponent implements OnInit, OnDestroy {
     }
 
     // remove selection from previously selected nodes
-    this.selectionModel.clear();
+    if (!updateInfo.doNotSelect) {
+      this.selectionModel.clear();
+    }
 
   }
 
