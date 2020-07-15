@@ -181,7 +181,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         docs.hits.forEach { doc: JsonNode ->
             val id = doc.get(FIELD_ID).asText()
-            val child = documentService.getByDocId(id, DocumentWrapperType.TYPE, true)
+            val child = documentService.getByDocumentId(id, DocumentWrapperType::class, true)
             child?.let {
                 val childVersion = documentService.getLatestDocument(it, false, false)
                 childVersion.put(FIELD_PARENT, parentId)
@@ -203,7 +203,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             isAddress: Boolean
     ): ResponseEntity<List<ObjectNode>> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         try {
             dbService.acquire(dbId).use {
@@ -223,7 +223,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
     }
 
-    private fun findChildrenDocs(parentId: String?, isAddress: Boolean): DBFindAllResults {
+    private fun findChildrenDocs(parentId: String?, isAddress: Boolean): FindAllResults {
         val queryMap = listOf(
                 QueryField(FIELD_PARENT, parentId),
                 QueryField(FIELD_CATEGORY, if (isAddress) DocumentCategory.ADDRESS.value else DocumentCategory.DATA.value)
@@ -256,9 +256,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             docs = dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
             val searchResult = SearchResult()
             searchResult.totalHits = docs.totalHits
-            searchResult.hits = docs.hits.stream()
+            searchResult.hits = docs.hits
                     .map { doc: JsonNode -> documentService.getLatestDocument(doc) }
-                    .collect(Collectors.toList())
             return ResponseEntity.ok(searchResult)
         }
     }

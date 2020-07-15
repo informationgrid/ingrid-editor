@@ -1,10 +1,9 @@
 package de.ingrid.igeserver.persistence
 
-class FindOptions {
-    var queryType: QueryType? = null
-    var queryOperator = "OR"
-    var size: Int? = null
-    var sortField: String? = null
-    var sortOrder: String? = null
-    var resolveReferences = false
-}
+class FindOptions(
+    val queryType: QueryType? = null,
+    val queryOperator: String = "OR",
+    val size: Int? = null,
+    val sortField: String? = null,
+    val sortOrder: String? = null,
+    val resolveReferences: Boolean = false)
