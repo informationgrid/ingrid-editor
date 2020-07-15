@@ -20,9 +20,9 @@
     </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button color="primary" mat-dialog-close cdkFocusInitial>Abbrechen</button>
+    <button mat-button color="primary" mat-dialog-close cdkFocusInitial data-cy="confirm-dialog-cancel">Abbrechen</button>
     <div fxFlex></div>
-    <button mat-stroked-button color="primary"
+    <button mat-stroked-button color="primary" data-cy="confirm-dialog-confirm"
             [mat-dialog-close]="true"
             [disabled]="data.confirmText && textConfirmed !== data.confirmText">
         {{data.acceptButtonText || 'Ok'}}

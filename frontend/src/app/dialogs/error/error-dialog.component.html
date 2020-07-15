@@ -1,12 +1,12 @@
 <div class="dialog-title-wrapper error">
-    <h2 mat-dialog-title>
+    <h2 mat-dialog-title data-cy="error-dialog-title">
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
         <span class="text">Fehler</span>
     </h2>
 </div>
-<mat-dialog-content>
+<mat-dialog-content data-cy="error-dialog-content">
 
     <ng-container *ngIf="errors.length === 1">
         <p>{{errors[0].message}}</p>
@@ -32,5 +32,5 @@
 
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button (click)="close()">Schließen</button>
+    <button mat-button (click)="close()" data-cy="error-dialog-close">Schließen</button>
 </mat-dialog-actions>
