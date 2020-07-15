@@ -96,9 +96,9 @@ class OrientDBDatabaseTest : FunSpec() {
             dbService.acquire("test").use {
                 val query: MutableList<QueryField> = ArrayList()
                 query.add(QueryField("age", "48", false))
-                val options = FindOptions()
-                options.queryType = QueryType.LIKE
-                options.resolveReferences = false
+                val options = FindOptions(
+                        queryType = QueryType.LIKE,
+                        resolveReferences = false)
 
                 val persons = dbService.findAll(UserInfoType::class, query, options)
                 persons.totalHits shouldBe 1
@@ -116,9 +116,9 @@ class OrientDBDatabaseTest : FunSpec() {
             // modify document in first session
             var id: String
             id = dbService.acquire("test").use {
-                val options = FindOptions()
-                options.queryType = QueryType.LIKE
-                options.resolveReferences = false
+                val options = FindOptions(
+                        queryType = QueryType.LIKE,
+                        resolveReferences = false)
                 val docToUpdate = dbService.findAll(UserInfoType::class, query, options).hits[0]
                 id = docToUpdate["@rid"].asText()
                 (docToUpdate as ObjectNode).put("name", "Johann")
@@ -132,9 +132,9 @@ class OrientDBDatabaseTest : FunSpec() {
 
             // changes are visible in second session
             dbService.acquire("test").use {
-                val options = FindOptions()
-                options.queryType = QueryType.LIKE
-                options.resolveReferences = false
+                val options = FindOptions(
+                        queryType = QueryType.LIKE,
+                        resolveReferences = false)
                 val updatedDoc = dbService.findAll(UserInfoType::class, query, options).hits[0]
 
                 updatedDoc["name"].asText() shouldBe "Johann"
