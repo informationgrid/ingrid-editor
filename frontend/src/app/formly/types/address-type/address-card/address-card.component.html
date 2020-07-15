@@ -17,7 +17,7 @@
 
     <mat-card-content>
         <ng-container *ngIf="address.ref?.organization">
-            <div class="title">{{content.title}}</div>
+            <div class="title" [class.error]="invalidAddressReference">{{content.title}}</div>
             <div class="organization-person">{{content.secondTitle}}</div>
             <div class="email">{{content.emailOrPhone}}</div>
         </ng-container>

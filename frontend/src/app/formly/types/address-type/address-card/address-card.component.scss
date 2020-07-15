@@ -29,6 +29,10 @@ mat-card {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        &.error {
+          color: $error-color;
+        }
       }
     }
   }

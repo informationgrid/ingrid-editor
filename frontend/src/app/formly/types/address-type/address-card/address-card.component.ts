@@ -26,12 +26,23 @@ export class AddressCardComponent implements OnInit {
     title: string;
     secondTitle: string;
     emailOrPhone: string;
-  }
+  };
+  invalidAddressReference = false;
 
   constructor(private profileService: ProfileService) {
   }
 
   ngOnInit(): void {
+    if (!this.address.ref) {
+      console.error('Address reference is null!');
+      // @ts-ignore
+      this.content = {
+        title: 'Ungültige Adressreferenz'
+      }
+      this.invalidAddressReference = true;
+      return;
+    }
+
     this.content = {
       iconClass: this.profileService.getDocumentIcon(<IgeDocument>this.address.ref),
       role: this.address.type,
