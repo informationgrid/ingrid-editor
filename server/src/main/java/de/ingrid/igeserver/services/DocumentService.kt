@@ -79,7 +79,7 @@ class DocumentService : MapperService() {
             val docType = doc[FIELD_DOCUMENT_TYPE].asText()
             val refType = getDocumentType(docType)
 
-            refType.mapLatestDocReference(doc, onlyPublished)
+            refType.mapLatestDocReference(docData, onlyPublished)
         }
 
         return docData
