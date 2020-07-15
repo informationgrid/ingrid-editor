@@ -174,9 +174,9 @@ class UsersApiController : UsersApi {
     private fun addOrUpdateCatalogAdmin(catalogName: String, userId: String) {
 
         val query = listOf(QueryField("userId", userId));
-        val findOptions = FindOptions()
-        findOptions.queryType = QueryType.EXACT
-        findOptions.resolveReferences = false
+        val findOptions = FindOptions(
+                queryType = QueryType.EXACT,
+                resolveReferences = false)
         val list = dbService.findAll(CatalogInfoType::class, query, findOptions)
 
         val isNewEntry = list.totalHits == 0L
@@ -219,9 +219,9 @@ class UsersApiController : UsersApi {
         try {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
                 val query = listOf(QueryField("catalogIds", id))
-                val findOptions = FindOptions()
-                findOptions.queryType = QueryType.CONTAINS
-                findOptions.resolveReferences = false
+                val findOptions = FindOptions(
+                        queryType = QueryType.CONTAINS,
+                        resolveReferences = false)
                 val infos = dbService.findAll(CatalogInfoType::class, query, findOptions)
                 infos.hits.forEach { result.add(it["userId"].asText()) }
             }
@@ -239,9 +239,9 @@ class UsersApiController : UsersApi {
         try {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
                 val query = listOf(QueryField("userId", userId))
-                val findOptions = FindOptions()
-                findOptions.queryType = QueryType.EXACT
-                findOptions.resolveReferences = false
+                val findOptions = FindOptions(
+                        queryType = QueryType.EXACT,
+                        resolveReferences = false)
                 val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
                 if (info.totalHits != 1L) {
                     val message = "User is not defined or more than once in ${DBApi.DATABASE.USERS.dbName}-table: " + info.totalHits

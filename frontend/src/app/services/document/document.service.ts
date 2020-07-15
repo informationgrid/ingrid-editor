@@ -272,8 +272,8 @@ export class DocumentService {
    * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
    * @returns {Observable<Response>}
    */
-  move(srcIDs: string[], dest: string, includeTree: boolean) {
-    return this.dataService.move(srcIDs, dest, includeTree);
+  move(srcIDs: string[], dest: string) {
+    return this.dataService.move(srcIDs, dest);
   }
 
   addExpandedNode(nodeId: string) {

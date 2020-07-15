@@ -38,9 +38,9 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         // TODO: use cache!
         try {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
-                val findOptions = FindOptions()
-                findOptions.queryType = QueryType.EXACT
-                findOptions.resolveReferences = false
+                val findOptions = FindOptions(
+                        queryType = QueryType.EXACT,
+                        resolveReferences = false)
                 val list = dbService.findAll(UserInfoType::class, query, findOptions)
                 if (list.totalHits == 0L) {
                     val msg = "The user does not seem to be assigned to any database: $userId"
@@ -72,9 +72,9 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         // TODO: use cache!
         try {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
-                val findOptions = FindOptions()
-                findOptions.queryType = QueryType.EXACT
-                findOptions.resolveReferences = false
+                val findOptions = FindOptions(
+                        queryType = QueryType.EXACT,
+                        resolveReferences = false)
                 val list = dbService.findAll(UserInfoType::class, query, findOptions)
                 if (list.totalHits == 0L) {
                     val msg = "The user does not seem to be assigned to any database: $userId"
@@ -130,9 +130,9 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
 
         try {
             dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
-                val findOptions = FindOptions()
-                findOptions.queryType = QueryType.EXACT
-                findOptions.resolveReferences = false
+                val findOptions = FindOptions(
+                        queryType = QueryType.EXACT,
+                        resolveReferences = false)
                 val list = dbService.findAll(UserInfoType::class, query, findOptions)
                 val catUserRef = list.hits[0] as ObjectNode
                 catUserRef.putPOJO("catalogIds", assignedCatalogs)

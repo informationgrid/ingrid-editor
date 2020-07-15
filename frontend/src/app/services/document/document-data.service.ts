@@ -82,15 +82,16 @@ export class DocumentDataService {
     return this.http.post<IgeDocument[]>(this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + '/copy', body);
   }
 
-  move(srcIDs: string[], dest: string, includeTree: boolean) {
-    const body = this.prepareCopyCutBody(dest, includeTree);
+  move(srcIDs: string[], dest: string) {
+    const body = this.prepareCopyCutBody(dest, true);
     return this.http.post(this.configuration.backendUrl + 'datasets/' + srcIDs.join(',') + '/move', body);
   }
 
   private prepareCopyCutBody(dest: string, includeTree: boolean): any {
     const body = {
       // srcIds: src,
-      destId: dest
+      destId: dest,
+      includeTree: includeTree
     };
     return body;
   }

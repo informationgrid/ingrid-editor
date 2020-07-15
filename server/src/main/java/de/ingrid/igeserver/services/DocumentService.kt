@@ -40,9 +40,9 @@ class DocumentService : MapperService() {
     fun <T : EntityType> getByDocumentId(id: String, type: KClass<T>, withReferences: Boolean): JsonNode? {
 
         val query = listOf(QueryField(FIELD_ID, id))
-        val findOptions = FindOptions()
-        findOptions.queryType = QueryType.EXACT
-        findOptions.resolveReferences = withReferences
+        val findOptions = FindOptions(
+                queryType = QueryType.EXACT,
+                resolveReferences = withReferences)
         val docs = dbService.findAll(type, query, findOptions)
         if (docs.totalHits != 1L) {
             log.error("A $type could not be found or is not unique for UUID: $id (got ${docs.totalHits})")
@@ -156,9 +156,9 @@ class DocumentService : MapperService() {
                 QueryField(FIELD_DOCUMENT_TYPE, DocumentCategory.FOLDER.value, true)
         )
 
-        val options = FindOptions()
-        options.queryOperator = "AND"
-        options.queryType = QueryType.EXACT
+        val options = FindOptions(
+                queryOperator = "AND",
+                queryType = QueryType.EXACT)
 
         val allData = dbService.findAll(DocumentWrapperType::class, allDocumentQuery, options)
         val allDataDrafts = dbService.findAll(DocumentWrapperType::class, allDocumentDraftsQuery, options)

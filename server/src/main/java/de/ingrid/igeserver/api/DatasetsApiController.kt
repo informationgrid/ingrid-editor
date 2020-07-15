@@ -113,7 +113,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            val result = copyOrMove(CopyMoveOperation.COPY, ids, data.destId)
+            val result = copyOrMove(CopyMoveOperation.COPY, ids, data)
             return ResponseEntity.ok(result)
         }
 
@@ -127,13 +127,13 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            copyOrMove(CopyMoveOperation.MOVE, ids, options.destId)
+            copyOrMove(CopyMoveOperation.MOVE, ids, options)
             return ResponseEntity(HttpStatus.OK)
         }
 
     }
 
-    private fun copyOrMove(operation: CopyMoveOperation, ids: List<String>, destId: String?): MutableList<JsonNode> {
+    private fun copyOrMove(operation: CopyMoveOperation, ids: List<String>, options: CopyOptions): MutableList<JsonNode> {
 
         val results = mutableListOf<JsonNode>()
 
@@ -143,10 +143,10 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             val doc = documentService.getLatestDocument(wrapper, false, false)
 
             // add new parent to document
-            doc.put(FIELD_PARENT, destId)
+            doc.put(FIELD_PARENT, options.destId)
 
             val result = when (operation) {
-                CopyMoveOperation.COPY -> handleCopy(doc, isAddress)
+                CopyMoveOperation.COPY -> handleCopy(doc, options, isAddress)
                 CopyMoveOperation.MOVE -> handleMove(doc, isAddress)
             }
 
@@ -157,12 +157,39 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
     }
 
-    private fun handleCopy(doc: ObjectNode, isAddress: Boolean): JsonNode {
+    private fun handleCopy(doc: ObjectNode, options: CopyOptions, isAddress: Boolean): JsonNode {
+
+        val origParentId = doc.get(FIELD_ID).asText()
 
         // when we copy the node, then we also have to reset the id
         doc.put(FIELD_ID, null as String?)
 
-        return documentService.createDocument(doc, isAddress)
+        val copiedParent = documentService.createDocument(doc, isAddress)
+
+        if (options.includeTree) {
+            handleCopySubTree(doc, origParentId, options, isAddress);
+        }
+
+        return copiedParent;
+    }
+
+    private fun handleCopySubTree(parent: ObjectNode, origParentId: String, options: CopyOptions, isAddress: Boolean) {
+
+        // get all children of parent and save those recursively
+        val parentId = parent.get(FIELD_ID).asText()
+        val docs = findChildrenDocs(origParentId, isAddress)
+
+        docs.hits.forEach { doc: JsonNode ->
+            val id = doc.get(FIELD_ID).asText()
+            val child = documentService.getByDocId(id, DocumentWrapperType.TYPE, true)
+            child?.let {
+                val childVersion = documentService.getLatestDocument(it, false, false)
+                childVersion.put(FIELD_PARENT, parentId)
+                handleCopy(childVersion, options, isAddress)
+            }
+
+        }
+
     }
 
     private fun handleMove(doc: ObjectNode, isAddress: Boolean): JsonNode {
@@ -176,20 +203,11 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             isAddress: Boolean
     ): ResponseEntity<List<ObjectNode>> {
 
-        var docs: FindAllResults
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
 
         try {
             dbService.acquire(dbId).use {
-                val queryMap = listOf(
-                        QueryField(FIELD_PARENT, parentId),
-                        QueryField(FIELD_CATEGORY, if (isAddress) DocumentCategory.ADDRESS.value else DocumentCategory.DATA.value)
-                )
-                val findOptions = FindOptions()
-                findOptions.queryType = QueryType.EXACT
-                findOptions.resolveReferences = true
-                findOptions.queryOperator = "AND"
-                docs = dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
+                val docs = findChildrenDocs(parentId, isAddress)
                 val childDocs = docs.hits
                         .map { doc: JsonNode ->
                             val node = documentService.getLatestDocument(doc)
@@ -205,6 +223,18 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
     }
 
+    private fun findChildrenDocs(parentId: String?, isAddress: Boolean): DBFindAllResults {
+        val queryMap = listOf(
+                QueryField(FIELD_PARENT, parentId),
+                QueryField(FIELD_CATEGORY, if (isAddress) DocumentCategory.ADDRESS.value else DocumentCategory.DATA.value)
+        )
+        val findOptions = FindOptions(
+                queryType = QueryType.EXACT,
+                resolveReferences = true,
+                queryOperator = "AND")
+        return dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
+    }
+
     @Throws(Exception::class)
     override fun find(principal: Principal?, query: String, size: Int, sort: String, sortOrder: String, forAddress: Boolean): ResponseEntity<SearchResult> {
 
@@ -217,12 +247,12 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                     QueryField("$cat AND draft.title", query),
                     QueryField("$cat AND draft IS NULL AND published.title", query)
             )
-            val findOptions = FindOptions()
-            findOptions.size = size
-            findOptions.queryType = QueryType.LIKE
-            findOptions.sortField = sort
-            findOptions.sortOrder = sortOrder
-            findOptions.resolveReferences = true
+            val findOptions = FindOptions(
+                    size = size,
+                    queryType = QueryType.LIKE,
+                    sortField = sort,
+                    sortOrder = sortOrder,
+                    resolveReferences = true)
             docs = dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
             val searchResult = SearchResult()
             searchResult.totalHits = docs.totalHits
@@ -243,9 +273,9 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         dbService.acquire(dbId).use {
             val query = listOf(QueryField(FIELD_ID, id))
-            val findOptions = FindOptions()
-            findOptions.queryType = QueryType.EXACT
-            findOptions.resolveReferences = true
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    resolveReferences = true)
             val docs = dbService.findAll(DocumentWrapperType::class, query, findOptions)
             return if (docs.totalHits > 0) {
                 val doc = documentService.getLatestDocument(docs.hits[0])

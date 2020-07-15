@@ -5,13 +5,13 @@ import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/tool
 import {UpdateType} from '../../../models/update-type.enum';
 import {ModalService} from '../../../services/modal/modal.service';
 import {PasteDialogComponent, PasteDialogOptions} from './paste-dialog.component';
-import {CopyMoveEnum} from './enums';
-import {merge, Subscription} from 'rxjs';
+import {merge, Observable, Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {MessageService} from '../../../services/message.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {filter, switchMap} from 'rxjs/operators';
 
 @UntilDestroy()
 @Injectable()
@@ -33,7 +33,7 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   constructor(private toolbarService: FormToolbarService,
-              private storageService: DocumentService,
+              private documentService: DocumentService,
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
               private modalService: ModalService,
@@ -55,10 +55,9 @@ export class CopyCutPastePlugin extends Plugin {
         pos: 40,
         active: false,
         menu: [
-          {eventId: 'COPY', label: 'Kopieren', active: true},
-          {eventId: 'CUT', label: 'Verschieben'},
-          {eventId: 'COPYTREE', label: 'Mit Teilbaum kopieren'},
-          {eventId: 'CUTTREE', label: 'Mit Teilbaum verschieben'}
+          {eventId: 'COPY', label: 'Kopieren'},
+          {eventId: 'CUT', label: 'Verschieben (inkl. Teilbaum)'},
+          {eventId: 'COPYTREE', label: 'Mit Teilbaum kopieren'}
         ]
       }
     ];
@@ -67,10 +66,12 @@ export class CopyCutPastePlugin extends Plugin {
     // add event handler for revert
     this.toolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'COPY') {
-        this.handleEvent(UpdateType.Copy);
+        // this.handleEvent(UpdateType.Copy);
         this.copy();
       } else if (eventId === 'CUT') {
         this.cut();
+      } else if (eventId === 'COPYTREE') {
+        this.copy(true);
       }
     });
 
@@ -86,73 +87,60 @@ export class CopyCutPastePlugin extends Plugin {
       } else {
         this.toolbarService.setButtonState('toolBtnCopy', true);
 
-        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPYTREE', false);
-        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'CUTTREE', false);
+        const entity = this.getQuery().getEntity(data[0]);
+
+        // set state of menu items
+        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPY', true);
+        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'CUT', true);
+        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPYTREE', entity._hasChildren);
       }
     });
   }
 
   private handleEvent(type: UpdateType) {
-    this.storageService.datasetsChanged$.next({
+    this.documentService.datasetsChanged$.next({
       type: type,
       data: null
     });
   }
 
-  copy() {
-    // remove last remembered copied documents
+  copy(includeTree = false) {
 
-    this.dialog.open(PasteDialogComponent, {
-      minWidth: '400px',
-      data: {
-        titleText: 'Kopieren',
-        buttonText: 'Kopieren',
-        forAddress: this.forAddress
-      } as PasteDialogOptions
-    }).afterClosed().subscribe(result => {
-      if (result) {
-        console.log('result', result);
-        this.paste(result.selection.parent, CopyMoveEnum.COPY);
-      }
-    });
+    // remove last remembered copied documents
+    this.showDialog('Kopieren').pipe(
+      switchMap(result => this.documentService.copy(this.getSelectedDatasets(), result.selection.parent, includeTree))
+    ).subscribe();
+
   }
 
   cut() {
-    // remove last remembered copied documents
 
-    this.dialog.open(PasteDialogComponent, {
-      minWidth: '400px',
-      data: {
-        titleText: 'Verschieben',
-        buttonText: 'Verschieben',
-        forAddress: this.forAddress
-      } as PasteDialogOptions
-    }).afterClosed().subscribe(result => {
-      if (result) {
-        console.log('result', result);
-        this.paste(result.selection.parent, CopyMoveEnum.MOVE);
-      }
-    });
+    // remove last remembered copied documents
+    this.showDialog('Verschieben').pipe(
+      switchMap(result => this.documentService.move(this.getSelectedDatasets(), result.selection.parent))
+    ).subscribe();
+
   }
 
-  paste(dest: string, mode: CopyMoveEnum) {
+  showDialog(title: string): Observable<any> {
+    return this.dialog.open(PasteDialogComponent, {
+      minWidth: '400px',
+      data: {
+        titleText: title,
+        buttonText: 'Einfügen',
+        forAddress: this.forAddress
+      } as PasteDialogOptions
+    }).afterClosed().pipe(
+      filter(result => result) // only confirmed dialog
+    )
+  }
 
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+  private getSelectedDatasets() {
+    return this.getQuery().getActiveId().map(id => id.toString());
+  }
 
-    // TODO: add subtree pasting
-    const includeTree = false;
-
-    const selectedDatasets = query.getActiveId().map(id => id.toString());
-
-    let result;
-    if (mode === CopyMoveEnum.COPY) {
-      result = this.storageService.copy(selectedDatasets, dest, includeTree);
-    } else {
-      result = this.storageService.move(selectedDatasets, dest, includeTree);
-
-    }
-
-    result.subscribe();
+  private getQuery() {
+    return this.forAddress ? this.addressTreeQuery : this.treeQuery;
   }
 
   unregister() {
