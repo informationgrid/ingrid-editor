@@ -5,7 +5,8 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 export interface FormDialogData {
   fields: FormlyFieldConfig[],
-  model: any
+  model: any,
+  newEntry?: boolean
 }
 
 @Component({

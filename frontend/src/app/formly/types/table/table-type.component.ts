@@ -66,7 +66,8 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
     this.dialog.open(FormDialogComponent, {
       data: {
         fields: this.to.columns,
-        model: index === null ? {} : JSON.parse(JSON.stringify(this.dataSource.data[index]))
+        model: index === null ? {} : JSON.parse(JSON.stringify(this.dataSource.data[index])),
+        newEntry: index === null
       } as FormDialogData
     }).afterClosed()
       .subscribe(result => {
