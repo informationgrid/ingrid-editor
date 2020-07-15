@@ -49,7 +49,7 @@ class OMCloudType : OrientDBDocumentEntityType {
         for (address in addresses) {
             val wrapperId = address.path("ref").asText()
             try {
-                val wrapper = docService.getByDocId(wrapperId, DocumentWrapperType::class, true)
+                val wrapper = docService.getByDocumentId(wrapperId, DocumentWrapperType::class, true)
                 if (wrapper != null) {
                     val latestDocument = docService.getLatestDocument(wrapper, onlyPublished)
                     (address as ObjectNode).replace("ref", latestDocument)

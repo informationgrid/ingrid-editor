@@ -2,7 +2,6 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.QueryField
@@ -11,7 +10,6 @@ import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
-import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.services.CatalogService
@@ -22,7 +20,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import java.time.OffsetDateTime
 import java.util.*
 import java.util.stream.Collectors
 
@@ -50,9 +47,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         try {
             dbService.acquire(dbId).use {
-                val dataJson = data
 
-                val resultDoc = documentService.createDocument(dataJson, address)
+                val resultDoc = documentService.createDocument(data, address)
 
                 return ResponseEntity.ok(resultDoc)
             }
@@ -84,58 +80,9 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 throw ApiException("Not implemented")
             }
 
-            val docWrapper = documentService.getByDocId(id, DocumentWrapperType::class, false) as ObjectNode
+            val resultDoc = documentService.updateDocument(id, data, publish)
 
-            checkForPublishedConcurrency(docWrapper, data.get(FIELD_VERSION)?.asInt())
-
-            // just update document by using new data and adding database ID
-            val recordId = determineRecordId(docWrapper)
-
-            // save document with same ID or new one, if no draft version exists
-            val updatedDocument = data as ObjectNode
-            updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString())
-            val version = updatedDocument.get(FIELD_VERSION)?.asText();
-            handleLinkedDocs(updatedDocument)
-
-            // TODO: use document id instead of DB-ID
-            val savedDoc = dbService.save(DocumentType::class, recordId, updatedDocument.toString(), version)
-
-            val dbID = dbService.getRecordId(savedDoc)
-            saveDocumentWrapper(publish, docWrapper, dbID)
-            val wrapper = documentService.getByDocId(id, DocumentWrapperType::class, true)
-            val result = documentService.getLatestDocument(wrapper!!)
-
-            return ResponseEntity.ok(result)
-        }
-    }
-
-    private fun determineRecordId(docWrapper: ObjectNode): String? {
-        return if (docWrapper[FIELD_DRAFT].isNull) {
-            null
-        } else {
-            docWrapper[FIELD_DRAFT].asText()
-        }
-    }
-
-    /**
-     * Throw an exception if we want to save a draft version with a version number lower than
-     * the current published version.
-     */
-    private fun checkForPublishedConcurrency(wrapper: ObjectNode, version: Int?) {
-
-        val draft = wrapper.get(FIELD_DRAFT)
-        val publishedDBID = wrapper.get(FIELD_PUBLISHED).asText()
-
-        if (draft.isNull && publishedDBID != null) {
-            val publishedDoc = dbService.find(DocumentType::class, publishedDBID)
-            val publishedVersion = publishedDoc?.get("@version")?.asInt()
-            if (version != null && publishedVersion != null && publishedVersion > version) {
-                throw ConcurrentModificationException(
-                        "Could not update object with id $publishedDBID. The database version is newer than the record version.",
-                        publishedDBID,
-                        publishedDoc.get("@version").asInt(),
-                        version)
-            }
+            return ResponseEntity.ok(resultDoc)
         }
     }
 
@@ -191,8 +138,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val results = mutableListOf<JsonNode>()
 
         for (id in ids) {
-            val wrapper = documentService.getByDocId(id, DocumentWrapperType::class, true) as ObjectNode
-            val isAddress = wrapper.get(FIELD_CATEGORY).asText() == "address"
+            val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
+            val isAddress = wrapper.get(FIELD_CATEGORY).asText() == DocumentCategory.ADDRESS.value
             val doc = documentService.getLatestDocument(wrapper, false, false)
 
             // add new parent to document
@@ -236,7 +183,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             dbService.acquire(dbId).use {
                 val queryMap = listOf(
                         QueryField(FIELD_PARENT, parentId),
-                        QueryField(FIELD_CATEGORY, if (isAddress) "address" else "data")
+                        QueryField(FIELD_CATEGORY, if (isAddress) DocumentCategory.ADDRESS.value else DocumentCategory.DATA.value)
                 )
                 val findOptions = FindOptions()
                 findOptions.queryType = QueryType.EXACT
@@ -325,7 +272,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         try {
             dbService.acquire(dbId).use {
                 while (true) {
-                    val doc = documentService.getByDocId(parentId, DocumentWrapperType::class, false) ?: break
+                    val doc = documentService.getByDocumentId(parentId, DocumentWrapperType::class, false) ?: break
                     val nextParentId = doc[FIELD_PARENT].textValue()
                     if (nextParentId != null) {
                         path.add(nextParentId)
@@ -341,46 +288,5 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         return ResponseEntity.ok(path.reversed())
 
-    }
-
-    private fun saveDocumentWrapper(publish: Boolean, docWrapper: ObjectNode, dbID: String): JsonNode {
-        if (publish) {
-            return handlePublishingOnWrapper(docWrapper, dbID)
-        } else {
-            return handleSaveOnWrapper(docWrapper, dbID)
-        }
-    }
-
-    @Throws(Exception::class)
-    private fun handleLinkedDocs(doc: ObjectNode) {
-        val docType = doc[FIELD_DOCUMENT_TYPE].asText()
-        val refType = documentService.getDocumentType(docType)
-        refType.handleLinkedFields(doc)
-    }
-
-    @Throws(ApiException::class)
-    private fun handleSaveOnWrapper(docWrapper: ObjectNode, dbID: String): JsonNode {
-        // update document wrapper with new draft version
-        if (docWrapper[FIELD_DRAFT].isNull) {
-            // TODO: db_id is ORecord!
-            docWrapper.put(FIELD_DRAFT, dbID)
-            return dbService.save(DocumentWrapperType::class, dbService.getRecordId(docWrapper), docWrapper.toString())
-        }
-        return docWrapper
-    }
-
-    @Throws(ApiException::class)
-    private fun handlePublishingOnWrapper(docWrapper: ObjectNode, dbID: String): JsonNode {
-        // add ID from published field to archive
-        if (!docWrapper[FIELD_PUBLISHED].isNull) {
-            docWrapper.withArray(FIELD_ARCHIVE).add(docWrapper[FIELD_PUBLISHED])
-        }
-
-        // add doc to published reference
-        docWrapper.put(FIELD_PUBLISHED, dbID)
-
-        // remove draft version
-        docWrapper.put(FIELD_DRAFT, null as String?)
-        return dbService.save(DocumentWrapperType::class, dbService.getRecordId(docWrapper), docWrapper.toString())
     }
 }

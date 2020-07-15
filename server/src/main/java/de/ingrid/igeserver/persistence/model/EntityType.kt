@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.persistence.model
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.services.DocumentCategory
 
 /**
  * Base interface for all entity types
@@ -8,14 +9,14 @@ import com.fasterxml.jackson.databind.JsonNode
 interface EntityType {
 
     companion object {
-        private const val CATEGORY = "data"
+        private val CATEGORY = DocumentCategory.DATA
     }
 
     /**
      * The category of the entity type.
      */
     val category: String
-        get() = CATEGORY
+        get() = CATEGORY.value
 
     /**
      * The class name used in the application/database

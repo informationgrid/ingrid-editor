@@ -66,7 +66,7 @@ class ImportService {
 
         val id = ref.path(FIELD_ID).textValue()
         try {
-            documentService.getByDocId(id, DocumentType::class, false)
+            documentService.getByDocumentId(id, DocumentType::class, false)
             return true
         } catch (e: RuntimeException) {
             return false

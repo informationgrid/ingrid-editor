@@ -28,7 +28,7 @@ class StatisticApiController : StatisticApi {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbApi.acquire(dbId).use {
-            val statistic = this.dbService.getDocStatistic()
+            val statistic = this.dbService.getDocumentStatistic()
             return ResponseEntity.ok(statistic)
         }
 
