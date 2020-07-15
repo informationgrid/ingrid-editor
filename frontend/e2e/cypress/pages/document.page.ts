@@ -59,11 +59,13 @@ export class DocumentPage extends BasePage {
     cy.visit('form;id=7e9687e8-43f4-4b95-bdcb-27647197a8cb');
   }
 
-  static createDocument(): string {
-    const docName = 'Test-Dokument ' + Utils.randomString();
+
+  static createDocument(docName?: string): string {
+    docName = docName ? docName : 'Test-Dokument ' + Utils.randomString();
     cy.get(DocumentPage.Toolbar.NewDoc).click();
     cy.get('[data-cy=create-title]').type(docName);
     cy.get('[data-cy=create-action]').click();
+    cy.get('[data-cy=create-action]').should('not.be.visible');
     return docName;
   }
 
