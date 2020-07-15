@@ -11,7 +11,7 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 import {MessageService} from '../../../services/message.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {filter, switchMap} from 'rxjs/operators';
+import {filter, switchMap, take} from 'rxjs/operators';
 
 @UntilDestroy()
 @Injectable()
@@ -87,12 +87,16 @@ export class CopyCutPastePlugin extends Plugin {
       } else {
         this.toolbarService.setButtonState('toolBtnCopy', true);
 
-        const entity = this.getQuery().getEntity(data[0]);
 
         // set state of menu items
         this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPY', true);
         this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'CUT', true);
-        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPYTREE', entity._hasChildren);
+        this.getQuery().selectEntity(data[0]).pipe(
+          filter(item => item !== undefined),
+          take(1)
+        ).subscribe(entity => {
+          this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPYTREE', entity._hasChildren);
+        });
       }
     });
   }
