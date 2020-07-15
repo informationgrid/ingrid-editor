@@ -1,9 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {FieldArrayType} from '@ngx-formly/core';
-import {ChipDialogComponent, ChipDialogData} from '../repeat-chip/chip-dialog/chip-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {FormDialogComponent, FormDialogData} from '../table/form-dialog/form-dialog.component';
-import {MatTableDataSource} from '@angular/material/table';
 import {DomSanitizer} from '@angular/platform-browser';
 
 interface Item {

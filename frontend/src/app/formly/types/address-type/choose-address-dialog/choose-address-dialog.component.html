@@ -34,9 +34,9 @@
 
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close cdkFocusInitial color="primary">Abbrechen</button>
+    <button mat-button mat-dialog-close cdkFocusInitial color="primary" data-cy="choose-address-cancel">Abbrechen</button>
     <div fxFlex></div>
-    <button mat-stroked-button color="primary"
+    <button mat-stroked-button color="primary" data-cy="choose-address-confirm"
             [disabled]="!selection || !selectedType"
             [mat-dialog-close]="getResult()">
         Übernehmen
