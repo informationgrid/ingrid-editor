@@ -62,18 +62,18 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
   }
 
   editRow(index: number) {
-
+    const newEntry = (index === null);
     this.dialog.open(FormDialogComponent, {
       data: {
         fields: this.to.columns,
-        model: index === null ? {} : JSON.parse(JSON.stringify(this.dataSource.data[index])),
-        newEntry: index === null
+        model: newEntry ? {} : JSON.parse(JSON.stringify(this.dataSource.data[index])),
+        newEntry: newEntry
       } as FormDialogData
     }).afterClosed()
       .subscribe(result => {
         console.log(result);
         if (result) {
-          if (index === null) {
+          if (newEntry) {
             this.dataSource.data.push(result);
           } else {
             this.dataSource.data.splice(index, 1, result);

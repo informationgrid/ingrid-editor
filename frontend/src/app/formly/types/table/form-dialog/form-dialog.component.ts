@@ -18,8 +18,10 @@ export class FormDialogComponent implements OnInit {
 
   model: any;
   form = new FormGroup({});
+  titleText: String;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: FormDialogData) {
+        this.titleText = data?.newEntry ? "Eintrag hinzufügen" : "Eintrag bearbeiten"
   }
 
   ngOnInit(): void {
