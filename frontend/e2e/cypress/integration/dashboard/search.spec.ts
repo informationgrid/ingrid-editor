@@ -4,8 +4,10 @@ import {AddressPage} from "../../pages/address.page";
 
 describe('Search', function () {
 
-  beforeEach(() => {
+  before(() => {
     cy.kcLogin('user');
+  });
+  beforeEach(() => {
     cy.visit('');
   });
 

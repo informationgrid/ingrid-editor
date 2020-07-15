@@ -4,6 +4,7 @@ import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {Injectable} from '@angular/core';
 import {CodelistStore} from '../../app/store/codelist/codelist.store';
+import {map} from 'rxjs/operators';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -236,12 +237,15 @@ export class McloudDoctype extends BaseDoctype {
               },
               {
                 key: 'text',
-                type: 'input',
+                type: 'select',
                 className: 'flex-1',
                 templateOptions: {
                   label: 'Typ',
                   appearance: 'outline',
-                  required: true
+                  required: true,
+                  options: this.getCodelistForSelect(502).pipe(
+                    map(items => items.filter(it => it.value !== '2'))
+                  )
                 }
               }]
           }
