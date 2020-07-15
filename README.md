@@ -97,6 +97,15 @@ location /orientdb-studio/ {
 
 To get the swagger-api json documentation go to http://localhost:8550/api-docs. The UI version can be accessed with http://localhost:8550/swagger-ui.html, where you also can test the API.
 
+# Jenkins Setup
+
+The following behaviours for the Jenkins project have to be applied:
+
+* Advanced clone behaviours
+  * to fetch tags so that the correct version is calculated
+* Check out to matching local branch
+  * to get branch information for creating correct tag for docker image
+
 # FAQ
 
 ## Error after login: ERR_TOO_MANY_REDIRECTS
