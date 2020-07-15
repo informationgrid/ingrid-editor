@@ -106,8 +106,7 @@ class OrientDBDatabase : DBApi {
             // NOTE we could also create and access databases directly using the server instance,
             // but setting up OrientDB instance allows us to use advanced features like connection
             // pooling and makes this class better testable since it could also use an injected environment
-            val databasePath = serverInternal.configuration.getProperty("server.database.path")
-            orientDBInternal = OrientDB("embedded:${databasePath}", OrientDBConfig.defaultConfig())
+            orientDBInternal = serverInternal.context
 
             setup()
         }
