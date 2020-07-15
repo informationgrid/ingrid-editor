@@ -1,12 +1,12 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.db.DBApi
-import de.ingrid.igeserver.documenttypes.DocumentWrapperType
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.model.ExportRequestParameter
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
-import de.ingrid.igeserver.utils.DBUtils
+import de.ingrid.igeserver.services.CatalogService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,17 +26,17 @@ class ExportApiController : ExportApi {
     lateinit var documentService: DocumentService
 
     @Autowired
-    private lateinit var dbUtils: DBUtils
+    private lateinit var catalogService: CatalogService
 
     @Throws(Exception::class)
     override fun export(principal: Principal?, data: ExportRequestParameter): ResponseEntity<String> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         // TODO: option to export addresses too?
         var result = ""
         dbService.acquire(dbId).use {
-            val doc = documentService.getByDocId(data.id, DocumentWrapperType.TYPE, true)
+            val doc = documentService.getByDocumentId(data.id, DocumentWrapperType::class, true)
             if (doc != null) {
                 val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
 

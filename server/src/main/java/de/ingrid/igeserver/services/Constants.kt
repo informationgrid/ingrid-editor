@@ -14,3 +14,11 @@ const val FIELD_DRAFT = "draft"
 const val FIELD_PUBLISHED = "published"
 const val FIELD_ARCHIVE = "archive"
 const val FIELD_VERSION = "_version"
+
+enum class DocumentCategory(val value: String) {
+    // used in FIELD_CATEGORY
+    DATA("data"),
+    ADDRESS("address"),
+    // used in FIELD_DOCUMENT_TYPE
+    FOLDER("FOLDER")
+}
