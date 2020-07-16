@@ -29,7 +29,7 @@
         *ngIf="formFieldControl.errorState && !formControl.errors?.required">{{formControl.errors}}</ige-form-error>
 
     <mat-table *ngIf="dataSource?.data?.length > 0" fxLayout="column" [dataSource]="dataSource"
-               [class.edit-mode]="batchMode" data-cy="{{ to.externalLabel }}-table">
+               [class.edit-mode]="batchMode" [attr.data-cy]="to.externalLabel+'-table'">
 
         <ng-container *ngFor="let column of displayedColumns; let i = index" [matColumnDef]="column"
                       [ngSwitch]="column">
@@ -102,6 +102,6 @@
     </ige-form-label>
     <ige-add-button (add)="addRow()"
                     [showRequiredError]="formFieldControl.errorState && formControl.errors?.required"
-                    data-cy="{{ to.externalLabel }}-add"></ige-add-button>
+                    [attr.data-cy]="to.externalLabel+'-add'"></ige-add-button>
 </div>
 
