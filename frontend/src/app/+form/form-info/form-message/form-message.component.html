@@ -1,4 +1,4 @@
-<div class="wrapper" *ngIf="type" [ngClass]="type.severity" [@slideDown]>
+<div class="wrapper" *ngIf="type" [ngClass]="type.severity" [@slideDown] data-cy="form-message">
     <span>
         <mat-icon>{{getIconClass(type.severity)}}</mat-icon>
         {{type.message}}
