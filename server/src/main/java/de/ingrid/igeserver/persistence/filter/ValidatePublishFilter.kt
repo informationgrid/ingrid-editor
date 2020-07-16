@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component
 @Component
 class ValidatePublishFilter : Filter<PersistencePayload> {
 
-    override val id = ValidatePublishFilter::class.toString()
-
     override fun invoke(payload: PersistencePayload, context: Context): PersistencePayload {
         if (payload.action == PersistencePayload.Action.PUBLISH) {
             context.messages.add(Message(this, "Validate data on publish"))

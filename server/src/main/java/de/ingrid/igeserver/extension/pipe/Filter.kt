@@ -12,4 +12,7 @@ import de.ingrid.igeserver.extension.Extension
  * NOTE Exceptions thrown by a filter prevent succeeding filters in the pipe from running.
  */
 interface Filter<T: Payload> : Extension, (T, Context) -> T {
+
+    override val id: String
+        get() = this::class.qualifiedName ?: this::class.toString()
 }

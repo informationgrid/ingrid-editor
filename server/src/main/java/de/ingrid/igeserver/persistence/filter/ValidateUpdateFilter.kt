@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component
 @Component
 class ValidateUpdateFilter : Filter<PersistencePayload> {
 
-    override val id = ValidateUpdateFilter::class.toString()
-
     override fun invoke(payload: PersistencePayload, context: Context): PersistencePayload {
         if (payload.action == PersistencePayload.Action.UPDATE) {
             context.messages.add(Message(this, "Validate data on update"))
