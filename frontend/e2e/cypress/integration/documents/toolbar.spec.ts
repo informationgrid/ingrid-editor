@@ -17,7 +17,7 @@ describe('Toolbar behavior', () => {
     Tree.selectNodeWithTitle('Neue Testdokumente');
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save']);
 
-    // TODO: copy/move with subtree should be enabled
+    // TODO: copy, cut and copy with subtree should be enabled
 
 
   });
@@ -26,7 +26,7 @@ describe('Toolbar behavior', () => {
     Tree.selectNodeWithTitle('zzz');
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish']);
 
-    // TODO: copy/move with subtree should be disabled
+    // TODO: copy with subtree should be disabled, but copy and cut enabled
   });
 
   xit('should activate specific buttons when a published document is loaded', () => {
