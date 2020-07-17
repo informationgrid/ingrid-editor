@@ -12,14 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 
-
 @ContextConfiguration(classes = [(PipeTestConfig::class)])
 @TestPropertySource(properties = [
-    "filterOrderMap={'PublishPipe': {" +
+    "pipes.filter.order={'PublishPipe': {" +
             "'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'," +
             "'de.ingrid.igeserver.extension.TestValidatePublishFilter'" +
     "} }",
-    "filterDisableMap={'CreatePipe': {" +
+    "pipes.filter.disabled={'CreatePipe': {" +
             "'de.ingrid.igeserver.extension.TestValidateCreateFilter'" +
     "} }"
 ])

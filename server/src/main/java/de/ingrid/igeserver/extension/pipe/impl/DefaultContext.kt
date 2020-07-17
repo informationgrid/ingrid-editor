@@ -10,4 +10,6 @@ import java.util.*
 open class DefaultContext : Context {
 
     override var messages: Queue<Message> = LinkedList<Message>()
+
+    override var properties: Map<String, Any?> = mutableMapOf()
 }
