@@ -5,6 +5,7 @@ export class Address {
   constructor(public firstName?: string, public lastName?: string, public organization?: string) {
   }
 }
+export const ROOT = `Adressen`;
 
 export class AddressPage extends DocumentPage {
 

@@ -94,7 +94,15 @@ describe('General create addresses/folders', () => {
       cy.get('.lastName input').should('have.value', 'Meier');
     });
 
-    xit('should create an address folder', () => {
+    it('should create an address folder', () => {
+      const folderName = 'Test-Adressen-Ordner ' + Utils.randomString();
+
+      cy.get(DocumentPage.Toolbar.NewFolder).click();
+      cy.get('[data-cy=create-title]').type(folderName);
+      cy.get('[data-cy=create-action]').click();
+
+      cy.get('ige-breadcrumb').shouldHaveTrimmedText(`Adressen`);
+      cy.get(DocumentPage.title).should('have.text', folderName)
     });
 
     it('should generate a title from create parameters', () => {
