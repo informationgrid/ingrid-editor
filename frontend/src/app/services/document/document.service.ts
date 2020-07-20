@@ -75,7 +75,7 @@ export class DocumentService {
     return this.dataService.getChildren(parentId, isAddress)
       .pipe(
         map(docs => this.mapToDocumentAbstracts(docs, parentId)),
-        map(docs => docs.sort((a, b) => a.title.localeCompare(b.title))),
+        // map(docs => docs.sort((a, b) => a.title.localeCompare(b.title))),
         tap(docs => this.updateTreeStoreDocs(isAddress, parentId, docs))
       );
   }
@@ -243,9 +243,10 @@ export class DocumentService {
    * @param srcIDs contains the IDs of the documents to be copied
    * @param dest is the document, where the other docs to be copied will have as their parent
    * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
+   * @param isAddress
    * @returns {Observable<Response>}
    */
-  copy(srcIDs: string[], dest: string, includeTree: boolean) {
+  copy(srcIDs: string[], dest: string, includeTree: boolean, isAddress: boolean) {
     return this.dataService.copy(srcIDs, dest, includeTree).pipe(
       tap((docs) => {
 
@@ -253,6 +254,8 @@ export class DocumentService {
 
         // const info = this.treeStore.getValue().openedDocument;
         const infos = this.mapToDocumentAbstracts(docs, dest);
+
+        this.updateStoreAfterCopy(infos, isAddress);
 
         this.datasetsChanged$.next({
           type: UpdateType.New,
@@ -267,13 +270,26 @@ export class DocumentService {
 
   /**
    * Move a set of documents under a specified destination document.
-   * @param src contains the IDs of the documents to be moved
+   * @param srcIDs contains the IDs of the documents to be moved
    * @param dest is the document, where the other docs to be copied will have as their parent
-   * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
+   * @param isAddress
    * @returns {Observable<Response>}
    */
-  move(srcIDs: string[], dest: string) {
-    return this.dataService.move(srcIDs, dest);
+  move(srcIDs: string[], dest: string, isAddress: boolean) {
+    return this.dataService.move(srcIDs, dest).pipe(
+      tap(() => {
+        this.messageService.sendInfo('Datensatz wurde verschoben');
+
+        this.updateStoreAfterMove(srcIDs, dest, isAddress);
+
+        this.datasetsChanged$.next({
+          type: UpdateType.Move,
+          // @ts-ignore
+          data: srcIDs.map(id => ({id: id})),
+          parent: dest
+        });
+      })
+    );
   }
 
   addExpandedNode(nodeId: string) {
@@ -285,10 +301,12 @@ export class DocumentService {
   }
 
   addDocumentToStore(docs: DocumentAbstract[]) {
+    // TODO: what about addresses?
     this.treeStore.add(docs);
   }
 
   updateChildrenInfo(id: string, hasChildren: boolean) {
+    // TODO: what about addresses?
     this.treeStore.update(id, {
       _hasChildren: hasChildren
     });
@@ -352,5 +370,21 @@ export class DocumentService {
       });
     });
 
+  }
+
+  private updateStoreAfterMove(ids: string[], parent: string, isAddress: boolean) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    ids.forEach(id => {
+      store.update(id, {_parent: parent});
+    });
+  }
+
+  private updateStoreAfterCopy(infos: DocumentAbstract[], isAddress: boolean) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    infos.forEach(info => {
+      store.upsert(info.id, info);
+    });
   }
 }

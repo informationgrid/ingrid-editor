@@ -2,7 +2,6 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
@@ -10,9 +9,9 @@ import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
-import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.*
-import java.util.stream.Collectors
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -108,13 +106,13 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     override fun copyDatasets(
             principal: Principal?,
             ids: List<String>,
-            data: CopyOptions): ResponseEntity<List<JsonNode>> {
+            options: CopyOptions): ResponseEntity<List<JsonNode>> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            val result = copyOrMove(CopyMoveOperation.COPY, ids, data)
-            return ResponseEntity.ok(result)
+            val results = ids.map { id -> handleCopy(id, options) }
+            return ResponseEntity.ok(results)
         }
 
     }
@@ -127,38 +125,29 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            copyOrMove(CopyMoveOperation.MOVE, ids, options)
+//            dbService.beginTransaction()
+            ids.forEach { id -> handleMove(id, options) }
+//            dbService.commitTransaction()
             return ResponseEntity(HttpStatus.OK)
         }
 
     }
 
-    private fun copyOrMove(operation: CopyMoveOperation, ids: List<String>, options: CopyOptions): MutableList<JsonNode> {
+    private fun handleCopy(id: String, options: CopyOptions): JsonNode {
 
-        val results = mutableListOf<JsonNode>()
+        val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
+        val isAddress = wrapper.get(FIELD_CATEGORY).asText() == DocumentCategory.ADDRESS.value
 
-        for (id in ids) {
-            val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
-            val isAddress = wrapper.get(FIELD_CATEGORY).asText() == DocumentCategory.ADDRESS.value
-            val doc = documentService.getLatestDocument(wrapper, false, false)
+        val doc = documentService.getLatestDocument(wrapper, false, false)
 
-            // add new parent to document
-            doc.put(FIELD_PARENT, options.destId)
+        // add new parent to document
+        doc.put(FIELD_PARENT, options.destId)
 
-            val result = when (operation) {
-                CopyMoveOperation.COPY -> handleCopy(doc, options, isAddress)
-                CopyMoveOperation.MOVE -> handleMove(doc, isAddress)
-            }
-
-            results.add(result)
-        }
-
-        return results
+        return createCopyAndHandleSubTree(doc, options, isAddress)
 
     }
 
-    private fun handleCopy(doc: ObjectNode, options: CopyOptions, isAddress: Boolean): JsonNode {
-
+    private fun createCopyAndHandleSubTree(doc: ObjectNode, options: CopyOptions, isAddress: Boolean): JsonNode {
         val origParentId = doc.get(FIELD_ID).asText()
 
         // when we copy the node, then we also have to reset the id
@@ -185,15 +174,32 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             child?.let {
                 val childVersion = documentService.getLatestDocument(it, false, false)
                 childVersion.put(FIELD_PARENT, parentId)
-                handleCopy(childVersion, options, isAddress)
+                createCopyAndHandleSubTree(childVersion, options, isAddress)
             }
 
         }
 
     }
 
-    private fun handleMove(doc: ObjectNode, isAddress: Boolean): JsonNode {
-        TODO("Not yet implemented")
+    private fun handleMove(id: String, options: CopyOptions) {
+
+        val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
+        val doc = documentService.getLatestDocument(wrapper, false, false)
+
+        // update parent
+        doc.put(FIELD_PARENT, options.destId)
+
+        val published = doc.get(FIELD_STATE).asText() == DocumentService.DocumentState.PUBLISHED.value
+
+        // update document which includes updating the wrapper
+        documentService.updateDocument(id, doc, published)
+
+        // updateWrapper
+        val wrapperWithLinks = documentService.getByDocumentId(id, DocumentWrapperType::class, false) as ObjectNode
+        wrapperWithLinks.put(FIELD_PARENT, options.destId)
+        val wrapperId = dbService.getRecordId(wrapperWithLinks)
+        dbService.save(DocumentWrapperType::class, wrapperId, wrapperWithLinks.toString())
+
     }
 
     @Throws(ApiException::class)

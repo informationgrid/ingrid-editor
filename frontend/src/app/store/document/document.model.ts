@@ -2,7 +2,7 @@ import { ID } from '@datorama/akita';
 import {DocumentState} from '../../models/ige-document';
 
 export interface DocumentAbstract {
-  id: ID;
+  id: ID | string;
   title: string;
   icon: string;
   _state: DocumentState;

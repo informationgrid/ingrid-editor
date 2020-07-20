@@ -243,13 +243,9 @@ export class TreeComponent implements OnInit, OnDestroy {
         return this.dataSource.updateNode(updateInfo.data);
       case UpdateType.Delete:
         this.deleteNode(updateInfo);
-
         return;
-      case UpdateType.Copy:
-        // no marking of nodes
-        return;
-      case UpdateType.Paste:
-        console.warn('Paste not implemented yet');
+      case UpdateType.Move:
+        this.moveNodes(updateInfo);
         return;
       default:
         throw new Error('Tree Action type not known: ' + updateInfo.type);
@@ -257,12 +253,12 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private deleteNode(updateInfo: UpdateDatasetInfo) {
-    const parentNodeRelations = updateInfo['data']
+    const nodesWithParent = updateInfo['data']
       .map(doc => this.dataSource.data.find(item => item._id === doc.id))
       .map(node => this.getParentNode(node));
 
     // update parent nodes in case they do not have any children anymore
-    parentNodeRelations.forEach(parentNode => {
+    nodesWithParent.forEach(parentNode => {
       // first collapse nodes to be deleted to make sure all sub nodes are removed
       this.treeControl.collapse(parentNode.node);
       this.dataSource.removeNode(parentNode.node);
@@ -291,26 +287,11 @@ export class TreeComponent implements OnInit, OnDestroy {
       }
 
       // TODO: use function jumpToNode
-
-      const parentNode = this.dataSource.data[parentNodeIndex];
-      parentNode.hasChildren = true;
-
-      // node will be added automatically when expanded
-      const isExpanded = this.treeControl.isExpanded(parentNode);
-
-      this.database.getChildren(parentNode._id, true, this.forAddresses)
-        .subscribe(() => {
-          if (isExpanded) {
-            this.treeControl.collapse(parentNode);
-          }
-          this.treeControl.expand(parentNode);
-          this.updateNodePath(updateInfo);
-          this.scrollToActiveElement();
-        });
+      this.updateChildrenFromServer(updateInfo.parent, <string>updateInfo.data[0].id);
 
     } else {
       this.dataSource.addRootNode(updateInfo.data[0]);
-      this.updateNodePath(updateInfo);
+      this.updateNodePath(<string>updateInfo.data[0].id);
       this.scrollToActiveElement();
     }
 
@@ -321,8 +302,33 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   }
 
-  private updateNodePath(updateInfo: UpdateDatasetInfo) {
-    const nodePath = this.getTitlesFromNodePath(this.dataSource.getNode(updateInfo.data[0].id + ''));
+  private updateChildrenFromServer(parentNodeId: string, id: string) {
+    if (parentNodeId === null) {
+      this.reloadTree(true).subscribe();
+      return;
+    }
+
+    const parentNodeIndex = this.dataSource.data.findIndex(item => item._id === parentNodeId);
+    const parentNode = this.dataSource.data[parentNodeIndex];
+    parentNode.hasChildren = true;
+
+    // node will be added automatically when expanded
+    const isExpanded = this.treeControl.isExpanded(parentNode);
+
+    this.database.getChildren(parentNodeId, true, this.forAddresses)
+      .subscribe((children) => {
+        console.log('updated children', children);
+        if (isExpanded) {
+          this.treeControl.collapse(parentNode);
+        }
+        this.treeControl.expand(parentNode);
+        this.updateNodePath(id);
+        this.scrollToActiveElement();
+      });
+  }
+
+  private updateNodePath(id: string) {
+    const nodePath = this.getTitlesFromNodePath(this.dataSource.getNode(id));
     if (nodePath) {
       this.currentPath.next(nodePath);
     }
@@ -481,5 +487,23 @@ export class TreeComponent implements OnInit, OnDestroy {
     } else {
       this.selectNode(node, $event)
     }
+  }
+
+  private async moveNodes(updateInfo: UpdateDatasetInfo) {
+    const parentNode = updateInfo.parent;
+    const docs = updateInfo.data;
+
+    const treeNodes = docs
+      .map(doc => this.dataSource.data.find(item => item._id === doc.id));
+    treeNodes.forEach(node => this.dataSource.removeNode(node));
+
+    const id = <string>docs[0].id;
+    await this.jumpToNode(id);
+    // await this.handleExpandNodes([parentNode]);
+
+    treeNodes.forEach(treeNode => this.dataSource.moveTreeNode(treeNode, parentNode));
+
+    this.activeNodeId = id;
+    this.updateNodePath(id);
   }
 }

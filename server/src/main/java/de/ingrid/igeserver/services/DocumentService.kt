@@ -32,7 +32,7 @@ class DocumentService : MapperService() {
     @Autowired
     private lateinit var dbService: DBApi
 
-    private enum class DocumentState(val value: String) {
+    enum class DocumentState(val value: String) {
         PUBLISHED("P"),
         DRAFT("W")
     }
@@ -117,6 +117,9 @@ class DocumentService : MapperService() {
         // just update document by using new data and adding database ID
         val recordId = determineRecordId(docWrapper)
 
+        // update parent in case of moving a document
+        docWrapper.put(FIELD_PARENT, data.get(FIELD_PARENT).asText());
+
         // save document with same ID or new one, if no draft version exists
         val updatedDocument = data as ObjectNode
         updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString())
@@ -128,6 +131,7 @@ class DocumentService : MapperService() {
         refType.handleLinkedFields(updatedDocument)
 
         // TODO: use document id instead of DB-ID
+        // TODO: use version as Int
         val savedDoc = dbService.save(DocumentType::class, recordId, updatedDocument.toString(), version)
 
         val dbID = dbService.getRecordId(savedDoc)
