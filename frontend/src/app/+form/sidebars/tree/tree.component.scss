@@ -11,6 +11,10 @@
   overflow: auto;
 }
 
+.drop {
+  background-color: #ffc734 !important;
+}
+
 mat-tree-node {
   cursor: pointer;
   min-height: 20px;

@@ -9,10 +9,12 @@
 
 
     <!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
-    <mat-tree #treeComponent [dataSource]="dataSource" [treeControl]="treeControl">
+    <mat-tree #treeComponent [dataSource]="dataSource" [treeControl]="treeControl"> <!-- cdkDropList (cdkDropListDropped)="drop($event)">-->
 
         <!-- This is the tree node template for leaf nodes -->
         <mat-tree-node *matTreeNodeDef="let node"
+                       draggable="true" (drop)="drop($event, node)" (dragstart)="dragManager.handleDragStart($event, node)"
+                       (dragend)="dragManager.handleDragEnd();"
                        matTreeNodePadding matTreeNodePaddingIndent="24"
                        (click)="!disabledCondition(node) && selectNode(node, $event)"
                        [class.selected]="selectionModel.isSelected(node)"
@@ -29,8 +31,11 @@
 
         <!-- This is the tree node template for expandable nodes -->
         <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
+                       draggable="true" (drop)="drop($event, node)" (dragstart)="dragManager.handleDragStart($event, node)"
+                       (dragover)="dragManager.handleDragOver($event, node);" (dragend)="dragManager.handleDragEnd();"
                        matTreeNodePadding matTreeNodePaddingIndent="24"
                        (click)="handleFolderClick(node, $event)"
+                       [class.drop]="dragManager.dragNodeExpandOverNode === node"
                        [class.selected]="selectionModel.isSelected(node)"
                        [class.active]="node._id === activeNodeId"
                        [class.expanded]="treeControl.isExpanded(node)"

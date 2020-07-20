@@ -11,6 +11,7 @@ import {DynamicDatabase} from './dynamic.database';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TreeService} from './tree.service';
 import {DocumentUtils} from '../../../services/document.utils';
+import {DragNDropUtils} from './dragndrop.utils';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -51,6 +52,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   );
   @Output() activate = new EventEmitter<string[]>();
   @Output() currentPath = new EventEmitter<ShortTreeNode[]>();
+  @Output() dropped = new EventEmitter<any>();
 
   @ViewChild('treeComponent', {read: ElementRef}) treeContainerElement: ElementRef;
 
@@ -61,6 +63,8 @@ export class TreeComponent implements OnInit, OnDestroy {
   treeControl: FlatTreeControl<TreeNode>;
 
   dataSource: DynamicDataSource;
+
+  dragManager: DragNDropUtils;
 
   /**
    * A function to determine if a tree node should be disabled.
@@ -73,6 +77,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   constructor(private database: DynamicDatabase, private treeService: TreeService) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database, treeService);
+    this.dragManager = new DragNDropUtils(this.treeControl);
   }
 
   getLevel = (node: TreeNode) => node.level;
@@ -245,7 +250,8 @@ export class TreeComponent implements OnInit, OnDestroy {
         this.deleteNode(updateInfo);
         return;
       case UpdateType.Move:
-        this.moveNodes(updateInfo);
+        const srcDocIds = updateInfo.data.map(doc => <string>doc.id);
+        this.moveNodes(srcDocIds, updateInfo.parent);
         return;
       default:
         throw new Error('Tree Action type not known: ' + updateInfo.type);
@@ -489,21 +495,50 @@ export class TreeComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async moveNodes(updateInfo: UpdateDatasetInfo) {
-    const parentNode = updateInfo.parent;
-    const docs = updateInfo.data;
+  private async moveNodes(srcDocIds: string[], destination: string) {
 
-    const treeNodes = docs
-      .map(doc => this.dataSource.data.find(item => item._id === doc.id));
+    const treeNodes = srcDocIds
+      .map(docId => this.dataSource.data.find(item => item._id === docId));
     treeNodes.forEach(node => this.dataSource.removeNode(node));
 
-    const id = <string>docs[0].id;
+    // make sure new parent has correct children info
+    if (destination) {
+      const destinationNodeIndex = this.dataSource.data.findIndex(item => item._id === destination);
+      this.dataSource.data[destinationNodeIndex].hasChildren = true;
+    }
+
+    const id = <string>srcDocIds[0];
     await this.jumpToNode(id);
-    // await this.handleExpandNodes([parentNode]);
 
-    treeNodes.forEach(treeNode => this.dataSource.moveTreeNode(treeNode, parentNode));
+    treeNodes.forEach(treeNode => this.dataSource.moveTreeNode(treeNode, destination));
 
+    // TODO: only set this if it's the currently loaded document
     this.activeNodeId = id;
     this.updateNodePath(id);
   }
+
+  /**
+   * See here for example: https://stackblitz.com/edit/angular-draggable-mat-tree
+   * @param event
+   * @param droppedNode
+   */
+  drop(event: DragEvent, droppedNode: TreeNode) {
+    event.preventDefault();
+
+    const dropInfo = this.dragManager.getDropInfo(droppedNode);
+
+    if (dropInfo.allow) {
+      this.dropped.next({
+        srcIds: [dropInfo.srcNode._id],
+        destination: droppedNode._id
+      });
+
+      // move will be initiated by document service when node was moved in backend
+      // this.moveNodes([dropInfo.srcNode._id], droppedNode._id);
+    }
+
+    this.dragManager.handleDragEnd();
+
+  }
+
 }

@@ -3,6 +3,7 @@
           [setActiveNode]="activeTreeNode"
           [forAddresses]="address"
           (currentPath)="storePathTitles($event)"
+          (dropped)="dropped.next($event)"
           (activate)="handleLoad($event)"
           (selected)="handleSelection($event)"></ige-tree>
 
