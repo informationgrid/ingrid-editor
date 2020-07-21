@@ -44,6 +44,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   @Input() update: Observable<any>;
   @Input() showHeaderOptions = true;
   @Input() showOnlyFolders = false;
+  @Input() enableDrag = false;
 
   /** The selection for checklist */
   selectionModel = new SelectionModel<TreeNode>(true);

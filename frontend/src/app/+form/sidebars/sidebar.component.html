@@ -2,6 +2,7 @@
           [update]="updateTree"
           [setActiveNode]="activeTreeNode"
           [forAddresses]="address"
+          [enableDrag]="true"
           (currentPath)="storePathTitles($event)"
           (dropped)="dropped.next($event)"
           (activate)="handleLoad($event)"
