@@ -149,22 +149,24 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         // when we copy the node, then we also have to reset the id
         doc.put(FIELD_ID, null as String?)
 
-        val copiedParent = documentService.createDocument(doc, isAddress)
+        val copiedParent = documentService.createDocument(doc, isAddress) as ObjectNode
 
         if (options.includeTree) {
-            handleCopySubTree(doc, origParentId, options, isAddress);
+            val count = handleCopySubTree(doc, origParentId, options, isAddress);
+            copiedParent.put(FIELD_HAS_CHILDREN, count > 0)
         }
 
         return copiedParent;
     }
 
-    private fun handleCopySubTree(parent: ObjectNode, origParentId: String, options: CopyOptions, isAddress: Boolean) {
+    private fun handleCopySubTree(parent: ObjectNode, origParentId: String, options: CopyOptions, isAddress: Boolean): Long {
 
         // get all children of parent and save those recursively
         val parentId = parent.get(FIELD_ID).asText()
         val docs = documentService.findChildrenDocs(origParentId, isAddress)
 
         docs.hits.forEach { doc: JsonNode ->
+
             val id = doc.get(FIELD_ID).asText()
             val child = documentService.getByDocumentId(id, DocumentWrapperType::class, true)
             child?.let {
@@ -174,6 +176,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             }
 
         }
+
+        return docs.totalHits
 
     }
 

@@ -139,13 +139,19 @@ export class DynamicDataSource {
       this.collapseNode(this.data[index], index);
 
       if (index !== -1) {
-        this.data.splice(index, 1, ...this._database.mapDocumentsToTreeNodes([doc], this.data[index].level));
-        this.dataChange.next(this.data);
+        this.data.splice(index, 1);
+        const updatedNode = this._database.mapDocumentsToTreeNodes([doc], this.data[index].level)[0];
+        this.insertNodeInTree(updatedNode, updatedNode.parent);
       }
     });
   }
 
-  moveTreeNode(node: TreeNode, dest: string) {
+  /**
+   * Insert a tree node under a parent in a correctly sorted way.
+   * @param node
+   * @param dest
+   */
+  insertNodeInTree(node: TreeNode, dest: string) {
 
     // in case the new parent was collapsed, the moved nodes are automatically
     // loaded from the backend when expanding the parent

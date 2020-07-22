@@ -11,7 +11,7 @@ export class SortTreeByTypeBehaviour extends Plugin {
   name = 'Sortierung des Baums nach Dokumententyp';
   defaultActive = false;
 
-  description = 'Anstatt die Baumknoten nach dem Titel zu sortieren, werden diese' +
+  description = 'Anstatt die Baumknoten nach dem Titel zu sortieren, werden diese ' +
     'nach dem Dokumenttyp sortiert. Verzeichnisse erscheinen weiterhin als erstes.';
 
   private sortByDocumentType: TreeSortFn = (a: TreeNode, b: TreeNode) => {

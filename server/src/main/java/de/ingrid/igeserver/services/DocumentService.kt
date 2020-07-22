@@ -336,7 +336,10 @@ class DocumentService : MapperService() {
             deleteRecursively(it.get(FIELD_ID).asText())
         }
 
+        // remove all document versions which have the same ID
         dbService.remove(DocumentType::class, id)
+
+        // remove the wrapper
         dbService.remove(DocumentWrapperType::class, id)
     }
 

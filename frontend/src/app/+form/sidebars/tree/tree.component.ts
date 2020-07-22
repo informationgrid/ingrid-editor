@@ -298,7 +298,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     } else {
       const newRootTreeNode = this.database.mapDocumentsToTreeNodes(updateInfo.data, 0);
-      this.dataSource.moveTreeNode(newRootTreeNode[0], null);
+      this.dataSource.insertNodeInTree(newRootTreeNode[0], null);
       this.updateNodePath(<string>updateInfo.data[0].id);
       this.scrollToActiveElement();
     }
@@ -506,13 +506,15 @@ export class TreeComponent implements OnInit, OnDestroy {
     // make sure new parent has correct children info
     if (destination) {
       const destinationNodeIndex = this.dataSource.data.findIndex(item => item._id === destination);
-      this.dataSource.data[destinationNodeIndex].hasChildren = true;
+      if (destinationNodeIndex > -1) {
+        this.dataSource.data[destinationNodeIndex].hasChildren = true;
+      }
     }
 
     const id = <string>srcDocIds[0];
     await this.jumpToNode(id);
 
-    treeNodes.forEach(treeNode => this.dataSource.moveTreeNode(treeNode, destination));
+    treeNodes.forEach(treeNode => this.dataSource.insertNodeInTree(treeNode, destination));
 
     // TODO: only set this if it's the currently loaded document
     this.activeNodeId = id;

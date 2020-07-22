@@ -8,7 +8,7 @@ import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
-import {applyTransaction, arrayAdd, arrayRemove} from '@datorama/akita';
+import {applyTransaction, arrayAdd, arrayRemove, transaction} from '@datorama/akita';
 import {MessageService} from '../message.service';
 import {ProfileService} from '../profile.service';
 import {SessionStore} from '../../store/session.store';
@@ -252,10 +252,9 @@ export class DocumentService {
 
         this.messageService.sendInfo('Datensatz wurde kopiert');
 
-        // const info = this.treeStore.getValue().openedDocument;
         const infos = this.mapToDocumentAbstracts(docs, dest);
 
-        this.updateStoreAfterCopy(infos, isAddress);
+        this.updateStoreAfterCopy(infos, dest, isAddress);
 
         this.datasetsChanged$.next({
           type: UpdateType.New,
@@ -380,11 +379,17 @@ export class DocumentService {
     });
   }
 
-  private updateStoreAfterCopy(infos: DocumentAbstract[], isAddress: boolean) {
+  @transaction()
+  private updateStoreAfterCopy(infos: DocumentAbstract[], parentId: string, isAddress: boolean) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     infos.forEach(info => {
       store.upsert(info.id, info);
+    });
+
+    // update parent in case it didn't have children before
+    store.update(parentId, {
+      _hasChildren: true
     });
   }
 }
