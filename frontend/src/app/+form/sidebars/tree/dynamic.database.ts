@@ -32,23 +32,23 @@ export class DynamicDatabase {
     return this.getChildren(null, forceFromServer, isAddress);
   }
 
-  getChildren(node: string, forceFromServer?: boolean, isAddress?: boolean): Observable<DocumentAbstract[]> {
+  getChildren(parentId: string, forceFromServer?: boolean, isAddress?: boolean): Observable<DocumentAbstract[]> {
 
     let children;
     if (forceFromServer) {
       children = [];
     } else {
       if (isAddress) {
-        children = this.addressTreeQuery.getChildren(node);
+        children = this.addressTreeQuery.getChildren(parentId);
       } else {
-        children = this.treeQuery.getChildren(node);
+        children = this.treeQuery.getChildren(parentId);
       }
     }
 
     if (children.length > 0) {
       return of(children);
     }
-    return this.docService.getChildren(node, isAddress);
+    return this.docService.getChildren(parentId, isAddress);
   }
 
   search(value: string, isAddress: boolean) {

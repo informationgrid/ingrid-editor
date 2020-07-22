@@ -297,7 +297,8 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.updateChildrenFromServer(updateInfo.parent, <string>updateInfo.data[0].id);
 
     } else {
-      this.dataSource.addRootNode(updateInfo.data[0]);
+      const newRootTreeNode = this.database.mapDocumentsToTreeNodes(updateInfo.data, 0);
+      this.dataSource.moveTreeNode(newRootTreeNode[0], null);
       this.updateNodePath(<string>updateInfo.data[0].id);
       this.scrollToActiveElement();
     }
