@@ -260,4 +260,10 @@ class UsersApiController : UsersApi {
 
     }
 
+    override fun refreshSession(): ResponseEntity<Void> {
+        // nothing to do here since session already is refreshed by http request
+
+        return ResponseEntity.ok().build()
+    }
+
 }

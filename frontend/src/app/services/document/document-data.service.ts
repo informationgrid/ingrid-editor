@@ -10,7 +10,6 @@ import {DocumentAbstract} from '../../store/document/document.model';
 })
 export class DocumentDataService {
   private configuration: Configuration;
-  private titleFields: string;
 
   constructor(private http: HttpClient, configService: ConfigService) {
 
