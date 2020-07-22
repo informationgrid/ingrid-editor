@@ -93,11 +93,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             for (id in ids) {
 
                 // TODO: remove references to document!?
-                // TODO: remove all children recursively
+                documentService.deleteRecursively(id)
 
-                // String recordId = this.dbService.getRecordId(type, id);
-                // JsonNode dbDoc = this.dbService.find(type, recordId);
-                dbService.remove(DocumentWrapperType::class, id)
             }
             return ResponseEntity.ok().build()
         }
@@ -136,14 +133,13 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     private fun handleCopy(id: String, options: CopyOptions): JsonNode {
 
         val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
-        val isAddress = wrapper.get(FIELD_CATEGORY).asText() == DocumentCategory.ADDRESS.value
 
         val doc = documentService.getLatestDocument(wrapper, false, false)
 
         // add new parent to document
         doc.put(FIELD_PARENT, options.destId)
 
-        return createCopyAndHandleSubTree(doc, options, isAddress)
+        return createCopyAndHandleSubTree(doc, options, documentService.isAddress(wrapper))
 
     }
 
@@ -166,7 +162,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         // get all children of parent and save those recursively
         val parentId = parent.get(FIELD_ID).asText()
-        val docs = findChildrenDocs(origParentId, isAddress)
+        val docs = documentService.findChildrenDocs(origParentId, isAddress)
 
         docs.hits.forEach { doc: JsonNode ->
             val id = doc.get(FIELD_ID).asText()
@@ -213,7 +209,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         try {
             dbService.acquire(dbId).use {
-                val docs = findChildrenDocs(parentId, isAddress)
+                val docs = documentService.findChildrenDocs(parentId, isAddress)
                 val childDocs = docs.hits
                         .map { doc: JsonNode ->
                             val node = documentService.getLatestDocument(doc)
@@ -227,18 +223,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             throw ApiException("Error occured getting children of " + parentId + ": " + e.message)
         }
 
-    }
-
-    private fun findChildrenDocs(parentId: String?, isAddress: Boolean): FindAllResults {
-        val queryMap = listOf(
-                QueryField(FIELD_PARENT, parentId),
-                QueryField(FIELD_CATEGORY, if (isAddress) DocumentCategory.ADDRESS.value else DocumentCategory.DATA.value)
-        )
-        val findOptions = FindOptions(
-                queryType = QueryType.EXACT,
-                resolveReferences = true,
-                queryOperator = "AND")
-        return dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
     }
 
     @Throws(Exception::class)

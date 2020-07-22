@@ -5,14 +5,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.api.NotFoundException
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
+import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -62,6 +60,18 @@ class DocumentService : MapperService() {
         return if (countMap.containsKey(id)) {
             countMap[id]!! > 0
         } else false
+    }
+
+    fun findChildrenDocs(parentId: String?, isAddress: Boolean): FindAllResults {
+        val queryMap = listOf(
+                QueryField(FIELD_PARENT, parentId),
+                QueryField(FIELD_CATEGORY, if (isAddress) DocumentCategory.ADDRESS.value else DocumentCategory.DATA.value)
+        )
+        val findOptions = FindOptions(
+                queryType = QueryType.EXACT,
+                resolveReferences = true,
+                queryOperator = "AND")
+        return dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
     }
 
     fun getLatestDocument(doc: JsonNode, onlyPublished: Boolean = false, resolveLinks: Boolean = true): ObjectNode {
@@ -317,5 +327,20 @@ class DocumentService : MapperService() {
                         version)
             }
         }
+    }
+
+    fun deleteRecursively(id: String) {
+        val wrapper = getByDocumentId(id, DocumentWrapperType::class, true)
+
+        findChildrenDocs(id, isAddress(wrapper)).hits.forEach {
+            deleteRecursively(it.get(FIELD_ID).asText())
+        }
+
+        dbService.remove(DocumentType::class, id)
+        dbService.remove(DocumentWrapperType::class, id)
+    }
+
+    fun isAddress(wrapper: JsonNode?): Boolean {
+        return wrapper?.get(FIELD_CATEGORY)?.asText() == DocumentCategory.ADDRESS.value
     }
 }

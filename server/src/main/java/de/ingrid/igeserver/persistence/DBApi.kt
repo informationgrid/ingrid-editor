@@ -50,7 +50,8 @@ interface DBApi {
     fun <T : EntityType> save(type: KClass<T>, id: String?, data: String, version: String? = null): JsonNode
 
     /**
-     * Delete a document of the given type with the given record ID.
+     * Delete a document of the given type with the given record ID. If multiple documents with same ID exist
+     * then all will be removed. If none exists then a PersistenceException is thrown.
      */
     fun <T : EntityType> remove(type: KClass<T>, id: String): Boolean
 
