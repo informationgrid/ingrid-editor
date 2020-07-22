@@ -216,7 +216,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 val docs = documentService.findChildrenDocs(parentId, isAddress)
                 val childDocs = docs.hits
                         .map { doc: JsonNode ->
-                            val node = documentService.getLatestDocument(doc)
+                            val node = documentService.getLatestDocument(doc, resolveLinks = false)
                             node.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc, DocumentWrapperType::class))
                             node
                         }
@@ -296,7 +296,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             dbService.acquire(dbId).use {
                 while (true) {
                     val doc = documentService.getByDocumentId(parentId, DocumentWrapperType::class, false) ?: break
-                    val nextParentId = doc[FIELD_PARENT].textValue()
+                    val nextParentId = doc[FIELD_PARENT]?.textValue()
                     if (nextParentId != null) {
                         path.add(nextParentId)
                         parentId = nextParentId
@@ -306,7 +306,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 }
             }
         } catch (e: Exception) {
-            log.error(e)
+            log.error("Error getting path", e)
         }
 
         return ResponseEntity.ok(path.reversed())
