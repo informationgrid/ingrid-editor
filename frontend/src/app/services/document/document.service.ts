@@ -3,7 +3,7 @@ import {ModalService} from '../modal/modal.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
 import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
 import {DocumentAbstract} from '../../store/document/document.model';
@@ -75,7 +75,6 @@ export class DocumentService {
     return this.dataService.getChildren(parentId, isAddress)
       .pipe(
         map(docs => this.mapToDocumentAbstracts(docs, parentId)),
-        // map(docs => docs.sort((a, b) => a.title.localeCompare(b.title))),
         tap(docs => this.updateTreeStoreDocs(isAddress, parentId, docs))
       );
   }
@@ -272,13 +271,17 @@ export class DocumentService {
    * @param srcIDs contains the IDs of the documents to be moved
    * @param dest is the document, where the other docs to be copied will have as their parent
    * @param isAddress
+   * @param confirm
    * @returns {Observable<Response>}
    */
-  move(srcIDs: string[], dest: string, isAddress: boolean) {
-    return this.dataService.move(srcIDs, dest).pipe(
+  move(srcIDs: string[], dest: string, isAddress: boolean, confirm = false): Observable<any> {
+    const moveOperation = () => this.dataService.move(srcIDs, dest).pipe(
+      switchMap(() => this.getChildrenIfNotDoneYet(dest, isAddress)),
       tap(() => {
         this.messageService.sendInfo('Datensatz wurde verschoben');
 
+        // update internal store, but we had to make sure that the children of the destination folder
+        // were already loaded, otherwise the tree won't know if children have been loaded yet
         this.updateStoreAfterMove(srcIDs, dest, isAddress);
 
         this.datasetsChanged$.next({
@@ -289,6 +292,16 @@ export class DocumentService {
         });
       })
     );
+
+    if (confirm) {
+      return this.modalService.confirm('Verschieben bestätigen', 'Möchten Sie den Datensatz wirklich verschieben?')
+        .pipe(
+          filter(result => result),
+          tap(() => moveOperation().subscribe())
+        );
+    } else {
+      return moveOperation();
+    }
   }
 
   addExpandedNode(nodeId: string) {
@@ -391,5 +404,22 @@ export class DocumentService {
     store.update(parentId, {
       _hasChildren: true
     });
+  }
+
+  private getChildrenIfNotDoneYet(parent: string, isAddress: boolean): Observable<DocumentAbstract[]> {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+    const entities = store.getValue().entities;
+    const parentNode = entities[parent];
+
+    // if a parent says it has children, but none are found then these have not been loaded yet
+    // in that case load them so that the caller can continue after store has been updated
+    if (parentNode._hasChildren) {
+      const hasAnyChildren = Object.keys(entities).some(id => entities[id]._parent === parent);
+      if (!hasAnyChildren) {
+        return this.getChildren(parent, isAddress);
+      }
+    }
+
+    return of([]);
   }
 }

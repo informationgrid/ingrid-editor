@@ -373,9 +373,11 @@ export class TreeComponent implements OnInit, OnDestroy {
     return DocumentUtils.getStateClass(node.state, node.type);
   }
 
-  jumpToNode(id: string): Promise<void> {
+  jumpToNode(id: string, resetSelection = true): Promise<void> {
 
-    this.selectionModel.clear();
+    if (resetSelection) {
+      this.selectionModel.clear();
+    }
 
     if (id !== null) {
       // TODO: do not always request path, when not needed
@@ -388,19 +390,25 @@ export class TreeComponent implements OnInit, OnDestroy {
               if (node) {
                 const nodePath = this.getTitlesFromNodePath(node);
                 this.currentPath.next(nodePath);
-                this.activate.next([id]);
-                this.selectionModel.select(node);
+                if (resetSelection) {
+                  this.activate.next([id]);
+                  this.selectionModel.select(node);
+                }
                 this.scrollToActiveElement();
               }
             });
         } else {
-          this.activate.next(id ? [id] : []);
+          if (resetSelection) {
+            this.activate.next(id ? [id] : []);
+          }
           if (id) {
             const node = this.dataSource.getNode(id);
             if (node) {
               const nodePath = this.getTitlesFromNodePath(node);
               this.currentPath.next(nodePath);
-              this.selectionModel.select(node);
+              if (resetSelection) {
+                this.selectionModel.select(node);
+              }
               this.scrollToActiveElement();
             }
           }
@@ -511,13 +519,15 @@ export class TreeComponent implements OnInit, OnDestroy {
       }
     }
 
+    // jump to new location of moved node (since backend already moved node)
     const id = <string>srcDocIds[0];
-    await this.jumpToNode(id);
+    await this.jumpToNode(id, false);
 
     treeNodes.forEach(treeNode => this.dataSource.insertNodeInTree(treeNode, destination));
 
     // TODO: only set this if it's the currently loaded document
     this.activeNodeId = id;
+    this.activate.next([id]);
     this.updateNodePath(id);
   }
 

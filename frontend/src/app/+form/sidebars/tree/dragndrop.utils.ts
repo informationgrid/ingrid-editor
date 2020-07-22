@@ -38,7 +38,6 @@ export class DragNDropUtils {
   }
 
   handleDragStart(event, node) {
-    console.log('drag start', event);
     // Required by Firefox (https://stackoverflow.com/questions/19055264/why-doesnt-html5-drag-and-drop-work-in-firefox)
     event.dataTransfer.setData('foo', 'bar');
     // event.dataTransfer.setDragImage(this.emptyItem.nativeElement, 0, 0);
@@ -51,14 +50,12 @@ export class DragNDropUtils {
 
     // Handle node expand
     if (node === this.dragNodeExpandOverNode) {
-      console.log('try to expand node');
       if (this.dragNode !== node && !this.treeControl.isExpanded(node)) {
         if ((new Date().getTime() - this.dragNodeExpandOverTime) > this.dragNodeExpandOverWaitTimeMs) {
           this.treeControl.expand(node);
         }
       }
     } else {
-      console.log('mark node for drop');
       this.dragNodeExpandOverNode = node;
       this.dragNodeExpandOverTime = new Date().getTime();
     }

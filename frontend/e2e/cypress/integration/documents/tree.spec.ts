@@ -88,6 +88,15 @@ describe('Tree', () => {
 
     });
 
+    xit('should move a document into a not expanded node (other children should be there)', () => {
+      // when dragging a node onto a folder, the folder expands automatically after a few milliseconds
+
+      // when we drop the document before the folder is expanded, then it happened the new moved node was the only
+      // one under the parent folder
+
+      // make sure that after move, all other expected children are available under the destination folder
+    });
+
 
   });
 

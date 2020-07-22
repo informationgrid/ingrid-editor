@@ -301,6 +301,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   handleDrop(event: any) {
-    this.documentService.move(event.srcIds, event.destination, this.address).subscribe();
+    this.documentService.move(event.srcIds, event.destination, this.address, true).subscribe();
   }
 }
