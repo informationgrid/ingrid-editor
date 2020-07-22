@@ -115,7 +115,6 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatRadioModule, MatCheckboxModule,
     MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
     // IGE-Modules
-    // IgeFormModule, FormFieldsModule,
     routing, FormsModule, MatTabsModule, FormSharedModule, MatMenuModule, SharedDocumentItemModule
   ],
   providers: [

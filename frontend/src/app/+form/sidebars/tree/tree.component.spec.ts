@@ -108,14 +108,14 @@ describe('TreeComponent', () => {
     const doc = createDocument({id: '12345', _type: 'A', title: 'initial node', _state: 'W'});
     sendTreeEvent(UpdateType.New, [doc]);
     hasNumberOfTreeNodes(4);
-    nodeContainsTitle(2, 'initial node');
+    nodeContainsTitle(3, 'initial node');
 
     // update document with a new id
     const docUpdate = createDocument({id: '12345', _type: 'A', title: 'modified node', _state: 'W'});
     sendTreeEvent(UpdateType.Update, [docUpdate]);
 
     // new/modified node should be placed correctly (alphabetically)
-    nodeContainsTitle(2, 'modified node');
+    nodeContainsTitle(3, 'modified node');
 
   }));
 
@@ -208,8 +208,9 @@ describe('TreeComponent', () => {
   }));
 
   it('should expand a node and load remote children', fakeAsync(() => {
-    recentDocuments[0]._hasChildren = true;
-    db.initialData.and.returnValue(of(recentDocuments));
+    const modRececentDocs = [...recentDocuments];
+    modRececentDocs[0]._hasChildren = true;
+    db.initialData.and.returnValue(of(modRececentDocs));
     db.getChildren.and.returnValue(of(childDocuments1).pipe(delay(2000)));
     spectator.detectChanges();
 
@@ -246,7 +247,7 @@ describe('TreeComponent', () => {
 
   it('should initially expand to a deeply nested node', fakeAsync(() => {
 
-    db.getPath.and.returnValue(['1', '2', '3']);
+    db.getPath.and.returnValue(Promise.resolve(['1', '2', '3']));
     db.initialData.and.returnValue(of(deeplyNestedDocumentsRoot));
     db.getChildren.and.callFake(id => {
       switch (id) {
@@ -316,7 +317,7 @@ describe('TreeComponent', () => {
 
   }));
 
-  it('should not move a root node to root?', fakeAsync(() => {
+  it('should move a root node to root?', fakeAsync(() => {
 
     db.getPath.and.returnValue(Promise.resolve(['1']));
     db.initialData.and.returnValue(of(recentDocuments));
