@@ -407,16 +407,19 @@ export class DocumentService {
   }
 
   private getChildrenIfNotDoneYet(parent: string, isAddress: boolean): Observable<DocumentAbstract[]> {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
-    const entities = store.getValue().entities;
-    const parentNode = entities[parent];
 
-    // if a parent says it has children, but none are found then these have not been loaded yet
-    // in that case load them so that the caller can continue after store has been updated
-    if (parentNode._hasChildren) {
-      const hasAnyChildren = Object.keys(entities).some(id => entities[id]._parent === parent);
-      if (!hasAnyChildren) {
-        return this.getChildren(parent, isAddress);
+    if (parent !== null) {
+      const store = isAddress ? this.addressTreeStore : this.treeStore;
+      const entities = store.getValue().entities;
+      const parentNode = entities[parent];
+
+      // if a parent says it has children, but none are found then these have not been loaded yet
+      // in that case load them so that the caller can continue after store has been updated
+      if (parentNode._hasChildren) {
+        const hasAnyChildren = Object.keys(entities).some(id => entities[id]._parent === parent);
+        if (!hasAnyChildren) {
+          return this.getChildren(parent, isAddress);
+        }
       }
     }
 
