@@ -179,18 +179,20 @@ export class McloudDoctype extends BaseDoctype {
           key: 'mfundProject',
           type: 'input',
           className: 'flex-1',
-          wrappers: ['form-field'],
+          wrappers: ['form-field', 'inline-help'],
           templateOptions: {
             label: 'mFUND Projekt',
+            hasInlineContextHelp: true,
             appearance: 'outline'
           }
         }, {
           key: 'mfundFKZ',
           type: 'input',
           className: 'flex-1',
-          wrappers: ['form-field'],
+          wrappers: ['form-field', 'inline-help'],
           templateOptions: {
             label: 'mFUND Förderkennzeichen',
+            hasInlineContextHelp: true,
             appearance: 'outline'
           }
         }]
@@ -252,6 +254,7 @@ export class McloudDoctype extends BaseDoctype {
         }, {
           fieldGroupClassName: 'display-flex',
           wrappers: ['panel'],
+          key: 'timeSpan',
           templateOptions: {
             externalLabel: 'Zeitspanne'
           },

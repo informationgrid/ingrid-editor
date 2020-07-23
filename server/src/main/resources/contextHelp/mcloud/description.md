@@ -10,25 +10,4 @@ title: Beschreibung
 
 # Beschreibung
 
-Fachliche Beschreibung der Organisationseinheit/Fachaufgabe. Im Falle einer Organisationseinheit sind die wesentlichen Zuständigkeitsbereiche/Fachaufgaben aufzuführen und ggf. kurz zu erläutern. Hierbei sollten die umweltbezogenen Fachaufgaben der Organisationseinheit im Vordergrund stehen. Ist das Objekt zur Beschreibung einer einzelnen Fachaufgabe angelegt worden, so ist diese Fachaufgabe näher zu erläutern (rechtliche Grundlage, organisatorische Rahmenbedingungen, Zielsetzung, ggf. Überschneidungen mit anderen Fachaufgaben). Auf Verständlichkeit für fachfremde Dritte ist zu achten. Das Feld Beschreibungen muss ausgefüllt werden, damit das Objekt abgespeichert werden kann.
-
-
-# ISO Abbildung
-
-kurze, beschreibende Zusammenfassung des Inhalts der Ressource
-
-Domain: 25 (gmd:abstract)
-
-## Abbildung ISO 19139 XML
-
-```XML
-<MD_Metadata>
-  <identificationInfo>
-    <MD_DataIdentification>
-      <abstract>
-        <gco:CharacterString>DESCRIPTION</gco:CharacterString>
-     </abstract>
-    </MD_DataIdentification>
-  </identificationInfo>
-</MD_Metadata>
-```
+Fachliche Inhaltsangabe über den beschriebenen Datensatz. Hier soll in knapper Form beschrieben werden, um welche Art von Information es sich handelt (Geo-Daten, Schnittstelle zu Daten, etc.). Ferner sollten die Hauptinhalte der beschriebenen Daten genannt werden. Auf Verständlichkeit für fachfremde Dritte ist zu achten. Wenn der Inhalt nicht selbsterklärend ist, sollte hier eine ausführlichere Beschreibung des Datensatzes, inkl. Hinweisen, die für die Nachnutzung erforderlich sind (z.B. Erläuterung kryptische Spaltennamen in Tabellen) angebracht werden.<br /><br/>Das Feld „Beschreibungen“ muss ausgefüllt werden, damit der Datensatz veröffentlicht werden kann.

@@ -16,10 +16,19 @@ import {ContextHelpAbstract} from '../../store/context-help/context-help.model';
 export class ContextHelpService {
 
   private static contextDialogHeight = 400;
+  private static contextDialogWidth = 330;
 
   private configuration: Configuration;
 
-  private static getLeftPosition = (infoElement: HTMLElement) => `${infoElement.getBoundingClientRect().left}px`
+  // private static getLeftPosition = (infoElement: HTMLElement) => `${infoElement.getBoundingClientRect().left}px`
+  private static getLeftPosition(infoElement: HTMLElement) {
+    const leftPosition = window.innerWidth - infoElement.getBoundingClientRect().left;
+    const enoughSpaceBeneath = leftPosition > this.contextDialogWidth;
+
+    return enoughSpaceBeneath
+      ? `${infoElement.getBoundingClientRect().left}px`
+      : `${infoElement.getBoundingClientRect().left - this.contextDialogWidth}px`
+  }
 
   private static getTopPosition(infoElement: HTMLElement) {
     const topPosition = window.innerHeight - infoElement.getBoundingClientRect().top;
@@ -68,7 +77,7 @@ export class ContextHelpService {
       },
       autoFocus: false,
       height: ContextHelpService.contextDialogHeight + 'px',
-      width: '330px'
+      width: ContextHelpService.contextDialogWidth + 'px',
     });
 
   }
