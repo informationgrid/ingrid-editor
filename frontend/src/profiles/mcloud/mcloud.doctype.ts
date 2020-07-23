@@ -12,7 +12,6 @@ import {map} from 'rxjs/operators';
 })
 export class McloudDoctype extends BaseDoctype {
 
-  // must be same as DBClass
   id = 'mCloudDoc';
 
   label = 'mCLOUD';

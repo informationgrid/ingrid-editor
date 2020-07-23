@@ -1,8 +1,8 @@
 import {UvpDoctype} from './uvp/uvp.doctype';
-import {ProfileFolder} from './folder.doctype';
+import {FolderDoctype} from './folder/folder.doctype';
 import {Component, NgModule} from '@angular/core';
 import {ProfileService} from '../app/services/profile.service';
-import {ProfileAddress} from './address/address.doctype';
+import {AddressDoctype} from './address/address.doctype';
 
 @Component({
   template: 'dynamic component'
@@ -10,7 +10,7 @@ import {ProfileAddress} from './address/address.doctype';
 class UVPComponent {
 
   constructor(service: ProfileService,
-              folder: ProfileFolder, uvp: UvpDoctype, address: ProfileAddress) {
+              folder: FolderDoctype, uvp: UvpDoctype, address: AddressDoctype) {
 
     service.registerProfiles([folder, uvp, address]);
 
