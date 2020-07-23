@@ -83,7 +83,7 @@ export class ContextHelpService {
     if (contextHelp === undefined || !contextHelp.helpText) {
       return this.getHelptextFromBackend(profile, docType, fieldId)
         .pipe(
-          tap(help => this.contextHelpStore.add(help)),
+          tap(help => this.contextHelpStore.update(help)),
           map(help => help.helpText)
         )
     }
