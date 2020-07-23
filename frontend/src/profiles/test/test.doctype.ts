@@ -217,7 +217,8 @@ export class TestDoctype extends BaseDoctype {
         wrappers: ['panel'],
         templateOptions: {
           externalLabel: 'Image List',
-          asImage: true
+          asImage: true,
+          required: true
         },
         fieldArray: {
           fieldGroup: [
@@ -256,7 +257,8 @@ export class TestDoctype extends BaseDoctype {
         type: 'repeatDetailList',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Link List'
+          externalLabel: 'Link List',
+          required: true
         },
         fieldArray: {
           fieldGroup: [
