@@ -4,7 +4,11 @@
         <div *ngIf="to.asImage" mat-list-avatar class="avatar"
              [style.background-image]="'url(' + model[i].description + ')'">
         </div>
-        <div *ngIf="!to.asImage" mat-list-avatar class="avatar"></div>
+        <div *ngIf="!to.asImage" mat-list-avatar class="avatar" [ngSwitch]="model[i]._type">
+            <mat-icon *ngSwitchCase="'internal'">insert_link</mat-icon>
+            <mat-icon *ngSwitchCase="'external'">launch</mat-icon>
+            <mat-icon *ngSwitchCase="'download'">get_app</mat-icon>
+        </div>
 
         <div mat-line class="type">{{model[i].type}}</div>
         <div mat-line class="title">{{model[i].title}}</div>

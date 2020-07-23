@@ -18,14 +18,17 @@
       align-self: center;
       width: 48px;
       height: 48px;
-      background-color: $ige-background-bar;
-      background-repeat: no-repeat;
-      border-radius: 8px;
+      .mat-icon {
+        font-size: 48px;
+      }
     }
 
     &.image .avatar {
       width: 100px;
       height: 100px;
+      background-color: $ige-background-bar;
+      background-repeat: no-repeat;
+      border-radius: 8px;
       background-size: cover;
       background-position: center;
     }
