@@ -122,3 +122,17 @@ class M017_TestMigration : MigrationBase("0.17") {
 
 }
 ```
+# Creating a cron task
+
+If you want to create a task which is executed at a certain time also repeatable, then do the following:
+
+* go to `de/ingrid/igeserver/tasks`
+* create a new component annotated class
+* add a function with the following annotation
+`@Scheduled(cron = "\${cron.codelist.expression}")` 
+where "cron.codelist.expression" should be replaced by a property from the application.properties file.
+An example would look like this
+```properties
+# scheduler: second, minute, hour, day of month, month, day(s) of week
+cron.codelist.expression=0 */30 * * * *
+```
