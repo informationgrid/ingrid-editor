@@ -21,6 +21,7 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { CodelistsComponent } from './codelists/codelists.component';
 import {MatSelectModule} from '@angular/material/select';
 import {BehavioursModule} from './+behaviours/behaviours.module';
+import {SharedModule} from '../shared/shared.module';
 
 @NgModule( {
   imports: [
@@ -29,7 +30,7 @@ import {BehavioursModule} from './+behaviours/behaviours.module';
     FlexLayoutModule,
     MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
     CatalogDialogsModule,
-    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule
+    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule
   ],
   providers: [
     CatalogService

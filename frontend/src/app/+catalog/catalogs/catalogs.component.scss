@@ -3,6 +3,7 @@
 :host {
   display: flex;
   flex-direction: column;
+  padding: 24px;
 }
 
 .modal-body input {
@@ -21,4 +22,8 @@
 
 .selected {
   background-color: $ige-mark-color;
+}
+
+.header {
+  padding-bottom: 24px;
 }
