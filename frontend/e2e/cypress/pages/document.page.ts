@@ -127,4 +127,9 @@ export class DocumentPage extends BasePage {
     return cy.get('.cdk-overlay-pane').find('ige-document-list-item');
   }
 
+  static deleteLoadedNode() {
+    cy.get(DocumentPage.Toolbar['Delete']).click()
+    cy.get('[data-cy="confirm-dialog-confirm"]').click()
+  }
+
 }
