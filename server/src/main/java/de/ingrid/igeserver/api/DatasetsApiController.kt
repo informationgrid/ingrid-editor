@@ -74,11 +74,11 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 throw NotFoundException(HttpStatus.NOT_FOUND.value(), "The user does not seem to be assigned to any database.")
             }
 
-            if (revert) {
-                throw ApiException("Not implemented")
+            val resultDoc = if (revert) {
+                documentService.revertDocument(id);
+            } else {
+                documentService.updateDocument(id, data, publish)
             }
-
-            val resultDoc = documentService.updateDocument(id, data, publish)
 
             return ResponseEntity.ok(resultDoc)
         }

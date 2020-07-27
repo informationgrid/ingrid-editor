@@ -55,7 +55,7 @@ export class PublishPlugin extends Plugin {
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
       id: 'toolBtnRevert', tooltip: 'Auf letzte Veröffentlichung zurücksetzen', matSvgVariable: 'Aenderungen-verwerfen',
-      eventId: this.eventRevertId, pos: 90, active: false
+      eventId: this.eventRevertId, pos: 90, active: true
     });
 
     // add event handler for revert
@@ -90,7 +90,7 @@ export class PublishPlugin extends Plugin {
   }
 
   private publishWithData(data) {
-    this.storageService.publish(data)
+    this.storageService.publish(data, this.forAddress)
       .then(() => this.messageService.sendInfo('Das Dokument wurde veröffentlicht.'))
       .catch(error => this.handleSaveError(error));
   }
@@ -107,7 +107,7 @@ export class PublishPlugin extends Plugin {
     const message = 'Wollen Sie diesen Datensatz wirklich auf die letzte Veröffentlichungsversion zurücksetzen?';
     this.modalService.confirm('Zurücksetzen', message).subscribe(doRevert => {
       if (doRevert) {
-        this.storageService.revert(doc._id).subscribe(
+        this.storageService.revert(doc._id, this.forAddress).subscribe(
           () => {
           },
           err => {

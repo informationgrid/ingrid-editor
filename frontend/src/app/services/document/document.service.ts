@@ -161,6 +161,8 @@ export class DocumentService {
           }
         }
 
+        this.updateOpenedDocumentInTreestore(info, isAddress);
+
         // update state by adding node and updating parent info
         store.upsert(info.id, info);
         if (isNewDoc && parentId) {
@@ -181,7 +183,7 @@ export class DocumentService {
   }
 
   // FIXME: this should be added with a plugin
-  publish(data: IgeDocument): Promise<void> {
+  publish(data: IgeDocument, isAddress: boolean): Promise<void> {
     console.log('PUBLISHING');
     const errors: any = {errors: []};
 
@@ -198,6 +200,9 @@ export class DocumentService {
           const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
           this.afterSave$.next(json);
+
+          this.updateOpenedDocumentInTreestore(info, isAddress);
+
           this.datasetsChanged$.next({
             type: UpdateType.Update,
             data: [info]
@@ -225,10 +230,20 @@ export class DocumentService {
       });
   }
 
-  revert(id: string): Observable<any> {
+  revert(id: string, isAddress: boolean): Observable<any> {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
     return this.dataService.revert(id)
       .pipe(
-        tap((json: any) => this.datasetsChanged$.next({type: UpdateType.Update, data: [json]}))
+        map(json => this.mapToDocumentAbstracts([json], json._parent)),
+        map(json => {
+          json[0]._hasChildren = store.getValue().entities[id]._hasChildren;
+          return json
+        }),
+        tap(json => this.datasetsChanged$.next({type: UpdateType.Update, data: json})),
+        // tap(json => this.treeStore.update(id, json[0])),
+        // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
+        tap(json => this.reload$.next(id))
         // catchError( err => this.errorService.handle( err ) )
       );
   }

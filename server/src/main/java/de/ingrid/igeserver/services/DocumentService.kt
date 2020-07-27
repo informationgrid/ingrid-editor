@@ -78,6 +78,10 @@ class DocumentService : MapperService() {
 
         val docData: ObjectNode = getDocumentVersion(doc, onlyPublished)
 
+        return prepareDocument(docData, doc[FIELD_DOCUMENT_TYPE].asText(), onlyPublished, resolveLinks)
+    }
+
+    private fun prepareDocument(docData: ObjectNode, docType: String, onlyPublished: Boolean = false, resolveLinks: Boolean = true): ObjectNode {
         // set empty parent fields explicitly to null
         if (!docData.has(FIELD_PARENT)) {
             docData.put(FIELD_PARENT, null as String?)
@@ -86,7 +90,6 @@ class DocumentService : MapperService() {
 
         // get latest references from links
         if (resolveLinks) {
-            val docType = doc[FIELD_DOCUMENT_TYPE].asText()
             val refType = getDocumentType(docType)
 
             refType.mapLatestDocReference(docData, onlyPublished)
@@ -345,5 +348,31 @@ class DocumentService : MapperService() {
 
     fun isAddress(wrapper: JsonNode?): Boolean {
         return wrapper?.get(FIELD_CATEGORY)?.asText() == DocumentCategory.ADDRESS.value
+    }
+
+    fun revertDocument(id: String): JsonNode {
+
+        // remove draft version
+        val wrapper = getByDocumentId(id, DocumentWrapperType::class, false) as ObjectNode
+
+        val publishedId = wrapper.get(FIELD_PUBLISHED)
+
+        // check if draft and published field are filled
+        assert(!wrapper.get(FIELD_DRAFT).isNull && !publishedId.isNull)
+
+        wrapper.put(FIELD_DRAFT, null as String?)
+        val recordId = dbService.getRecordId(wrapper)
+//        val version = wrapper.get(FIELD_VERSION).asText()
+
+        dbService.save(DocumentWrapperType::class, recordId, wrapper.toString())
+
+        // return published version
+        val publishedDoc = dbService.find(DocumentType::class, publishedId.asText()) as ObjectNode
+
+        publishedDoc.put(FIELD_STATE, DocumentState.PUBLISHED.value)
+//        publishedDoc.put(FIELD_HAS_CHILDREN, determineHasChildren())
+
+        return prepareDocument(publishedDoc, wrapper.get(FIELD_DOCUMENT_TYPE).asText())
+
     }
 }
