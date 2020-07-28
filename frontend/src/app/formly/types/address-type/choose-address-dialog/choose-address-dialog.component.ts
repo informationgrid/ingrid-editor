@@ -8,8 +8,8 @@ import {CodelistService} from '../../../../services/codelist/codelist.service';
 import {map} from 'rxjs/operators';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AddressRef} from '../address-card/address-card.component';
-import {SessionQuery} from "../../../../store/session.query";
-import {DocumentService} from 'src/app/services/document/document.service';
+import {SessionQuery} from '../../../../store/session.query';
+import {DocumentService} from '../../../../services/document/document.service';
 
 export interface ChooseAddressResponse {
   type: string,

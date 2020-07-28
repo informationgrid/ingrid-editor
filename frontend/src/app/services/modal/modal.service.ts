@@ -22,7 +22,8 @@ export class ModalService {
 
   confirm(title: string, message: string): Observable<boolean> {
     return this.dialog.open(ConfirmDialogComponent, {
-      data: {title, message}
+      data: {title, message, acceptButtonText: 'Verschieben'},
+      maxWidth: 700
     }).afterClosed();
   }
 

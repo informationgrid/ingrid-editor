@@ -311,7 +311,13 @@ export class DocumentService {
     );
 
     if (confirm) {
-      return this.modalService.confirm('Verschieben bestätigen', 'Möchten Sie den Datensatz wirklich verschieben?')
+      const store = isAddress ? this.addressTreeStore : this.treeStore;
+      const destinationTitle = store.getValue().entities[dest].title;
+
+      return this.modalService.confirm(
+        'Verschieben bestätigen',
+        `Möchten Sie den Datensatz wirklich nach "${destinationTitle}" verschieben?`
+      )
         .pipe(
           filter(result => result),
           tap(() => moveOperation().subscribe())
