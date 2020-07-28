@@ -11,8 +11,49 @@
   overflow: auto;
 }
 
-.drop {
-  background-color: #ffc734 !important;
+// higher priority for drop class!
+.drop.drop.drop, .drop-root {
+  background-color: rgba(20, 255, 0, 0.15) !important;
+}
+.drop-root.drop-root.hover {
+  background-color: rgba(20, 255, 0, 0.25) !important;
+}
+
+.header-wrapper {
+  position: relative;
+
+
+  .drop-root {
+    padding: 24px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .zone {
+      height: 100%;
+      width: 100%;
+      border: 2px dashed #398C32;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(24, 24, 24, 0.6);
+      border-radius: 4px;
+
+      .mat-icon {
+        vertical-align: middle;
+        padding-bottom: 3px;
+
+        ::ng-deep .coloring {
+          fill: rgba(24, 24, 24, 0.6);
+        }
+      }
+    }
+  }
 }
 
 mat-tree-node {

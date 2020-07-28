@@ -6,7 +6,7 @@ import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
 import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
 import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
-import {DocumentAbstract} from '../../store/document/document.model';
+import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE, DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
 import {applyTransaction, arrayAdd, arrayRemove, transaction} from '@datorama/akita';
 import {MessageService} from '../message.service';
@@ -19,7 +19,7 @@ import {ServerSearchResult} from '../../models/server-search-result.model';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 import {StatisticResponse} from '../../models/statistic.model';
 import {IgeError} from '../../models/ige-error';
-import {SessionQuery} from "../../store/session.query";
+import {SessionQuery} from '../../store/session.query';
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -312,7 +312,13 @@ export class DocumentService {
 
     if (confirm) {
       const store = isAddress ? this.addressTreeStore : this.treeStore;
-      const destinationTitle = store.getValue().entities[dest].title;
+
+      let destinationTitle;
+      if (dest === null) {
+        destinationTitle = isAddress ? ADDRESS_ROOT_NODE.title : DOCUMENT_ROOT_NODE.title;
+      } else {
+        destinationTitle = store.getValue().entities[dest].title;
+      }
 
       return this.modalService.confirm(
         'Verschieben bestätigen',

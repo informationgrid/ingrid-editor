@@ -1,11 +1,23 @@
 <ng-container *ngIf="dataSource.data?.length > 0; else emptyNavigation">
 
-    <ige-tree-header *ngIf="showHeader"
-                     (reload)="reloadTree(true).subscribe()"
-                     [isAddress]="forAddresses"
-                     [showOptions]="showHeaderOptions"
-                     [showOnlyFolders]="showOnlyFolders"
-                     (open)="jumpToNode($event)"></ige-tree-header>
+    <div class="header-wrapper">
+        <ige-tree-header *ngIf="showHeader"
+                         [class.invisible]="isDragging"
+                         (reload)="reloadTree(true).subscribe()"
+                         [isAddress]="forAddresses"
+                         [showOptions]="showHeaderOptions"
+                         [showOnlyFolders]="showOnlyFolders"
+                         (open)="jumpToNode($event)"></ige-tree-header>
+
+        <div *ngIf="isDragging" class="drop-root"
+             [class.hover]="dragManager.dragNodeExpandOverNode === null"
+             (dragover)="dragManager.handleDragOver($event, null);"
+             (drop)="drop($event, null)">
+            <div class="zone">
+                <span>Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon> Daten</span>
+            </div>
+        </div>
+    </div>
 
 
     <!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
@@ -13,8 +25,8 @@
 
         <!-- This is the tree node template for leaf nodes -->
         <mat-tree-node *matTreeNodeDef="let node"
-                       [draggable]="enableDrag" (drop)="drop($event, node)" (dragstart)="dragManager.handleDragStart($event, node)"
-                       (dragend)="dragManager.handleDragEnd();"
+                       [draggable]="enableDrag" (drop)="drop($event, node)" (dragstart)="handleDragStart($event, node)"
+                       (dragend)="handleDragEnd();"
                        matTreeNodePadding matTreeNodePaddingIndent="24"
                        (click)="!disabledCondition(node) && selectNode(node, $event)"
                        [class.selected]="selectionModel.isSelected(node)"
@@ -31,8 +43,8 @@
 
         <!-- This is the tree node template for expandable nodes -->
         <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
-                       [draggable]="enableDrag" (drop)="drop($event, node)" (dragstart)="dragManager.handleDragStart($event, node)"
-                       (dragover)="dragManager.handleDragOver($event, node);" (dragend)="dragManager.handleDragEnd();"
+                       [draggable]="enableDrag" (drop)="drop($event, node)" (dragstart)="handleDragStart($event, node)"
+                       (dragover)="dragManager.handleDragOver($event, node);" (dragend)="handleDragEnd();"
                        matTreeNodePadding matTreeNodePaddingIndent="24"
                        (click)="handleFolderClick(node, $event)"
                        [class.drop]="dragManager.dragNodeExpandOverNode === node"
