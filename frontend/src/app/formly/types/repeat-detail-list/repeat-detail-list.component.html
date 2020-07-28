@@ -5,9 +5,12 @@
              [style.background-image]="'url(' + model[i].description + ')'">
         </div>
         <div *ngIf="!to.asImage" mat-list-avatar class="avatar" [ngSwitch]="model[i]._type">
-            <mat-icon *ngSwitchCase="'internal'">insert_link</mat-icon>
-            <mat-icon *ngSwitchCase="'external'">launch</mat-icon>
-            <mat-icon *ngSwitchCase="'download'">get_app</mat-icon>
+            <mat-icon *ngSwitchCase="'internal'" svgIcon="download-doc"></mat-icon>
+            <mat-icon *ngSwitchCase="'external'" svgIcon="download-link"></mat-icon>
+            <div *ngSwitchCase="'download'" class="download-image">
+                <mat-icon svgIcon="download-doc"></mat-icon>
+                <mat-icon svgIcon="download-arrow" class="overlay"></mat-icon>
+            </div>
         </div>
 
         <div mat-line class="type">{{model[i].type}}</div>

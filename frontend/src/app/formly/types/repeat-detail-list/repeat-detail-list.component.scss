@@ -20,7 +20,12 @@
       height: 48px;
       .mat-icon {
         font-size: 48px;
-        color: $ige-background-bar;
+        width: 48px;
+        height: 48px;
+
+        ::ng-deep .coloring {
+          fill: $ige-background-bar;
+        }
       }
     }
 
@@ -42,6 +47,21 @@
       font-size: 16px;
       font-weight: 500;
       padding-bottom: 4px;
+    }
+  }
+}
+
+.download-image {
+  display: inline-block;
+  position: relative;
+
+  .overlay {
+    position: absolute;
+    top: 16px;
+    left: 12px;
+
+    ::ng-deep .coloring {
+      fill: #333333 !important;
     }
   }
 }
