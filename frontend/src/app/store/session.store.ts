@@ -22,7 +22,7 @@ export function createInitialState(): SessionState {
     sessionTimeoutDuration: 1800,
     ui: {
       sidebarExpanded: true,
-      sidebarWidth: 15,
+      sidebarWidth: 30,
       showJSONView: false
     },
     latestDocuments: [],
