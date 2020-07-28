@@ -35,7 +35,7 @@ class M018_FixParents : MigrationBase("0.18") {
             var noWrapper = 0
 
             allDocs
-                    .filter { it.get(FIELD_PARENT).isNull || it.get(FIELD_PARENT).asText().isEmpty() }
+                    .filter { it.get(FIELD_PARENT) == null || it.get(FIELD_PARENT).asText().isEmpty() }
                     .forEach {
                         count++
                         try {
