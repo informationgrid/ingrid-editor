@@ -116,7 +116,7 @@ mat-tree-node {
   }
 
   &:hover {
-    background-color: darken(#FFFFFF, 5%) !important;
+    background-color: darken(#FFFFFF, 2.5%) !important;
   }
 
   &.active, &.rootNode.active, &:not(.rootNode).expanded + &.active:not(.rootNode) {
