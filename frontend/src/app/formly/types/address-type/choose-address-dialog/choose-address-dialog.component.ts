@@ -1,13 +1,15 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {DocumentAbstract} from '../../../../store/document/document.model';
-import {Observable, of, Subject} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {TreeNode} from '../../../../store/tree/tree-node.model';
 import {AddressTreeQuery} from '../../../../store/address-tree/address-tree.query';
 import {CodelistQuery} from '../../../../store/codelist/codelist.query';
 import {CodelistService} from '../../../../services/codelist/codelist.service';
 import {map} from 'rxjs/operators';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AddressRef} from '../address-card/address-card.component';
+import {SessionQuery} from "../../../../store/session.query";
+import {DocumentService} from 'src/app/services/document/document.service';
 
 export interface ChooseAddressResponse {
   type: string,
@@ -17,15 +19,15 @@ export interface ChooseAddressResponse {
 @Component({
   selector: 'ige-choose-address-dialog',
   templateUrl: './choose-address-dialog.component.html',
-  styleUrls: ['./choose-address-dialog.component.scss']
+  styleUrls: ['./choose-address-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChooseAddressDialogComponent implements OnInit {
-
-  recentAddresses: Observable<DocumentAbstract[]> = new Subject();
+export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   selection: DocumentAbstract;
   selectedType: string;
   selectedNode: Observable<string>;
+  recentAddresses$: Observable<DocumentAbstract[]>;
 
 
   types = this.codelistQuery.selectEntity('505').pipe(
@@ -39,27 +41,37 @@ export class ChooseAddressDialogComponent implements OnInit {
   constructor(private addressTreeQuery: AddressTreeQuery,
               @Inject(MAT_DIALOG_DATA) private address: AddressRef,
               private codelistQuery: CodelistQuery,
-              private codelistService: CodelistService) {
+              private codelistService: CodelistService,
+              private sessionQuery: SessionQuery,
+              private documentService: DocumentService,
+              private dlgRef: MatDialogRef<ChooseAddressDialogComponent>
+  ) {
   }
 
   ngOnInit(): void {
 
     this.updateModel(this.address);
     this.codelistService.byId('505');
+    this.recentAddresses$ = this.sessionQuery.recentAddresses$;
+
 
   }
 
-  updateAddress(addressId: string, tree: string) {
-
+  updateAddressTree(addressId: string) {
     this.selection = this.addressTreeQuery.getEntity(addressId);
-
   }
 
-  getResult(): ChooseAddressResponse {
-    return {
+  updateAddressList(address: DocumentAbstract) {
+    this.selection = address;
+  }
+
+  getResult(): void {
+    this.documentService.addToRecentAdresses(this.selection);
+
+    this.dlgRef.close({
       type: this.selectedType,
       address: this.selection
-    };
+    });
   }
 
   private updateModel(address: AddressRef) {
@@ -69,5 +81,9 @@ export class ChooseAddressDialogComponent implements OnInit {
 
     this.selectedType = address.type;
     this.selectedNode = of(address.ref._id);
+  }
+
+  ngOnDestroy(): void {
+
   }
 }

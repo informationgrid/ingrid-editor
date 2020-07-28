@@ -19,6 +19,7 @@ import {ServerSearchResult} from '../../models/server-search-result.model';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 import {StatisticResponse} from '../../models/statistic.model';
 import {IgeError} from '../../models/ige-error';
+import {SessionQuery} from "../../store/session.query";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -45,6 +46,7 @@ export class DocumentService {
               private messageService: MessageService,
               private profileService: ProfileService,
               private sessionStore: SessionStore,
+              private sessionQuery: SessionQuery,
               private treeStore: TreeStore,
               private addressTreeStore: AddressTreeStore) {
     this.configuration = configService.getConfiguration();
@@ -391,6 +393,19 @@ export class DocumentService {
       store.update(id, {_parent: parent});
     });
   }
+
+  public addToRecentAdresses(address: DocumentAbstract) {
+    let addresses = this.sessionQuery.recentAddresses.slice();
+    addresses = addresses.filter(ad => ad.id !== address.id)
+    addresses.unshift(address);
+
+    //only store 5 most recent addresses
+    if (addresses.length > 5) {
+      addresses = addresses.slice(0, 5);
+    }
+    this.sessionStore.update({recentAddresses: addresses})
+  }
+
 
   @transaction()
   private updateStoreAfterCopy(infos: DocumentAbstract[], parentId: string, isAddress: boolean) {
