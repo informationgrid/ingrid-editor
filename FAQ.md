@@ -136,3 +136,17 @@ An example would look like this
 # scheduler: second, minute, hour, day of month, month, day(s) of week
 cron.codelist.expression=0 */30 * * * *
 ```
+
+# Add a new SVG icon
+
+New Icons added to IGE-NG should be integrated the following way:
+
+* clean SVG file with online tool: https://jakearchibald.github.io/svgomg/
+* choose an appropriate symbol catalog in `src/assets/icons`
+* add SVG source content from online tool to symbol catalog
+* replace svg-tag with symbol-tag
+* add classes for easier styling to relevant svg-paths
+  * **coloring**: for changing the fill color
+  * **coloring-stroke**: for changing the stroke style
+  
+For easier editing you can format the file but remember to minimize it afterwards (IntelliJ: Select all + "Join Lines")
