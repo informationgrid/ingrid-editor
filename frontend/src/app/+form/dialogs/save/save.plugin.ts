@@ -60,7 +60,9 @@ export class SavePlugin extends Plugin {
       .subscribe(() => {
         const form: IgeDocument = this.getForm()?.value;
         if (form) {
-          this.save(form);
+          this.formToolbarService.setButtonState('toolBtnSave', false);
+          this.save(form)
+            .finally(() => this.formToolbarService.setButtonState('toolBtnSave', true));
         }
       });
 
