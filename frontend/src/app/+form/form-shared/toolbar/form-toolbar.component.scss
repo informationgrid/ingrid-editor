@@ -14,9 +14,8 @@
   padding-right: 16px;
 
   .drop-down {
-    width: 50px;
+    width: 56px;
     padding-left: 8px;
-    margin-right: 8px;
   }
 }
 
@@ -49,6 +48,7 @@
   }
 }
 
-.mat-icon-button:hover {
+.mat-icon-button:not([disabled]):hover {
   background-color: darken($ige-background-bar, 5%) !important;
+  border-radius: 4px;
 }
