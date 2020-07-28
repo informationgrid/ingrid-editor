@@ -165,7 +165,7 @@ class OrientDBDatabase : DBApi {
         return null
     }
 
-    override fun <T : EntityType> findAll(type: KClass<T>): List<JsonNode>? {
+    override fun <T : EntityType> findAll(type: KClass<T>): List<JsonNode> {
         val typeImpl = getEntityTypeImpl(type)
         val oDocuments: ORecordIteratorClass<ODocument>
         oDocuments = dBFromThread.browseClass(typeImpl.className)

@@ -139,8 +139,9 @@ export class DynamicDataSource {
       this.collapseNode(this.data[index], index);
 
       if (index !== -1) {
+        const level = this.data[index].level;
         this.data.splice(index, 1);
-        const updatedNode = this._database.mapDocumentsToTreeNodes([doc], this.data[index].level)[0];
+        const updatedNode = this._database.mapDocumentsToTreeNodes([doc], level)[0];
         this.insertNodeInTree(updatedNode, updatedNode.parent);
       }
     });
@@ -184,7 +185,9 @@ export class DynamicDataSource {
 
     // get all children nodes from destination
     let childrenNodes = [node];
+    const childrenNodesWithExpanded = [];
     for (let i = destNodeIndex + 1; i < this.data.length && this.data[i].level > destNodeLevel; i++) {
+      childrenNodesWithExpanded.push(this.data[i]);
       if (this.data[i].level === destNodeLevel + 1) {
         childrenNodes.push(this.data[i]);
       }
@@ -200,16 +203,16 @@ export class DynamicDataSource {
     let count = 0;
 
     if (atEnd) {
-      const predecessorId = childrenNodes[sortedMovedNodeIndex - 1]._id;
-      for (let i = destNodeIndex + 1; i < this.data.length && this.data[i]._id !== predecessorId; i++, count++) {
-      }
-      this.data.splice(destNodeIndex + 1 + count + 1, 0, node);
+
+      this.data.splice(destNodeIndex + 1 + childrenNodesWithExpanded.length, 0, node);
 
     } else {
+
       const successor = childrenNodes[sortedMovedNodeIndex + 1]._id;
       for (let i = destNodeIndex + 1; i < this.data.length && this.data[i]._id !== successor; i++, count++) {
       }
       this.data.splice(destNodeIndex + 1 + count, 0, node);
+
     }
 
     this.dataChange.next(this.data);

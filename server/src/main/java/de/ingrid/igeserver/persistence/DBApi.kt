@@ -31,7 +31,7 @@ interface DBApi {
     /**
      * Get all documents of the given type.
      */
-    fun <T : EntityType> findAll(type: KClass<T>): List<JsonNode?>?
+    fun <T : EntityType> findAll(type: KClass<T>): List<JsonNode>
 
     /**
      * Get all documents of the given type matching the given query.

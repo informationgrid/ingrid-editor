@@ -83,7 +83,8 @@ class DocumentService : MapperService() {
 
     private fun prepareDocument(docData: ObjectNode, docType: String, onlyPublished: Boolean = false, resolveLinks: Boolean = true): ObjectNode {
         // set empty parent fields explicitly to null
-        if (!docData.has(FIELD_PARENT)) {
+        val parent = docData.has(FIELD_PARENT)
+        if (!parent || docData.get(FIELD_PARENT).asText().isEmpty()) {
             docData.put(FIELD_PARENT, null as String?)
         }
         removeDBManagementFields(docData)
