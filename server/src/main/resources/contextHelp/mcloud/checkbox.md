@@ -3,12 +3,7 @@
 id: checkbox
 docType: TestDoc
 profile: mcloud
-
-# title, used as window title
-title: Checkbox mit Hilfe
 ---
-
-# Beschreibung
 
 Diese ist die Hilfe für eine Checkbox
 
