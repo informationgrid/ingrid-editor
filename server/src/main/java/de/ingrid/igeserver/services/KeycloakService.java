@@ -4,12 +4,14 @@ import de.ingrid.igeserver.model.User;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.keycloak.representations.idm.UserSessionRepresentation;
 import org.keycloak.util.JsonSerialization;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.naming.NoPermissionException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +41,10 @@ public class KeycloakService implements UserManagementService {
 
     private static class UserList extends ArrayList<UserRepresentation> {
         private static final long serialVersionUID = -5810388584187302144L;
+    }
+
+    private static class SessionList extends ArrayList<UserSessionRepresentation> {
+        private static final long serialVersionUID = -7540118001695537791L;
     }
 
     public List<User> getUsers(Principal principal) throws IOException, NoPermissionException {
@@ -78,8 +85,50 @@ public class KeycloakService implements UserManagementService {
 
     @Override
     public User getUser(Principal principal, String login) throws IOException {
+        return mapUser(this.getKeycloakUser(principal,login));
+    }
+
+    private UserRepresentation getKeycloakUser(Principal principal, String username) throws IOException {
         try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
-            HttpGet get = new HttpGet(keycloakUrl + "/admin/realms/" + keycloakRealm + "/users/" + login);
+            URIBuilder builder = new URIBuilder( keycloakUrl + "/admin/realms/" + keycloakRealm + "/users" );
+            builder.setParameter( "username", username );
+            HttpGet get = new HttpGet( builder.build() );
+            KeycloakAuthenticationToken keycloakPrincipal = (KeycloakAuthenticationToken) principal;
+            get.addHeader( "Authorization", "Bearer " + keycloakPrincipal.getAccount().getKeycloakSecurityContext().getTokenString() );
+
+            HttpResponse response = client.execute( get );
+
+            if (response.getStatusLine().getStatusCode() != 200) {
+                log.error( "Response was not ok! => " + response.getStatusLine().getStatusCode() );
+                throw new RuntimeException( "Keycloak User Request for username: " + username + " => " + response.getStatusLine().getReasonPhrase() );
+                // return null;
+            }
+
+            HttpEntity entity = response.getEntity();
+
+            try (InputStream is = entity.getContent()) {
+                // FIXME Make sure first match is always the right one
+                UserRepresentation user = JsonSerialization.readValue( is, UserList.class ).get( 0 );
+                return user;
+
+            } catch (Exception ex) {
+                log.error( "Could not get users from keycloak endpoint", ex );
+                throw ex;
+            }
+        } catch (URISyntaxException e){
+            log.error("Problem getting users from keycloak. Invalid URI.", e);
+            throw new RuntimeException( "Keycloak User Request for username: " + username );
+        } catch (Exception e) {
+            log.error("Problem getting users from keycloak", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public Date getLatestLoginDate(Principal principal, String login) throws IOException {
+        String userId = getKeycloakUser(principal, login ).getId();
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+            HttpGet get = new HttpGet(keycloakUrl + "/admin/realms/" + keycloakRealm + "/users/" + userId +"/sessions");
             KeycloakAuthenticationToken keycloakPrincipal = (KeycloakAuthenticationToken) principal;
             get.addHeader("Authorization", "Bearer " + keycloakPrincipal.getAccount().getKeycloakSecurityContext().getTokenString());
 
@@ -94,8 +143,11 @@ public class KeycloakService implements UserManagementService {
             HttpEntity entity = response.getEntity();
 
             try (InputStream is = entity.getContent()) {
-                UserRepresentation user = JsonSerialization.readValue(is, UserRepresentation.class);
-                return mapUser(user);
+                SessionList sessions = JsonSerialization.readValue(is, SessionList.class);
+                // TODO Figure out if latest (length-1) or oldest (0) session is the wanted value
+                //UserSessionRepresentation session = sessions.get( 0 );
+                UserSessionRepresentation session = sessions.get( sessions.size()-1 );
+                return new Date(session.getStart());
 
             } catch (Exception ex) {
                 log.error("Could not get users from keycloak endpoint", ex);

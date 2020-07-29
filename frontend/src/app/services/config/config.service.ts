@@ -22,7 +22,7 @@ export interface UserInfo {
   assignedCatalogs: any[];
   roles: string[];
   currentCatalog: Catalog;
-
+  lastLogin?: Date;
   version: Version;
 }
 

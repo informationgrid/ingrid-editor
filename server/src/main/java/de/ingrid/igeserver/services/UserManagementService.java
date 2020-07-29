@@ -6,11 +6,14 @@ import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import javax.naming.NoPermissionException;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 public interface UserManagementService {
     List<User> getUsers(Principal principal) throws IOException, NoPermissionException;
+
+    Date getLatestLoginDate(Principal principal, String login) throws IOException;
 
     User getUser(Principal principal, String login) throws IOException;
 

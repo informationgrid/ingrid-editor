@@ -15,7 +15,7 @@ import java.util.*;
 @Profile("dev")
 public class KeycloakMockService implements UserManagementService {
 
-    private Logger log = LogManager.getLogger(KeycloakMockService.class);
+    private final Logger log = LogManager.getLogger( KeycloakMockService.class );
 
     @Value("${dev.user.roles:}")
     String[] mockedUserRoles;
@@ -29,21 +29,24 @@ public class KeycloakMockService implements UserManagementService {
     @Value("${dev.user.lastName:}")
     String mockedLastName;
 
-
     public List<User> getUsers(Principal principal) {
 
         List<User> mockUsers = new ArrayList<>();
         User user = new User();
-        user.setLogin(mockedLogin);
-        user.setFirstName(mockedFirstName);
-        user.setLastName(mockedLastName);
-        mockUsers.add(user);
+        user.setLogin( mockedLogin );
+        user.setFirstName( mockedFirstName );
+        user.setLastName( mockedLastName );
+        mockUsers.add( user );
         return mockUsers;
+    }
+
+    @Override public Date getLatestLoginDate(Principal principal, String login) {
+        return new Date();
     }
 
     @Override
     public Set<String> getRoles(KeycloakAuthenticationToken principal) {
-        return new HashSet<>(Arrays.asList(mockedUserRoles));
+        return new HashSet<>( Arrays.asList( mockedUserRoles ) );
     }
 
     @Override
@@ -51,13 +54,12 @@ public class KeycloakMockService implements UserManagementService {
         return mockedFirstName + " " + mockedLastName;
     }
 
-
     @Override
     public User getUser(Principal principal, String login) {
         User user = new User();
-        user.setLogin("admin");
-        user.setFirstName("Mocked");
-        user.setLastName("User");
+        user.setLogin( "admin" );
+        user.setFirstName( "Mocked" );
+        user.setLastName( "User" );
         return user;
     }
 

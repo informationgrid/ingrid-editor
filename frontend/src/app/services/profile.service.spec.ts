@@ -18,7 +18,8 @@ describe('ProfileService', () => {
           name: 'x',
           roles: [],
           userId: 'y',
-          version: null
+          version: null,
+          lastLogin: new Date()
         })
       })
     ],

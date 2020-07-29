@@ -23,7 +23,8 @@ export class ConfigDataService {
           userId: json.userId,
           currentCatalog: json.currentCatalog ? new Catalog(json.currentCatalog) : {},
           catalogProfile: json.catalogProfile,
-          version: json.version
+          version: json.version,
+          lastLogin: new Date(json.lastLogin)
         } as UserInfo;
       })
       .catch((e: string) => {

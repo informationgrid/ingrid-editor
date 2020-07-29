@@ -42,6 +42,7 @@
             <div class="user-popup-header">
                 {{(userInfo | async).name}}
                 <p>Letzte Anmeldung:</p>
+                {{(userInfo | async).lastLogin}}
             </div>
             <span mat-menu-item [disableRipple]="true" (click)="$event.stopPropagation()">
                 Profile verwalten
