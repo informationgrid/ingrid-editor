@@ -1,7 +1,7 @@
 <mat-toolbar>
     <mat-toolbar-row>
         <ng-container *ngFor="let button of buttons_left">
-            <button *ngIf="!button.isSeparator && !button.menu" mat-icon-button
+            <button *ngIf="!button.isSeparator && !button.menu" mat-button class="standard-toolbar-button"
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     [matTooltip]="button.tooltip"
                     [matTooltipShowDelay]="1000"

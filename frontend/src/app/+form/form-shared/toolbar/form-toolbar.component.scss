@@ -25,6 +25,16 @@
   height: 36px
 }
 
+.standard-toolbar-button {
+  padding: 0;
+  min-width: 40px;
+  min-height: 40px;
+
+  &[disabled] {
+    opacity: 0.26;
+  }
+}
+
 .save-buttons button {
   text-transform: uppercase;
   letter-spacing: 1px;
