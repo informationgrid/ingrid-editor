@@ -320,10 +320,12 @@ export class DocumentService {
         destinationTitle = store.getValue().entities[dest].title;
       }
 
-      return this.modalService.confirm(
-        'Verschieben bestätigen',
-        `Möchten Sie den Datensatz wirklich nach "${destinationTitle}" verschieben?`
-      )
+      return this.modalService.confirmWith({
+        title: 'Verschieben bestätigen',
+        message: `Möchten Sie den folgenden Datensatz wirklich nach "${destinationTitle}" verschieben?`,
+        list: srcIDs.map(id => store.getValue().entities[id].title),
+        acceptButtonText: 'Verschieben'
+      })
         .pipe(
           filter(result => result),
           tap(() => moveOperation().subscribe())

@@ -79,7 +79,7 @@ export class PublishPlugin extends Plugin {
     if (formIsValid) {
       // show confirm dialog
       const message = 'Wollen Sie diesen Datensatz wirklich veröffentlichen?';
-      this.modalService.confirm('Veröffentlichen', message).subscribe(doPublish => {
+      this.modalService.confirm('Veröffentlichen', message, 'Veröffentlichen').subscribe(doPublish => {
         if (doPublish) {
           this.publishWithData(this.getFormValue());
         }

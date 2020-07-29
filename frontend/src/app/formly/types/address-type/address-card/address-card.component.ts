@@ -39,7 +39,8 @@ export class AddressCardComponent implements OnInit {
       console.error('Address reference is null!');
       // @ts-ignore
       this.content = {
-        title: 'Ungültige Adressreferenz'
+        title: 'Ungültige Adressreferenz',
+        iconState: ''
       }
       this.invalidAddressReference = true;
       return;
@@ -47,7 +48,7 @@ export class AddressCardComponent implements OnInit {
 
     this.content = {
       iconClass: this.profileService.getDocumentIcon(<IgeDocument>this.address.ref),
-      iconState: DocumentUtils.getStateClass(this.address.ref._state, this.address.ref._type),
+      iconState: DocumentUtils.getStateClass(this.address.ref._state, this.address.ref._type) ?? '',
       role: this.address.type,
       title: this.getTitle(this.address.ref),
       secondTitle: this.getSecondTitle(this.address.ref),
