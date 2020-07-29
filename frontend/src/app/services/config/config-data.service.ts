@@ -19,6 +19,8 @@ export class ConfigDataService {
         return {
           assignedCatalogs: json.assignedCatalogs,
           name: json.name,
+          firstName: json.firstName,
+          lastName: json.lastName,
           roles: json.roles,
           userId: json.userId,
           currentCatalog: json.currentCatalog ? new Catalog(json.currentCatalog) : {},
@@ -40,6 +42,8 @@ export class ConfigDataService {
         return {
           assignedCatalogs: [],
           name: undefined,
+          firstName: undefined,
+          lastName: undefined,
           roles: [],
           userId: undefined,
           catalogProfile: undefined,

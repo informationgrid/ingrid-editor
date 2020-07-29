@@ -35,25 +35,33 @@
         </span>
 
         <!--<span class="catalog-title">{{(userInfo|async).currentCatalog.label}}</span>-->
+        <span *ngIf="userInfo$ | async as userInfo">
         <button type="button" class="user-popup" mat-icon-button [matMenuTriggerFor]="menu">
-            {{getInitials((userInfo | async).name)}}
+            {{getInitials((userInfo$ | async))}}
         </button>
         <mat-menu #menu="matMenu" class="user-popup-menu">
             <div class="user-popup-header">
-                {{(userInfo | async).name}}
-                <p>Letzte Anmeldung:</p>
-                {{(userInfo | async).lastLogin}}
+                <mat-card-title>{{userInfo.firstName}}</mat-card-title>
+                <mat-card-title>{{userInfo.lastName}}</mat-card-title>
+                <p class="last-login">Letzte Anmeldung: {{userInfo.lastLogin | date}}</p>
             </div>
-            <span mat-menu-item [disableRipple]="true" (click)="$event.stopPropagation()">
-                Profile verwalten
+            <span mat-menu-item disabled [disableRipple]="true" (click)="$event.stopPropagation()">
+                <mat-icon svgIcon="german_flag-24px"></mat-icon>
+                Sprache: Deutsch
+                <mat-icon>arrow_drop_down</mat-icon>
             </span>
-            <span mat-menu-item [disableRipple]="true" (click)="$event.stopPropagation()">
-                Konfiguration
+            <span mat-menu-item disabled [disableRipple]="true" (click)="$event.stopPropagation()">
+                <mat-icon svgIcon="perm_identity-24px"></mat-icon>
+                Profil verwalten
+            </span>
+            <span mat-menu-item disabled [disableRipple]="true" (click)="$event.stopPropagation()">
+                <mat-icon svgIcon="baseline-settings-24px"></mat-icon>
+                Einstellungen
             </span>
             <div class="user-popup-footer">
-                <button mat-button class="upper-case" (click)="logout()">Abmelden</button>
+                <button mat-button color=primary class="upper-case" (click)="logout()">Abmelden</button>
             </div>
         </mat-menu>
-
+        </span>
     </mat-toolbar-row>
 </mat-toolbar>

@@ -18,6 +18,8 @@ export interface Version {
 export interface UserInfo {
   userId: string;
   name: string;
+  firstName: string;
+  lastName: string;
 
   assignedCatalogs: any[];
   roles: string[];

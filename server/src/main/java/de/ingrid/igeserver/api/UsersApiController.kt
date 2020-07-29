@@ -110,9 +110,11 @@ class UsersApiController : UsersApi {
     @Throws(ApiException::class)
     override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
 
-        val userId = authUtils.getUsernameFromPrincipal(principal)
-        val lastLogin = this.getLastLogin(principal, userId)
-        val dbIds = catalogService.getCatalogsForUser(userId)
+        val username = authUtils.getUsernameFromPrincipal(principal)
+        val user = keycloakService.getUser(principal, username)
+
+        val lastLogin = this.getLastLogin(principal, user.login)
+        val dbIds = catalogService.getCatalogsForUser(user.login)
         val dbIdsValid: MutableSet<String> = HashSet()
         val assignedCatalogs: MutableList<Catalog> = ArrayList()
         for (dbId in dbIds) {
@@ -125,15 +127,17 @@ class UsersApiController : UsersApi {
 
         // clean up catalog association if one was deleted?
         if (dbIds.size != assignedCatalogs.size) {
-            catalogService.setCatalogIdsForUser(userId, dbIdsValid)
+            catalogService.setCatalogIdsForUser(user.login, dbIdsValid)
         }
-        val currentCatalogForUser = catalogService.getCurrentCatalogForUser(userId)
+        val currentCatalogForUser = catalogService.getCurrentCatalogForUser(user.login)
         val catalog: Catalog? = catalogService.getCatalogById(currentCatalogForUser)
         val userInfo = UserInfo(
-                userId = userId,
-                name = keycloakService.getName(principal as KeycloakAuthenticationToken?),
+                userId = user.login,
+                name =  user.firstName + ' ' + user.lastName,
+                lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
+                firstName = user.firstName,
                 assignedCatalogs = assignedCatalogs,
-                roles = keycloakService.getRoles(principal),
+                roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?),
                 currentCatalog = catalog,
                 version = getVersion(),
                 lastLogin = lastLogin
