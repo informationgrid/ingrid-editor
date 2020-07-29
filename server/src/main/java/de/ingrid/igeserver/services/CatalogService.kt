@@ -160,14 +160,14 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
     }
 
     fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String?>?) {
-        this.setFieldForUser(userId, "catalogIds", assignedCatalogs as Object)
+        this.setFieldForUser(userId, "catalogIds", assignedCatalogs as Any)
     }
 
     fun setRecentLoginsForUser(userId: String, recentLogins: Array<Date>) {
-        this.setFieldForUser(userId, "recentLogins", recentLogins as Object)
+        this.setFieldForUser(userId, "recentLogins", recentLogins as Any)
     }
 
-    private fun setFieldForUser(userId: String, fieldId: String, fieldValue: Object) {
+    private fun setFieldForUser(userId: String, fieldId: String, fieldValue: Any) {
         val query = listOf(QueryField("userId", userId))
 
         try {
@@ -176,14 +176,21 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
                         queryType = QueryType.EXACT,
                         resolveReferences = false)
                 val list = dbService.findAll(UserInfoType::class, query, findOptions)
-                val catUserRef = list.hits[0] as ObjectNode
+                val catUserRef: ObjectNode
+                val id: String?
+                if (list.hits.isEmpty()) {
+                    catUserRef = ObjectMapper().createObjectNode()
+                    id = null
+                } else {
+                    catUserRef = list.hits[0] as ObjectNode
+                    id = dbService.getRecordId(catUserRef)
+                    removeDBManagementFields(catUserRef)
+                }
                 catUserRef.putPOJO(fieldId, fieldValue)
-                val id = dbService.getRecordId(catUserRef)
-                removeDBManagementFields(catUserRef)
                 dbService.save(UserInfoType::class, id, catUserRef.toString())
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            log.error("Error setting field in user table", e)
         }
     }
 

@@ -57,9 +57,9 @@ public class KeycloakMockService implements UserManagementService {
     @Override
     public User getUser(Principal principal, String login) {
         User user = new User();
-        user.setLogin( "admin" );
-        user.setFirstName( "Mocked" );
-        user.setLastName( "User" );
+        user.setLogin( mockedLogin );
+        user.setFirstName( mockedFirstName );
+        user.setLastName( mockedLastName );
         return user;
     }
 
