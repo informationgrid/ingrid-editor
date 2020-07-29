@@ -62,7 +62,7 @@ export class TestDoctype extends BaseDoctype {
         type: 'checkbox',
         wrappers: ['panel', 'form-field', 'inline-help'],
         templateOptions: {
-          externalLabel: 'Open Data',
+          externalLabel: 'Checkbox',
           label: 'Open Data',
           indeterminate: false,
           required: true
