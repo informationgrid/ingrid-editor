@@ -6,8 +6,6 @@ import com.mitchellbosecke.pebble.PebbleEngine
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel
-import de.ingrid.igeserver.services.DocumentService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.io.IOException
@@ -18,15 +16,14 @@ import java.io.Writer
 @Profile("mcloud")
 class PortalExporter : IgeExporter {
 
-    @Autowired
-    private lateinit var documentService: DocumentService
-
-    override fun getTypeInfo(): ExportTypeInfo {
-        return ExportTypeInfo(
-                "portal",
-                "mCLOUD Portal",
-                "Export der Daten für die weitere Verwendung im Liferay Portal und Exporter.")
-    }
+    override val typeInfo: ExportTypeInfo
+        get() {
+            return ExportTypeInfo(
+                    "portal",
+                    "mCLOUD Portal",
+                    "Export der Daten für die weitere Verwendung im Liferay Portal und Exporter.",
+                    listOf("mcloud"))
+        }
 
     @Throws(IOException::class)
     override fun run(jsonData: JsonNode): Any {
@@ -48,7 +45,7 @@ class PortalExporter : IgeExporter {
 
     private fun getMapFromObject(json: JsonNode): Map<String, Any> {
 
-        return mapOf( "model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
+        return mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
 
     }
 }

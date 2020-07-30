@@ -1,23 +1,19 @@
-package de.ingrid.igeserver.services;
+package de.ingrid.igeserver.services
 
-import de.ingrid.igeserver.model.User;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import de.ingrid.igeserver.model.User
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
+import java.io.IOException
+import java.security.Principal
+import java.util.*
+import javax.naming.NoPermissionException
 
-import javax.naming.NoPermissionException;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+interface UserManagementService {
+    @Throws(IOException::class, NoPermissionException::class)
+    fun getUsers(principal: Principal?): List<User>
 
-public interface UserManagementService {
-    List<User> getUsers(Principal principal) throws IOException, NoPermissionException;
+    fun getLatestLoginDate(principal: Principal?, login: String): Date
 
-    Date getLatestLoginDate(Principal principal, String login) throws IOException;
-
-    User getUser(Principal principal, String login) throws IOException;
-
-    Set<String> getRoles(KeycloakAuthenticationToken principal);
-
-    String getName(KeycloakAuthenticationToken principal);
+    fun getUser(principal: Principal?, login: String): User
+    fun getRoles(principal: KeycloakAuthenticationToken?): Set<String>?
+    fun getName(principal: KeycloakAuthenticationToken?): String?
 }

@@ -21,7 +21,7 @@ interface DBApi {
     /**
      * Get the database record ID of a document.
      */
-    fun getRecordId(doc: JsonNode): String
+    fun getRecordId(doc: JsonNode): String?
 
     /**
      * Get a document of the given type with the given record ID.

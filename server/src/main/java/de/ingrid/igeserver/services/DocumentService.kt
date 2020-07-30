@@ -116,7 +116,7 @@ class DocumentService : MapperService() {
         // create DocumentWrapper
         val recordId = dbService.getRecordId(result)
         val category = getCategoryFromType(data.get(FIELD_DOCUMENT_TYPE).asText(), address)
-        val documentWrapper = createDocumentWrapper(dataJson, recordId, category)
+        val documentWrapper = createDocumentWrapper(dataJson, recordId!!, category)
 
         // save wrapper
         val resultWrapper = dbService.save(DocumentWrapperType::class, null, documentWrapper.toString())
@@ -149,7 +149,7 @@ class DocumentService : MapperService() {
         val savedDoc = dbService.save(DocumentType::class, recordId, updatedDocument.toString(), version)
 
         val dbID = dbService.getRecordId(savedDoc)
-        saveDocumentWrapper(publish, docWrapper, dbID)
+        saveDocumentWrapper(publish, docWrapper, dbID!!)
         val wrapper = getByDocumentId(id, DocumentWrapperType::class, true)
         return getLatestDocument(wrapper!!)
     }

@@ -1,66 +1,58 @@
-package de.ingrid.igeserver.services;
+package de.ingrid.igeserver.services
 
-import de.ingrid.igeserver.model.User;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-
-import java.security.Principal;
-import java.util.*;
+import de.ingrid.igeserver.model.User
+import org.apache.logging.log4j.LogManager
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Service
+import java.security.Principal
+import java.util.*
 
 @Service
 @Profile("dev")
-public class KeycloakMockService implements UserManagementService {
+class KeycloakMockService : UserManagementService {
+    private val log = LogManager.getLogger(KeycloakMockService::class.java)
 
-    private final Logger log = LogManager.getLogger( KeycloakMockService.class );
+    @Value("\${dev.user.roles:}")
+    lateinit var mockedUserRoles: Array<String>
 
-    @Value("${dev.user.roles:}")
-    String[] mockedUserRoles;
+    @Value("\${dev.user.login:}")
+    lateinit var mockedLogin: String
 
-    @Value("${dev.user.login:}")
-    String mockedLogin;
+    @Value("\${dev.user.firstName:}")
+    lateinit var mockedFirstName: String
 
-    @Value("${dev.user.firstName:}")
-    String mockedFirstName;
+    @Value("\${dev.user.lastName:}")
+    lateinit var mockedLastName: String
 
-    @Value("${dev.user.lastName:}")
-    String mockedLastName;
-
-    public List<User> getUsers(Principal principal) {
-
-        List<User> mockUsers = new ArrayList<>();
-        User user = new User();
-        user.setLogin( mockedLogin );
-        user.setFirstName( mockedFirstName );
-        user.setLastName( mockedLastName );
-        mockUsers.add( user );
-        return mockUsers;
+    override fun getUsers(principal: Principal?): List<User> {
+        val mockUsers: MutableList<User> = ArrayList()
+        val user = User()
+        user.login = mockedLogin
+        user.firstName = mockedFirstName
+        user.lastName = mockedLastName
+        mockUsers.add(user)
+        return mockUsers
     }
 
-    @Override public Date getLatestLoginDate(Principal principal, String login) {
-        return new Date();
+    override fun getLatestLoginDate(principal: Principal?, login: String): Date {
+        return Date()
     }
 
-    @Override
-    public Set<String> getRoles(KeycloakAuthenticationToken principal) {
-        return new HashSet<>( Arrays.asList( mockedUserRoles ) );
+    override fun getRoles(principal: KeycloakAuthenticationToken?): Set<String> {
+        return HashSet(Arrays.asList(*mockedUserRoles))
     }
 
-    @Override
-    public String getName(KeycloakAuthenticationToken principal) {
-        return mockedFirstName + " " + mockedLastName;
+    override fun getName(principal: KeycloakAuthenticationToken?): String {
+        return "$mockedFirstName $mockedLastName"
     }
 
-    @Override
-    public User getUser(Principal principal, String login) {
-        User user = new User();
-        user.setLogin( mockedLogin );
-        user.setFirstName( mockedFirstName );
-        user.setLastName( mockedLastName );
-        return user;
+    override fun getUser(principal: Principal?, login: String): User {
+        val user = User()
+        user.login = mockedLogin
+        user.firstName = mockedFirstName
+        user.lastName = mockedLastName
+        return user
     }
-
 }

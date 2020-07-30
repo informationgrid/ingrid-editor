@@ -150,7 +150,7 @@ class UsersApiController : UsersApi {
         val lastLoginKeyCloak = keycloakService.getLatestLoginDate(principal, userId)
         var recentLogins = catalogService.getRecentLoginsForUser(userId)
         when (recentLogins.size) {
-            0 -> recentLogins.addAll(arrayOf(lastLoginKeyCloak, lastLoginKeyCloak))
+            0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
             1 -> recentLogins.add(lastLoginKeyCloak)
             else -> {
                 if (recentLogins.size > 2) {
@@ -272,14 +272,17 @@ class UsersApiController : UsersApi {
                         queryType = QueryType.EXACT,
                         resolveReferences = false)
                 val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
-                if (info.totalHits != 1L) {
-                    val message = "User is not defined or more than once in ${DBApi.DATABASE.USERS.dbName}-table: " + info.totalHits
-                    logger.error(message)
-                    throw ApiException(message)
-                }
-                val map = info.hits[0] as ObjectNode
-                map.put("currentCatalogId", catalogId)
-                dbService.save(CatalogInfoType::class, dbService.getRecordId(map), map.toString())
+                val objectNode = when (info.totalHits){
+                    0L -> ObjectMapper().createObjectNode()
+                    1L -> (info.hits[0] as ObjectNode)
+                    else -> {
+                        val message = "There are more than one User '$userId' defined in ${DBApi.DATABASE.USERS.dbName}-table"
+                        logger.error(message)
+                        throw ApiException(message)
+                    }
+                }.put("currentCatalogId", catalogId)
+
+                dbService.save(CatalogInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
                 return ResponseEntity.ok().build()
             }
         } catch (e: Exception) {

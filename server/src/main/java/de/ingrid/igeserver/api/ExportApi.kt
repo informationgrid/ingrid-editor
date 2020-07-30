@@ -26,12 +26,12 @@ interface ExportApi {
     @Throws(Exception::class)
     fun export(
             principal: Principal?,
-            @Parameter(description = "The dataset to be exported.", required = true) @RequestBody data: @Valid ExportRequestParameter): ResponseEntity<String>
+            @Parameter(description = "The dataset to be exported.", required = true) @RequestBody data: @Valid ExportRequestParameter): ResponseEntity<String?>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The supported types for export."), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @GetMapping(value = ["/export"], produces = ["application/json"])
     @Throws(Exception::class)
     fun exportTypes(
             principal: Principal?,
-            @Parameter(description = "The source catalog to get the supported export types from.") @RequestParam(value = "source") sourceCatalogType: String): ResponseEntity<List<ExportTypeInfo>>
+            @Parameter(description = "The catalog profile to get the supported export types from.") @RequestParam(value = "profile") profile: String): ResponseEntity<List<ExportTypeInfo>>
 }

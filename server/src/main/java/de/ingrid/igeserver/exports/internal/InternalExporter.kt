@@ -1,28 +1,23 @@
-package de.ingrid.igeserver.exports.internal;
+package de.ingrid.igeserver.exports.internal
 
-import com.fasterxml.jackson.databind.JsonNode;
-import de.ingrid.igeserver.exports.ExportTypeInfo;
-import de.ingrid.igeserver.exports.IgeExporter;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
+import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.exports.IgeExporter
+import org.springframework.stereotype.Service
+import java.io.IOException
 
 @Service
-public class InternalExporter implements IgeExporter {
+class InternalExporter : IgeExporter {
 
-    @Override
-    public ExportTypeInfo getTypeInfo() {
-        return new ExportTypeInfo("internal", "IGE", "Interne Datenstruktur des IGE");
-    }
+    override val typeInfo: ExportTypeInfo
+        get() = ExportTypeInfo("internal", "IGE", "Interne Datenstruktur des IGE", listOf())
 
-    @Override
-    public Object run(JsonNode jsonData) throws IOException {
+    override fun run(jsonData: JsonNode): Any {
         // TODO: profile must be added to the exported format!
-        return jsonData.toPrettyString();
+        return jsonData.toPrettyString()
     }
 
-    @Override
-    public String toString(Object exportedObject) {
-        return (String) exportedObject;
+    override fun toString(exportedObject: Any): String {
+        return exportedObject as String
     }
 }

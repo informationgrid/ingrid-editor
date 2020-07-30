@@ -1,19 +1,17 @@
-package de.ingrid.igeserver.exports.iso19115;
+package de.ingrid.igeserver.exports.iso19115
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*
 
-public class Iso {
-    public String uuid;
-    public String parentIdentifier;
-    public String title;
-    public String alternateTitle;
-    public String description;
-    public String hierarchyLevel;
-    public Date modified;
-    public List<UseConstraint> useLimitations = new ArrayList<>();
-    public List<UseConstraint> accessConstraints = new ArrayList<>();
-    public List<UseConstraint> useConstraints = new ArrayList<>();
-    public List<Thesaurus> thesauruses = new ArrayList<>();
-}
+data class Iso(
+        var uuid: String? = null,
+        var parentIdentifier: String? = null,
+        var title: String? = null,
+        var alternateTitle: String? = null,
+        var description: String? = null,
+        var hierarchyLevel: String? = null,
+        var modified: Date? = null,
+        var useLimitations: List<UseConstraint> = mutableListOf(),
+        var accessConstraints: List<UseConstraint> = mutableListOf(),
+        var useConstraints: List<UseConstraint> = mutableListOf(),
+        var thesauruses: List<Thesaurus>? = mutableListOf()
+)

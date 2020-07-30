@@ -1,107 +1,87 @@
-package de.ingrid.igeserver.exports.iso19115;
+package de.ingrid.igeserver.exports.iso19115
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import de.ingrid.igeserver.exports.ExportTypeInfo;
-import de.ingrid.igeserver.exports.IgeExporter;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.*;
+import com.fasterxml.jackson.databind.JsonNode
+import com.mitchellbosecke.pebble.PebbleEngine
+import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.exports.IgeExporter
+import org.springframework.stereotype.Service
+import java.io.IOException
+import java.io.StringWriter
+import java.io.Writer
+import java.util.*
 
 @Service
-public class Iso19115Exporter implements IgeExporter {
+class Iso19115Exporter : IgeExporter {
+    private val info: ExportTypeInfo
 
-    private final ExportTypeInfo info;
+    override val typeInfo: ExportTypeInfo
+        get() = info
 
-    public Iso19115Exporter() {
-        info = new ExportTypeInfo("iso19115", "ISO-19115", "Export in das ISO-19115 Format");
-    }
-
-    @Override
-    public ExportTypeInfo getTypeInfo() {
-        return info;
-    }
-
-    @Override
-    public Object run(JsonNode jsonData) throws IOException {
-        PebbleEngine engine = new PebbleEngine.Builder()
+    @Throws(IOException::class)
+    override fun run(jsonData: JsonNode): Any {
+        val engine = PebbleEngine.Builder()
                 .newLineTrimming(false)
-                .build();
-
-        PebbleTemplate compiledTemplate = engine.getTemplate("templates/export/iso/iso-base.peb");
-
-        Writer writer = new StringWriter();
-
-        compiledTemplate.evaluate(writer, createContext(jsonData));
-
-        return writer.toString().replaceAll("\\s+\n", "\n");
+                .build()
+        val compiledTemplate = engine.getTemplate("templates/export/iso/iso-base.peb")
+        val writer: Writer = StringWriter()
+        compiledTemplate.evaluate(writer, createContext(jsonData))
+        return writer.toString().replace("\\s+\n".toRegex(), "\n")
     }
 
-    @Override
-    public String toString(Object exportedObject) {
-        return null;
+    override fun toString(exportedObject: Any): String {
+        return ""
     }
 
-    private Map<String, Object> createContext(JsonNode json) {
-        Map<String, Object> context = new HashMap<>();
-
-        Iso iso = new Iso();
-        iso.title = getStringOf(json, "title");
-        iso.description = getStringOf(json, "description");
-        iso.uuid = "123456789";
-        iso.hierarchyLevel = "dataset";
-        iso.modified = new Date();
-        iso.useConstraints = getUseConstraints();
-        iso.thesauruses = getKeywords(json);
-
-        context.put("iso", iso);
-        return context;
+    private fun createContext(json: JsonNode): Map<String, Any> {
+        val context: MutableMap<String, Any> = HashMap()
+        val iso = Iso()
+        iso.title = getStringOf(json, "title")
+        iso.description = getStringOf(json, "description")
+        iso.uuid = "123456789"
+        iso.hierarchyLevel = "dataset"
+        iso.modified = Date()
+        iso.useConstraints = useConstraints
+        iso.thesauruses = getKeywords(json)
+        context["iso"] = iso
+        return context
     }
 
-    private List<Thesaurus> getKeywords(JsonNode json) {
-        JsonNode keywordsNode = json.get("keywords");
-        if (keywordsNode == null) {
-            return null;
-        }
-
-        List<Thesaurus> thesauruses = new ArrayList<>();
-        List<Keyword> keywords = new ArrayList<>();
-
-        Iterator<JsonNode> keywordsIterator = keywordsNode.iterator();
+    private fun getKeywords(json: JsonNode): List<Thesaurus>? {
+        val keywordsNode = json["keywords"] ?: return null
+        val thesauruses: MutableList<Thesaurus> = ArrayList()
+        val keywords: MutableList<Keyword> = ArrayList()
+        val keywordsIterator: Iterator<JsonNode> = keywordsNode.iterator()
         while (keywordsIterator.hasNext()) {
-            JsonNode next = keywordsIterator.next();
-            Keyword keyword = new Keyword(getStringOf(next, "name"), getStringOf(next, "link"));
-            keywords.add(keyword);
+            val next = keywordsIterator.next()
+            val keyword = Keyword(getStringOf(next, "name"), getStringOf(next, "link"))
+            keywords.add(keyword)
+        }
+        val thesaurus = Thesaurus("Mein Thesaurus", "10.10.1978", keywords)
+        thesauruses.add(thesaurus)
+        return thesauruses
+    }
+
+    private val useConstraints: List<UseConstraint>
+        get() {
+            val list: MutableList<UseConstraint> = ArrayList()
+            val useConstraint = UseConstraint()
+            useConstraint.data = "{title: 'xxx'}"
+            val otherConstraints = Arrays.asList("My use constraint", "Quellenvermerk: my source note")
+            useConstraint.otherConstraints = otherConstraints
+            list.add(useConstraint)
+            val useConstraint2 = UseConstraint()
+            useConstraint2.data = "{title: 'zzz'}"
+            val otherConstraints2 = listOf("My other constraint")
+            useConstraint2.otherConstraints = otherConstraints2
+            list.add(useConstraint2)
+            return list
         }
 
-        Thesaurus thesaurus = new Thesaurus("Mein Thesaurus", "10.10.1978", keywords);
-        thesauruses.add(thesaurus);
-
-        return thesauruses;
+    private fun getStringOf(node: JsonNode, key: String): String? {
+        return if (node.has(key)) node[key].asText() else null
     }
 
-    private List<UseConstraint> getUseConstraints() {
-        List<UseConstraint> list = new ArrayList<>();
-
-        UseConstraint useConstraint = new UseConstraint();
-        useConstraint.setData("{title: 'xxx'}");
-        List<String> otherConstraints = Arrays.asList("My use constraint", "Quellenvermerk: my source note");
-        useConstraint.setOtherConstraints(otherConstraints);
-        list.add(useConstraint);
-        UseConstraint useConstraint2 = new UseConstraint();
-        useConstraint2.setData("{title: 'zzz'}");
-        List<String> otherConstraints2 = Collections.singletonList("My other constraint");
-        useConstraint2.setOtherConstraints(otherConstraints2);
-        list.add(useConstraint2);
-
-        return list;
-    }
-
-    private String getStringOf(JsonNode node, String key) {
-        return node.has(key) ? node.get(key).asText() : null;
+    init {
+        info = ExportTypeInfo("iso19115", "ISO-19115", "Export in das ISO-19115 Format", listOf("ingrid"))
     }
 }

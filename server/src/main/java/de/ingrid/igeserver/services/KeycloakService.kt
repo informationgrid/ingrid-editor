@@ -1,190 +1,173 @@
-package de.ingrid.igeserver.services;
+package de.ingrid.igeserver.services
 
-import de.ingrid.igeserver.model.User;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.keycloak.representations.idm.UserRepresentation;
-import org.keycloak.representations.idm.UserSessionRepresentation;
-import org.keycloak.util.JsonSerialization;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-
-import javax.naming.NoPermissionException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import de.ingrid.igeserver.model.User
+import org.apache.http.HttpResponse
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.utils.URIBuilder
+import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.logging.log4j.LogManager
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
+import org.keycloak.representations.idm.UserRepresentation
+import org.keycloak.representations.idm.UserSessionRepresentation
+import org.keycloak.util.JsonSerialization
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Service
+import java.io.IOException
+import java.net.URISyntaxException
+import java.security.Principal
+import java.util.*
+import javax.naming.NoPermissionException
 
 @Service
 @Profile("!dev")
-public class KeycloakService implements UserManagementService {
+class KeycloakService : UserManagementService {
+    private val log = LogManager.getLogger(KeycloakService::class.java)
 
-    private Logger log = LogManager.getLogger(KeycloakService.class);
+    @Value("\${keycloak.auth-server-url}")
+    private val keycloakUrl: String? = null
 
-    @Value("${keycloak.auth-server-url}")
-    private String keycloakUrl;
+    @Value("\${keycloak.realm}")
+    private val keycloakRealm: String? = null
 
-    @Value("${keycloak.realm}")
-    private String keycloakRealm;
-
-    private static class UserList extends ArrayList<UserRepresentation> {
-        private static final long serialVersionUID = -5810388584187302144L;
+    private class UserList : ArrayList<UserRepresentation>() {
+        private val serialVersionUID = -5810388584187302144L
     }
 
-    private static class SessionList extends ArrayList<UserSessionRepresentation> {
-        private static final long serialVersionUID = -7540118001695537791L;
+    private class SessionList : ArrayList<UserSessionRepresentation>() {
+        private val serialVersionUID = -7540118001695537791L
     }
 
-    public List<User> getUsers(Principal principal) throws IOException, NoPermissionException {
-
-        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
-            HttpGet get = new HttpGet(keycloakUrl + "/admin/realms/" + keycloakRealm + "/users");
-            KeycloakAuthenticationToken keycloakPrincipal = (KeycloakAuthenticationToken) principal;
-            get.addHeader("Authorization", "Bearer " + keycloakPrincipal.getAccount().getKeycloakSecurityContext().getTokenString());
-
-            HttpResponse response = client.execute(get);
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode != 200) {
-                log.error("Response was not ok! => " + statusCode);
-                if (statusCode == 403) {
-                    throw new NoPermissionException("You have no permission to get users from keycloak: " + response.getStatusLine().getReasonPhrase());
-                } else {
-                    throw new RuntimeException("Error getting users from keycloak: " + response.getStatusLine().getReasonPhrase());
+    @Throws(IOException::class, NoPermissionException::class)
+    override fun getUsers(principal: Principal?): List<User> {
+        try {
+            HttpClientBuilder.create().build().use { client ->
+                val get = HttpGet("$keycloakUrl/admin/realms/$keycloakRealm/users")
+                val keycloakPrincipal = principal as KeycloakAuthenticationToken?
+                get.addHeader("Authorization", "Bearer " + keycloakPrincipal!!.account.keycloakSecurityContext.tokenString)
+                val response: HttpResponse = client.execute(get)
+                val statusCode = response.statusLine.statusCode
+                if (statusCode != 200) {
+                    log.error("Response was not ok! => $statusCode")
+                    if (statusCode == 403) {
+                        throw NoPermissionException("You have no permission to get users from keycloak: " + response.statusLine.reasonPhrase)
+                    } else {
+                        throw RuntimeException("Error getting users from keycloak: " + response.statusLine.reasonPhrase)
+                    }
+                }
+                val entity = response.entity
+                try {
+                    entity.content.use { `is` ->
+                        val users = JsonSerialization.readValue(`is`, UserList::class.java)
+                        return mapUsers(users)
+                    }
+                } catch (ex: Exception) {
+                    log.error("Could not get users from keycloak endpoint", ex)
+                    throw ex
                 }
             }
-
-            HttpEntity entity = response.getEntity();
-
-            try (InputStream is = entity.getContent()) {
-                UserList users = JsonSerialization.readValue(is, UserList.class);
-                return mapUsers(users);
-
-            } catch (Exception ex) {
-                log.error("Could not get users from keycloak endpoint", ex);
-                throw ex;
-            }
-
-        } catch (Exception e) {
-            log.error("Problem getting users from keycloak", e);
-            throw e;
+        } catch (e: Exception) {
+            log.error("Problem getting users from keycloak", e)
+            throw e
         }
     }
 
-    @Override
-    public User getUser(Principal principal, String login) throws IOException {
-        return mapUser(this.getKeycloakUser(principal,login));
+    @Throws(IOException::class)
+    override fun getUser(principal: Principal?, login: String): User {
+        return mapUser(getKeycloakUser(principal, login))
     }
 
-    private UserRepresentation getKeycloakUser(Principal principal, String username) throws IOException {
-        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
-            URIBuilder builder = new URIBuilder( keycloakUrl + "/admin/realms/" + keycloakRealm + "/users" );
-            builder.setParameter( "username", username );
-            HttpGet get = new HttpGet( builder.build() );
-            KeycloakAuthenticationToken keycloakPrincipal = (KeycloakAuthenticationToken) principal;
-            get.addHeader( "Authorization", "Bearer " + keycloakPrincipal.getAccount().getKeycloakSecurityContext().getTokenString() );
-
-            HttpResponse response = client.execute( get );
-
-            if (response.getStatusLine().getStatusCode() != 200) {
-                log.error( "Response was not ok! => " + response.getStatusLine().getStatusCode() );
-                throw new RuntimeException( "Keycloak User Request for username: " + username + " => " + response.getStatusLine().getReasonPhrase() );
-                // return null;
+    @Throws(IOException::class)
+    private fun getKeycloakUser(principal: Principal?, username: String): UserRepresentation {
+        try {
+            HttpClientBuilder.create().build().use { client ->
+                val builder = URIBuilder("$keycloakUrl/admin/realms/$keycloakRealm/users")
+                builder.setParameter("username", username)
+                val get = HttpGet(builder.build())
+                val keycloakPrincipal = principal as KeycloakAuthenticationToken?
+                get.addHeader("Authorization", "Bearer " + keycloakPrincipal!!.account.keycloakSecurityContext.tokenString)
+                val response: HttpResponse = client.execute(get)
+                if (response.statusLine.statusCode != 200) {
+                    log.error("Response was not ok! => " + response.statusLine.statusCode)
+                    throw RuntimeException("Keycloak User Request for username: " + username + " => " + response.statusLine.reasonPhrase)
+                    // return null;
+                }
+                val entity = response.entity
+                try {
+                    entity.content.use { `is` ->
+                        // FIXME Make sure first match is always the right one
+                        return JsonSerialization.readValue(`is`, UserList::class.java)[0]
+                    }
+                } catch (ex: Exception) {
+                    log.error("Could not get users from keycloak endpoint", ex)
+                    throw ex
+                }
             }
-
-            HttpEntity entity = response.getEntity();
-
-            try (InputStream is = entity.getContent()) {
-                // FIXME Make sure first match is always the right one
-                UserRepresentation user = JsonSerialization.readValue( is, UserList.class ).get( 0 );
-                return user;
-
-            } catch (Exception ex) {
-                log.error( "Could not get users from keycloak endpoint", ex );
-                throw ex;
-            }
-        } catch (URISyntaxException e){
-            log.error("Problem getting users from keycloak. Invalid URI.", e);
-            throw new RuntimeException( "Keycloak User Request for username: " + username );
-        } catch (Exception e) {
-            log.error("Problem getting users from keycloak", e);
-            throw e;
+        } catch (e: URISyntaxException) {
+            log.error("Problem getting users from keycloak. Invalid URI.", e)
+            throw RuntimeException("Keycloak User Request for username: $username")
+        } catch (e: Exception) {
+            log.error("Problem getting users from keycloak", e)
+            throw e
         }
     }
 
-    @Override
-    public Date getLatestLoginDate(Principal principal, String login) throws IOException {
-        String userId = getKeycloakUser(principal, login ).getId();
-        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
-            HttpGet get = new HttpGet(keycloakUrl + "/admin/realms/" + keycloakRealm + "/users/" + userId +"/sessions");
-            KeycloakAuthenticationToken keycloakPrincipal = (KeycloakAuthenticationToken) principal;
-            get.addHeader("Authorization", "Bearer " + keycloakPrincipal.getAccount().getKeycloakSecurityContext().getTokenString());
-
-            HttpResponse response = client.execute(get);
-
-            if (response.getStatusLine().getStatusCode() != 200) {
-                log.error("Response was not ok! => " + response.getStatusLine().getStatusCode());
-                throw new RuntimeException("Keycloak User Request for login: " + login + " => " + response.getStatusLine().getReasonPhrase());
-                // return null;
+    @Throws(IOException::class)
+    override fun getLatestLoginDate(principal: Principal?, login: String): Date {
+        val userId = getKeycloakUser(principal, login).id
+        try {
+            HttpClientBuilder.create().build().use { client ->
+                val get = HttpGet("$keycloakUrl/admin/realms/$keycloakRealm/users/$userId/sessions")
+                val keycloakPrincipal = principal as KeycloakAuthenticationToken?
+                get.addHeader("Authorization", "Bearer " + keycloakPrincipal!!.account.keycloakSecurityContext.tokenString)
+                val response: HttpResponse = client.execute(get)
+                if (response.statusLine.statusCode != 200) {
+                    log.error("Response was not ok! => " + response.statusLine.statusCode)
+                    throw RuntimeException("Keycloak User Request for login: " + login + " => " + response.statusLine.reasonPhrase)
+                    // return null;
+                }
+                val entity = response.entity
+                try {
+                    entity.content.use { `is` ->
+                        val sessions = JsonSerialization.readValue(`is`, SessionList::class.java)
+                        // TODO Figure out if latest (length-1) or oldest (0) session is the wanted value
+                        //UserSessionRepresentation session = sessions.get( 0 );
+                        val session = sessions[sessions.size - 1]
+                        return Date(session.start)
+                    }
+                } catch (ex: Exception) {
+                    log.error("Could not get users from keycloak endpoint", ex)
+                    throw ex
+                }
             }
-
-            HttpEntity entity = response.getEntity();
-
-            try (InputStream is = entity.getContent()) {
-                SessionList sessions = JsonSerialization.readValue(is, SessionList.class);
-                // TODO Figure out if latest (length-1) or oldest (0) session is the wanted value
-                //UserSessionRepresentation session = sessions.get( 0 );
-                UserSessionRepresentation session = sessions.get( sessions.size()-1 );
-                return new Date(session.getStart());
-
-            } catch (Exception ex) {
-                log.error("Could not get users from keycloak endpoint", ex);
-                throw ex;
-            }
-
-        } catch (Exception e) {
-            log.error("Problem getting users from keycloak", e);
-            throw e;
+        } catch (e: Exception) {
+            log.error("Problem getting users from keycloak", e)
+            throw e
         }
     }
 
-    private User mapUser(UserRepresentation user) {
-        User mappedUser = new User();
-        mappedUser.setLogin(user.getUsername());
-        mappedUser.setFirstName(user.getFirstName());
-        mappedUser.setLastName(user.getLastName());
-        mappedUser.setId(user.getId());
-        return mappedUser;
+    private fun mapUser(user: UserRepresentation): User {
+        val mappedUser = User()
+        mappedUser.login = user.username
+        mappedUser.firstName = user.firstName
+        mappedUser.lastName = user.lastName
+        mappedUser.id = user.id
+        return mappedUser
     }
 
-    private List<User> mapUsers(KeycloakService.UserList users) {
-        ArrayList<User> list = new ArrayList<>();
-
-        users.forEach(user -> list.add(mapUser(user)));
-        return list;
+    private fun mapUsers(users: UserList): List<User> {
+        return users.map { user -> mapUser(user) }
     }
 
-    public Set<String> getRoles(KeycloakAuthenticationToken principal) {
-        return principal == null ? null : principal.getAccount().getRoles();
+    override fun getRoles(principal: KeycloakAuthenticationToken?): Set<String>? {
+        return principal?.account?.roles
     }
 
-    public String getName(KeycloakAuthenticationToken principal) {
-        int expiration = principal == null ? -99 : principal.getAccount().getKeycloakSecurityContext().getToken().getExpiration();
-        int issuedAt = principal == null ? -99 : principal.getAccount().getKeycloakSecurityContext().getToken().getIssuedAt();
-        log.info("Expiration in: " + new Date(Long.parseLong(expiration + "000")));
-        log.info("Issued at: " + new Date(Long.parseLong(issuedAt + "000")));
-        return principal == null ? null : principal.getAccount().getKeycloakSecurityContext().getIdToken().getName();
+    override fun getName(principal: KeycloakAuthenticationToken?): String? {
+        val expiration = principal?.account?.keycloakSecurityContext?.token?.expiration ?: -99
+        val issuedAt = principal?.account?.keycloakSecurityContext?.token?.issuedAt ?: -99
+        log.info("Expiration in: " + Date((expiration.toString() + "000").toLong()))
+        log.info("Issued at: " + Date((issuedAt.toString() + "000").toLong()))
+        return principal?.account?.keycloakSecurityContext?.idToken?.name
     }
 }

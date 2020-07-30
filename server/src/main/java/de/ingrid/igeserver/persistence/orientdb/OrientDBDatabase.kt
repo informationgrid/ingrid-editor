@@ -147,8 +147,8 @@ class OrientDBDatabase : DBApi {
         return null
     }
 
-    override fun getRecordId(doc: JsonNode): String {
-        return doc[DB_ID].asText()
+    override fun getRecordId(doc: JsonNode): String? {
+        return doc[DB_ID]?.asText()
     }
 
     override fun <T : EntityType> find(type: KClass<T>, id: String?): JsonNode? {
@@ -325,6 +325,7 @@ class OrientDBDatabase : DBApi {
     }
 
     override fun acquire(name: String?): Closeable? {
+        assert(name != null)
         return acquireImpl(name)
     }
 

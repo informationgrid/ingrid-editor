@@ -1,15 +1,12 @@
-package de.ingrid.igeserver.services;
+package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode
 
-public interface ExportPostProcessors {
-	
-	enum TransformationType {
-		ISO
-	}
+interface ExportPostProcessors {
+    enum class TransformationType {
+        ISO
+    }
 
-	Object process(Object exportedDoc, JsonNode jsonData);
-	
-	TransformationType getType();
-	
+    fun process(exportedDoc: Any?, jsonData: JsonNode): Any?
+    val type: TransformationType
 }

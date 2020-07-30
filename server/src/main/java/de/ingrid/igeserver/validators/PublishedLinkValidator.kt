@@ -1,24 +1,16 @@
-package de.ingrid.igeserver.validators;
+package de.ingrid.igeserver.validators
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import de.ingrid.igeserver.annotations.PublishedLink
+import javax.validation.ConstraintValidator
+import javax.validation.ConstraintValidatorContext
 
-import de.ingrid.igeserver.annotations.PublishedLink;
-
-public class PublishedLinkValidator implements ConstraintValidator<PublishedLink, String> {
-
-    @SuppressWarnings("unused")
-    private String link;
-
-    @Override
-    public void initialize(PublishedLink constraintAnnotation) {
-        this.link = constraintAnnotation.value();
-
+class PublishedLinkValidator : ConstraintValidator<PublishedLink, String?> {
+    private var link: String? = null
+    override fun initialize(constraintAnnotation: PublishedLink) {
+        link = constraintAnnotation.value
     }
 
-    @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
-        return false;
+    override fun isValid(value: String?, context: ConstraintValidatorContext): Boolean {
+        return false
     }
-
 }
