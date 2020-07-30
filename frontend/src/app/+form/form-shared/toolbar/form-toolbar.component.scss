@@ -49,14 +49,16 @@
 
 .save-buttons {
 
+  button.btnPublish, button.btnPublishMore {
+    &:not([disabled]):hover {
+      background-color: lighten($ige-secondary, 5%);
+    }
+  }
+
   button.btnPublish {
     margin-right: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-
-    &:not([disabled]):hover {
-      background-color: lighten($ige-secondary, 5%);
-    }
 
     .mat-icon {
       margin-right: -10px;
