@@ -40,5 +40,6 @@ class ExportService {
 
     fun getExportTypes(profile: String): List<ExportTypeInfo> {
         return exporterFactory.typeInfos
+                .filter { it.profiles.isEmpty() || it.profiles.contains(profile) }
     }
 }

@@ -59,7 +59,7 @@ export class ImportExportService {
   }
 
   getExportTypes(): Observable<ExportTypeInfo[]> {
-    return this.http.get<ExportTypeInfo[]>( this.configuration.backendUrl + 'export?source=mcloud' );
+    return this.http.get<ExportTypeInfo[]>( this.configuration.backendUrl + 'export?profile=mcloud' );
   }
 
 }
