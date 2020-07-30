@@ -12,11 +12,12 @@
 }
 
 // higher priority for drop class!
-.drop.drop.drop, .drop-root {
-  background-color: rgba(20, 255, 0, 0.15) !important;
-}
-.drop-root.drop-root.hover {
-  background-color: rgba(20, 255, 0, 0.25) !important;
+.drop.drop.drop, .drop-root.drop-root.hover {
+  background-color: $ige-info-background !important;
+
+  .zone {
+    border: 2px dashed #398C32 !important;
+  }
 }
 
 .header-wrapper {
@@ -37,7 +38,7 @@
     .zone {
       height: 100%;
       width: 100%;
-      border: 2px dashed #398C32;
+      border: 2px dashed rgba(24, 24, 24, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
