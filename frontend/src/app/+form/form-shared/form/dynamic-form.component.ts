@@ -35,7 +35,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('scrollForm', {read: ElementRef}) scrollForm: ElementRef;
 
   activeId = new BehaviorSubject<string>(null);
-  sidebarWidth = 15;
+  sidebarWidth: number;
 
   fields: FormlyFieldConfig[] = [];
 
@@ -298,5 +298,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // FIXME: form does not seem to be updated automatically and we have to force update event
     this.formsManager.upsert(this.formStateName, this.form);
 
+  }
+
+  handleDrop(event: any) {
+    this.documentService.move(event.srcIds, event.destination, this.address, true).subscribe();
   }
 }

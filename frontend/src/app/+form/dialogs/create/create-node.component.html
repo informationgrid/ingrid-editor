@@ -68,7 +68,7 @@
 
                 </ng-template>
 
-                <div class="dlg-field-label dlg-create-place">Ort</div>
+                <div class="dlg-field-label dlg-create-place">Ordner</div>
                 <ige-breadcrumb [path]="path"
                                 [rootName]="rootTreeName"
                                 [selectable]="true"
@@ -77,7 +77,7 @@
             </div>
         </mat-tab>
 
-        <mat-tab label="Ort auswählen">
+        <mat-tab label="Ordner auswählen">
             <ige-destination-selection [forAddress]="forAddress"
                                        [initialSelectedId]="jumpedTreeNodeId"
                                        (choice)="updateParent($event)"></ige-destination-selection>

@@ -21,7 +21,7 @@ interface DBApi {
     /**
      * Get the database record ID of a document.
      */
-    fun getRecordId(doc: JsonNode): String
+    fun getRecordId(doc: JsonNode): String?
 
     /**
      * Get a document of the given type with the given record ID.
@@ -31,7 +31,7 @@ interface DBApi {
     /**
      * Get all documents of the given type.
      */
-    fun <T : EntityType> findAll(type: KClass<T>): List<JsonNode?>?
+    fun <T : EntityType> findAll(type: KClass<T>): List<JsonNode>
 
     /**
      * Get all documents of the given type matching the given query.
@@ -50,7 +50,8 @@ interface DBApi {
     fun <T : EntityType> save(type: KClass<T>, id: String?, data: String, version: String? = null): JsonNode
 
     /**
-     * Delete a document of the given type with the given record ID.
+     * Delete a document of the given type with the given record ID. If multiple documents with same ID exist
+     * then all will be removed. If none exists then a PersistenceException is thrown.
      */
     fun <T : EntityType> remove(type: KClass<T>, id: String): Boolean
 

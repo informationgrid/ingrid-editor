@@ -16,9 +16,12 @@ describe('ProfileService', () => {
           assignedCatalogs: [],
           currentCatalog: new Catalog({}),
           name: 'x',
+          firstName: 'x',
+          lastName: 'x',
           roles: [],
           userId: 'y',
-          version: null
+          version: null,
+          lastLogin: new Date()
         })
       })
     ],

@@ -1,5 +1,5 @@
-<div *ngIf="dataSource?.data?.length > 0" class="table-header" fxLayout data-cy="{{ to.externalLabel }}-header">
-    <ige-form-label [class.required]="to.required">
+<div *ngIf="dataSource?.data?.length > 0" class="table-header" [class.hasContextHelp]="to.hasContextHelp" [class.required]="to.required" fxLayout data-cy="{{ to.externalLabel }}-header">
+    <ige-form-label [hasContextHelp]="to.hasContextHelp" (contextHelp)="showContextHelp($event)">
         {{ to.externalLabel }}<span *ngIf="to.required">*</span>
     </ige-form-label>
     <div fxFlex></div>
@@ -94,8 +94,8 @@
     </mat-table>
 </div>
 
-<div class="display-flex">
-    <ige-form-label [class.required]="to.required">
+<div class="display-flex" [class.hasContextHelp]="to.hasContextHelp" [class.required]="to.required">
+    <ige-form-label [hasContextHelp]="to.hasContextHelp" (contextHelp)="showContextHelp($event)">
         <ng-container *ngIf="dataSource?.data?.length === 0">
             {{ to.externalLabel }}<span *ngIf="to.required">*</span>
         </ng-container>

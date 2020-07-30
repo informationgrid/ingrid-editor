@@ -3,7 +3,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ErrorDialogComponent} from '../../dialogs/error/error-dialog.component';
 import {IgeError} from '../../models/ige-error';
 import {Observable} from 'rxjs';
-import {ConfirmDialogComponent} from '../../dialogs/confirm/confirm-dialog.component';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
 
 interface DialogContent {
   message: string;
@@ -20,9 +20,18 @@ export class ModalService {
   constructor(private dialog: MatDialog, private ngZone: NgZone) {
   }
 
-  confirm(title: string, message: string): Observable<boolean> {
+  // DEPRECATED
+  confirm(title: string, message: string, confirmButtonText?: string): Observable<boolean> {
     return this.dialog.open(ConfirmDialogComponent, {
-      data: {title, message}
+      data: <ConfirmDialogData>{title, message, acceptButtonText: confirmButtonText},
+      maxWidth: 700
+    }).afterClosed();
+  }
+
+  confirmWith(options: ConfirmDialogData): Observable<boolean> {
+    return this.dialog.open(ConfirmDialogComponent, {
+      data: options,
+      maxWidth: 700
     }).afterClosed();
   }
 

@@ -147,8 +147,8 @@ class OrientDBDatabase : DBApi {
         return null
     }
 
-    override fun getRecordId(doc: JsonNode): String {
-        return doc[DB_ID].asText()
+    override fun getRecordId(doc: JsonNode): String? {
+        return doc[DB_ID]?.asText()
     }
 
     override fun <T : EntityType> find(type: KClass<T>, id: String?): JsonNode? {
@@ -165,7 +165,7 @@ class OrientDBDatabase : DBApi {
         return null
     }
 
-    override fun <T : EntityType> findAll(type: KClass<T>): List<JsonNode>? {
+    override fun <T : EntityType> findAll(type: KClass<T>): List<JsonNode> {
         val typeImpl = getEntityTypeImpl(type)
         val oDocuments: ORecordIteratorClass<ODocument>
         oDocuments = dBFromThread.browseClass(typeImpl.className)
@@ -249,17 +249,19 @@ class OrientDBDatabase : DBApi {
         }
     }
 
-    override fun <T : EntityType> remove(type:KClass<T>, id: String): Boolean {
+    override fun <T : EntityType> remove(type: KClass<T>, id: String): Boolean {
         val typeImpl = getEntityTypeImpl(type)
         val result = dBFromThread.command("select * from ${typeImpl.className} where _id = '$id'")
-        val record = result.elementStream()
-                .reduce { a: OElement, b: OElement -> throw IllegalStateException("Multiple elements: $a, $b") }
-                .orElseGet(null)
+
+        val count = result.elementStream()
+                .map { it.delete<ORecordAbstract>() }
+                .count()
+        log.debug("Deleted $count records of type: $type with _id: $id")
+
         result.close()
-        if (record == null) {
+        if (count == 0L) {
             throw PersistenceException("Document cannot be deleted, since it wasn't found: ${typeImpl.className} -> $id")
         }
-        record.delete<ORecordAbstract>()
         return true
     }
 
@@ -323,6 +325,7 @@ class OrientDBDatabase : DBApi {
     }
 
     override fun acquire(name: String?): Closeable? {
+        assert(name != null)
         return acquireImpl(name)
     }
 
@@ -333,8 +336,7 @@ class OrientDBDatabase : DBApi {
     override fun commitTransaction() {
         try {
             dBFromThread.commit()
-        }
-        catch (ex: OConcurrentModificationException) {
+        } catch (ex: OConcurrentModificationException) {
             val id = ex.rid.toString()
             throw ConcurrentModificationException("Could not update object with id $id. The database version is newer than the record version.",
                     id, ex.enhancedDatabaseVersion, ex.enhancedRecordVersion)
@@ -399,7 +401,7 @@ class OrientDBDatabase : DBApi {
         }
     }
 
-    private fun <T : EntityType> getEntityTypeImpl(type : KClass<T>): OrientDBEntityType {
+    private fun <T : EntityType> getEntityTypeImpl(type: KClass<T>): OrientDBEntityType {
         if (!::entityTypeMap.isInitialized) {
             if (!::entityTypes.isInitialized) {
                 throw PersistenceException("No entity types registered")

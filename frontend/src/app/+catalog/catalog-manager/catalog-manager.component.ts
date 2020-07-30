@@ -1,5 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {BehavioursComponent} from '../+behaviours/behaviours.component';
+import {ConfigService} from '../../services/config/config.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'ige-catalog-manager',
@@ -9,8 +11,20 @@ import {BehavioursComponent} from '../+behaviours/behaviours.component';
 export class CatalogManagerComponent implements OnInit {
 
   @ViewChild('behaviours') behaviourComponent: BehavioursComponent;
+  currentCatalog: string;
 
-  ngOnInit(): void {
+
+  constructor(private router: Router, private configService: ConfigService) {
   }
 
+  ngOnInit(): void {
+    this.configService.$userInfo
+      .subscribe(info => {
+        this.currentCatalog = info.currentCatalog.id;
+      });
+  }
+
+  gotoCatalogs() {
+    this.router.navigate(['/catalogs/manage'])
+  }
 }

@@ -29,12 +29,12 @@ class ExportApiController : ExportApi {
     private lateinit var catalogService: CatalogService
 
     @Throws(Exception::class)
-    override fun export(principal: Principal?, data: ExportRequestParameter): ResponseEntity<String> {
+    override fun export(principal: Principal?, data: ExportRequestParameter): ResponseEntity<String?> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         // TODO: option to export addresses too?
-        var result = ""
+        var result: String? = ""
         dbService.acquire(dbId).use {
             val doc = documentService.getByDocumentId(data.id, DocumentWrapperType::class, true)
             if (doc != null) {
@@ -47,7 +47,7 @@ class ExportApiController : ExportApi {
     }
 
     @Throws(Exception::class)
-    override fun exportTypes(principal: Principal?, sourceCatalogType: String): ResponseEntity<List<ExportTypeInfo>> {
-        return ResponseEntity.ok(exportService.exportTypes)
+    override fun exportTypes(principal: Principal?, profile: String): ResponseEntity<List<ExportTypeInfo>> {
+        return ResponseEntity.ok(exportService.getExportTypes(profile))
     }
 }

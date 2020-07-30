@@ -1,7 +1,7 @@
 <mat-toolbar>
     <mat-toolbar-row>
         <ng-container *ngFor="let button of buttons_left">
-            <button *ngIf="!button.isSeparator && !button.menu" mat-icon-button
+            <button *ngIf="!button.isSeparator && !button.menu" mat-button class="standard-toolbar-button"
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     [matTooltip]="button.tooltip"
                     [matTooltipShowDelay]="1000"
@@ -54,28 +54,27 @@
                     {{button.label}}
                 </button>
                 <ng-container *ngIf="button.label && button.isPrimary">
-                    <button class="btnPublish" mat-flat-button color="primary" [matMenuTriggerFor]="publishMenu"
-                            [attr.data-cy]="'toolbar_' + button.eventId"
+                    <button class="btnPublish" mat-flat-button color="primary"
+                            (click)="sendEvent(button.eventId)"
+                            [attr.data-cy]="'toolbar_publish_now'"
                             [matTooltip]="button.tooltip"
                             [matTooltipShowDelay]="1000"
-                            [disabled]="!button.active"
-                            (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
+                            [disabled]="!button.active">
                         {{button.label}}
+                    </button>
+                    <button class="btnPublishMore" mat-flat-button color="primary"
+                            [disabled]="!button.active"
+                            [attr.data-cy]="'toolbar_' + button.eventId"
+                            [matMenuTriggerFor]="publishMenu"
+                            (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
                         <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
                     </button>
 
                     <mat-menu #publishMenu="matMenu">
-                      <button mat-menu-item
-                              (click)="sendEvent(button.eventId)"
-                              [attr.data-cy]="'toolbar_publish_now'">
-                        <span>Jetzt veröffentlichen</span>
-                      </button>
                       <button mat-menu-item disabled [attr.data-cy]="'toolbar_publish_later'">
-    <!--                    <mat-icon>dialpad</mat-icon>-->
                         <span>Planen</span>
                       </button>
                       <button mat-menu-item disabled [attr.data-cy]="'toolbar_publish_revert'">
-    <!--                    <mat-icon>voicemail</mat-icon>-->
                         <span>Zurücknehmen</span>
                       </button>
                     </mat-menu>

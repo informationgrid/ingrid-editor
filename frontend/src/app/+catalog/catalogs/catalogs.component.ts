@@ -64,7 +64,8 @@ export class CatalogsComponent implements OnInit {
 
   chooseCatalog(id: string) {
     this.catalogService.switchCatalog(id).subscribe(() => {
-      window.location.reload();
+      // TODO: fix reload of sub page, which is not loaded correctly (catalogs/manage)
+      this.router.navigate(['/catalogs']).then(() => window.location.reload());
     });
   }
 
@@ -94,4 +95,7 @@ export class CatalogsComponent implements OnInit {
     });
   }
 
+  goBack() {
+    this.router.navigate(['/catalogs']);
+  }
 }

@@ -4,19 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
-import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
-import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.keycloak.representations.AccessTokenResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.info.BuildProperties
+import org.springframework.boot.info.GitProperties
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -25,8 +27,6 @@ import java.io.IOException
 import java.security.Principal
 import java.util.*
 import javax.naming.NoPermissionException
-import org.springframework.boot.info.BuildProperties;
-import org.springframework.boot.info.GitProperties
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -110,8 +110,11 @@ class UsersApiController : UsersApi {
     @Throws(ApiException::class)
     override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
 
-        val userId = authUtils.getUsernameFromPrincipal(principal)
-        val dbIds = catalogService.getCatalogsForUser(userId)
+        val username = authUtils.getUsernameFromPrincipal(principal)
+        val user = keycloakService.getUser(principal, username)
+
+        val lastLogin = this.getLastLogin(principal, user.login)
+        val dbIds = catalogService.getCatalogsForUser(user.login)
         val dbIdsValid: MutableSet<String> = HashSet()
         val assignedCatalogs: MutableList<Catalog> = ArrayList()
         for (dbId in dbIds) {
@@ -124,19 +127,45 @@ class UsersApiController : UsersApi {
 
         // clean up catalog association if one was deleted?
         if (dbIds.size != assignedCatalogs.size) {
-            catalogService.setCatalogIdsForUser(userId, dbIdsValid)
+            catalogService.setCatalogIdsForUser(user.login, dbIdsValid)
         }
-        val currentCatalogForUser = catalogService.getCurrentCatalogForUser(userId)
+        val currentCatalogForUser = catalogService.getCurrentCatalogForUser(user.login)
         val catalog: Catalog? = catalogService.getCatalogById(currentCatalogForUser)
         val userInfo = UserInfo(
-                userId = userId,
-                name = keycloakService.getName(principal as KeycloakAuthenticationToken?),
+                userId = user.login,
+                name =  user.firstName + ' ' + user.lastName,
+                lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
+                firstName = user.firstName,
                 assignedCatalogs = assignedCatalogs,
-                roles = keycloakService.getRoles(principal),
+                roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?),
                 currentCatalog = catalog,
-                version = getVersion())
+                version = getVersion(),
+                lastLogin = lastLogin
+        )
         return ResponseEntity.ok(userInfo)
 
+    }
+
+    private fun getLastLogin(principal: Principal?, userId: String): Date {
+        val lastLoginKeyCloak = keycloakService.getLatestLoginDate(principal, userId)
+        var recentLogins = catalogService.getRecentLoginsForUser(userId)
+        when (recentLogins.size) {
+            0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
+            1 -> recentLogins.add(lastLoginKeyCloak)
+            else -> {
+                if (recentLogins.size > 2) {
+                    logger.warn("More than two recent logins received! Using last 2 values")
+                    recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
+                }
+
+                //only update if most recent dates are not equal
+                if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
+                    recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
+                }
+            }
+        }
+        catalogService.setRecentLoginsForUser(userId, recentLogins.toTypedArray())
+        return recentLogins[0]
     }
 
     private fun getVersion(): Version {
@@ -173,7 +202,7 @@ class UsersApiController : UsersApi {
     @Throws(Exception::class)
     private fun addOrUpdateCatalogAdmin(catalogName: String, userId: String) {
 
-        val query = listOf(QueryField("userId", userId));
+        val query = listOf(QueryField("userId", userId))
         val findOptions = FindOptions(
                 queryType = QueryType.EXACT,
                 resolveReferences = false)
@@ -243,14 +272,17 @@ class UsersApiController : UsersApi {
                         queryType = QueryType.EXACT,
                         resolveReferences = false)
                 val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
-                if (info.totalHits != 1L) {
-                    val message = "User is not defined or more than once in ${DBApi.DATABASE.USERS.dbName}-table: " + info.totalHits
-                    logger.error(message)
-                    throw ApiException(message)
-                }
-                val map = info.hits[0] as ObjectNode
-                map.put("currentCatalogId", catalogId)
-                dbService.save(CatalogInfoType::class, dbService.getRecordId(map), map.toString())
+                val objectNode = when (info.totalHits){
+                    0L -> ObjectMapper().createObjectNode()
+                    1L -> (info.hits[0] as ObjectNode)
+                    else -> {
+                        val message = "There are more than one User '$userId' defined in ${DBApi.DATABASE.USERS.dbName}-table"
+                        logger.error(message)
+                        throw ApiException(message)
+                    }
+                }.put("currentCatalogId", catalogId)
+
+                dbService.save(CatalogInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
                 return ResponseEntity.ok().build()
             }
         } catch (e: Exception) {
@@ -258,6 +290,12 @@ class UsersApiController : UsersApi {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
 
+    }
+
+    override fun refreshSession(): ResponseEntity<Void> {
+        // nothing to do here since session already is refreshed by http request
+
+        return ResponseEntity.ok().build()
     }
 
 }

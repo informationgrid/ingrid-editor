@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Router} from '@angular/router';
 import {TreeStore} from '../../store/tree/tree.store';
 import {BehaviorSubject, Subject} from 'rxjs';
@@ -16,6 +16,8 @@ export class SidebarComponent implements OnInit {
 
   @Input() address = false;
   @Input() activeId: Subject<string>;
+
+  @Output() dropped = new EventEmitter();
 
   updateTree = new Subject<TreeAction[]>();
   activeTreeNode = new BehaviorSubject<string>(null);

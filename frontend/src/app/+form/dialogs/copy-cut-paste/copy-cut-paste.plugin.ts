@@ -56,8 +56,8 @@ export class CopyCutPastePlugin extends Plugin {
         active: false,
         menu: [
           {eventId: 'COPY', label: 'Kopieren'},
-          {eventId: 'CUT', label: 'Verschieben (inkl. Teilbaum)'},
-          {eventId: 'COPYTREE', label: 'Mit Teilbaum kopieren'}
+          {eventId: 'COPYTREE', label: 'Kopieren mit Teilbaum'},
+          {eventId: 'CUT', label: 'Verschieben (inkl. Teilbaum)'}
         ]
       }
     ];
@@ -112,7 +112,7 @@ export class CopyCutPastePlugin extends Plugin {
 
     // remove last remembered copied documents
     this.showDialog('Kopieren').pipe(
-      switchMap(result => this.documentService.copy(this.getSelectedDatasets(), result.selection.parent, includeTree))
+      switchMap(result => this.documentService.copy(this.getSelectedDatasets(), result.selection.parent, includeTree, this.forAddress))
     ).subscribe();
 
   }
@@ -121,7 +121,7 @@ export class CopyCutPastePlugin extends Plugin {
 
     // remove last remembered copied documents
     this.showDialog('Verschieben').pipe(
-      switchMap(result => this.documentService.move(this.getSelectedDatasets(), result.selection.parent))
+      switchMap(result => this.documentService.move(this.getSelectedDatasets(), result.selection.parent, this.forAddress))
     ).subscribe();
 
   }
@@ -129,6 +129,7 @@ export class CopyCutPastePlugin extends Plugin {
   showDialog(title: string): Observable<any> {
     return this.dialog.open(PasteDialogComponent, {
       minWidth: '400px',
+      maxWidth: '600px',
       data: {
         titleText: title,
         buttonText: 'Einfügen',

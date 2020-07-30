@@ -1,7 +1,7 @@
 import {TreeComponent} from './tree.component';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatIconModule} from '@angular/material/icon';
+import {MatIconModule, MatIconRegistry} from '@angular/material/icon';
 import {MatTreeModule} from '@angular/material/tree';
 import {createComponentFactory, Spectator, SpyObject} from '@ngneat/spectator';
 import {
@@ -28,6 +28,10 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 import {EmptyNavigationComponent} from './empty-navigation/empty-navigation.component';
 import {TreeNode} from '../../../store/tree/tree-node.model';
 import {ReactiveFormsModule} from '@angular/forms';
+import {FakeMatIconRegistry} from '@angular/material/icon/testing';
+import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
+import {TreeStore} from '../../../store/tree/tree.store';
+import {TreeQuery} from '../../../store/tree/tree.query';
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(doc =>
@@ -46,6 +50,9 @@ describe('TreeComponent', () => {
     imports: [MatTreeModule, MatIconModule, MatDialogModule, MatButtonModule, MatSlideToggleModule, ReactiveFormsModule,
       MatFormFieldModule, MatAutocompleteModule, FormFieldsModule],
     declarations: [TreeHeaderComponent, EmptyNavigationComponent],
+    providers: [
+      {provide: MatIconRegistry, useClass: FakeMatIconRegistry}
+    ],
     componentMocks: [DynamicDatabase],
     detectChanges: false
   });
@@ -101,14 +108,14 @@ describe('TreeComponent', () => {
     const doc = createDocument({id: '12345', _type: 'A', title: 'initial node', _state: 'W'});
     sendTreeEvent(UpdateType.New, [doc]);
     hasNumberOfTreeNodes(4);
-    nodeContainsTitle(2, 'initial node');
+    nodeContainsTitle(3, 'initial node');
 
     // update document with a new id
     const docUpdate = createDocument({id: '12345', _type: 'A', title: 'modified node', _state: 'W'});
     sendTreeEvent(UpdateType.Update, [docUpdate]);
 
     // new/modified node should be placed correctly (alphabetically)
-    nodeContainsTitle(2, 'modified node');
+    nodeContainsTitle(3, 'modified node');
 
   }));
 
@@ -201,8 +208,9 @@ describe('TreeComponent', () => {
   }));
 
   it('should expand a node and load remote children', fakeAsync(() => {
-    recentDocuments[0]._hasChildren = true;
-    db.initialData.and.returnValue(of(recentDocuments));
+    const modRececentDocs = [...recentDocuments];
+    modRececentDocs[0]._hasChildren = true;
+    db.initialData.and.returnValue(of(modRececentDocs));
     db.getChildren.and.returnValue(of(childDocuments1).pipe(delay(2000)));
     spectator.detectChanges();
 
@@ -239,7 +247,7 @@ describe('TreeComponent', () => {
 
   it('should initially expand to a deeply nested node', fakeAsync(() => {
 
-    db.getPath.and.returnValue(['1', '2', '3']);
+    db.getPath.and.returnValue(Promise.resolve(['1', '2', '3']));
     db.initialData.and.returnValue(of(deeplyNestedDocumentsRoot));
     db.getChildren.and.callFake(id => {
       switch (id) {
@@ -279,7 +287,21 @@ describe('TreeComponent', () => {
 
   }));
 
-  xit('should copy a root node to root', fakeAsync(() => {
+  it('should copy a root node to root', fakeAsync(() => {
+
+    db.initialData.and.returnValue(of(recentDocuments));
+    spectator.detectChanges();
+
+    hasNumberOfTreeNodes(3);
+
+    db.treeUpdates.next(newNode({title: 'Test Document 4'}));
+
+    tick(5000);
+    spectator.detectChanges();
+    hasNumberOfTreeNodes(4);
+
+    // new folder should be last
+    nodeContainsTitle(3, 'Test Document 4');
 
   }));
 
@@ -295,12 +317,53 @@ describe('TreeComponent', () => {
 
   }));
 
-  xit('should not move a root node to root?', fakeAsync(() => {
+  it('should move a root node to root?', fakeAsync(() => {
+
+    db.getPath.and.returnValue(Promise.resolve(['1']));
+    db.initialData.and.returnValue(of(recentDocuments));
+    spectator.detectChanges();
+
+    hasNumberOfTreeNodes(3);
+
+    db.treeUpdates.next(newNode({updateType: UpdateType.Move, id: '1', parent: null}));
+
+    tick(5000);
+    spectator.detectChanges();
+    hasNumberOfTreeNodes(3);
+
+    // new folder should be last
+    nodeContainsTitle(0, 'Test Document 1');
 
   }));
 
-  xit('should move a root node to a folder', fakeAsync(() => {
+  it('should move a root node to a folder', fakeAsync(() => {
 
+    const store = spectator.inject(TreeStore);
+    const treeQuery = spectator.inject(TreeQuery);
+    store.set(recentDocuments);
+
+    db.getPath.and.returnValue(Promise.resolve(['1']));
+    db.initialData.and.returnValue(of(recentDocuments));
+    db.getChildren.and.callFake((parentId) => of(treeQuery.getChildren(parentId)));
+    spectator.detectChanges();
+
+    hasNumberOfTreeNodes(3);
+
+    // store must be updated where getChildren info comes from
+    store.update('1', {_parent: '2'});
+    db.treeUpdates.next(newNode({updateType: UpdateType.Move, id: '1', parent: '2'}));
+
+    tick(1000);
+    spectator.detectChanges();
+    hasNumberOfTreeNodes(3);
+
+    // new folder should be last
+    nodeContainsTitle(0, 'Test Document 2');
+    nodeContainsTitle(1, 'Test Document 1');
+    nodeContainsTitle(2, 'Test Document 3');
+
+    nodeIsExpanded(0);
+    nodeHasLevel(1, 1);
   }));
 
   xit('should move a child node to root', fakeAsync(() => {
@@ -361,6 +424,13 @@ describe('TreeComponent', () => {
     spectator.click(nodes[index]);
   }
 
+  function nodeHasLevel(index: number, level: number) {
+    const nodes = spectator.queryAll('.mat-tree-node');
+    expect(nodes[index]).toHaveStyle({
+      'padding-left': `${24 * level}px`
+    });
+  }
+
   function sendTreeEvent(type: UpdateType, docs: DocumentAbstract[], parent?: string) {
     db.treeUpdates.next({type: type, data: docs, parent: parent});
 
@@ -389,5 +459,20 @@ describe('TreeComponent', () => {
     nodeExpectation(index).toHaveClass('active');
   }
 
+  function newNode(options: { id?, type?, state?, title?, parent?, updateType?: UpdateType }): UpdateDatasetInfo {
+    return {
+      type: options.updateType || UpdateType.New,
+      // @ts-ignore
+      data: [{
+        id: options.id || '123',
+        _type: options.type || 'FOLDER',
+        _parent: options.parent || null,
+        _state: options.state || 'W',
+        title: options.title || 'Test Document 123'
+      }],
+      parent: options.parent || null,
+      doNotSelect: true
+    };
+  }
 
 });

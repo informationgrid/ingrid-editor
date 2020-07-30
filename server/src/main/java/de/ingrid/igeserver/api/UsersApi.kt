@@ -89,4 +89,9 @@ interface UsersApi {
     fun switchCatalog(
             principal: Principal?,
             @Parameter(description = "The id of the catalog to switch to for the current user", required = true) @PathVariable("catalogId") catalogId: String): ResponseEntity<Void>
+
+    @RequestMapping(value = ["/info/refreshSession"], method = [RequestMethod.GET])
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun refreshSession(): ResponseEntity<Void>
 }

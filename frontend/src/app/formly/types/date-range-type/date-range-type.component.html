@@ -1,6 +1,6 @@
-<mat-date-range-input [rangePicker]="picker">
-    <input matStartDate placeholder="TT.MM.JJJJ">
-    <input matEndDate placeholder="TT.MM.JJJJ">
+<mat-date-range-input [rangePicker]="picker" [formGroup]="rangeFormGroup">
+    <input matStartDate placeholder="TT.MM.JJJJ" formControlName="start" (change)="updateFormControl()">
+    <input matEndDate placeholder="TT.MM.JJJJ" formControlName="end" (change)="updateFormControl()">
 </mat-date-range-input>
 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-<mat-date-range-picker #picker></mat-date-range-picker>
+<mat-date-range-picker #picker (closed)="updateFormControl()"></mat-date-range-picker>

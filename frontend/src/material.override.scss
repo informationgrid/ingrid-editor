@@ -121,6 +121,7 @@ ige-root .mat-card {
 .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-background,
 .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
 .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+.mat-slide-toggle:not(.mat-disabled).mat-accent .mat-ripple-element,
 .mat-pseudo-checkbox-checked {
   background-color: #398C32 !important;
 }
@@ -128,8 +129,14 @@ ige-root .mat-card {
 .mat-radio-button.mat-accent:not(.mat-radio-disabled) .mat-radio-inner-circle,
 .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple,
+.mat-slide-toggle.mat-accent .mat-ripple-element,
+.mat-slide-toggle.mat-accent .mat-slide-toggle-thumb,
 .mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
   background-color: #398C32 !important;
+}
+
+.mat-slide-toggle.mat-accent .mat-slide-toggle-bar {
+  background-color: #398c328a !important;
 }
 
 .mat-radio-button.mat-accent.mat-radio-checked:not(.mat-radio-disabled) .mat-radio-outer-circle {

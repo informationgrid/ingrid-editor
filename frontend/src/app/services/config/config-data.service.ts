@@ -19,11 +19,14 @@ export class ConfigDataService {
         return {
           assignedCatalogs: json.assignedCatalogs,
           name: json.name,
+          firstName: json.firstName,
+          lastName: json.lastName,
           roles: json.roles,
           userId: json.userId,
           currentCatalog: json.currentCatalog ? new Catalog(json.currentCatalog) : {},
           catalogProfile: json.catalogProfile,
-          version: json.version
+          version: json.version,
+          lastLogin: new Date(json.lastLogin)
         } as UserInfo;
       })
       .catch((e: string) => {
@@ -39,6 +42,8 @@ export class ConfigDataService {
         return {
           assignedCatalogs: [],
           name: undefined,
+          firstName: undefined,
+          lastName: undefined,
           roles: [],
           userId: undefined,
           catalogProfile: undefined,

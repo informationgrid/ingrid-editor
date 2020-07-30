@@ -1,8 +1,7 @@
-import {Component} from '@angular/core';
-import {FieldArrayType} from '@ngx-formly/core';
+import {Component, OnInit} from '@angular/core';
+import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
 import {MatDialog} from '@angular/material/dialog';
 import {FormDialogComponent, FormDialogData} from '../table/form-dialog/form-dialog.component';
-import {DomSanitizer} from '@angular/platform-browser';
 
 interface Item {
   type?: string;
@@ -16,10 +15,30 @@ interface Item {
   templateUrl: './repeat-detail-list.component.html',
   styleUrls: ['./repeat-detail-list.component.scss']
 })
-export class RepeatDetailListComponent extends FieldArrayType {
+export class RepeatDetailListComponent extends FieldArrayType implements OnInit {
+  private getTypeDeclaration: FormlyFieldConfig = {
+    key: '_type',
+    type: 'select',
+    templateOptions: {
+      appearance: 'outline',
+      required: true,
+      label: 'Link-Typ',
+      options: [
+        {label: 'Externer Link', value: 'external'},
+        {label: 'Interner Link', value: 'internal'},
+        {label: 'Daten-Download', value: 'download'}
+      ]
+    }
+  };
 
-  constructor(private dialog: MatDialog, private sanitizer: DomSanitizer) {
+  constructor(private dialog: MatDialog) {
     super();
+  }
+
+  ngOnInit(): void {
+    if (!this.to.asImage) {
+      this.field.fieldArray.fieldGroup.unshift(this.getTypeDeclaration);
+    }
   }
 
   addItem() {
