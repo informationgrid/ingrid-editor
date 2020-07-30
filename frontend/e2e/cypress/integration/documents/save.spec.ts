@@ -170,7 +170,7 @@ describe('General create documents/folders', () => {
 
       cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('#sidebar').findByText(doc2Name).click();
-      cy.get('[data-cy=Beschreibung]').type('testestest');
+      cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('testestest');
 
       // reject dialog
       // check selected tree node === previous selected node
@@ -195,7 +195,7 @@ describe('General create documents/folders', () => {
 
       cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('#sidebar').findByText(docname).click();
-      cy.get('[data-cy=Beschreibung]').type('testestest');
+      cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('testestest');
 
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page

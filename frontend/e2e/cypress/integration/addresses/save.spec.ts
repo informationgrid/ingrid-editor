@@ -134,7 +134,7 @@ describe('General create addresses/folders', () => {
   });
 
   describe('Publish addresses', () => {
-    it.only('should show a validation error when a required field is not filled', () => {
+    it('should show a validation error when a required field is not filled', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
 
       AddressPage.createAddress(new Address('publishErrorTest'));

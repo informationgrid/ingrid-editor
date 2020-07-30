@@ -89,7 +89,6 @@ export class DocumentPage extends BasePage {
   }
 
   static publishNow() {
-    cy.get(DocumentPage.Toolbar.Publish).click();
     cy.get('[data-cy=toolbar_publish_now]').click();
   }
 
