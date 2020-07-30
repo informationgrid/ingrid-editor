@@ -6,7 +6,6 @@ import {SessionStore} from '../store/session.store';
 import {ModalService} from './modal/modal.service';
 import {IgeError} from '../models/ige-error';
 import {SessionQuery} from '../store/session.query';
-import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +38,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       this.timer$.unsubscribe();
     }
 
-    const duration = this.overrideSessionDuration || this.defaultSessionDurationInMillSeconds;
+    const duration = (this.overrideSessionDuration ?? this.defaultSessionDurationInMillSeconds) + 1;
 
     this.timer$ = timer(0, this.oneSecondInMilliseconds).pipe(
       scan(acc => --acc, duration),
