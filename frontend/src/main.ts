@@ -12,7 +12,8 @@ if (environment.production) {
 }
 
 persistState({
-  include: ['session.ui']
+  include: ['session'],
+  preStorageUpdate: (storeName: string, state: any) => ({ui: state.ui, recentAddresses: state.recentAddresses})
 });
 
 const bootstrap = () => platformBrowserDynamic().bootstrapModule(AppModule);

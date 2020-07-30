@@ -66,6 +66,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   dataSource: DynamicDataSource;
 
   dragManager: DragNDropUtils;
+  isDragging = false;
 
   /**
    * A function to determine if a tree node should be disabled.
@@ -539,12 +540,13 @@ export class TreeComponent implements OnInit, OnDestroy {
   drop(event: DragEvent, droppedNode: TreeNode) {
     event.preventDefault();
 
+
     const dropInfo = this.dragManager.getDropInfo(droppedNode);
 
     if (dropInfo.allow) {
       this.dropped.next({
         srcIds: [dropInfo.srcNode._id],
-        destination: droppedNode._id
+        destination: droppedNode === null ? null : droppedNode._id
       });
 
       // move will be initiated by document service when node was moved in backend
@@ -555,4 +557,18 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   }
 
+  handleDragStart($event: DragEvent, node: any) {
+
+    // set flag delayed to correctly initiate dragging of a node
+    setTimeout(() => this.isDragging = true);
+    this.dragManager.handleDragStart($event, node);
+
+  }
+
+  handleDragEnd() {
+
+    this.isDragging = false;
+    this.dragManager.handleDragEnd();
+
+  }
 }

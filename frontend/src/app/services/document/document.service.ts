@@ -6,7 +6,7 @@ import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
 import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
 import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
-import {DocumentAbstract} from '../../store/document/document.model';
+import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE, DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
 import {applyTransaction, arrayAdd, arrayRemove, transaction} from '@datorama/akita';
 import {MessageService} from '../message.service';
@@ -19,6 +19,7 @@ import {ServerSearchResult} from '../../models/server-search-result.model';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 import {StatisticResponse} from '../../models/statistic.model';
 import {IgeError} from '../../models/ige-error';
+import {SessionQuery} from '../../store/session.query';
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -45,6 +46,7 @@ export class DocumentService {
               private messageService: MessageService,
               private profileService: ProfileService,
               private sessionStore: SessionStore,
+              private sessionQuery: SessionQuery,
               private treeStore: TreeStore,
               private addressTreeStore: AddressTreeStore) {
     this.configuration = configService.getConfiguration();
@@ -159,6 +161,8 @@ export class DocumentService {
           }
         }
 
+        this.updateOpenedDocumentInTreestore(info, isAddress);
+
         // update state by adding node and updating parent info
         store.upsert(info.id, info);
         if (isNewDoc && parentId) {
@@ -179,7 +183,7 @@ export class DocumentService {
   }
 
   // FIXME: this should be added with a plugin
-  publish(data: IgeDocument): Promise<void> {
+  publish(data: IgeDocument, isAddress: boolean): Promise<void> {
     console.log('PUBLISHING');
     const errors: any = {errors: []};
 
@@ -196,6 +200,9 @@ export class DocumentService {
           const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
           this.afterSave$.next(json);
+
+          this.updateOpenedDocumentInTreestore(info, isAddress);
+
           this.datasetsChanged$.next({
             type: UpdateType.Update,
             data: [info]
@@ -223,10 +230,20 @@ export class DocumentService {
       });
   }
 
-  revert(id: string): Observable<any> {
+  revert(id: string, isAddress: boolean): Observable<any> {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
     return this.dataService.revert(id)
       .pipe(
-        tap((json: any) => this.datasetsChanged$.next({type: UpdateType.Update, data: [json]}))
+        map(json => this.mapToDocumentAbstracts([json], json._parent)),
+        map(json => {
+          json[0]._hasChildren = store.getValue().entities[id]._hasChildren;
+          return json
+        }),
+        tap(json => this.datasetsChanged$.next({type: UpdateType.Update, data: json})),
+        // tap(json => this.treeStore.update(id, json[0])),
+        // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
+        tap(json => this.reload$.next(id))
         // catchError( err => this.errorService.handle( err ) )
       );
   }
@@ -294,7 +311,21 @@ export class DocumentService {
     );
 
     if (confirm) {
-      return this.modalService.confirm('Verschieben bestätigen', 'Möchten Sie den Datensatz wirklich verschieben?')
+      const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+      let destinationTitle;
+      if (dest === null) {
+        destinationTitle = isAddress ? ADDRESS_ROOT_NODE.title : DOCUMENT_ROOT_NODE.title;
+      } else {
+        destinationTitle = store.getValue().entities[dest].title;
+      }
+
+      return this.modalService.confirmWith({
+        title: 'Verschieben bestätigen',
+        message: `Möchten Sie den folgenden Datensatz wirklich nach "${destinationTitle}" verschieben?`,
+        list: srcIDs.map(id => store.getValue().entities[id].title),
+        acceptButtonText: 'Verschieben'
+      })
         .pipe(
           filter(result => result),
           tap(() => moveOperation().subscribe())
@@ -391,6 +422,19 @@ export class DocumentService {
       store.update(id, {_parent: parent});
     });
   }
+
+  public addToRecentAdresses(address: DocumentAbstract) {
+    let addresses = this.sessionQuery.recentAddresses.slice();
+    addresses = addresses.filter(ad => ad.id !== address.id)
+    addresses.unshift(address);
+
+    //only store 5 most recent addresses
+    if (addresses.length > 5) {
+      addresses = addresses.slice(0, 5);
+    }
+    this.sessionStore.update({recentAddresses: addresses})
+  }
+
 
   @transaction()
   private updateStoreAfterCopy(infos: DocumentAbstract[], parentId: string, isAddress: boolean) {

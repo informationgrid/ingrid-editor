@@ -16,8 +16,8 @@ export class AuthGuard implements CanActivate {
     const path = state.url;
 
 
-    if (user.assignedCatalogs.length === 0 && state.url.indexOf('/catalogs') === -1) {
-      this.router.navigate(['/catalogs']);
+    if (user.assignedCatalogs.length === 0 && state.url.indexOf('/catalogs/manage') === -1) {
+      this.router.navigate(['/catalogs/manage']);
       return false;
     }
 

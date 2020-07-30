@@ -53,6 +53,7 @@ export class DashboardComponent implements OnInit {
   createNewDocument() {
     const dlg = this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
+      maxWidth: 600,
       minHeight: 400,
       disableClose: true,
       data:
@@ -67,6 +68,7 @@ export class DashboardComponent implements OnInit {
   createNewAddress() {
     const dlg = this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
+      maxWidth: 600,
       minHeight: 400,
       disableClose: true,
       data:
@@ -93,6 +95,7 @@ export class DashboardComponent implements OnInit {
   createNewFolder() {
     this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
+      maxWidth: 600,
       minHeight: 400,
       disableClose: true,
       data: {

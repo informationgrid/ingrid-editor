@@ -37,7 +37,7 @@ export class InlineHelpWrapperComponent extends FieldWrapper implements OnInit, 
 
     const target = new ElementRef(evt.currentTarget);
     const infoElement = target.nativeElement as HTMLElement;
-    const title = this.to.externalLabel ?? this.to.label
+    const title = this.to.label ?? this.to.externalLabel
     this.contextHelpService.showContextHelp(this.profile, this.docType, this.fieldId, title, infoElement);
 
   }

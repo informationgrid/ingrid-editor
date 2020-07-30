@@ -35,7 +35,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('scrollForm', {read: ElementRef}) scrollForm: ElementRef;
 
   activeId = new BehaviorSubject<string>(null);
-  sidebarWidth = 15;
+  sidebarWidth: number;
 
   fields: FormlyFieldConfig[] = [];
 

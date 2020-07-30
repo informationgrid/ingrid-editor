@@ -18,11 +18,13 @@ export interface Version {
 export interface UserInfo {
   userId: string;
   name: string;
+  firstName: string;
+  lastName: string;
 
   assignedCatalogs: any[];
   roles: string[];
   currentCatalog: Catalog;
-
+  lastLogin?: Date;
   version: Version;
 }
 

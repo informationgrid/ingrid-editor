@@ -1,4 +1,4 @@
-@import '../../../../variables.scss';
+@import 'src/variables.scss';
 
 :host {
   display: block;
@@ -18,7 +18,7 @@
     }
 
     &.info {
-      background-color: #ECF5EB;
+      background-color: $ige-info-background;
 
       .mat-icon {
         color: #35922C;

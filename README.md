@@ -97,6 +97,15 @@ location /orientdb-studio/ {
 
 To get the swagger-api json documentation go to http://localhost:8550/api-docs. The UI version can be accessed with http://localhost:8550/swagger-ui.html, where you also can test the API.
 
+# Release
+
+## Update changelog
+
+We use the standard of  [Keep a Changelog](https://keepachangelog.com/).
+
+The gradle-changelog-plugin can be used to update the unreleased section to the current version
+and to create a new unreleased section.
+
 # Jenkins Setup
 
 The following behaviours for the Jenkins project have to be applied:

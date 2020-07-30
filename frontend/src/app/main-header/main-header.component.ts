@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../services/ApiService';
-import {ConfigService, Version} from '../services/config/config.service';
+import {ConfigService, UserInfo, Version} from '../services/config/config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {SessionQuery} from '../store/session.query';
 
@@ -11,7 +11,7 @@ import {SessionQuery} from '../store/session.query';
 })
 export class MainHeaderComponent implements OnInit {
 
-  userInfo = this.configService.$userInfo;
+  userInfo$ = this.configService.$userInfo;
   showShadow: boolean;
   pageTitle: string;
   version: Version;
@@ -54,9 +54,7 @@ export class MainHeaderComponent implements OnInit {
     }
   }
 
-  getInitials(name: string) {
-    return name.split(' ')
-      .map(item => item[0])
-      .join('');
+  getInitials(user: UserInfo) {
+    return user.firstName[0]+user.lastName[0];
   }
 }
