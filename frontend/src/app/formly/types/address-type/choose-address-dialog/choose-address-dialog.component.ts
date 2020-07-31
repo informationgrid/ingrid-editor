@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {DocumentAbstract} from '../../../../store/document/document.model';
-import {Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {TreeNode} from '../../../../store/tree/tree-node.model';
 import {AddressTreeQuery} from '../../../../store/address-tree/address-tree.query';
 import {CodelistQuery} from '../../../../store/codelist/codelist.query';
@@ -26,7 +26,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   selection: DocumentAbstract;
   selectedType: string;
-  selectedNode: Observable<string>;
+  selectedNode = new BehaviorSubject<string>(null);
   recentAddresses$: Observable<DocumentAbstract[]>;
 
 
@@ -44,16 +44,22 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
               private codelistService: CodelistService,
               private sessionQuery: SessionQuery,
               private documentService: DocumentService,
+              private cdr: ChangeDetectorRef,
               private dlgRef: MatDialogRef<ChooseAddressDialogComponent>
   ) {
   }
 
   ngOnInit(): void {
 
-    this.updateModel(this.address);
     this.codelistService.byId('505');
     this.recentAddresses$ = this.sessionQuery.recentAddresses$;
 
+    // the tree is not updated correctly
+    // FIXME: Find out why tree is not updated
+    setTimeout(() => {
+      this.updateModel(this.address);
+      this.cdr.detectChanges();
+    }, 100);
 
   }
 
@@ -80,7 +86,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     }
 
     this.selectedType = address.type;
-    this.selectedNode = of(address.ref._id);
+    this.selectedNode.next(address.ref._id);
   }
 
   ngOnDestroy(): void {
