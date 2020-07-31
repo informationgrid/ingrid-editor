@@ -39,7 +39,7 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(value = [IllegalArgumentException::class, IllegalStateException::class])
     protected fun handleConflict(ex: RuntimeException, request: WebRequest): ResponseEntity<Any> {
         log.error("Conflict happened:", ex)
-        val bodyOfResponse = "This should be application specific"
+        val bodyOfResponse = ex.message
         return handleExceptionInternal(ex, bodyOfResponse, HttpHeaders(), HttpStatus.CONFLICT, request)
     }
 
