@@ -2,7 +2,9 @@ package de.ingrid.igeserver.profiles.mcloud.types.impl
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.PublishedVersionNotFoundException
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.orientdb.OrientDBDocumentEntityType
@@ -61,6 +63,8 @@ class OMCloudType : OrientDBDocumentEntityType {
                 if (e is NotFoundException) {
                     log.error("Referenced address was not found: $wrapperId -> Should we remove it?");
                     continue
+                } else if (e is PublishedVersionNotFoundException) {
+                    throw ApiException("Problem with referenced addresses of document '${doc.get("title")}' with ID '${doc.get(FIELD_ID).asText()}': ${e.message}", true)
                 }
                 log.error(e)
                 throw e

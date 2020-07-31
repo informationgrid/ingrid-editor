@@ -26,8 +26,8 @@ data class MCloudModel(
 
     val publisher: AddressModel?
     get() {
-        return addresses?.filter { it.type == "10" }
-                ?.first()
+        return addresses
+                ?.firstOrNull { it.type == "10" }
                 ?.ref;
     }
 

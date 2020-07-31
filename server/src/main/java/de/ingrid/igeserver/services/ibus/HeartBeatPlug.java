@@ -189,7 +189,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                     }
                     _accurate = true;
                 } catch (final Throwable e) {
-                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "]. With plugdescription: " + _plugDescription, e);
+                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "]. With plugdescription: " + _plugDescription + " Error message: " + e.getMessage());
                     _accurate = false;
                     //this._heartBeatFailed = true;
 
