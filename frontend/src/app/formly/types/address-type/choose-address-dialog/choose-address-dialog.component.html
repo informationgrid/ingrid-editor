@@ -8,15 +8,30 @@
 </div>
 <mat-dialog-content>
 
-    <div class="side-padding place-title">Adresse wählen</div>
+    <div class="side-padding place-title">1. Schritt: Adresse wählen</div>
+    <div class="side-padding">
+        <mat-form-field appearance="outline" class="width-100">
+            <mat-select *ngIf="recentAddresses$ | async as recentAddresses" (selectionChange)="updateAddressList($event.value)" placeholder="Zuletzt verwendete Adressen..."
+                        data-cy="address-type-select">
+                <mat-option *ngFor="let address of recentAddresses" [value]=address>
+                    {{address.title}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
     <ige-tree (selected)="updateAddressTree($event[0]) " data-cy="choose-address-tree"
               [setActiveNode]="selectedNode"
               [forAddresses]="true"
               [disabledCondition]="disabledCondition"
               [showReloadButton]="false"></ige-tree>
 
-    <div class="side-padding top-padding place-title">Adresstyp zuordnen</div>
+
+    <div class="selection-divider"></div>
+
+    <div class="side-padding top-padding place-title">2. Schritt Adresstyp zuordnen</div>
     <div class="side-padding">
+        <div class="dlg-field-label required">Adresstyp*</div>
         <mat-form-field appearance="outline" class="width-100">
             <mat-select [(value)]="selectedType" placeholder="Bitte wählen ..." data-cy="address-type-select">
                 <mat-option *ngFor="let type of types | async" [value]="type.value">
@@ -25,12 +40,6 @@
             </mat-select>
         </mat-form-field>
     </div>
-
-    <div class="side-padding place-title-other">Zuletzt verwendete Adressen</div>
-    <ige-document-list-item [docs]="recentAddresses$"
-                            [showSelection]="true"
-                            [hideDivider]="true"
-                            (select)="updateAddressList($event)"></ige-document-list-item>
 
 </mat-dialog-content>
 <mat-dialog-actions>

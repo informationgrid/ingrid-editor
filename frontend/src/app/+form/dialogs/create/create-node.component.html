@@ -13,12 +13,12 @@
             <div class="first-tab-wrapper" fxFlex fxLayout="column" [formGroup]="formGroup">
 
                 <ng-container *ngIf="isFolder || !forAddress; else addressForm">
-                    <div class="dlg-field-label">Titel</div>
+                    <div class="dlg-field-label required">Titel*</div>
                     <mat-form-field appearance="outline">
                         <input matInput
                                formControlName="title"
                                data-cy="create-title"
-                               placeholder="Ohne Titel"
+                               placeholder="Eingeben..."
                                igeFocus
                                autocomplete="off"
                                (keyup.enter)="handleCreate()"
@@ -27,7 +27,7 @@
                     </mat-form-field>
 
                     <ng-container *ngIf="numDocumentTypes > 1">
-                        <div class="dlg-create-place" id="doc-type">Datensatztyp wählen</div>
+                        <div class="dlg-create-place" id="doc-type">Datensatztyp wählen:</div>
                         <ige-document-list-item [docs]="documentTypes" showSelection="true"
                                                 [denseMode]="true"
                                                 [hideDivider]="true"
