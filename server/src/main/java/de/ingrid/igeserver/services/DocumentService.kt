@@ -3,15 +3,15 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.api.NotFoundException
-import de.ingrid.igeserver.persistence.model.document.DocumentType
-import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
-import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.api.PublishedVersionNotFoundException
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
+import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.model.document.DocumentType
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -216,9 +216,10 @@ class DocumentService : MapperService() {
         val published = doc[FIELD_PUBLISHED]
 
         if (onlyPublished && published.isNull) {
-            throw ApiException("No published version available of ${doc.get(FIELD_ID)}")
+            throw PublishedVersionNotFoundException("No published version available of ${doc.get(FIELD_ID)}")
         }
 
+        // TODO: check if isNull function really works or if we need a null comparison
         val objectNode = if (draft.isNull || onlyPublished) {
             published as ObjectNode
         } else {
