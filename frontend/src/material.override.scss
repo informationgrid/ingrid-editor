@@ -123,7 +123,7 @@ ige-root .mat-card {
 .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
 .mat-slide-toggle:not(.mat-disabled).mat-accent .mat-ripple-element,
 .mat-pseudo-checkbox-checked {
-  background-color: #398C32 !important;
+  background-color: $ige-check-color !important;
 }
 
 .mat-radio-button.mat-accent:not(.mat-radio-disabled) .mat-radio-inner-circle,
@@ -132,15 +132,15 @@ ige-root .mat-card {
 .mat-slide-toggle.mat-accent .mat-ripple-element,
 .mat-slide-toggle.mat-accent .mat-slide-toggle-thumb,
 .mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
-  background-color: #398C32 !important;
+  background-color: $ige-check-color !important;
 }
 
 .mat-slide-toggle.mat-accent .mat-slide-toggle-bar {
-  background-color: #398c328a !important;
+  background-color: #{$ige-check-color + '8a'} !important;
 }
 
 .mat-radio-button.mat-accent.mat-radio-checked:not(.mat-radio-disabled) .mat-radio-outer-circle {
-  border-color: #398C32 !important;
+  border-color: $ige-check-color !important;
 }
 
 /* Placeholder */

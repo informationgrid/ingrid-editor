@@ -13,12 +13,12 @@
             <div class="first-tab-wrapper" fxFlex fxLayout="column" [formGroup]="formGroup">
 
                 <ng-container *ngIf="isFolder || !forAddress; else addressForm">
-                    <div class="dlg-field-label">Titel</div>
+                    <div class="dlg-field-label required">Titel*</div>
                     <mat-form-field appearance="outline">
                         <input matInput
                                formControlName="title"
                                data-cy="create-title"
-                               placeholder="Ohne Titel"
+                               placeholder="Eingeben..."
                                igeFocus
                                autocomplete="off"
                                (keyup.enter)="handleCreate()"
@@ -27,7 +27,7 @@
                     </mat-form-field>
 
                     <ng-container *ngIf="numDocumentTypes > 1">
-                        <div class="dlg-create-place" id="doc-type">Datensatztyp wählen</div>
+                        <div class="dlg-create-place" id="doc-type">Datensatztyp wählen:</div>
                         <ige-document-list-item [docs]="documentTypes" showSelection="true"
                                                 [denseMode]="true"
                                                 [hideDivider]="true"
@@ -102,7 +102,7 @@
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
     <button *ngIf="selectedPage === 0" mat-button color="primary"
             data-cy="create-changeLocation"
-            (click)="jumpToTree(this.parent)">Ort ändern</button>
+            (click)="jumpToTree(this.parent)">Ordner ändern</button>
 
     <button *ngIf="selectedPage === 0" mat-stroked-button color="primary"
             class="btn-create"

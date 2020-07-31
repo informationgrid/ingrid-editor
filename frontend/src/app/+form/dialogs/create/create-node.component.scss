@@ -48,7 +48,9 @@ mat-radio-button {
 }
 
 .dlg-create-place {
-  padding-top: 8px;
+  padding-top: 16px;
+  padding-bottom: 0;
+  margin-bottom: -4px;
 }
 
 .mat-dialog-actions button.btn-create {
@@ -69,5 +71,15 @@ mat-radio-button {
   .mat-list-item-content {
     padding-left: 24px;
     padding-right: 24px;
+  }
+}
+
+.create-dlg-content {
+  ::ng-deep .mat-list-option.selected {
+    background-color: $ige-mark-color !important;
+
+    [svgicon="baseline-check-24px"] path {
+        fill: #398C32;
+    }
   }
 }

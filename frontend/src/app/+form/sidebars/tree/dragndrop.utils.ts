@@ -74,7 +74,7 @@ export class DragNDropUtils {
 
   handleDragEnd() {
     this.dragNode = null;
-    this.dragNodeExpandOverNode = null;
+    this.dragNodeExpandOverNode = undefined;
     this.dragNodeExpandOverTime = 0;
   }
 

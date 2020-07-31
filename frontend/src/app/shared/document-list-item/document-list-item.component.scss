@@ -47,10 +47,8 @@
     margin-right: 12px;
     padding: 0;
 
-    &.marker {
-      ::ng-deep polygon {
-        fill: limegreen;
-      }
+    &.marker ::ng-deep .coloring {
+      fill: $ige-check-color;
     }
   }
 

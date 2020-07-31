@@ -1,7 +1,6 @@
 import {Utils} from './utils';
 import {BasePage} from './base.page';
 import {Tree} from './tree.partial';
-import {Address} from "./address.page";
 
 export const SEPARATOR = 'chevron_right';
 export const ROOT = `Daten`;
@@ -62,7 +61,8 @@ export class DocumentPage extends BasePage {
     static searchAndAdd(searchString: string, addressType: string) {
       // TODO replace addressType with proper addressType class or enum
       this.search(searchString);
-      cy.get('.doc-item').contains(searchString).click();
+      cy.wait(500);
+      cy.get('ige-document-list-item').contains(searchString).click();
       cy.get('[data-cy="address-type-select"]').click();
       cy.get('mat-option').contains(addressType).click();
       cy.get('[data-cy="choose-address-confirm"]').click();

@@ -3,8 +3,12 @@ import {Tree} from '../../pages/tree.partial';
 
 describe('Toolbar behavior', () => {
 
-  beforeEach(() => {
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
+  });
+
+  beforeEach(() => {
     cy.visit('/form');
     cy.get('mat-toolbar').should('be.visible');
   });

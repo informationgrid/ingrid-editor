@@ -32,6 +32,7 @@ export const routes: Routes = [
   {
     path: 'research',
     loadChildren: () => import('./+research/research.module').then(m => m.ResearchModule),
+    canActivate: [AuthGuard],
     data: {
       title: 'Recherche',
       featureFlag: 'AP3',

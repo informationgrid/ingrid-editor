@@ -1,8 +1,13 @@
-import {DocumentPage} from "../../../pages/document.page";
+import {DocumentPage} from '../../../pages/document.page';
 
 describe('mCLOUD documents', function () {
-  beforeEach(() => {
+
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
+  });
+
+  beforeEach(() => {
     DocumentPage.visit();
   });
 
@@ -27,7 +32,7 @@ describe('mCLOUD documents', function () {
       DocumentPage.createDocument();
       // cy.visit('/form;id=642b8dde-96a9-4b1f-a2eb-e8894735f4cd');
 
-      cy.get('[data-cy=Beschreibung]').type('Testbeschreibung');
+      cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('Testbeschreibung');
 
       cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
       DocumentPage.AddAddressDialog.searchAndAdd('Testorganisation', 'Herausgeber');
@@ -48,7 +53,7 @@ describe('mCLOUD documents', function () {
 
       cy.get('[data-cy=Lizenz] mat-form-field').click();
       cy.get('mat-option').contains('Andere offene Lizenz').click();
-
+      cy.wait(500);
       DocumentPage.publishNow();
       cy.get('[data-cy="confirm-dialog-confirm"]').click();
       cy.get('[data-cy="form-message"]').contains('Das Dokument wurde veröffentlicht.')

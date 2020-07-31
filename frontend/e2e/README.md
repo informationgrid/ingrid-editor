@@ -1,5 +1,39 @@
+# Running Cypress tests
+
+In order to run the cypress tests you first need to edit the file `cypress.json`
+to set the correct `baseUrl`. By default the IP address of the test system is configured.
+
+## Local tests
+
+If we want to run our tests locally then we have to fulfill the following preconditions:
+
+* patch keycloak-test-library, to make client-secret work
+  * in IntelliJ right-click on "keycloak.patch" and "Apply patch..."
+* edit `cypress.json` to set application URL and Keycloak URL
+  ```json
+  {
+    "baseUrl": "http://localhost:8550",
+    "env": {
+      "auth_base_url": "https://keycloak.informationgrid.eu/auth"
+    }
+  }
+  ```
+* use the test database
+  * copy database content from docker-setup-project `ige-ng/compose-files/qs/databases` into `server/databases`
+* run backend with following command
+  * ```gradlew.bat bootRun -PbuildProfile=cypress --args='--spring.profiles.active=default,mcloud'```
+* create a new catalog or use the test catalog
+
+If we are all set, then we can run the test by executing the following command inside the e2e-folder:
+
+```bash
+npm run cypress:runFull
+```
+
 # Tests Convention
 
-For each spec file only one describe statement, followed by its tests.
-If another describe statement is needed, it is time to create a new spec file.
+For each topic a spec file should be written It's also possible to define multiple
+describe blocks within a spec-file for better organization.
+
+# 
 
