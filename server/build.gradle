@@ -34,7 +34,7 @@ repositories {
 }
 
 // Profile support
-if (!hasProperty('buildProfile')) apply from: "profile-dev.gradle"
+if (!hasProperty('buildProfile') || getProperty('buildProfile') == 'cypress') apply from: "profile-dev.gradle"
 
 // for faster development ignore frontend project and its long build time
 if (hasProperty('buildProfile')) {

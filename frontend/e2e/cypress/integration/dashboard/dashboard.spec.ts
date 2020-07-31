@@ -1,12 +1,16 @@
-import {DashboardPage} from "../../pages/dashboard.page";
-import {DocumentPage} from "../../pages/document.page";
-import {Utils} from "../../pages/utils";
-import {Address, AddressPage} from "../../pages/address.page";
+import {DashboardPage} from '../../pages/dashboard.page';
+import {DocumentPage} from '../../pages/document.page';
+import {Utils} from '../../pages/utils';
+import {Address, AddressPage} from '../../pages/address.page';
 
 describe('Dashboard', () => {
 
-  beforeEach(() => {
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
+  });
+
+  beforeEach(() => {
     cy.visit('');
   });
 

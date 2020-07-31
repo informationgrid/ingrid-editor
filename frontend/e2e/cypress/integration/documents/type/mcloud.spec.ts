@@ -1,8 +1,13 @@
-import {DocumentPage} from "../../../pages/document.page";
+import {DocumentPage} from '../../../pages/document.page';
 
 describe('mCLOUD documents', function () {
-  beforeEach(() => {
+
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
+  });
+
+  beforeEach(() => {
     DocumentPage.visit();
   });
 

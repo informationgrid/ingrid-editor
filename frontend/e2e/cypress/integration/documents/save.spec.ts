@@ -1,12 +1,15 @@
 import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
-import {AddressPage} from "../../pages/address.page";
 
 describe('General create documents/folders', () => {
 
-  beforeEach(() => {
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
+  });
+
+  beforeEach(() => {
     DocumentPage.visit();
   });
 
@@ -214,8 +217,6 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=confirm-dialog-confirm]').click();
 
       cy.get(DocumentPage.title).should('not.exist')
-
-
 
 
     });

@@ -1,5 +1,5 @@
-import {DocumentPage, SEPARATOR} from "../../pages/document.page";
-import {AddressPage, ROOT} from "../../pages/address.page";
+import {DocumentPage, SEPARATOR} from '../../pages/document.page';
+import {AddressPage, ROOT} from '../../pages/address.page';
 
 describe('Load addresses', function () {
   before(() => {
