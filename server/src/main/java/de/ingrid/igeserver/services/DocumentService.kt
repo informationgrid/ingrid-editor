@@ -132,7 +132,10 @@ class DocumentService : MapperService() {
         val recordId = determineRecordId(docWrapper)
 
         // update parent in case of moving a document
-        docWrapper.put(FIELD_PARENT, data.get(FIELD_PARENT).asText());
+        val parent = data.get(FIELD_PARENT)
+        if (!parent.isNull) {
+            docWrapper.put(FIELD_PARENT, parent.asText());
+        }
 
         // save document with same ID or new one, if no draft version exists
         val updatedDocument = data as ObjectNode

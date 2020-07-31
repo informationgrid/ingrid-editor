@@ -428,7 +428,7 @@ export class DocumentService {
     addresses = addresses.filter(ad => ad.id !== address.id)
     addresses.unshift(address);
 
-    //only store 5 most recent addresses
+    // only store 5 most recent addresses
     if (addresses.length > 5) {
       addresses = addresses.slice(0, 5);
     }
