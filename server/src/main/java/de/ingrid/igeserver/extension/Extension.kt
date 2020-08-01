@@ -9,4 +9,11 @@ interface Extension {
      * Identifier of the extension
      */
     val id: String
+
+    /**
+     * List of profiles using the extension
+     *
+     * NOTE Empty array means *all profiles*, null means *no profile*
+     */
+    val profiles: Array<String>?
 }

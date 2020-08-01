@@ -1,16 +1,16 @@
 package de.ingrid.igeserver.extension.pipe
 
-import java.util.*
-
 /**
- * Interface for contexts used to provide or collect additional information when running the filters in a pipe
+ * Interface for contexts providing or collecting additional information when running the filters in a pipe
  */
 interface Context {
 
     /**
-     * List of messages collected while running the filters in a pipe
+     * Name of the profile to which the pipe payload belongs, used to select matching filters
+     *
+     * NOTE Null means *no profile*
      */
-    val messages: Queue<Message>
+    val profile: String?
 
     /**
      * Properties holding additional information that could also be shared between filters
@@ -19,4 +19,19 @@ interface Context {
      * about other filters setting specific properties.
      */
     val properties: Map<String, Any?>
+
+    /**
+     * Add a message to the context
+     */
+    fun addMessage(msg: Message)
+
+    /**
+     * Remove all messages
+     */
+    fun clearMessages()
+
+    /**
+     * Get the message iterator
+     */
+    fun messages(): Iterable<Message>
 }

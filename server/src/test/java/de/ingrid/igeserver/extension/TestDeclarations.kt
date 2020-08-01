@@ -23,8 +23,7 @@ open class TestPayloadPersist(var action: Action, var data: JsonNode): Payload {
     }
 }
 
-open class TestPayloadCreate(data: JsonNode) : TestPayloadPersist(Action.CREATE, data) {
-}
+open class TestPayloadCreate(data: JsonNode) : TestPayloadPersist(Action.CREATE, data)
 
 open class TestPayloadUpdate(data: JsonNode) : TestPayloadPersist(Action.UPDATE, data) {
     constructor(action: Action, data: JsonNode) : this(data) {
@@ -32,8 +31,9 @@ open class TestPayloadUpdate(data: JsonNode) : TestPayloadPersist(Action.UPDATE,
     }
 }
 
-open class TestPayloadPublish(data: JsonNode) : TestPayloadUpdate(Action.PUBLISH, data) {
-}
+open class TestPayloadPublish(data: JsonNode) : TestPayloadUpdate(Action.PUBLISH, data)
+
+open class TestPayloadPostPublish(data: JsonNode) : TestPayloadPublish(data)
 
 /**
  * Test filters
@@ -120,14 +120,11 @@ class TestAuthorizePublishFilter : Filter<TestPayloadPublish> {
  * Pipes
  */
 
-class CreatePipe : Pipe<TestPayloadCreate>("CreatePipe") {
-}
+class TestCreatePipe : Pipe<TestPayloadCreate>("CreatePipe")
 
-class UpdatePipe : Pipe<TestPayloadUpdate>("UpdatePipe") {
-}
+class TestUpdatePipe : Pipe<TestPayloadUpdate>("UpdatePipe")
 
-class PublishPipe : Pipe<TestPayloadPublish>("PublishPipe") {
-}
+class TestPublishPipe : Pipe<TestPayloadPublish>("PublishPipe")
 
 /**
  * Bean configuration
@@ -154,11 +151,14 @@ class PipeTestConfig {
     fun authorizePublishFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishFilter()
 
     @Bean
-    fun createPipe(): Pipe<TestPayloadCreate> = CreatePipe()
+    fun createPipe(): Pipe<TestPayloadCreate> = TestCreatePipe()
 
     @Bean
-    fun updatePipe(): Pipe<TestPayloadUpdate> = UpdatePipe()
+    fun updatePipe(): Pipe<TestPayloadUpdate> = TestUpdatePipe()
 
     @Bean
-    fun publishPipe(): Pipe<TestPayloadPublish> = PublishPipe()
+    fun publishPipe(): Pipe<TestPayloadPublish> = TestPublishPipe()
+
+    @Bean
+    fun postPublishPipe(): Pipe<TestPayloadPostPublish> = Pipe("PostPublishPipe")
 }

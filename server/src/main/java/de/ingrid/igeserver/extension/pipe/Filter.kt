@@ -17,4 +17,11 @@ interface Filter<T: Payload> : Extension, (T, Context) -> T {
 
     override val id: String
         get() = this::class.qualifiedName ?: this::class.toString()
+
+    /**
+     * Check if the filter is used in the given profile
+     */
+    fun usedInProfile(profileId: String): Boolean {
+        return profiles != null && (profiles!!.isEmpty() || profileId in profiles!!)
+    }
 }

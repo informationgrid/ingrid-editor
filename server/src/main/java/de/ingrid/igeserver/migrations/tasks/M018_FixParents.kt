@@ -8,7 +8,6 @@ import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.igeserver.services.FIELD_PARENT
-import de.ingrid.igeserver.services.PARENT_ID
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
