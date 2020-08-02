@@ -41,14 +41,14 @@ open class TestPayloadPostPublish(data: JsonNode) : TestPayloadPublish(data)
 
 // Common validation on persist (used as base class)
 @Component
-class TestValidatePersistFilter<T : TestPayloadPersist> : Filter<T> {
+class TestValidatePersistFilter<T : TestPayloadPersist>(override val profiles: Array<String>?) : Filter<T> {
 
     override fun invoke(payload: T, context: Context): T {
         if (payload.action == TestPayloadPersist.Action.CREATE || payload.action == TestPayloadPersist.Action.UPDATE) {
-            context.messages.add(Message(this, "Validate data on persist"))
+            context.addMessage(Message(this, "Validate data on persist"))
         }
         else {
-            context.messages.add(Message(this, "Filter does not apply"))
+            context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
     }
@@ -56,15 +56,15 @@ class TestValidatePersistFilter<T : TestPayloadPersist> : Filter<T> {
 
 // Specific validation on create
 @Component
-class TestValidateCreateFilter : Filter<TestPayloadCreate>, TestValidatePersistFilter<TestPayloadCreate>() {
+class TestValidateCreateFilter(profiles: Array<String>) : Filter<TestPayloadCreate>, TestValidatePersistFilter<TestPayloadCreate>(profiles) {
 
     override fun invoke(payload: TestPayloadCreate, context: Context): TestPayloadCreate {
         super.invoke(payload, context)
         if (payload.action == TestPayloadPersist.Action.CREATE) {
-            context.messages.add(Message(this, "Validate data on create"))
+            context.addMessage(Message(this, "Validate data on create"))
         }
         else {
-            context.messages.add(Message(this, "Filter does not apply"))
+            context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
     }
@@ -72,15 +72,15 @@ class TestValidateCreateFilter : Filter<TestPayloadCreate>, TestValidatePersistF
 
 // Specific validation on update
 @Component
-class TestValidateUpdateFilter : Filter<TestPayloadUpdate>, TestValidatePersistFilter<TestPayloadUpdate>() {
+class TestValidateUpdateFilter(profiles: Array<String>) : Filter<TestPayloadUpdate>, TestValidatePersistFilter<TestPayloadUpdate>(profiles) {
 
     override fun invoke(payload: TestPayloadUpdate, context: Context): TestPayloadUpdate {
         super.invoke(payload, context)
         if (payload.action == TestPayloadPersist.Action.UPDATE) {
-            context.messages.add(Message(this, "Validate data on update"))
+            context.addMessage(Message(this, "Validate data on update"))
         }
         else {
-            context.messages.add(Message(this, "Filter does not apply"))
+            context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
     }
@@ -88,14 +88,14 @@ class TestValidateUpdateFilter : Filter<TestPayloadUpdate>, TestValidatePersistF
 
 // Specific validation on publish (can be used with update payload or publish payload)
 @Component
-class TestValidatePublishFilter<T : TestPayloadUpdate> : Filter<T> {
+class TestValidatePublishFilter<T : TestPayloadUpdate>(override val profiles: Array<String>?) : Filter<T> {
 
     override fun invoke(payload: T, context: Context): T {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
-            context.messages.add(Message(this, "Validate data on publish"))
+            context.addMessage(Message(this, "Validate data on publish"))
         }
         else {
-            context.messages.add(Message(this, "Filter does not apply"))
+            context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
     }
@@ -103,14 +103,14 @@ class TestValidatePublishFilter<T : TestPayloadUpdate> : Filter<T> {
 
 // Authorization on publish
 @Component
-class TestAuthorizePublishFilter : Filter<TestPayloadPublish> {
+class TestAuthorizePublishFilter(override val profiles: Array<String>?) : Filter<TestPayloadPublish> {
 
     override fun invoke(payload: TestPayloadPublish, context: Context): TestPayloadPublish {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
-            context.messages.add(Message(this, "Authorize on publish"))
+            context.addMessage(Message(this, "Authorize on publish"))
         }
         else {
-            context.messages.add(Message(this, "Filter does not apply"))
+            context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
     }
@@ -133,22 +133,22 @@ class TestPublishPipe : Pipe<TestPayloadPublish>("PublishPipe")
 @Configuration
 class PipeTestConfig {
     @Bean
-    fun validatePersistFilter(): Filter<TestPayloadPersist> = TestValidatePersistFilter()
+    fun validatePersistFilter(): Filter<TestPayloadPersist> = TestValidatePersistFilter(arrayOf())
 
     @Bean
-    fun validateCreateFilter(): Filter<TestPayloadCreate> = TestValidateCreateFilter()
+    fun validateCreateFilter(): Filter<TestPayloadCreate> = TestValidateCreateFilter(arrayOf())
 
     @Bean
-    fun validateUpdateFilter(): Filter<TestPayloadUpdate> = TestValidateUpdateFilter()
+    fun validateUpdateFilter(): Filter<TestPayloadUpdate> = TestValidateUpdateFilter(arrayOf())
 
     @Bean
-    fun validateUpdatePublishFilter(): Filter<TestPayloadUpdate> = TestValidatePublishFilter()
+    fun validateUpdatePublishFilter(): Filter<TestPayloadUpdate> = TestValidatePublishFilter(arrayOf())
 
     @Bean
-    fun validatePublishFilter(): Filter<TestPayloadPublish> = TestValidatePublishFilter()
+    fun validatePublishFilter(): Filter<TestPayloadPublish> = TestValidatePublishFilter(arrayOf())
 
     @Bean
-    fun authorizePublishFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishFilter()
+    fun authorizePublishFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishFilter(arrayOf())
 
     @Bean
     fun createPipe(): Pipe<TestPayloadCreate> = TestCreatePipe()
