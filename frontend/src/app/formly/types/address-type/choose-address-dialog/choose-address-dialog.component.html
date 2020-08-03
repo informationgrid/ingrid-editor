@@ -12,7 +12,7 @@
     <div class="side-padding">
         <mat-form-field appearance="outline" class="width-100">
             <mat-select *ngIf="recentAddresses$ | async as recentAddresses" (selectionChange)="updateAddressList($event.value)" placeholder="Zuletzt verwendete Adressen..."
-                        data-cy="address-type-select">
+                        data-cy="recent-address-select">
                 <mat-option *ngFor="let address of recentAddresses" [value]=address>
                     {{address.title}}
                 </mat-option>
