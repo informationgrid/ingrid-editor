@@ -2,9 +2,10 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.extension.pipe.Pipe
+import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.EntityType
@@ -12,11 +13,11 @@ import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
+import de.ingrid.igeserver.persistence.filter.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
-import java.util.*
 import kotlin.reflect.KClass
 
 @Service
@@ -29,6 +30,13 @@ class DocumentService : MapperService() {
 
     @Autowired
     private lateinit var dbService: DBApi
+
+    @Autowired private lateinit var preCreatePipe: Pipe<PreCreatePayload>
+    @Autowired private lateinit var postCreatePipe: Pipe<PostCreatePayload>
+    @Autowired private lateinit var preUpdatePipe: Pipe<PreUpdatePayload>
+    @Autowired private lateinit var postUpdatePipe: Pipe<PostUpdatePayload>
+    @Autowired private lateinit var prePublishPipe: Pipe<PrePublishPayload>
+    @Autowired private lateinit var postPublishPipe: Pipe<PostPublishPayload>
 
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),
@@ -58,7 +66,7 @@ class DocumentService : MapperService() {
         val id = doc[FIELD_ID].asText()
         val countMap = dbService.countChildrenOfType(id, type)
         return if (countMap.containsKey(id)) {
-            countMap[id]!! > 0
+            countMap.getValue(id) > 0
         } else false
     }
 
@@ -81,80 +89,137 @@ class DocumentService : MapperService() {
         return prepareDocument(docData, doc[FIELD_DOCUMENT_TYPE].asText(), onlyPublished, resolveLinks)
     }
 
-    private fun prepareDocument(docData: ObjectNode, docType: String, onlyPublished: Boolean = false, resolveLinks: Boolean = true): ObjectNode {
-        // set empty parent fields explicitly to null
-        val parent = docData.has(FIELD_PARENT)
-        if (!parent || docData.get(FIELD_PARENT).asText().isEmpty()) {
-            docData.put(FIELD_PARENT, null as String?)
-        }
-        removeDBManagementFields(docData)
-
-        // get latest references from links
-        if (resolveLinks) {
-            val refType = getDocumentType(docType)
-
-            refType.mapLatestDocReference(docData, onlyPublished)
-        }
-
-        return docData
-    }
-
     fun getDocumentType(docType: String): EntityType {
 
         return checkNotNull(documentTypes.find { it.className == docType })
     }
 
     fun createDocument(data: JsonNode, address: Boolean = false): JsonNode {
+        val filterContext = DefaultContext.withCurrentProfile(dbService)
+        val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
+        val docType = getDocumentType(docTypeName)
 
-        val dataJson = data as ObjectNode
-
-        addCreationInfo(dataJson)
+        // run pre-create pipe
+        val preCreatePayload = PreCreatePayload(docType, data as ObjectNode, getCategoryFromType(docTypeName, address))
+        preCreatePipe.runFilters(preCreatePayload, filterContext)
 
         // save document
-        val result = dbService.save(DocumentType::class, null, dataJson.toString())
+        val newDocument = dbService.save(DocumentType::class, null, preCreatePayload.document.toString())
 
-        // create DocumentWrapper
-        val recordId = dbService.getRecordId(result)
-        val category = getCategoryFromType(data.get(FIELD_DOCUMENT_TYPE).asText(), address)
-        val documentWrapper = createDocumentWrapper(dataJson, recordId!!, category)
+        // set wrapper to document association
+        preCreatePayload.wrapper.put(FIELD_DRAFT, dbService.getRecordId(newDocument))
 
         // save wrapper
-        val resultWrapper = dbService.save(DocumentWrapperType::class, null, documentWrapper.toString())
-        return getLatestDocument(resultWrapper)
+        val newWrapper = dbService.save(DocumentWrapperType::class, null, preCreatePayload.wrapper.toString())
+
+        // run post-create pipe
+        val postCreatePayload = PostCreatePayload(docType, newDocument as ObjectNode, newWrapper as ObjectNode)
+        postCreatePipe.runFilters(postCreatePayload, filterContext)
+
+        return getLatestDocument(postCreatePayload.wrapper)
     }
 
     fun updateDocument(id: String, data: JsonNode, publish: Boolean = false): JsonNode {
-        val docWrapper = getByDocumentId(id, DocumentWrapperType::class, false) as ObjectNode
+        val filterContext = DefaultContext.withCurrentProfile(dbService)
+        val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
+        val docType = getDocumentType(docTypeName)
 
-        checkForPublishedConcurrency(docWrapper, data.get(FIELD_VERSION)?.asInt())
-
-        // just update document by using new data and adding database ID
-        val recordId = determineRecordId(docWrapper)
-
-        // update parent in case of moving a document
-        val parent = data.get(FIELD_PARENT)
-        if (!parent.isNull) {
-            docWrapper.put(FIELD_PARENT, parent.asText());
+        // run pre-update pipe
+        val wrapper = getByDocumentId(id, DocumentWrapperType::class, false)
+        val preUpdatePayload = PreUpdatePayload(docType, data as ObjectNode, wrapper as ObjectNode)
+        preUpdatePipe.runFilters(preUpdatePayload, filterContext)
+        if (publish) {
+            // run pre-publish pipe
+            val prePublishPayload = PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
+            prePublishPipe.runFilters(prePublishPayload, filterContext)
         }
-
-        // save document with same ID or new one, if no draft version exists
-        val updatedDocument = data as ObjectNode
-        updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString())
-        val version = updatedDocument.get(FIELD_VERSION)?.asText();
-
-        // handle linked docs
-        val docType = updatedDocument[FIELD_DOCUMENT_TYPE].asText()
-        val refType = getDocumentType(docType)
-        refType.handleLinkedFields(updatedDocument)
 
         // TODO: use document id instead of DB-ID
         // TODO: use version as Int
-        val savedDoc = dbService.save(DocumentType::class, recordId, updatedDocument.toString(), version)
+        // save document with same ID or new one, if no draft version exists (because the last version is published)
+        val recordId = if (!preUpdatePayload.wrapper[FIELD_DRAFT].isNull) {
+            preUpdatePayload.wrapper[FIELD_DRAFT].asText()
+        } else null
+        val version = preUpdatePayload.document.get(FIELD_VERSION)?.asText();
+        val updatedDocument = dbService.save(DocumentType::class, recordId, preUpdatePayload.document.toString(), version)
 
-        val dbID = dbService.getRecordId(savedDoc)
-        saveDocumentWrapper(publish, docWrapper, dbID!!)
+        // update wrapper to document association
+        with(preUpdatePayload.wrapper) {
+            val updatedRecordId = dbService.getRecordId(updatedDocument)
+            if (publish) {
+                // move published version to archive
+                val publishedId = get(FIELD_PUBLISHED)
+                if (!publishedId.isNull) {
+                    withArray(FIELD_ARCHIVE).add(publishedId)
+                }
+                // set published version
+                put(FIELD_PUBLISHED, updatedRecordId)
+                // remove draft version
+                put(FIELD_DRAFT, null as String?)
+            } else {
+                // update draft version
+                var draftId = get(FIELD_DRAFT)
+                if (draftId.isNull) {
+                    // TODO: db_id is ORecord!
+                    put(FIELD_DRAFT, updatedRecordId)
+                }
+                else {}
+            }
+        }
+
+        // save wrapper
+        val updatedWrapper = dbService.save(DocumentWrapperType::class, dbService.getRecordId(preUpdatePayload.wrapper), preUpdatePayload.wrapper.toString())
+
+        // run post-update pipe
+        val postUpdatePayload = PostUpdatePayload(docType, updatedDocument as ObjectNode, updatedWrapper as ObjectNode)
+        postUpdatePipe.runFilters(postUpdatePayload, filterContext)
+        if (publish) {
+            // run post-publish pipe
+            val postPublishPayload = PostPublishPayload(docType, postUpdatePayload.document, postUpdatePayload.wrapper)
+            postPublishPipe.runFilters(postPublishPayload, filterContext)
+            return getLatestDocument(postPublishPayload.wrapper)
+        }
+
+        return getLatestDocument(postUpdatePayload.wrapper)
+    }
+
+    fun deleteRecursively(id: String) {
         val wrapper = getByDocumentId(id, DocumentWrapperType::class, true)
-        return getLatestDocument(wrapper!!)
+
+        findChildrenDocs(id, isAddress(wrapper)).hits.forEach {
+            deleteRecursively(it.get(FIELD_ID).asText())
+        }
+
+        // remove all document versions which have the same ID
+        dbService.remove(DocumentType::class, id)
+
+        // remove the wrapper
+        dbService.remove(DocumentWrapperType::class, id)
+    }
+
+    fun revertDocument(id: String): JsonNode {
+
+        // remove draft version
+        val wrapper = getByDocumentId(id, DocumentWrapperType::class, false) as ObjectNode
+
+        val publishedId = wrapper.get(FIELD_PUBLISHED)
+
+        // check if draft and published field are filled
+        assert(!wrapper.get(FIELD_DRAFT).isNull && !publishedId.isNull)
+
+        wrapper.put(FIELD_DRAFT, null as String?)
+        val recordId = dbService.getRecordId(wrapper)
+//        val version = wrapper.get(FIELD_VERSION).asText()
+
+        dbService.save(DocumentWrapperType::class, recordId, wrapper.toString())
+
+        // return published version
+        val publishedDoc = dbService.find(DocumentType::class, publishedId.asText()) as ObjectNode
+
+        publishedDoc.put(FIELD_STATE, DocumentState.PUBLISHED.value)
+//        publishedDoc.put(FIELD_HAS_CHILDREN, determineHasChildren())
+
+        return prepareDocument(publishedDoc, wrapper.get(FIELD_DOCUMENT_TYPE).asText())
     }
 
     fun getDocumentStatistic(): StatisticResponse {
@@ -192,11 +257,14 @@ class DocumentService : MapperService() {
         )
     }
 
+    fun isAddress(wrapper: JsonNode?): Boolean {
+        return wrapper?.get(FIELD_CATEGORY)?.asText() == DocumentCategory.ADDRESS.value
+    }
+
     /**
-     * Every document type belongs to a category(data or address). However a folder can belong to multiple categories
+     * Every document type belongs to a category (data or address). However a folder can belong to multiple categories
      */
     private fun getCategoryFromType(docType: String, defaultIsAddress: Boolean): String {
-
         if (docType == DocumentCategory.FOLDER.value) {
             return if (defaultIsAddress) DocumentCategory.ADDRESS.value else DocumentCategory.DATA.value
         }
@@ -204,14 +272,6 @@ class DocumentService : MapperService() {
         return documentTypes
                 .find { it.className == docType }!!
                 .category
-    }
-
-    private fun determineRecordId(docWrapper: ObjectNode): String? {
-        return if (docWrapper[FIELD_DRAFT].isNull) {
-            null
-        } else {
-            docWrapper[FIELD_DRAFT].asText()
-        }
     }
 
     private fun getDocumentVersion(doc: JsonNode, onlyPublished: Boolean): ObjectNode {
@@ -245,67 +305,22 @@ class DocumentService : MapperService() {
         }
     }
 
-    private fun addCreationInfo(dataJson: ObjectNode) {
-
-        val uuid = dataJson.get(FIELD_ID)?.textValue() ?: UUID.randomUUID().toString()
-        val now = OffsetDateTime.now().toString()
-
-        with(dataJson) {
-            put(FIELD_ID, uuid)
-            put(FIELD_HAS_CHILDREN, false)
-            put(FIELD_CREATED, now)
-            put(FIELD_MODIFIED, now)
+    private fun prepareDocument(docData: ObjectNode, docType: String, onlyPublished: Boolean = false, resolveLinks: Boolean = true): ObjectNode {
+        // set empty parent fields explicitly to null
+        val parent = docData.has(FIELD_PARENT)
+        if (!parent || docData.get(FIELD_PARENT).asText().isEmpty()) {
+            docData.put(FIELD_PARENT, null as String?)
         }
-    }
+        removeDBManagementFields(docData)
 
-    private fun createDocumentWrapper(node: ObjectNode, recordId: String, category: String): ObjectNode {
+        // get latest references from links
+        if (resolveLinks) {
+            val refType = getDocumentType(docType)
 
-        val nodeParentId = node[PARENT_ID]
-        val parentId = nodeParentId?.textValue()
-        val documentType = node[FIELD_DOCUMENT_TYPE].asText()
-
-        return jacksonObjectMapper().createObjectNode().apply {
-            put(FIELD_DRAFT, null as String?)
-            put(FIELD_PUBLISHED, null as String?)
-            put(FIELD_ID, node[FIELD_ID].asText())
-            put(FIELD_DRAFT, recordId)
-            put(FIELD_PARENT, parentId)
-            put(FIELD_DOCUMENT_TYPE, documentType)
-            put(FIELD_CATEGORY, category)
-            putArray(FIELD_ARCHIVE)
-        }
-    }
-
-    private fun saveDocumentWrapper(publish: Boolean, docWrapper: ObjectNode, dbID: String): JsonNode {
-        return if (publish) {
-            handlePublishingOnDocumentWrapper(docWrapper, dbID)
-        } else {
-            handleSaveOnDocumentWrapper(docWrapper, dbID)
-        }
-    }
-
-    private fun handleSaveOnDocumentWrapper(docWrapper: ObjectNode, dbID: String): JsonNode {
-        // update document wrapper with new draft version
-        if (docWrapper[FIELD_DRAFT].isNull) {
-            // TODO: db_id is ORecord!
-            docWrapper.put(FIELD_DRAFT, dbID)
-            return dbService.save(DocumentWrapperType::class, dbService.getRecordId(docWrapper), docWrapper.toString())
-        }
-        return docWrapper
-    }
-
-    private fun handlePublishingOnDocumentWrapper(docWrapper: ObjectNode, dbID: String): JsonNode {
-        // add ID from published field to archive
-        if (!docWrapper[FIELD_PUBLISHED].isNull) {
-            docWrapper.withArray(FIELD_ARCHIVE).add(docWrapper[FIELD_PUBLISHED])
+            refType.mapLatestDocReference(docData, onlyPublished)
         }
 
-        // add doc to published reference
-        docWrapper.put(FIELD_PUBLISHED, dbID)
-
-        // remove draft version
-        docWrapper.put(FIELD_DRAFT, null as String?)
-        return dbService.save(DocumentWrapperType::class, dbService.getRecordId(docWrapper), docWrapper.toString())
+        return docData
     }
 
     private fun updateParent(dbDoc: String, parent: String?): JsonNode {
@@ -334,49 +349,5 @@ class DocumentService : MapperService() {
                         version)
             }
         }
-    }
-
-    fun deleteRecursively(id: String) {
-        val wrapper = getByDocumentId(id, DocumentWrapperType::class, true)
-
-        findChildrenDocs(id, isAddress(wrapper)).hits.forEach {
-            deleteRecursively(it.get(FIELD_ID).asText())
-        }
-
-        // remove all document versions which have the same ID
-        dbService.remove(DocumentType::class, id)
-
-        // remove the wrapper
-        dbService.remove(DocumentWrapperType::class, id)
-    }
-
-    fun isAddress(wrapper: JsonNode?): Boolean {
-        return wrapper?.get(FIELD_CATEGORY)?.asText() == DocumentCategory.ADDRESS.value
-    }
-
-    fun revertDocument(id: String): JsonNode {
-
-        // remove draft version
-        val wrapper = getByDocumentId(id, DocumentWrapperType::class, false) as ObjectNode
-
-        val publishedId = wrapper.get(FIELD_PUBLISHED)
-
-        // check if draft and published field are filled
-        assert(!wrapper.get(FIELD_DRAFT).isNull && !publishedId.isNull)
-
-        wrapper.put(FIELD_DRAFT, null as String?)
-        val recordId = dbService.getRecordId(wrapper)
-//        val version = wrapper.get(FIELD_VERSION).asText()
-
-        dbService.save(DocumentWrapperType::class, recordId, wrapper.toString())
-
-        // return published version
-        val publishedDoc = dbService.find(DocumentType::class, publishedId.asText()) as ObjectNode
-
-        publishedDoc.put(FIELD_STATE, DocumentState.PUBLISHED.value)
-//        publishedDoc.put(FIELD_HAS_CHILDREN, determineHasChildren())
-
-        return prepareDocument(publishedDoc, wrapper.get(FIELD_DOCUMENT_TYPE).asText())
-
     }
 }

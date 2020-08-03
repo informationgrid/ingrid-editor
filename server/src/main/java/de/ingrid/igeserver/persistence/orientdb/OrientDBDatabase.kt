@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.orientechnologies.orient.core.db.*
 import com.orientechnologies.orient.core.exception.OConcurrentModificationException
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass
-import com.orientechnologies.orient.core.record.OElement
 import com.orientechnologies.orient.core.record.ORecordAbstract
 import com.orientechnologies.orient.core.record.impl.ODocument
 import com.orientechnologies.orient.core.sql.executor.OResult
@@ -153,7 +152,7 @@ class OrientDBDatabase : DBApi {
 
     override fun <T : EntityType> find(type: KClass<T>, id: String?): JsonNode? {
         val typeImpl = getEntityTypeImpl(type)
-        val query = "SELECT @this.toJSON('rid,class,version') as jsonDoc FROM ${typeImpl.className} WHERE @rid = $id"
+        val query = "SELECT @this.toJSON('rid,class,version') as jsonDoc FROM ${typeImpl.className} WHERE $DB_ID = $id"
         val result = dBFromThread.query(query)
         val list = mapOResultSetToJson(result)
         result.close()
@@ -305,7 +304,7 @@ class OrientDBDatabase : DBApi {
     override fun updateDatabase(settings: Catalog) {
         acquireImpl(settings.id).use {
             val list = this.findAll(CatalogInfoType::class)
-            if (list == null || list.isEmpty()) {
+            if (list.isEmpty()) {
                 throw PersistenceException("No catalog info found in database ${settings.id}")
             }
             val map = list[0] as ObjectNode
@@ -416,7 +415,7 @@ class OrientDBDatabase : DBApi {
 
     private fun <T : EntityType> getById(type: KClass<T>, id: String?): Optional<OResult> {
         val typeImpl = getEntityTypeImpl(type)
-        val query = "SELECT * FROM ${typeImpl.className} WHERE @rid = $id"
+        val query = "SELECT * FROM ${typeImpl.className} WHERE $DB_ID = $id"
         val result = dBFromThread.query(query)
         val first = result.stream()
                 .findFirst()
