@@ -18,6 +18,10 @@ If we want to run our tests locally then we have to fulfill the following precon
     }
   }
   ```
+* edit `application-default.properties`:
+  ```properties
+  keycloak.auth-server-url=https://keycloak.informationgrid.eu/auth
+  ```
 * use the test database
   * copy database content from docker-setup-project `ige-ng/compose-files/qs/databases` into `server/databases`
 * run backend with following command
@@ -27,7 +31,7 @@ If we want to run our tests locally then we have to fulfill the following precon
 If we are all set, then we can run the test by executing the following command inside the e2e-folder:
 
 ```bash
-npm run cypress:runFull
+npm run cypress:run
 ```
 
 # Tests Convention
