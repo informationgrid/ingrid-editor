@@ -28,6 +28,7 @@
   max-width: 1200px;
   margin: 0 auto;
 }
+
 .form-content ige-form-info {
   display: block;
   margin-bottom: 0;
@@ -57,3 +58,23 @@ pre {
   background: #999999;
   border-radius: 20px;
 }
+
+.optional-fields-toggle {
+  background: $ige-background;
+  display: flex;
+  float: right;
+  margin-bottom: -2em;
+  font-size: 14px;
+  height: 36px;
+  padding-right: 10px;
+
+  .diagonal {
+    width: 46px;
+    background: -webkit-linear-gradient(45deg, #ffffff 45%, $ige-background 0%);
+  }
+
+  mat-slide-toggle {
+    height: inherit;
+  }
+}
+

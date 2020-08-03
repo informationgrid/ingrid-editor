@@ -130,12 +130,12 @@ ige-root .mat-card {
 .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple,
 .mat-slide-toggle.mat-accent .mat-ripple-element,
-.mat-slide-toggle.mat-accent .mat-slide-toggle-thumb,
+.mat-slide-toggle.mat-accent.mat-checked .mat-slide-toggle-thumb,
 .mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
   background-color: $ige-check-color !important;
 }
 
-.mat-slide-toggle.mat-accent .mat-slide-toggle-bar {
+.mat-slide-toggle.mat-accent.mat-checked .mat-slide-toggle-bar {
   background-color: #{$ige-check-color + '8a'} !important;
 }
 
