@@ -28,7 +28,7 @@ describe('mCLOUD documents', function () {
       cy.fieldIsInvalid('description', 'Dieses Feld muss ausgefüllt sein');
     });
 
-    it.only('should create a minimal publishable document', () => {
+    it('should create a minimal publishable document', () => {
       DocumentPage.createDocument();
       // cy.visit('/form;id=642b8dde-96a9-4b1f-a2eb-e8894735f4cd');
 
