@@ -18,18 +18,32 @@ describe('Toolbar behavior', () => {
   });
 
   it('should activate specific buttons when a folder is loaded', () => {
+    // Empty folder
     Tree.selectNodeWithTitle('Neue Testdokumente');
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save']);
+    cy.get(DocumentPage.Toolbar.Copy).click();
+    cy.get("[aria-disabled='false']").contains("Kopieren")
+    cy.get("[aria-disabled='true']").contains("Kopieren mit Teilbaum")
+    cy.get("[aria-disabled='false']").contains("Verschieben (inkl. Teilbaum)")
 
-    // TODO: copy, cut and copy with subtree should be enabled
-
-
+    // Non Empty folder
+    cy.get('body').type('{esc}')
+    Tree.selectNodeWithTitle('Testdokumente');
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Previous']);
+    cy.get(DocumentPage.Toolbar.Copy).click();
+    cy.get("[aria-disabled='false']").contains("Kopieren")
+    cy.get("[aria-disabled='false']").contains("Kopieren mit Teilbaum")
+    cy.get("[aria-disabled='false']").contains("Verschieben (inkl. Teilbaum)")
   });
 
-  xit('should activate specific buttons when a document is loaded', () => {
-    Tree.selectNodeWithTitle('zzz');
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish']);
-
+  it('should activate specific buttons when a document is loaded', () => {
+    Tree.selectNodeWithTitle('Testdokumente');
+    cy.get('#sidebar').findByText('Test mCLOUD Dokument').click();
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish', 'Previous']);
+    cy.get(DocumentPage.Toolbar.Copy).click();
+    cy.get("[aria-disabled='false']").contains("Kopieren")
+    cy.get("[aria-disabled='true']").contains("Kopieren mit Teilbaum")
+    cy.get("[aria-disabled='false']").contains("Verschieben (inkl. Teilbaum)")
     // TODO: copy with subtree should be disabled, but copy and cut enabled
   });
 
