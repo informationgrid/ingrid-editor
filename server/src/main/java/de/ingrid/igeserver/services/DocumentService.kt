@@ -12,12 +12,10 @@ import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.*
-import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.filter.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.time.OffsetDateTime
 import kotlin.reflect.KClass
 
 @Service
@@ -140,7 +138,7 @@ class DocumentService : MapperService() {
         val recordId = if (!preUpdatePayload.wrapper[FIELD_DRAFT].isNull) {
             preUpdatePayload.wrapper[FIELD_DRAFT].asText()
         } else null
-        val version = preUpdatePayload.document.get(FIELD_VERSION)?.asText();
+        val version = preUpdatePayload.document.get(FIELD_VERSION)?.asText()
         val updatedDocument = dbService.save(DocumentType::class, recordId, preUpdatePayload.document.toString(), version)
 
         // update wrapper to document association
@@ -158,7 +156,7 @@ class DocumentService : MapperService() {
                 put(FIELD_DRAFT, null as String?)
             } else {
                 // update draft version
-                var draftId = get(FIELD_DRAFT)
+                val draftId = get(FIELD_DRAFT)
                 if (draftId.isNull) {
                     // TODO: db_id is ORecord!
                     put(FIELD_DRAFT, updatedRecordId)
@@ -327,27 +325,5 @@ class DocumentService : MapperService() {
         val map = getJsonNode(dbDoc) as ObjectNode
         map.put(FIELD_PARENT, parent)
         return map
-    }
-
-    /**
-     * Throw an exception if we want to save a draft version with a version number lower than
-     * the current published version.
-     */
-    private fun checkForPublishedConcurrency(wrapper: ObjectNode, version: Int?) {
-
-        val draft = wrapper.get(FIELD_DRAFT)
-        val publishedDBID = wrapper.get(FIELD_PUBLISHED).asText()
-
-        if (draft.isNull && publishedDBID != null) {
-            val publishedDoc = dbService.find(DocumentType::class, publishedDBID)
-            val publishedVersion = publishedDoc?.get("@version")?.asInt()
-            if (version != null && publishedVersion != null && publishedVersion > version) {
-                throw ConcurrentModificationException(
-                        "Could not update object with id $publishedDBID. The database version is newer than the record version.",
-                        publishedDBID,
-                        publishedDoc.get("@version").asInt(),
-                        version)
-            }
-        }
     }
 }
