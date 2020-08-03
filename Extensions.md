@@ -1,12 +1,29 @@
 # Extension Points
 
-Extension points are used to add functionality at pre-defined locations in the server application. The functionality is implemented in extensions that are typically activated in some environments only.
+Extension points are a typical approach to solve the problem of **varying requirements for several application aspects** (e.g. data import-/export formats or data validation). The idea is to define places in the application - the extension points - where so-called extensions can add or alter the default functionality. Each extension implements it's own requirements according to the specific extension point and the behavioral variation of the extension point is achieved by activating the extension in some environments and deactivating it in others.
 
 ## General concept
 
-Extension points are defined by implementing the `ExtensionPoint<T: Extension>` interface and deriving a sub-interface from the `Extension` interface that is used to parametrize this specific extension point. The extension point is established by using an instance of the newly created `ExtensionPoint` implementation at a specific location in the server code. Application developers could then implement the specific `Extension` sub-interface to add custom functionality to that extension point. All classes and interfaces are located in the `de.ingrid.igeserver.extension` package.
+An **Extension point** in IGE Server is **defined** by two concepts:
 
-The following **example** shows the steps necessary to fulfill the requirement of supporting customer specific export formats:
+- A class implementing the `ExtensionPoint<T: Extension>` interface which holds the extensions and gives access to them.
+- A sub-interface of `Extension` used as type parameter for the extension point which means that only extensions implementing this interface will be available at that extension point.
+
+The extension point is **established** by using an instance of the extension point class at a specific location in the server code (e.g. the data exporter). Application developers could then implement the related extension sub-interface to add custom functionality to that extension point.
+
+All extension related classes and interfaces of IGE Server are located in the `de.ingrid.igeserver.extension` package.
+
+#### Profiles
+
+A key aspect of IGE Server's data model is the support for different document types that are related to a single or multiple so-called **profile(s)**. Since extensions are typically used in data processing application aspects, the `Extension` interface defines a `profiles` property which is used to define for which profiles the concrete extension is used. The possible values of the profile property have the following meanings in the context of the profile associated with the processed data (*data profile*):
+
+- *Empty list*: The extension is used with all data profiles (also when the data profile is not specified)
+- *List of profile names*: The extension is only used if the data profile is equal to one of the listed profiles (not when the data profile is not specified)
+- *Null*: The extension is not used with any profile (also not when the data profile is not specified)
+
+### Example
+
+The following example shows the steps necessary to define an extension point for supporting **customer specific export formats**:
 
 1. **Define the extension interface** used to implement the specific export formats:
 
@@ -14,31 +31,48 @@ The following **example** shows the steps necessary to fulfill the requirement o
    interface ExportFormat : Extension {
    
        override val id: String
-           get() = this::class.qualifiedName ?: this::class.toString()
+           get() = this::class.qualifiedName ?: 
+                   this::class.toString()
+           
+       // export specific methods to be called 
+       // on the data, e.g. writeData()
      	...
    }
    ```
-   The interface provides a default getter for the `id` property, which is useful, if instances are created with spring's `@Autowired` mechanism.
+
+   NOTE: The interface provides a default getter for the extension's `id` property, which is useful, if instances are created with spring's `@Autowired` mechanism.
    
 2. **Define the extension point** to which the  export format extensions will be registered:
 
    ```
    @Component
-   class Export(@Value("ExportExtensionPoint") override val id: String) : ExtensionPoint<ExportFormat> {
+   class Export(@Value("ExportExtensionPoint") override val id: String) : 
+       ExtensionPoint<ExportFormat> {
    
        @Autowired(required = false)
        override lateinit var extensions: List<ExportFormat>
+       
+       // extension point specific methods to be used to access the extensions
+       // and their functionality, e.g. getFormatByName()
        ...
    }
    ```
-   The `id` property defaults to *ExportExtensionPoint*, if an instance is created with spring's `@Autowired` mechanism.
+
+   NOTE: The `id` property of the extension point defaults to *ExportExtensionPoint*, if an instance is created with spring's `@Autowired` mechanism.
    
-3. **Establish the extension point** as member variable in the class handling the export process:
+3. **Establish the extension point** as member variable in the class that handles the export process:
 
    ```
-   @Autowired private lateinit var export: Export
+   @Service
+   class Exporter {
+   
+       @Autowired private lateinit var export: Export
+       ...
+   }
+   
    ```
-   The `export` variable will receive all `ExportFormat` implementations in the `extensions` property and can choose the appropriate export format from them.
+
+   The `Export` instance named `export` will receive all `ExportFormat` implementations in it's `extensions` property and can choose the appropriate export format from them.
    
 4. **Define an extension** for the custom export format:
 
@@ -56,35 +90,65 @@ The following **example** shows the steps necessary to fulfill the requirement o
    }
    ```
 
-   `MyExportFormat` defines the profiles (document types) with which it can be used in the `PROFILES` member variable. An empty array means that the extension can be used with any profile.
+   `MyExportFormat` defines the profiles with which it can be used in the `PROFILES` member variable. The empty array means that the extension can be used with any profile.
 
 
 ## Pipes and Filters
 
-The server application provides a special extension point that implements the [pipes and filters pattern](https://www.enterpriseintegrationpatterns.com/patterns/messaging/PipesAndFilters.html) and is located in the `de.ingrid.igeserver.extension.pipe` package. This extension point is used at several places, for example to set up filter chains when persisting and publishing documents.
+The IGE Server code provides a **special extension point type** that implements the [pipes and filters pattern](https://www.enterpriseintegrationpatterns.com/patterns/messaging/PipesAndFilters.html) for sequentially validating and transforming data in a flexible way. This extension point type is used at several places of the application, for example to set up filter chains when persisting and publishing documents. The classes and interfaces are located in the `de.ingrid.igeserver.extension.pipe` package. 
 
-The Pipes and Filters extension point consists of the following main **classes and interfaces**:
+IGE Server's pipes and filters implementation applies the two extension point concepts mentioned above as follows:
 
-- `class Pipe<T: Payload> : ExtensionPoint<Filter<T>>` defines the extension point.
-- `interface Payload` defines the actual content to be transferred in a specific pipe.
-- `interface Filter<T: Payload> : Extension` defines the interface for filters used in a pipe.
+- The class `Pipe<T: Payload> : ExtensionPoint<Filter<T>>` implements the extension point interface and expects the extensions to be of type `Filter`.
+- The interface `Filter<T: Payload> : Extension, (T, Context) -> T` defines the interface for extensions (aka filters) used at the extension point. Each filter must implement the `invoke()` method that is called by the pipe instance when running the contained filters using the `runFilters()` method.
 
-Concrete `Payload` classes are used to bind the filters to the pipes. A `Context` is sent together with the payload through the pipe. It is used to provide and collect additional information.
+#### Payload and Context
 
-An **example** of a concrete pipe is the `PreCreatePipe` that is used by `DocumentService` for preparing document data before storing them. It consists of the following parts (see `de.ingrid.igeserver.persistence.filter` package):
+An additional concept is that of a payload that contains the **data to be processed** by the filters of a pipe. The fact that each pipe will typically handle a specific payload requires to bind payload specific filters to payload specific pipes. This is done by defining a sub-interface of the `Payload` interface for each pipe (e.g. *pre* update pipe uses *PreUpdatePayload*, *post* update pipe uses *PostUpdatePayload*). Parameterizing the pipe and the related filters with this sub-interface ensures that only matching filters run in a pipe. Inheritance of payloads and filters allows for flexible configuration and code-reuse.
 
-- **Pipe**: `@Component class PreCreatePipe : Pipe<PreCreatePayload>("PreCreatePipe")`
-- **Payload**:`class PreCreatePayload : Payload`
-- **Filter**: `@Component class DefaultDocumentInitializer : Filter<PreCreatePayload>`
+When a pipe runs it's filters, a `Context` is sent together with the payload through the pipe. It is used to provide additional information (e.g. the data profile) and collect results (e.g. status messages or properties passed between filters). Although `Context` is defined as an interface, there only exists the `DefaultContext` implementation by now.
 
-Note the `@Component` annotations on the pipe and filter classes that are necessary for spring's `@Autowired` mechanism.
+### Example
 
-`DocumentService` uses the  `PreCreatePipe` in the following way:
+An example of a concrete pipe is the `PreCreatePipe` that is used by `DocumentService` for preparing document data before storing them. It consists of the following parts (see `de.ingrid.igeserver.persistence.filter` package):
+
+- **Payload** (data)
+
+  ```
+  open class PreCreatePayload : Payload
+  ```
+
+  NOTE: Constructor parameters and the base class `PersistencePayload` are left out for for the sake of simplicity.
+
+- **Pipe** (extension point)
+
+  ```
+  @Component class PreCreatePipe : Pipe<PreCreatePayload>("PreCreatePipe")
+  ```
+
+- **Filter** (extension)
+
+  ```
+  @Component class DefaultDocumentInitializer : Filter<PreCreatePayload> {
+  
+      override fun invoke(payload: PreCreatePayload, context: Context): PreCreatePayload {
+          context.addMessage(Message(this, "Initialize document data before insert"))
+          ...
+          return payload
+      }
+      ...
+  }
+  ```
+
+NOTE: `@Component` annotations on the pipe and filter classes are necessary for spring's `@Autowired` mechanism.
+
+The following code demonstrates how `DocumentService` uses the  `PreCreatePipe` when creating documents:
 
 ```
 @Service
 class DocumentService : MapperService() {
 
+    // set up the pipe instance
 	@Autowired private lateinit var preCreatePipe: Pipe<PreCreatePayload>
 	
     fun createDocument(data: JsonNode, address: Boolean = false): JsonNode {
