@@ -22,4 +22,11 @@ export class IndexService {
       format: 'portal'
     });
   }
+
+  setCronPattern(value: string) {
+    return this.http.post(this.configuration.backendUrl + 'index/config', {
+      catalogId: this.catalog.id,
+      cronPattern: value
+    });
+  }
 }

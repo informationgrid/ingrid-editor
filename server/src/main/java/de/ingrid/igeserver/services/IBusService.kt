@@ -7,11 +7,13 @@ import de.ingrid.utils.*
 import net.weta.components.communication.configuration.ClientConfiguration
 import net.weta.components.communication.tcp.StartCommunication
 import de.ingrid.utils.query.IngridQuery
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.io.File
 import javax.annotation.PostConstruct
 
 @Service
+@Profile("ibus")
 class IBusService: HeartBeatPlug(60000) {
 
     @PostConstruct

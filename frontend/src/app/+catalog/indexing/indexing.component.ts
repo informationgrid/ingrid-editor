@@ -16,4 +16,8 @@ export class IndexingComponent implements OnInit {
   index() {
     this.indexService.start().subscribe()
   }
+
+  updatePattern(value: string) {
+    this.indexService.setCronPattern(value).subscribe();
+  }
 }

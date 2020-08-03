@@ -1,12 +1,12 @@
 package de.ingrid.igeserver.index
 
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
+import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
-import de.ingrid.igeserver.services.FIELD_DRAFT
 import de.ingrid.igeserver.services.FIELD_PUBLISHED
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,6 +35,22 @@ class IndexService @Autowired constructor(private val dbService: DBApi, private 
                 .forEach { println(it) }
 
     }
+
+    fun updateConfig(cronPattern: String) {
+
+        val info = this.dbService.findAll(CatalogInfoType::class)[0] as ObjectNode
+        info.put("cron", cronPattern)
+        dbService.save(CatalogInfoType::class, dbService.getRecordId(info), info.toString())
+
+    }
+
+    fun getConfig(): String? {
+
+        val info = this.dbService.findAll(CatalogInfoType::class)[0] as ObjectNode
+        return info.get("cron")?.asText()
+
+    }
+
 /*
     private fun getVersion(wrapper: JsonNode, options: IndexOptions): JsonNode {
 
