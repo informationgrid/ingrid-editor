@@ -3,7 +3,6 @@ package de.ingrid.igeserver.extension.pipe
 import de.ingrid.igeserver.extension.ExtensionPoint
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
 
 /**
  * Extension point implementing the pipes and filters pattern
@@ -13,8 +12,7 @@ import org.springframework.stereotype.Component
  * NOTE Filters are injected using the @Autowired annotation. This means that
  * two Pipe instances with the same Payload type will receive the same filter set.
  */
-@Component
-class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : ExtensionPoint<Filter<T>> {
+open class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : ExtensionPoint<Filter<T>> {
 
     /**
      * Optional configuration value for defining the filter sequences
@@ -70,7 +68,7 @@ class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : Extens
             val filterSequence: List<String>? = filterOrderMap?.getOrDefault(id, emptyList())
             filters = extensions.sortedBy {
                 if (filterSequence != null && filterSequence.contains(it.id)) {
-                    filterSequence?.indexOf(it.id)
+                    filterSequence.indexOf(it.id)
                 }
                 else  {
                     // put unknown filters at the end
@@ -83,10 +81,16 @@ class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : Extens
             filters = filters.filter { disabledFilters == null || !disabledFilters.contains(it.id) }
         }
 
+        extensions.forEach {
+            if (!filters.contains(it)) {
+                context.addMessage(Message(this, "Skipped filter '${it.id}' because it is disabled by configuration"))
+            }
+        }
+
         // run filters
         var result: T = payload
         for (filter in filters) {
-            if (profile == null || filter.usedInProfile(profile)) {
+            if (filter.usedInProfile(profile)) {
                 context.addMessage(Message(this, "Running filter '${filter.id}'"))
                 result = filter(result, context)
             }

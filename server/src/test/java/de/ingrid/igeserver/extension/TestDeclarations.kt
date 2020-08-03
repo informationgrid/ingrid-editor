@@ -116,6 +116,36 @@ class TestAuthorizePublishFilter(override val profiles: Array<String>?) : Filter
     }
 }
 
+// Authorization on publish only for profileA
+@Component
+class TestAuthorizePublishProfileAFilter(override val profiles: Array<String>?) : Filter<TestPayloadPublish> {
+
+    override fun invoke(payload: TestPayloadPublish, context: Context): TestPayloadPublish {
+        if (payload.action == TestPayloadPersist.Action.PUBLISH) {
+            context.addMessage(Message(this, "Authorize on publish for 'profileA'"))
+        }
+        else {
+            context.addMessage(Message(this, "Filter does not apply"))
+        }
+        return payload
+    }
+}
+
+// Authorization on publish for no profile (deactivated)
+@Component
+class TestAuthorizePublishNullFilter(override val profiles: Array<String>?) : Filter<TestPayloadPublish> {
+
+    override fun invoke(payload: TestPayloadPublish, context: Context): TestPayloadPublish {
+        if (payload.action == TestPayloadPersist.Action.PUBLISH) {
+            context.addMessage(Message(this, "Should not run"))
+        }
+        else {
+            context.addMessage(Message(this, "Filter does not apply"))
+        }
+        return payload
+    }
+}
+
 /**
  * Pipes
  */
@@ -149,6 +179,12 @@ class PipeTestConfig {
 
     @Bean
     fun authorizePublishFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishFilter(arrayOf())
+
+    @Bean
+    fun authorizePublishProfileAFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishProfileAFilter(arrayOf("profileA"))
+
+    @Bean
+    fun authorizePublishNullFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishNullFilter(null)
 
     @Bean
     fun createPipe(): Pipe<TestPayloadCreate> = TestCreatePipe()

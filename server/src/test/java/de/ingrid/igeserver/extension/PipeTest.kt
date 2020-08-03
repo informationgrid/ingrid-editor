@@ -48,35 +48,24 @@ class PipeTest : FunSpec() {
 
             val result = updatePipe.runFilters(payload, context)
 
+            updatePipe.extensions.size shouldBe 2
             result.data shouldBe data
             context.messages().count() shouldBe 6
-
-            val m1 = context.messages().elementAt(0)
-            m1.creator should beInstanceOf(TestUpdatePipe::class)
-            m1.message shouldStartWith "Running filters on pipe 'UpdatePipe' for profile 'null'"
-
-            val m2 = context.messages().elementAt(1)
-            m2.creator should beInstanceOf(TestUpdatePipe::class)
-            m2.message shouldStartWith "Running filter 'de.ingrid.igeserver.extension.TestValidateUpdateFilter'"
-
-            val m3 = context.messages().elementAt(2)
-            m3.creator should beInstanceOf(TestValidateUpdateFilter::class)
-            m3.message shouldStartWith "Validate data on persist"
-
-            val m4 = context.messages().elementAt(3)
-            m4.creator should beInstanceOf(TestValidateUpdateFilter::class)
-            m4.message shouldStartWith "Validate data on update"
-
-            val m5 = context.messages().elementAt(4)
-            m5.creator should beInstanceOf(TestUpdatePipe::class)
-            m5.message shouldStartWith "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'"
-
-            val m6 = context.messages().elementAt(5)
-            m6.creator should beInstanceOf(TestValidatePublishFilter::class)
-            m6.message shouldStartWith "Filter does not apply"
+            arrayOf(
+                    TestUpdatePipe::class            to "Running filters on pipe 'UpdatePipe' for profile 'null'",
+                    TestUpdatePipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestValidateUpdateFilter'",
+                    TestValidateUpdateFilter::class  to "Validate data on persist",
+                    TestValidateUpdateFilter::class  to "Validate data on update",
+                    TestUpdatePipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
+                    TestValidatePublishFilter::class to "Filter does not apply"
+            ).forEachIndexed { index, expectation ->
+                val m = context.messages().elementAt(index)
+                m.creator should beInstanceOf(expectation.first)
+                m.message shouldStartWith expectation.second
+            }
         }
 
-        test("a pipe should run all contained filters in the configured sequence")
+        test("a pipe should run all filters in the configured sequence")
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
@@ -84,31 +73,23 @@ class PipeTest : FunSpec() {
 
             val result = publishPipe.runFilters(payload, context)
 
+            publishPipe.extensions.size shouldBe 4
             result.data shouldBe data
-            context.messages().count() shouldBe 5
-
-            val m1 = context.messages().elementAt(0)
-            m1.creator should beInstanceOf(TestPublishPipe::class)
-            m1.message shouldStartWith "Running filters on pipe 'PublishPipe' for profile 'null'"
-
-            val m2 = context.messages().elementAt(1)
-            m2.creator should beInstanceOf(TestPublishPipe::class)
-            m2.message shouldStartWith "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'"
-
-            val m3 = context.messages().elementAt(2)
-            m3.creator should beInstanceOf(TestAuthorizePublishFilter::class)
-            m3.message shouldStartWith "Authorize on publish"
-
-            val m4 = context.messages().elementAt(3)
-            m4.creator should beInstanceOf(TestPublishPipe::class)
-            m4.message shouldStartWith "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'"
-
-            val m5 = context.messages().elementAt(4)
-            m5.creator should beInstanceOf(TestValidatePublishFilter::class)
-            m5.message shouldStartWith "Validate data on publish"
+            context.messages().count() shouldBe 7
+            arrayOf(
+                    TestPublishPipe::class            to "Running filters on pipe 'PublishPipe' for profile 'null'",
+                    TestPublishPipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
+                    TestAuthorizePublishFilter::class to "Authorize on publish",
+                    TestPublishPipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
+                    TestValidatePublishFilter::class  to "Validate data on publish"
+            ).forEachIndexed { index, expectation ->
+                val m = context.messages().elementAt(index)
+                m.creator should beInstanceOf(expectation.first)
+                m.message shouldStartWith expectation.second
+            }
         }
 
-        test("a pipe should run only the contained filters that are not disabled")
+        test("a pipe should not run filters that are disabled by configuration")
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadCreate(data)
@@ -116,22 +97,79 @@ class PipeTest : FunSpec() {
 
             val result = createPipe.runFilters(payload, context)
 
+            createPipe.extensions.size shouldBe 1
             result.data shouldBe data
-            context.messages().count() shouldBe 1
+            context.messages().count() shouldBe 2
+            arrayOf(
+                    TestCreatePipe::class to "Running filters on pipe 'CreatePipe' for profile 'null'",
+                    TestCreatePipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestValidateCreateFilter' because it is disabled by configuration"
+            ).forEachIndexed { index, expectation ->
+                val m = context.messages().elementAt(index)
+                m.creator should beInstanceOf(expectation.first)
+                m.message shouldStartWith expectation.second
+            }
         }
 
-        test("a pipe should run only the contained filters that match the profile of the context").config(enabled = false)
+        test("a pipe should run all filters that match the profile of the context")
         {
+            val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
+            val payload = TestPayloadPublish(data)
+            val context = DefaultContext("profileA")
+
+            val result = publishPipe.runFilters(payload, context)
+
+            publishPipe.extensions.size shouldBe 4
+            result.data shouldBe data
+            context.messages().count() shouldBe 8
+            arrayOf(
+                    TestPublishPipe::class                    to "Running filters on pipe 'PublishPipe' for profile 'profileA'",
+                    TestPublishPipe::class                    to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
+                    TestAuthorizePublishFilter::class         to "Authorize on publish",
+                    TestPublishPipe::class                    to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
+                    TestValidatePublishFilter::class          to "Validate data on publish",
+                    TestPublishPipe::class                    to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishProfileAFilter'",
+                    TestAuthorizePublishProfileAFilter::class to "Authorize on publish for 'profileA'",
+                    TestPublishPipe::class                    to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishNullFilter' because it does not apply to profile 'profileA'"
+            ).forEachIndexed { index, expectation ->
+                val m = context.messages().elementAt(index)
+                m.creator should beInstanceOf(expectation.first)
+                m.message shouldStartWith expectation.second
+            }
+        }
+
+        test("a pipe should not run profile specific filters if the context has no profile")
+        {
+            val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
+            val payload = TestPayloadPublish(data)
+            val context = DefaultContext(null)
+
+            val result = publishPipe.runFilters(payload, context)
+
+            publishPipe.extensions.size shouldBe 4
+            result.data shouldBe data
+            context.messages().count() shouldBe 7
+            arrayOf(
+                    TestPublishPipe::class            to "Running filters on pipe 'PublishPipe' for profile 'null'",
+                    TestPublishPipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
+                    TestAuthorizePublishFilter::class to "Authorize on publish",
+                    TestPublishPipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
+                    TestValidatePublishFilter::class  to "Validate data on publish",
+                    TestPublishPipe::class            to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishProfileAFilter' because it does not apply to profile 'null'",
+                    TestPublishPipe::class            to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishNullFilter' because it does not apply to profile 'null'"
+            ).forEachIndexed { index, expectation ->
+                val m = context.messages().elementAt(index)
+                m.creator should beInstanceOf(expectation.first)
+                m.message shouldStartWith expectation.second
+            }
         }
 
         test("an explicit pipe @Component must be declared for each payload")
         {
             // NOTE The postPublishPipe is declared as Pipe<TestPayloadPostPublish> without providing a @Component of
             // type Pipe<TestPayloadPostPublish>. One could expect that only filters of type
-            // Filter<TestPayloadPostPublish> (1) would be injected. But actually
-            // @Autowired will inject filters of *all* payload types (6).
-            postPublishPipe.extensions.size shouldNotBe 1
-            postPublishPipe.extensions.size shouldBe 6
+            // Filter<TestPayloadPostPublish> would be injected. But actually
+            // @Autowired will inject filters of *all* payload types.
+            postPublishPipe.extensions.size shouldBe 8
         }
     }
 }

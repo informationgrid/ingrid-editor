@@ -8,7 +8,7 @@ interface Context {
     /**
      * Name of the profile to which the pipe payload belongs, used to select matching filters
      *
-     * NOTE Null means *no profile*
+     * NOTE Null means *no profile*, which means that only filters matching *all profiles* will be active
      */
     val profile: String?
 
