@@ -89,14 +89,14 @@ class DocumentService : MapperService() {
 	
     fun createDocument(data: JsonNode, address: Boolean = false): JsonNode {
 
-		// set up the filter context with the profile derived from the opened catalog
+        // set up the filter context with the profile derived from the opened catalog
         val filterContext = DefaultContext.withCurrentProfile(dbService)
         
         // get the document type and category of the received data
         val docType = ...
         val category = ...
 
-		// create the payload to be sent through the pipe
+        // create the payload to be sent through the pipe
         val preCreatePayload = PreCreatePayload(docType, data as ObjectNode, category)
 
         // run all filters that handle PreCreatePayload and the specified profile
