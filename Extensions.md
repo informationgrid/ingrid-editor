@@ -40,7 +40,7 @@ The following example shows the steps necessary to define an extension point for
    }
    ```
 
-   NOTE: The interface provides a default getter for the extension's `id` property, which is useful, if instances are created with spring's `@Autowired` mechanism.
+   NOTE: The interface provides a default getter for the extension's `id` property, which is useful, if instances are created with Spring's `@Autowired` mechanism.
    
 2. **Define the extension point** to which the  export format extensions will be registered:
 
@@ -58,7 +58,7 @@ The following example shows the steps necessary to define an extension point for
    }
    ```
 
-   NOTE: The `id` property of the extension point defaults to *ExportExtensionPoint*, if an instance is created with spring's `@Autowired` mechanism.
+   NOTE: The `id` property of the extension point defaults to *ExportExtensionPoint*, if an instance is created with Spring's `@Autowired` mechanism.
    
 3. **Establish the extension point** as member variable in the class that handles the export process:
 
@@ -108,6 +108,35 @@ An additional concept is that of a payload that contains the **data to be proces
 
 When a pipe runs it's filters, a `Context` is sent together with the payload through the pipe. It is used to provide additional information (e.g. the data profile) and collect results (e.g. status messages or properties passed between filters). Although `Context` is defined as an interface, there only exists the `DefaultContext` implementation by now.
 
+#### Configuration
+
+Pipes and filters are configured mainly using Spring's dependency injection with `@Autowired` and `@Value` annotations together with payload specific interfaces. But there are concerns that are preferable defined in an environment specific configuration file rather than in code: 
+
+- **Filter sequence**: The order in which filters are applied to a payload is significant in some situations. It can be defined in the `pipes.filter.order` application property like the following:
+
+  ```
+  pipes.filter.order={'pipeId1': {'filterA','filterB'}, 'pipeId2': {'filterD','filterC'}}
+  ```
+
+  Filters that are not mentioned in the configuration are applied after mentioned filters. The following configuration ensures that data is validated *before* updating.
+
+  ```
+  pipes.filter.order={\
+    'PreUpdatePipe': {\
+      'de.ingrid.igeserver.persistence.filter.DefaultUpdateValidator',\
+      'de.ingrid.igeserver.persistence.filter.DefaultDocumentUpdater'\
+    }\
+  }
+  ```
+
+- **Filter presence**: The `pipes.filter.disabled` application property can be used to deactivate specific filters in a pipe:
+
+  ```
+  pipes.filter.disabled={'pipeId1': {'filterA'}, 'pipeId2': {'filterC'}}
+  ```
+
+NOTE: Pipes and filters are identified by their `id` property. Both properties are optional and they are typically defined in the `application.properties` file.
+
 ### Example
 
 An example of a concrete pipe is the `PreCreatePipe` that is used by `DocumentService` for preparing document data before storing them. It consists of the following parts (see `de.ingrid.igeserver.persistence.filter` package):
@@ -140,7 +169,7 @@ An example of a concrete pipe is the `PreCreatePipe` that is used by `DocumentSe
   }
   ```
 
-NOTE: `@Component` annotations on the pipe and filter classes are necessary for spring's `@Autowired` mechanism.
+NOTE: `@Component` annotations on the pipe and filter classes are necessary for Spring's `@Autowired` mechanism.
 
 The following code demonstrates how `DocumentService` uses the  `PreCreatePipe` when creating documents:
 
