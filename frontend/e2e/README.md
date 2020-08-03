@@ -18,7 +18,7 @@ If we want to run our tests locally then we have to fulfill the following precon
     }
   }
   ```
-* edit `application-default.properties`:
+* edit `server/src/develop/resources/application-default.properties`:
   ```properties
   keycloak.auth-server-url=https://keycloak.informationgrid.eu/auth
   ```
