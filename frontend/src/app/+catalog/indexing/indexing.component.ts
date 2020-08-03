@@ -7,10 +7,13 @@ import {IndexService} from './index.service';
   styleUrls: ['./indexing.component.scss']
 })
 export class IndexingComponent implements OnInit {
+  cronPattern = '';
 
   constructor(private indexService: IndexService) { }
 
   ngOnInit(): void {
+    this.indexService.getCronPattern()
+      .subscribe( config => this.cronPattern = config.cronPattern);
   }
 
   index() {

@@ -48,4 +48,12 @@ class IndexApiController @Autowired constructor(private val catalogService: Cata
 
         return ResponseEntity.ok().build()
     }
+
+    override fun getConfig(principal: Principal?, id: String): ResponseEntity<IndexConfigOptions> {
+
+        dbService.acquire(id).use {
+            return ResponseEntity.ok(IndexConfigOptions(id, indexService.getConfig() ?: ""))
+        }
+
+    }
 }

@@ -14,7 +14,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.scheduling.config.ScheduledTaskRegistrar
 import org.springframework.scheduling.support.CronTrigger
 import org.springframework.stereotype.Component
-import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 
@@ -26,7 +25,7 @@ class IndexingTask @Autowired constructor(private val indexService: IndexService
     val executor = Executors.newSingleThreadScheduledExecutor()
     private val indexManager: IIndexManager = getIndexManager()
     private val scheduler: TaskScheduler = initScheduler()
-    private val scheduledFutures: MutableCollection<ScheduledFuture<*>?> = mutableListOf()
+    private val scheduledFutures: MutableCollection<IndexConfig> = mutableListOf()
 
 
     private fun getIndexManager(): IIndexManager {
@@ -58,10 +57,12 @@ class IndexingTask @Autowired constructor(private val indexService: IndexService
     override fun configureTasks(taskRegistrar: ScheduledTaskRegistrar) {
 
         // get index configurations from all catalogs
-        val newSchedules = getIndexConfigurations()
-                .map { config -> addSchedule(config) }
-
-        scheduledFutures.addAll(newSchedules)
+        getIndexConfigurations()
+                .forEach { config ->
+                    val future = addSchedule(config)
+                    config.future = future
+                    scheduledFutures.add(config)
+                }
 
     }
 
@@ -72,11 +73,18 @@ class IndexingTask @Autowired constructor(private val indexService: IndexService
 
     fun updateTaskTrigger(database: String, cronPattern: String) {
 
-        val first = scheduledFutures.first()
-        first?.cancel(false)
-        scheduledFutures.remove(first)
-        val newFuture = addSchedule(IndexConfig(database, cronPattern))
-        scheduledFutures.add(newFuture)
+        val schedule = scheduledFutures.find { it.database == database }
+        schedule?.future?.cancel(false)
+        scheduledFutures.remove(schedule)
+        if (cronPattern.isEmpty()) {
+            log.info("Indexing Task for '$database' disabled")
+        } else {
+            val config = IndexConfig(database, cronPattern)
+            val newFuture = addSchedule(config)
+            config.future = newFuture
+            scheduledFutures.add(config)
+            log.info("Indexing Task for '$database' rescheduled")
+        }
 
     }
 
@@ -113,4 +121,4 @@ class IndexingTask @Autowired constructor(private val indexService: IndexService
     }
 }
 
-data class IndexConfig(val database: String, val cron: String, val onStartup: Boolean = false)
+data class IndexConfig(val database: String, val cron: String, var future: ScheduledFuture<*>? = null, val onStartup: Boolean = false)

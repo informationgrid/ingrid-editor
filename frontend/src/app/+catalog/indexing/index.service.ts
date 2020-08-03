@@ -29,4 +29,8 @@ export class IndexService {
       cronPattern: value
     });
   }
+
+  getCronPattern() {
+    return this.http.get<any>(this.configuration.backendUrl + 'index/config/' + this.catalog.id);
+  }
 }

@@ -3,7 +3,7 @@
 <div class="padding">
     <mat-form-field class="width-100" appearance="outline">
         <mat-label>Cron Pattern</mat-label>
-        <input #cronInput matInput placeholder="*/1 * * * * *">
+        <input #cronInput matInput placeholder="*/1 * * * * *" [value]="cronPattern">
     </mat-form-field>
     <button mat-button (click)="updatePattern(cronInput.value)">Setzen</button>
 </div>
