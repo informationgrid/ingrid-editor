@@ -8,16 +8,18 @@
 </div>
 <mat-dialog-content>
 
-    <div class="side-padding place-title">1. Schritt: Adresse wählen</div>
-    <div class="side-padding">
-        <mat-form-field appearance="outline" class="width-100">
-            <mat-select *ngIf="recentAddresses$ | async as recentAddresses" (selectionChange)="updateAddressList($event.value)" placeholder="Zuletzt verwendete Adressen..."
-                        data-cy="recent-address-select">
-                <mat-option *ngFor="let address of recentAddresses" [value]=address>
-                    {{address.title}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+    <div *ngIf="(recentAddresses$ | async ).length > 0">
+        <div class="side-padding place-title">1. Schritt: Adresse wählen</div>
+        <div class="side-padding">
+            <mat-form-field appearance="outline" class="width-100">
+                <mat-select (selectionChange)="updateAddressList($event.value)" placeholder="Zuletzt verwendete Adressen..."
+                            data-cy="recent-address-select">
+                    <mat-option *ngFor="let address of recentAddresses$ | async" [value]=address>
+                        {{address.title}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
     </div>
 
     <ige-tree (selected)="updateAddressTree($event[0]) " data-cy="choose-address-tree"
