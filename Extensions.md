@@ -204,3 +204,30 @@ class DocumentService : MapperService() {
     ...
 }	
 ```
+
+## Design Decisions
+
+- We want to use `@Autowire` as much as possible instead of configuration files
+
+  - This implies that we need different types for either payload or pipe to allow Spring to know which filters belong to which pipes
+
+- Design alternative:
+
+  - Omit `Payload` interface and parametrize pipes directly with `Filter` interface. This implies:
+
+    - Pipe base class `Pipe<T: Filter> : ExtensionPoint<T>` and subclasses for each extension point
+    - One `Filter` interface per pipe with pipe specific parameters in run method
+
+  - Evaluation:
+
+    - Pro
+      - Easier to understand, because less concepts
+      - No payload object creation required (better performance)
+    - Con
+      - No uniform interface for running filters (`pipeA.runFilters(x, y, z)`, `pipeB.runFilters(a, b)` instead of `pipeA.runFilters(p, c)`, `pipeB.runFilters(p, c)`)
+      - No object passing through filters (output of filter A is not input of filter B)
+      - More boilerplate code in pipe classes for running filters with pipe specific run method
+    - Both
+      - Pipe specific parameters in run method vs pipe specific payload
+
+    
