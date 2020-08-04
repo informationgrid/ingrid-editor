@@ -178,13 +178,15 @@ The following code demonstrates how `DocumentService` uses the  `PreCreatePipe` 
 class DocumentService : MapperService() {
 
     // set up the pipe instance
-	@Autowired private lateinit var preCreatePipe: Pipe<PreCreatePayload>
-	
+    @Autowired private lateinit var preCreatePipe: PreCreatePipe
+    // ... or to be more explicit about the payload type
+    // @Autowired private lateinit var preCreatePipe: Pipe<PreCreatePayload>
+
     fun createDocument(data: JsonNode, address: Boolean = false): JsonNode {
 
         // set up the filter context with the profile derived from the opened catalog
         val filterContext = DefaultContext.withCurrentProfile(dbService)
-        
+
         // get the document type and category of the received data
         val docType = ...
         val category = ...
@@ -202,4 +204,3 @@ class DocumentService : MapperService() {
     ...
 }	
 ```
-
