@@ -7,13 +7,13 @@
     "theme": "{{ model.theme }}",
     "issued": "{{ model.created }}",
     "modified": "{{ model.modified }}",
-    "accrualPeriodicity": undefined,
-    "contactPoint": undefined,
-    "keywords": undefined,
-    "creator": undefined,
+    "accrualPeriodicity": null,
+    "contactPoint": null,
+    "keywords": null,
+    "creator": null,
     "originator": [
         {
-            organization: "{{ model.origin }}"
+            "organization": "{{ model.origin }}"
         }
     ],
     "publisher": {
@@ -24,35 +24,35 @@
     "distribution": [
     {% for download in model.downloads %}
         {
-            format: "{{ download.type }}",
-            accessURL: "{{ download.link }}",
-            title: "{{ download.title }}",
-            type: "{{ download.format }}"
+            "format": "{{ download.type }}",
+            "accessURL": "{{ download.link }}",
+            "title": "{{ download.title }}",
+            "type": "{{ download.format }}"
         }
     {% endfor %}
     ],
     "extras": {
         "metadata": {
             "source": {
-                attribution: "mCLOUD IGE"
-            }
-            "issued": undefined,
+                "attribution": "mCLOUD IGE"
+            },
+            "issued": null,
             "modified": "{{ model.modified }}",
-            "harvested": undefined,
+            "harvested": null,
             "harvesting_errors": null,
             "isValid": {{ model.isValid }}
         },
         "generated_id": "{{ model.uuid }}",
         "subgroups": [
-            {{ model.categories | join(',') }}
+            "{{ model.categories | join(',') }}"
         ],
-        "license": { // TODO: codelist value should be used!
-            id: {{ model.license }},
-            title: {{ model.license }},
-            url: {{ model.license }}
+        "license": {
+            "id": "{{ model.license }}",
+            "title": "{{ model.license }}",
+            "url": "{{ model.license }}"
         },
-        "harvested_data": undefined,
-        "subsection": undefined,
+        "harvested_data": null,
+        "subsection": null,
         "spatial": {
             {% if not model.hasSingleSpatial %}
                 "type": "geometrycollection",
@@ -68,17 +68,16 @@
         },
         "spatialText": "{{ model.spatialTitels | join(',') }}",
         "temporal": {
-            start: {{ model.timeSpan.start }},
-            end: {{ model.timeSpan.end }}
+            "start": "{{ model.timeSpan.start }}",
+            "end": "{{ model.timeSpan.end }}"
         },
-        "groups": undefined,
-        "displayContact": [
+        "groups": null,
+        "displayContact": [{
             "name": "???",
             "homepage": "???"
-        ],
-        "all": "{{ model.allData }}",
+        }],
         "realtime": {{ model.periodicity == "1" }},
-        "citation": undefined,
+        "citation": null,
         "mfund_fkz": "{{ model.mfundFKZ }}",
         "mfund_project_title": "{{ model.mfundProject }}"
     }

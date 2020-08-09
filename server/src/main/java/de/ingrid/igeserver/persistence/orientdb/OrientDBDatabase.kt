@@ -171,7 +171,7 @@ class OrientDBDatabase : DBApi {
         return mapODocumentsToJsonNode(oDocuments)
     }
 
-    override fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions?): FindAllResults {
+    override fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions): FindAllResults {
         val typeImpl = getEntityTypeImpl(type)
         var queryString: String
         val countQuery: String
@@ -181,26 +181,20 @@ class OrientDBDatabase : DBApi {
         } else {
             // TODO: try to use Elasticsearch as an alternative!
             val where = createWhereClause(query, options)
-            val whereString = where.joinToString(separator = " " + (options?.queryOperator ?: "OR") + " ") { it }
-            val fetchPlan = if (options?.resolveReferences == true) ",fetchPlan:*:-1" else ""
-            queryString = if (options?.sortField != null) {
-                "SELECT @this.toJSON('rid,class,version" + fetchPlan + "') as jsonDoc FROM ${typeImpl.className} LET \$temp = max( draft." + options.sortField + ", published." + options.sortField + " ) WHERE (" + whereString + ")"
+            val whereString = where.joinToString(separator = " ${options.queryOperator} ") { it }
+            val fetchPlan = if (options.resolveReferences) ",fetchPlan:*:-1" else ""
+            queryString = if (options.sortField != null) {
+                "SELECT @this.toJSON('rid,class,version$fetchPlan') as jsonDoc FROM ${typeImpl.className} LET \$temp = max( draft.${options.sortField}, published.${options.sortField} ) WHERE ($whereString)"
             } else {
                 "SELECT @this.toJSON('rid,class,version$fetchPlan') as jsonDoc FROM ${typeImpl.className} WHERE ($whereString)"
             }
             countQuery = "SELECT count(*) FROM ${typeImpl.className} WHERE ($whereString)"
-            /*} else {
-                String draftWhere = attachFieldToWhereList(where, "draft.");
-                String publishedWhere = attachFieldToWhereList(where, "published.");
-                queryString = "SELECT FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
-                countQuery = "SELECT count(*) FROM DocumentWrapper WHERE (" + draftWhere + ") OR (draft IS NULL AND (" + publishedWhere + "))";
-            }*/
         }
-        if (options?.sortField != null) {
-            queryString += " ORDER BY \$temp " + options.sortOrder
+        if (options.sortField != null) {
+            queryString += " ORDER BY \$temp ${options.sortOrder}"
         }
-        if (options?.size != null) {
-            queryString += " LIMIT " + options.size
+        if (options.size != null) {
+            queryString += " LIMIT ${options.size}"
         }
         log.debug("Query-String: $queryString")
         val docs = dBFromThread.query(queryString)

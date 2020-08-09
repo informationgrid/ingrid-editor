@@ -1,0 +1,19 @@
+{
+  "properties": {
+    "linkedIndex": {
+      "type": "keyword"
+    },
+    "linkedType": {
+      "type": "keyword"
+    },
+    "indexId": {
+      "type": "keyword"
+    },
+    "plugId": {
+      "type": "keyword"
+    },
+    "lastHeartbeat": {
+      "type": "date"
+    }
+  }
+}

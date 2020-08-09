@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.scheduling.annotation.EnableScheduling
 
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = ["de.ingrid.igeserver", "de.ingrid.elasticsearch"])
 @EnableScheduling
 class IgeServer
 

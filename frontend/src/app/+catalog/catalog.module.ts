@@ -22,6 +22,7 @@ import { CodelistsComponent } from './codelists/codelists.component';
 import {MatSelectModule} from '@angular/material/select';
 import {BehavioursModule} from './+behaviours/behaviours.module';
 import {SharedModule} from '../shared/shared.module';
+import { IndexingComponent } from './indexing/indexing.component';
 
 @NgModule( {
   imports: [
@@ -35,7 +36,7 @@ import {SharedModule} from '../shared/shared.module';
   providers: [
     CatalogService
   ],
-  declarations: [CatalogManagerComponent, CatalogDetailComponent, AddUserDialogComponent, CatalogsComponent, CodelistsComponent],
+  declarations: [CatalogManagerComponent, CatalogDetailComponent, AddUserDialogComponent, CatalogsComponent, CodelistsComponent, IndexingComponent],
   exports: [RouterModule],
   entryComponents: [AddUserDialogComponent]
 } )

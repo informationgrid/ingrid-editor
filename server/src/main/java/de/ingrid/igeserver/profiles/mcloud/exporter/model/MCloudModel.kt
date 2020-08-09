@@ -26,8 +26,8 @@ data class MCloudModel(
 
     val publisher: AddressModel?
     get() {
-        return addresses?.filter { it.type == "10" }
-                ?.first()
+        return addresses
+                ?.firstOrNull { it.type == "10" }
                 ?.ref;
     }
 
@@ -42,13 +42,18 @@ data class MCloudModel(
         if (mfundFKZ != null || mfundProject != null) {
             val result = mutableListOf("mfund")
             if (mfundFKZ != null) {
-                result.add("mFUND-FKZ: " + mfundFKZ)
+                result.add("mFUND-FKZ: $mfundFKZ")
             }
             if (mfundProject != null) {
-                result.add("mFUND-Projekt: " + mfundProject)
+                result.add("mFUND-Projekt: $mfundProject")
             }
             return result
         }
         return null
+    }
+
+    fun isValid(): Boolean {
+        // TODO: implement
+        return true
     }
 }

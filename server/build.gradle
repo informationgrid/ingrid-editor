@@ -91,8 +91,23 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions-spring:4.0.6") // to wire dependencies using Spring
     testImplementation 'junit:junit' // TODO: remove when converted to Kotest
     testImplementation 'org.mockito:mockito-core'
-    testImplementation('org.springframework.boot:spring-boot-starter-test:2.3.1.RELEASE') {
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
+    // iBus communication
+    implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {
+        exclude group: 'org.apache.logging.log4j'
+        exclude group: 'junit'
+    }
+
+    // iBus communication
+    implementation('de.ingrid:ingrid-elasticsearch-tools:5.4.0')
+//    compile 'org.elasticsearch:elasticsearch:6.8.4'
+
+    implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {
+        exclude group: 'org.apache.logging.log4j'
+        exclude group: 'junit'
     }
 }
 

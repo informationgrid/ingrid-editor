@@ -13,12 +13,12 @@ data class AddressModel(
         val contact: List<ContactModel>
 ) {
 
-    val homepage: String
+    val homepage: String?
     get() {
         return contact
-                .first { it.type == "4" }
-                .connection
+                .firstOrNull { it.type == "4" }
+                ?.connection
     }
 }
 
-data class ContactModel(val type: String, val connection: String)
+data class ContactModel(val type: String?, val connection: String?)

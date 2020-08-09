@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.PublishedVersionNotFoundException
 import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.persistence.model.document.DocumentType
@@ -277,9 +278,10 @@ class DocumentService : MapperService() {
         val published = doc[FIELD_PUBLISHED]
 
         if (onlyPublished && published.isNull) {
-            throw ApiException("No published version available of ${doc.get(FIELD_ID)}")
+            throw PublishedVersionNotFoundException("No published version available of ${doc.get(FIELD_ID)}")
         }
 
+        // TODO: check if isNull function really works or if we need a null comparison
         val objectNode = if (draft.isNull || onlyPublished) {
             published as ObjectNode
         } else {

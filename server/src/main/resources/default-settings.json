@@ -1,0 +1,42 @@
+{
+  "analysis": {
+    "filter": {
+      "decomp": {
+        "type": "decompound"
+      },
+      "german_stop": {
+        "type": "stop",
+        "stopwords": "_german_"
+      },
+      "german_stemmer": {
+        "type": "stemmer",
+        "language": "light_german"
+      }
+    },
+    "analyzer": {
+      "decomp": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "german_stop",
+          "german_normalization",
+          "german_stemmer",
+          "decomp",
+          "unique"
+        ]
+      },
+      "no_decomp": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "german_stop",
+          "german_normalization",
+          "german_stemmer",
+          "unique"
+        ]
+      }
+    }
+  }
+}
