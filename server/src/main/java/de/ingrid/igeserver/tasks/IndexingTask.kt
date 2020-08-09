@@ -1,10 +1,12 @@
 package de.ingrid.igeserver.tasks
 
-import de.ingrid.elasticsearch.ElasticConfig
-import de.ingrid.elasticsearch.IBusIndexManager
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IIndexManager
+import de.ingrid.elasticsearch.IndexInfo
+import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +21,10 @@ import java.util.concurrent.ScheduledFuture
 
 
 @Component
-class IndexingTask @Autowired constructor(private val indexService: IndexService, private val dbService: DBApi) : SchedulingConfigurer, DisposableBean {
+class IndexingTask @Autowired constructor(
+        private val indexService: IndexService,
+        private val esIndexManager: IndexManager,
+        private val dbService: DBApi) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
     val executor = Executors.newSingleThreadScheduledExecutor()
@@ -29,28 +34,59 @@ class IndexingTask @Autowired constructor(private val indexService: IndexService
 
 
     private fun getIndexManager(): IIndexManager {
-        val config = ElasticConfig()
-        config.uuid = "123456789"
-        return IBusIndexManager(config)
+        return esIndexManager
     }
 
-    fun startIndexing(database: String) {
+    fun startIndexing(database: String, format: String) {
         log.debug("Starting Indexing - Task for $database")
 
-        // needed information:
-        //   database/catalog
-        //   indexingMethod: ibus or elasticsearch direct
-        //   indexName
+        dbService.acquire(database).use {
 
-        // pre phase
-        // indexManager.createIndex("ige-ng-test")
+            // needed information:
+            //   database/catalog
+            //   indexingMethod: ibus or elasticsearch direct
+            //   indexName
 
-        // iterate over all documents
-//        indexService.start()
+            // pre phase
+            val info = indexPrePhase(database)
 
-        // post phase
+            // iterate over all documents
+            // TODO: dynamically get target to send exported documents
+
+            // TODO: configure index name
+            val indexInfo = IndexInfo()
+            indexInfo.realIndexName = info.second
+            indexInfo.toType = "base"
+            indexInfo.toAlias = "igeng"
+            indexInfo.docIdField = "uuid"
+            indexService.start(indexService.INDEX_PUBLISHED_DOCUMENTS(format))
+                    .forEach { indexManager.update(indexInfo, convertToElasticDocument(it), false) }
+
+
+            // post phase
+            indexPostPhase(database, info.first, info.second)
+
+        }
+    }
+
+    private fun convertToElasticDocument(doc: Any): ElasticDocument? {
+
+        return jacksonObjectMapper().readValue(doc as String, ElasticDocument::class.java)
+
+    }
+
+
+    private fun indexPrePhase(database: String): Pair<String, String> {
+        val oldIndex = indexManager.getIndexNameFromAliasName(database, "uuid");
+        val newIndex = IndexManager.getNextIndexName(database, "uuid", "ige-ng-test")
+        indexManager.createIndex(newIndex, "base", indexManager.defaultMapping, indexManager.defaultSettings)
+        return Pair(oldIndex, newIndex)
+    }
+
+    private fun indexPostPhase(database: String, oldIndex: String, newIndex: String) {
         // switch alias and delete old index
-
+        indexManager.switchAlias(database, oldIndex, newIndex);
+        indexManager.deleteIndex(oldIndex);
     }
 
     // check out here: https://stackoverflow.com/questions/39152599/interrupt-spring-scheduler-task-before-next-invocation
@@ -58,6 +94,7 @@ class IndexingTask @Autowired constructor(private val indexService: IndexService
 
         // get index configurations from all catalogs
         getIndexConfigurations()
+                .filter { !it.cron.isEmpty() }
                 .forEach { config ->
                     val future = addSchedule(config)
                     config.future = future
@@ -68,7 +105,7 @@ class IndexingTask @Autowired constructor(private val indexService: IndexService
 
     private fun addSchedule(config: IndexConfig): ScheduledFuture<*>? {
         val trigger = CronTrigger(config.cron)
-        return scheduler.schedule(Runnable { startIndexing(config.database) }, trigger)
+        return scheduler.schedule(Runnable { startIndexing(config.database, "portal") }, trigger)
     }
 
     fun updateTaskTrigger(database: String, cronPattern: String) {
@@ -113,7 +150,7 @@ class IndexingTask @Autowired constructor(private val indexService: IndexService
         executor.shutdownNow()
     }
 
-    fun initScheduler(): TaskScheduler {
+    final fun initScheduler(): TaskScheduler {
         val scheduler = ThreadPoolTaskScheduler()
         scheduler.poolSize = 10
         scheduler.afterPropertiesSet()

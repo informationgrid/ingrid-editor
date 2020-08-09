@@ -22,19 +22,7 @@ import java.security.Principal
 class IndexApiController @Autowired constructor(private val catalogService: CatalogService, private val dbService: DBApi, private val indexService: IndexService, private val indexingTask: IndexingTask) : IndexApi {
     override fun startIndexing(principal: Principal?, options: IndexRequestOptions): ResponseEntity<Void> {
 
-//        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
-        dbService.acquire(options.catalogId).use {
-
-            val onlyPublishedDocs = listOf(
-                    QueryField(FIELD_PUBLISHED, null, true),
-                    QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value)
-            )
-
-            val indexOptions = IndexOptions(onlyPublishedDocs, options.format)
-            indexService.start(indexOptions)
-
-        }
+        indexingTask.startIndexing(options.catalogId, options.format)
 
         return ResponseEntity.ok().build()
     }
