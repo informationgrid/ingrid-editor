@@ -14,13 +14,14 @@ export class HeaderNavigationComponent implements OnInit {
   }
 
   scrollToSection(index: number) {
-    const element = document
-      .querySelectorAll('ige-section-wrapper')
-      .item(index)
-      .scrollIntoView({behavior: 'smooth', block: 'end'});
-
-    // TODO: calculate correct scroll position, so we won't hide behind the header
-    // const position = element.getBoundingClientRect().top + window.pageYOffset;
-    // element.parentElement.parentElement.parentElement.parentElement.scrollTo({top: position, behavior: 'smooth'});
+    const element = document.querySelectorAll('ige-section-wrapper').item(index);
+    // calculate offset
+    const toolbar = document.querySelectorAll('form-toolbar')[0];
+    const formNav = document.querySelectorAll('ige-header-navigation')[0];
+    const yOffset = toolbar.getBoundingClientRect().top + toolbar.getBoundingClientRect().height + formNav.getBoundingClientRect().height;
+    // calculate scroll position (account for form's current scroll position)
+    const y = element.getBoundingClientRect().top + document.getElementById('form').scrollTop - yOffset - 10;
+    // scroll to position
+    document.getElementById('form').scrollTo({top: y, behavior: 'smooth'});
   }
 }

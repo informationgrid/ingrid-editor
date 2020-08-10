@@ -6,6 +6,10 @@ import {environment} from './environments/environment';
 import {hmrBootstrap} from './hmr';
 import {enableAkitaProdMode, persistState} from '@datorama/akita';
 
+// add scrollto polyfill for ie11
+import smoothscroll from 'smoothscroll-polyfill';
+smoothscroll.polyfill();
+
 if (environment.production) {
   enableProdMode();
   enableAkitaProdMode()
