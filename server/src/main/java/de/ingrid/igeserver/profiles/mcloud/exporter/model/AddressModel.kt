@@ -6,17 +6,17 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AddressModel(
         @JsonProperty("_id") val uuid: String,
-        val firstName: String,
-        val lastName: String,
-        val organization: String,
-        val title: String,
-        val contact: List<ContactModel>
+        val firstName: String?,
+        val lastName: String?,
+        val organization: String?,
+        val title: String?,
+        val contact: List<ContactModel>?
 ) {
 
     val homepage: String?
     get() {
         return contact
-                .firstOrNull { it.type == "4" }
+                ?.firstOrNull { it.type == "4" }
                 ?.connection
     }
 }

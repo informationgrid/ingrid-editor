@@ -35,7 +35,7 @@ data class MCloudModel(
     get() = spatials?.size == 1
 
     val spatialTitels: List<String>?
-    get() = spatials?.map { it.title }
+    get() = spatials?.map { it.title }?.filterNotNull()
 
     val allData: List<String>?
     get() {
