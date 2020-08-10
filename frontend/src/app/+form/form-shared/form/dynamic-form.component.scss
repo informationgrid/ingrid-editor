@@ -60,13 +60,26 @@ pre {
 }
 
 .optional-fields-toggle {
-  background: $ige-background;
   display: flex;
-  float: right;
-  margin-bottom: -2em;
-  font-size: 14px;
+  flex-direction: row;
+  justify-content: flex-end;
   height: 36px;
-  padding-right: 10px;
+  min-width: 460px;
+  max-width: 1260px;
+  margin: 0 auto -36px;
+  font-size: 14px;
+
+  .mat-slide-toggle {
+    background: $ige-background;
+  }
+
+  ::ng-deep .mat-slide-toggle.mat-disabled {
+    opacity: 1;
+
+    .mat-slide-toggle-label {
+      opacity: .38;
+    }
+  }
 
   .diagonal {
     width: 46px;
