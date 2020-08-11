@@ -14,9 +14,8 @@
   padding-right: 16px;
 
   .drop-down {
-    width: 50px;
+    width: 56px;
     padding-left: 8px;
-    margin-right: 8px;
   }
 }
 
@@ -24,6 +23,16 @@
   margin-right: 8px;
   padding-left: 8px;
   height: 36px
+}
+
+.standard-toolbar-button {
+  padding: 0;
+  min-width: 40px;
+  min-height: 40px;
+
+  &[disabled] {
+    opacity: 0.26;
+  }
 }
 
 .save-buttons button {
@@ -37,18 +46,36 @@
   }
 }
 
-.save-buttons button.btnPublish {
-  margin-right: 0;
 
-  &:not([disabled]):hover {
-    background-color: lighten($ige-secondary, 5%);
+.save-buttons {
+
+  button.btnPublish, button.btnPublishMore {
+    &:not([disabled]):hover {
+      background-color: lighten($ige-secondary, 5%);
+    }
   }
 
-  .mat-icon {
-    margin-right: -10px;
+  button.btnPublish {
+    margin-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+
+    .mat-icon {
+      margin-right: -10px;
+    }
   }
+
+  button.btnPublishMore {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    min-width: 36px;
+    margin-left: 1px;
+    padding: 0;
+  }
+
 }
 
-.mat-icon-button:hover {
+.mat-icon-button:not([disabled]):hover {
   background-color: darken($ige-background-bar, 5%) !important;
+  border-radius: 4px;
 }

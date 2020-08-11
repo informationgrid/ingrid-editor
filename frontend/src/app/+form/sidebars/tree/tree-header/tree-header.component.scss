@@ -2,6 +2,7 @@
 
 :host {
   background-color: $ige-background;
+  display: block;
 }
 
 .header {
@@ -12,6 +13,7 @@
 
     .show-all {
       font-size: 14px;
+      height: 40px;
     }
   }
 }
@@ -46,7 +48,7 @@
         border: none;
       }
     }
-    
+
     .mat-form-field-prefix,
     .mat-form-field-suffix {
       top: 0;

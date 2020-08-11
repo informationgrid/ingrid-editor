@@ -1,11 +1,15 @@
-import {DashboardPage} from "../../pages/dashboard.page";
-import {DocumentPage} from "../../pages/document.page";
-import {AddressPage} from "../../pages/address.page";
+import {DashboardPage} from '../../pages/dashboard.page';
+import {DocumentPage} from '../../pages/document.page';
+import {AddressPage} from '../../pages/address.page';
 
 describe('Search', function () {
 
-  beforeEach(() => {
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
+  });
+
+  beforeEach(() => {
     cy.visit('');
   });
 
@@ -23,28 +27,28 @@ describe('Search', function () {
     });
     // TODO: as Unit tests and e2e tests only checks if functionality is there ("click on Alle-Link", ...)
     DashboardPage.clearSearch();
-    DashboardPage.search("t");
+    DashboardPage.search('t');
     // result should show docs and addresses
-    cy.get(".result-title").contains(/Daten \([1-9][0-9]*\)/).should('exist');
-    cy.get(".result-title").contains(/Adressen \([1-9][0-9]*\)/).should('exist');
+    cy.get('.result-title').contains(/Daten \([1-9][0-9]*\)/).should('exist');
+    cy.get('.result-title').contains(/Adressen \([1-9][0-9]*\)/).should('exist');
 
     // TODO does not work if at the end of this test. investigate!
     // result should show "All" link when more than 5 results for docs / addresses
     DashboardPage.clearSearch();
-    DashboardPage.search("t");
-    cy.get("a").contains("Alle").should('exist');
+    DashboardPage.search('t');
+    cy.get('a').contains('Alle').should('exist');
 
 
     // result should show only docs
     DashboardPage.clearSearch();
-    DashboardPage.search("dokument");
-    cy.get(".result-title").contains(/Daten \([1-9][0-9]*\)/).should('exist');
-    cy.get(".result-title").contains(/Adressen \(0\)/).should('exist');
+    DashboardPage.search('dokument');
+    cy.get('.result-title').contains(/Daten \([1-9][0-9]*\)/).should('exist');
+    cy.get('.result-title').contains(/Adressen \(0\)/).should('exist');
     // result should show only addresses
     DashboardPage.clearSearch();
-    DashboardPage.search("adresse");
-    cy.get(".result-title").contains(/Daten \(0\)/).should('exist');
-    cy.get(".result-title").contains(/Adressen \([1-9][0-9]*\)/).should('exist');
+    DashboardPage.search('adresse');
+    cy.get('.result-title').contains(/Daten \(0\)/).should('exist');
+    cy.get('.result-title').contains(/Adressen \([1-9][0-9]*\)/).should('exist');
 
   });
 
@@ -70,7 +74,7 @@ describe('Search', function () {
   });
 
   it('should switch to research page after click "Erweiterte Suche" and show all documents/addresses', () => {
-    DashboardPage.search("t");
+    DashboardPage.search('t');
     cy.get('a').contains('Erweiterte Suche').click();
     cy.get('div').contains('Die Suchergebnisseite ist gerade in der Entwicklung.');
     // cy.url().should('include', '/research');

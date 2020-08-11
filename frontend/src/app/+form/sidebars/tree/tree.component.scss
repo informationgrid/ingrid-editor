@@ -1,4 +1,4 @@
-@import "../../../../variables";
+@import "src/variables";
 
 :host {
   display: flex;
@@ -9,6 +9,52 @@
 ::ng-deep .mat-tree {
   background-color: #ffffff;
   overflow: auto;
+}
+
+// higher priority for drop class!
+.drop.drop.drop, .drop-root.drop-root.hover {
+  background-color: $ige-info-background !important;
+
+  .zone {
+    border: 2px dashed $ige-check-color !important;
+  }
+}
+
+.header-wrapper {
+  position: relative;
+
+
+  .drop-root {
+    padding: 24px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .zone {
+      height: 100%;
+      width: 100%;
+      border: 2px dashed rgba(24, 24, 24, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(24, 24, 24, 0.6);
+      border-radius: 4px;
+
+      .mat-icon {
+        vertical-align: middle;
+        padding-bottom: 3px;
+
+        ::ng-deep .coloring {
+          fill: rgba(24, 24, 24, 0.6);
+        }
+      }
+    }
+  }
 }
 
 mat-tree-node {
@@ -112,7 +158,7 @@ mat-tree-node {
   }
 
   &:hover {
-    background-color: darken(#FFFFFF, 5%) !important;
+    background-color: darken(#FFFFFF, 2.5%) !important;
   }
 
   &.active, &.rootNode.active, &:not(.rootNode).expanded + &.active:not(.rootNode) {

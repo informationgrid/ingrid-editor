@@ -1,8 +1,12 @@
+<div class="header">
+    <button mat-stroked-button (click)="goBack()">Zurück</button>
+</div>
+
 <p *ngIf="noAssignedCatalogs">
     Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog angehören, können Sie zusätzliche Operationen ausführen.
 </p>
 
-<div fxLayout="row wrap" fxLayoutGap="24px grid">
+<div fxLayout="row wrap" fxLayoutGap="24px">
     <div *ngFor="let cat of catalogs | async; trackBy:trackByCatalogId" fxFlex="25" class="catalog-wrapper">
         <mat-card class="hover-elevate" [class.selected]="cat.id === currentCatalog">
             <mat-card-title>{{cat.label}}</mat-card-title>
@@ -20,9 +24,10 @@
     <mat-spinner *ngIf="showSpinner" diameter="50"></mat-spinner>
 </div>
 
-
+<ige-add-button (add)="showCreateCatalogDialog()"></ige-add-button>
+<!--
 <div class="button-add">
     <button mat-fab color="primary" (click)="showCreateCatalogDialog()">
         <mat-icon>add</mat-icon>
     </button>
-</div>
+</div>-->

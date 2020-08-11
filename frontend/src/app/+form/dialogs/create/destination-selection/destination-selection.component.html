@@ -1,11 +1,11 @@
-<div class="side-padding place-title">Neuen Ort wählen</div>
+<div class="side-padding place-title">Neuen Ordner wählen</div>
 <ige-tree [disabledCondition]="disabledCondition" (selected)="updateParent($event, 'Tree')"
           [setActiveNode]="activeTreeNode"
           (currentPath)="updatePath($event)"
           [forAddresses]="forAddress"
           [showOnlyFolders]="true"
           [showReloadButton]="false"></ige-tree>
-
+<div class="selection-divider"></div>
 <div class="side-padding place-title-other">Oder anlegen unter</div>
 <ige-document-list-item [docs]="getRootNode()"
                         [hideDivider]="true"

@@ -28,6 +28,7 @@
   max-width: 1200px;
   margin: 0 auto;
 }
+
 .form-content ige-form-info {
   display: block;
   margin-bottom: 0;
@@ -57,3 +58,36 @@ pre {
   background: #999999;
   border-radius: 20px;
 }
+
+.optional-fields-toggle {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  height: 36px;
+  min-width: 460px;
+  max-width: 1260px;
+  margin: 0 auto -36px;
+  font-size: 14px;
+
+  .mat-slide-toggle {
+    background: $ige-background;
+  }
+
+  ::ng-deep .mat-slide-toggle.mat-disabled {
+    opacity: 1;
+
+    .mat-slide-toggle-label {
+      opacity: .38;
+    }
+  }
+
+  .diagonal {
+    width: 46px;
+    background: -webkit-linear-gradient(45deg, #ffffff 45%, $ige-background 0%);
+  }
+
+  mat-slide-toggle {
+    height: inherit;
+  }
+}
+

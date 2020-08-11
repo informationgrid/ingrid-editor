@@ -1,13 +1,12 @@
 package de.ingrid.igeserver.migrations
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.api.ApiException
-import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.function.Consumer
-import java.util.stream.Collectors
 import javax.annotation.PostConstruct
 
 @Service
@@ -58,23 +57,22 @@ class Migration {
 
     private fun getVersion(database: String): String {
         dbService.acquire(database).use {
-            val info = dbService.findAll("Info")
-            val infoDoc = info!![0]
-            val version = infoDoc!!["version"]
+            val info = dbService.findAll(CatalogInfoType::class)
+            val infoDoc = info?.get(0)
+            val version = infoDoc?.get("version")
             return if (version == null) "0" else version.asText()
         }
     }
 
     private fun setVersion(database: String, version: String) {
-        try {
-            dbService.acquire(database).use {
-                val info = dbService.findAll("Info")
-                val infoDoc = info!![0]
+        dbService.acquire(database).use {
+            val info = dbService.findAll(CatalogInfoType::class)
+            val infoDoc = info?.get(0)
+            if (infoDoc != null) {
                 (infoDoc as ObjectNode).put("version", version)
-                dbService.save("Info", dbService.getRecordId(infoDoc), infoDoc.toString())
+                dbService.save(CatalogInfoType::class, dbService.getRecordId(infoDoc), infoDoc.toString())
             }
-        } catch (e: ApiException) {
-            log.error(e)
+            // TODO should we throw an exception if version can not be set because of missing catalog info?
         }
     }
 

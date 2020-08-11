@@ -57,7 +57,7 @@ export class ProfileService {
       .map(doctype => (doctype.getIconClass && doctype.getIconClass(doc)) || doctype.iconClass);
 
     if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
-      console.log('Unknown document type or iconClass for: ', doc);
+      console.warn('Unknown document type or iconClass for: ', doc);
       return null;
     }
 

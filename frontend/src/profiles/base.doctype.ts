@@ -70,9 +70,11 @@ export abstract class BaseDoctype implements Doctype {
         this.addContextHelp(field.fieldGroup, field.key);
       }
       if (this.helpIds.indexOf(field.key) > -1) {
+        if (!field.model?._type) field.templateOptions.docType = this.id;
+
         if (field.type === 'checkbox') {
           field.templateOptions.hasInlineContextHelp = true;
-        } else {
+        } else if (!field.templateOptions.hasInlineContextHelp) {
           field.templateOptions.hasContextHelp = true;
         }
       }

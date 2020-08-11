@@ -1,9 +1,8 @@
-import {DashboardPage} from '../../pages/dashboard.page';
 import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
-import {AddressPage} from "../../pages/address.page";
 
 describe('Load documents', () => {
-  beforeEach(() => {
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
   });
 
@@ -12,11 +11,11 @@ describe('Load documents', () => {
 
   it('should show a dashboard view when no document is selected or in root element', function () {
     DocumentPage.visit();
-    cy.get('ige-form-dashboard').should('contain','Daten').should('contain','Neuer Datensatz');
+    cy.get('ige-form-dashboard').should('contain', 'Daten').should('contain', 'Neuer Datensatz');
     // expect(cy.get('ige-form-dashboard')).to.contain('text');
     cy.visit('/form;id=a0df9837-512a-4594-b2ef-2814f7c55c81');
     cy.get('ige-form-info ige-breadcrumb .selectable').click();
-    cy.get('ige-form-dashboard').should('contain','Daten').should('contain','Neuer Datensatz');
+    cy.get('ige-form-dashboard').should('contain', 'Daten').should('contain', 'Neuer Datensatz');
   });
 
   it('should jump directly to a root folder specified by URL', () => {

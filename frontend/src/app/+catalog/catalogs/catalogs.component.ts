@@ -94,4 +94,7 @@ export class CatalogsComponent implements OnInit {
     });
   }
 
+  goBack() {
+    this.router.navigate(['/catalogs']);
+  }
 }

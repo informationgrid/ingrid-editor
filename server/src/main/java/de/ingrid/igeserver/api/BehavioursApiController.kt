@@ -1,10 +1,10 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.db.DBApi
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.model.meta.BehaviourType
 import de.ingrid.igeserver.model.Behaviour
 import de.ingrid.igeserver.services.MapperService
-import de.ingrid.igeserver.utils.AuthUtils
-import de.ingrid.igeserver.utils.DBUtils
+import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.Logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -20,15 +20,15 @@ class BehavioursApiController : BehavioursApi, Logging {
     lateinit var dbService: DBApi
 
     @Autowired
-    lateinit var dbUtils: DBUtils
+    lateinit var catalogService: CatalogService
 
     @Throws(ApiException::class)
     override fun getBehaviours(principal: Principal?): ResponseEntity<List<Behaviour>> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            val behaviours = dbService.findAll(DBApi.DBClass.Behaviours.name)!!
+            val behaviours = dbService.findAll(BehaviourType::class)!!
             val result = behaviours
                     .map {
                         Behaviour(
@@ -47,12 +47,12 @@ class BehavioursApiController : BehavioursApi, Logging {
             principal: Principal?,
             behaviours: List<Behaviour>): ResponseEntity<Void> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
             for (behaviour in behaviours) {
-                val rid = dbService.getRecordId("Behaviours", behaviour._id)
-                dbService.save("Behaviours", rid, MapperService.getJsonNodeFromClass(behaviour))
+                val rid = dbService.getRecordId(BehaviourType::class, behaviour._id)
+                dbService.save(BehaviourType::class, rid, MapperService.getJsonNodeFromClass(behaviour))
             }
             return ResponseEntity.ok().build()
         }

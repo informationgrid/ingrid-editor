@@ -4,6 +4,7 @@ import {BaseDoctype} from '../base.doctype';
 import {CodelistQuery} from '../../app/store/codelist/codelist.query';
 import {Injectable} from '@angular/core';
 import {CodelistStore} from '../../app/store/codelist/codelist.store';
+import {map} from 'rxjs/operators';
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -11,7 +12,6 @@ import {CodelistStore} from '../../app/store/codelist/codelist.store';
 })
 export class McloudDoctype extends BaseDoctype {
 
-  // must be same as DBClass
   id = 'mCloudDoc';
 
   label = 'mCLOUD';
@@ -178,18 +178,20 @@ export class McloudDoctype extends BaseDoctype {
           key: 'mfundProject',
           type: 'input',
           className: 'flex-1',
-          wrappers: ['form-field'],
+          wrappers: ['form-field', 'inline-help'],
           templateOptions: {
             label: 'mFUND Projekt',
+            hasInlineContextHelp: true,
             appearance: 'outline'
           }
         }, {
           key: 'mfundFKZ',
           type: 'input',
           className: 'flex-1',
-          wrappers: ['form-field'],
+          wrappers: ['form-field', 'inline-help'],
           templateOptions: {
             label: 'mFUND Förderkennzeichen',
+            hasInlineContextHelp: true,
             appearance: 'outline'
           }
         }]
@@ -236,18 +238,22 @@ export class McloudDoctype extends BaseDoctype {
               },
               {
                 key: 'text',
-                type: 'input',
+                type: 'select',
                 className: 'flex-1',
                 templateOptions: {
                   label: 'Typ',
                   appearance: 'outline',
-                  required: true
+                  required: true,
+                  options: this.getCodelistForSelect(502).pipe(
+                    map(items => items.filter(it => it.value !== '2'))
+                  )
                 }
               }]
           }
         }, {
           fieldGroupClassName: 'display-flex',
           wrappers: ['panel'],
+          key: 'timeSpan',
           templateOptions: {
             externalLabel: 'Zeitspanne'
           },

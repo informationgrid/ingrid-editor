@@ -1,8 +1,8 @@
 package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.db.DBApi
-import de.ingrid.igeserver.documenttypes.DocumentType
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_ID
@@ -48,7 +48,7 @@ class ImportService {
         val docType = doc[FIELD_DOCUMENT_TYPE].asText()
         val refType = documentService.getDocumentType(docType)
 
-        val references = refType.handleLinkedFields(doc, dbService)
+        val references = refType.handleLinkedFields(doc)
 
         // save references
         references
@@ -66,7 +66,7 @@ class ImportService {
 
         val id = ref.path(FIELD_ID).textValue()
         try {
-            documentService.getByDocId(id, DocumentType.TYPE, false)
+            documentService.getByDocumentId(id, DocumentType::class, false)
             return true
         } catch (e: RuntimeException) {
             return false

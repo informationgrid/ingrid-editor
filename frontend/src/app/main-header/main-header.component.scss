@@ -1,15 +1,20 @@
 @import '../../variables';
 
-:host:hover ige-session-timeout-info, ige-session-timeout-info.show {
-  display: inline-block;
-}
-
 ige-session-timeout-info {
   display: none;
 }
 
 .header-row {
   color: $ige-secondary;
+}
+
+.center-header {
+  height: inherit;
+  align-items: center;
+
+  &:hover ige-session-timeout-info, ige-session-timeout-info.show {
+    display: inline-block;
+  }
 }
 
 .header-info {
@@ -109,3 +114,17 @@ ige-session-timeout-info {
   padding-bottom: 4px !important;
   font-size: 14px !important;
 }
+
+.mat-menu-item .mat-icon {
+  padding-bottom: 4px !important;
+  margin-right: 0;
+}
+
+mat-card-title {
+  font-weight: normal;
+}
+
+.last-login {
+  margin-bottom: 0;
+}
+

@@ -20,14 +20,15 @@ import {SharedDocumentItemModule} from './shared-document-item.module';
 import {AddButtonComponent} from './add-button/add-button.component';
 import {OptionListComponent} from './option-list/option-list.component';
 import {MatRadioModule} from '@angular/material/radio';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule,
-    MatSlideToggleModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
-    MatCardModule,
-    SharedDocumentItemModule, MatRadioModule, FormsModule],
+    imports: [
+        CommonModule,
+        MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule,
+        MatSlideToggleModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
+        MatCardModule,
+        SharedDocumentItemModule, MatRadioModule, FormsModule, DragDropModule],
   declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent, AddButtonComponent,
     OptionListComponent],
   exports: [TreeComponent, MatIconModule, MatInputModule, MatButtonModule, CardBoxComponent, AddButtonComponent,

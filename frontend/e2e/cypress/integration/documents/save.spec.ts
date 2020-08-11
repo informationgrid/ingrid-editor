@@ -1,12 +1,15 @@
 import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
-import {AddressPage} from "../../pages/address.page";
 
 describe('General create documents/folders', () => {
 
-  beforeEach(() => {
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
+  });
+
+  beforeEach(() => {
     DocumentPage.visit();
   });
 
@@ -44,8 +47,10 @@ describe('General create documents/folders', () => {
 
     it('should not be possible to publish folders', function () {
       cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
       cy.visit('/form;id=bdde3ecb-3629-489c-86df-12ffac978ef5');
+      cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled')
     });
 
@@ -124,6 +129,40 @@ describe('General create documents/folders', () => {
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
 
     });
+
+    it('should delete a folder with no children', () => {
+      const folderName = 'Löschtestordner' + Utils.randomString();
+      const childName = 'Testdokument' + Utils.randomString();
+
+      cy.get(DocumentPage.Toolbar.NewFolder).click();
+      cy.get('[data-cy=create-title]').type(folderName);
+      cy.get('[data-cy=create-action]').click();
+      cy.get(DocumentPage.title).should('have.text', folderName);
+      cy.wait(500);
+      DocumentPage.createDocument(childName);
+      cy.get(DocumentPage.title).should('have.text', childName);
+
+      cy.get('#sidebar').findByText(folderName).click();
+      cy.get(DocumentPage.title).should('have.text', folderName);
+      cy.get(DocumentPage.Toolbar.Delete).click();
+
+      cy.get('[data-cy=error-dialog-close]').click();
+      cy.get('#sidebar').findByText(folderName).click();
+
+      cy.get('#sidebar').findByText(childName).click();
+      cy.get(DocumentPage.title).should('have.text', childName);
+      cy.get(DocumentPage.Toolbar.Delete).click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      cy.wait(500);
+
+      cy.get('#sidebar').findByText(folderName).click();
+      cy.get(DocumentPage.title).should('have.text', folderName);
+      cy.get(DocumentPage.Toolbar.Delete).click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      cy.get('#sidebar').findByText(folderName).should('not.exist');
+      cy.url().should('be', 'form');
+
+    });
   });
 
 
@@ -134,20 +173,22 @@ describe('General create documents/folders', () => {
 
       cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('#sidebar').findByText(doc2Name).click();
-      cy.get('[data-cy=Beschreibung]').type('testestest');
+      cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('testestest');
 
       // reject dialog
       // check selected tree node === previous selected node
+      cy.wait(500);
       cy.get('span').contains(doc1Name).click();
       cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
-      cy.get('mat-dialog-actions').contains('Abbrechen').click();
+      cy.get('[data-cy=confirm-dialog-cancel]').click();
       cy.get(DocumentPage.title).should('have.text', doc2Name);
 
       // accept dialog
       // check selected tree node === newly selected node
+      cy.wait(500);
       cy.get('span').contains(doc1Name).click();
       cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
-      cy.get('mat-dialog-actions').contains('Verwerfen').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
       cy.get(DocumentPage.title).should('have.text', doc1Name);
 
     });
@@ -157,14 +198,14 @@ describe('General create documents/folders', () => {
 
       cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('#sidebar').findByText(docname).click();
-      cy.get('[data-cy=Beschreibung]').type('testestest');
+      cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('testestest');
 
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
       cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
-      cy.get('mat-dialog-actions').contains('Abbrechen').click();
+      cy.get('[data-cy=confirm-dialog-cancel]').click();
 
       cy.get(DocumentPage.title).should('have.text', docname);
 
@@ -173,11 +214,9 @@ describe('General create documents/folders', () => {
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
       cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
-      cy.get('mat-dialog-actions').contains('Verwerfen').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
 
       cy.get(DocumentPage.title).should('not.exist')
-
-
 
 
     });

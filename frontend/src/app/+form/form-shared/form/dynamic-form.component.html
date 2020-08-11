@@ -6,7 +6,7 @@
 
         <!-- exchangable sidebar -->
         <as-split-area [size]="sidebarWidth" id="sidebar">
-            <ige-sidebar [address]="address" [activeId]="activeId"></ige-sidebar>
+            <ige-sidebar [address]="address" [activeId]="activeId" (dropped)="handleDrop($event)"></ige-sidebar>
         </as-split-area>
 
         <!-- The form -->
@@ -28,7 +28,10 @@
                                    [sections]="sections"
                                    [parentContainer]="scrollForm"
                                    (showStickyHeader)="updateContentPadding($event)"></ige-form-info>
-
+                    <div [class.hide]="model._type === 'FOLDER'" class="optional-fields-toggle">
+                        <div class="diagonal"></div>
+                        <mat-slide-toggle checked disabled>Alle</mat-slide-toggle>
+                    </div>
                     <form [formGroup]="form"
                           [style.padding-top]="paddingWithHeader"
                           [class.hide-validation]="!showValidationErrors"

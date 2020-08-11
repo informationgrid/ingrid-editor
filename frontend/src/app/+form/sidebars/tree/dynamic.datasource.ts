@@ -69,7 +69,7 @@ export class DynamicDataSource {
 
     if (expand && !node.isExpanded) {
 
-      this.expandNode(node, index);
+      this.expandNode(node);
 
     } else if (!expand && node.isExpanded) {
 
@@ -78,7 +78,7 @@ export class DynamicDataSource {
     }
   }
 
-  private expandNode(node: TreeNode, index: number) {
+  private expandNode(node: TreeNode) {
     node.isLoading = true;
     this._database.getChildren(node._id, false, this.forAddress)
       .pipe(
@@ -86,6 +86,8 @@ export class DynamicDataSource {
         map(docs => docs.sort(this.treeService.getSortTreeNodesFunction()))
       )
       .subscribe(children => {
+
+        const index = this.data.findIndex(item => item === node);
 
         if (children) {
           // mark node after children to set border-top correctly
@@ -122,11 +124,11 @@ export class DynamicDataSource {
 
   removeNode(doc: TreeNode) {
     // docs.forEach(doc => {
-      const index = this.data.indexOf(doc);
-      if (index !== -1) {
-        this.data.splice(index, 1);
-        this.dataChange.next(this.data);
-      }
+    const index = this.data.indexOf(doc);
+    if (index !== -1) {
+      this.data.splice(index, 1);
+      this.dataChange.next(this.data);
+    }
     // });
   }
 
@@ -137,11 +139,86 @@ export class DynamicDataSource {
       this.collapseNode(this.data[index], index);
 
       if (index !== -1) {
-        this.data.splice(index, 1, ...this._database.mapDocumentsToTreeNodes([doc], this.data[index].level));
-        this.dataChange.next(this.data);
+        const level = this.data[index].level;
+        this.data.splice(index, 1);
+        const updatedNode = this._database.mapDocumentsToTreeNodes([doc], level)[0];
+        this.insertNodeInTree(updatedNode, updatedNode.parent);
       }
     });
   }
+
+  /**
+   * Insert a tree node under a parent in a correctly sorted way.
+   * @param node
+   * @param dest
+   */
+  insertNodeInTree(node: TreeNode, dest: string) {
+
+    // in case the new parent was collapsed, the moved nodes are automatically
+    // loaded from the backend when expanding the parent
+    const alreadyPresent = this.data.find(item => item._id === node._id);
+    if (alreadyPresent) {
+      return;
+    }
+
+    node.parent = dest;
+
+    let destNodeLevel;
+    let destNodeIndex;
+
+    if (dest === null) {
+      destNodeLevel = -1;
+      destNodeIndex = -1;
+    } else {
+      destNodeIndex = this.data.findIndex(item => item._id === dest);
+
+      const destNode = this.data[destNodeIndex];
+      destNodeLevel = destNode.level;
+
+      if (!destNode.isExpanded) {
+        // TODO: we should expand with update from server here!
+        this.expandNode(destNode);
+        return;
+      }
+    }
+    node.level = destNodeLevel + 1;
+
+    // get all children nodes from destination
+    let childrenNodes = [node];
+    const childrenNodesWithExpanded = [];
+    for (let i = destNodeIndex + 1; i < this.data.length && this.data[i].level > destNodeLevel; i++) {
+      childrenNodesWithExpanded.push(this.data[i]);
+      if (this.data[i].level === destNodeLevel + 1) {
+        childrenNodes.push(this.data[i]);
+      }
+    }
+
+    // sort children nodes
+    childrenNodes = childrenNodes.sort(this.treeService.getSortTreeNodesFunction());
+
+    // get index of sorted moved node
+    const sortedMovedNodeIndex = childrenNodes.findIndex(item => item._id === node._id);
+
+    const atEnd = sortedMovedNodeIndex === childrenNodes.length - 1;
+    let count = 0;
+
+    if (atEnd) {
+
+      this.data.splice(destNodeIndex + 1 + childrenNodesWithExpanded.length, 0, node);
+
+    } else {
+
+      const successor = childrenNodes[sortedMovedNodeIndex + 1]._id;
+      for (let i = destNodeIndex + 1; i < this.data.length && this.data[i]._id !== successor; i++, count++) {
+      }
+      this.data.splice(destNodeIndex + 1 + count, 0, node);
+
+    }
+
+    this.dataChange.next(this.data);
+
+  }
+
 
   addRootNode(doc: DocumentAbstract) {
 

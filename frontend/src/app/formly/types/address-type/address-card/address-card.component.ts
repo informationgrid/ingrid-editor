@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IgeDocument} from '../../../../models/ige-document';
 import {ProfileService} from '../../../../services/profile.service';
+import {DocumentUtils} from '../../../../services/document.utils';
 
 export interface AddressRef {
   type: string;
@@ -22,18 +23,32 @@ export class AddressCardComponent implements OnInit {
 
   content: {
     iconClass: string;
+    iconState: string;
     role: string;
     title: string;
     secondTitle: string;
     emailOrPhone: string;
-  }
+  };
+  invalidAddressReference = false;
 
   constructor(private profileService: ProfileService) {
   }
 
   ngOnInit(): void {
+    if (!this.address.ref) {
+      console.error('Address reference is null!');
+      // @ts-ignore
+      this.content = {
+        title: 'Ungültige Adressreferenz',
+        iconState: ''
+      }
+      this.invalidAddressReference = true;
+      return;
+    }
+
     this.content = {
       iconClass: this.profileService.getDocumentIcon(<IgeDocument>this.address.ref),
+      iconState: DocumentUtils.getStateClass(this.address.ref._state, this.address.ref._type) ?? '',
       role: this.address.type,
       title: this.getTitle(this.address.ref),
       secondTitle: this.getSecondTitle(this.address.ref),

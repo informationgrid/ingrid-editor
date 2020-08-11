@@ -37,6 +37,8 @@ describe('CatalogManagerComponent', () => {
       assignedCatalogs: [],
       currentCatalog: {id: 'xxx'},
       name: '',
+      firstName: '',
+      lastName: '',
       roles: [],
       userId: ''
     });

@@ -6,13 +6,18 @@ import {environment} from './environments/environment';
 import {hmrBootstrap} from './hmr';
 import {enableAkitaProdMode, persistState} from '@datorama/akita';
 
+// add scrollto polyfill for ie11
+import smoothscroll from 'smoothscroll-polyfill';
+smoothscroll.polyfill();
+
 if (environment.production) {
   enableProdMode();
   enableAkitaProdMode()
 }
 
 persistState({
-  include: ['session.ui']
+  include: ['session'],
+  preStorageUpdate: (storeName: string, state: any) => ({ui: state.ui, recentAddresses: state.recentAddresses})
 });
 
 const bootstrap = () => platformBrowserDynamic().bootstrapModule(AppModule);

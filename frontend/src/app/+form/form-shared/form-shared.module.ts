@@ -41,6 +41,7 @@ import {FormComponent} from '../form/form.component';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {formPluginProvider} from '../../form-plugin.provider';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 
 
 @NgModule({
@@ -50,24 +51,25 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     FormMessageComponent, DestinationSelectionComponent,
     DynamicFormComponent, SidebarComponent, FormDashboardComponent
   ],
-  imports: [
-    CommonModule,
-    AngularSplitModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    FlexLayoutModule,
-    IgeFormlyModule,
-    MatTabsModule,
-    SharedModule,
-    MatTooltipModule,
-    MatProgressSpinnerModule
-  ],
+    imports: [
+        CommonModule,
+        AngularSplitModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatMenuModule,
+        MatDividerModule,
+        MatInputModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        FlexLayoutModule,
+        IgeFormlyModule,
+        MatTabsModule,
+        SharedModule,
+        MatTooltipModule,
+        MatProgressSpinnerModule,
+        MatSlideToggleModule
+    ],
   providers: [FormToolbarService, FormPluginsService, CreateDocumentPlugin, SavePlugin, CreateFolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService, HistoryPlugin,
 

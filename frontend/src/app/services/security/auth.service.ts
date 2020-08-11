@@ -1,9 +1,20 @@
 import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {ConfigService, Configuration} from '../config/config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private configuration: Configuration;
+
+  constructor(private http: HttpClient, configService: ConfigService) {
+    this.configuration = configService.getConfiguration();
+  }
+
+  refreshSession() {
+    return this.http.get(`${this.configuration.backendUrl}info/refreshSession`);
+  }
 
   /*
   // store the URL so we can redirect after logging in

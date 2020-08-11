@@ -3,12 +3,12 @@ import {ModalService} from '../modal/modal.service';
 import {UpdateType} from '../../models/update-type.enum';
 import {UpdateDatasetInfo} from '../../models/update-dataset-info.model';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
 import {IgeDocument} from '../../models/ige-document';
 import {DocumentDataService} from './document-data.service';
-import {DocumentAbstract} from '../../store/document/document.model';
+import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE, DocumentAbstract} from '../../store/document/document.model';
 import {TreeStore} from '../../store/tree/tree.store';
-import {applyTransaction, arrayAdd, arrayRemove} from '@datorama/akita';
+import {applyTransaction, arrayAdd, arrayRemove, transaction} from '@datorama/akita';
 import {MessageService} from '../message.service';
 import {ProfileService} from '../profile.service';
 import {SessionStore} from '../../store/session.store';
@@ -19,6 +19,7 @@ import {ServerSearchResult} from '../../models/server-search-result.model';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 import {StatisticResponse} from '../../models/statistic.model';
 import {IgeError} from '../../models/ige-error';
+import {SessionQuery} from '../../store/session.query';
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -45,6 +46,7 @@ export class DocumentService {
               private messageService: MessageService,
               private profileService: ProfileService,
               private sessionStore: SessionStore,
+              private sessionQuery: SessionQuery,
               private treeStore: TreeStore,
               private addressTreeStore: AddressTreeStore) {
     this.configuration = configService.getConfiguration();
@@ -75,7 +77,6 @@ export class DocumentService {
     return this.dataService.getChildren(parentId, isAddress)
       .pipe(
         map(docs => this.mapToDocumentAbstracts(docs, parentId)),
-        map(docs => docs.sort((a, b) => a.title.localeCompare(b.title))),
         tap(docs => this.updateTreeStoreDocs(isAddress, parentId, docs))
       );
   }
@@ -160,6 +161,8 @@ export class DocumentService {
           }
         }
 
+        this.updateOpenedDocumentInTreestore(info, isAddress);
+
         // update state by adding node and updating parent info
         store.upsert(info.id, info);
         if (isNewDoc && parentId) {
@@ -180,7 +183,7 @@ export class DocumentService {
   }
 
   // FIXME: this should be added with a plugin
-  publish(data: IgeDocument): Promise<void> {
+  publish(data: IgeDocument, isAddress: boolean): Promise<void> {
     console.log('PUBLISHING');
     const errors: any = {errors: []};
 
@@ -197,6 +200,9 @@ export class DocumentService {
           const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
           this.afterSave$.next(json);
+
+          this.updateOpenedDocumentInTreestore(info, isAddress);
+
           this.datasetsChanged$.next({
             type: UpdateType.Update,
             data: [info]
@@ -224,10 +230,20 @@ export class DocumentService {
       });
   }
 
-  revert(id: string): Observable<any> {
+  revert(id: string, isAddress: boolean): Observable<any> {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
     return this.dataService.revert(id)
       .pipe(
-        tap((json: any) => this.datasetsChanged$.next({type: UpdateType.Update, data: [json]}))
+        map(json => this.mapToDocumentAbstracts([json], json._parent)),
+        map(json => {
+          json[0]._hasChildren = store.getValue().entities[id]._hasChildren;
+          return json
+        }),
+        tap(json => this.datasetsChanged$.next({type: UpdateType.Update, data: json})),
+        // tap(json => this.treeStore.update(id, json[0])),
+        // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
+        tap(json => this.reload$.next(id))
         // catchError( err => this.errorService.handle( err ) )
       );
   }
@@ -243,16 +259,18 @@ export class DocumentService {
    * @param srcIDs contains the IDs of the documents to be copied
    * @param dest is the document, where the other docs to be copied will have as their parent
    * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
+   * @param isAddress
    * @returns {Observable<Response>}
    */
-  copy(srcIDs: string[], dest: string, includeTree: boolean) {
+  copy(srcIDs: string[], dest: string, includeTree: boolean, isAddress: boolean) {
     return this.dataService.copy(srcIDs, dest, includeTree).pipe(
       tap((docs) => {
 
         this.messageService.sendInfo('Datensatz wurde kopiert');
 
-        // const info = this.treeStore.getValue().openedDocument;
         const infos = this.mapToDocumentAbstracts(docs, dest);
+
+        this.updateStoreAfterCopy(infos, dest, isAddress);
 
         this.datasetsChanged$.next({
           type: UpdateType.New,
@@ -267,13 +285,54 @@ export class DocumentService {
 
   /**
    * Move a set of documents under a specified destination document.
-   * @param src contains the IDs of the documents to be moved
+   * @param srcIDs contains the IDs of the documents to be moved
    * @param dest is the document, where the other docs to be copied will have as their parent
-   * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
+   * @param isAddress
+   * @param confirm
    * @returns {Observable<Response>}
    */
-  move(srcIDs: string[], dest: string, includeTree: boolean) {
-    return this.dataService.move(srcIDs, dest, includeTree);
+  move(srcIDs: string[], dest: string, isAddress: boolean, confirm = false): Observable<any> {
+    const moveOperation = () => this.dataService.move(srcIDs, dest).pipe(
+      switchMap(() => this.getChildrenIfNotDoneYet(dest, isAddress)),
+      tap(() => {
+        this.messageService.sendInfo('Datensatz wurde verschoben');
+
+        // update internal store, but we had to make sure that the children of the destination folder
+        // were already loaded, otherwise the tree won't know if children have been loaded yet
+        this.updateStoreAfterMove(srcIDs, dest, isAddress);
+
+        this.datasetsChanged$.next({
+          type: UpdateType.Move,
+          // @ts-ignore
+          data: srcIDs.map(id => ({id: id})),
+          parent: dest
+        });
+      })
+    );
+
+    if (confirm) {
+      const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+      let destinationTitle;
+      if (dest === null) {
+        destinationTitle = isAddress ? ADDRESS_ROOT_NODE.title : DOCUMENT_ROOT_NODE.title;
+      } else {
+        destinationTitle = store.getValue().entities[dest].title;
+      }
+
+      return this.modalService.confirmWith({
+        title: 'Verschieben bestätigen',
+        message: `Möchten Sie den folgenden Datensatz wirklich nach "${destinationTitle}" verschieben?`,
+        list: srcIDs.map(id => store.getValue().entities[id].title),
+        acceptButtonText: 'Verschieben'
+      })
+        .pipe(
+          filter(result => result),
+          tap(() => moveOperation().subscribe())
+        );
+    } else {
+      return moveOperation();
+    }
   }
 
   addExpandedNode(nodeId: string) {
@@ -285,10 +344,12 @@ export class DocumentService {
   }
 
   addDocumentToStore(docs: DocumentAbstract[]) {
+    // TODO: what about addresses?
     this.treeStore.add(docs);
   }
 
   updateChildrenInfo(id: string, hasChildren: boolean) {
+    // TODO: what about addresses?
     this.treeStore.update(id, {
       _hasChildren: hasChildren
     });
@@ -352,5 +413,60 @@ export class DocumentService {
       });
     });
 
+  }
+
+  private updateStoreAfterMove(ids: string[], parent: string, isAddress: boolean) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    ids.forEach(id => {
+      store.update(id, {_parent: parent});
+    });
+  }
+
+  public addToRecentAdresses(address: DocumentAbstract) {
+    let addresses = this.sessionQuery.recentAddresses.slice();
+    addresses = addresses.filter(ad => ad.id !== address.id)
+    addresses.unshift(address);
+
+    // only store 5 most recent addresses
+    if (addresses.length > 5) {
+      addresses = addresses.slice(0, 5);
+    }
+    this.sessionStore.update({recentAddresses: addresses})
+  }
+
+
+  @transaction()
+  private updateStoreAfterCopy(infos: DocumentAbstract[], parentId: string, isAddress: boolean) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    infos.forEach(info => {
+      store.upsert(info.id, info);
+    });
+
+    // update parent in case it didn't have children before
+    store.update(parentId, {
+      _hasChildren: true
+    });
+  }
+
+  private getChildrenIfNotDoneYet(parent: string, isAddress: boolean): Observable<DocumentAbstract[]> {
+
+    if (parent !== null) {
+      const store = isAddress ? this.addressTreeStore : this.treeStore;
+      const entities = store.getValue().entities;
+      const parentNode = entities[parent];
+
+      // if a parent says it has children, but none are found then these have not been loaded yet
+      // in that case load them so that the caller can continue after store has been updated
+      if (parentNode._hasChildren) {
+        const hasAnyChildren = Object.keys(entities).some(id => entities[id]._parent === parent);
+        if (!hasAnyChildren) {
+          return this.getChildren(parent, isAddress);
+        }
+      }
+    }
+
+    return of([]);
   }
 }

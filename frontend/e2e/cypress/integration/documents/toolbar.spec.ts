@@ -3,8 +3,12 @@ import {Tree} from '../../pages/tree.partial';
 
 describe('Toolbar behavior', () => {
 
-  beforeEach(() => {
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
+  });
+
+  beforeEach(() => {
     cy.visit('/form');
     cy.get('mat-toolbar').should('be.visible');
   });
@@ -14,19 +18,33 @@ describe('Toolbar behavior', () => {
   });
 
   it('should activate specific buttons when a folder is loaded', () => {
+    // Empty folder
     Tree.selectNodeWithTitle('Neue Testdokumente');
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save']);
+    cy.get(DocumentPage.Toolbar.Copy).click();
+    cy.get("[aria-disabled='false']").contains("Kopieren")
+    cy.get("[aria-disabled='true']").contains("Kopieren mit Teilbaum")
+    cy.get("[aria-disabled='false']").contains("Verschieben (inkl. Teilbaum)")
 
-    // TODO: copy/move with subtree should be enabled
-
-
+    // Non Empty folder
+    cy.get('body').type('{esc}')
+    Tree.selectNodeWithTitle('Testdokumente');
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Previous']);
+    cy.get(DocumentPage.Toolbar.Copy).click();
+    cy.get("[aria-disabled='false']").contains("Kopieren")
+    cy.get("[aria-disabled='false']").contains("Kopieren mit Teilbaum")
+    cy.get("[aria-disabled='false']").contains("Verschieben (inkl. Teilbaum)")
   });
 
-  xit('should activate specific buttons when a document is loaded', () => {
-    Tree.selectNodeWithTitle('zzz');
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish']);
-
-    // TODO: copy/move with subtree should be disabled
+  it('should activate specific buttons when a document is loaded', () => {
+    Tree.selectNodeWithTitle('Testdokumente');
+    cy.get('#sidebar').findByText('Test mCLOUD Dokument').click();
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish', 'Previous']);
+    cy.get(DocumentPage.Toolbar.Copy).click();
+    cy.get("[aria-disabled='false']").contains("Kopieren")
+    cy.get("[aria-disabled='true']").contains("Kopieren mit Teilbaum")
+    cy.get("[aria-disabled='false']").contains("Verschieben (inkl. Teilbaum)")
+    // TODO: copy with subtree should be disabled, but copy and cut enabled
   });
 
   xit('should activate specific buttons when a published document is loaded', () => {

@@ -51,6 +51,25 @@ export class DocumentPage extends BasePage {
     Publish: '[data-cy=toolbar_PUBLISH]'
   };
 
+  static AddAddressDialog = class {
+
+    static search(searchString: string) {
+      cy.get('[data-cy="choose-address-tree"]').findByPlaceholderText('Suchen').click();
+      cy.get('[data-cy="choose-address-tree"]').findByPlaceholderText('Suchen').type(searchString);
+    };
+
+    static searchAndAdd(searchString: string, addressType: string) {
+      // TODO replace addressType with proper addressType class or enum
+      this.search(searchString);
+      cy.wait(500);
+      cy.get('ige-document-list-item').contains(searchString).click();
+      cy.get('[data-cy="address-type-select"]').click();
+      cy.get('mat-option').contains(addressType).click();
+      cy.get('[data-cy="choose-address-confirm"]').click();
+    }
+
+  };
+
   static visit() {
     cy.visit('form');
   }
@@ -59,16 +78,17 @@ export class DocumentPage extends BasePage {
     cy.visit('form;id=7e9687e8-43f4-4b95-bdcb-27647197a8cb');
   }
 
-  static createDocument(): string {
-    const docName = 'Test-Dokument ' + Utils.randomString();
+
+  static createDocument(docName?: string): string {
+    docName = docName ? docName : 'Test-Dokument ' + Utils.randomString();
     cy.get(DocumentPage.Toolbar.NewDoc).click();
     cy.get('[data-cy=create-title]').type(docName);
     cy.get('[data-cy=create-action]').click();
+    cy.get('[data-cy=create-action]').should('not.be.visible');
     return docName;
   }
 
   static publishNow() {
-    cy.get(DocumentPage.Toolbar.Publish).click();
     cy.get('[data-cy=toolbar_publish_now]').click();
   }
 
@@ -104,6 +124,11 @@ export class DocumentPage extends BasePage {
 
   static getSearchResults() {
     return cy.get('.cdk-overlay-pane').find('ige-document-list-item');
+  }
+
+  static deleteLoadedNode() {
+    cy.get(DocumentPage.Toolbar['Delete']).click()
+    cy.get('[data-cy="confirm-dialog-confirm"]').click()
   }
 
 }

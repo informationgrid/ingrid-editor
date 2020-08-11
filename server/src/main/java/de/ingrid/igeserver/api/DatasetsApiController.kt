@@ -2,17 +2,16 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.orientechnologies.orient.core.exception.OConcurrentModificationException
-import com.orientechnologies.orient.core.id.ORecordId
-import de.ingrid.igeserver.db.*
-import de.ingrid.igeserver.documenttypes.DocumentType
-import de.ingrid.igeserver.documenttypes.DocumentWrapperType
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.FindOptions
+import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
-import de.ingrid.igeserver.utils.DBUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -20,13 +19,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import java.time.OffsetDateTime
 import java.util.*
-import java.util.stream.Collectors
 
 @RestController
 @RequestMapping(path = ["/api"])
-class DatasetsApiController @Autowired constructor(private val authUtils: AuthUtils, private val dbUtils: DBUtils, private val dbService: DBApi, private val documentService: DocumentService) : DatasetsApi {
+class DatasetsApiController @Autowired constructor(private val authUtils: AuthUtils, private val catalogService: CatalogService, private val dbService: DBApi, private val documentService: DocumentService) : DatasetsApi {
 
     private val log = logger()
 
@@ -44,13 +41,12 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             address: Boolean,
             publish: Boolean): ResponseEntity<JsonNode> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         try {
             dbService.acquire(dbId).use {
-                val dataJson = data
 
-                val resultDoc = documentService.createDocument(dataJson, address)
+                val resultDoc = documentService.createDocument(data, address)
 
                 return ResponseEntity.ok(resultDoc)
             }
@@ -71,86 +67,34 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             publish: Boolean,
             revert: Boolean): ResponseEntity<JsonNode> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
             if (dbId == null) {
                 throw NotFoundException(HttpStatus.NOT_FOUND.value(), "The user does not seem to be assigned to any database.")
             }
 
-            if (revert) {
-                throw ApiException("Not implemented")
+            val resultDoc = if (revert) {
+                documentService.revertDocument(id);
+            } else {
+                documentService.updateDocument(id, data, publish)
             }
 
-            val docWrapper = documentService.getByDocId(id, DocumentWrapperType.TYPE, false) as ObjectNode
-
-            checkForPublishedConcurrency(docWrapper, data.get(FIELD_VERSION)?.asInt())
-
-            // just update document by using new data and adding database ID
-            val recordId = determineRecordId(docWrapper)
-
-            // save document with same ID or new one, if no draft version exists
-            val updatedDocument = data as ObjectNode
-            updatedDocument.put(FIELD_MODIFIED, OffsetDateTime.now().toString())
-            val version = updatedDocument.get(FIELD_VERSION)?.asText();
-            handleLinkedDocs(updatedDocument)
-
-            // TODO: use document id instead of DB-ID
-            val savedDoc = dbService.save(DocumentType.TYPE, recordId, updatedDocument.toString(), version)
-
-            val dbID = dbService.getRecordId(savedDoc)
-            saveDocumentWrapper(publish, docWrapper, dbID)
-            val wrapper = documentService.getByDocId(id, DocumentWrapperType.TYPE, true)
-            val result = documentService.getLatestDocument(wrapper!!)
-
-            return ResponseEntity.ok(result)
-        }
-    }
-
-    private fun determineRecordId(docWrapper: ObjectNode): String? {
-        return if (docWrapper[FIELD_DRAFT].isNull) {
-            null
-        } else {
-            docWrapper[FIELD_DRAFT].asText()
-        }
-    }
-
-    /**
-     * Throw an exception if we want to save a draft version with a version number lower than
-     * the current published version.
-     */
-    private fun checkForPublishedConcurrency(wrapper: ObjectNode, version: Int?) {
-
-        val draft = wrapper.get(FIELD_DRAFT)
-        val publishedDBID = wrapper.get(FIELD_PUBLISHED).asText()
-
-        if (draft.isNull && publishedDBID != null) {
-            val publishedDoc = dbService.find(DocumentType.TYPE, publishedDBID)
-            val publishedVersion = publishedDoc?.get("@version")?.asInt()
-            if (version != null && publishedVersion != null && publishedVersion > version) {
-                throw OConcurrentModificationException(
-                        ORecordId(publishedDBID),
-                        publishedDoc.get("@version").asInt(),
-                        version,
-                        0)
-            }
+            return ResponseEntity.ok(resultDoc)
         }
     }
 
     @Throws(Exception::class)
     override fun deleteById(principal: Principal?, ids: Array<String>): ResponseEntity<String> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
             for (id in ids) {
 
                 // TODO: remove references to document!?
-                // TODO: remove all children recursively
+                documentService.deleteRecursively(id)
 
-                // String recordId = this.dbService.getRecordId(type, id);
-                // JsonNode dbDoc = this.dbService.find(type, recordId);
-                dbService.remove(DocumentWrapperType.TYPE, id)
             }
             return ResponseEntity.ok().build()
         }
@@ -159,13 +103,13 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     override fun copyDatasets(
             principal: Principal?,
             ids: List<String>,
-            data: CopyOptions): ResponseEntity<List<JsonNode>> {
+            options: CopyOptions): ResponseEntity<List<JsonNode>> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            val result = copyOrMove(CopyMoveOperation.COPY, ids, data.destId)
-            return ResponseEntity.ok(result)
+            val results = ids.map { id -> handleCopy(id, options) }
+            return ResponseEntity.ok(results)
         }
 
     }
@@ -175,49 +119,87 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             ids: List<String>,
             options: CopyOptions): ResponseEntity<Void> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
-            copyOrMove(CopyMoveOperation.MOVE, ids, options.destId)
+//            dbService.beginTransaction()
+            ids.forEach { id -> handleMove(id, options) }
+//            dbService.commitTransaction()
             return ResponseEntity(HttpStatus.OK)
         }
 
     }
 
-    private fun copyOrMove(operation: CopyMoveOperation, ids: List<String>, destId: String?): MutableList<JsonNode> {
+    private fun handleCopy(id: String, options: CopyOptions): JsonNode {
 
-        val results = mutableListOf<JsonNode>()
+        val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
 
-        for (id in ids) {
-            val wrapper = documentService.getByDocId(id, DocumentWrapperType.TYPE, true) as ObjectNode
-            val isAddress = wrapper.get(FIELD_CATEGORY).asText() == "address"
-            val doc = documentService.getLatestDocument(wrapper, false, false)
+        val doc = documentService.getLatestDocument(wrapper, false, false)
 
-            // add new parent to document
-            doc.put(FIELD_PARENT, destId)
+        // add new parent to document
+        doc.put(FIELD_PARENT, options.destId)
 
-            val result = when (operation) {
-                CopyMoveOperation.COPY -> handleCopy(doc, isAddress)
-                CopyMoveOperation.MOVE -> handleMove(doc, isAddress)
-            }
-
-            results.add(result)
-        }
-
-        return results
+        return createCopyAndHandleSubTree(doc, options, documentService.isAddress(wrapper))
 
     }
 
-    private fun handleCopy(doc: ObjectNode, isAddress: Boolean): JsonNode {
+    private fun createCopyAndHandleSubTree(doc: ObjectNode, options: CopyOptions, isAddress: Boolean): JsonNode {
+        val origParentId = doc.get(FIELD_ID).asText()
 
         // when we copy the node, then we also have to reset the id
         doc.put(FIELD_ID, null as String?)
 
-        return documentService.createDocument(doc, isAddress)
+        val copiedParent = documentService.createDocument(doc, isAddress) as ObjectNode
+
+        if (options.includeTree) {
+            val count = handleCopySubTree(doc, origParentId, options, isAddress);
+            copiedParent.put(FIELD_HAS_CHILDREN, count > 0)
+        }
+
+        return copiedParent;
     }
 
-    private fun handleMove(doc: ObjectNode, isAddress: Boolean): JsonNode {
-        TODO("Not yet implemented")
+    private fun handleCopySubTree(parent: ObjectNode, origParentId: String, options: CopyOptions, isAddress: Boolean): Long {
+
+        // get all children of parent and save those recursively
+        val parentId = parent.get(FIELD_ID).asText()
+        val docs = documentService.findChildrenDocs(origParentId, isAddress)
+
+        docs.hits.forEach { doc: JsonNode ->
+
+            val id = doc.get(FIELD_ID).asText()
+            val child = documentService.getByDocumentId(id, DocumentWrapperType::class, true)
+            child?.let {
+                val childVersion = documentService.getLatestDocument(it, false, false)
+                childVersion.put(FIELD_PARENT, parentId)
+                createCopyAndHandleSubTree(childVersion, options, isAddress)
+            }
+
+        }
+
+        return docs.totalHits
+
+    }
+
+    private fun handleMove(id: String, options: CopyOptions) {
+
+        val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
+        val doc = documentService.getLatestDocument(wrapper, false, false)
+
+        // update parent
+        doc.put(FIELD_PARENT, options.destId)
+
+        val published = doc.get(FIELD_STATE).asText() == DocumentService.DocumentState.PUBLISHED.value
+
+        // update document which includes updating the wrapper
+        documentService.updateDocument(id, doc, published)
+
+        // updateWrapper
+        val wrapperWithLinks = documentService.getByDocumentId(id, DocumentWrapperType::class, false) as ObjectNode
+        wrapperWithLinks.put(FIELD_PARENT, options.destId)
+        val wrapperId = dbService.getRecordId(wrapperWithLinks)
+        dbService.save(DocumentWrapperType::class, wrapperId, wrapperWithLinks.toString())
+
     }
 
     @Throws(ApiException::class)
@@ -227,24 +209,15 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             isAddress: Boolean
     ): ResponseEntity<List<ObjectNode>> {
 
-        var docs: DBFindAllResults
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         try {
             dbService.acquire(dbId).use {
-                val queryMap = listOf(
-                        QueryField(FIELD_PARENT, parentId),
-                        QueryField(FIELD_CATEGORY, if (isAddress) "address" else "data")
-                )
-                val findOptions = FindOptions()
-                findOptions.queryType = QueryType.exact
-                findOptions.resolveReferences = true
-                findOptions.queryOperator = "AND"
-                docs = dbService.findAll(DocumentWrapperType.TYPE, queryMap, findOptions)
+                val docs = documentService.findChildrenDocs(parentId, isAddress)
                 val childDocs = docs.hits
                         .map { doc: JsonNode ->
-                            val node = documentService.getLatestDocument(doc)
-                            node.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc, DocumentWrapperType.TYPE))
+                            val node = documentService.getLatestDocument(doc, resolveLinks = false)
+                            node.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc, DocumentWrapperType::class))
                             node
                         }
                 return ResponseEntity.ok(childDocs)
@@ -259,8 +232,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     @Throws(Exception::class)
     override fun find(principal: Principal?, query: String, size: Int, sort: String, sortOrder: String, forAddress: Boolean): ResponseEntity<SearchResult> {
 
-        var docs: DBFindAllResults
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        var docs: FindAllResults
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
             val cat = FIELD_CATEGORY + " == " + if (forAddress) "\"address\"" else "\"data\""
@@ -268,18 +241,17 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                     QueryField("$cat AND draft.title", query),
                     QueryField("$cat AND draft IS NULL AND published.title", query)
             )
-            val findOptions = FindOptions()
-            findOptions.size = size
-            findOptions.queryType = QueryType.like
-            findOptions.sortField = sort
-            findOptions.sortOrder = sortOrder
-            findOptions.resolveReferences = true
-            docs = dbService.findAll(DocumentWrapperType.TYPE, queryMap, findOptions)
+            val findOptions = FindOptions(
+                    size = size,
+                    queryType = QueryType.LIKE,
+                    sortField = sort,
+                    sortOrder = sortOrder,
+                    resolveReferences = true)
+            docs = dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
             val searchResult = SearchResult()
             searchResult.totalHits = docs.totalHits
-            searchResult.hits = docs.hits.stream()
+            searchResult.hits = docs.hits
                     .map { doc: JsonNode -> documentService.getLatestDocument(doc) }
-                    .collect(Collectors.toList())
             return ResponseEntity.ok(searchResult)
         }
     }
@@ -290,14 +262,14 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             id: String,
             publish: Boolean?): ResponseEntity<JsonNode> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
             val query = listOf(QueryField(FIELD_ID, id))
-            val findOptions = FindOptions()
-            findOptions.queryType = QueryType.exact
-            findOptions.resolveReferences = true
-            val docs = dbService.findAll(DocumentWrapperType.TYPE, query, findOptions)
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    resolveReferences = true)
+            val docs = dbService.findAll(DocumentWrapperType::class, query, findOptions)
             return if (docs.totalHits > 0) {
                 val doc = documentService.getLatestDocument(docs.hits[0])
                 ResponseEntity.ok(doc)
@@ -314,7 +286,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             principal: Principal?,
             id: String): ResponseEntity<List<String>> {
 
-        val dbId = dbUtils.getCurrentCatalogForPrincipal(principal)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         var parentId: String = id
         val path: MutableList<String> = ArrayList()
@@ -323,8 +295,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         try {
             dbService.acquire(dbId).use {
                 while (true) {
-                    val doc = documentService.getByDocId(parentId, DocumentWrapperType.TYPE, false) ?: break
-                    val nextParentId = doc[FIELD_PARENT].textValue()
+                    val doc = documentService.getByDocumentId(parentId, DocumentWrapperType::class, false) ?: break
+                    val nextParentId = doc[FIELD_PARENT]?.textValue()
                     if (nextParentId != null) {
                         path.add(nextParentId)
                         parentId = nextParentId
@@ -334,51 +306,10 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 }
             }
         } catch (e: Exception) {
-            log.error(e)
+            log.error("Error getting path", e)
         }
 
         return ResponseEntity.ok(path.reversed())
 
-    }
-
-    private fun saveDocumentWrapper(publish: Boolean, docWrapper: ObjectNode, dbID: String): JsonNode {
-        if (publish) {
-            return handlePublishingOnWrapper(docWrapper, dbID)
-        } else {
-            return handleSaveOnWrapper(docWrapper, dbID)
-        }
-    }
-
-    @Throws(Exception::class)
-    private fun handleLinkedDocs(doc: ObjectNode) {
-        val docType = doc[FIELD_DOCUMENT_TYPE].asText()
-        val refType = documentService.getDocumentType(docType)
-        refType.handleLinkedFields(doc, dbService)
-    }
-
-    @Throws(ApiException::class)
-    private fun handleSaveOnWrapper(docWrapper: ObjectNode, dbID: String): JsonNode {
-        // update document wrapper with new draft version
-        if (docWrapper[FIELD_DRAFT].isNull) {
-            // TODO: db_id is ORecord!
-            docWrapper.put(FIELD_DRAFT, dbID)
-            return dbService.save(DocumentWrapperType.TYPE, dbService.getRecordId(docWrapper), docWrapper.toString())
-        }
-        return docWrapper
-    }
-
-    @Throws(ApiException::class)
-    private fun handlePublishingOnWrapper(docWrapper: ObjectNode, dbID: String): JsonNode {
-        // add ID from published field to archive
-        if (!docWrapper[FIELD_PUBLISHED].isNull) {
-            docWrapper.withArray(FIELD_ARCHIVE).add(docWrapper[FIELD_PUBLISHED])
-        }
-
-        // add doc to published reference
-        docWrapper.put(FIELD_PUBLISHED, dbID)
-
-        // remove draft version
-        docWrapper.put(FIELD_DRAFT, null as String?)
-        return dbService.save(DocumentWrapperType.TYPE, dbService.getRecordId(docWrapper), docWrapper.toString())
     }
 }

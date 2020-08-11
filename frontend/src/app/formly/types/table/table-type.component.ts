@@ -6,6 +6,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {FormDialogComponent, FormDialogData} from './form-dialog/form-dialog.component';
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material/table';
+import {ContextHelpService} from "../../../services/context-help/context-help.service";
+import {ConfigService} from "../../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -22,8 +24,14 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
   selection = new SelectionModel<any>(true, []);
   batchMode = false;
 
+  private profile: string;
+  private docType: string;
+  private fieldId: string;
 
-  constructor(private dialog: MatDialog) {
+
+  constructor(private dialog: MatDialog,
+              public contextHelpService: ContextHelpService,
+              public configService: ConfigService) {
     super();
   }
 
@@ -44,8 +52,16 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
   }
 
   ngAfterViewInit() {
+    this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
+    this.docType = this.to.docType ?? this.model?._type;
+    this.fieldId = this.field.key;
   }
 
+  showContextHelp(infoElement: HTMLElement) {
+
+    this.contextHelpService.showContextHelp(this.profile, this.docType, this.fieldId, this.to.externalLabel, infoElement);
+
+  }
 
   addRow() {
 
@@ -62,17 +78,18 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
   }
 
   editRow(index: number) {
-
+    const newEntry = (index === null);
     this.dialog.open(FormDialogComponent, {
       data: {
         fields: this.to.columns,
-        model: index === null ? {} : JSON.parse(JSON.stringify(this.dataSource.data[index]))
+        model: newEntry ? {} : JSON.parse(JSON.stringify(this.dataSource.data[index])),
+        newEntry: newEntry
       } as FormDialogData
     }).afterClosed()
       .subscribe(result => {
         console.log(result);
         if (result) {
-          if (index === null) {
+          if (newEntry) {
             this.dataSource.data.push(result);
           } else {
             this.dataSource.data.splice(index, 1, result);

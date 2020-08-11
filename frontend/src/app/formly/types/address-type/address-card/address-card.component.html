@@ -1,6 +1,6 @@
 <mat-card class="hover-elevate">
     <mat-card-header>
-        <div mat-card-avatar><mat-icon [svgIcon]="content.iconClass"></mat-icon></div>
+        <div mat-card-avatar><mat-icon [svgIcon]="content.iconClass" [ngClass]="['document-icon', content.iconState]"></mat-icon></div>
         <mat-card-title fxFlex>{{address.type | codelist:"505" | async}}</mat-card-title>
         <div fxFlex></div>
         <div>
@@ -10,14 +10,14 @@
             <mat-menu #linkedAddressMenu="matMenu">
                 <button mat-menu-item (click)="edit.next()">Bearbeiten</button>
                 <button mat-menu-item (click)="gotoAddress.next()">Hinspringen</button>
-                <button mat-menu-item (click)="remove.next()">Löschen</button>
+                <button mat-menu-item (click)="remove.next()">Entfernen</button>
             </mat-menu>
         </div>
     </mat-card-header>
 
     <mat-card-content>
         <ng-container *ngIf="address.ref?.organization">
-            <div class="title">{{content.title}}</div>
+            <div class="title" [class.error]="invalidAddressReference">{{content.title}}</div>
             <div class="organization-person">{{content.secondTitle}}</div>
             <div class="email">{{content.emailOrPhone}}</div>
         </ng-container>

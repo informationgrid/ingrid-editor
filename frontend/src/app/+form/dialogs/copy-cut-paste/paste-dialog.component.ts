@@ -13,7 +13,8 @@ export interface PasteDialogOptions {
 }
 
 @Component({
-  templateUrl: './paste-dialog.component.html'
+  templateUrl: './paste-dialog.component.html',
+  styleUrls: ['./paste-dialog.component.scss']
 })
 export class PasteDialogComponent implements OnInit {
 

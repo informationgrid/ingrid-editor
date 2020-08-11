@@ -34,7 +34,7 @@ repositories {
 }
 
 // Profile support
-if (!hasProperty('buildProfile')) apply from: "profile-dev.gradle"
+if (!hasProperty('buildProfile') || getProperty('buildProfile') == 'cypress') apply from: "profile-dev.gradle"
 
 // for faster development ignore frontend project and its long build time
 if (hasProperty('buildProfile')) {
@@ -88,8 +88,27 @@ dependencies {
     testImplementation 'io.kotest:kotest-runner-junit5-jvm:4.0.6' // for kotest framework
     testImplementation 'io.kotest:kotest-assertions-core-jvm:4.0.6' // for kotest core jvm assertions
     testImplementation 'io.kotest:kotest-runner-console-jvm:4.0.6' // to run from IntelliJ
+    testImplementation("io.kotest:kotest-extensions-spring:4.0.6") // to wire dependencies using Spring
     testImplementation 'junit:junit' // TODO: remove when converted to Kotest
     testImplementation 'org.mockito:mockito-core'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
+    // iBus communication
+    implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {
+        exclude group: 'org.apache.logging.log4j'
+        exclude group: 'junit'
+    }
+
+    // iBus communication
+    implementation('de.ingrid:ingrid-elasticsearch-tools:5.4.0')
+//    compile 'org.elasticsearch:elasticsearch:6.8.4'
+
+    implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {
+        exclude group: 'org.apache.logging.log4j'
+        exclude group: 'junit'
+    }
 }
 
 group = 'de.ingrid'

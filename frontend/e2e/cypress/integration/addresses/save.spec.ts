@@ -7,8 +7,12 @@ describe('General create addresses/folders', () => {
 
   const dialog = AddressPage.CreateDialog;
 
-  beforeEach(() => {
+  before(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
+  });
+
+  beforeEach(() => {
     AddressPage.visit();
   });
 
@@ -94,7 +98,15 @@ describe('General create addresses/folders', () => {
       cy.get('.lastName input').should('have.value', 'Meier');
     });
 
-    xit('should create an address folder', () => {
+    it('should create an address folder', () => {
+      const folderName = 'Test-Adressen-Ordner ' + Utils.randomString();
+
+      cy.get(DocumentPage.Toolbar.NewFolder).click();
+      cy.get('[data-cy=create-title]').type(folderName);
+      cy.get('[data-cy=create-action]').click();
+
+      cy.get('ige-breadcrumb').shouldHaveTrimmedText(`Adressen`);
+      cy.get(DocumentPage.title).should('have.text', folderName)
     });
 
     it('should generate a title from create parameters', () => {
@@ -126,37 +138,72 @@ describe('General create addresses/folders', () => {
   });
 
   describe('Publish addresses', () => {
-    xit('should show a validation error when a required field is not filled', () => {
+    it('should show a validation error when a required field is not filled', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
 
-      // AddressPage.createAddress();
+      AddressPage.createAddress(new Address('publishErrorTest'));
 
       cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
       AddressPage.publishNow();
 
       cy.hasErrorDialog('Es müssen alle Felder korrekt');
+      cy.get('[data-cy="error-dialog-close"]').click();
 
-      cy.fieldIsInvalid('description', 'Dieses Feld muss ausgefüllt sein');
+      cy.get('[data-cy="Kommunikation"]').contains('Bitte erstellen Sie mindestens einen Eintrag');
+      AddressPage.deleteLoadedNode();
     });
   });
 
   describe('Dirty checks', () => {
-    xit('should show a dialog when an address was modified and another address was clicked', () => {
+    it('should show a dialog when an address was modified and another address was clicked', () => {
+      const adr1Name = 'Neue Testadressen';
+      const adr2Name = 'Testorganisation';
+
+      cy.get('#sidebar').findByText('Testadressen').click();
+      cy.get('#sidebar').findByText(adr2Name).click();
+      cy.get('.lastName ').type('testestest');
 
       // reject dialog
       // check selected tree node === previous selected node
+      cy.wait(500);
+      cy.get('#sidebar').findByText(adr1Name).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('[data-cy=confirm-dialog-cancel]').click();
+      cy.get(DocumentPage.title).should('have.text', adr2Name);
 
       // accept dialog
       // check selected tree node === newly selected node
-
+      cy.wait(500);
+      cy.get('#sidebar').findByText(adr1Name).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      cy.get(DocumentPage.title).should('have.text', adr1Name);
     });
 
-    xit('should show a dialog when an address was modified and the page was changed', () => {
+    it('should show a dialog when an address was modified and the page was changed', () => {
+      const addressName = 'Testorganisation';
 
+      cy.get('#sidebar').findByText('Testadressen').click();
+      cy.get('#sidebar').findByText(addressName).click();
+      cy.get('.lastName ').type('testestest');
+
+      // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
+      cy.wait(500);
+      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('[data-cy=confirm-dialog-cancel]').click();
+
+      cy.get(DocumentPage.title).should('have.text', addressName);
+
 
       // accept -> should load new page
+      cy.wait(500);
+      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
 
+      cy.get(DocumentPage.title).should('not.exist');
     });
   });
 });

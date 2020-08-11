@@ -1,3 +1,5 @@
+@import "src/variables";
+
 .empty-navigation-wrapper {
 
   .navigation-title {
@@ -6,8 +8,8 @@
   }
 
   .empty-text-wrapper {
-    border-top: 1px solid #DFDFDF;
-    border-bottom: 1px solid #DFDFDF;
+    border-top: 1px solid $ige-background-bar;
+    border-bottom: 1px solid $ige-background-bar;
     height: 49px;
     line-height: 49px;
     color: #000000de;

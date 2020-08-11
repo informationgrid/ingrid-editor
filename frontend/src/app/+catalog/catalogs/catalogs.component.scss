@@ -2,6 +2,8 @@
 
 :host {
   display: flex;
+  flex-direction: column;
+  padding: 24px;
 }
 
 .modal-body input {
@@ -16,8 +18,13 @@
 
 .catalog-wrapper {
   min-width: 320px;
+  margin-bottom: 24px;
 }
 
 .selected {
   background-color: $ige-mark-color;
+}
+
+.header {
+  padding-bottom: 24px;
 }

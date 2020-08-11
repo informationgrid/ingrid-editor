@@ -38,12 +38,16 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       this.timer$.unsubscribe();
     }
 
-    const duration = this.overrideSessionDuration || this.defaultSessionDurationInMillSeconds;
+    const duration = (this.overrideSessionDuration ?? this.defaultSessionDurationInMillSeconds) + 1;
 
     this.timer$ = timer(0, this.oneSecondInMilliseconds).pipe(
       scan(acc => --acc, duration),
       takeWhile(x => x >= 0)
-    ).subscribe(time => this.updateStore(time));
+    ).subscribe(time => {
+      if ((time % 60 == 0) || time < 300) {
+        this.updateStore(time)
+      }
+    });
 
   }
 

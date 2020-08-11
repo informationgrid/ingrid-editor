@@ -4,6 +4,12 @@
   display: flex;
   align-items: center;
 
+  formly-field-mat-input + .mat-icon-button.menu-button {
+      margin-top: -3px;
+      margin-bottom: -3px;
+      margin-left: auto;
+  }
+
   .mat-icon-button.menu-button {
     width: 24px;
     height: 24px;
@@ -14,6 +20,6 @@
       * {
         vertical-align: unset;
       }
-    } 
+    }
   }
 }

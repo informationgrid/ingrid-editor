@@ -23,3 +23,12 @@ ige-tree {
   overflow: auto;
   max-height: 550px;
 }
+
+.selection-divider{
+  height: 1px;
+  background: $ige-primary;
+}
+
+.place-title {
+  padding-bottom: 12px!important;
+}
