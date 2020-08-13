@@ -103,6 +103,8 @@ describe('General create documents/folders', () => {
 
       cy.get('[data-cy=create-changeLocation]').click();
       cy.get('ige-destination-selection mat-list-option').click();
+      //check if 'Daten' is chosen
+      cy.get("[aria-selected=true]").contains("Daten");
 
       cy.get('[data-cy=create-applyLocation]').click();
       cy.get('[data-cy=create-action]').click();
