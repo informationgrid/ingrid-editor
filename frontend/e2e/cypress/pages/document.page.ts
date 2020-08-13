@@ -18,9 +18,14 @@ export class DocumentPage extends BasePage {
     }
 
     static setLocation(nodeTitle: string) {
-      cy.get('[data-cy=create-changeLocation]').click();
+      //cy.get('[data-cy=create-changeLocation]').click();
       Tree.selectNodeWithTitle(nodeTitle, true);
       cy.get('[data-cy=create-applyLocation]').click();
+    }
+
+    static changeLocation(nodeTitle: string) {
+      cy.get('[data-cy=create-changeLocation]').click();
+      this.setLocation(nodeTitle);
     }
 
     static execute() {

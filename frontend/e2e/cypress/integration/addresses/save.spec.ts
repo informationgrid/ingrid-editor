@@ -62,7 +62,7 @@ describe('General create addresses/folders', () => {
       dialog.checkPath(['Adressen']);
 
       // change location in dialog
-      dialog.setLocation('Testadressen');
+      dialog.changeLocation('Testadressen');
 
       dialog.checkPath(['Adressen', 'Testadressen']);
 
