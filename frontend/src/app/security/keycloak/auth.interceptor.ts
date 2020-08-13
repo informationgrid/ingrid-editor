@@ -30,7 +30,7 @@ export class AuthInterceptor implements HttpInterceptor {
             const message = 'You have been logged out. Redirecting to login page in 3 seconds.';
             this.showError(message);
             console.error(error);
-            // setTimeout(() => window.location.reload(), 3000);
+            setTimeout(() => window.location.reload(), 3000);
           }
           // intercept the respons error and displace it to the console
           console.log('Error Occurred');
