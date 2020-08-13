@@ -1,3 +1,5 @@
+import {DocumentPage} from "./document.page";
+
 export class Tree {
 
   static containsNodeWithTitle(text: string, level?: number) {
@@ -18,5 +20,6 @@ export class Tree {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? new RegExp('^ ' + nodeTitle + ' $', 'g') : nodeTitle;
     cy.contains(`${parentContainer} mat-tree mat-tree-node .label`, query).click();
+    cy.get(DocumentPage.title).should('have.text', nodeTitle);
   }
 }
