@@ -29,9 +29,9 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       const currentId = this.formsManager.getControl(type).value._id;
       return this.dialog.open(ConfirmDialogComponent, {
         data: {
-          title: 'Änderungen verwerfen?',
-          message: 'Wollen Sie die Änderungen am Datensatz wirklich verwerfen?',
-          acceptButtonText: 'Verwerfen'
+          title: 'Änderungen sichern?',
+          message: 'Verbleiben Sie auf der Seite und sichern Sie Ihre Eingaben.\nWenn Sie die Seite jetzt verlassen, werden die Änderungen verworfen.',
+          acceptButtonText: 'Seite verlassen'
         } as ConfirmDialogData
       }).afterClosed()
         .pipe(

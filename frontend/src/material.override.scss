@@ -11,6 +11,7 @@
     div[mat-dialog-content] {
       flex-grow: 1;
       //max-height: unset;
+      white-space: pre;
     }
   }
 }
