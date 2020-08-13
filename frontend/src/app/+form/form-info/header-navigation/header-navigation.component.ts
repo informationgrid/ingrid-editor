@@ -20,7 +20,7 @@ export class HeaderNavigationComponent implements OnInit {
     const formNav = document.querySelectorAll('ige-header-navigation')[0];
     const yOffset = toolbar.getBoundingClientRect().top + toolbar.getBoundingClientRect().height + formNav.getBoundingClientRect().height;
     // calculate scroll position (account for form's current scroll position)
-    const y = element.getBoundingClientRect().top + document.getElementById('form').scrollTop - yOffset - 10;
+    const y = index === 0 ? 0 : element.getBoundingClientRect().top + document.getElementById('form').scrollTop - yOffset - 10;
     // scroll to position
     document.getElementById('form').scrollTo({top: y, behavior: 'smooth'});
   }
