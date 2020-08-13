@@ -3,8 +3,15 @@
 
 .mat-dialog-content {
   padding-top: 0;
-  height: 300px;
+  height: 330px;
   color: #181818;
+  white-space: normal!important;
+}
+
+::ng-deep.mat-dialog-container {
+  resize: both!important;
+  overflow: hidden;
+  max-height: unset;
 }
 
 :host {

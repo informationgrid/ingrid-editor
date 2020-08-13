@@ -16,7 +16,7 @@ import {ContextHelpAbstract} from '../../store/context-help/context-help.model';
 export class ContextHelpService {
 
   private static contextDialogHeight = 400;
-  private static contextDialogWidth = 330;
+  private static contextDialogWidth = 500;
 
   private configuration: Configuration;
 
@@ -33,10 +33,10 @@ export class ContextHelpService {
   private static getTopPosition(infoElement: HTMLElement) {
     const topPosition = window.innerHeight - infoElement.getBoundingClientRect().top;
     const enoughSpaceBeneath = topPosition > this.contextDialogHeight;
+    const altTop = infoElement.getBoundingClientRect().top - this.contextDialogHeight;
+    const enoughSpaceAbove = altTop > 0;
 
-    return enoughSpaceBeneath
-      ? `${infoElement.getBoundingClientRect().top}px`
-      : `${infoElement.getBoundingClientRect().top - this.contextDialogHeight}px`
+    return !enoughSpaceBeneath && enoughSpaceAbove ? `${altTop}px` : `${infoElement.getBoundingClientRect().top}px`
   }
 
 
