@@ -181,7 +181,7 @@ describe('General create documents/folders', () => {
       // check selected tree node === previous selected node
       cy.wait(500);
       cy.get('span').contains(doc1Name).click();
-      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
       cy.get(DocumentPage.title).should('have.text', doc2Name);
 
@@ -189,7 +189,7 @@ describe('General create documents/folders', () => {
       // check selected tree node === newly selected node
       cy.wait(500);
       cy.get('span').contains(doc1Name).click();
-      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
       cy.get('[data-cy=confirm-dialog-confirm]').click();
       cy.get(DocumentPage.title).should('have.text', doc1Name);
 
@@ -206,7 +206,7 @@ describe('General create documents/folders', () => {
       // reject -> should stay on page
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
 
       cy.get(DocumentPage.title).should('have.text', docname);
@@ -215,7 +215,7 @@ describe('General create documents/folders', () => {
       // accept -> should load new page
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-      cy.get('.mat-dialog-title').contains('Änderungen verwerfen?');
+      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
       cy.get('[data-cy=confirm-dialog-confirm]').click();
 
       cy.get(DocumentPage.title).should('not.exist')
