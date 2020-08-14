@@ -6,6 +6,7 @@ import {SessionStore} from '../store/session.store';
 import {ModalService} from './modal/modal.service';
 import {IgeError} from '../models/ige-error';
 import {SessionQuery} from '../store/session.query';
+import {ApiService} from "./ApiService";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
   private overrideSessionDuration;
   private oneSecondInMilliseconds = 1000;
 
-  constructor(private session: SessionStore, private modalService: ModalService,
+  constructor(private session: SessionStore, private modalService: ModalService, private apiService: ApiService,
               sessionQuery: SessionQuery) {
 
     sessionQuery.select('sessionTimeoutDuration')
@@ -57,10 +58,11 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       sessionTimeoutIn: time
     });
 
-    if (time === 0) {
+    if (time <= 0) {
       const error = new IgeError();
       error.setMessage('Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt.')
       this.modalService.showIgeError(error);
+      this.apiService.logout();
       setTimeout(() => window.location.reload(), 5000);
     }
 

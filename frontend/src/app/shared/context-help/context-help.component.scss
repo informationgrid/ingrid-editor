@@ -8,11 +8,6 @@
   white-space: normal!important;
 }
 
-::ng-deep.mat-dialog-container {
-  resize: both!important;
-  overflow: hidden;
-  max-height: unset;
-}
 
 :host {
   ::ng-deep h1 {
