@@ -92,6 +92,15 @@ export class DocumentPage extends BasePage {
     return docName;
   }
 
+  static createFolder(folderName?: string): string {
+    folderName = folderName ? folderName : 'Test-Ordner ' + Utils.randomString();
+    cy.get(DocumentPage.Toolbar.NewFolder).click();
+    cy.get('[data-cy=create-title]').type(folderName);
+    cy.get('[data-cy=create-action]').click();
+    cy.get('[data-cy=create-action]').should('not.be.visible');
+    return folderName;
+  }
+
   static publishNow() {
     cy.get('[data-cy=toolbar_publish_now]').click();
   }
