@@ -27,10 +27,10 @@ export class AuthInterceptor implements HttpInterceptor {
             const message = 'You do not have permission to this resource or are logged out';
             this.showError(message);
           } else if (error.status === 401) {
-            const message = 'You have been logged out. Redirecting to login page in 3 seconds.';
+            const message = 'Sie wurden abgemeldet und werden in 5 Sekunden zur Login-Seite geschickt.';
             this.showError(message);
             console.error(error);
-            setTimeout(() => window.location.reload(), 3000);
+            setTimeout(() => window.location.reload(), 5000);
           }
           // intercept the respons error and displace it to the console
           console.log('Error Occurred');
