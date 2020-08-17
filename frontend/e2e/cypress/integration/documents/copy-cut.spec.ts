@@ -77,6 +77,10 @@ describe('Copy & Cut of documents', () => {
     xit('should copy a tree inside a folder to root', () => {
 
     });
+
+    xit('cannot copy a root folder in itself', () => {
+
+    });
   });
 
   describe('Cut', () => {
