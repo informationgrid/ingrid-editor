@@ -84,21 +84,21 @@ export class DocumentPage extends BasePage {
 
 
   static createDocument(docName?: string): string {
-    docName = docName ? docName : 'Test-Dokument ' + Utils.randomString();
     cy.get(DocumentPage.Toolbar.NewDoc).click();
-    cy.get('[data-cy=create-title]').type(docName);
-    cy.get('[data-cy=create-action]').click();
-    cy.get('[data-cy=create-action]').should('not.be.visible');
-    return docName;
+    return this.fillCreateDialog(docName);
   }
 
   static createFolder(folderName?: string): string {
-    folderName = folderName ? folderName : 'Test-Ordner ' + Utils.randomString();
     cy.get(DocumentPage.Toolbar.NewFolder).click();
-    cy.get('[data-cy=create-title]').type(folderName);
+    return this.fillCreateDialog(folderName);
+  }
+
+  static fillCreateDialog(objectName?: string){
+    objectName = objectName ? objectName : 'Test-Objekt ' + Utils.randomString();
+    cy.get('[data-cy=create-title]').type(objectName);
     cy.get('[data-cy=create-action]').click();
     cy.get('[data-cy=create-action]').should('not.be.visible');
-    return folderName;
+    return objectName;
   }
 
   static publishNow() {
