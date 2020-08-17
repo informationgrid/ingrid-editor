@@ -45,7 +45,7 @@
                     </form>
 
                     <div *ngIf="model._type === 'FOLDER'" class="folder-content">
-                        <ige-card-box label="Ordner-Informationen"></ige-card-box>
+                        <ige-folder-dashboard [isAddress]="address" [parentId]="activeId | async"></ige-folder-dashboard>
                     </div>
                 </ng-container>
 
