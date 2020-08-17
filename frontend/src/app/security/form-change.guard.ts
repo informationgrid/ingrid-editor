@@ -32,7 +32,8 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
           title: 'Änderungen sichern?',
           message: 'Möchten Sie auf der Seite bleiben und Ihre Eingaben speichern?\nWenn Sie die Seite jetzt verlassen, werden die Änderungen verworfen.',
           acceptButtonText: 'Seite verlassen',
-          cancelButtonText: 'Auf Seite bleiben'
+          cancelButtonText: 'Auf Seite bleiben',
+          reverseButtonOrder: true
         } as ConfirmDialogData
       }).afterClosed()
         .pipe(

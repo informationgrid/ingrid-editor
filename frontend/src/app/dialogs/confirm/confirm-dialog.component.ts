@@ -8,6 +8,7 @@ export interface ConfirmDialogData {
   confirmText?: string;
   acceptButtonText?: string;
   cancelButtonText?: string;
+  reverseButtonOrder?: boolean;
 }
 
 @Component( {
