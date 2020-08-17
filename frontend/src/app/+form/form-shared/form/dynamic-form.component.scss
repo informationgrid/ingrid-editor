@@ -22,11 +22,20 @@
 }
 
 .form-content > form {
+  position: relative;
   padding: 20px 24px 0 36px;
   background-color: #ffffff;
   min-width: 400px;
   max-width: 1200px;
   margin: 0 auto;
+
+  .note-manatory {
+    position: absolute;
+    left: 332px;
+    font-size: 14px;
+    line-height: 2.75;
+    opacity: .38;
+  }
 }
 
 .form-content ige-form-info {
@@ -60,6 +69,7 @@ pre {
 }
 
 .optional-fields-toggle {
+  position: relative;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -68,6 +78,7 @@ pre {
   max-width: 1260px;
   margin: 0 auto -36px;
   font-size: 14px;
+  z-index: 1;
 
   .mat-slide-toggle {
     background: $ige-background;
