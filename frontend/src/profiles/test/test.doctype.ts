@@ -71,7 +71,7 @@ export class TestDoctype extends BaseDoctype {
     }, {
       wrappers: ['section'],
       templateOptions: {
-        label: 'Repeatables'
+        label: 'Mehrfacheingaben'
       },
       fieldGroup: [{
         key: 'addresses',
@@ -170,7 +170,7 @@ export class TestDoctype extends BaseDoctype {
         type: 'repeatList',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Repeatable List (Simple)',
+          externalLabel: 'Mehrfacheingabe (Simple)',
           placeholder: 'Bitte etwas eingeben',
           required: true
         }
@@ -179,7 +179,7 @@ export class TestDoctype extends BaseDoctype {
         type: 'repeatList',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Repeatable List (Codelist)',
+          externalLabel: 'Mehrfacheingabe (Codelist)',
           placeholder: 'Raumbezugscode eingeben...',
           options: this.getCodelistForSelect(100),
           codelistId: 100
@@ -189,7 +189,7 @@ export class TestDoctype extends BaseDoctype {
         type: 'repeatList',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Repeatable List (Statisch)',
+          externalLabel: 'Mehrfacheingabe (Statisch)',
           placeholder: 'Begriff eingeben...',
           options: of(<SelectOption[]>[
             {label: 'Wert 1', value: '1'},
@@ -202,7 +202,7 @@ export class TestDoctype extends BaseDoctype {
         type: 'repeatList',
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Repeatable List (Select)',
+          externalLabel: 'Mehrfacheingabe (Select)',
           placeholder: 'Wert wählen...',
           options: of(<SelectOption[]>[
             {label: 'Wert 1', value: '1'},

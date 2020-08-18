@@ -29,7 +29,7 @@ const simpleRepeatListProps = {
     key: 'repeatListSimple',
     type: 'repeatList',
     templateOptions: {
-      externalLabel: 'Repeatable List (Simple)',
+      externalLabel: 'Mehrfacheingabe (Simple)',
       placeholder: 'Bitte etwas eingeben'
     }
   }],
