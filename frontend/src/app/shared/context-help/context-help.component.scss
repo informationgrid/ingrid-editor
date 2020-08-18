@@ -1,13 +1,20 @@
 @import "src/variables";
 
+::ng-deep.mat-dialog-container {
+  resize: both;
+  overflow: auto;
+}
+
+::ng-deep .cdk-overlay-pane {
+  max-width: 800px !important;
+  max-height: 600px !important;
+}
 
 .mat-dialog-content {
   padding-top: 0;
-  height: 330px;
   color: #181818;
-  white-space: normal!important;
+  white-space: normal !important;
 }
-
 
 :host {
   ::ng-deep h1 {
@@ -20,7 +27,6 @@
     font-weight: 500;
     color: #181818;
   }
-
 }
 
 .mat-dialog-title {
@@ -30,6 +36,7 @@
   margin-right: -14px;
   display: flex;
   align-items: flex-start;
+  cursor: move;
 
   span {
     flex: 1 1 auto;
@@ -39,12 +46,11 @@
   }
 
   .mat-icon-button {
-    margin-top: -8px;
     height: 24px;
     width: 24px;
+    line-height: 24px;
     color: $ige-secondary;
   }
-
 }
 
 .mat-dialog-actions {

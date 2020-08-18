@@ -11,19 +11,24 @@ export class ContextHelpComponent implements OnInit {
 
   title: string;
   description$: Observable<String> = this.data.description$;
-
-  inExpandedView: boolean;
+  
+  //inExpandedView: boolean;
 
   constructor(public dialogRef: MatDialogRef<ContextHelpComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   ngOnInit() {
-
+    /*
+    setTimeout(()=>{
+      let contentWidth = document.getElementsByClassName('mat-dialog-content')[0].clientWidth;
+      let contentHeight = document.getElementsByClassName('mat-dialog-content')[0].clientHeight + 34;
+      this.dialogRef.updateSize(contentWidth + 'px', contentHeight + 'px');
+    }, 200);
+    */
     this.title = this.data.title ? this.data.title : 'Kein Titel';
-    this.inExpandedView = false;
-
+    //this.inExpandedView = false;
   }
-
+/*
   showMore() {
 
     this.dialogRef.updateSize('600px', 'auto');
@@ -33,4 +38,5 @@ export class ContextHelpComponent implements OnInit {
     this.inExpandedView = true;
 
   }
+*/
 }
