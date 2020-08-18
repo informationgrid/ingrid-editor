@@ -5,11 +5,6 @@
   overflow: auto;
 }
 
-::ng-deep .cdk-overlay-pane {
-  max-width: 800px !important;
-  max-height: 600px !important;
-}
-
 .mat-dialog-content {
   padding-top: 0;
   color: #181818;

@@ -16,7 +16,9 @@ import {ContextHelpAbstract} from '../../store/context-help/context-help.model';
 export class ContextHelpService {
 
   private static contextDialogHeight = 400;
+  private static contextDialogMaxHeight = 600;
   private static contextDialogWidth = 500;
+  private static contextDialogMaxWidth = 800;
 
   private configuration: Configuration;
 
@@ -76,8 +78,10 @@ export class ContextHelpService {
         top: ContextHelpService.getTopPosition(infoElement)
       },
       autoFocus: false,
-      height: ContextHelpService.contextDialogHeight + 'px',
-      width: ContextHelpService.contextDialogWidth + 'px',
+      minWidth: ContextHelpService.contextDialogWidth,
+      maxWidth: ContextHelpService.contextDialogMaxWidth,
+      minHeight: ContextHelpService.contextDialogHeight,
+      maxHeight: ContextHelpService.contextDialogMaxHeight,
     });
 
   }
