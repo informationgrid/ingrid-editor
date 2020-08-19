@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FolderDashboardComponent } from './form-dashboard.component';
+import { FolderDashboardComponent } from './folder-dashboard.component';
 
 describe('FormDashboardComponent', () => {
   let component: FolderDashboardComponent;
