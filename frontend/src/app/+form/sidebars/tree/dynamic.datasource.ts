@@ -107,6 +107,8 @@ export class DynamicDataSource {
   }
 
   private collapseNode(node: TreeNode, index: number) {
+    if (!node) return;
+
     let count = 0;
     const nextIndex = index + 1;
     for (let i = nextIndex; i < this.data.length && this.data[i].level > node.level; i++, count++) {

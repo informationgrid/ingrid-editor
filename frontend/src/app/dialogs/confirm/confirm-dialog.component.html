@@ -19,7 +19,7 @@
         </mat-form-field>
     </div>
 </mat-dialog-content>
-<mat-dialog-actions>
+<mat-dialog-actions  *ngIf="!data.buttons">
     <button *ngIf="!data.reverseButtonOrder" mat-button color="primary" mat-dialog-close cdkFocusInitial data-cy="confirm-dialog-cancel">{{data.cancelButtonText || 'Abbrechen'}}</button>
     <button *ngIf="data.reverseButtonOrder" mat-button color="primary" data-cy="confirm-dialog-confirm"
             [mat-dialog-close]="true"
@@ -33,6 +33,12 @@
             [disabled]="data.confirmText && textConfirmed !== data.confirmText">
         {{data.acceptButtonText || 'Ok'}}
     </button>
+</mat-dialog-actions>
+<mat-dialog-actions *ngIf="data.buttons">
+    <ng-container *ngFor="let button of data.buttons; let i = index">
+    <div *ngIf="i > 0" fxFlex></div>
+    <button mat-button color="primary" [mat-dialog-close]="button.dialogClose || button.buttonText" cdkFocusInitial data-cy="confirm-dialog-cancel">{{button.buttonText}}</button>
+    </ng-container>
 </mat-dialog-actions>
 
 <!--

@@ -8,7 +8,11 @@ import {FormularService} from '../../formular.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {CreateNodeComponent, CreateOptions} from './create-node.component';
-import {filter, take} from 'rxjs/operators';
+import {filter, first, take, tap} from 'rxjs/operators';
+import {NgFormsManager} from "@ngneat/forms-manager";
+import {ConfirmDialogComponent, ConfirmDialogData} from "../../../dialogs/confirm/confirm-dialog.component";
+import {DocumentService} from "../../../services/document/document.service";
+import {Observable} from "rxjs";
 
 export interface DocType {
   id: string,
@@ -27,7 +31,9 @@ export class CreateDocumentPlugin extends Plugin {
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
               private formularService: FormularService,
+              private documentService: DocumentService,
               private messageService: MessageService,
+              private formsManager: NgFormsManager,
               private dialog: MatDialog) {
     super();
 
@@ -61,11 +67,33 @@ export class CreateDocumentPlugin extends Plugin {
       });
   };
 
-  newDoc() {
+  async newDoc() {
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
     const selectedDoc = query.getOpenedDocument();
 
+
     if (selectedDoc) {
+
+      const type = this.forAddress ? 'address' : 'document';
+      const formHasChanged = this.formsManager.getControl(type)?.dirty;
+      if (formHasChanged) {
+        const form = this.formsManager.getControl(type).value
+        const decision = await this.openSaveDialog().pipe(first()).toPromise()
+        if (decision == 'Ja') {
+          this.documentService.save(form, false, this.forAddress)
+        } else if (decision == 'Nein') {
+          // TODO: refactor
+          //  mark as untouched to prevent dirty dialog when opening newly created document
+          // form.markAsPristine();
+          // form.markAsUntouched();
+          // FIXME: form does not seem to be updated automatically and we have to force update event
+          //this.formsManager.upsert(type, form);
+        } else {
+          //decision is 'Abbrechen'
+          return;
+        }
+      }
+
       query.selectEntity(selectedDoc.id)
         .pipe(
           filter(entity => entity !== undefined),
@@ -83,6 +111,17 @@ export class CreateDocumentPlugin extends Plugin {
       this.showDialog(null);
     }
 
+  }
+
+  openSaveDialog(): Observable<any> {
+    return this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Änderungen sichern?',
+        message: 'Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?',
+        // buttons: [{buttonText: 'Abbrechen'},{buttonText: 'Nein'},{buttonText: 'Ja'}]
+        buttons: [{buttonText: 'Abbrechen'}, {buttonText: 'Ja'}]
+      } as ConfirmDialogData
+    }).afterClosed()
   }
 
   showDialog(parentDocId: string) {
