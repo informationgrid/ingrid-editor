@@ -27,6 +27,13 @@ describe('Copy & Cut of documents', () => {
       DocumentPage.CreateDialog.setLocation('Testdokumente');
 
       selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
+
+      //delete created folder to stabilze tests
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      cy.get('#sidebar').findByText(docName).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
     });
 
     it('should copy a node within a folder to the root', () => {
@@ -47,6 +54,22 @@ describe('Copy & Cut of documents', () => {
 
       cy.get('#sidebar').contains(docName).click();
       selectNodeWithChecks(docName, ['Daten', testFolder]);
+
+      //delete created folder to stabilze tests
+      DocumentPage.visit();
+      cy.get('#sidebar').contains(docName).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').contains(testFolder).click();
+      //doubleclick to activate the document
+      cy.get('#sidebar').contains(docName).dblclick();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').contains(testFolder).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
     });
 
     it('should copy a root node to the root', () => {
@@ -64,6 +87,16 @@ describe('Copy & Cut of documents', () => {
       cy.get('#sidebar').contains(docName).click();
       cy.get('ige-breadcrumb').contains('Daten');
       cy.get('ige-header-title-row').contains(docName);
+
+      //delete created folder to stabilze tests
+      DocumentPage.visit();
+      cy.get('#sidebar').contains(docName).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').contains(docName).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
     });
 
     it('should copy a root node into a deeply nested folder (which is first selected in dialog)', () => {
@@ -82,10 +115,13 @@ describe('Copy & Cut of documents', () => {
       //checkPath if root tree is copied in a sub folder
       cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('#sidebar').findByText('Ordner 2. Ebene').click();
-      //cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
       selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
       cy.get('ige-header-title-row').contains(docName);
+
+      //delete created folder to stabilze tests
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
     });
 
     it('should copy a root tree to a sub folder', () => {
@@ -103,6 +139,8 @@ describe('Copy & Cut of documents', () => {
       //delete docName document and testFolder
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
+      Tree.containsNodeWithTitle(docName);
+
       cy.get('[data-cy=toolbar_DELETE]').click();
       cy.get('[data-cy=confirm-dialog-confirm]').click();
       //refresh page after deleting document to stabilize test (if we do not this, we got an error and can not delete testFolder)
@@ -118,6 +156,18 @@ describe('Copy & Cut of documents', () => {
       cy.get('#sidebar').contains(docName).click();
       selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
       cy.get('ige-header-title-row').contains(docName);
+
+      //delete created folder to stabilze tests
+      cy.get('#sidebar').contains(docName).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').contains('Ordner 2. Ebene').click();
+      cy.get('#sidebar').contains(testFolder).click();
+      Tree.containsNodeWithTitle(testFolder);
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
     });
 
     it('should copy a tree inside a folder to root', () => {
@@ -126,7 +176,7 @@ describe('Copy & Cut of documents', () => {
 
       DocumentPage.visit();
 
-      cy.get('#sidebar').contains('Testdokumente').click();
+      cy.get('#sidebar').findByText('Testdokumente').click();
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
 
@@ -137,15 +187,58 @@ describe('Copy & Cut of documents', () => {
       cy.get('[data-cy=create-applyLocation]').click();
 
       //to close Testdokumente
-      cy.get('#sidebar').contains('Testdokumente').click();
+      cy.get('#sidebar').findByText('Testdokumente').click();
 
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
       selectNodeWithChecks(docName, ['Daten', testFolder]);
+
+      //delete created folder to stabilze tests
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').contains(testFolder).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').contains(testFolder).click();
+      cy.get('#sidebar').contains(docName).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').contains(testFolder).click();
+      cy.wait(500);
+      Tree.containsNodeWithTitle(testFolder);
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
     });
 
-    xit('cannot copy a root folder in itself', () => {
+    it('cannot copy a root folder in itself', () => {
+      const testFolder = 'copy into myself';
+      const testFolder2 = 'copy into myself2';
 
+      DocumentPage.visit();
+
+      DocumentPage.createFolder(testFolder);
+      DocumentPage.createFolder(testFolder2);
+
+      cy.get('#sidebar').contains(testFolder).click();
+
+      copyObjectWithTree(testFolder, testFolder2);
+      cy.get('error-dialog').contains('Copy Error');
+      cy.get('[data-cy=error-dialog-close]').click();
+
+      //delete created folder to stabilze tests
+      cy.get('#sidebar').contains(testFolder).click();
+      cy.get('#sidebar').contains(testFolder2).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').contains(testFolder).click();
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
     });
   });
 
@@ -175,6 +268,17 @@ describe('Copy & Cut of documents', () => {
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
       selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
+
+      //delete created folder to stabilze tests
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').contains('Ordner 2. Ebene').click();
+      cy.get('#sidebar').contains(testFolder).click();
+      Tree.containsNodeWithTitle(testFolder);
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
     });
 
     it('should move a node within a folder to the root', () => {
@@ -193,9 +297,20 @@ describe('Copy & Cut of documents', () => {
       cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
       cy.get('[data-cy=create-applyLocation]').click();
 
+      DocumentPage.visit();
+
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
       selectNodeWithChecks(docName, ['Daten', testFolder]);
+
+      //delete created folder to stabilze tests
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.visit();
+      cy.get('#sidebar').contains(testFolder).click();
+      Tree.containsNodeWithTitle(testFolder);
+      cy.get('[data-cy=toolbar_DELETE]').click();
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
     });
 
     it('should move a whole tree', () => {
@@ -240,7 +355,8 @@ function copyObjectWithTree(rootNode: string, secondNode: string){
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[aria-disabled=false]').contains('Kopieren mit Teilbaum').click();
     cy.get('#mat-dialog-2').findByText(rootNode).click();
-    cy.get('ige-tree mat-tree mat-tree-node .label').contains(secondNode).click();
+  cy.wait(500) //TODO delete when better selector is found
+    cy.get('ige-tree mat-tree mat-tree-node div').contains(secondNode).click();
     cy.get('[data-cy=create-applyLocation]').click();
   }
 
@@ -248,7 +364,8 @@ function copyObject(rootNode: string, secondNode: string) {
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[aria-disabled=false]').contains('Kopieren').click();
     cy.get('#mat-dialog-1').findByText(rootNode).click();
-    cy.get('ige-tree mat-tree mat-tree-node .label').contains(secondNode).click();
+    cy.wait(500) //TODO delete when better selector is found
+    cy.get('ige-tree mat-tree mat-tree-node div').contains(secondNode).click();
     cy.get('[data-cy=create-applyLocation]').click();
   }
 
@@ -256,7 +373,8 @@ function moveObject(rootNode: string, secondNode: string) {
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
     cy.get('#mat-dialog-2').findByText(rootNode).click();
-    cy.get('ige-tree mat-tree mat-tree-node .label').contains(secondNode).click();
+    cy.wait(500) //TODO delete when better selector is found
+    cy.get('ige-tree mat-tree mat-tree-node div').contains(secondNode).click();
     cy.get('[data-cy=create-applyLocation]').click();
   }
 });
