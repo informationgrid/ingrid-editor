@@ -75,7 +75,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             }
 
             val resultDoc = if (revert) {
-                documentService.revertDocument(id);
+                documentService.revertDocument(id)
             } else {
                 documentService.updateDocument(id, data, publish)
             }
@@ -136,6 +136,11 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         val doc = documentService.getLatestDocument(wrapper, false, false)
 
+        if (options.includeTree) {
+            validateCopyOperation(id, options.destId)
+        }
+
+
         // add new parent to document
         doc.put(FIELD_PARENT, options.destId)
 
@@ -152,11 +157,11 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val copiedParent = documentService.createDocument(doc, isAddress) as ObjectNode
 
         if (options.includeTree) {
-            val count = handleCopySubTree(doc, origParentId, options, isAddress);
+            val count = handleCopySubTree(doc, origParentId, options, isAddress)
             copiedParent.put(FIELD_HAS_CHILDREN, count > 0)
         }
 
-        return copiedParent;
+        return copiedParent
     }
 
     private fun handleCopySubTree(parent: ObjectNode, origParentId: String, options: CopyOptions, isAddress: Boolean): Long {
@@ -186,6 +191,13 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
         val doc = documentService.getLatestDocument(wrapper, false, false)
 
+        if (id == options.destId) {
+            val msg = "Move Error: Source equals Destination"
+            log.error(msg)
+            throw ApiException(msg)
+        }
+        validateCopyOperation(id, options.destId)
+
         // update parent
         doc.put(FIELD_PARENT, options.destId)
 
@@ -200,6 +212,34 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val wrapperId = dbService.getRecordId(wrapperWithLinks)
         dbService.save(DocumentWrapperType::class, wrapperId, wrapperWithLinks.toString())
 
+    }
+
+    private fun validateCopyOperation(sourceId: String, destinationId: String?) {
+        // check destination is not part of source
+        val descIds = getAllDescendantIds(sourceId).drop(1)
+        if (descIds.contains(destinationId)) {
+            val msg = "Copy Error: Source contains Destination ($destinationId)"
+            log.error(msg)
+            throw ApiException(msg)
+        }
+    }
+
+
+    /**
+     *  first id in result is always own id
+     */
+    private fun getAllDescendantIds(id: String): List<String> {
+        val docs = documentService.findChildren(id)
+        if (docs.hits.isEmpty()) {
+            return List(1) { id }
+        } else {
+            val result = mutableListOf(id)
+            docs.hits.forEach { doc: JsonNode ->
+                val id = doc.get(FIELD_ID).asText()
+                result.addAll(getAllDescendantIds(id))
+            }
+            return result
+        }
     }
 
     @Throws(ApiException::class)
@@ -301,7 +341,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                         path.add(nextParentId)
                         parentId = nextParentId
                     } else {
-                        break;
+                        break
                     }
                 }
             }

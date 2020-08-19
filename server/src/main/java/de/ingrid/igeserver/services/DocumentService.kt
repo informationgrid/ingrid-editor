@@ -2,17 +2,20 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.api.PublishedVersionNotFoundException
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.PublishedVersionNotFoundException
 import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
-import de.ingrid.igeserver.persistence.model.document.DocumentType
-import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
-import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
-import de.ingrid.igeserver.persistence.*
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.FindOptions
+import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.*
+import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.model.document.DocumentType
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -29,12 +32,23 @@ class DocumentService : MapperService() {
     @Autowired
     private lateinit var dbService: DBApi
 
-    @Autowired private lateinit var preCreatePipe: Pipe<PreCreatePayload>
-    @Autowired private lateinit var postCreatePipe: Pipe<PostCreatePayload>
-    @Autowired private lateinit var preUpdatePipe: Pipe<PreUpdatePayload>
-    @Autowired private lateinit var postUpdatePipe: Pipe<PostUpdatePayload>
-    @Autowired private lateinit var prePublishPipe: Pipe<PrePublishPayload>
-    @Autowired private lateinit var postPublishPipe: Pipe<PostPublishPayload>
+    @Autowired
+    private lateinit var preCreatePipe: Pipe<PreCreatePayload>
+
+    @Autowired
+    private lateinit var postCreatePipe: Pipe<PostCreatePayload>
+
+    @Autowired
+    private lateinit var preUpdatePipe: Pipe<PreUpdatePayload>
+
+    @Autowired
+    private lateinit var postUpdatePipe: Pipe<PostUpdatePayload>
+
+    @Autowired
+    private lateinit var prePublishPipe: Pipe<PrePublishPayload>
+
+    @Autowired
+    private lateinit var postPublishPipe: Pipe<PostPublishPayload>
 
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),
@@ -69,10 +83,15 @@ class DocumentService : MapperService() {
     }
 
     fun findChildrenDocs(parentId: String?, isAddress: Boolean): FindAllResults {
-        val queryMap = listOf(
-                QueryField(FIELD_PARENT, parentId),
-                QueryField(FIELD_CATEGORY, if (isAddress) DocumentCategory.ADDRESS.value else DocumentCategory.DATA.value)
-        )
+        return findChildren(parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
+    }
+
+    fun findChildren(parentId: String?, docCat: DocumentCategory? = null): FindAllResults {
+        val queryMap = mutableListOf(QueryField(FIELD_PARENT, parentId))
+
+        //find all children regardless of category
+        if (docCat != null) queryMap.add(QueryField(FIELD_CATEGORY, docCat.value))
+
         val findOptions = FindOptions(
                 queryType = QueryType.EXACT,
                 resolveReferences = true,
@@ -160,8 +179,8 @@ class DocumentService : MapperService() {
                 if (draftId.isNull) {
                     // TODO: db_id is ORecord!
                     put(FIELD_DRAFT, updatedRecordId)
+                } else {
                 }
-                else {}
             }
         }
 
