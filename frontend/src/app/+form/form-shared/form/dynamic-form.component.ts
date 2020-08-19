@@ -20,6 +20,7 @@ import {BehaviorSubject, combineLatest, merge} from 'rxjs';
 import {ProfileQuery} from '../../../store/profile/profile.query';
 import {Behaviour} from '../../../services/behavior/behaviour';
 import {NgFormsManager} from '@ngneat/forms-manager';
+import {AuthService} from "../../../services/security/auth.service";
 
 @UntilDestroy()
 @Component({
@@ -73,6 +74,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
               private session: SessionQuery,
               private profileQuery: ProfileQuery,
               private router: Router,
+              private auth: AuthService,
               private route: ActivatedRoute) {
 
     // TODO: get roles definiton
@@ -91,6 +93,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    this.formsManager.valueChanges(this.address ? 'address' : 'document').subscribe(() => this.auth.refreshSession().subscribe())
 
     if (this.address) {
       this.formPlugins.setAddressConfiguration();
