@@ -62,7 +62,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       const error = new IgeError();
       error.setMessage('Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt.')
       this.modalService.showIgeError(error);
-      this.apiService.logout();
+      this.apiService.logout().subscribe().unsubscribe();
       setTimeout(() => window.location.reload(), 5000);
     }
 
