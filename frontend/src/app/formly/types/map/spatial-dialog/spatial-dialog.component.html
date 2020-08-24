@@ -41,8 +41,10 @@
                 Titel<span *ngIf="view === 'geo-name'">*</span>
             </div>
             <mat-form-field appearance="outline">
-                <input matInput [formControl]="titleInput">
-                <mat-hint *ngIf="view === 'geo-name'">Geben Sie dem Raumbezug einen geografischen Namen</mat-hint>
+                <input matInput
+                    [formControl]="titleInput"
+                    placeholder="Eingeben...">
+                <mat-hint *ngIf="view === 'geo-name'">Geben Sie dem Raumbezug eine geographische Bezeichnung oder auch Eigennamen.</mat-hint>
             </mat-form-field>
 
             <div [class.invisible]="view === 'geo-name'" #leafletDlg fxFlex></div>

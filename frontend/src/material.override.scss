@@ -11,8 +11,11 @@
     div[mat-dialog-content] {
       flex-grow: 1;
       //max-height: unset;
-      white-space: pre;
       line-height: 1.35;
+    }
+    mat-dialog-content p,
+    div[mat-dialog-content] p {
+      white-space: pre;
     }
   }
 }

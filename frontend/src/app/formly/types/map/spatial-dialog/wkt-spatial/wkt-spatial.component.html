@@ -6,8 +6,7 @@
     <mat-form-field class="width-100" appearance="outline">
         <textarea #wkt matInput rows="5" [value]="wktString" igeFocus
                   placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))"></textarea>
-        <mat-hint>Unterstützt werden Polygone mit einer Außen- und Innengrenzen (Löcher), Points und Linestrings
-        </mat-hint>
+        <mat-hint>Nur in geografischen Koordinaten (WGS84) möglich. Unterstützt werden Polygone mit einer Außen- und Innengrenze (Löcher), Points und Linestrings. Zur Darstellung auf der Karte klicken Sie auf "Anzeigen".</mat-hint>
     </mat-form-field>
 
     <div>

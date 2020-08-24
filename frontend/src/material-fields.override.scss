@@ -55,6 +55,20 @@
   }
 }
 
+.cdk-overlay-container {
+  .mat-form-field-appearance-outline .mat-form-field-subscript-wrapper {
+    padding: 6px 0;
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: 0.4px;
+
+    .mat-hint {
+      color: $ige-text-color;
+      opacity: 0.6;
+    }
+  }
+}
+
 .mat-list-base .mat-list-item.small-padding-right .mat-list-item-content {
   padding-right: 12px;
 }

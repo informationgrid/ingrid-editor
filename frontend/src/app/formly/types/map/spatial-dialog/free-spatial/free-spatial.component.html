@@ -6,13 +6,13 @@
     <mat-form-field appearance="outline">
         <mat-icon matPrefix class="passive">search</mat-icon>
         <input matInput igeFocus placeholder="Suchen" [formControl]="searchInput">
+        <mat-hint *ngIf="showWelcome">
+            Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis zur Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“ werden die zugehörigen Breiten-/Längenkoordinaten automatisch angezeigt.
+        </mat-hint>
     </mat-form-field>
 
     <div *ngIf="showNoResult">
         Keine Ergebnisse. Ändern Sie Ihre Suche.
-    </div>
-    <div *ngIf="showWelcome">
-        Suchen Sie nach einem Ort und wählen Sie diesen aus, um ihn anzuzeigen.
     </div>
 
     <div class="result-wrapper">
