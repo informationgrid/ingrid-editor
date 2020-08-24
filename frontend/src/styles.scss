@@ -525,10 +525,10 @@ ige-side-menu {
   }
 
   .mat-form-field.mat-form-field-invalid .mat-form-field-label {
-    color: rgba(0, 0, 0, 0.6) !important;
+    color: $ige-placeholder-color !important;
 
     &.mat-accent, .mat-form-field-required-marker {
-      color: rgba(0, 0, 0, 0.6) !important;
+      color: $ige-placeholder-color !important;
     }
   }
 }
