@@ -53,6 +53,11 @@
     }
   }
 
+  _:-ms-fullscreen, /* IE11 */
+  :root .label {
+    margin-top: -3px;
+  }
+
   button {
     margin-top: 10px;
   }
@@ -81,7 +86,7 @@
 
   ::ng-deep .mat-form-field-wrapper {
     padding-bottom: 0 !important;
-    margin: 0 !important;
+    margin: 0 0 9px;
   }
 
   ::ng-deep .mat-form-field-subscript-wrapper {
