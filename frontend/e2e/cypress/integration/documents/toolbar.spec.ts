@@ -18,8 +18,12 @@ describe('Toolbar behavior', () => {
   });
 
   it('should activate specific buttons when a folder is loaded', () => {
+    const testFolder = 'checkDisabledBtn';
+
+    DocumentPage.createFolder(testFolder);
+
     // Empty folder
-    Tree.selectNodeWithTitle('Neue Testdokumente');
+    Tree.selectNodeWithTitle(testFolder);
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save']);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get("[aria-disabled='false']").contains("Kopieren")
