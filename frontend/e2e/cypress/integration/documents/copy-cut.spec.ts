@@ -2,7 +2,7 @@ import {DocumentPage, SEPARATOR} from "../../pages/document.page";
 import {Utils} from "../../pages/utils";
 import {Tree} from "../../pages/tree.partial";
 import Doc = Mocha.reporters.Doc;
-import {copyCutUtils} from "../../pages/copy-cut-utils";
+import {CopyCutUtils} from "../../pages/copy-cut-utils";
 
 describe('Copy & Cut of documents', () => {
 
@@ -29,7 +29,7 @@ describe('Copy & Cut of documents', () => {
 
       DocumentPage.CreateDialog.setLocation('Testdokumente');
 
-      copyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
     });
 
     it('should copy a node within a folder to the root', () => {
@@ -47,7 +47,7 @@ describe('Copy & Cut of documents', () => {
       cy.get('[data-cy=create-applyLocation]').click();
 
       cy.get('#sidebar').contains(docName).click();
-      copyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
     });
 
     it('should copy a root node to the root', () => {
@@ -70,7 +70,7 @@ describe('Copy & Cut of documents', () => {
 
       DocumentPage.createDocument(docName);
 
-      copyCutUtils.copyObject('Testdokumente', 'Ordner 2. Ebene');
+      CopyCutUtils.copyObject('Testdokumente', 'Ordner 2. Ebene');
 
       cy.get('#sidebar').contains(docName).click();
       cy.get('[data-cy=toolbar_DELETE]').click();
@@ -80,7 +80,7 @@ describe('Copy & Cut of documents', () => {
       cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('#sidebar').findByText('Ordner 2. Ebene').click();
       cy.get('#sidebar').contains(docName).click();
-      copyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
       cy.get('ige-header-title-row').contains(docName);
     });
 
@@ -92,7 +92,7 @@ describe('Copy & Cut of documents', () => {
       DocumentPage.createDocument(docName);
       cy.get('#sidebar').contains(testFolder).click();
 
-      copyCutUtils.copyObjectWithTree('Testdokumente', 'Ordner 2. Ebene');
+      CopyCutUtils.copyObjectWithTree('Testdokumente', 'Ordner 2. Ebene');
 
       //delete docName document and testFolder
       cy.get('#sidebar').contains(testFolder).click();
@@ -111,7 +111,7 @@ describe('Copy & Cut of documents', () => {
       cy.get('#sidebar').contains('Ordner 2. Ebene').click();
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
-      copyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
       cy.get('ige-header-title-row').contains(docName);
     });
 
@@ -134,7 +134,7 @@ describe('Copy & Cut of documents', () => {
 
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
-      copyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
     });
 
     it('cannot copy a root folder in itself', () => {
@@ -146,7 +146,7 @@ describe('Copy & Cut of documents', () => {
 
       cy.get('#sidebar').contains(testFolder).click();
 
-      copyCutUtils.copyObjectWithTree(testFolder, testFolder2);
+      CopyCutUtils.copyObjectWithTree(testFolder, testFolder2);
       cy.get('error-dialog').contains('Copy Error');
       cy.get('[data-cy=error-dialog-close]').click();
     });
@@ -167,7 +167,7 @@ describe('Copy & Cut of documents', () => {
 
       cy.get('#sidebar').contains(testFolder).click();
 
-      copyCutUtils.moveObject('Testdokumente', 'Ordner 2. Ebene');
+      CopyCutUtils.moveObject('Testdokumente', 'Ordner 2. Ebene');
 
       DocumentPage.visit();
 
@@ -175,7 +175,7 @@ describe('Copy & Cut of documents', () => {
       cy.get('#sidebar').contains('Ordner 2. Ebene').click();
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
-      copyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
     });
 
     it('should move a node within a folder to the root', () => {
@@ -196,7 +196,7 @@ describe('Copy & Cut of documents', () => {
 
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
-      copyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
     });
 
     it('should move a whole tree', () => {
@@ -224,7 +224,7 @@ describe('Copy & Cut of documents', () => {
       cy.get('#sidebar').findByText(testFolder2).click();
       cy.get('#sidebar').findByText(testFolder3).click();
       cy.get('#sidebar').findByText(docName).click();
-      copyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder, testFolder2, testFolder3]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder, testFolder2, testFolder3]);
     });
 
   });

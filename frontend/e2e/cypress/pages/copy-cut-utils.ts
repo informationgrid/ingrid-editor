@@ -1,6 +1,6 @@
 import {SEPARATOR} from "./document.page";
 
-export class copyCutUtils {
+export class CopyCutUtils {
   static selectNodeWithChecks(nodeTitle: string, path: string[]){
     //Tree.selectNodeWithTitle(nodeTitle); <-- just work for level 0 nodes
     cy.get('#sidebar').contains(nodeTitle).click();
