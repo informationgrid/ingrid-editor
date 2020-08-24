@@ -9,7 +9,7 @@
         </button>
     </div>
 
-    <mat-form-field class="search" appearance="outline">
+    <mat-form-field class="search" appearance="outline" data-cy="tree-search-field">
         <mat-icon *ngIf="query.value?.length === 0" class="passive" matPrefix>search</mat-icon>
         <input matInput placeholder="Suchen" aria-label="Search"
                [formControl]="query"
