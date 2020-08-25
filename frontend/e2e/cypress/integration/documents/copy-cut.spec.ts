@@ -137,6 +137,7 @@ describe('Copy & Cut of documents', () => {
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
     });
 
+    //Bug #2064
     it('cannot copy a root folder in itself', () => {
       const testFolder = 'copy into myself';
       const testFolder2 = 'copy into myself2';
