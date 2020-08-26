@@ -15,16 +15,12 @@
     </button>
 </div>
 
-<div *ngIf="(treeDocs | async) > 0">
-    <div class="info-box" fxLayout="row" fxLayoutGap="24px">
-        <ige-card-box fxFlex label="Meine Daten">...</ige-card-box>
-        <ige-card-box fxFlex label="Neue Datensätze">...</ige-card-box>
-    </div>
-
-    <div class="info-box" fxLayout="row" fxLayoutGap="24px">
-        <ige-card-box fxFlex label="Zuletzt bearbeitet">...</ige-card-box>
-        <ige-card-box fxFlex label="Favoriten">...</ige-card-box>
-    </div>
+<div *ngIf="(childDocs$ | async)?.length">
+    <ige-card-box fxFlex label="Zuletzt bearbeitete Datensätze und Ordner" data-cy="card-latest-docs">
+        <ige-document-list-item [docs]="childDocs$"
+                                [hideDate]="false"
+                                (select)="openDocument($event.id)"></ige-document-list-item>
+    </ige-card-box>
 </div>
 
 <div *ngIf="(treeDocs | async) === 0" class="banner text-center">

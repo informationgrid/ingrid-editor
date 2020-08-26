@@ -73,6 +73,18 @@ export class DocumentService {
       ).subscribe();
   }
 
+  findRecentAddresses(): Observable<DocumentAbstract[]> {
+    return  this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&address=true&sort=_modified&sortOrder=DESC&size=5`)
+      .pipe(
+        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
+        map(result => this.mapSearchResults(result).hits),
+        // TODO create and use latestAddresses Sessionstore
+        // tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
+        // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
+      )
+      //.subscribe();
+  }
+
   getChildren(parentId: string, isAddress?: boolean): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId, isAddress)
       .pipe(
