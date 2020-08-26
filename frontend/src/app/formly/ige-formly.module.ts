@@ -50,6 +50,7 @@ import {DateRangeTypeComponent} from './types/date-range-type/date-range-type.co
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatRadioModule} from '@angular/material/radio';
 import {RepeatDetailListComponent} from './types/repeat-detail-list/repeat-detail-list.component';
+import {DragDropModule} from "@angular/cdk/drag-drop";
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
@@ -105,7 +106,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
         { name: 'panel', component: OneColumnWrapperComponent },
       ]*/
     }), FormFieldsModule,
-    SharedModule, MatMenuModule, MatCheckboxModule, MatChipsModule, MatDatepickerModule, MatRadioModule
+    SharedModule, MatMenuModule, MatCheckboxModule, MatChipsModule, MatDatepickerModule, MatRadioModule, DragDropModule
   ],
   providers: [
     {
