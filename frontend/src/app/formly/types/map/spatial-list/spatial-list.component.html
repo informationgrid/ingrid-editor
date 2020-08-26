@@ -32,11 +32,12 @@
                     </div>
                 </div>
                 <div>
-                    <button mat-icon-button class="menu-button" [matMenuTriggerFor]="spatialRef">
+                    <button mat-icon-button class="menu-button" [matMenuTriggerFor]="spatialRef" (click)="$event.stopPropagation()">
                         <mat-icon svgIcon="Mehr"></mat-icon>
                     </button>
                     <mat-menu #spatialRef="matMenu">
                         <button mat-menu-item (click)="edit.next(location.indexNumber)">Bearbeiten</button>
+                        <button mat-menu-item (click)="selectLocation.next(location.indexNumber)">Anzeigen</button>
                         <button mat-menu-item (click)="remove.next(location.indexNumber)">Löschen</button>
                     </mat-menu>
                 </div>
