@@ -3,6 +3,7 @@ import {FieldArrayType} from '@ngx-formly/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ChipDialogComponent, ChipDialogData} from './chip-dialog/chip-dialog.component';
 import {FormControl} from '@angular/forms';
+import {ConfirmDialogComponent, ConfirmDialogData} from "../../../dialogs/confirm/confirm-dialog.component";
 
 @Component({
   selector: 'ige-repeat-chip',
@@ -57,7 +58,33 @@ export class RepeatChipComponent extends FieldArrayType {
   }
 
   addValues(value: string) {
-    value.split(',').forEach(item => this.add(null, item));
+    let duplicates = [];
+    value.split(',').forEach(item => {
+      const trimmed = item.trim();
+      if (trimmed == '') return;
+
+      if (this.model.indexOf(trimmed) === -1) {
+        this.add(null, trimmed);
+      } else {
+        if (duplicates.indexOf(trimmed) == -1) duplicates.push(trimmed);
+      }
+    });
     this.inputControl.setValue('');
+    if (duplicates.length > 0) {
+      duplicates = duplicates.map(dup => "'" + dup + "'");
+      var formatedDuplicates = ""
+      if (duplicates.length == 1) {
+        formatedDuplicates = duplicates[0];
+      } else {
+        formatedDuplicates = duplicates.join(", ").replace(/,([^,]*)$/, '\ und$1');
+      }
+      this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          title: 'Bitte beachten',
+          message: 'Die Eingabe von ' + formatedDuplicates + ' erfolgte mehrfach, wurde aber nur einmal übernommen.',
+          buttons: [{buttonText: 'Ok'}]
+        } as ConfirmDialogData
+      });
+    }
   }
 }
