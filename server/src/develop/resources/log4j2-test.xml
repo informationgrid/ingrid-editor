@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN" monitorInterval="30">
+<Configuration status="WARN" monitorInterval="30" verbose="true"
+               packages="de.ingrid.igeserver.persistence.orientdb"
+>
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%5level [%d{yyyy-MM-dd HH:mm:ss}] .(%40.40F:%L) - %m%n" />
@@ -11,8 +13,13 @@
       </Policies>
       <DefaultRolloverStrategy max="9" />
     </RollingFile>
+    <OrientDBAppender name="DataHistoryDB" database="DataHistory" table="log" />
   </Appenders>
   <Loggers>
+    <Logger name="de.ingrid.igeserver.persistence.filter.DataHistoryLogger" level="info" additivity="false">
+      <AppenderRef ref="DataHistoryDB" />
+      <AppenderRef ref="Console" />
+    </Logger>
     <Logger name="de.ingrid" level="debug" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>

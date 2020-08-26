@@ -16,4 +16,6 @@ interface UserManagementService {
     fun getUser(principal: Principal?, login: String): User
     fun getRoles(principal: KeycloakAuthenticationToken?): Set<String>?
     fun getName(principal: KeycloakAuthenticationToken?): String?
+
+    fun getCurrentPrincipal(): Principal?
 }

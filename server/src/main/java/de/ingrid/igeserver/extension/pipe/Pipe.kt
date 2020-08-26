@@ -44,7 +44,24 @@ open class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : E
     /**
      * Sorted list of enabled filters contained in this pipe
      */
-    private lateinit var filters: List<Filter<T>>
+    private val filters: List<Filter<T>> by lazy {
+        // sort filters
+        val filterSequence: List<String>? = filterOrderMap?.getOrDefault(id, emptyList())
+        val sortedFilters = extensions.sortedBy {
+            if (filterSequence != null && filterSequence.contains(it.id)) {
+                filterSequence.indexOf(it.id)
+            }
+            else  {
+                // put unknown filters at the end
+                Int.MAX_VALUE
+            }
+        }
+
+        // disable filters
+        val disabledFilters: List<String>? = filterDisableMap?.getOrDefault(id, emptyList())
+        val result = sortedFilters.filter { disabledFilters == null || !disabledFilters.contains(it.id) }
+        result
+    }
 
     /**
      * Run all registered Filter instances in the configured sequence
@@ -60,25 +77,6 @@ open class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : E
         if (!::extensions.isInitialized) {
             context.addMessage(Message(this, "No filters configured for pipe '$id'"))
             return payload
-        }
-
-        // initialize filter list when run first
-        if (!::filters.isInitialized) {
-            // sort filters
-            val filterSequence: List<String>? = filterOrderMap?.getOrDefault(id, emptyList())
-            filters = extensions.sortedBy {
-                if (filterSequence != null && filterSequence.contains(it.id)) {
-                    filterSequence.indexOf(it.id)
-                }
-                else  {
-                    // put unknown filters at the end
-                    Int.MAX_VALUE
-                }
-            }
-
-            // disable filters
-            val disabledFilters: List<String>? = filterDisableMap?.getOrDefault(id, emptyList())
-            filters = filters.filter { disabledFilters == null || !disabledFilters.contains(it.id) }
         }
 
         extensions.forEach {

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.PublishedVersionNotFoundException
-import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
@@ -33,22 +32,31 @@ class DocumentService : MapperService() {
     private lateinit var dbService: DBApi
 
     @Autowired
-    private lateinit var preCreatePipe: Pipe<PreCreatePayload>
+    private lateinit var postPersistencePipe: PostPersistencePipe
 
     @Autowired
-    private lateinit var postCreatePipe: Pipe<PostCreatePayload>
+    private lateinit var preCreatePipe: PreCreatePipe
 
     @Autowired
-    private lateinit var preUpdatePipe: Pipe<PreUpdatePayload>
+    private lateinit var postCreatePipe: PostCreatePipe
 
     @Autowired
-    private lateinit var postUpdatePipe: Pipe<PostUpdatePayload>
+    private lateinit var preUpdatePipe: PreUpdatePipe
 
     @Autowired
-    private lateinit var prePublishPipe: Pipe<PrePublishPayload>
+    private lateinit var postUpdatePipe: PostUpdatePipe
 
     @Autowired
-    private lateinit var postPublishPipe: Pipe<PostPublishPayload>
+    private lateinit var prePublishPipe: PrePublishPipe
+
+    @Autowired
+    private lateinit var postPublishPipe: PostPublishPipe
+
+    @Autowired
+    private lateinit var preDeletePipe: PreDeletePipe
+
+    @Autowired
+    private lateinit var postDeletePipe: PostDeletePipe
 
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),
@@ -116,7 +124,7 @@ class DocumentService : MapperService() {
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
 
-        // run pre-create pipe
+        // run pre-create pipe(s)
         val preCreatePayload = PreCreatePayload(docType, data as ObjectNode, getCategoryFromType(docTypeName, address))
         preCreatePipe.runFilters(preCreatePayload, filterContext)
 
@@ -129,9 +137,10 @@ class DocumentService : MapperService() {
         // save wrapper
         val newWrapper = dbService.save(DocumentWrapperType::class, null, preCreatePayload.wrapper.toString())
 
-        // run post-create pipe
+        // run post-create pipe(s)
         val postCreatePayload = PostCreatePayload(docType, newDocument as ObjectNode, newWrapper as ObjectNode)
         postCreatePipe.runFilters(postCreatePayload, filterContext)
+        postPersistencePipe.runFilters(postCreatePayload as PostPersistencePayload, filterContext)
 
         return getLatestDocument(postCreatePayload.wrapper)
     }
@@ -141,12 +150,12 @@ class DocumentService : MapperService() {
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
 
-        // run pre-update pipe
+        // run pre-update pipe(s)
         val wrapper = getByDocumentId(id, DocumentWrapperType::class, false)
         val preUpdatePayload = PreUpdatePayload(docType, data as ObjectNode, wrapper as ObjectNode)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
         if (publish) {
-            // run pre-publish pipe
+            // run pre-publish pipe(s)
             val prePublishPayload = PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
             prePublishPipe.runFilters(prePublishPayload, filterContext)
         }
@@ -187,31 +196,50 @@ class DocumentService : MapperService() {
         // save wrapper
         val updatedWrapper = dbService.save(DocumentWrapperType::class, dbService.getRecordId(preUpdatePayload.wrapper), preUpdatePayload.wrapper.toString())
 
-        // run post-update pipe
+        // run post-update pipe(s)
         val postUpdatePayload = PostUpdatePayload(docType, updatedDocument as ObjectNode, updatedWrapper as ObjectNode)
         postUpdatePipe.runFilters(postUpdatePayload, filterContext)
         if (publish) {
-            // run post-publish pipe
+            // run post-publish pipe(s)
             val postPublishPayload = PostPublishPayload(docType, postUpdatePayload.document, postUpdatePayload.wrapper)
             postPublishPipe.runFilters(postPublishPayload, filterContext)
+            postPersistencePipe.runFilters(postPublishPayload as PostPersistencePayload, filterContext)
             return getLatestDocument(postPublishPayload.wrapper)
         }
-
-        return getLatestDocument(postUpdatePayload.wrapper)
+        else {
+            postPersistencePipe.runFilters(postUpdatePayload as PostPersistencePayload, filterContext)
+            return getLatestDocument(postUpdatePayload.wrapper)
+        }
     }
 
     fun deleteRecursively(id: String) {
-        val wrapper = getByDocumentId(id, DocumentWrapperType::class, true)
+        val filterContext = DefaultContext.withCurrentProfile(dbService)
 
-        findChildrenDocs(id, isAddress(wrapper)).hits.forEach {
-            deleteRecursively(it.get(FIELD_ID).asText())
+        // run pre-delete pipe(s)
+        val data = getByDocumentId(id, DocumentType::class, false)
+        if (data != null) {
+            val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
+            val docType = getDocumentType(docTypeName)
+
+            val wrapper = getByDocumentId(id, DocumentWrapperType::class, true)
+            val preDeletePayload = PreDeletePayload(docType, data as ObjectNode, wrapper as ObjectNode)
+            preDeletePipe.runFilters(preDeletePayload, filterContext)
+
+            findChildrenDocs(id, isAddress(wrapper)).hits.forEach {
+                deleteRecursively(it.get(FIELD_ID).asText())
+            }
+
+            // remove all document versions which have the same ID
+            dbService.remove(DocumentType::class, id)
+
+            // remove the wrapper
+            dbService.remove(DocumentWrapperType::class, id)
+
+            // run post-delete pipe(s)
+            val postDeletePayload = PostDeletePayload(docType, preDeletePayload.document, preDeletePayload.wrapper)
+            postDeletePipe.runFilters(postDeletePayload, filterContext)
+            postPersistencePipe.runFilters(postDeletePayload as PostPersistencePayload, filterContext)
         }
-
-        // remove all document versions which have the same ID
-        dbService.remove(DocumentType::class, id)
-
-        // remove the wrapper
-        dbService.remove(DocumentWrapperType::class, id)
     }
 
     fun revertDocument(id: String): JsonNode {

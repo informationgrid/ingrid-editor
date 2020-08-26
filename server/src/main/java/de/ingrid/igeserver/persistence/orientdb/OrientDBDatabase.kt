@@ -42,6 +42,13 @@ class OrientDBDatabase : DBApi {
 
     companion object {
         private const val DB_ID = "@rid"
+
+        // database type for creating databases (filesystem)
+        val dbType = ODatabaseType.PLOCAL
+
+        // orientDB uses these credentials when creating databases
+        const val serverUser: String = "admin"
+        const val serverPassword: String = "admin"
     }
 
     @Autowired
@@ -70,13 +77,6 @@ class OrientDBDatabase : DBApi {
             }
             return orientDBInternal
         }
-
-    // database type for creating databases (filesystem)
-    private val dbType = ODatabaseType.PLOCAL
-
-    // orientDB uses these credentials when creating databases
-    private var serverUser: String = "admin"
-    private var serverPassword: String = "admin"
 
     private val log = logger()
 
@@ -269,7 +269,7 @@ class OrientDBDatabase : DBApi {
     override val databases: Array<String>
         get() {
             return orientDB.list()
-                    .filter { item: String -> !(item == DBApi.DATABASE.USERS.dbName || item == "OSystem" || item == "management") }
+                    .filter { item: String -> !(DBApi.DATABASE.values().any { it.dbName == item } || item == "OSystem" || item == "management") }
                     .toTypedArray()
         }
 

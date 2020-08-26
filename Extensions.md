@@ -15,7 +15,7 @@ All extension related classes and interfaces of IGE Server are located in the `d
 
 #### Profiles
 
-A key aspect of IGE Server's data model is the support for different document types that are related to a single or multiple so-called **profile(s)**. Since extensions are typically used in data processing application aspects, the `Extension` interface defines a `profiles` property which is used to define for which profiles the concrete extension is used. The possible values of the profile property have the following meanings in the context of the profile associated with the processed data (*data profile*):
+A key aspect of IGE Server's data model is the support for different document types that are related to a single or multiple so-called **InGrid Profile(s)** (e.g. *uvp*, *mcloud*). Since extensions are typically used in data processing application aspects, the `Extension` interface defines a `profiles` property which is used to define for which profiles the concrete extension is used. The possible values of the profile property have the following meanings in the context of the profile associated with the processed data (*data profile*):
 
 - *Empty list*: The extension is used with all data profiles (also when the data profile is not specified)
 - *List of profile names*: The extension is only used if the data profile is equal to one of the listed profiles (not when the data profile is not specified)

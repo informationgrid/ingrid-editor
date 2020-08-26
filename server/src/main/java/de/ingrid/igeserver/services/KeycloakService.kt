@@ -6,12 +6,16 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.logging.log4j.LogManager
+import org.keycloak.KeycloakPrincipal
+import org.keycloak.KeycloakSecurityContext
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.keycloak.representations.idm.UserRepresentation
 import org.keycloak.representations.idm.UserSessionRepresentation
 import org.keycloak.util.JsonSerialization
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.io.IOException
 import java.net.URISyntaxException
@@ -169,5 +173,10 @@ class KeycloakService : UserManagementService {
         log.info("Expiration in: " + Date((expiration.toString() + "000").toLong()))
         log.info("Issued at: " + Date((issuedAt.toString() + "000").toLong()))
         return principal?.account?.keycloakSecurityContext?.idToken?.name
+    }
+
+    override fun getCurrentPrincipal(): Principal? {
+        val securityContext: SecurityContext = SecurityContextHolder.getContext()
+        return securityContext.authentication.principal as KeycloakPrincipal<*>
     }
 }

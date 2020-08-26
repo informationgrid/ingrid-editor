@@ -2,9 +2,12 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.User
 import org.apache.logging.log4j.LogManager
+import org.keycloak.KeycloakPrincipal
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
@@ -54,5 +57,9 @@ class KeycloakMockService : UserManagementService {
         user.firstName = mockedFirstName
         user.lastName = mockedLastName
         return user
+    }
+
+    override fun getCurrentPrincipal(): Principal? {
+        return Principal { mockedLogin }
     }
 }
