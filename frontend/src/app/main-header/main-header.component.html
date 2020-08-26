@@ -15,7 +15,7 @@
         <span class="header-info">
 
 
-            <button class="link-button" mat-button [matMenuTriggerFor]="menuInfo">
+            <button class="link-button" mat-button [matMenuTriggerFor]="menuInfo" data-cy="header-info-button">
                 Info
             </button>
             <mat-menu #menuInfo="matMenu" class="info-menu">
@@ -38,7 +38,7 @@
 
         <!--<span class="catalog-title">{{(userInfo|async).currentCatalog.label}}</span>-->
         <span *ngIf="userInfo$ | async as userInfo">
-        <button type="button" class="user-popup" mat-icon-button [matMenuTriggerFor]="menu">
+        <button type="button" class="user-popup" mat-icon-button [matMenuTriggerFor]="menu" data-cy="header-profile-button">
             {{getInitials((userInfo$ | async))}}
         </button>
         <mat-menu #menu="matMenu" class="user-popup-menu">
@@ -60,7 +60,7 @@
                 Einstellungen
             </span>
             <div class="user-popup-footer">
-                <button mat-button color=primary class="upper-case" (click)="logout()">Abmelden</button>
+                <button mat-button color=primary class="upper-case" (click)="logout()" data-cy="logout-button">Abmelden</button>
             </div>
         </mat-menu>
         </span>
