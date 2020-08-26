@@ -15,7 +15,7 @@ import {DocumentAbstract} from "../../store/document/document.model";
 export class AddressDashboardComponent implements OnChanges {
 
   treeDocs: Observable<number> = this.treeQuery.selectCount();
-  private childDocs$: Observable<DocumentAbstract[]>;
+  childDocs$: Observable<DocumentAbstract[]>;
 
   constructor(private treeQuery: AddressTreeQuery,
               private formToolbarService: FormToolbarService,

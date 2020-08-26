@@ -15,7 +15,7 @@ import {SessionQuery} from "../../store/session.query";
 export class FormDashboardComponent implements OnChanges {
 
   treeDocs: Observable<number> = this.treeQuery.selectCount();
-  private childDocs$: Observable<DocumentAbstract[]>;
+  childDocs$: Observable<DocumentAbstract[]>;
 
   constructor(private treeQuery: AddressTreeQuery,
               private formToolbarService: FormToolbarService,
