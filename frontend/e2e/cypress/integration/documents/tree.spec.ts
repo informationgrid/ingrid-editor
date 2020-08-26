@@ -179,9 +179,31 @@ describe('Tree', () => {
     });
   });
 
-  describe.only('Cut', () => {
-    xit('should be possible to move a root node under the root node', () => {
+  describe('Cut', () => {
+    it('should be possible to move a root node under the root node', () => {
       // at the moment it's allowed since there's no harm
+      const testFolder = 'move me under the root node'
+      const docName = 'document at level 2'
+
+      DocumentPage.createFolder(testFolder);
+      DocumentPage.createDocument(docName);
+
+      //Check path
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+
+      cy.get('#sidebar').contains(testFolder).click();
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
+      cy.get('#mat-dialog-2').findByText('Daten').click();
+      cy.get('[data-cy=create-applyLocation]').click();
+
+      DocumentPage.visit();
+
+      cy.get('#sidebar').contains(testFolder).click();
+      cy.get('#sidebar').contains(docName).click();
+      //check if path is the same like before
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
     });
 
     xit('should be possible to move a node inside a folder into the same one', () => {
@@ -189,24 +211,88 @@ describe('Tree', () => {
 
     });
 
-    xit('should move a root document into a folder', () => {
+    it('should move a root document into a folder', () => {
+      const docName = 'move me into a folder'
 
+      DocumentPage.createDocument(docName);
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
+      cy.get('#mat-dialog-1').findByText('Testdokumente').click();
+      cy.get('[data-cy=create-applyLocation]').click();
+
+      DocumentPage.visit();
+
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').contains(docName).click();
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
     });
 
-    xit('should move a root document into a deeply nested folder', () => {
+    it('should move a root document into a deeply nested folder', () => {
+      const docName = 'move me into a deep folder'
 
+      DocumentPage.createDocument(docName);
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
+      cy.get('#mat-dialog-1').findByText('Testdokumente').click();
+      cy.wait(500) //TODO delete when better selector is found
+      cy.get('ige-tree mat-tree mat-tree-node div').contains('Ordner 2. Ebene').click();
+      cy.get('[data-cy=create-applyLocation]').click();
+
+      DocumentPage.visit();
+
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').contains('Ordner 2. Ebene').click();
+      cy.get('#sidebar').contains(docName).click();
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
     });
 
-    xit('should move a document from a folder to the root', () => {
+    it('should move a document from a folder to the root', () => {
+      const docName = 'move me from a deep folder'
 
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').contains('Ordner 2. Ebene').click();
+
+      DocumentPage.createDocument(docName);
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
+      cy.get('#mat-dialog-1').findByText('Daten').click();
+      cy.wait(500) //TODO delete when better selector is found
+      cy.get('[data-cy=create-applyLocation]').click();
+
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
     });
 
-    xit('should move a root folder into a folder', () => {
+    it('should move a root folder into a folder', () => {
+      const testFolder = 'move me';
+      const testFolder2 = 'move me2';
+      const docName = 'iam under a moved folder'
 
+      DocumentPage.createFolder(testFolder);
+      DocumentPage.createFolder(testFolder2);
+      DocumentPage.createDocument(docName);
+
+      cy.get('#sidebar').contains(testFolder).click();
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
+      cy.get('#mat-dialog-3').findByText('Testdokumente').click();
+      cy.get('[data-cy=create-applyLocation]').click();
+
+      DocumentPage.visit();
+
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      cy.get('#sidebar').findByText(testFolder).click();
+      cy.get('#sidebar').findByText(testFolder2).click();
+      cy.get('#sidebar').findByText(docName).click();
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder, testFolder2]);
     });
 
     xit('should not be possible to move a node under the previous parent/root', () => {
-
+      //same place as before??
+      //same like: 'should be possible to move a root node under the root node'
     });
 
     it('should move a root node into a folder', () => {
@@ -249,35 +335,6 @@ describe('Tree', () => {
       cy.get('#sidebar').contains(docName).click();
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
     });
-
-    it('should move a whole tree', () => {
-      const testFolder = 'move me';
-      const testFolder2 = 'move me2';
-      const testFolder3 = 'move me3';
-      const docName = 'iam under a moved folder'
-
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createFolder(testFolder2);
-      DocumentPage.createFolder(testFolder3);
-      DocumentPage.createDocument(docName);
-
-      cy.get('#sidebar').contains(testFolder).click();
-
-      cy.get('[data-cy=toolbar_COPY]').click();
-      cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
-      cy.get('#mat-dialog-4').findByText('Testdokumente').click();
-      cy.get('[data-cy=create-applyLocation]').click();
-
-      DocumentPage.visit();
-
-      cy.get('#sidebar').findByText('Testdokumente').click();
-      cy.get('#sidebar').findByText(testFolder).click();
-      cy.get('#sidebar').findByText(testFolder2).click();
-      cy.get('#sidebar').findByText(testFolder3).click();
-      cy.get('#sidebar').findByText(docName).click();
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder, testFolder2, testFolder3]);
-    });
-
   });
 
   describe('DragnDrop', () => {
