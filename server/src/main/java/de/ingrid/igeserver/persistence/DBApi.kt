@@ -10,8 +10,7 @@ import kotlin.reflect.KClass
 interface DBApi {
 
     enum class DATABASE(val dbName: String) {
-        USERS("IgeUsers"),
-        HISTORY("DataHistory")
+        USERS("IgeUsers")
     }
 
     /**

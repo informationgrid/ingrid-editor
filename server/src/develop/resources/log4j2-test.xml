@@ -14,10 +14,15 @@
       <DefaultRolloverStrategy max="9" />
     </RollingFile>
     <OrientDBAppender name="DataHistoryDB" database="DataHistory" table="log" />
+    <OrientDBAppender name="AuditLogDB" database="AuditLog" table="log" />
   </Appenders>
   <Loggers>
     <Logger name="de.ingrid.igeserver.persistence.filter.DataHistoryLogger" level="info" additivity="false">
       <AppenderRef ref="DataHistoryDB" />
+      <AppenderRef ref="Console" />
+    </Logger>
+    <Logger name="audit" level="info" additivity="false">
+      <AppenderRef ref="AuditLogDB" />
       <AppenderRef ref="Console" />
     </Logger>
     <Logger name="de.ingrid" level="debug" additivity="false">

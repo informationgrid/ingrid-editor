@@ -59,6 +59,9 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-security') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
+    implementation('org.springframework.boot:spring-boot-starter-aop') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
 
     // Keycloak
     implementation('org.keycloak:keycloak-spring-boot-starter:10.0.2') {

@@ -57,9 +57,6 @@ class OrientDBDatabase : DBApi {
     @Autowired
     lateinit var documentTypes: List<OrientDBDocumentEntityType>
 
-    // mapping between entity types and implementing classes
-    private lateinit var entityTypeMap: Map<KClass<out EntityType>, OrientDBEntityType>
-
     // embedded server instance
     private lateinit var serverInternal: OServer
 
@@ -77,6 +74,21 @@ class OrientDBDatabase : DBApi {
             }
             return orientDBInternal
         }
+
+    // mapping between entity types and implementing classes
+    private val entityTypeMap: Map<KClass<out EntityType>, OrientDBEntityType> by lazy {
+        if (!::entityTypes.isInitialized) {
+            throw PersistenceException("No entity types registered")
+        }
+        val result: Map<KClass<out EntityType>, OrientDBEntityType> = mutableMapOf()
+        entityTypes.forEach { t: OrientDBEntityType ->
+            (result as MutableMap<KClass<out EntityType>, OrientDBEntityType>)[t.entityType] = t
+        }
+        result
+    }
+
+    // registry for catalog databases
+    private lateinit var catalogDatabases: MutableSet<String>
 
     private val log = logger()
 
@@ -107,7 +119,7 @@ class OrientDBDatabase : DBApi {
             // pooling and makes this class better testable since it could also use an injected environment
             orientDBInternal = serverInternal.context
 
-            setup()
+            initialize()
         }
     }
 
@@ -268,29 +280,32 @@ class OrientDBDatabase : DBApi {
 
     override val databases: Array<String>
         get() {
-            return orientDB.list()
-                    .filter { item: String -> !(DBApi.DATABASE.values().any { it.dbName == item } || item == "OSystem" || item == "management") }
-                    .toTypedArray()
+            return catalogDatabases.toTypedArray()
         }
 
     override fun createDatabase(settings: Catalog): String? {
         settings.id = settings.name.toLowerCase().replace(" ".toRegex(), "_")
-        orientDB.createIfNotExists(settings.id, dbType)
-        acquireImpl(settings.id).use { session ->
-            if (session == null) {
-                throw PersistenceException("Failed to initialize database ${settings.id}")
+        val isNew = orientDB.createIfNotExists(settings.id, dbType)
+        if (isNew) {
+            acquireImpl(settings.id).use { session ->
+                if (session == null) {
+                    throw PersistenceException("Failed to initialize database ${settings.id}")
+                }
+                OBehaviourType().initialize(session)
+                OCatalogInfoType().initialize(session)
+
+                val catInfo = ObjectMapper().createObjectNode()
+                catInfo.put("id", settings.id)
+                catInfo.put("name", settings.name)
+                catInfo.put("description", settings.description)
+                catInfo.put("type", settings.type)
+                this.save(CatalogInfoType::class, null, catInfo.toString(), null)
+
+                initDocumentTypes(settings)
+
+                // update registry
+                catalogDatabases.add(settings.id!!)
             }
-            OBehaviourType().initialize(session)
-            OCatalogInfoType().initialize(session)
-
-            val catInfo = ObjectMapper().createObjectNode()
-            catInfo.put("id", settings.id)
-            catInfo.put("name", settings.name)
-            catInfo.put("description", settings.description)
-            catInfo.put("type", settings.type)
-            this.save(CatalogInfoType::class, null, catInfo.toString(), null)
-
-            initDocumentTypes(settings)
         }
         return settings.id
     }
@@ -312,6 +327,9 @@ class OrientDBDatabase : DBApi {
 
     override fun removeDatabase(name: String): Boolean {
         orientDB.drop(name)
+
+        // update registry
+        catalogDatabases.remove(name)
 
         // TODO: remove database from all assigned users
         return true
@@ -358,12 +376,13 @@ class OrientDBDatabase : DBApi {
     }
 
     /**
-     * First time database initialization (will be skipped, if done already).
+     * Initialize the instance
      */
-    private fun setup() {
+    private fun initialize() {
         // make sure the database for storing users and catalog information is there
         val alreadyExists = orientDB.exists(DBApi.DATABASE.USERS.dbName)
         if (!alreadyExists) {
+            log.info("Creating database " + DBApi.DATABASE.USERS.dbName)
             orientDB.create(DBApi.DATABASE.USERS.dbName, dbType)
             acquireImpl(DBApi.DATABASE.USERS.dbName).use { session ->
                 if (session == null) {
@@ -373,6 +392,10 @@ class OrientDBDatabase : DBApi {
                 session.commit()
             }
         }
+
+        // initialize registry of catalog databases
+        catalogDatabases = orientDB.list().filter { name -> isCatalogDatabase(name) }.toMutableSet()
+        log.info("Existing catalog databases: $catalogDatabases")
     }
 
     /**
@@ -394,16 +417,19 @@ class OrientDBDatabase : DBApi {
         }
     }
 
-    private fun <T : EntityType> getEntityTypeImpl(type: KClass<T>): OrientDBEntityType {
-        if (!::entityTypeMap.isInitialized) {
-            if (!::entityTypes.isInitialized) {
-                throw PersistenceException("No entity types registered")
-            }
-            entityTypeMap = mutableMapOf()
-            entityTypes.forEach { t: OrientDBEntityType ->
-                (entityTypeMap as MutableMap<KClass<out EntityType>, OrientDBEntityType>)[t.entityType] = t
-            }
+    private fun isCatalogDatabase(name: String): Boolean {
+        // exclude by name
+        if (DBApi.DATABASE.values().any { it.dbName == name } || name == "OSystem" || name == "management") {
+            return false
         }
+
+        // check if Info class exists
+        val session = orientDB.open(name, serverUser, serverPassword)
+        val schema = session.metadata.schema
+        return schema.existsClass(OUserInfoType().className)
+    }
+
+    private fun <T : EntityType> getEntityTypeImpl(type: KClass<T>): OrientDBEntityType {
         return entityTypeMap[type] ?: throw PersistenceException("There is no entity type: $type registered")
     }
 

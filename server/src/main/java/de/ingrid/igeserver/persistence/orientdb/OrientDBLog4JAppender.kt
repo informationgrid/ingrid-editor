@@ -126,11 +126,22 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
         if (queue.size >= MAX_QUEUE_LENGTH) {
             saveQueue()
         }
-        saveQueue()
     }
 
     private fun mapEvent(event: LogEvent): JsonNode {
-        val result = jacksonObjectMapper().createObjectNode().apply {
+        // create message node
+        var msg: JsonNode = try {
+            jacksonObjectMapper().readTree(event.message.formattedMessage)
+        }
+        catch(ex: Exception) {
+            // message is no valid json
+            jacksonObjectMapper().createObjectNode().apply {
+                put("text", event.message.formattedMessage)
+            }
+        }
+        (msg as ObjectNode).put("@type", "d")
+
+        return jacksonObjectMapper().createObjectNode().apply {
             put(LOGGER, event.loggerName)
             put(TIMESTAMP, event.timeMillis)
             put(LEVEL, event.level?.name())
@@ -139,16 +150,8 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
             put(CLASS, event.source?.className)
             put(METHOD, event.source?.methodName)
             put(LINE, event.source?.lineNumber)
+            replace(MESSAGE, msg)
         }
-        try {
-            val msg = jacksonObjectMapper().readTree(event.message.formattedMessage)
-            (msg as ObjectNode).put("@type", "d")
-            result.replace(MESSAGE, msg)
-        }
-        catch(ex: Exception) {
-            result.put(MESSAGE, event.message.formattedMessage)
-        }
-        return result
     }
 
     /**
@@ -169,7 +172,8 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
                     session.execute("sql", cmd.toString())
                 }
             }
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             error("Unexpected exception while saving log events", null, e)
         }
         queue.clear()
