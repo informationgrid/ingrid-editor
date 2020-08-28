@@ -17,6 +17,11 @@
     div[mat-dialog-content] p {
       white-space: pre;
     }
+
+    ige-context-help mat-dialog-content p,
+    ige-context-help div[mat-dialog-content] p {
+      white-space: normal;
+    }
   }
 }
 
