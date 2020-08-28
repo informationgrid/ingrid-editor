@@ -5,6 +5,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.igeserver.services.UserManagementService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,9 +22,14 @@ class DataHistoryLogger : Filter<PostPersistencePayload> {
         private val PROFILES = arrayOf<String>()
 
         private const val ACTION = "action"
+        private const val TARGET = "target"
+        private const val TIME = "time"
         private const val ACTOR = "actor"
         private const val DATA = "data"
     }
+
+    @Autowired
+    private lateinit var dateService: DateService
 
     @Autowired
     private lateinit var userService: UserManagementService
@@ -42,6 +49,8 @@ class DataHistoryLogger : Filter<PostPersistencePayload> {
     private fun createLogMessage(payload: PostPersistencePayload): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
             put(ACTION, payload.action.name.toLowerCase())
+            put(TARGET, payload.document[FIELD_ID].asText())
+            put(TIME, dateService.now().toString())
             put(ACTOR, userService.getCurrentPrincipal()?.name)
             replace(DATA, payload.document)
         }

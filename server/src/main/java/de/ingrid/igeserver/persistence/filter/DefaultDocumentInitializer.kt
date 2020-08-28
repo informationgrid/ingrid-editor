@@ -4,8 +4,8 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.services.*
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.time.OffsetDateTime
 import java.util.*
 
 /**
@@ -17,6 +17,9 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
     companion object {
         private val PROFILES = arrayOf<String>()
     }
+
+    @Autowired
+    private lateinit var dateService: DateService
 
     override val profiles: Array<String>?
         get() = PROFILES
@@ -32,7 +35,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
 
     protected fun initializeDocument(payload: PreCreatePayload, context: Context) {
         val uuid = payload.document.get(FIELD_ID)?.textValue() ?: UUID.randomUUID().toString()
-        val now = OffsetDateTime.now().toString()
+        val now = dateService.now().toString()
 
         with(payload.document) {
             put(FIELD_ID, uuid)

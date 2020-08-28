@@ -1,8 +1,11 @@
 package de.ingrid.igeserver.annotations
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.UserManagementService
+import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -14,47 +17,82 @@ import org.springframework.stereotype.Component
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 @Repeatable
-annotation class AuditLog(val category: String, val logger: String)
+annotation class AuditLog(
+        val category: String = "",
+        val action: String = "",
+        val target: String = "",
+        val logger: String = ""
+)
 
 @Aspect
 @Component
-class AuditLogAspect {
+class AuditLogger {
     companion object {
         private const val DEFAULT_LOGGER = "audit"
 
         private const val CATEGORY = "cat"
-        private const val ACTOR = "actor"
         private const val ACTION = "action"
-        private const val PARAMETERS = "params"
+        private const val TARGET = "target"
+        private const val TIME = "time"
+        private const val ACTOR = "actor"
+        private const val DATA = "data"
     }
+
+    @Autowired
+    private lateinit var dateService: DateService
 
     @Autowired
     private lateinit var userService: UserManagementService
 
+    /**
+     * Log an audit message with the given data
+     */
+    fun log(category: String, action: String, target: String, data: JsonNode? = null, logger: String? = null) {
+        getLogger(logger).info(createLogMessage(category, action, target, data))
+    }
+
+    /**
+     * Log a method execution with the @AuditLog annotation
+     * The method will log the method name in the 'action' field (if not specified in the annotation)
+     * and the method call parameters in the 'data' field.
+     */
     @Around("@annotation(AuditLog)")
-    fun logExecution(joinPoint: ProceedingJoinPoint): Any? {
+    fun logMethodExecution(joinPoint: ProceedingJoinPoint): Any? {
         val annotation = (joinPoint.signature as MethodSignature).method.getAnnotation(AuditLog::class.java)
-        val log = if (annotation.logger.isNotBlank()) logger(annotation.logger) else logger(DEFAULT_LOGGER)
 
         // call target method
         val proceed = joinPoint.proceed()
 
-        log.info(createLogMessage(annotation, joinPoint))
-        return proceed
-    }
-
-    private fun createLogMessage(annotation: AuditLog, joinPoint: ProceedingJoinPoint): JsonNode {
+        // extract data from method call parameters
         val parameters = jacksonObjectMapper().createObjectNode()
         val parameterNames = (joinPoint.signature as MethodSignature).parameterNames
         for (i in parameterNames.indices) {
             parameters.put(parameterNames[i], joinPoint.args[i]?.toString())
         }
 
+        // determine action and target
+        val action = if (annotation.action.isNotBlank()) annotation.action else
+            joinPoint.signature.declaringTypeName + "." + joinPoint.signature.name
+        val target = if (annotation.target.isNotBlank() &&
+                parameters.hasNonNull(annotation.target)) (parameters[annotation.target] as TextNode).asText() else
+            ""
+
+        getLogger(annotation.logger).info(createLogMessage(annotation.category, action, target, parameters))
+        return proceed
+    }
+
+    private fun getLogger(name: String?): KotlinLogger {
+        return if (!name.isNullOrBlank()) logger(name) else logger(DEFAULT_LOGGER)
+    }
+
+    private fun createLogMessage(category: String, action: String, target: String, data: JsonNode?): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
-            put(CATEGORY, annotation.category)
+            put(CATEGORY, category)
+            put(ACTION, action)
+            put(TARGET, target)
+            put(TIME, dateService.now().toString())
             put(ACTOR, userService.getCurrentPrincipal()?.name)
-            put(ACTION, joinPoint.signature.declaringTypeName + "." + joinPoint.signature.name)
-            replace(PARAMETERS, parameters)
+            replace(DATA, data)
         }
     }
 }

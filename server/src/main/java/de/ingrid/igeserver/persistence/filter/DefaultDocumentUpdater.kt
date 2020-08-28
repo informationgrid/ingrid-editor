@@ -4,9 +4,8 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.services.*
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.time.OffsetDateTime
-import java.util.*
 
 /**
  * Filter for updating document data send from the client before updating in the storage
@@ -17,6 +16,9 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
     companion object {
         private val PROFILES = arrayOf<String>()
     }
+
+    @Autowired
+    private lateinit var dateService: DateService
 
     override val profiles: Array<String>?
         get() = PROFILES
@@ -31,7 +33,7 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
         }
 
         // update modified date
-        payload.document.put(FIELD_MODIFIED, OffsetDateTime.now().toString())
+        payload.document.put(FIELD_MODIFIED, dateService.now().toString())
 
         // handle linked docs
         payload.type.handleLinkedFields(payload.document)

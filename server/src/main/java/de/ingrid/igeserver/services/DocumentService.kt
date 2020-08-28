@@ -120,7 +120,7 @@ class DocumentService : MapperService() {
         return checkNotNull(documentTypes.find { it.className == docType })
     }
 
-    @AuditLog(category="persistence", logger="audit")
+    @AuditLog(category="persistence", logger="audit", action="create")
     fun createDocument(data: JsonNode, address: Boolean = false): JsonNode {
         val filterContext = DefaultContext.withCurrentProfile(dbService)
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
@@ -147,7 +147,7 @@ class DocumentService : MapperService() {
         return getLatestDocument(postCreatePayload.wrapper)
     }
 
-    @AuditLog(category="persistence", logger="audit")
+    @AuditLog(category="persistence", logger="audit", action="update", target="id")
     fun updateDocument(id: String, data: JsonNode, publish: Boolean = false): JsonNode {
         val filterContext = DefaultContext.withCurrentProfile(dbService)
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
@@ -215,7 +215,7 @@ class DocumentService : MapperService() {
         }
     }
 
-    @AuditLog(category="persistence", logger="audit")
+    @AuditLog(category="persistence", logger="audit", action="delete", target="id")
     fun deleteRecursively(id: String) {
         val filterContext = DefaultContext.withCurrentProfile(dbService)
 
@@ -246,7 +246,7 @@ class DocumentService : MapperService() {
         }
     }
 
-    @AuditLog(category="persistence", logger="audit")
+    @AuditLog(category="persistence", logger="audit", action="revert", target="id")
     fun revertDocument(id: String): JsonNode {
 
         // remove draft version
