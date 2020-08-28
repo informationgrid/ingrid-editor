@@ -18,9 +18,24 @@ import org.springframework.stereotype.Component
 @Retention(AnnotationRetention.RUNTIME)
 @Repeatable
 annotation class AuditLog(
+        /**
+         * Log category (e.g. persistence)
+         */
         val category: String = "",
+
+        /**
+         * Executed action (e.g. update)
+         */
         val action: String = "",
+
+        /**
+         * Action target (e.g. id of the document)
+         */
         val target: String = "",
+
+        /**
+         * Log4j logger name to be used for logging (defaults to 'audit')
+         */
         val logger: String = ""
 )
 
@@ -53,8 +68,11 @@ class AuditLogger {
 
     /**
      * Log a method execution with the @AuditLog annotation
-     * The method will log the method name in the 'action' field (if not specified in the annotation)
-     * and the method call parameters in the 'data' field.
+     * The fields will be set as follows:
+     * - action: name of the annotated method (if action is not specified in the annotation)
+     * - data: parameter names and values of the annotated method call
+     * - target: value of the parameter specified in 'target' (e.g. if target is 'id', the value of the 'id' method parameter
+     *           will become the value of target)
      */
     @Around("@annotation(AuditLog)")
     fun logMethodExecution(joinPoint: ProceedingJoinPoint): Any? {
