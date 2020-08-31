@@ -33,7 +33,7 @@
     }
 
     a {
-      color: #28225B;
+      color: $ige-secondary;
       //font-size: 13px;
       padding: 0 10px;
       text-transform: none;
@@ -70,7 +70,7 @@
 
     mat-icon {
       line-height: 32px;
-      color: #f27100;
+      color: $state-working-color;
       font-size: 16px;
       padding-left: 2px;
       padding-top: 2px;

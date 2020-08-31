@@ -3,7 +3,7 @@
 /*-------------------*/
 
 .section {
-  color: #196ea2;
+  color: $ige-primary;
 }
 
 .section mat-icon {
@@ -23,7 +23,7 @@
 .header h1 {
   margin-bottom: 15px;
   padding-left: 20px;
-  color: #196ea2;
+  color: $ige-primary;
 }
 
 .header div, .form-content {
