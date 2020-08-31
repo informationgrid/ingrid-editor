@@ -13,7 +13,11 @@ describe('Tree', () => {
   });
 
   xit('should navigate to a section when clicking on form header navigation', () => {
-
+    cy.get('#sidebar').findByText('Testdokumente').click();
+    cy.get('#sidebar').findByText('Ordner 2. Ebene').click();
+    cy.get('#sidebar').contains('Tiefes Dokument').click();
+    cy.get('.navigation-header').contains('Zeitbezüge').click();
+    //needs to check up that the screen is on point Zeitbezüge
   });
 
   // ...
@@ -339,21 +343,65 @@ describe('Tree', () => {
 
   describe('DragnDrop', () => {
 
-    xit('should move a document into an opened folder', () => {
+    it('should move a document into an opened folder', () => {
+      const docName = 'drag&drop to a folder'
 
+      DocumentPage.createDocument(docName);
+
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+
+      cy.get('#sidebar').contains(docName).click();
+
+      //drag&drop
+      cy.get('#sidebar').contains(docName).trigger('dragstart', { dataTransfer: new DataTransfer });
+      cy.get('#sidebar').findByText('Neue Testdokumente').eq(0).trigger('drop');
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Neue Testdokumente']);
     });
 
     xit('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
+      const docName = 'drag&drop to a deep folder'
 
+      DocumentPage.createDocument(docName);
+
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+
+      cy.get('#sidebar').contains(docName).click()
+        .trigger('dragstart', { dataTransfer: new DataTransfer })
+      cy.get('#sidebar').findByText('Testdokumente')
+        .trigger('dragover', { dataTransfer: DataTransfer})
+
+      //auto-expanding of hovered node does not work, maybe the reason for that is the doubleclick to open a node? I'll check that tomorrow
+      //cy.get('#sidebar').contains('Ordner 2. Ebene')
+      //  .eq(0).trigger('drop');
+
+      // cy.get('[data-cy=confirm-dialog-confirm]').click();
+
+      // CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
     });
 
-    xit('should move a document into a not expanded node (other children should be there)', () => {
+    it('should move a document into a not expanded node (other children should be there)', () => {
       // when dragging a node onto a folder, the folder expands automatically after a few milliseconds
 
       // when we drop the document before the folder is expanded, then it happened the new moved node was the only
       // one under the parent folder
 
       // make sure that after move, all other expected children are available under the destination folder
+      const docName = 'drag&drop to a node'
+
+      DocumentPage.createDocument(docName);
+
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+
+      cy.get('#sidebar').contains(docName).click();
+
+      cy.get('#sidebar').contains(docName).trigger('dragstart', { dataTransfer: new DataTransfer });
+      cy.get('#sidebar').findByText('Testdokumente').eq(0).trigger('drop');
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
+      CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
     });
 
 
