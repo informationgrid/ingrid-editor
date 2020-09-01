@@ -14,7 +14,7 @@
         <input matInput placeholder="Suchen" aria-label="Search"
                [formControl]="query"
                [matAutocomplete]="searchAuto">
-        <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="close" (click)="query.reset('')">
+        <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="close" (click)="query.reset('')"  data-cy="clear-tree-search-field">
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
         <mat-autocomplete #searchAuto="matAutocomplete" class="quicksearch-auto dense">
