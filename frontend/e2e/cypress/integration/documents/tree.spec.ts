@@ -17,30 +17,50 @@ describe('Tree', () => {
     cy.get('#sidebar').findByText('Ordner 2. Ebene').click();
     cy.get('#sidebar').contains('Tiefes Dokument').click();
     cy.get('.navigation-header').contains('Zeitbezüge').click();
-    //needs to check up that the screen is on point Zeitbezüge
+    // needs to check up that the screen is on point Zeitbezüge
+  });
+  
+  it('should expand and select the same node when reloading page', () => {
+    cy.get('#sidebar').findByText('Testdokumente').click();
+    cy.get('#sidebar').findByText('Ordner 2. Ebene').click();
+
+    CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
+
+    cy.reload();
+
+    CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
   });
 
-  // ...
-  xit('should expand and select the same node when reloading page', () => {
-
+  it('should show search results in tree search', () => {
+    cy.get('[data-cy=tree-search-field]').type('Tiefes Dokument');
+    cy.get('#mat-autocomplete-0').contains('Tiefes Dokument');
   });
 
-  xit('should show search results in tree search', () => {
+  it('should show empty search input field when clicking on x-button', () => {
+    cy.get('[data-cy=tree-search-field]').type('Test');
+    cy.get('#mat-autocomplete-0').contains('Test');
 
-  });
+    cy.get('[data-cy=clear-tree-search-field]').click();
 
-  xit('should show empty search input field when clicking on x-button', () => {
-
+    // if dropdown is not visible, tree-search-field is empty
+    cy.get('#mat-autocomplete-0').should('not.visible');
+    cy.get('#mat-input-0').should('be.empty');
   });
 
   describe('Copy', () => {
-    xit('should not be possible to copy a root node under the root node', () => {
+    it('should not be possible to copy a node under itself', () => {
+      const docName = 'copy into myself0';
 
+      DocumentPage.createDocument(docName);
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Kopieren').click();
+      cy.get('#mat-dialog-1').should('not.contain.value', docName);
     });
 
     it('should not be possible to copy a node inside a folder into the same one', () => {
-      //Bug #2064
-      const testFolder = 'copy into myself';
+      // Bug #2064
+      const testFolder = 'copy into myself1';
       const testFolder2 = 'copy into myself2';
 
       DocumentPage.createFolder(testFolder);
@@ -53,10 +73,29 @@ describe('Tree', () => {
       cy.get('[data-cy=error-dialog-close]').click();
     });
 
-    xit('should not be possible to copy a document/folder under a document', () => {
+    it('should not be possible to copy a document/folder under a document', () => {
       // only folders can contain sub-elements
+      const docName = 'root doc';
+      const testFolder = 'folder: copy me under a doc';
+      const docName2 = 'doc: copy me under a doc';
 
-      //neu
+      DocumentPage.createDocument(docName);
+      DocumentPage.createDocument(docName2);
+      DocumentPage.createFolder(testFolder);
+
+      cy.get('#sidebar').findByText(docName2).click();
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Kopieren').click();
+      cy.get('#mat-dialog-3').should('not.contain.value', docName);
+
+      cy.get('#mat-dialog-3').type('{esc}');
+
+      cy.get('#sidebar').findByText(testFolder).click();
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Kopieren').click();
+      cy.get('#mat-dialog-4').should('not.contain.value', docName);
     });
 
     it('should copy a root document into a folder', () => {
@@ -84,7 +123,7 @@ describe('Tree', () => {
       cy.get('[data-cy=toolbar_DELETE]').click();
       cy.get('[data-cy=confirm-dialog-confirm]').click();
 
-      //checkPath if root tree is copied in a sub folder
+      // checkPath if root tree is copied in a sub folder
       cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('#sidebar').findByText('Ordner 2. Ebene').click();
       cy.get('#sidebar').contains(docName).click();
@@ -107,8 +146,17 @@ describe('Tree', () => {
       cy.get('ige-header-title-row').contains(docName);
     });
 
-    xit('should copy a root folder (without sub-tree) into a folder', () => {
-      //neu
+    it('should copy a root folder (without sub-tree) into a folder', () => {
+      const testFolder = 'copy me into a folder2'
+
+      DocumentPage.createFolder(testFolder);
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Kopieren').click();
+      cy.get('#mat-dialog-1').findByText('Testdokumente').click();
+      cy.get('[data-cy=create-applyLocation]').click();
+
+      CopyCutUtils.selectNodeWithChecks(testFolder,['Daten', 'Testdokumente']);
     });
 
     it('should copy a root folder (with sub-tree) into a folder', () => {
@@ -139,19 +187,19 @@ describe('Tree', () => {
 
       CopyCutUtils.copyObjectWithTree('Testdokumente', 'Ordner 2. Ebene');
 
-      //delete docName document and testFolder
+      // delete docName document and testFolder
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
       Tree.containsNodeWithTitle(docName);
       cy.get('[data-cy=toolbar_DELETE]').click();
       cy.get('[data-cy=confirm-dialog-confirm]').click();
-      //refresh page after deleting document to stabilize test (if we do not this, we got an error and can not delete testFolder)
+      // refresh page after deleting document to stabilize test (if we do not this, we got an error and can not delete testFolder)
       DocumentPage.visit();
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('[data-cy=toolbar_DELETE]').click();
       cy.get('[data-cy=confirm-dialog-confirm]').click();
 
-      //checkPath if root tree is copied in a sub folder
+      // checkPath if root tree is copied in a sub folder
       cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('#sidebar').contains('Ordner 2. Ebene').click();
       cy.get('#sidebar').contains(testFolder).click();
@@ -174,7 +222,7 @@ describe('Tree', () => {
       cy.get('[aria-disabled=false]').contains('Kopieren mit Teilbaum').click();
       cy.get('[data-cy=create-applyLocation]').click();
 
-      //to close Testdokumente
+      // to close Testdokumente
       cy.get('#sidebar').findByText('Testdokumente').click();
 
       cy.get('#sidebar').contains(testFolder).click();
@@ -192,7 +240,7 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
 
-      //Check path
+      // Check path
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
 
       cy.get('#sidebar').contains(testFolder).click();
@@ -206,13 +254,23 @@ describe('Tree', () => {
 
       cy.get('#sidebar').contains(testFolder).click();
       cy.get('#sidebar').contains(docName).click();
-      //check if path is the same like before
+      // check if path is the same like before
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
     });
 
-    xit('should be possible to move a node inside a folder into the same one', () => {
+    it('should be possible to move a node inside a folder into the same one', () => {
       // at the moment it's allowed since there's no harm
+      const testFolder = 'move me up'
 
+      cy.get('#sidebar').findByText('Testdokumente').click();
+      DocumentPage.createFolder(testFolder);
+
+      cy.get('[data-cy=toolbar_COPY]').click();
+      cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
+      cy.get('#mat-dialog-1').findByText('Testdokumente').click();
+      cy.get('[data-cy=create-applyLocation]').click();
+
+      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten', 'Testdokumente']);
     });
 
     it('should move a root document into a folder', () => {
@@ -294,11 +352,6 @@ describe('Tree', () => {
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder, testFolder2]);
     });
 
-    xit('should not be possible to move a node under the previous parent/root', () => {
-      //same place as before??
-      //same like: 'should be possible to move a root node under the root node'
-    });
-
     it('should move a root node into a folder', () => {
       const testFolder = 'move me to a folder';
       const docName = 'iam under a folder'
@@ -352,7 +405,7 @@ describe('Tree', () => {
 
       cy.get('#sidebar').contains(docName).click();
 
-      //drag&drop
+      // drag&drop
       cy.get('#sidebar').contains(docName).trigger('dragstart', { dataTransfer: new DataTransfer });
       cy.get('#sidebar').findByText('Neue Testdokumente').eq(0).trigger('drop');
       cy.get('[data-cy=confirm-dialog-confirm]').click();
@@ -360,7 +413,7 @@ describe('Tree', () => {
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Neue Testdokumente']);
     });
 
-    xit('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
+    it('should move a document into a deeply nested folder with hovered node', () => {
       const docName = 'drag&drop to a deep folder'
 
       DocumentPage.createDocument(docName);
@@ -370,24 +423,20 @@ describe('Tree', () => {
       cy.get('#sidebar').contains(docName).click()
         .trigger('dragstart', { dataTransfer: new DataTransfer })
       cy.get('#sidebar').findByText('Testdokumente')
-        .trigger('dragover', { dataTransfer: DataTransfer})
+        .trigger('dragover', { dataTransfer: DataTransfer}).click()
+      cy.get('#sidebar').findByText('Ordner 2. Ebene')
+        .trigger('dragover', { dataTransfer: DataTransfer}).click()
+        .trigger('drop')
 
-      //auto-expanding of hovered node does not work, maybe the reason for that is the doubleclick to open a node? I'll check that tomorrow
-      //cy.get('#sidebar').contains('Ordner 2. Ebene')
-      //  .eq(0).trigger('drop');
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
 
-      // cy.get('[data-cy=confirm-dialog-confirm]').click();
-
-      // CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
     });
 
     it('should move a document into a not expanded node (other children should be there)', () => {
-      // when dragging a node onto a folder, the folder expands automatically after a few milliseconds
-
       // when we drop the document before the folder is expanded, then it happened the new moved node was the only
       // one under the parent folder
 
-      // make sure that after move, all other expected children are available under the destination folder
       const docName = 'drag&drop to a node'
 
       DocumentPage.createDocument(docName);
@@ -399,12 +448,15 @@ describe('Tree', () => {
       cy.get('#sidebar').contains(docName).trigger('dragstart', { dataTransfer: new DataTransfer });
       cy.get('#sidebar').findByText('Testdokumente').eq(0).trigger('drop');
       cy.get('[data-cy=confirm-dialog-confirm]').click();
-
+      // when dragging a node onto a folder, the folder expands automatically after a few milliseconds
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
+      // chek if other expected children are available under destination folder
       CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
     });
 
-
+    xit('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
+      //cypress dont open a hovered node by auto-expanding
+    });
   });
 
 
