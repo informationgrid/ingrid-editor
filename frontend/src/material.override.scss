@@ -19,10 +19,11 @@
     }
 
     ige-context-help mat-dialog-content p,
-    ige-context-help div[mat-dialog-content] p {
+    ige-context-help div[mat-dialog-content] p,
+    ige-context-help mat-dialog-content li,
+    ige-context-help div[mat-dialog-content] li {
       white-space: normal;
-      font-size: 14px;
-      line-height: 20px;
+      line-height: 22px;
     }
   }
 }
