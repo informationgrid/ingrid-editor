@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterContentChecked,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -30,7 +40,7 @@ import {MatSlideToggleChange} from "@angular/material/slide-toggle";
   styleUrls: ['./dynamic-form.component.scss']
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, AfterContentChecked {
 
   @Input() address = false;
 
@@ -60,6 +70,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   paddingWithHeader: string;
 
   showValidationErrors = false;
+
+  hasOptionalFields = new BehaviorSubject<boolean>(false);
 
   private formStateName: 'document' | 'address';
   private query: TreeQuery | AddressTreeQuery;
@@ -182,6 +194,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     FormUtils.addHotkeys(event, this.formToolbarService);
   }
 
+
+  ngAfterContentChecked() {
+    // TODO check if performance is impacted
+    this.hasOptionalFields.next(document.querySelectorAll('.optional').length < 1)
+  }
+
   /**
    * Load a document and prepare the form for the data.
    * @param {string} id is the ID of document to be loaded
@@ -301,7 +319,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // FIXME: form does not seem to be updated automatically and we have to force update event
     this.formsManager.upsert(this.formStateName, this.form);
-
   }
 
   handleDrop(event: any) {
@@ -309,10 +326,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   toggleOptionals($event: MatSlideToggleChange) {
-    if ($event.checked){
-      document.querySelectorAll('.optional').forEach((e)=>{e.classList.remove('hidden')})
-    }else{
-      document.querySelectorAll('.optional').forEach((e)=>{e.classList.add('hidden')})
+    if ($event.checked) {
+      document.querySelectorAll('.optional').forEach((e) => {
+        e.classList.remove('hidden')
+      })
+    } else {
+      document.querySelectorAll('.optional').forEach((e) => {
+        e.classList.add('hidden')
+      })
     }
   }
 }
