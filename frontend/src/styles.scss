@@ -379,7 +379,7 @@ ige-root .mat-drawer-container {
     }
 
     svg .coloring {
-      fill: #333333;
+      fill: $ige-icon-color;
     }
 
     &.working svg .coloring {
@@ -395,11 +395,11 @@ ige-root .mat-drawer-container {
 
 svg {
   .coloring {
-    fill: #333333;
+    fill: $ige-icon-color;
   }
 
   .coloring-stroke {
-    stroke: #333333;
+    stroke: $ige-icon-color;
   }
 }
 

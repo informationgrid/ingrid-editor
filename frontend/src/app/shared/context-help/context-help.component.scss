@@ -7,7 +7,7 @@
 
 .mat-dialog-content {
   padding-top: 0;
-  color: #181818;
+  color: $ige-text-color;
   white-space: normal !important;
 }
 
@@ -20,7 +20,7 @@
   ::ng-deep h2 {
     font-size: 16px;
     font-weight: 500;
-    color: #181818;
+    color: $ige-text-color;
   }
 }
 

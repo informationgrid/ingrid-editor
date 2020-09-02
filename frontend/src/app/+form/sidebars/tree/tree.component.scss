@@ -39,11 +39,11 @@
     .zone {
       height: 100%;
       width: 100%;
-      border: 2px dashed rgba(24, 24, 24, 0.6);
+      border: 2px dashed $ige-hint-color;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: rgba(24, 24, 24, 0.6);
+      color: $ige-hint-color;
       border-radius: 4px;
 
       .mat-icon {
@@ -51,7 +51,7 @@
         padding-bottom: 3px;
 
         ::ng-deep .coloring {
-          fill: rgba(24, 24, 24, 0.6);
+          fill: $ige-hint-color;
         }
       }
     }
@@ -72,7 +72,7 @@ mat-tree-node {
     &.expanded {
 
       .toggle {
-        color: #000000de;
+        color: $ige-text-color;
       }
 
       .expander {
@@ -171,7 +171,7 @@ mat-tree-node {
   }
 
   &.disabled {
-    color: #999;
+    color: $ige-hint-color;
     font-style: italic;
   }
 
