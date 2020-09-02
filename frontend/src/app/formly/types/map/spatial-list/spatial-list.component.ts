@@ -2,6 +2,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {SpatialBoundingBox} from '../spatial-dialog/spatial-result.model';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
+import {ConfirmDialogComponent, ConfirmDialogData} from "../../../../dialogs/confirm/confirm-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 export type SpatialLocationType = 'free' | 'wkt' | 'geo-name';
 
@@ -32,7 +34,7 @@ export class SpatialListComponent implements OnInit {
   typedLocations: { [x: string]: SpatialLocationWithColor[] };
   types: SpatialLocationType[];
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
@@ -43,7 +45,7 @@ export class SpatialListComponent implements OnInit {
 
   }
 
-  private updateLocations(locations: SpatialLocationWithColor[]) {
+  private updateLocations(locations: SpatialLocationWithColor[]): void {
 
     this.typedLocations = locations
       .reduce((prev, curr) => {
@@ -57,7 +59,7 @@ export class SpatialListComponent implements OnInit {
 
   }
 
-  getTypeName(type: SpatialLocationType) {
+  getTypeName(type: SpatialLocationType): string {
     switch (type) {
       case 'free':
         return 'Freier Raumbezug';
@@ -66,5 +68,19 @@ export class SpatialListComponent implements OnInit {
       case 'geo-name':
         return 'Geographischer Name';
     }
+  }
+
+  confirmRemove(location: SpatialLocationWithColor): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Raumbezug löschen',
+        message: 'Möchten Sie wirklich diesen Raumbezug löschen?',
+        list: [location.title]
+      } as ConfirmDialogData
+    }).afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.remove.next(location.indexNumber)
+      }
+    });
   }
 }
