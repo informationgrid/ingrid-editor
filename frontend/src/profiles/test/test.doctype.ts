@@ -34,6 +34,16 @@ export class TestDoctype extends BaseDoctype {
           required: true
         }
       }, {
+        key: 'optionalText',
+        type: 'input',
+        className: 'optional',
+        wrappers: ['panel', 'form-field'],
+        templateOptions: {
+          externalLabel: 'Optionales Textfeld',
+          appearance: 'outline',
+          required: true
+        }
+      }, {
         key: 'description',
         type: 'textarea',
         className: 'description',

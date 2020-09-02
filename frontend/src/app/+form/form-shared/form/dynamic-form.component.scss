@@ -102,3 +102,6 @@ pre {
   }
 }
 
+::ng-deep .hidden {
+  display: none;
+}

@@ -30,7 +30,7 @@
                                    (showStickyHeader)="updateContentPadding($event)"></ige-form-info>
                     <div [class.hide]="model._type === 'FOLDER' || address" class="optional-fields-toggle">
                         <div class="diagonal"></div>
-                        <mat-slide-toggle checked disabled>Alle</mat-slide-toggle>
+                        <mat-slide-toggle checked (change)="toggleOptionals($event)">Alle</mat-slide-toggle>
                     </div>
                     <form [formGroup]="form"
                           [style.padding-top]="paddingWithHeader"

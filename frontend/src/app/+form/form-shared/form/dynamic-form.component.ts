@@ -21,6 +21,7 @@ import {ProfileQuery} from '../../../store/profile/profile.query';
 import {Behaviour} from '../../../services/behavior/behaviour';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {AuthService} from "../../../services/security/auth.service";
+import {MatSlideToggleChange} from "@angular/material/slide-toggle";
 
 @UntilDestroy()
 @Component({
@@ -305,5 +306,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   handleDrop(event: any) {
     this.documentService.move(event.srcIds, event.destination, this.address, true).subscribe();
+  }
+
+  toggleOptionals($event: MatSlideToggleChange) {
+    if ($event.checked){
+      document.querySelectorAll('.optional').forEach((e)=>{e.classList.remove('hidden')})
+    }else{
+      document.querySelectorAll('.optional').forEach((e)=>{e.classList.add('hidden')})
+    }
   }
 }
