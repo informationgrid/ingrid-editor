@@ -16,6 +16,7 @@ export class HeaderTitleRowComponent implements OnInit {
   @Input() form: FormGroup;
   @Input() model: IgeDocument;
   @Input() sections: string[];
+  @Input() disableEdit: boolean;
 
   @ViewChild('titleInput') titleInput: ElementRef;
   @ViewChild('cfcAutosize') contentFCAutosize: CdkTextareaAutosize;

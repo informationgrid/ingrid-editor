@@ -48,6 +48,18 @@ export class AddressDoctype extends BaseDoctype {
               }
             }]
           }, {
+          fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'department',
+              className: 'width-100 organization',
+              type: 'input',
+              templateOptions: {
+                label: 'Abteilung/Referat',
+                appearance: 'outline'
+              },
+              hideExpression: '!model.organization || model.organization.length === 0',
+            }]
+          }, {
             fieldGroupClassName: 'display-flex',
             fieldGroup: [{
               key: 'firstName',
@@ -116,7 +128,26 @@ export class AddressDoctype extends BaseDoctype {
             className: 'width-100',
             type: 'input',
             templateOptions: {
-              label: 'Strasse/Hausnummer',
+              label: 'Straße/Hausnummer',
+              appearance: 'outline'
+            }
+          }]
+        }, {
+          fieldGroupClassName: 'display-flex',
+          fieldGroup: [{
+            key: 'po-box',
+            className: 'flex-1',
+            type: 'input',
+            templateOptions: {
+              label: 'Postfach',
+              appearance: 'outline'
+            }
+          }, {
+            key: 'PO',
+            className: 'flex-3',
+            type: 'input',
+            templateOptions: {
+              label: 'Postfach-Nr.',
               appearance: 'outline'
             }
           }]
@@ -135,26 +166,7 @@ export class AddressDoctype extends BaseDoctype {
             className: 'flex-3',
             type: 'input',
             templateOptions: {
-              label: 'Stadt',
-              appearance: 'outline'
-            }
-          }]
-        }, {
-          fieldGroupClassName: 'display-flex',
-          fieldGroup: [{
-            key: 'po-box',
-            className: 'flex-1',
-            type: 'input',
-            templateOptions: {
-              label: 'Postfach',
-              appearance: 'outline'
-            }
-          }, {
-            key: 'PO',
-            className: 'flex-1',
-            type: 'input',
-            templateOptions: {
-              label: 'PLZ (Postfach)',
+              label: 'Ort',
               appearance: 'outline'
             }
           }]

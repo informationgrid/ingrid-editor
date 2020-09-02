@@ -5,7 +5,7 @@
                   [ngClass]="['document-icon',getStateClass()]"></mat-icon>
     </div>
 
-    <span *ngIf="!showTitleInput" fxFlex class="label" (click)="editTitle()">
+    <span *ngIf="!showTitleInput" fxFlex class="label" [class.editable]="!disableEdit" (click)="disableEdit ? '' : editTitle()">
         <span>{{form.get('title')?.value || 'Kein Titel'}}</span>
         <mat-icon svgIcon="cursor-edit"></mat-icon>
     </span>
