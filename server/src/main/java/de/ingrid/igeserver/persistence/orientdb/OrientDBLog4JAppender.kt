@@ -101,11 +101,10 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
                 selector.loggerContexts.onEach { ctx ->
                     ctx.configuration.appenders.values.onEach { a ->
                         if (a is OrientDBLog4JAppender) {
-                            val isNew = orientDB.createIfNotExists(a.database, ODatabaseType.PLOCAL)
-                            if (isNew) {
-                                orientDB.open(a.database, OrientDBDatabase.serverUser, OrientDBDatabase.serverPassword).use {
-                                    initializeSchema(it as ODatabaseSession, a.table!!)
-                                }
+                            orientDB.createIfNotExists(a.database, ODatabaseType.PLOCAL)
+                            orientDB.open(a.database, OrientDBDatabase.serverUser, OrientDBDatabase.serverPassword).use {
+                                log.debug("Initializing schema: database=${a.database} table=${a.table}")
+                                initializeSchema(it as ODatabaseSession, a.table!!)
                             }
                         }
                     }
