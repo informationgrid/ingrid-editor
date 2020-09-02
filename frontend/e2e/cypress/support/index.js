@@ -1,5 +1,6 @@
 import '@testing-library/cypress/add-commands';
 import "cypress-keycloak-commands";
+import "./drag-and-drop";
 
 const addContext = require('mochawesome/addContext');
 

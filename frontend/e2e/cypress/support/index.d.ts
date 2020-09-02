@@ -9,5 +9,6 @@ declare namespace Cypress {
 
     fieldIsInvalid(fieldClass: string, content?: string): void;
 
+    drag(value: string): Chainable<Element>;
   }
 }

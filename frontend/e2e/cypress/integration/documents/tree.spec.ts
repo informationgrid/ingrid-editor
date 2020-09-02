@@ -19,7 +19,7 @@ describe('Tree', () => {
     cy.get('.navigation-header').contains('Zeitbezüge').click();
     // needs to check up that the screen is on point Zeitbezüge
   });
-  
+
   it('should expand and select the same node when reloading page', () => {
     cy.get('#sidebar').findByText('Testdokumente').click();
     cy.get('#sidebar').findByText('Ordner 2. Ebene').click();
@@ -454,10 +454,55 @@ describe('Tree', () => {
       CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
     });
 
-    xit('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
+    it('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
       //cypress dont open a hovered node by auto-expanding
+      const docName = 'drag&drop to a deep node (auto-expand)'
+      const dropFolder ='Test (auto-expanding)'
+      const dropFolder2 ='Test (auto-expanding)2'
+
+      DocumentPage.createDocument(docName);
+
+      DocumentPage.createFolder(dropFolder);
+      DocumentPage.createFolder(dropFolder2);
+
+      //to close for checking auto-expanding by hovered node
+      cy.get('#sidebar').contains(dropFolder).click();
+
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+
+      cy.get('#sidebar div:contains('+ docName +')').drag('#sidebar div:contains('+ dropFolder +')')
+        .get('#sidebar').contains(dropFolder2).trigger('drop')
+      cy.get('[data-cy=confirm-dialog-confirm]').click();
+
+      //check if document is moved
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', dropFolder, dropFolder2]);
+    });
+    it('should auto-expand a deeply nested folder', () =>{
+      const docName ='Tester deep auto-expand'
+      const docName2 = 'Deep deep folder'
+      const deepFolder ='Deep auto-expanding'
+      const deepFolder2 ='Deep auto-expanding2'
+      const deepFolder3 ='Deep auto-expanding3'
+
+      DocumentPage.createDocument(docName);
+
+      DocumentPage.createFolder(deepFolder);
+      DocumentPage.createFolder(deepFolder2);
+      DocumentPage.createFolder(deepFolder3);
+      DocumentPage.createDocument(docName2);
+
+      // to close for checking auto-expanding by hovered node
+      cy.get('#sidebar').contains(deepFolder).click();
+
+      cy.get('#sidebar div:contains('+ docName +')').drag('#sidebar div:contains('+ deepFolder +')');
+      cy.get('#sidebar div:contains('+ docName +')').drag('#sidebar div:contains('+ deepFolder2 +')');
+      cy.get('#sidebar div:contains('+ docName +')').drag('#sidebar div:contains('+ deepFolder3 +')')
+        .then(() => cy.get('#sidebar').contains(deepFolder3).trigger('drop'));
+      cy.get('[data-cy=confirm-dialog-cancel]').click();
+
+      //check if nodes are expanded
+      CopyCutUtils.selectNodeWithChecks(docName2, ['Daten', deepFolder, deepFolder2, deepFolder3]);
     });
   });
-
 
 });
