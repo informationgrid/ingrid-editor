@@ -48,7 +48,7 @@ export class AddressDoctype extends BaseDoctype {
               }
             }]
           }, {
-          fieldGroupClassName: 'display-flex',
+            fieldGroupClassName: 'display-flex',
             fieldGroup: [{
               key: 'department',
               className: 'width-100 organization',
@@ -79,122 +79,130 @@ export class AddressDoctype extends BaseDoctype {
               }
             }]
           }]
-      }, {
-        key: 'contact',
-        type: 'repeat',
-        wrappers: ['panel'],
-        templateOptions: {
-          externalLabel: 'Kommunikation',
-          required: true,
-          minLength: 1
-        },
-        fieldArray: {
-          fieldGroupClassName: 'display-flex',
-          fieldGroup: [
-            {
-              key: 'type',
-              type: 'select',
-              className: 'flex-1',
-              templateOptions: {
-                label: 'Art',
-                appearance: 'outline',
-                required: true,
-                options: this.getCodelistForSelect(4430).pipe(
-                  map(items => items.filter(item => item.value !== '5' && item.value !== '6'))
-                )
-              }
-            },
-            {
-              key: 'connection',
+      }],
+    },
+    {
+      wrappers: ['section'],
+      templateOptions: {
+        label: 'Kommunikation'
+      },
+      fieldGroup: [
+        {
+          key: 'contact',
+          type: 'repeat',
+          wrappers: ['panel'],
+          templateOptions: {
+            externalLabel: 'Kommunikation',
+            required: true,
+            minLength: 1
+          },
+          fieldArray: {
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [
+              {
+                key: 'type',
+                type: 'select',
+                className: 'flex-1',
+                templateOptions: {
+                  label: 'Art',
+                  appearance: 'outline',
+                  required: true,
+                  options: this.getCodelistForSelect(4430).pipe(
+                    map(items => items.filter(item => item.value !== '5' && item.value !== '6'))
+                  )
+                }
+              },
+              {
+                key: 'connection',
+                type: 'input',
+                className: 'flex-3',
+                templateOptions: {
+                  label: 'Verbindung',
+                  appearance: 'outline',
+                  required: true
+                }
+              }]
+          }
+        }, {
+          key: 'address',
+          wrappers: ['panel'],
+          templateOptions: {
+            externalLabel: 'Adresse'
+          },
+          fieldGroup: [{
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'street',
+              className: 'width-100',
               type: 'input',
-              className: 'flex-3',
               templateOptions: {
-                label: 'Verbindung',
-                appearance: 'outline',
-                required: true
+                label: 'Straße/Hausnummer',
+                appearance: 'outline'
               }
             }]
+          }, {
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'po-box',
+              className: 'flex-1',
+              type: 'input',
+              templateOptions: {
+                label: 'Postfach',
+                appearance: 'outline'
+              }
+            }, {
+              key: 'PO',
+              className: 'flex-3',
+              type: 'input',
+              templateOptions: {
+                label: 'Postfach-Nr.',
+                appearance: 'outline'
+              }
+            }]
+          }, {
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'plz',
+              className: 'flex-1',
+              type: 'input',
+              templateOptions: {
+                label: 'PLZ',
+                appearance: 'outline'
+              }
+            }, {
+              key: 'city',
+              className: 'flex-3',
+              type: 'input',
+              templateOptions: {
+                label: 'Ort',
+                appearance: 'outline'
+              }
+            }]
+          }, {
+            fieldGroupClassName: 'display-flex',
+            fieldGroup: [{
+              key: 'administrativeArea',
+              type: 'autocomplete',
+              className: 'flex-1',
+              templateOptions: {
+                label: 'Verwaltungsgebiet',
+                appearance: 'outline',
+                placeholder: 'Bitte wählen',
+                options: this.getCodelistForSelect(110)
+              }
+            }, {
+              key: 'country',
+              type: 'autocomplete',
+              className: 'flex-1',
+              templateOptions: {
+                label: 'Land',
+                appearance: 'outline',
+                placeholder: 'Bitte wählen',
+                options: this.getCodelistForSelect(6200)
+              }
+            }]
+          }]
         }
-      }, {
-        key: 'address',
-        wrappers: ['panel'],
-        templateOptions: {
-          externalLabel: 'Adresse'
-        },
-        fieldGroup: [{
-          fieldGroupClassName: 'display-flex',
-          fieldGroup: [{
-            key: 'street',
-            className: 'width-100',
-            type: 'input',
-            templateOptions: {
-              label: 'Straße/Hausnummer',
-              appearance: 'outline'
-            }
-          }]
-        }, {
-          fieldGroupClassName: 'display-flex',
-          fieldGroup: [{
-            key: 'po-box',
-            className: 'flex-1',
-            type: 'input',
-            templateOptions: {
-              label: 'Postfach',
-              appearance: 'outline'
-            }
-          }, {
-            key: 'PO',
-            className: 'flex-3',
-            type: 'input',
-            templateOptions: {
-              label: 'Postfach-Nr.',
-              appearance: 'outline'
-            }
-          }]
-        }, {
-          fieldGroupClassName: 'display-flex',
-          fieldGroup: [{
-            key: 'plz',
-            className: 'flex-1',
-            type: 'input',
-            templateOptions: {
-              label: 'PLZ',
-              appearance: 'outline'
-            }
-          }, {
-            key: 'city',
-            className: 'flex-3',
-            type: 'input',
-            templateOptions: {
-              label: 'Ort',
-              appearance: 'outline'
-            }
-          }]
-        }, {
-          fieldGroupClassName: 'display-flex',
-          fieldGroup: [{
-            key: 'administrativeArea',
-            type: 'autocomplete',
-            className: 'flex-1',
-            templateOptions: {
-              label: 'Verwaltungsgebiet',
-              appearance: 'outline',
-              placeholder: 'Bitte wählen',
-              options: this.getCodelistForSelect(110)
-            }
-          }, {
-            key: 'country',
-            type: 'autocomplete',
-            className: 'flex-1',
-            templateOptions: {
-              label: 'Land',
-              appearance: 'outline',
-              placeholder: 'Bitte wählen',
-              options: this.getCodelistForSelect(6200)
-            }
-          }]
-        }]
-      }
       ]
     }];
 
