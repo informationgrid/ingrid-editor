@@ -64,7 +64,7 @@ export class SpatialListComponent implements OnInit {
       case 'free':
         return 'Freier Raumbezug';
       case 'wkt':
-        return 'WKT';
+        return 'Raumbezug (WKT)';
       case 'geo-name':
         return 'Geographischer Name';
     }

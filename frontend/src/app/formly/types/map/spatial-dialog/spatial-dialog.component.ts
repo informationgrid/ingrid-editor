@@ -31,7 +31,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   _bbox: any = null;
   types = [
     {id: 'free', label: 'Freier Raumbezug'},
-    {id: 'wkt', label: 'WKT'},
+    {id: 'wkt', label: 'Raumbezug (WKT)'},
     // {id: 'draw', label: 'Auf Karte zeichnen'},
     {id: 'geo-name', label: 'Geografischer Name'}
   ];
