@@ -13,7 +13,7 @@
 
 <mat-form-field *ngIf="to.asSelect; else templateAutocomplete" appearance="outline" class="width-100">
     <mat-select [placeholder]="to.placeholder" (valueChange)="addToList($event)" [formControl]="inputControl">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.value">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.value" [disabled]="option.disabled">
             {{option.label}}
         </mat-option>
     </mat-select>
@@ -30,7 +30,7 @@
                (keydown.enter)="addToList(repeatListInput.value)"
                [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addToList($event.option.value)">
-            <mat-option *ngFor="let option of filteredOptions | async" [value]="option.value">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option.value" [disabled]="option.disabled">
                 {{option.label}}
             </mat-option>
         </mat-autocomplete>

@@ -10,6 +10,7 @@ import {buffer, distinct, filter, map, switchMap, tap} from 'rxjs/operators';
 export interface SelectOption {
   label: string;
   value: string;
+  disabled?: boolean;
 }
 
 @UntilDestroy()

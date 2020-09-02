@@ -55,7 +55,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
           untilDestroyed(this),
           startWith(''),
           filter(value => value !== undefined && value !== null),
-          map(value => this._filter(<string>value))
+          map(value => this._filter(<string>value)),
+          map(value => this._markSelected(value)),
+          tap(console.log)
         );
 
   }
@@ -86,9 +88,20 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private _filter(value: string): SelectOption[] {
     const filterValue = value.toLowerCase();
 
-    return this.parameterOptions
-      ?.filter(option => this.model.indexOf(option.value) === -1)
-      ?.filter(option => option.label.toLowerCase().includes(filterValue));
+    return this.parameterOptions?.filter(option => option.label.toLowerCase().includes(filterValue));
+  }
+
+  private _markSelected(value: SelectOption[]): SelectOption[] {
+    return value
+      ?.map(option => {
+        if (this.model.indexOf(option.value) !== -1) {
+          console.log(option)
+          option.disabled = true;
+        } else{
+          option.disabled = false;
+        }
+        return option
+      });
   }
 
   removeItem(index: number) {
