@@ -36,7 +36,7 @@
 </mat-dialog-actions>
 <mat-dialog-actions *ngIf="data.buttons">
     <ng-container *ngFor="let button of data.buttons; let i = index">
-    <div *ngIf="i > 0" fxFlex></div>
+    <div *ngIf="i > 0 || data.buttons.length === 1" fxFlex></div>
     <button mat-button color="primary" [mat-dialog-close]="button.dialogClose || button.buttonText" cdkFocusInitial data-cy="confirm-dialog-cancel">{{button.buttonText}}</button>
     </ng-container>
 </mat-dialog-actions>
