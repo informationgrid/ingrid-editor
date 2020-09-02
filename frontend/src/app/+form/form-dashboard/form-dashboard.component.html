@@ -16,7 +16,7 @@
 </div>
 
 <div *ngIf="(childDocs$ | async)?.length">
-    <ige-card-box fxFlex label="Zuletzt bearbeitete Datensätze und Ordner" data-cy="card-latest-docs">
+    <ige-card-box fxFlex label="Zuletzt bearbeitet" data-cy="card-latest-docs">
         <ige-document-list-item [docs]="childDocs$"
                                 [hideDate]="false"
                                 (select)="openDocument($event.id)"></ige-document-list-item>
