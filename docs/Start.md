@@ -18,7 +18,7 @@
 
 ### Extensions
 
-[Extensions]: ./Extensions.md "Extensions"
+[Documentation](./Extensions.md)
 
 ## Data model
 
