@@ -13,7 +13,7 @@
       </Policies>
       <DefaultRolloverStrategy max="9" />
     </RollingFile>
-    <OrientDBAppender name="AuditLogDB" database="AuditLog" table="log" />
+    <OrientDBAppender name="AuditLogDB" database="${spring:audit.log.database}" table="${spring:audit.log.table}" />
   </Appenders>
   <Loggers>
     <!-- audit logger -->

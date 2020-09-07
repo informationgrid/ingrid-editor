@@ -63,10 +63,10 @@ class ProfileApiController : ProfileApi {
         fileContent = prepareProfileContent(fileContent)
         dbService.acquire(dbId).use {
             val infos = dbService.findAll(CatalogInfoType::class)
-            if (infos!!.isNotEmpty()) {
+            if (infos.isNotEmpty()) {
                 val rid: String
                 try {
-                    rid = infos[0]!!["@rid"].textValue()
+                    rid = dbService.getRecordId(infos[0])!!
                     dbService.remove(CatalogInfoType::class, rid)
                 } catch (e: Exception) {
                     log.error("Error removing profile document", e)

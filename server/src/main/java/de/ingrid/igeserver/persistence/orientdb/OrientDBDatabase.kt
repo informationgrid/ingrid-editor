@@ -24,8 +24,8 @@ import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.services.FIELD_PARENT
-import de.ingrid.igeserver.services.MapperService.Companion.getJsonNode
-import de.ingrid.igeserver.services.MapperService.Companion.removeDBManagementFields
+import de.ingrid.igeserver.services.FIELD_VERSION
+import de.ingrid.igeserver.services.MapperService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -42,6 +42,11 @@ class OrientDBDatabase : DBApi {
 
     companion object {
         private const val DB_ID = "@rid"
+        private const val DB_TYPE = "@type"
+        private const val DB_CLASS = "@class"
+        private const val DB_VERSION = "@version"
+
+        private val INTERNAL_FIELDS = listOf(DB_ID, DB_TYPE, DB_CLASS, DB_VERSION)
 
         // database type for creating databases (filesystem)
         val dbType = ODatabaseType.PLOCAL
@@ -56,6 +61,9 @@ class OrientDBDatabase : DBApi {
 
     @Autowired
     lateinit var documentTypes: List<OrientDBDocumentEntityType>
+
+    @Autowired
+    private lateinit var mapperService: MapperService
 
     // embedded server instance
     private lateinit var serverInternal: OServer
@@ -162,6 +170,23 @@ class OrientDBDatabase : DBApi {
         return doc[DB_ID]?.asText()
     }
 
+    override fun getVersion(doc: JsonNode): Int? {
+        return doc[DB_VERSION]?.asInt()
+    }
+
+    override fun removeInternalFields(doc: JsonNode) {
+        val objNode = doc as ObjectNode
+
+        val version = getVersion(doc)
+        if (version != null) {
+            objNode.put(FIELD_VERSION, version)
+        }
+
+        INTERNAL_FIELDS.forEach {
+            objNode.remove(it)
+        }
+    }
+
     override fun <T : EntityType> find(type: KClass<T>, id: String?): JsonNode? {
         val typeImpl = getEntityTypeImpl(type)
         val query = "SELECT @this.toJSON('rid,class,version') as jsonDoc FROM ${typeImpl.className} WHERE $DB_ID = $id"
@@ -187,14 +212,14 @@ class OrientDBDatabase : DBApi {
         val typeImpl = getEntityTypeImpl(type)
         var queryString: String
         val countQuery: String
+        val fetchPlan = if (options.resolveReferences) ",fetchPlan:*:-1" else ""
         if (query == null || query.isEmpty()) {
-            queryString = "SELECT * FROM ${typeImpl.className}"
+            queryString = "SELECT @this.toJSON('rid,class,version$fetchPlan') as jsonDoc FROM ${typeImpl.className}"
             countQuery = "SELECT count(*) FROM ${typeImpl.className}"
         } else {
             // TODO: try to use Elasticsearch as an alternative!
             val where = createWhereClause(query, options)
             val whereString = where.joinToString(separator = " ${options.queryOperator} ") { it }
-            val fetchPlan = if (options.resolveReferences) ",fetchPlan:*:-1" else ""
             queryString = if (options.sortField != null) {
                 "SELECT @this.toJSON('rid,class,version$fetchPlan') as jsonDoc FROM ${typeImpl.className} LET \$temp = max( draft.${options.sortField}, published.${options.sortField} ) WHERE ($whereString)"
             } else {
@@ -320,7 +345,7 @@ class OrientDBDatabase : DBApi {
             map.put("name", settings.name)
             map.put("description", settings.description)
             val id = map[DB_ID].asText()
-            removeDBManagementFields(map)
+            removeInternalFields(map)
             this.save(CatalogInfoType::class, id, map.toString(), null)
         }
     }
@@ -451,6 +476,8 @@ class OrientDBDatabase : DBApi {
             val invert = field.invert
             if (value == null) {
                 where.add(key + ".toLowerCase() IS " + (if (invert) "NOT " else "") + "NULL")
+            } else if (!field.operator.isNullOrEmpty()) {
+                where.add("$key${field.operator} '$value'")
             } else {
                 var operator: String
                 when (options?.queryType) {
@@ -490,7 +517,7 @@ class OrientDBDatabase : DBApi {
         while (docs.hasNext()) {
             val doc = docs.next()
             val json = doc.getProperty<String>("jsonDoc")
-            val node = getJsonNode(json)
+            val node = mapperService.getJsonNode(json)
             list.add(node)
         }
         return list
@@ -500,7 +527,7 @@ class OrientDBDatabase : DBApi {
         val list: MutableList<JsonNode> = ArrayList()
         while (oDocsIterator.hasNext()) {
             val next = oDocsIterator.next()
-            list.add(getJsonNode(next.toJSON()))
+            list.add(mapperService.getJsonNode(next.toJSON()))
         }
         return list
     }
@@ -511,6 +538,6 @@ class OrientDBDatabase : DBApi {
         } else {
             oDoc.toJSON("rid,class,version")
         }
-        return getJsonNode(json)
+        return mapperService.getJsonNode(json)
     }
 }

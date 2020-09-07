@@ -1,6 +1,7 @@
 buildscript {
     ext.kotlin_version = '1.3.72' // Required for Kotlin integration
-    ext.spring_boot_version = '2.3.1.RELEASE'
+    ext.spring_boot_version = '2.3.3.RELEASE'
+    ext.log4j2_version = '2.13.3'
     repositories {
         jcenter()
     }
@@ -51,22 +52,14 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
 
     // Spring
-    implementation('org.springframework.boot:spring-boot-starter-web') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "io.pebbletemplates:pebble-spring-boot-starter:3.1.4"
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
-    implementation('org.springframework.boot:spring-boot-starter-security') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-    }
-    implementation('org.springframework.boot:spring-boot-starter-aop') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
     // Keycloak
-    implementation('org.keycloak:keycloak-spring-boot-starter:10.0.2') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-    }
+    implementation 'org.keycloak:keycloak-spring-boot-starter:10.0.2'
 
     // Markdown
     implementation "com.atlassian.commonmark:commonmark:0.15.1"
@@ -84,7 +77,9 @@ dependencies {
     }
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.2'
     implementation 'javax.validation:validation-api:2.0.1.Final'
-    implementation 'org.apache.logging.log4j:log4j-1.2-api'
+    implementation "org.apache.logging.log4j:log4j-spring-cloud-config-client:$log4j2_version"
+    implementation "org.apache.logging.log4j:log4j-api:$log4j2_version"
+    implementation "org.apache.logging.log4j:log4j-core:$log4j2_version"
     implementation 'org.apache.commons:commons-lang3:3.9'
 
     // Test
@@ -94,9 +89,7 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions-spring:4.0.6") // to wire dependencies using Spring
     testImplementation 'junit:junit' // TODO: remove when converted to Kotest
     testImplementation 'org.mockito:mockito-core'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-    }
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // iBus communication
     implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {
@@ -111,6 +104,17 @@ dependencies {
     implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {
         exclude group: 'org.apache.logging.log4j'
         exclude group: 'junit'
+    }
+}
+
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
+        resolutionStrategy {
+            force "org.apache.logging.log4j:log4j-api:$log4j2_version"
+            force "org.apache.logging.log4j:log4j-core:$log4j2_version"
+        }
     }
 }
 

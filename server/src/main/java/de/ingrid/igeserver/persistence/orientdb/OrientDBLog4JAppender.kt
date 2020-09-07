@@ -42,8 +42,8 @@ import org.springframework.stereotype.Component
 @Component
 @Plugin(name = "OrientDBAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
-                            val database: String?,
-                            val table: String?) :
+                            var database: String?,
+                            var table: String?) :
         AbstractAppender(name, filter, null, false, null) {
 
     companion object {
@@ -63,6 +63,9 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
         // shared orientDB instance
         private lateinit var orientDB: OrientDB
 
+        /**
+         * This method is called during Log4j initialization
+         */
         @PluginFactory
         @JvmStatic
         fun createAppender(
@@ -84,6 +87,11 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
 
     private val log = logger()
 
+    /**
+     * This method is called during Spring initialization
+     * NOTE When this method is called, the Spring environment is initialized, which means that SpringLookup
+     * is able to resolve variables when calling the ctx.configuration.strSubstitutor.replace() method
+     */
     @Autowired
     fun setDBApi(orientDBDatabase: OrientDBDatabase) {
         log.debug("Initializing OrientDBLog4JAppender using OrientDBDatabase instance")
@@ -101,10 +109,16 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
                 selector.loggerContexts.onEach { ctx ->
                     ctx.configuration.appenders.values.onEach { a ->
                         if (a is OrientDBLog4JAppender) {
+                            // replace any spring configuration variables
+                            a.database = ctx.configuration.strSubstitutor.replace(a.database)
+                            a.table = ctx.configuration.strSubstitutor.replace(a.table)
+
                             orientDB.createIfNotExists(a.database, ODatabaseType.PLOCAL)
-                            orientDB.open(a.database, OrientDBDatabase.serverUser, OrientDBDatabase.serverPassword).use {
+                            orientDB.open(a.database, OrientDBDatabase.serverUser, OrientDBDatabase.serverPassword).use { session ->
                                 log.debug("Initializing schema: database=${a.database} table=${a.table}")
-                                initializeSchema(it as ODatabaseSession, a.table!!)
+                                a.table?.let { table ->
+                                    initializeSchema(session as ODatabaseSession, table)
+                                }
                             }
                         }
                     }

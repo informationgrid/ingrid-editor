@@ -18,12 +18,12 @@ class DataHistoryLogger(
         /**
          * Log4j logger name to be used for data history logging
          */
-        @Value("audit.data-history") val loggerName: String,
+        @Value("\${audit.log.data-history-logger:audit.data-history}") val loggerName: String,
 
         /**
          * Audit log category used for data history logging
          */
-        @Value("data-history") val logCategory: String
+        @Value("\${audit.log.data-history-category:data-history}") val logCategory: String
     ) : Filter<PostPersistencePayload> {
 
     companion object {

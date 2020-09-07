@@ -24,6 +24,16 @@ interface DBApi {
     fun getRecordId(doc: JsonNode): String?
 
     /**
+     * Get the database version of a document.
+     */
+    fun getVersion(doc: JsonNode): Int?
+
+    /**
+     * Remove the internal fields added by the database from a document.
+     */
+    fun removeInternalFields(doc: JsonNode)
+
+    /**
      * Get a document of the given type with the given record ID.
      */
     fun <T : EntityType> find(type: KClass<T>, id: String?): JsonNode?

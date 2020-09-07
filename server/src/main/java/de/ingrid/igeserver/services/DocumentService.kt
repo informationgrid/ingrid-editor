@@ -357,7 +357,7 @@ class DocumentService : MapperService() {
         if (!parent || docData.get(FIELD_PARENT).asText().isEmpty()) {
             docData.put(FIELD_PARENT, null as String?)
         }
-        removeDBManagementFields(docData)
+        dbService.removeInternalFields(docData)
 
         // get latest references from links
         if (resolveLinks) {

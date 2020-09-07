@@ -10,8 +10,6 @@ import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.services.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.time.OffsetDateTime
-import java.util.*
 
 /**
  * Filter for validating document data send from the client before updating in the storage

@@ -14,13 +14,11 @@ import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
-import de.ingrid.igeserver.services.MapperService.Companion.removeDBManagementFields
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.security.Principal
-import java.text.DateFormat
 import java.util.*
 
 @Service
@@ -184,7 +182,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
                 } else {
                     catUserRef = list.hits[0] as ObjectNode
                     id = dbService.getRecordId(catUserRef)
-                    removeDBManagementFields(catUserRef)
+                    dbService.removeInternalFields(catUserRef)
                 }
                 catUserRef.putPOJO(fieldId, fieldValue)
                 dbService.save(UserInfoType::class, id, catUserRef.toString())

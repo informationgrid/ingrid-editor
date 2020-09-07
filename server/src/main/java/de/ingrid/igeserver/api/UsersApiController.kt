@@ -235,7 +235,7 @@ class UsersApiController : UsersApi {
         catInfo.replace("catalogIds", arrayNode)
         var recordId: String? = null
         if (!isNewEntry) {
-            recordId = catInfo["@rid"].asText()
+            recordId = dbService.getRecordId(catInfo)
         }
         dbService.save(CatalogInfoType::class, recordId, catInfo.toString())
 

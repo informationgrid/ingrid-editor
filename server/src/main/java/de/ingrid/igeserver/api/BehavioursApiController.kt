@@ -22,6 +22,9 @@ class BehavioursApiController : BehavioursApi, Logging {
     @Autowired
     lateinit var catalogService: CatalogService
 
+    @Autowired
+    lateinit var mapperService: MapperService
+
     @Throws(ApiException::class)
     override fun getBehaviours(principal: Principal?): ResponseEntity<List<Behaviour>> {
 
@@ -52,7 +55,7 @@ class BehavioursApiController : BehavioursApi, Logging {
         dbService.acquire(dbId).use {
             for (behaviour in behaviours) {
                 val rid = dbService.getRecordId(BehaviourType::class, behaviour._id)
-                dbService.save(BehaviourType::class, rid, MapperService.getJsonNodeFromClass(behaviour))
+                dbService.save(BehaviourType::class, rid, mapperService.getJsonNodeFromClass(behaviour))
             }
             return ResponseEntity.ok().build()
         }
