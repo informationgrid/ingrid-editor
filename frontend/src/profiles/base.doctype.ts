@@ -66,10 +66,11 @@ export abstract class BaseDoctype implements Doctype {
 
   private addContextHelp(fields: FormlyFieldConfig[], previousKey?: string) {
     fields.forEach(field => {
+      let fieldKey = <string>field.key;
       if (field.fieldGroup) {
-        this.addContextHelp(field.fieldGroup, field.key);
+        this.addContextHelp(field.fieldGroup, fieldKey);
       }
-      if (this.helpIds.indexOf(field.key) > -1) {
+      if (this.helpIds.indexOf(fieldKey) > -1) {
         if (!field.model?._type) field.templateOptions.docType = this.id;
 
         if (field.type === 'checkbox') {

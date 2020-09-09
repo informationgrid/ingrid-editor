@@ -46,6 +46,7 @@ For the client just run `npm start` in the frontend directory. When developing f
   * Right click file *server/src/main/java/de/ingrid/igeserver/IgeServer.kt* > Run
   * Run > Edit Configurations > Kotlin > IgeServerKt
     * VM options: `-Dspring.profiles.active=default,dev,mcloud` 
+    * Shorten Commandline: JAR manifest
     * JRE: *path/to/java-11-jdk*
 * Install **frontend packages** 
   * Open a shell in root directory of the project

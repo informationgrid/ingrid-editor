@@ -99,11 +99,11 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
    * https://github.com/angular/angular/issues/1618
    */
   public ngOnDestroy(): void {
-    if (this.leafletReference.remove) {
+    if (this.leafletReference && this.leafletReference.remove) {
       this.leafletReference.clearAllEventListeners();
       this.leafletReference.remove();
     }
-    if (this.leaflet.nativeElement.remove) {
+    if (this.leaflet && this.leaflet.nativeElement.remove) {
       this.leaflet.nativeElement.remove();
     }
   }

@@ -26,7 +26,7 @@ export class OneColumnWrapperComponent extends FieldWrapper implements AfterView
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
     // TODO: this.model is not the whole model!!! How to get the _type?
     this.docType = this.to.docType ?? this.model?._type;
-    this.fieldId = this.field.key;
+    this.fieldId = <string>this.field.key;
 
   }
 

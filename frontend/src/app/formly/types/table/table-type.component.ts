@@ -54,7 +54,7 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
     this.docType = this.to.docType ?? this.model?._type;
-    this.fieldId = this.field.key;
+    this.fieldId = <string>this.field.key;
   }
 
   showContextHelp(infoElement: HTMLElement) {

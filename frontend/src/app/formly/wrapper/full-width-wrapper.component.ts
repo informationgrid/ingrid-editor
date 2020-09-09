@@ -25,7 +25,7 @@ export class FullWidthWrapperComponent extends FieldWrapper implements AfterView
 
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
     this.docType = this.model._type;
-    this.fieldId = this.field.key;
+    this.fieldId = <string>this.field.key;
 
   }
 
