@@ -1,14 +1,20 @@
 @import "src/variables";
 
 ::ng-deep.mat-dialog-container {
-  resize: both;
+  //resize: both;
   overflow: auto;
+  padding-bottom: 0;
 }
 
 .mat-dialog-content {
+  resize: both;
   padding-top: 0;
   color: $ige-text-color;
   white-space: normal !important;
+}
+
+.initialWidth {
+  width: 500px;
 }
 
 :host {

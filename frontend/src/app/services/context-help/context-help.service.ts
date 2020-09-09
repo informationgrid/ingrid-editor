@@ -77,11 +77,7 @@ export class ContextHelpService {
         left: ContextHelpService.getLeftPosition(infoElement),
         top: ContextHelpService.getTopPosition(infoElement)
       },
-      autoFocus: false,
-      minWidth: ContextHelpService.contextDialogWidth,
-      maxWidth: ContextHelpService.contextDialogMaxWidth,
-      minHeight: ContextHelpService.contextDialogHeight,
-      maxHeight: ContextHelpService.contextDialogMaxHeight,
+      autoFocus: false
     });
 
   }

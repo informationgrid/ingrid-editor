@@ -1,4 +1,4 @@
-<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane" #contextHelpContainer>
     <h2 mat-dialog-title cdkDragHandle>
         <div class="infoIcon">
             <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
@@ -8,11 +8,6 @@
             <mat-icon>close</mat-icon>
         </button>
     </h2>
-    <div mat-dialog-content [innerHTML]="description$ | async">
+    <div mat-dialog-content [innerHTML]="description$ | async" [class.initialWidth]="notResized">
     </div>
 </div>
-<!--    <div *ngIf="!inExpandedView" mat-dialog-actions>
-    <button mat-icon-button color='primary' (click)="showMore()">
-        <mat-icon svgIcon="Infolayer-gross"></mat-icon>
-        <span>grösser</span></button>
-</div>-->

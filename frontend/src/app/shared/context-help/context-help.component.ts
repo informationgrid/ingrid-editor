@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 
@@ -7,12 +7,18 @@ import {Observable} from 'rxjs';
   templateUrl: './context-help.component.html',
   styleUrls: ['./context-help.component.scss']
 })
-export class ContextHelpComponent implements OnInit {
+export class ContextHelpComponent implements OnInit, OnDestroy {
+
+  @ViewChild('contextHelpContainer') container: ElementRef;
 
   title: string;
   description$: Observable<String> = this.data.description$;
-  
-  //inExpandedView: boolean;
+  notResized = true;
+  private timer: NodeJS.Timeout;
+  private initialDimension = {
+    width: '',
+    height: ''
+  };
 
   constructor(public dialogRef: MatDialogRef<ContextHelpComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
   }
@@ -20,17 +26,21 @@ export class ContextHelpComponent implements OnInit {
   ngOnInit() {
 
     this.title = this.data.title ? this.data.title : 'Kein Titel';
-    //this.inExpandedView = false;
-  }
-/*
-  showMore() {
-
-    this.dialogRef.updateSize('600px', 'auto');
-    this.dialogRef.updatePosition({
-      top: '50px'
-    });
-    this.inExpandedView = true;
+    this.timer = setInterval(() => this.checkSize(), 500);
 
   }
-*/
+
+  checkSize() {
+    let newHeight = this.container.nativeElement.parentElement.parentElement.style.height;
+    let newWidth = this.container.nativeElement.parentElement.parentElement.style.width;
+    if (this.initialDimension.width !== newWidth || this.initialDimension.height !== newHeight) {
+      clearInterval(this.timer);
+      this.notResized = false;
+    }
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.timer);
+  }
+
 }
