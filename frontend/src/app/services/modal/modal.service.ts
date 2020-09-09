@@ -20,14 +20,6 @@ export class ModalService {
   constructor(private dialog: MatDialog, private ngZone: NgZone) {
   }
 
-  // DEPRECATED
-  confirm(title: string, message: string, confirmButtonText?: string): Observable<boolean> {
-    return this.dialog.open(ConfirmDialogComponent, {
-      data: <ConfirmDialogData>{title, message, acceptButtonText: confirmButtonText},
-      maxWidth: 700
-    }).afterClosed();
-  }
-
   confirmWith(options: ConfirmDialogData): Observable<boolean> {
     return this.dialog.open(ConfirmDialogComponent, {
       data: options,

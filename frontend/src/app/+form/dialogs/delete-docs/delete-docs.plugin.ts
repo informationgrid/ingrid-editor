@@ -3,7 +3,11 @@ import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service
 import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
-import {ConfirmDialogComponent} from '../../../dialogs/confirm/confirm-dialog.component';
+import {
+  ConfirmDialogButton,
+  ConfirmDialogComponent,
+  ConfirmDialogData
+} from '../../../dialogs/confirm/confirm-dialog.component';
 import {DocumentService} from '../../../services/document/document.service';
 import {Router} from '@angular/router';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
@@ -71,13 +75,17 @@ export class DeleteDocsPlugin extends Plugin {
       )
       .subscribe(docs => {
         this.dialog.open(ConfirmDialogComponent, {
-          data: {
+          data: <ConfirmDialogData>{
             message: 'Möchten Sie wirklich diese Datensätze löschen:',
             title: 'Löschen',
-            list: docs.map(doc => doc.title)
+            list: docs.map(doc => doc.title),
+            buttons: [
+              {text: 'Abbrechen'},
+              {text: 'Löschen', alignRight: true, id: 'delete', emphasize: true}
+            ]
           }
-        }).afterClosed().subscribe(doDelete => {
-          if (doDelete) {
+        }).afterClosed().subscribe(response => {
+          if (response === 'delete') {
             this.deleteDocs(docs.map(doc => <string>doc.id));
           }
         });

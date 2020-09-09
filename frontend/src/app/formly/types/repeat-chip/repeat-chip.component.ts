@@ -82,7 +82,7 @@ export class RepeatChipComponent extends FieldArrayType {
         data: {
           title: 'Bitte beachten',
           message: 'Die Eingabe von ' + formatedDuplicates + ' erfolgte mehrfach, wurde aber nur einmal übernommen.',
-          buttons: [{buttonText: 'Ok'}]
+          buttons: [{text: 'Ok', alignRight: true, emphasize: true}]
         } as ConfirmDialogData
       });
     }

@@ -336,7 +336,10 @@ export class DocumentService {
         title: 'Verschieben bestätigen',
         message: `Möchten Sie den folgenden Datensatz wirklich nach "${destinationTitle}" verschieben?`,
         list: srcIDs.map(id => store.getValue().entities[id].title),
-        acceptButtonText: 'Verschieben'
+        buttons: [
+          {text: 'Abbrechen'},
+          {id: 'move', text: 'Verschieben', emphasize: true, alignRight: true}
+        ]
       })
         .pipe(
           filter(result => result),

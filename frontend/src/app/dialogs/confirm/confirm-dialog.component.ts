@@ -6,15 +6,15 @@ export interface ConfirmDialogData {
   message: string;
   list?: string[];
   confirmText?: string;
-  acceptButtonText?: string;
-  cancelButtonText?: string;
-  reverseButtonOrder?: boolean;
   buttons?: ConfirmDialogButton[];
 }
 
 export interface ConfirmDialogButton {
-  buttonText: string;
-  dialogClose?: any;
+  id?: string;
+  text: string;
+  emphasize?: boolean;
+  alignRight?: boolean;
+  disabledWhenNotConfirmed?: boolean;
 }
 
 @Component( {
@@ -22,9 +22,15 @@ export interface ConfirmDialogButton {
 } )
 export class ConfirmDialogComponent {
   textConfirmed: string;
+  leftAlignedButtons: ConfirmDialogButton[] = [{text: 'Abbrechen'}];
+  rightAlignedButtons: ConfirmDialogButton[] = [{text: 'Ok', id: 'ok', emphasize: true}];
 
   constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
               @Inject( MAT_DIALOG_DATA ) public data: ConfirmDialogData) {
+    if (data.buttons) {
+      this.leftAlignedButtons = data.buttons.filter(button => !button.alignRight);
+      this.rightAlignedButtons = data.buttons.filter(button => button.alignRight);
+    }
   }
 
   onNoClick(): void {

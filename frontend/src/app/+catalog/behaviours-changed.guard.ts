@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {CatalogManagerComponent} from './catalog-manager/catalog-manager.component';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
+import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -20,12 +21,16 @@ export class BehavioursChangedGuard implements CanDeactivate<CatalogManagerCompo
 
     if (behavioursHaveChanged) {
       return this.dialog.open(ConfirmDialogComponent, {
-        data: {
+        data: <ConfirmDialogData>{
           title: 'Änderungen verwerfen?',
           message: 'Wollen Sie die Änderungen an den Verhalten verwerfen?',
-          acceptButtonText: 'Verwerfen'
+          buttons: [
+            {text: 'Abbrechen'},
+            {text: 'Verwerfen', id: 'discard', alignRight: true, emphasize: true}
+          ]
         } as ConfirmDialogData
-      }).afterClosed();
+      }).afterClosed()
+        .pipe(map(response => response === 'discard'));
     }
     return true;
 

@@ -59,7 +59,11 @@ export class CatalogDetailComponent implements OnInit {
       data: {
         title: 'Katalog löschen',
         message: 'Wollen Sie den Katalog wirklich löschen?',
-        confirmText: 'Löschen'
+        confirmText: 'Löschen',
+        buttons: [
+          {text: 'Abbrechen'},
+          {text: 'Löschen', id: 'delete', emphasize: true, alignRight: true, disabledWhenNotConfirmed: true}
+        ]
       } as ConfirmDialogData
     }).afterClosed().subscribe(confirmed => {
       if (confirmed) {

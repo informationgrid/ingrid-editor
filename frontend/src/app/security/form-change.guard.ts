@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {Observable, of} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {FormComponent} from '../+form/form/form.component';
 import {TreeStore} from '../store/tree/tree.store';
 import {AddressTreeStore} from '../store/address-tree/address-tree.store';
@@ -31,13 +31,15 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
         data: {
           title: 'Änderungen sichern?',
           message: 'Möchten Sie auf der Seite bleiben und Ihre Eingaben speichern?\nWenn Sie die Seite jetzt verlassen, werden die Änderungen verworfen.',
-          acceptButtonText: 'Seite verlassen',
-          cancelButtonText: 'Auf Seite bleiben',
-          reverseButtonOrder: true
+          buttons: [
+            {text: 'Seite verlassen'},
+            {text: 'Auf Seite bleiben', emphasize: true, alignRight: true, id: 'stay'}
+          ]
         } as ConfirmDialogData
       }).afterClosed()
         .pipe(
-          tap(confirmed => confirmed ? null : this.revertTreeNodeChange(type, currentId))
+          map(response => response !== 'stay'),
+          tap(leavePage => leavePage ? null : this.revertTreeNodeChange(type, currentId)),
         );
     }
     return of(true);

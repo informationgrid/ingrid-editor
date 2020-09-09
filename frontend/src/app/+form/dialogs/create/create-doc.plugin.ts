@@ -10,7 +10,11 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {CreateNodeComponent, CreateOptions} from './create-node.component';
 import {filter, first, take, tap} from 'rxjs/operators';
 import {NgFormsManager} from "@ngneat/forms-manager";
-import {ConfirmDialogComponent, ConfirmDialogData} from "../../../dialogs/confirm/confirm-dialog.component";
+import {
+  ConfirmDialogButton,
+  ConfirmDialogComponent,
+  ConfirmDialogData
+} from "../../../dialogs/confirm/confirm-dialog.component";
 import {DocumentService} from "../../../services/document/document.service";
 import {Observable} from "rxjs";
 
@@ -79,9 +83,9 @@ export class CreateDocumentPlugin extends Plugin {
       if (formHasChanged) {
         const form = this.formsManager.getControl(type).value
         const decision = await this.openSaveDialog().pipe(first()).toPromise()
-        if (decision == 'Ja') {
+        if (decision === 'save') {
           this.documentService.save(form, false, this.forAddress)
-        } else if (decision == 'Nein') {
+        } else if (decision === 'discard') {
           // TODO: refactor
           //  mark as untouched to prevent dirty dialog when opening newly created document
           // form.markAsPristine();
@@ -115,11 +119,14 @@ export class CreateDocumentPlugin extends Plugin {
 
   openSaveDialog(): Observable<any> {
     return this.dialog.open(ConfirmDialogComponent, {
-      data: {
+      data: <ConfirmDialogData>{
         title: 'Änderungen sichern?',
         message: 'Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?',
-        // buttons: [{buttonText: 'Abbrechen'},{buttonText: 'Nein'},{buttonText: 'Ja'}]
-        buttons: [{buttonText: 'Abbrechen'}, {buttonText: 'Ja'}]
+        buttons: [
+          {id: "cancel", text: 'Abbrechen'},
+          {id: "discard", text: 'Verwerfen', alignRight: true},
+          {id: "save", text: 'Speichern', alignRight: true, emphasize: true}
+        ]
       } as ConfirmDialogData
     }).afterClosed()
   }

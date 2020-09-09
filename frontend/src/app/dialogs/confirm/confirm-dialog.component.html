@@ -19,7 +19,7 @@
         </mat-form-field>
     </div>
 </mat-dialog-content>
-<mat-dialog-actions  *ngIf="!data.buttons">
+<!--<mat-dialog-actions  *ngIf="!data.buttons">
     <button *ngIf="!data.reverseButtonOrder" mat-button color="primary" mat-dialog-close cdkFocusInitial data-cy="confirm-dialog-cancel">{{data.cancelButtonText || 'Abbrechen'}}</button>
     <button *ngIf="data.reverseButtonOrder" mat-button color="primary" data-cy="confirm-dialog-confirm"
             [mat-dialog-close]="true"
@@ -33,39 +33,18 @@
             [disabled]="data.confirmText && textConfirmed !== data.confirmText">
         {{data.acceptButtonText || 'Ok'}}
     </button>
-</mat-dialog-actions>
-<mat-dialog-actions *ngIf="data.buttons">
-    <ng-container *ngFor="let button of data.buttons; let i = index">
-    <div *ngIf="i > 0 || data.buttons.length === 1" fxFlex></div>
-    <button mat-button color="primary" [mat-dialog-close]="button.dialogClose || button.buttonText" cdkFocusInitial data-cy="confirm-dialog-cancel">{{button.buttonText}}</button>
-    </ng-container>
-</mat-dialog-actions>
+</mat-dialog-actions>-->
 
-<!--
 <mat-dialog-actions>
-    <ng-container *ngIf="!data.reverseButtonOrder; else acceptButton">
-      <ng-container *ngTemplateOutlet="cancelButton"></ng-container>
-    </ng-container>
+    <button *ngFor="let button of leftAlignedButtons" mat-button color="primary" [class.mat-stroked-button]="button.emphasize"
+            [disabled]="button.disabledWhenNotConfirmed && data.confirmText && textConfirmed !== data.confirmText"
+            [mat-dialog-close]="button.id || false" data-cy="confirm-dialog-{{button.id}}">
+        {{button.text}}
+    </button>
     <div fxFlex></div>
-    <ng-container *ngIf="!data.reverseButtonOrder; else cancelButton">
-      <ng-container *ngTemplateOutlet="acceptButton"></ng-container>
-    </ng-container>
+    <button *ngFor="let button of rightAlignedButtons" mat-button color="primary" [class.mat-stroked-button]="button.emphasize"
+            [disabled]="button.disabledWhenNotConfirmed && data.confirmText && textConfirmed !== data.confirmText"
+            [mat-dialog-close]="button.id || false" data-cy="confirm-dialog-{{button.id}}">
+        {{button.text}}
+    </button>
 </mat-dialog-actions>
-
-<ng-template #acceptButton>
-  <button color="primary" data-cy="confirm-dialog-confirm"
-          [ngClass]="!data.reverseButtonOrder ? 'mat-stroked-button' : 'mat-button'"
-          [mat-dialog-close]="true"
-          [disabled]="data.confirmText && textConfirmed !== data.confirmText">
-      {{data.acceptButtonText || 'Ok'}}
-  </button>
-</ng-template>
-
-<ng-template #cancelButton>
-  <button color="primary" data-cy="confirm-dialog-cancel"
-          [ngClass]="!data.reverseButtonOrder ? 'mat-button' : 'mat-stroked-button'"
-          mat-dialog-close cdkFocusInitial>
-      {{data.cancelButtonText || 'Abbrechen'}}
-  </button>
-</ng-template>
--->

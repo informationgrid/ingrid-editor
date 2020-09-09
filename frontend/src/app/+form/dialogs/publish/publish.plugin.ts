@@ -10,8 +10,12 @@ import {merge} from 'rxjs';
 import {IgeDocument} from '../../../models/ige-document';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {HttpErrorResponse} from '@angular/common/http';
-import {VersionConflictChoice, VersionConflictDialogComponent} from '../version-conflict-dialog/version-conflict-dialog.component';
+import {
+  VersionConflictChoice,
+  VersionConflictDialogComponent
+} from '../version-conflict-dialog/version-conflict-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
+import {ConfirmDialogComponent, ConfirmDialogData} from "../../../dialogs/confirm/confirm-dialog.component";
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -79,7 +83,17 @@ export class PublishPlugin extends Plugin {
     if (formIsValid) {
       // show confirm dialog
       const message = 'Wollen Sie diesen Datensatz wirklich veröffentlichen?';
-      this.modalService.confirm('Veröffentlichen', message, 'Veröffentlichen').subscribe(doPublish => {
+      this.dialog.open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: 'Veröffentlichen',
+          message,
+          buttons: [
+            {text: 'Abbrechen'},
+            {text: 'Veröffentlichen', id: 'publish', emphasize: true, alignRight: true}
+          ]
+        },
+        maxWidth: 700
+      }).afterClosed().subscribe(doPublish => {
         if (doPublish) {
           this.publishWithData(this.getFormValue());
         }
@@ -105,7 +119,17 @@ export class PublishPlugin extends Plugin {
     const doc = this.formsManager.getControl('document').value;
 
     const message = 'Wollen Sie diesen Datensatz wirklich auf die letzte Veröffentlichungsversion zurücksetzen?';
-    this.modalService.confirm('Zurücksetzen', message).subscribe(doRevert => {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: <ConfirmDialogData>{
+        title: 'Zurücksetzen',
+        message,
+        buttons: [
+          {text: 'Abbrechen'},
+          {text: 'Zurücksetzen', id: 'revert', emphasize: true, alignRight: true}
+        ]
+      },
+      maxWidth: 700
+    }).afterClosed().subscribe(doRevert => {
       if (doRevert) {
         this.storageService.revert(doc._id, this.forAddress).subscribe(
           () => {
