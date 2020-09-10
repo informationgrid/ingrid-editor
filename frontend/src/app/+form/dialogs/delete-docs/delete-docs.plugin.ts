@@ -81,7 +81,7 @@ export class DeleteDocsPlugin extends Plugin {
             list: docs.map(doc => doc.title),
             buttons: [
               {text: 'Abbrechen'},
-              {text: 'Löschen', alignRight: true, id: 'delete', emphasize: true}
+              {text: 'Löschen', alignRight: true, id: 'confirm', emphasize: true}
             ]
           }
         }).afterClosed().subscribe(response => {

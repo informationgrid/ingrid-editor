@@ -87,7 +87,7 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
-      Tree.containsNodeWithTitle(folderName, 1);
+      Tree.containsNodeWithTitle(folderName, 2);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
 
     });
@@ -109,7 +109,7 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=create-applyLocation]').click();
       cy.get('[data-cy=create-action]').click();
 
-      Tree.containsNodeWithTitle(folderName, 0);
+      Tree.containsNodeWithTitle(folderName, 1);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT);
 
     });
@@ -127,7 +127,7 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=create-applyLocation]').click();
       cy.get('[data-cy=create-action]').click();
 
-      Tree.containsNodeWithTitle(folderName, 1);
+      Tree.containsNodeWithTitle(folderName, 2);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
 
     });
