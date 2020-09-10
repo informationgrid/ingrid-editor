@@ -324,6 +324,7 @@ describe('Copy', () => {
     cy.get('[data-cy=toolbar_DELETE]').click();
     cy.get('[data-cy=confirm-dialog-confirm]').click();
     // refresh page after deleting document to stabilize test (if we do not this, we got an error and can not delete testFolder)
+    // FIXME: do not revisit page to avoid error, this error should be fixed in application
     DocumentPage.visit();
     cy.get('#sidebar').contains(testFolder).click();
     cy.get('[data-cy=toolbar_DELETE]').click();

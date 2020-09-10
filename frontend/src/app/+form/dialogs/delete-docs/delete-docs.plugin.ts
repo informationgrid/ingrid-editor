@@ -85,7 +85,7 @@ export class DeleteDocsPlugin extends Plugin {
             ]
           }
         }).afterClosed().subscribe(response => {
-          if (response === 'delete') {
+          if (response === 'confirm') {
             this.deleteDocs(docs.map(doc => <string>doc.id));
           }
         });
