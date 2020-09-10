@@ -89,7 +89,7 @@ export class PublishPlugin extends Plugin {
           message,
           buttons: [
             {text: 'Abbrechen'},
-            {text: 'Veröffentlichen', id: 'publish', emphasize: true, alignRight: true}
+            {text: 'Veröffentlichen', id: 'confirm', emphasize: true, alignRight: true}
           ]
         },
         maxWidth: 700

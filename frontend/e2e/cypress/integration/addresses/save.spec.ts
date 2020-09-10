@@ -176,7 +176,7 @@ describe('General create addresses/folders', () => {
       cy.wait(500);
       cy.get('#sidebar').findByText(adr1Name).click();
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
-      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      cy.get('[data-cy=confirm-dialog-stay]').click();
       cy.get(DocumentPage.title).should('have.text', adr1Name);
     });
 
@@ -201,7 +201,7 @@ describe('General create addresses/folders', () => {
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
-      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      cy.get('[data-cy=confirm-dialog-stay]').click();
 
       cy.get(DocumentPage.title).should('not.exist');
     });

@@ -62,7 +62,7 @@ export class CatalogDetailComponent implements OnInit {
         confirmText: 'Löschen',
         buttons: [
           {text: 'Abbrechen'},
-          {text: 'Löschen', id: 'delete', emphasize: true, alignRight: true, disabledWhenNotConfirmed: true}
+          {text: 'Löschen', id: 'confirm', emphasize: true, alignRight: true, disabledWhenNotConfirmed: true}
         ]
       } as ConfirmDialogData
     }).afterClosed().subscribe(confirmed => {

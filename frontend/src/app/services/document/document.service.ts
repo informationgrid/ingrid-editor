@@ -338,7 +338,7 @@ export class DocumentService {
         list: srcIDs.map(id => store.getValue().entities[id].title),
         buttons: [
           {text: 'Abbrechen'},
-          {id: 'move', text: 'Verschieben', emphasize: true, alignRight: true}
+          {id: 'confirm', text: 'Verschieben', emphasize: true, alignRight: true}
         ]
       })
         .pipe(
