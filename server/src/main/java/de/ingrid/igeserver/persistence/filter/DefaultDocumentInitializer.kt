@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 /**
- * Filter for initializing document data send from the client before inserting into the storage
+ * Filter for processing document data send from the client before insert
  */
 @Component
 class DefaultDocumentInitializer : Filter<PreCreatePayload> {
@@ -25,20 +25,27 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
         get() = PROFILES
 
     override fun invoke(payload: PreCreatePayload, context: Context): PreCreatePayload {
-        context.addMessage(Message(this, "Initialize document data before insert"))
+        // initialize id
+        if (payload.document.get(FIELD_ID)?.textValue().isNullOrEmpty()) {
+            payload.document.put(FIELD_ID, UUID.randomUUID().toString())
+        }
+        val docId = payload.document[FIELD_ID].asText();
+
+        context.addMessage(Message(this, "Process document data '$docId' before insert"))
 
         initializeDocument(payload, context)
         initializeDocumentWrapper(payload, context)
+
+        // call entity type specific hook
+        payload.type.onCreate(payload.document)
 
         return payload
     }
 
     protected fun initializeDocument(payload: PreCreatePayload, context: Context) {
-        val uuid = payload.document.get(FIELD_ID)?.textValue() ?: UUID.randomUUID().toString()
         val now = dateService.now().toString()
 
         with(payload.document) {
-            put(FIELD_ID, uuid)
             put(FIELD_HAS_CHILDREN, false)
             put(FIELD_CREATED, now)
             put(FIELD_MODIFIED, now)

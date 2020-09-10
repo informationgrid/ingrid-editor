@@ -363,7 +363,7 @@ class DocumentService : MapperService() {
         if (resolveLinks) {
             val refType = getDocumentType(docType)
 
-            refType.mapLatestDocReference(docData, onlyPublished)
+            refType.updateReferences(docData, onlyPublished)
         }
 
         return docData

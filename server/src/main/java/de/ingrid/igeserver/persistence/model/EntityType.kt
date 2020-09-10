@@ -38,14 +38,34 @@ interface EntityType {
     }
 
     /**
+     * Persistence hook called when an instance of this type is created
+     */
+    fun onCreate(doc: JsonNode) {}
+
+    /**
+     * Persistence hook called when an instance of this type is updated
+     */
+    fun onUpdate(doc: JsonNode) {}
+
+    /**
+     * Persistence hook called when an instance of this type is published
+     */
+    fun onPublish(doc: JsonNode) {}
+
+    /**
+     * Persistence hook called when an instance of this type is deleted
+     */
+    fun onDelete(doc: JsonNode) {}
+
+    /**
      * Extract referenced documents/addresses and replace them with their ID
      */
-    fun handleLinkedFields(doc: JsonNode): List<JsonNode> {
+    fun pullReferences(doc: JsonNode): List<JsonNode> {
         return emptyList()
     }
 
     /**
      * Replace document/address references with their latest version
      */
-    fun mapLatestDocReference(doc: JsonNode, onlyPublished: Boolean) {}
+    fun updateReferences(doc: JsonNode, onlyPublished: Boolean) {}
 }

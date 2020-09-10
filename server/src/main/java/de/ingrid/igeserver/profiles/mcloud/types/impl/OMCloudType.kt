@@ -38,15 +38,50 @@ class OMCloudType : OrientDBDocumentEntityType {
     override val entityType: KClass<out EntityType>
         get() = MCloudType::class
 
-    override fun handleLinkedFields(doc: JsonNode): List<JsonNode> {
-        return handleLinkedAddresses(doc)
+    override fun onPublish(doc: JsonNode) {
+        // check if all referenced addresses are published
+        val addresses = doc.path("addresses")
+        for (address in addresses) {
+            val wrapperId = address.path("ref").asText()
+            try {
+                val wrapper = docService.getByDocumentId(wrapperId, DocumentWrapperType::class, true)
+                if (wrapper != null) {
+                    // try to find published version of the linked document
+                    docService.getLatestDocument(wrapper, true)
+                } else {
+                    throw NotFoundException("Referenced Address could not be found: $wrapperId")
+                }
+            } catch (e: Exception) {
+                val ex = ApiException("Failed to check publish state of references in document '${doc.get("title")}' with ID '${doc.get(FIELD_ID).asText()}': ${e.message}", true)
+                log.error(ex)
+                throw ex
+            }
+        }
     }
 
-    override fun mapLatestDocReference(doc: JsonNode, onlyPublished: Boolean) {
-        handleLatestAddresses(doc, onlyPublished)
+    override fun pullReferences(doc: JsonNode): List<JsonNode> {
+        return pullLinkedAddresses(doc)
     }
 
-    private fun handleLatestAddresses(doc: JsonNode, onlyPublished: Boolean) {
+    override fun updateReferences(doc: JsonNode, onlyPublished: Boolean) {
+        updateAddresses(doc, onlyPublished)
+    }
+
+    private fun pullLinkedAddresses(doc: JsonNode): MutableList<JsonNode> {
+        val addressDocs = mutableListOf<JsonNode>()
+
+        val addresses = doc.path("addresses")
+        for (address in addresses) {
+            val addressDoc = address.path("ref")
+            val id = addressDoc.path(FIELD_ID).textValue()
+
+            addressDocs.add(addressDoc)
+            (address as ObjectNode).put("ref", id)
+        }
+        return addressDocs
+    }
+
+    private fun updateAddresses(doc: JsonNode, onlyPublished: Boolean) {
         val addresses = doc.path("addresses")
         for (address in addresses) {
             val wrapperId = address.path("ref").asText()
@@ -61,7 +96,7 @@ class OMCloudType : OrientDBDocumentEntityType {
             } catch (e: Exception) {
                 // TODO: what to do with removed references?
                 if (e is NotFoundException) {
-                    log.error("Referenced address was not found: $wrapperId -> Should we remove it?");
+                    log.error("Referenced address was not found: $wrapperId -> Should we remove it?")
                     continue
                 } else if (e is PublishedVersionNotFoundException) {
                     throw ApiException("Problem with referenced addresses of document '${doc.get("title")}' with ID '${doc.get(FIELD_ID).asText()}': ${e.message}", true)
@@ -70,19 +105,5 @@ class OMCloudType : OrientDBDocumentEntityType {
                 throw e
             }
         }
-    }
-
-    private fun handleLinkedAddresses(doc: JsonNode): MutableList<JsonNode> {
-        val addressDocs = mutableListOf<JsonNode>()
-
-        val addresses = doc.path("addresses")
-        for (address in addresses) {
-            val addressDoc = address.path("ref")
-            val id = addressDoc.path(FIELD_ID).textValue()
-
-            addressDocs.add(addressDoc)
-            (address as ObjectNode).put("ref", id)
-        }
-        return addressDocs
     }
 }

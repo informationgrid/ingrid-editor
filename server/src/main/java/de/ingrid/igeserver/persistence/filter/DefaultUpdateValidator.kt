@@ -28,7 +28,9 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
     private lateinit var dbService: DBApi
 
     override fun invoke(payload: PreUpdatePayload, context: Context): PreUpdatePayload {
-        context.addMessage(Message(this, "Validate document data before update"))
+        val docId = payload.document[FIELD_ID].asText();
+
+        context.addMessage(Message(this, "Validate document data '$docId' before update"))
 
         checkForPublishedConcurrency(payload.wrapper, payload.document.get(FIELD_VERSION)?.asInt())
 
@@ -49,7 +51,7 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
             val publishedVersion = publishedDoc?.get("@version")?.asInt()
             if (version != null && publishedVersion != null && publishedVersion > version) {
                 throw ConcurrentModificationException(
-                        "Could not update object with id $publishedDBID. The database version is newer than the record version.",
+                        "Could not update object with id '$publishedDBID'. The database version is newer than the record version.",
                         publishedDBID,
                         publishedDoc.get("@version").asInt(),
                         version)

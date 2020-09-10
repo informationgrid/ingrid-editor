@@ -48,7 +48,7 @@ class ImportService {
         val docType = doc[FIELD_DOCUMENT_TYPE].asText()
         val refType = documentService.getDocumentType(docType)
 
-        val references = refType.handleLinkedFields(doc)
+        val references = refType.pullReferences(doc)
 
         // save references
         references
