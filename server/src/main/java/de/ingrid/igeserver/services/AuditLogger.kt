@@ -58,7 +58,7 @@ class AuditLogger {
     fun find(logger: String?, id: String?, user: String?, action: String?, from: LocalDate?, to: LocalDate?,
              sort: String?, sortOrder: String?) : FindAllResults {
         if (auditLogDB.isNullOrEmpty()) {
-            throw ConfigurationException("Value 'audit.log.database' is missing or empty.")
+            throw ConfigurationException.fromMissingValue("audit.log.database")
         }
 
         val queryMap = listOfNotNull(

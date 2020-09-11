@@ -20,7 +20,7 @@ class OAuditLogRecordType : OrientDBEntityType {
 
     override val className: String by lazy {
         if (auditLogTable.isNullOrEmpty()) {
-            throw ConfigurationException("Value 'audit.log.table' is missing or empty.")
+            throw ConfigurationException.fromMissingValue("audit.log.table")
         }
         auditLogTable!!
     }
