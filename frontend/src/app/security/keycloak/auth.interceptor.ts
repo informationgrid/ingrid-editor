@@ -32,12 +32,11 @@ export class AuthInterceptor implements HttpInterceptor {
             console.error(error);
             setTimeout(() => window.location.reload(), 5000);
           }
-          // intercept the respons error and displace it to the console
-          console.log('Error Occurred');
-          console.log(error);
+          // intercept the response error and displace it to the console
+          console.log('Error Occurred', error);
+
           // return the error to the method that called it
           return throwError(error);
-          // throw error;
         })
       );
 
