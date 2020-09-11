@@ -106,7 +106,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   }
 
   ngOnInit() {
-    this.formsManager.valueChanges(this.address ? 'address' : 'document').subscribe(() => this.auth.refreshSession().subscribe())
+
+    this.formsManager.valueChanges(this.address ? 'address' : 'document')
+      .subscribe(() => this.auth.refreshSession().subscribe())
 
     if (this.address) {
       this.formPlugins.setAddressConfiguration();
@@ -116,6 +118,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       this.formStateName = 'document';
       this.query = this.treeQuery;
     }
+
+    this.formsManager.upsert(this.formStateName, this.form, {
+        withInitialValue: true
+      }
+    );
 
     this.query.select('isDocLoading')
       .pipe(untilDestroyed(this))
@@ -253,8 +260,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
     try {
 
       // switch to the right profile depending on the data
-      this.form = new FormGroup({});
-      this.formsManager.upsert(this.formStateName, this.form);
       if (needsProfileSwitch) {
         this.fields = this.switchProfile(profile);
         this.sections = this.formularService.getSectionsFromProfile(this.fields);
@@ -262,6 +267,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
       this.model = {...data};
       this.resetForm();
+      this.formsManager.setInitialValue(this.formStateName, data);
       this.documentService.setDocLoadingState(false, this.address);
 
     } catch (ex) {
@@ -317,8 +323,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
     this.form.markAsPristine();
     this.form.markAsUntouched();
 
-    // FIXME: form does not seem to be updated automatically and we have to force update event
-    this.formsManager.upsert(this.formStateName, this.form);
   }
 
   handleDrop(event: any) {

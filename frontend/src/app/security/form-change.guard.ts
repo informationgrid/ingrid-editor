@@ -1,4 +1,4 @@
-import {CanDeactivate} from '@angular/router';
+import {ActivatedRouteSnapshot, CanDeactivate, RouterStateSnapshot} from '@angular/router';
 import {Injectable} from '@angular/core';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
@@ -20,7 +20,13 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
               private treeStore: TreeStore, private addressTreeStore: AddressTreeStore) {
   }
 
-  canDeactivate(target: FormComponent | AddressComponent): Observable<boolean> {
+  canDeactivate(target: FormComponent | AddressComponent, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean> {
+
+    // do not check when we navigate within the current page (loading another document)
+    // only check if we actually leave the page
+    if (FormChangeDeactivateGuard.pageIsNotLeft(currentState.url, nextState.url)) {
+      return of(true);
+    }
 
     const type = target instanceof FormComponent ? 'document' : 'address';
     const formHasChanged = this.formsManager.getControl(type)?.dirty;
@@ -39,7 +45,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       }).afterClosed()
         .pipe(
           map(response => response !== 'stay'),
-          tap(leavePage => leavePage ? null : this.revertTreeNodeChange(type, currentId)),
+          tap(leavePage => leavePage ? null : this.revertTreeNodeChange(type, currentId))
         );
     }
     return of(true);
@@ -61,4 +67,9 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     });
   }
 
+  private static pageIsNotLeft(currentUrl: string, nextUrl: string) {
+    let currentPrefix = currentUrl.substring(0, 5);
+
+    return nextUrl.indexOf(currentPrefix) === 0;
+  }
 }

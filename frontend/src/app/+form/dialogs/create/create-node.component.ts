@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {DocumentService} from '../../../services/document/document.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {filter, take, tap} from 'rxjs/operators';
+import {filter, take} from 'rxjs/operators';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {Router} from '@angular/router';

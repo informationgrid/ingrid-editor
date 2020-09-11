@@ -124,7 +124,7 @@ export class SavePlugin extends Plugin {
         this.save(formData);
         break;
       case 'reload':
-        this.documentService.reload$.next(this.getIdFromFormData())
+        this.documentService.reload$.next(this.getIdFromFormData());
         break;
 
     }

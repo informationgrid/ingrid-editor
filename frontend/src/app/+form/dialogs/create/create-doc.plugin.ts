@@ -8,15 +8,10 @@ import {FormularService} from '../../formular.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {CreateNodeComponent, CreateOptions} from './create-node.component';
-import {filter, first, take, tap} from 'rxjs/operators';
+import {filter, take} from 'rxjs/operators';
 import {NgFormsManager} from "@ngneat/forms-manager";
-import {
-  ConfirmDialogButton,
-  ConfirmDialogComponent,
-  ConfirmDialogData
-} from "../../../dialogs/confirm/confirm-dialog.component";
 import {DocumentService} from "../../../services/document/document.service";
-import {Observable} from "rxjs";
+import {FormUtils} from "../../form.utils";
 
 export interface DocType {
   id: string,
@@ -78,24 +73,10 @@ export class CreateDocumentPlugin extends Plugin {
 
     if (selectedDoc) {
 
-      const type = this.forAddress ? 'address' : 'document';
-      const formHasChanged = this.formsManager.getControl(type)?.dirty;
-      if (formHasChanged) {
-        const form = this.formsManager.getControl(type).value
-        const decision = await this.openSaveDialog().pipe(first()).toPromise()
-        if (decision === 'save') {
-          this.documentService.save(form, false, this.forAddress)
-        } else if (decision === 'discard') {
-          // TODO: refactor
-          //  mark as untouched to prevent dirty dialog when opening newly created document
-          // form.markAsPristine();
-          // form.markAsUntouched();
-          // FIXME: form does not seem to be updated automatically and we have to force update event
-          //this.formsManager.upsert(type, form);
-        } else {
-          //decision is 'Abbrechen'
-          return;
-        }
+      let handled = await FormUtils.handleDirtyForm(this.formsManager, this.documentService, this.dialog, this.forAddress);
+
+      if (!handled) {
+        return;
       }
 
       query.selectEntity(selectedDoc.id)
@@ -115,20 +96,6 @@ export class CreateDocumentPlugin extends Plugin {
       this.showDialog(null);
     }
 
-  }
-
-  openSaveDialog(): Observable<any> {
-    return this.dialog.open(ConfirmDialogComponent, {
-      data: <ConfirmDialogData>{
-        title: 'Änderungen sichern?',
-        message: 'Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?',
-        buttons: [
-          {id: "cancel", text: 'Abbrechen'},
-          {id: "discard", text: 'Verwerfen', alignRight: true},
-          {id: "save", text: 'Speichern', alignRight: true, emphasize: true}
-        ]
-      } as ConfirmDialogData
-    }).afterClosed()
   }
 
   showDialog(parentDocId: string) {
