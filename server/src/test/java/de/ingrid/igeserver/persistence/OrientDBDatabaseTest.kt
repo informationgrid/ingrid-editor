@@ -63,7 +63,7 @@ class OrientDBDatabaseTest : FunSpec() {
                             // new person is not yet visible outside of the session
                             withContext(ctx2) {
                                 dbService.acquire("test").use {
-                                    dbService.findAll(UserInfoType::class)?.size shouldBe 0
+                                    dbService.findAll(UserInfoType::class).size shouldBe 0
                                 }
                             }
 
@@ -73,7 +73,7 @@ class OrientDBDatabaseTest : FunSpec() {
                             // new person is visible outside of the session
                             withContext(ctx2) {
                                 dbService.acquire("test").use {
-                                    dbService.findAll(UserInfoType::class)?.size shouldBe 1
+                                    dbService.findAll(UserInfoType::class).size shouldBe 1
                                 }
                             }
                         }
@@ -86,7 +86,7 @@ class OrientDBDatabaseTest : FunSpec() {
         {
             addTestData()
             dbService.acquire("test").use {
-                dbService.findAll(UserInfoType::class)?.size shouldBe 2
+                dbService.findAll(UserInfoType::class).size shouldBe 2
             }
         }
 
@@ -163,7 +163,7 @@ class OrientDBDatabaseTest : FunSpec() {
                 // check reference in second document
                 val docs = dbService.findAll(DocumentType::class)
 
-                docs!!.size shouldBe 2
+                docs.size shouldBe 2
                 val refId = (docs[1]["addresses"] as ArrayNode)[0].asText()
                 val ref = dbService.find(DocumentType::class, refId)
                 ref!!["title"].asText() shouldBe "my document"

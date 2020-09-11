@@ -16,7 +16,7 @@ import java.time.LocalDate
 @Tag(name = "DataHistory", description = "the data history API")
 interface DataHistoryApi {
     @GetMapping(value = ["/data-history"], produces = ["application/json"])
-    @Operation(description = "Get the previous versions of datasets which match a given parameters. The results can also be sorted.")
+    @Operation(description = "Get the previous versions of datasets which match the given parameters. The results can also be sorted.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets found")])
     fun find(
             principal: Principal?,
