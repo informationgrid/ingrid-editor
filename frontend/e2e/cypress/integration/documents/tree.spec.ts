@@ -453,16 +453,22 @@ describe('Cut', () => {
   it('should move a document from a folder to the root', () => {
     const docName = 'move me from a deep folder'
 
+    // FIXME: use following function to select a tree node => Tree.selectNodeWithTitle('Testdokumente');
     cy.get('#sidebar').findByText('Testdokumente').click();
     cy.get('#sidebar').contains('Ordner 2. Ebene').click();
 
     DocumentPage.createDocument(docName);
 
+    // TODO: create easy to use functions for copy/move
+    //       e.g.: CopyCutUtils.move('Daten')
+    //       e.g.: CopyCutUtils.copy('Daten')
+    //       e.g.: CopyCutUtils.copyWithTree('Daten')
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[aria-disabled=false]').contains('Verschieben (inkl. Teilbaum)').click();
     cy.get('#mat-dialog-1').findByText('Daten').click();
-    cy.wait(500) //TODO delete when better selector is found
     cy.get('[data-cy=create-applyLocation]').click();
+    cy.wait(500) //TODO delete when better selector is found
+    // END_OF_TODO
 
     CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
   });

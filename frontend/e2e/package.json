@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cypress": "^5.0.0",
-    "mocha": "^8.0.1",
+    "cypress": "^5.1.0",
+    "mocha": "^8.1.3",
     "mochawesome": "^6.1.1",
     "mochawesome-merge": "^4.1.0",
     "mochawesome-report-generator": "^5.1.0",
@@ -22,6 +22,6 @@
   "devDependencies": {
     "cypress-intellij-reporter": "^0.0.4",
     "cypress-keycloak-commands": "^1.2.0",
-    "@testing-library/cypress": "^6.0.0"
+    "@testing-library/cypress": "^7.0.0"
   }
 }
