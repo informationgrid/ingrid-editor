@@ -45,7 +45,6 @@ class ProfileApiController : ProfileApi {
         return ResponseEntity.ok(profile!!)
     }
 
-    @Throws(IOException::class, ApiException::class)
     override fun uploadProfile(principal: Principal, file: MultipartFile,
                                redirectAttributes: RedirectAttributes): ResponseEntity<String> {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)

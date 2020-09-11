@@ -5,8 +5,6 @@
  */
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.model.Behaviour
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -22,11 +20,9 @@ import java.security.Principal
 interface BehavioursApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Behaviours are returned.")])
     @RequestMapping(value = ["/behaviours"], produces = ["application/json"], method = [RequestMethod.GET])
-    @Throws(ApiException::class)
     fun getBehaviours(principal: Principal?): ResponseEntity<List<Behaviour>>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Behaviours have been set.")])
     @RequestMapping(value = ["/behaviours"], produces = ["application/json"], method = [RequestMethod.POST])
-    @Throws(Exception::class)
     fun setBehaviours(principal: Principal?, @Parameter(required = true) @RequestBody behaviours: List<Behaviour>): ResponseEntity<Void>
 }

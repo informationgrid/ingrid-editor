@@ -1,15 +1,10 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.index.IndexOptions
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.model.IndexRequestOptions
-import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.FIELD_CATEGORY
-import de.ingrid.igeserver.services.FIELD_PUBLISHED
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity

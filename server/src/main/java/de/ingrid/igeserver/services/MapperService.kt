@@ -6,8 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.Behaviour
 import org.springframework.stereotype.Component
 
-@Component
-class MapperService {
+open class MapperService {
 
     fun getJsonNode(json: String): JsonNode {
         val mapper = jacksonObjectMapper()

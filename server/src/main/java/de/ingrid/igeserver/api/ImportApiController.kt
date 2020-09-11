@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import java.io.IOException
 import java.security.Principal
 
 @RestController
@@ -19,7 +18,6 @@ class ImportApiController @Autowired constructor(private val importService: Impo
 
     private val log = logger()
 
-    @Throws(IOException::class, ApiException::class)
     override fun importDataset(principal: Principal?, file: MultipartFile): ResponseEntity<ImportAnalyzeInfo> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -37,5 +35,4 @@ class ImportApiController @Autowired constructor(private val importService: Impo
 
         return info
     }
-
 }

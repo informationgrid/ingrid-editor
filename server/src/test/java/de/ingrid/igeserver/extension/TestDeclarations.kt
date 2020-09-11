@@ -2,6 +2,7 @@ package de.ingrid.igeserver.extension
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.extension.pipe.*
+import de.ingrid.igeserver.services.DateService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
@@ -18,7 +19,6 @@ open class TestPayloadPersist(var action: Action, var data: JsonNode): Payload {
         CREATE,
         UPDATE,
         PUBLISH,
-        UNPUBLISH,
         DELETE
     }
 }

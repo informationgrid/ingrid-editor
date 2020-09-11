@@ -31,7 +31,5 @@ class StatisticApiController : StatisticApi {
             val statistic = this.dbService.getDocumentStatistic()
             return ResponseEntity.ok(statistic)
         }
-
     }
-
 }

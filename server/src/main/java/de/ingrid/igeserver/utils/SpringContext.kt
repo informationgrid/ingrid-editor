@@ -13,8 +13,8 @@ class SpringContext : ApplicationContextAware {
         /**
          * Get the Spring managed bean instance of the given class type if it exists, null otherwise
          */
-        fun <T: Any?> getBean(beanClass: Class<T>?): T {
-            return context!!.getBean(beanClass)
+        fun <T: Any?> getBean(beanClass: Class<T>?): T? {
+            return context?.getBean(beanClass)
         }
     }
 

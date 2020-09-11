@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 class ContexthelpApiController : ContexthelpApi {
 
     @Autowired
-    lateinit var helpService: ContextHelpService
+    private lateinit var helpService: ContextHelpService
 
     override fun getContextHelpText(id: String, profile: String, docType: String): ResponseEntity<HelpMessage> {
 

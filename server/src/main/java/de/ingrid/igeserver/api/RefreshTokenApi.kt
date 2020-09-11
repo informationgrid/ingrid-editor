@@ -5,7 +5,6 @@
  */
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.StatisticResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -13,12 +12,11 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
-import java.security.Principal
 
-@Tag(name = "Statistic", description = "the statistic API")
-interface StatisticApi {
+@Tag(name = "RefreshToken", description = "the refreshToken API")
+interface RefreshTokenApi {
     @Operation
-    @RequestMapping(value = ["/statistic"], produces = ["application/json"], method = [RequestMethod.GET])
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
-    fun getStatistic(principal: Principal?): ResponseEntity<StatisticResponse>
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns a new access token to the requested client")])
+    @RequestMapping(value = ["/refreshToken"], produces = ["application/json"], method = [RequestMethod.GET])
+    fun refreshToken(): ResponseEntity<Void>
 }

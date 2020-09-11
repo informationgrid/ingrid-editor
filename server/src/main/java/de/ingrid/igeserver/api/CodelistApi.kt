@@ -22,13 +22,11 @@ interface CodelistApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
     @Operation
     @RequestMapping(value = [""], produces = ["application/json"], method = [RequestMethod.GET])
-    @Throws(ApiException::class)
     fun getAllCodelists(): ResponseEntity<List<CodeList>>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
     @Operation
     @RequestMapping(value = [""], produces = ["application/json"], method = [RequestMethod.POST])
-    @Throws(ApiException::class)
     fun updateCodelists(): ResponseEntity<List<CodeList>>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])

@@ -17,18 +17,17 @@ import java.security.Principal
 @RequestMapping(path = ["/api"])
 class ExportApiController : ExportApi {
     @Autowired
-    lateinit var exportService: ExportService
+    private lateinit var exportService: ExportService
 
     @Autowired
-    lateinit var dbService: DBApi
+    private lateinit var dbService: DBApi
 
     @Autowired
-    lateinit var documentService: DocumentService
+    private lateinit var documentService: DocumentService
 
     @Autowired
     private lateinit var catalogService: CatalogService
 
-    @Throws(Exception::class)
     override fun export(principal: Principal?, data: ExportRequestParameter): ResponseEntity<String?> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -46,7 +45,6 @@ class ExportApiController : ExportApi {
         return ResponseEntity.ok(result)
     }
 
-    @Throws(Exception::class)
     override fun exportTypes(principal: Principal?, profile: String): ResponseEntity<List<ExportTypeInfo>> {
         return ResponseEntity.ok(exportService.getExportTypes(profile))
     }

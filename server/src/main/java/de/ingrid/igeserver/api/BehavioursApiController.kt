@@ -17,17 +17,14 @@ import java.security.Principal
 class BehavioursApiController : BehavioursApi, Logging {
 
     @Autowired
-    lateinit var dbService: DBApi
+    private lateinit var dbService: DBApi
 
     @Autowired
-    lateinit var catalogService: CatalogService
+    private lateinit var catalogService: CatalogService
 
-    @Autowired
-    lateinit var mapperService: MapperService
+    private val mapperService = MapperService()
 
-    @Throws(ApiException::class)
     override fun getBehaviours(principal: Principal?): ResponseEntity<List<Behaviour>> {
-
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquire(dbId).use {
@@ -39,13 +36,10 @@ class BehavioursApiController : BehavioursApi, Logging {
                                 active = it.get("active").asBoolean(),
                                 data = it.get("data"))
                     }
-
             return ResponseEntity.ok(result)
         }
-
     }
 
-    @Throws(Exception::class)
     override fun setBehaviours(
             principal: Principal?,
             behaviours: List<Behaviour>): ResponseEntity<Void> {
@@ -59,7 +53,5 @@ class BehavioursApiController : BehavioursApi, Logging {
             }
             return ResponseEntity.ok().build()
         }
-
     }
-
 }

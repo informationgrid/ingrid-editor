@@ -23,16 +23,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.io.IOException
 import java.security.Principal
 import java.util.*
-import javax.naming.NoPermissionException
 
 @RestController
 @RequestMapping(path = ["/api"])
 class UsersApiController : UsersApi {
 
-    val logger = logger()
+    private val logger = logger()
 
     @Autowired
     private lateinit var catalogService: CatalogService
@@ -59,32 +57,26 @@ class UsersApiController : UsersApi {
 
         // do some magic!
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
-
     }
 
     override fun deleteUser(id: String): ResponseEntity<Void> {
 
         // do some magic!
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
-
     }
 
     fun get(): ResponseEntity<Void> {
 
         // do some magic!
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
-
     }
 
-    @Throws(IOException::class)
     override fun getUser(principal: Principal?, id: String): ResponseEntity<User> {
 
         val user = keycloakService.getUser(principal, id)
         return ResponseEntity.ok(user)
-
     }
 
-    @Throws(IOException::class, NoPermissionException::class)
     override fun list(principal: Principal?, res: AccessTokenResponse): ResponseEntity<List<User>> {
 
         if (principal == null && !developmentMode) {
@@ -97,17 +89,14 @@ class UsersApiController : UsersApi {
         } else {
             ResponseEntity.ok(users)
         }
-
     }
 
     override fun updateUser(id: String, user: User): ResponseEntity<Void> {
 
         // do some magic!
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
-
     }
 
-    @Throws(ApiException::class)
     override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
 
         val username = authUtils.getUsernameFromPrincipal(principal)
@@ -143,7 +132,6 @@ class UsersApiController : UsersApi {
                 lastLogin = lastLogin
         )
         return ResponseEntity.ok(userInfo)
-
     }
 
     private fun getLastLogin(principal: Principal?, userId: String): Date {
@@ -172,7 +160,6 @@ class UsersApiController : UsersApi {
         return Version(buildInfo?.version, Date.from(buildInfo?.time), gitInfo?.commitId)
     }
 
-    @Throws(ApiException::class)
     override fun setCatalogAdmin(
             principal: Principal?,
             info: CatalogAdmin): ResponseEntity<UserInfo?> {
@@ -196,10 +183,8 @@ class UsersApiController : UsersApi {
             logger.error(e)
         }
         return ResponseEntity.ok(null)
-
     }
 
-    @Throws(Exception::class)
     private fun addOrUpdateCatalogAdmin(catalogName: String, userId: String) {
 
         val query = listOf(QueryField("userId", userId))
@@ -238,10 +223,8 @@ class UsersApiController : UsersApi {
             recordId = dbService.getRecordId(catInfo)
         }
         dbService.save(CatalogInfoType::class, recordId, catInfo.toString())
-
     }
 
-    @Throws(ApiException::class)
     override fun assignedUsers(principal: Principal?, id: String): ResponseEntity<List<String>> {
 
         val result: MutableList<String> = ArrayList()
@@ -258,10 +241,8 @@ class UsersApiController : UsersApi {
             logger.error("Could not get assigned Users", e)
         }
         return ResponseEntity.ok(result)
-
     }
 
-    @Throws(ApiException::class)
     override fun switchCatalog(principal: Principal?, catalogId: String): ResponseEntity<Void> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
@@ -289,7 +270,6 @@ class UsersApiController : UsersApi {
             logger.error(e)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
-
     }
 
     override fun refreshSession(): ResponseEntity<Void> {
@@ -297,5 +277,4 @@ class UsersApiController : UsersApi {
 
         return ResponseEntity.ok().build()
     }
-
 }

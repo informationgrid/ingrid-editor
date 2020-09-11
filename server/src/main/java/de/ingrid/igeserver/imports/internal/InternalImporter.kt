@@ -13,8 +13,7 @@ class InternalImporter : IgeImporter {
 
     private val log = logger()
 
-    @Autowired
-    private lateinit var mapperService: MapperService
+    private val mapperService = MapperService()
 
     override fun run(data: Any): JsonNode {
         try {

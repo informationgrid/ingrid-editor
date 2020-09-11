@@ -5,7 +5,6 @@
  */
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.model.CatalogAdmin
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.model.User1
@@ -21,9 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
-import java.io.IOException
 import java.security.Principal
-import javax.naming.NoPermissionException
 import javax.validation.Valid
 
 @Tag(name = "Users", description = "the users API")
@@ -44,7 +41,6 @@ interface UsersApi {
     @RequestMapping(value = ["/users/{id}"], produces = ["application/json"], method = [RequestMethod.GET])
     @Operation(description = "Get the user with the given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
-    @Throws(IOException::class)
     fun getUser(
             principal: Principal?,
             @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String): ResponseEntity<User>
@@ -52,7 +48,6 @@ interface UsersApi {
     @RequestMapping(value = ["/users"], produces = ["application/json"], method = [RequestMethod.GET])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of users")])
-    @Throws(IOException::class, NoPermissionException::class)
     fun list(principal: Principal?, res: AccessTokenResponse): ResponseEntity<List<User>>
 
     @RequestMapping(value = ["/users/{id}"], produces = ["application/json"], method = [RequestMethod.PUT])
@@ -65,27 +60,23 @@ interface UsersApi {
     @RequestMapping(value = ["/info/currentUser"], produces = ["application/json"], method = [RequestMethod.GET])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "406", description = "")])
-    @Throws(ApiException::class)
     fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo>
 
     @RequestMapping(value = ["/info/setCatalogAdmin"], produces = ["application/json"], method = [RequestMethod.POST])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "406", description = "")])
-    @Throws(ApiException::class)
     fun setCatalogAdmin(principal: Principal?,
                         @Parameter(description = "Save the user data into the database.", required = true) @RequestBody info: @Valid CatalogAdmin): ResponseEntity<UserInfo?>
 
     @RequestMapping(value = ["/info/assignedUsers/{id}"], produces = ["application/json"], method = [RequestMethod.GET])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    @Throws(ApiException::class)
     fun assignedUsers(principal: Principal?,
                       @Parameter(description = "The database id to query the assigned users from.", required = true) @PathVariable("id") id: String): ResponseEntity<List<String>>
 
     @RequestMapping(value = ["/user/catalog/{catalogId}"], method = [RequestMethod.POST])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    @Throws(ApiException::class)
     fun switchCatalog(
             principal: Principal?,
             @Parameter(description = "The id of the catalog to switch to for the current user", required = true) @PathVariable("catalogId") catalogId: String): ResponseEntity<Void>

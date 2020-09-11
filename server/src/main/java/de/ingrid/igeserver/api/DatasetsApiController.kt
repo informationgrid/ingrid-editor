@@ -34,7 +34,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     /**
      * Create dataset.
      */
-    @Throws(ApiException::class)
     override fun createDataset(
             principal: Principal?,
             data: JsonNode,
@@ -59,7 +58,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     /**
      * Update dataset.
      */
-    @Throws(ApiException::class)
     override fun updateDataset(
             principal: Principal?,
             id: String,
@@ -84,7 +82,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         }
     }
 
-    @Throws(Exception::class)
     override fun deleteById(principal: Principal?, ids: Array<String>): ResponseEntity<String> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -127,7 +124,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 //            dbService.commitTransaction()
             return ResponseEntity(HttpStatus.OK)
         }
-
     }
 
     private fun handleCopy(id: String, options: CopyOptions): JsonNode {
@@ -145,7 +141,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         doc.put(FIELD_PARENT, options.destId)
 
         return createCopyAndHandleSubTree(doc, options, documentService.isAddress(wrapper))
-
     }
 
     private fun createCopyAndHandleSubTree(doc: ObjectNode, options: CopyOptions, isAddress: Boolean): JsonNode {
@@ -181,9 +176,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             }
 
         }
-
         return docs.totalHits
-
     }
 
     private fun handleMove(id: String, options: CopyOptions) {
@@ -211,7 +204,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         wrapperWithLinks.put(FIELD_PARENT, options.destId)
         val wrapperId = dbService.getRecordId(wrapperWithLinks)
         dbService.save(DocumentWrapperType::class, wrapperId, wrapperWithLinks.toString())
-
     }
 
     private fun validateCopyOperation(sourceId: String, destinationId: String?) {
@@ -223,7 +215,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             throw ApiException(msg)
         }
     }
-
 
     /**
      *  first id in result is always own id
@@ -242,7 +233,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         }
     }
 
-    @Throws(ApiException::class)
     override fun getChildren(
             principal: Principal?,
             parentId: String?,
@@ -266,10 +256,8 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             log.error(e)
             throw ApiException("Error occured getting children of " + parentId + ": " + e.message)
         }
-
     }
 
-    @Throws(Exception::class)
     override fun find(principal: Principal?, query: String, size: Int, sort: String, sortOrder: String, forAddress: Boolean): ResponseEntity<SearchResult<ObjectNode>> {
 
         var docs: FindAllResults
@@ -296,7 +284,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         }
     }
 
-    @Throws(Exception::class)
     override fun getByID(
             principal: Principal?,
             id: String,
@@ -317,11 +304,9 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
                 throw NotFoundException(404, "Document not found with id: $id")
             }
         }
-
     }
 
     @ExperimentalStdlibApi
-    @Throws(ApiException::class)
     override fun getPath(
             principal: Principal?,
             id: String): ResponseEntity<List<String>> {
@@ -350,6 +335,5 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         }
 
         return ResponseEntity.ok(path.reversed())
-
     }
 }

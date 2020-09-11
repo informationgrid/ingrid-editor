@@ -62,8 +62,7 @@ class OrientDBDatabase : DBApi {
     @Autowired
     lateinit var documentTypes: List<OrientDBDocumentEntityType>
 
-    @Autowired
-    private lateinit var mapperService: MapperService
+    private val mapperService = MapperService()
 
     // embedded server instance
     private lateinit var serverInternal: OServer

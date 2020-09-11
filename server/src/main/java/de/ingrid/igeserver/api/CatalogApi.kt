@@ -27,14 +27,12 @@ interface CatalogApi {
     // @PreAuthorize("hasRole('admin')")
     @RequestMapping(value = ["/catalogs"], produces = ["application/json"], method = [RequestMethod.POST])
     @Operation
-    @Throws(ApiException::class)
     fun createCatalog(
             @Parameter(description = "The settings of the catalog to create.", required = true) @RequestBody settings: Catalog
     ): ResponseEntity<String>
 
     @RequestMapping(value = ["/catalogs/{name}"], produces = ["application/json"], method = [RequestMethod.PUT])
     @Operation
-    @Throws(ApiException::class)
     fun updateCatalog(
             @Parameter(description = "The name of the catalog to update.", required = true) @PathVariable("name") name: String,
             @Parameter(description = "The settings of the catalog to update.", required = true) @RequestBody settings: Catalog
@@ -43,7 +41,6 @@ interface CatalogApi {
     @RequestMapping(value = ["/catalogs/{name}"], produces = ["application/json"], method = [RequestMethod.DELETE])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "404", description = "Unknown database")])
-    @Throws(ApiException::class)
     fun deleteCatalog(
             @Parameter(description = "The name of the catalog to delete.", required = true) @PathVariable("name") name: String
     ): ResponseEntity<Void>

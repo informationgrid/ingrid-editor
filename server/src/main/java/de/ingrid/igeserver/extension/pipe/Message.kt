@@ -10,15 +10,16 @@ import java.time.format.DateTimeFormatter
  */
 data class Message(val creator: Any, val message: String) {
 
-    val created: OffsetDateTime = dateService.now()
+    val created: OffsetDateTime? = dateService?.now()
 
     override fun toString(): String {
+        val createDate = created ?: OffsetDateTime.now()
         return message + " [" + dateFormat.format(created) + " from " + creator.toString() + "]"
     }
 
     companion object {
         val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        val dateService: DateService by lazy {
+        val dateService: DateService? by lazy {
             SpringContext.getBean(DateService::class.java)
         }
     }
