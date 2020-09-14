@@ -115,6 +115,53 @@ If we need to **access the audit log** in the application, the audit log must be
 
 `AuditLogger` will then be able to connect to the database and retrieve records using it's `find()` method.
 
+#### @AuditLog annotation
+
+A convenient way to create an audit log record each time a method is called is to use the `@AuditLog` annotation. It creates a record with the following values:
+
+- *Category*: The value of the `category` parameter defined in the annotation (default: *empty string*)
+- *Action*: The value of the `action` parameter defined in the annotation (default: class name with the name of the annotated method appended)
+- *Target*: The value of the method parameter specified in the `target` parameter, e.g. if target is `id`, the value of the `id` method parameter will become the value of *Target* (default: *empty string*)
+- *Data* The value of the method parameter specified in the `data` parameter, e.g. if target is `document`, the value of the `document` method parameter will become the value of *Data* (default: parameter names and values of the annotated method call in JSON notation)
+
+*Actor* and *Time* are defined as usual.
+
+NOTE: The audit log record is created **after** the method is executed which means that only *successful* method executions are recorded.
+
+Using the annotation **without any parameters**
+
+```kotlin
+@AuditLog
+fun updateDocument(id: String, data: JsonNode, publish: Boolean = false) {
+  ...
+}
+```
+
+will result in records of the following form:
+
+```json
+{
+    "cat":"",
+    "action":"de.ingrid.igeserver.services.DocumentService.updateDocument",
+    "actor":"user1",
+    "time":"2020-09-14T17:10:06.145049500+02:00",
+    "target":"",
+    "data":{
+        "data":"{\"title\":\"Test\",\"_id\":\"bd485713-0aba-4140-88cb-dd37675d5973\",\"_parent\":null,\"_type\":\"UvpDoc\",\"_created\":\"2020-09-14T17:04:48.733668500+02:00\",\"_version\":1,\"description\":\"Beschreibung\",\"_modified\":\"2020-09-14T17:10:06.101057900+02:00\"}",
+        "publish":"false","id":"bd485713-0aba-4140-88cb-dd37675d5973"
+    }
+}
+```
+
+The following example will create a record similar to the **default data history log** (see below):
+
+```kotlin
+@AuditLog(category="data-history", action="update", target="id", data="data", logger="audit.data-history")
+fun updateDocument(id: String, data: JsonNode, publish: Boolean = false) {
+  ...
+}
+```
+
 #### Data history log
 
 A special category of audit log records are data history records. They are used to document changes made to the application data. The data history log is realized in the following way:
@@ -124,7 +171,7 @@ A special category of audit log records are data history records. They are used 
   - *Category*: Value of `audit.log.data-history-category` defined in `application.properties` (default: *data-history*)
   - *Logger*: Value of `audit.log.data-history-logger` defined in `application.properties` (default: *audit.data-history*)
 
-This means that data history records can be retrieved by filtering audit log records by a category value of *data-history*. Since the logger name *audit.data-history* is a descendent of the default audit log logger, it uses the same configuration by default (especially the same appender), but could be configured in a different way as well.
+This means that data history records can be retrieved by filtering audit log records by a category value of *data-history*. Since the logger name *audit.data-history* is a descendent of the default audit log logger, it uses the same configuration by default (especially the same appender), but could be configured in a different way as well. The produced records look like the example mentioned in the audit log section.
 
 ## Data model
 
@@ -135,8 +182,3 @@ This means that data history records can be retrieved by filtering audit log rec
 ## Testing
 
 ## Deployment
-
-
-
-
-
