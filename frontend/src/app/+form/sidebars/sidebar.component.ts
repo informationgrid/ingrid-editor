@@ -72,7 +72,7 @@ export class SidebarComponent implements OnInit {
       return;
     }
 
-    const currentId = this.formsManager.getControl(this.formType).value._id;
+    const currentId = this.formsManager.getControl(this.formType)?.value?._id;
 
     // do not load same node again
     if (currentId === selectedDocIds[0]) {
