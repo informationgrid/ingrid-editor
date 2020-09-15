@@ -25,6 +25,7 @@
                 <mat-menu #copyMenu="matMenu">
                     <button *ngFor="let menuItem of button.menu" mat-menu-item
                             [disabled]="!menuItem.active"
+                            [attr.data-cy]="'copyMenu_' + menuItem.eventId"
                             (click)="sendEvent(menuItem.eventId)">
                         <span>{{menuItem.label}}</span>
                     </button>
