@@ -43,10 +43,11 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
          * Otherwise a reload will lead to a 404 - Not Found error
          */
         val basePath = ""
+        // Attention: update resource locations when changing springdoc-openapi-ui
         registry.addResourceHandler("$basePath/swagger-ui/index.html**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.25.0/index.html")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.32.5/index.html")
         registry.addResourceHandler("$basePath/swagger-ui/*")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.25.0/")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.32.5/")
         registry.addResourceHandler("/**/*")
                 .addResourceLocations("classpath:/static/")
                 .resourceChain(true)

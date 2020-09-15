@@ -68,7 +68,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'com.auth0:java-jwt:3.10.0'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.4.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.4.6' // Attention: also update SwaggerDocumentationConfig.kt
     implementation 'com.orientechnologies:orientdb-core:3.0.31'
     implementation 'com.orientechnologies:orientdb-server:3.0.31'
     implementation 'com.github.fge:json-schema-validator:2.2.6'
