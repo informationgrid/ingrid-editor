@@ -6,6 +6,9 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 import {CreateNodeComponent, CreateOptions} from './create-node.component';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {filter, take} from 'rxjs/operators';
+import {FormUtils} from "../../form.utils";
+import {DocumentService} from "../../../services/document/document.service";
+import {NgFormsManager} from "@ngneat/forms-manager";
 
 @Injectable()
 export class CreateFolderPlugin extends Plugin {
@@ -21,6 +24,8 @@ export class CreateFolderPlugin extends Plugin {
   constructor(private formToolbarService: FormToolbarService,
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
+              private documentService: DocumentService,
+              private formsManager: NgFormsManager,
               private dialog: MatDialog) {
     super();
     this.isActive = true;
@@ -60,7 +65,7 @@ export class CreateFolderPlugin extends Plugin {
     // add hook to attach to when action is triggered
   }
 
-  createFolder() {
+  async createFolder() {
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
     // TODO: parent node determination is the same as in new-doc plugin
@@ -71,6 +76,13 @@ export class CreateFolderPlugin extends Plugin {
     // loaded while we clicked on the create node button. In this case the function
     // getFirstParentFolder would throw an error
     if (selectedDoc) {
+
+      let handled = await FormUtils.handleDirtyForm(this.formsManager, this.documentService, this.dialog, this.forAddress);
+
+      if (!handled) {
+        return;
+      }
+
       query.selectEntity(selectedDoc.id)
         .pipe(
           filter(entity => entity !== undefined),

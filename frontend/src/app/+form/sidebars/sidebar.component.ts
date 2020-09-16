@@ -5,10 +5,11 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {ShortTreeNode, TreeAction} from './tree/tree.component';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
-import {NgFormsManager} from "@ngneat/forms-manager";
-import {FormUtils} from "../form.utils";
-import {MatDialog} from "@angular/material/dialog";
-import {DocumentService} from "../../services/document/document.service";
+import {NgFormsManager} from '@ngneat/forms-manager';
+import {FormUtils} from '../form.utils';
+import {MatDialog} from '@angular/material/dialog';
+import {DocumentService} from '../../services/document/document.service';
+import {TreeService} from './tree/tree.service';
 
 @UntilDestroy()
 @Component({
@@ -35,6 +36,7 @@ export class SidebarComponent implements OnInit {
               private documentService: DocumentService,
               private formsManager: NgFormsManager,
               private addressTreeStore: AddressTreeStore,
+              private treeService: TreeService,
               private docTreeStore: TreeStore) {
 
   }
@@ -84,21 +86,8 @@ export class SidebarComponent implements OnInit {
     if (handled) {
       this.router.navigate([this.path, {id: selectedDocIds[0]}]);
     } else {
-      this.revertTreeNodeChange(currentId);
+      this.treeService.selectTreeNode(this.address, currentId);
     }
-
-  }
-
-  /**
-   * Send two updates here since active node won't be set in tree because it seems that it already is
-   * due to the Subject being used.
-   * @param id
-   */
-  private revertTreeNodeChange(id: string) {
-
-    this.treeStore.update({
-      explicitActiveNode: new ShortTreeNode(id, '?')
-    });
 
   }
 

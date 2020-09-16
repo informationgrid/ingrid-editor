@@ -1,12 +1,14 @@
 import {Component, Input, OnChanges} from '@angular/core';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {Observable} from 'rxjs';
-import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
+import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {DocumentAbstract} from '../../../store/document/document.model';
-import {Router} from "@angular/router";
-import {DocumentService} from "../../../services/document/document.service";
-import {SessionQuery} from "../../../store/session.query";
-import {map} from "rxjs/operators";
+import {Router} from '@angular/router';
+import {DocumentService} from '../../../services/document/document.service';
+import {map} from 'rxjs/operators';
+import {FormUtils} from '../../form.utils';
+import {NgFormsManager} from '@ngneat/forms-manager';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'ige-folder-dashboard',
@@ -23,7 +25,8 @@ export class FolderDashboardComponent implements OnChanges {
               private formToolbarService: FormToolbarService,
               private router: Router,
               private docService: DocumentService,
-              private sessionQuery: SessionQuery) {
+              private formsManager: NgFormsManager,
+              private dialog: MatDialog) {
   }
 
   ngOnChanges() {
@@ -45,12 +48,17 @@ export class FolderDashboardComponent implements OnChanges {
     this.formToolbarService.toolbarEvent$.next('NEW_DOC');
   }
 
-  openDocument(id: number | string) {
-    if (this.isAddress) {
-      this.router.navigate(['/address', {id: id}]);
-    } else {
+  async openDocument(id: number | string) {
 
-      this.router.navigate(['/form', {id: id}]);
+    const handled = await FormUtils.handleDirtyForm(this.formsManager, this.docService, this.dialog, this.isAddress);
+
+    if (handled) {
+      if (this.isAddress) {
+        this.router.navigate(['/address', {id: id}]);
+      } else {
+
+        this.router.navigate(['/form', {id: id}]);
+      }
     }
   }
 

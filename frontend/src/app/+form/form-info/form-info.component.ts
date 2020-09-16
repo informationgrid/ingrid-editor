@@ -24,6 +24,11 @@ import {ShortTreeNode} from '../sidebars/tree/tree.component';
 import {TreeStore} from '../../store/tree/tree.store';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 import {DocumentUtils} from '../../services/document.utils';
+import {TreeService} from '../sidebars/tree/tree.service';
+import {FormUtils} from '../form.utils';
+import {DocumentService} from '../../services/document/document.service';
+import {NgFormsManager} from '@ngneat/forms-manager';
+import {MatDialog} from '@angular/material/dialog';
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -60,10 +65,14 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
 
   constructor(private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
+              private treeService: TreeService,
               private treeStore: TreeStore,
               private addressTreeStore: AddressTreeStore,
               private cdr: ChangeDetectorRef,
               private sessionQuery: SessionQuery,
+              private documentService: DocumentService,
+              private formsManager: NgFormsManager,
+              private dialog: MatDialog,
               private profileService: ProfileService) {
   }
 
@@ -123,7 +132,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
       throttleTime(10), // do not handle all events
       map(() => element.scrollTop),
       map((top): boolean => this.determineToggleState(top)),
-      distinctUntilChanged(),
+      distinctUntilChanged()
     ).subscribe(show => this.toggleStickyHeader(show));
 
   }
@@ -162,11 +171,12 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     return DocumentUtils.getStateClass(this.model._state, this.model._type);
   }
 
-  scrollToTreeNode(nodeId: string) {
+  async scrollToTreeNode(nodeId: string) {
 
-    this.store.update({
-      explicitActiveNode: new ShortTreeNode(nodeId, '?')
-    });
+    let handled = await FormUtils.handleDirtyForm(this.formsManager, this.documentService, this.dialog, this.forAddress);
+    if (handled) {
+      this.treeService.selectTreeNode(this.forAddress, nodeId);
+    }
 
   }
 }

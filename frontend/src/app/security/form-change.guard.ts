@@ -5,11 +5,9 @@ import {MatDialog} from '@angular/material/dialog';
 import {Observable, of} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {FormComponent} from '../+form/form/form.component';
-import {TreeStore} from '../store/tree/tree.store';
-import {AddressTreeStore} from '../store/address-tree/address-tree.store';
 import {AddressComponent} from '../+address/address/address.component';
-import {ShortTreeNode} from '../+form/sidebars/tree/tree.component';
 import {NgFormsManager} from '@ngneat/forms-manager';
+import {TreeService} from '../+form/sidebars/tree/tree.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +15,7 @@ import {NgFormsManager} from '@ngneat/forms-manager';
 export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
 
   constructor(private dialog: MatDialog, private formsManager: NgFormsManager,
-              private treeStore: TreeStore, private addressTreeStore: AddressTreeStore) {
+              private treeService: TreeService) {
   }
 
   canDeactivate(target: FormComponent | AddressComponent, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean> {
@@ -45,26 +43,11 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       }).afterClosed()
         .pipe(
           map(response => response !== 'stay'),
-          tap(leavePage => leavePage ? null : this.revertTreeNodeChange(type, currentId))
+          tap(leavePage => leavePage ? null : this.treeService.selectTreeNode(type === 'address', currentId))
         );
     }
     return of(true);
 
-  }
-
-  /**
-   * Send two updates here since active node won't be set in tree because it seems that it already is
-   * due to the Subject being used.
-   * @param type
-   * @param id
-   */
-  private revertTreeNodeChange(type: 'address'|'document', id: string) {
-
-    const store = type === 'document' ? this.treeStore : this.addressTreeStore;
-
-    store.update({
-      explicitActiveNode: new ShortTreeNode(id, '?')
-    });
   }
 
   private static pageIsNotLeft(currentUrl: string, nextUrl: string) {

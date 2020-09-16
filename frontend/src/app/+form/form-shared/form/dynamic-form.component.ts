@@ -30,8 +30,10 @@ import {BehaviorSubject, combineLatest, merge} from 'rxjs';
 import {ProfileQuery} from '../../../store/profile/profile.query';
 import {Behaviour} from '../../../services/behavior/behaviour';
 import {NgFormsManager} from '@ngneat/forms-manager';
-import {AuthService} from "../../../services/security/auth.service";
-import {MatSlideToggleChange} from "@angular/material/slide-toggle";
+import {AuthService} from '../../../services/security/auth.service';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
+import {MatDialog} from '@angular/material/dialog';
+import {TreeService} from '../../sidebars/tree/tree.service';
 
 @UntilDestroy()
 @Component({
@@ -80,8 +82,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService,
+              private dialog: MatDialog,
               private documentService: DocumentService, private modalService: ModalService,
               private formsManager: NgFormsManager,
+              private treeService: TreeService,
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
               private session: SessionQuery,
@@ -108,7 +112,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   ngOnInit() {
 
     this.formsManager.valueChanges(this.address ? 'address' : 'document')
-      .subscribe(() => this.auth.refreshSession().subscribe())
+      .subscribe(() => this.auth.refreshSession().subscribe());
 
     if (this.address) {
       this.formPlugins.setAddressConfiguration();
@@ -204,7 +208,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   ngAfterContentChecked() {
     // TODO check if performance is impacted
-    this.hasOptionalFields.next(document.querySelectorAll('.optional').length < 1)
+    this.hasOptionalFields.next(document.querySelectorAll('.optional').length < 1);
   }
 
   /**
@@ -222,7 +226,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
         setTimeout(() => this.scrollForm.nativeElement.scrollTop = this.treeQuery.getValue().scrollPosition, 1000);
       } else {
         this.fields = [];
-        this.formsManager.destroy(this.formStateName);
+        this.formsManager.clear(this.formStateName);
         this.activeId.next(null);
         this.documentService.updateOpenedDocumentInTreestore(null, this.address, true);
         return;
@@ -332,12 +336,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   toggleOptionals($event: MatSlideToggleChange) {
     if ($event.checked) {
       document.querySelectorAll('.optional').forEach((e) => {
-        e.classList.remove('hidden')
-      })
+        e.classList.remove('hidden');
+      });
     } else {
       document.querySelectorAll('.optional').forEach((e) => {
-        e.classList.add('hidden')
-      })
+        e.classList.add('hidden');
+      });
     }
   }
 }

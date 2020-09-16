@@ -1,5 +1,8 @@
 import {Injectable} from '@angular/core';
 import {TreeNode} from '../../../store/tree/tree-node.model';
+import {TreeStore} from '../../../store/tree/tree.store';
+import {AddressTreeStore} from '../../../store/address-tree/address-tree.store';
+import {ShortTreeNode} from './tree.component';
 
 export type TreeSortFn = (a: TreeNode, b: TreeNode) => number;
 
@@ -23,7 +26,7 @@ export class TreeService {
   };
 
 
-  constructor() {
+  constructor(private treeStore: TreeStore, private addressTreeStore: AddressTreeStore) {
   }
 
   registerTreeSortFunction(treeSortFn: TreeSortFn) {
@@ -38,5 +41,20 @@ export class TreeService {
 
   getSortTreeNodesFunction(): TreeSortFn {
     return this.alternativeSortFunction || this.sortNodesByFolderFirst;
+  }
+
+  /**
+   * Set active TreeNode
+   * @param isAddress
+   * @param id
+   */
+  selectTreeNode(isAddress: boolean, id: string) {
+
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    store.update({
+      explicitActiveNode: new ShortTreeNode(id, '?')
+    });
+
   }
 }
