@@ -143,4 +143,7 @@ export class DocumentPage extends BasePage {
     cy.get('[data-cy="confirm-dialog-confirm"]').click()
   }
 
+  static refreshDashboard(){
+    return cy.get('[data-cy=reload-button]').click()
+  }
 }
