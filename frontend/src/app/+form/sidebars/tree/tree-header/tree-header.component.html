@@ -2,7 +2,7 @@
     <div *ngIf="showOptions" class="options" fxLayout="row" fxLayoutAlign="space-between">
         <mat-slide-toggle class="show-all" checked disabled>Alle anzeigen</mat-slide-toggle>
 
-        <button *ngIf="showReloadButton" mat-icon-button
+        <button *ngIf="showReloadButton" mat-icon-button data-cy="reload-button"
                 matTooltip="Aktualisieren"
                 (click)="reloadTree()">
             <mat-icon>refresh</mat-icon>
