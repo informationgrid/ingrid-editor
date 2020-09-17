@@ -2,6 +2,7 @@ import {DocumentPage} from '../../pages/document.page';
 import {Utils} from '../../pages/utils';
 import {Address, AddressPage} from '../../pages/address.page';
 import {Tree} from '../../pages/tree.partial';
+import {CopyCutUtils} from "../../pages/copy-cut-utils";
 
 describe('General create addresses/folders', () => {
 
@@ -105,7 +106,7 @@ describe('General create addresses/folders', () => {
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
-      cy.get('ige-breadcrumb').shouldHaveTrimmedText(`Adressen`);
+      CopyCutUtils.selectNodeWithChecks(folderName, ['Adressen']);
       cy.get(DocumentPage.title).should('have.text', folderName)
     });
 
@@ -176,7 +177,7 @@ describe('General create addresses/folders', () => {
       cy.wait(500);
       cy.get('#sidebar').findByText(adr1Name).click();
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
-      cy.get('[data-cy=confirm-dialog-stay]').click();
+      cy.get('[data-cy=confirm-dialog-save]').click();
       cy.get(DocumentPage.title).should('have.text', adr1Name);
     });
 

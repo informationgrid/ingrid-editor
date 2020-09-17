@@ -23,24 +23,18 @@ export class Tree {
     if (!isInsideDialog) cy.get(DocumentPage.title).should('have.text', nodeTitle);
   }
 
-  /**
-   * true -> exact same, false -> nearly same/similar
-   * default is false
-   * @param exact
-   */
-  static openNode(targetNodePath: string[], exact= false){
-    targetNodePath.forEach(node => Tree.selectNodeWithTitle(node, false, exact));
+  static openNode(targetNodePath: string[]){
+    targetNodePath.forEach(node => Tree.selectNodeWithTitle(node));
   }
 
   static deleteNode(deleteHoleNodePath: string[]){
     const reverseNodePath = deleteHoleNodePath.reverse();
 
-    deleteHoleNodePath.forEach(node => Tree.selectNodeWithTitle(node, false, true))
+    // deleteHoleNodePath.forEach(node =>  cy.get('#sidebar').findByText(node).click())
     reverseNodePath.forEach(node => {
-      cy.contains(node).click({ctrlKey:true});
+      cy.get('#sidebar').findByText(node).click({multiple: true, ctrlKey:true});
     })
-    cy.get(DocumentPage.Toolbar.Delete).click();
-    cy.get('[data-cy=confirm-dialog-confirm]').click();
+    DocumentPage.deleteLoadedNode();
   }
 
 }

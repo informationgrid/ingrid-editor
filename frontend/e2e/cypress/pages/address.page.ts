@@ -33,6 +33,21 @@ export class AddressPage extends DocumentPage {
     this.CreateDialog.execute();
   }
 
+  static saveChanges () {
+    cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+    cy.get('[data-cy=confirm-dialog-save]').click();
+  }
+
+  static discardSaveChanges () {
+    cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+    cy.get('[data-cy=confirm-dialog-discard]').click();
+  }
+
+  static cancelSaveChanges () {
+    cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+    cy.get('[data-cy=confirm-dialog-cancel]').click();
+  }
+
   /*
     static publishNow() {
       cy.get(DocumentPage.Toolbar.Publish).click();

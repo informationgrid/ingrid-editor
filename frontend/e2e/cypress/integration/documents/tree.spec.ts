@@ -13,14 +13,14 @@ beforeEach(() => {
 describe('Tree', () => {
 
   xit('should navigate to a section when clicking on form header navigation', () => {
-    Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument'], true);
+    Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument']);
 
     cy.get('.navigation-header').contains('Zeitbezüge').click();
     // needs to check up that the screen is on point Zeitbezüge
   });
 
   it('should expand and select the same node when reloading page', () => {
-    Tree.openNode(['Testdokumente', 'Ordner 2. Ebene'], true);
+    Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
     CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
 
     DocumentPage.refreshDashboard();
@@ -94,15 +94,15 @@ describe('Tree', () => {
     it('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
       //cypress dont open a hovered node by auto-expanding
       const docName = 'drag&drop to a deep node (auto-expand)'
-      const dropFolder ='Test (auto-expanding)'
-      const dropFolder2 ='Test (auto-expanding)2'
+      const dropFolder ='Auto-expanding1'
+      const dropFolder2 ='Auto-expanding2'
 
       DocumentPage.createDocument(docName);
       DocumentPage.createFolder(dropFolder);
       DocumentPage.createFolder(dropFolder2);
 
       //to close for checking auto-expanding by hovered node
-      Tree.openNode([dropFolder]);
+      Tree.selectNodeWithTitle(dropFolder);
 
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
 
@@ -115,7 +115,7 @@ describe('Tree', () => {
     it('should auto-expand a deeply nested folder', () =>{
       const docName ='Tester deep auto-expand'
       const docName2 = 'Deep deep folder'
-      const deepFolder ='Deep auto-expanding'
+      const deepFolder ='Deep auto-expanding1'
       const deepFolder2 ='Deep auto-expanding2'
       const deepFolder3 ='Deep auto-expanding3'
 
@@ -156,10 +156,10 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
       DocumentPage.createFolder(testFolder2);
 
-      Tree.selectNodeWithTitle(testFolder);
+      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten']);
 
       CopyCutUtils.copyObjectWithTree([testFolder, testFolder2]);
-      cy.get('error-dialog').contains('Copy Error');
+      cy.get('error-dialog').contains('failure');
     });
 
     it('should not be possible to copy a document/folder under a document', () => {
@@ -172,7 +172,7 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName2);
       DocumentPage.createFolder(testFolder);
 
-      Tree.openNode([docName2]);
+      CopyCutUtils.selectNodeWithChecks(docName2, ['Daten']);
 
       // because of 'not.contain.value' we can not use CopyCutUtils.copyObject()
       cy.get('[data-cy=toolbar_COPY]').click()
@@ -205,8 +205,9 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName);
 
       CopyCutUtils.copyObject(['Testdokumente', 'Ordner 2. Ebene']);
+      DocumentPage.deleteLoadedNode();
 
-      Tree.openNode(['Testdokumente', 'Ordner 2. Ebene'], true);
+      Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
     });
 
@@ -255,8 +256,10 @@ describe('Tree', () => {
       Tree.selectNodeWithTitle(testFolder);
       CopyCutUtils.copyObjectWithTree(['Testdokumente', 'Ordner 2. Ebene']);
 
-      Tree.selectNodeWithTitle(testFolder);
-      Tree.deleteNode([testFolder, docName]);
+      Tree.openNode([testFolder]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+
+      Tree.deleteNode([testFolder, docName])
 
       Tree.openNode([ 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
 
@@ -338,7 +341,7 @@ describe('Tree', () => {
     it('should move a document from a folder to the root', () => {
       const docName = 'move me from a deep folder'
 
-      Tree.openNode(['Testdokumente', 'Ordner 2. Ebene'], true);
+      Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
 
       DocumentPage.createDocument(docName);
 
