@@ -50,6 +50,7 @@ import {FullWidthWrapperComponent} from './formly/wrapper/full-width-wrapper.com
 import {SessionTimeoutInterceptor} from './services/session-timeout.interceptor';
 import {SessionTimeoutInfoComponent} from './main-header/session-timeout-info/session-timeout-info.component';
 import {TimePipe} from './directives/time.pipe';
+import {FormFieldsModule} from './form-fields/form-fields.module';
 
 registerLocaleData(de);
 
@@ -94,29 +95,29 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     TimePipe,
     MainHeaderComponent,
     SessionTimeoutInfoComponent],
-  imports: [
-    environment.production ? [] : AkitaNgDevtools.forRoot(),
-    AngularSplitModule.forRoot(),
-    MatTooltipModule,
-    // angular
-    BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
-    // Flex layout
-    FlexLayoutModule,
-    FormlyModule.forRoot({
-      wrappers: [
-        {name: 'inline-help', component: InlineHelpWrapperComponent},
-        {name: 'panel', component: OneColumnWrapperComponent},
-        {name: 'full-panel', component: FullWidthWrapperComponent},
-        {name: 'section', component: SectionWrapper}
-      ]
-    }),
-    FormlyMaterialModule,
-    // Material
-    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatRadioModule, MatCheckboxModule,
-    MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
-    // IGE-Modules
-    routing, FormsModule, MatTabsModule, FormSharedModule, MatMenuModule, SharedDocumentItemModule
-  ],
+    imports: [
+        environment.production ? [] : AkitaNgDevtools.forRoot(),
+        AngularSplitModule.forRoot(),
+        MatTooltipModule,
+        // angular
+        BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
+        // Flex layout
+        FlexLayoutModule,
+        FormlyModule.forRoot({
+            wrappers: [
+                {name: 'inline-help', component: InlineHelpWrapperComponent},
+                {name: 'panel', component: OneColumnWrapperComponent},
+                {name: 'full-panel', component: FullWidthWrapperComponent},
+                {name: 'section', component: SectionWrapper}
+            ]
+        }),
+        FormlyMaterialModule,
+        // Material
+        MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatRadioModule, MatCheckboxModule,
+        MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
+        // IGE-Modules
+        routing, FormsModule, MatTabsModule, FormSharedModule, MatMenuModule, SharedDocumentItemModule, FormFieldsModule
+    ],
   providers: [
     // appRoutingProviders,
     // make sure we are authenticated by keycloak before bootstrap

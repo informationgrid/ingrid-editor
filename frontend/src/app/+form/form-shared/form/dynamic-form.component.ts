@@ -24,7 +24,7 @@ import {FormularService} from '../../formular.service';
 import {FormPluginsService} from '../form-plugins.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {StickyHeaderInfo} from '../../form-info/form-info.component';
-import {filter, map} from 'rxjs/operators';
+import {debounceTime, filter, map} from 'rxjs/operators';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {BehaviorSubject, combineLatest, merge} from 'rxjs';
 import {ProfileQuery} from '../../../store/profile/profile.query';
@@ -106,12 +106,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
     // reset selected documents if we revisit the page
     this.formularService.setSelectedDocuments([]);
+
+    // clean up form manager
+    this.formsManager.clear(this.formStateName);
     this.formsManager.unsubscribe();
   }
 
   ngOnInit() {
 
     this.formsManager.valueChanges(this.address ? 'address' : 'document')
+      .pipe(debounceTime(3000)) // send request 3s after last form change
       .subscribe(() => this.auth.refreshSession().subscribe());
 
     if (this.address) {
@@ -224,6 +228,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
         console.log('Opening previous selected node', previousOpenedDoc.id);
         id = previousOpenedDoc.id.toString();
         setTimeout(() => this.scrollForm.nativeElement.scrollTop = this.treeQuery.getValue().scrollPosition, 1000);
+        // just change active id, which initiates another call to this function
+        this.activeId.next(id);
+        return;
       } else {
         this.fields = [];
         this.formsManager.clear(this.formStateName);

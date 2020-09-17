@@ -11,6 +11,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatIconModule} from '@angular/material/icon';
+import {FormFieldsModule} from '../../form-fields/form-fields.module';
 
 
 @NgModule({
@@ -18,7 +19,7 @@ import {MatIconModule} from '@angular/material/icon';
     imports: [
         CommonModule, FormsModule,
         MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatDialogModule,
-        MatInputModule, MatButtonModule, MatSelectModule, FlexModule, MatIconModule
+        MatInputModule, MatButtonModule, MatSelectModule, FlexModule, MatIconModule, FormFieldsModule
     ],
   entryComponents: [NewCatalogDialogComponent]
 })

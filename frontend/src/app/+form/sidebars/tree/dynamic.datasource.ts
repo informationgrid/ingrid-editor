@@ -136,7 +136,12 @@ export class DynamicDataSource {
 
   updateNode(docs: DocumentAbstract[]) {
     docs.forEach(doc => {
-      const index = this.data.findIndex(node => node._id === doc.id);
+      const index = this.data?.findIndex(node => node._id === doc.id);
+
+      // in case we save unsaved changes before leaving the page
+      if (index === undefined) {
+        return;
+      }
 
       this.collapseNode(this.data[index], index);
 

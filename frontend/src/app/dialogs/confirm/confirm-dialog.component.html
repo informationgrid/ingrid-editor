@@ -19,31 +19,19 @@
         </mat-form-field>
     </div>
 </mat-dialog-content>
-<!--<mat-dialog-actions  *ngIf="!data.buttons">
-    <button *ngIf="!data.reverseButtonOrder" mat-button color="primary" mat-dialog-close cdkFocusInitial data-cy="confirm-dialog-cancel">{{data.cancelButtonText || 'Abbrechen'}}</button>
-    <button *ngIf="data.reverseButtonOrder" mat-button color="primary" data-cy="confirm-dialog-confirm"
-            [mat-dialog-close]="true"
-            [disabled]="data.confirmText && textConfirmed !== data.confirmText">
-        {{data.acceptButtonText || 'Ok'}}
-    </button>
-    <div fxFlex></div>
-    <button *ngIf="data.reverseButtonOrder" mat-stroked-button color="primary" mat-dialog-close cdkFocusInitial data-cy="confirm-dialog-cancel">{{data.cancelButtonText || 'Abbrechen'}}</button>
-    <button *ngIf="!data.reverseButtonOrder" mat-stroked-button color="primary" data-cy="confirm-dialog-confirm"
-            [mat-dialog-close]="true"
-            [disabled]="data.confirmText && textConfirmed !== data.confirmText">
-        {{data.acceptButtonText || 'Ok'}}
-    </button>
-</mat-dialog-actions>-->
 
 <mat-dialog-actions>
-    <button *ngFor="let button of leftAlignedButtons" mat-button color="primary" [class.mat-stroked-button]="button.emphasize"
+    <button *ngFor="let button of leftAlignedButtons" mat-button color="primary"
+            [class.mat-stroked-button]="button.emphasize"
             [disabled]="button.disabledWhenNotConfirmed && data.confirmText && textConfirmed !== data.confirmText"
             [mat-dialog-close]="button.id || false" [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')">
         {{button.text}}
     </button>
     <div fxFlex></div>
-    <button *ngFor="let button of rightAlignedButtons" mat-button color="primary" [class.mat-stroked-button]="button.emphasize"
+    <button *ngFor="let button of rightAlignedButtons" mat-button color="primary"
+            [class.mat-stroked-button]="button.emphasize"
             [disabled]="button.disabledWhenNotConfirmed && data.confirmText && textConfirmed !== data.confirmText"
+            igeFocus
             [mat-dialog-close]="button.id || false" [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')">
         {{button.text}}
     </button>

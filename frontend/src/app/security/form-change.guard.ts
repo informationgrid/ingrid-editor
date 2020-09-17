@@ -8,6 +8,7 @@ import {FormComponent} from '../+form/form/form.component';
 import {AddressComponent} from '../+address/address/address.component';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {TreeService} from '../+form/sidebars/tree/tree.service';
+import {DocumentService} from '../services/document/document.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ import {TreeService} from '../+form/sidebars/tree/tree.service';
 export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
 
   constructor(private dialog: MatDialog, private formsManager: NgFormsManager,
+              private documentService: DocumentService,
               private treeService: TreeService) {
   }
 
@@ -32,22 +34,35 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     if (formHasChanged) {
       const currentId = this.formsManager.getControl(type).value._id;
       return this.dialog.open(ConfirmDialogComponent, {
+        disableClose: true,
         data: {
           title: 'Änderungen sichern?',
-          message: 'Möchten Sie auf der Seite bleiben und Ihre Eingaben speichern?\nWenn Sie die Seite jetzt verlassen, werden die Änderungen verworfen.',
+          message: 'Möchten Sie die Änderungen speichern bevor Sie die Seite verlassen?\nSie können die Änderungen auch verwerfen oder auf der Seite bleiben.',
           buttons: [
-            {text: 'Seite verlassen'},
+            {text: 'Seite verlassen', id: 'leave'},
+            {text: 'Speichern und verlassen', id: 'save'},
             {text: 'Auf Seite bleiben', emphasize: true, alignRight: true, id: 'stay'}
           ]
         } as ConfirmDialogData
       }).afterClosed()
         .pipe(
-          map(response => response !== 'stay'),
-          tap(leavePage => leavePage ? null : this.treeService.selectTreeNode(type === 'address', currentId))
+          tap(response => response ? this.handleAction(response, type, currentId) : null),
+          map(response => response === 'leave' || response === 'save')
         );
     }
     return of(true);
 
+  }
+
+  private async handleAction(action: undefined | 'save' | 'stay', type: 'document' | 'address', currentId) {
+    const isAddress = type === 'address';
+
+    if (action === 'save') {
+      const form = this.formsManager.getControl(type)?.value;
+      await this.documentService.save(form, false, isAddress);
+    } else if (action === 'stay') {
+      this.treeService.selectTreeNode(isAddress, currentId);
+    }
   }
 
   private static pageIsNotLeft(currentUrl: string, nextUrl: string) {

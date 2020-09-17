@@ -14,7 +14,7 @@
 
                 <ng-container *ngIf="isFolder || !forAddress; else addressForm">
                     <div class="dlg-field-label required">Titel*</div>
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" [igeFocus]="true">
                         <textarea matInput
                                formControlName="title"
                                data-cy="create-title"

@@ -37,6 +37,7 @@ export class FormUtils {
 
   private static showDecisionDialog(dialog: MatDialog): Promise<undefined | string> {
     return dialog.open(ConfirmDialogComponent, {
+      disableClose: true,
       data: <ConfirmDialogData>{
         title: 'Änderungen sichern?',
         message: 'Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?',

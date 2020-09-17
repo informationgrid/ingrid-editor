@@ -77,7 +77,7 @@ export class SidebarComponent implements OnInit {
     const currentId = this.formsManager.getControl(this.formType)?.value?._id;
 
     // do not load same node again
-    if (currentId === selectedDocIds[0]) {
+    if (currentId === selectedDocIds[0] && this.router.url.indexOf(currentId) !== -1) {
       return;
     }
 
