@@ -15,7 +15,9 @@ import {
   VersionConflictDialogComponent
 } from '../version-conflict-dialog/version-conflict-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import {ConfirmDialogComponent, ConfirmDialogData} from "../../../dialogs/confirm/confirm-dialog.component";
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../../dialogs/confirm/confirm-dialog.component';
+import {ErrorDialogComponent} from '../../../dialogs/error/error-dialog.component';
+import {IgeError} from '../../../models/ige-error';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -172,9 +174,16 @@ export class PublishPlugin extends Plugin {
    * @private
    */
   private handleSaveError(error: HttpErrorResponse) {
-    if (error?.status === 409) {
+    if (error?.error?.ErrorCode === 'VERSION_CONFLICT') {
       this.dialog.open(VersionConflictDialogComponent).afterClosed()
         .subscribe(choice => this.handleAfterConflictChoice(choice, error.error));
+    } else if (error?.status === 404 && error?.error.ErrorCode === 'PUBLISHED_VERSION_NOT_FOUND') {
+      this.dialog.open(ErrorDialogComponent, {
+        data: new IgeError({
+          message: 'Eine Referenz besitzt keine veröffentlichte Version',
+          error: {message: error?.error?.ErrorText}
+        })
+      });
     } else {
       throw error;
     }
@@ -189,7 +198,7 @@ export class PublishPlugin extends Plugin {
         this.publishWithData(formData);
         break;
       case 'reload':
-        this.storageService.reload$.next(this.getIdFromFormData())
+        this.storageService.reload$.next(this.getIdFromFormData());
         break;
 
     }

@@ -12,7 +12,10 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/operators';
 import {NgFormsManager} from '@ngneat/forms-manager';
-import {VersionConflictChoice, VersionConflictDialogComponent} from '../version-conflict-dialog/version-conflict-dialog.component';
+import {
+  VersionConflictChoice,
+  VersionConflictDialogComponent
+} from '../version-conflict-dialog/version-conflict-dialog.component';
 import {HttpErrorResponse} from '@angular/common/http';
 
 @UntilDestroy()
@@ -107,7 +110,7 @@ export class SavePlugin extends Plugin {
    * @private
    */
   private handleSaveError(response: HttpErrorResponse) {
-    if (response?.status === 409) {
+    if (response?.error?.ErrorCode === 'VERSION_CONFLICT') {
       this.dialog.open(VersionConflictDialogComponent).afterClosed()
         .subscribe(choice => this.handleAfterConflictChoice(choice, response.error));
     } else {
