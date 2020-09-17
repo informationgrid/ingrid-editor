@@ -58,7 +58,7 @@ class AuditLogger {
     fun find(logger: String?, id: String?, user: String?, action: String?, from: LocalDate?, to: LocalDate?,
              sort: String?, sortOrder: String?) : FindAllResults {
         if (auditLogDB.isNullOrEmpty()) {
-            throw ConfigurationException.fromMissingValue("audit.log.database")
+            throw ConfigurationException.withMissingValue("audit.log.database")
         }
 
         val queryMap = listOfNotNull(
@@ -70,7 +70,7 @@ class AuditLogger {
                 if (to != null) QueryField("message.time", " <=", to.plusDays(1).format(ISO_LOCAL_DATE)) else null
         ).toList()
 
-        dbService.acquire(auditLogDB).use {
+        dbService.acquire(auditLogDB!!).use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false,

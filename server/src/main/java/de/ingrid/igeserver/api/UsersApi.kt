@@ -27,14 +27,14 @@ import javax.validation.Valid
 interface UsersApi {
     @RequestMapping(value = ["/users/{id}"], produces = ["application/json"], method = [RequestMethod.POST])
     @Operation(description = "Create a new user. If the user already exists an error will be returned.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "User was successfully updated"), ApiResponse(responseCode = "406", description = "A user with the given login does not exist and cannot be updated")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "User was successfully updated"), ApiResponse(responseCode = "400", description = "A user with the given login does not exist and cannot be updated")])
     fun createUser(
             @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
             @Parameter(description = "Save the user data into the database.", required = true) @RequestBody user: @Valid User1): ResponseEntity<Void>
 
     @RequestMapping(value = ["/users/{id}"], produces = ["application/json"], method = [RequestMethod.DELETE])
     @Operation(description = "The user with the given ID is deleted. If user with a given login does not exists an error will be returned.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "User was successfully deleted"), ApiResponse(responseCode = "406", description = "A user with the given login does not exist and cannot be deleted")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "User was successfully deleted"), ApiResponse(responseCode = "400", description = "A user with the given login does not exist and cannot be deleted")])
     fun deleteUser(
             @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String): ResponseEntity<Void>
 
@@ -52,19 +52,19 @@ interface UsersApi {
 
     @RequestMapping(value = ["/users/{id}"], produces = ["application/json"], method = [RequestMethod.PUT])
     @Operation(description = "Updates an existing user user. If the user does not exist an error will be returned.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "User was successfully created"), ApiResponse(responseCode = "406", description = "A user already exists with the given login")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "User was successfully created"), ApiResponse(responseCode = "400", description = "A user already exists with the given login")])
     fun updateUser(
             @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
             @Parameter(description = "Save the user data into the database.", required = true) @RequestBody user: @Valid User): ResponseEntity<Void>
 
     @RequestMapping(value = ["/info/currentUser"], produces = ["application/json"], method = [RequestMethod.GET])
     @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "406", description = "")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "400", description = "")])
     fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo>
 
     @RequestMapping(value = ["/info/setCatalogAdmin"], produces = ["application/json"], method = [RequestMethod.POST])
     @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "406", description = "")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "400", description = "")])
     fun setCatalogAdmin(principal: Principal?,
                         @Parameter(description = "Save the user data into the database.", required = true) @RequestBody info: @Valid CatalogAdmin): ResponseEntity<UserInfo?>
 

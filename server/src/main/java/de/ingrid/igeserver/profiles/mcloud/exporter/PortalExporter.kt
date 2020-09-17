@@ -8,7 +8,6 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import java.io.IOException
 import java.io.StringWriter
 import java.io.Writer
 
@@ -25,7 +24,6 @@ class PortalExporter : IgeExporter {
                     listOf("mcloud"))
         }
 
-    @Throws(IOException::class)
     override fun run(jsonData: JsonNode): Any {
         val engine = PebbleEngine.Builder()
                 .newLineTrimming(false)

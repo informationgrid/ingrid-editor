@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.exports.IgeExporter
@@ -22,7 +21,6 @@ class ExportService {
     fun doExport(jsonData: JsonNode, format: String): String? {
         val exportedDoc: Any?
         val exporter = exporterFactory.getExporter(format)
-                ?: throw ApiException(500, "Export format not supported: $format")
         exportedDoc = exporter.run(jsonData)
 
         // run post processors

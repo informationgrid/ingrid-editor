@@ -1,5 +1,7 @@
 package de.ingrid.igeserver.services
 
+import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.UnauthenticatedException
 import de.ingrid.igeserver.model.User
 import org.apache.http.HttpResponse
 import org.apache.http.client.methods.HttpGet
@@ -7,7 +9,6 @@ import org.apache.http.client.utils.URIBuilder
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.logging.log4j.LogManager
 import org.keycloak.KeycloakPrincipal
-import org.keycloak.KeycloakSecurityContext
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.keycloak.representations.idm.UserRepresentation
 import org.keycloak.representations.idm.UserSessionRepresentation
@@ -17,11 +18,8 @@ import org.springframework.context.annotation.Profile
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import java.io.IOException
-import java.net.URISyntaxException
 import java.security.Principal
 import java.util.*
-import javax.naming.NoPermissionException
 
 @Service
 @Profile("!dev")
@@ -42,7 +40,6 @@ class KeycloakService : UserManagementService {
         private val serialVersionUID = -7540118001695537791L
     }
 
-    @Throws(IOException::class, NoPermissionException::class)
     override fun getUsers(principal: Principal?): List<User> {
         try {
             HttpClientBuilder.create().build().use { client ->
@@ -52,36 +49,24 @@ class KeycloakService : UserManagementService {
                 val response: HttpResponse = client.execute(get)
                 val statusCode = response.statusLine.statusCode
                 if (statusCode != 200) {
-                    log.error("Response was not ok! => $statusCode")
-                    if (statusCode == 403) {
-                        throw NoPermissionException("You have no permission to get users from keycloak: " + response.statusLine.reasonPhrase)
-                    } else {
-                        throw RuntimeException("Error getting users from keycloak: " + response.statusLine.reasonPhrase)
-                    }
+                    throw ServerException.withReason("Keycloak user request failed: " +
+                            "${response.statusLine.reasonPhrase} (${response.statusLine.statusCode}).")
                 }
                 val entity = response.entity
-                try {
-                    entity.content.use { `is` ->
-                        val users = JsonSerialization.readValue(`is`, UserList::class.java)
-                        return mapUsers(users)
-                    }
-                } catch (ex: Exception) {
-                    log.error("Could not get users from keycloak endpoint", ex)
-                    throw ex
+                entity.content.use { `is` ->
+                    val users = JsonSerialization.readValue(`is`, UserList::class.java)
+                    return mapUsers(users)
                 }
             }
         } catch (e: Exception) {
-            log.error("Problem getting users from keycloak", e)
-            throw e
+            throw ServerException.withReason("Failed to retrieve users.", e)
         }
     }
 
-    @Throws(IOException::class)
     override fun getUser(principal: Principal?, login: String): User {
         return mapUser(getKeycloakUser(principal, login))
     }
 
-    @Throws(IOException::class)
     private fun getKeycloakUser(principal: Principal?, username: String): UserRepresentation {
         try {
             HttpClientBuilder.create().build().use { client ->
@@ -92,31 +77,20 @@ class KeycloakService : UserManagementService {
                 get.addHeader("Authorization", "Bearer " + keycloakPrincipal!!.account.keycloakSecurityContext.tokenString)
                 val response: HttpResponse = client.execute(get)
                 if (response.statusLine.statusCode != 200) {
-                    log.error("Response was not ok! => " + response.statusLine.statusCode)
-                    throw RuntimeException("Keycloak User Request for username: " + username + " => " + response.statusLine.reasonPhrase)
-                    // return null;
+                    throw ServerException.withReason("Keycloak authentication request for '$username' failed: " +
+                            "${response.statusLine.reasonPhrase} (${response.statusLine.statusCode}).")
                 }
                 val entity = response.entity
-                try {
-                    entity.content.use { `is` ->
-                        // FIXME Make sure first match is always the right one
-                        return JsonSerialization.readValue(`is`, UserList::class.java)[0]
-                    }
-                } catch (ex: Exception) {
-                    log.error("Could not get users from keycloak endpoint", ex)
-                    throw ex
+                entity.content.use { `is` ->
+                    // FIXME Make sure first match is always the right one
+                    return JsonSerialization.readValue(`is`, UserList::class.java)[0]
                 }
             }
-        } catch (e: URISyntaxException) {
-            log.error("Problem getting users from keycloak. Invalid URI.", e)
-            throw RuntimeException("Keycloak User Request for username: $username")
         } catch (e: Exception) {
-            log.error("Problem getting users from keycloak", e)
-            throw e
+            throw UnauthenticatedException.withUser(username, e)
         }
     }
 
-    @Throws(IOException::class)
     override fun getLatestLoginDate(principal: Principal?, login: String): Date {
         val userId = getKeycloakUser(principal, login).id
         try {
@@ -126,27 +100,20 @@ class KeycloakService : UserManagementService {
                 get.addHeader("Authorization", "Bearer " + keycloakPrincipal!!.account.keycloakSecurityContext.tokenString)
                 val response: HttpResponse = client.execute(get)
                 if (response.statusLine.statusCode != 200) {
-                    log.error("Response was not ok! => " + response.statusLine.statusCode)
-                    throw RuntimeException("Keycloak User Request for login: " + login + " => " + response.statusLine.reasonPhrase)
-                    // return null;
+                    throw ServerException.withReason("Keycloak sessions request for '$login' failed: " +
+                            "${response.statusLine.reasonPhrase} (${response.statusLine.statusCode}).")
                 }
                 val entity = response.entity
-                try {
-                    entity.content.use { `is` ->
-                        val sessions = JsonSerialization.readValue(`is`, SessionList::class.java)
-                        // TODO Figure out if latest (length-1) or oldest (0) session is the wanted value
-                        //UserSessionRepresentation session = sessions.get( 0 );
-                        val session = sessions[sessions.size - 1]
-                        return Date(session.start)
-                    }
-                } catch (ex: Exception) {
-                    log.error("Could not get users from keycloak endpoint", ex)
-                    throw ex
+                entity.content.use { `is` ->
+                    val sessions = JsonSerialization.readValue(`is`, SessionList::class.java)
+                    // TODO Figure out if latest (length-1) or oldest (0) session is the wanted value
+                    //UserSessionRepresentation session = sessions.get( 0 );
+                    val session = sessions[sessions.size - 1]
+                    return Date(session.start)
                 }
             }
         } catch (e: Exception) {
-            log.error("Problem getting users from keycloak", e)
-            throw e
+            throw ServerException.withReason("Failed to get latest login date for '$login'.", e)
         }
     }
 

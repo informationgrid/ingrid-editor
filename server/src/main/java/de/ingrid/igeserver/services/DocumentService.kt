@@ -3,14 +3,10 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
-import de.ingrid.igeserver.api.PublishedVersionNotFoundException
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.document.DocumentType
@@ -70,15 +66,12 @@ class DocumentService : MapperService() {
                 queryType = QueryType.EXACT,
                 resolveReferences = withReferences)
         val docs = dbService.findAll(type, query, findOptions)
-        if (docs.totalHits != 1L) {
-            log.error("A $type could not be found or is not unique for UUID: $id (got ${docs.totalHits})")
-            throw NotFoundException(404, "No unique document wrapper found")
-        }
-        return try {
-            docs.hits[0]
-        } catch (e: Exception) {
-            log.error("Error getting document by ID: $id", e)
-            null
+        return when (docs.totalHits) {
+            0L -> throw NotFoundException.withMissingResource(id, type.simpleName)
+            1L -> docs.hits[0]
+            else -> {
+                throw PersistenceException.withMultipleEntities(id, type.simpleName, dbService.currentDatabase)
+            }
         }
     }
 
@@ -199,16 +192,16 @@ class DocumentService : MapperService() {
         // run post-update pipe(s)
         val postUpdatePayload = PostUpdatePayload(docType, updatedDocument as ObjectNode, updatedWrapper as ObjectNode)
         postUpdatePipe.runFilters(postUpdatePayload, filterContext)
-        if (publish) {
+        return if (publish) {
             // run post-publish pipe(s)
             val postPublishPayload = PostPublishPayload(docType, postUpdatePayload.document, postUpdatePayload.wrapper)
             postPublishPipe.runFilters(postPublishPayload, filterContext)
             postPersistencePipe.runFilters(postPublishPayload as PostPersistencePayload, filterContext)
-            return getLatestDocument(postPublishPayload.wrapper)
+            getLatestDocument(postPublishPayload.wrapper)
         }
         else {
             postPersistencePipe.runFilters(postUpdatePayload as PostPersistencePayload, filterContext)
-            return getLatestDocument(postUpdatePayload.wrapper)
+            getLatestDocument(postUpdatePayload.wrapper)
         }
     }
 
@@ -324,7 +317,7 @@ class DocumentService : MapperService() {
         val published = doc[FIELD_PUBLISHED]
 
         if (onlyPublished && published.isNull) {
-            throw PublishedVersionNotFoundException("No published version available of ${doc.get(FIELD_ID)}")
+            throw NotFoundException.withMissingPublishedVersion(doc.get(FIELD_ID).asText())
         }
 
         // TODO: check if isNull function really works or if we need a null comparison

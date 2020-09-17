@@ -77,7 +77,7 @@ class OrientDBDatabase : DBApi {
         }
         get() {
             if (!::orientDBInternal.isInitialized) {
-                throw PersistenceException("Database environment is not initialized")
+                throw PersistenceException.withReason("Database environment is not initialized.")
             }
             return orientDBInternal
         }
@@ -85,7 +85,7 @@ class OrientDBDatabase : DBApi {
     // mapping between entity types and implementing classes
     private val entityTypeMap: Map<KClass<out EntityType>, OrientDBEntityType> by lazy {
         if (!::entityTypes.isInitialized) {
-            throw PersistenceException("No entity types registered")
+            throw PersistenceException.withReason("No entity types registered.")
         }
         val result: Map<KClass<out EntityType>, OrientDBEntityType> = mutableMapOf()
         entityTypes.forEach { t: OrientDBEntityType ->
@@ -159,7 +159,7 @@ class OrientDBDatabase : DBApi {
                 docs.close()
                 return doc.identity.get().toString()
             } else {
-                throw PersistenceException("There is more than one result for type: $type and docUuid: $docUuid")
+                throw PersistenceException.withMultipleEntities(docUuid, type.simpleName, currentDatabase)
             }
         }
         return null
@@ -275,8 +275,7 @@ class OrientDBDatabase : DBApi {
         } catch (ex: OConcurrentModificationException) {
             throw convertConcurrentException(ex)
         } catch (e: Exception) {
-            log.error("Error saving document", e)
-            throw PersistenceException("Error saving document" + e.message)
+            throw PersistenceException.withReason("Failed to update document of type '${type.simpleName}' with id ${id}.", e)
         }
     }
 
@@ -291,7 +290,7 @@ class OrientDBDatabase : DBApi {
 
         result.close()
         if (count == 0L) {
-            throw PersistenceException("Document cannot be deleted, since it wasn't found: ${typeImpl.className} -> $id")
+            throw PersistenceException.withReason("Failed to delete non-existing document of type '${type.simpleName}' with id '$id'.")
         }
         return true
     }
@@ -309,14 +308,16 @@ class OrientDBDatabase : DBApi {
             return catalogDatabases.toTypedArray()
         }
 
+    override val currentDatabase: String?
+        get() {
+            return dBFromThread.name
+        }
+
     override fun createDatabase(settings: Catalog): String? {
         settings.id = settings.name.toLowerCase().replace(" ".toRegex(), "_")
         val isNew = orientDB.createIfNotExists(settings.id, dbType)
         if (isNew) {
-            acquireImpl(settings.id).use { session ->
-                if (session == null) {
-                    throw PersistenceException("Failed to initialize database ${settings.id}")
-                }
+            acquireImpl(settings.id!!).use { session ->
                 OBehaviourType().initialize(session)
                 OCatalogInfoType().initialize(session)
 
@@ -337,10 +338,10 @@ class OrientDBDatabase : DBApi {
     }
 
     override fun updateDatabase(settings: Catalog) {
-        acquireImpl(settings.id).use {
+        acquireImpl(settings.id!!).use {
             val list = this.findAll(CatalogInfoType::class)
             if (list.isEmpty()) {
-                throw PersistenceException("No catalog info found in database ${settings.id}")
+                throw PersistenceException.withReason("No catalog info found in database '${settings.id}'.")
             }
             val map = list[0] as ObjectNode
             map.put("name", settings.name)
@@ -361,8 +362,11 @@ class OrientDBDatabase : DBApi {
         return true
     }
 
-    override fun acquire(name: String?): Closeable? {
-        assert(name != null)
+    override fun databaseExists(name: String): Boolean {
+        return orientDB.exists(name)
+    }
+
+    override fun acquire(name: String): Closeable {
         return acquireImpl(name)
     }
 
@@ -378,12 +382,6 @@ class OrientDBDatabase : DBApi {
         }
     }
 
-    private fun convertConcurrentException(ex: OConcurrentModificationException): ConcurrentModificationException {
-        val id = ex.rid.toString()
-        return ConcurrentModificationException("Could not update object with id $id. The database version is newer than the record version.",
-                id, ex.enhancedDatabaseVersion, ex.enhancedRecordVersion)
-    }
-
     override fun rollbackTransaction() {
         dBFromThread.rollback()
     }
@@ -394,9 +392,9 @@ class OrientDBDatabase : DBApi {
     private val dBFromThread: ODatabaseSession
         get() = ODatabaseRecordThreadLocal.instance().get()
 
-    private fun acquireImpl(name: String?): ODatabaseSession? {
+    private fun acquireImpl(name: String): ODatabaseSession {
         if (!orientDB.exists(name)) {
-            throw PersistenceException("Database does not exist: $name")
+            throw PersistenceException.withReason("Database '$name' does not exist.")
         }
         if (ODatabaseRecordThreadLocal.instance().ifDefined?.name.equals(name)) {
             // this could be caused by nested acquire calls
@@ -412,12 +410,9 @@ class OrientDBDatabase : DBApi {
         // make sure the database for storing users and catalog information is there
         val alreadyExists = orientDB.exists(DBApi.DATABASE.USERS.dbName)
         if (!alreadyExists) {
-            log.info("Creating database " + DBApi.DATABASE.USERS.dbName)
+            log.info("Creating database '${DBApi.DATABASE.USERS.dbName}'.")
             orientDB.create(DBApi.DATABASE.USERS.dbName, dbType)
             acquireImpl(DBApi.DATABASE.USERS.dbName).use { session ->
-                if (session == null) {
-                    throw PersistenceException("Failed to initialize database ${DBApi.DATABASE.USERS.dbName}")
-                }
                 OUserInfoType().initialize(session)
                 session.commit()
             }
@@ -437,10 +432,7 @@ class OrientDBDatabase : DBApi {
             return
         }
         for ((id, _, _, type) in settings) {
-            acquireImpl(id).use { session ->
-                if (session == null) {
-                    throw PersistenceException("Failed to initialize document types in database $id")
-                }
+            acquireImpl(id!!).use { session ->
                 documentTypes.filter { docType: OrientDBEntityType -> docType.usedInProfile(type) }
                         .forEach { t: OrientDBEntityType -> t.initialize(session) }
             }
@@ -460,7 +452,7 @@ class OrientDBDatabase : DBApi {
     }
 
     private fun <T : EntityType> getEntityTypeImpl(type: KClass<T>): OrientDBEntityType {
-        return entityTypeMap[type] ?: throw PersistenceException("There is no entity type: $type registered")
+        return entityTypeMap[type] ?: throw PersistenceException.withReason("No entity type '$type' registered.")
     }
 
     private fun <T : EntityType> getById(type: KClass<T>, id: String?): Optional<OResult> {
@@ -544,5 +536,10 @@ class OrientDBDatabase : DBApi {
             oDoc.toJSON("rid,class,version")
         }
         return mapperService.getJsonNode(json)
+    }
+
+    private fun convertConcurrentException(ex: OConcurrentModificationException): ConcurrentModificationException {
+        val id = ex.rid.toString()
+        return ConcurrentModificationException.withConflictingResource(id, ex.enhancedDatabaseVersion, ex.enhancedRecordVersion)
     }
 }

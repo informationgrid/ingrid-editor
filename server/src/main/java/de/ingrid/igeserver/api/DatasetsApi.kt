@@ -56,7 +56,7 @@ interface DatasetsApi {
             @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions): ResponseEntity<List<JsonNode>>
 
     @Operation(description = "Deletes a dataset")
-    @ApiResponses(value = [ApiResponse(responseCode = "200"), ApiResponse(responseCode = "200", description = "Unexpected error")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200"), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @RequestMapping(value = ["/datasets/{id}"], produces = ["application/json"], method = [RequestMethod.DELETE])
     fun deleteById(
             principal: Principal?,
@@ -71,7 +71,7 @@ interface DatasetsApi {
             @Parameter(description = "Define if we want to have addresses or documents.") @RequestParam(value = "address", required = false) isAddress: Boolean): ResponseEntity<List<ObjectNode>>
 
     @Operation(description = "Retrieve a dataset by a given ID.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The dataset with the given ID."), ApiResponse(responseCode = "200", description = "Unexpected error")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The dataset with the given ID."), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @RequestMapping(value = ["/datasets/{id}"], produces = ["application/json"], method = [RequestMethod.GET])
     fun getByID(
             principal: Principal?,

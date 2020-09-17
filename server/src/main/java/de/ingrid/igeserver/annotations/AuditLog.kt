@@ -53,7 +53,7 @@ class AuditLogAspect {
      * The fields will be set as follows:
      * - action: name of the annotated method (if action is not specified in the annotation)
      * - data: parameter names and values of the annotated method call, if 'data' parameter is not set or
-     *         value of the parameter specified in 'data' (e.g. if target is 'document', the value of the 'document' method parameter
+     *         value of the parameter specified in 'data' (e.g. if data is 'document', the value of the 'document' method parameter
      *         will become the value of data)
      * - target: value of the parameter specified in 'target' (e.g. if target is 'id', the value of the 'id' method parameter
      *         will become the value of target)
@@ -81,8 +81,7 @@ class AuditLogAspect {
         // determine action, target, data
         val action = if (annotation.action.isNotBlank()) annotation.action else
             joinPoint.signature.declaringTypeName + "." + joinPoint.signature.name
-        val target = if (annotation.target.isNotBlank()) getParameter(annotation.target, parameterNames, joinPoint)?.toString() else
-            ""
+        val target = if (annotation.target.isNotBlank()) getParameter(annotation.target, parameterNames, joinPoint)?.toString() else ""
 
         auditLogger.log(annotation.category, action, target, parameters, annotation.logger)
         return proceed
@@ -107,7 +106,7 @@ class AuditLogAspect {
         return try {
             jacksonObjectMapper().readTree(strValue)
         }
-        catch(ex: Exception) {
+        catch (ex: Exception) {
             jacksonObjectMapper().createObjectNode().apply {
                 put("text", strValue)
             }

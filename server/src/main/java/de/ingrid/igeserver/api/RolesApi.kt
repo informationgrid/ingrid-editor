@@ -21,14 +21,14 @@ import javax.validation.Valid
 @Tag(name = "Roles", description = "the roles API")
 interface RolesApi {
     @Operation(description = "Creates a new role. If role with a given login already exists an error will be returned.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Role was successfully updated"), ApiResponse(responseCode = "406", description = "A role with the given login does not exist and cannot be updated")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Role was successfully updated"), ApiResponse(responseCode = "400", description = "A role with the given login does not exist and cannot be updated")])
     @RequestMapping(value = ["/roles/{id}"], produces = ["application/json"], method = [RequestMethod.POST])
     fun createRole(
             @Parameter(description = "The unique id of the user.", required = true) @PathVariable("id") id: String,
             @Parameter(description = "Save the role into the database.", required = true) @RequestBody role: @Valid Role): ResponseEntity<Void>
 
     @Operation(description = "Delete a role with a given ID. If role with a given id does not exists an error will be returned.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Role was successfully deleted"), ApiResponse(responseCode = "406", description = "A role with the given id does not exist and cannot be deleted")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Role was successfully deleted"), ApiResponse(responseCode = "400", description = "A role with the given id does not exist and cannot be deleted")])
     @RequestMapping(value = ["/roles/{id}"], produces = ["application/json"], method = [RequestMethod.DELETE])
     fun deleteRole(
             @Parameter(description = "The unique id of the role.", required = true) @PathVariable("id") id: String): ResponseEntity<Void>
@@ -45,7 +45,7 @@ interface RolesApi {
     fun listRoles(): ResponseEntity<String>
 
     @Operation(description = "Updates a role. If role could not be found an error will be returned.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Role was successfully created"), ApiResponse(responseCode = "406", description = "A role already exists with the given login")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Role was successfully created"), ApiResponse(responseCode = "400", description = "A role already exists with the given login")])
     @RequestMapping(value = ["/roles/{id}"], produces = ["application/json"], method = [RequestMethod.PUT])
     fun updateRole(
             @Parameter(description = "The unique id of the role.", required = true) @PathVariable("id") id: String,

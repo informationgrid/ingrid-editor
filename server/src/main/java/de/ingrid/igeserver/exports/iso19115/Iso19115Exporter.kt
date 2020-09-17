@@ -5,7 +5,6 @@ import com.mitchellbosecke.pebble.PebbleEngine
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import org.springframework.stereotype.Service
-import java.io.IOException
 import java.io.StringWriter
 import java.io.Writer
 import java.util.*
@@ -17,7 +16,6 @@ class Iso19115Exporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
         get() = info
 
-    @Throws(IOException::class)
     override fun run(jsonData: JsonNode): Any {
         val engine = PebbleEngine.Builder()
                 .newLineTrimming(false)

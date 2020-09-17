@@ -19,7 +19,6 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
-import java.io.IOException
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -39,7 +38,6 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
     private val httpsEnabled = false
 
     inner class RequestResponseLoggingFilter : Filter {
-        @Throws(IOException::class, ServletException::class)
         override fun doFilter(
                 request: ServletRequest,
                 response: ServletResponse,
@@ -59,7 +57,6 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
             chain.doFilter(request, response)
         }
 
-        @Throws(IOException::class)
         private fun checkAndModifyResponse(res: HttpServletResponse) {
             if (SecurityContextHolder.getContext().authentication == null) {
                 val msg = "We seem to be logged out. Throwing exception in order to notify frontend correctly"
@@ -73,7 +70,6 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
      */
     @Autowired
-    @Throws(Exception::class)
     fun configureGlobal(auth: AuthenticationManagerBuilder) {
         // check out: https://www.thomasvitale.com/spring-security-keycloak/
         val grantedAuthorityMapper = SimpleAuthorityMapper()
@@ -115,7 +111,6 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
     /**
      * Secure appropriate endpoints
      */
-    @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         var http = http
         super.configure(http)

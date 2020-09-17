@@ -5,7 +5,6 @@ import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -38,8 +37,7 @@ class ProfileApiController : ProfileApi {
                 val map = allFrom[0]
                 map!!["profile"].asText()
             } else {
-                log.warn("No profiles available in database!")
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+                throw NotFoundException.withMissingResource(dbId, "Profile")
             }
         }
         return ResponseEntity.ok(profile!!)
@@ -53,8 +51,7 @@ class ProfileApiController : ProfileApi {
         var fileContent = try {
             String(file.bytes)
         } catch (e: IOException) {
-            log.error("Could not get file content from uploaded file: " + file.originalFilename, e)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw InvalidParameterException.withInvalidParameters("file")
         }
 
         // manipulate file content by replacing dynamic variable name with a static one
@@ -63,13 +60,8 @@ class ProfileApiController : ProfileApi {
         dbService.acquire(dbId).use {
             val infos = dbService.findAll(CatalogInfoType::class)
             if (infos.isNotEmpty()) {
-                val rid: String
-                try {
-                    rid = dbService.getRecordId(infos[0])!!
-                    dbService.remove(CatalogInfoType::class, rid)
-                } catch (e: Exception) {
-                    log.error("Error removing profile document", e)
-                }
+                val rid = dbService.getRecordId(infos[0])!!
+                dbService.remove(CatalogInfoType::class, rid)
             }
             dbService.save(CatalogInfoType::class, "profile", fileContent, null)
             return ResponseEntity.ok().build()

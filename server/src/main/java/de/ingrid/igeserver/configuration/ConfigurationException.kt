@@ -1,10 +1,12 @@
 package de.ingrid.igeserver.configuration
 
 import de.ingrid.igeserver.ServerException
+import org.springframework.http.HttpStatus
 
-open class ConfigurationException(errorText: String, data: Map<String, Any>? = null) :
-        ServerException(ERROR_CODE, errorText, data) {
-    constructor(configName: String) : this(ERROR_TEXT_MISSING, mapOf("configName" to configName))
+open class ConfigurationException: ServerException {
+
+    protected constructor(statusCode: HttpStatus, errorCode: String, errorText: String, data: Map<String, Any?>? = null, cause: Throwable? = null) :
+            super(statusCode, errorCode, errorText, data, cause)
 
     companion object {
         private const val ERROR_CODE = "INVALID_CONFIG"
@@ -13,8 +15,15 @@ open class ConfigurationException(errorText: String, data: Map<String, Any>? = n
         /**
          * Factory method for missing configuration value
          */
-        fun fromMissingValue(valueName: String) : ConfigurationException {
-            return ConfigurationException(ERROR_TEXT_MISSING, mapOf("valueName" to valueName))
+        fun withMissingValue(valueName: String, cause: Throwable? = null) : ConfigurationException {
+            return ConfigurationException(STATUS_CODE, ERROR_CODE, ERROR_TEXT_MISSING, mapOf("valueName" to valueName), cause)
+        }
+
+        /**
+         * Factory method for an arbitrary reason
+         */
+        fun withReason(reason: String, cause: Throwable? = null): ConfigurationException {
+            return ConfigurationException(STATUS_CODE, ERROR_CODE, reason, null, cause)
         }
     }
 }

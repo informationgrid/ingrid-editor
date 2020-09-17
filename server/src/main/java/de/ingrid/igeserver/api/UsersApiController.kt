@@ -1,12 +1,12 @@
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
+import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.services.CatalogService
@@ -80,15 +80,10 @@ class UsersApiController : UsersApi {
     override fun list(principal: Principal?, res: AccessTokenResponse): ResponseEntity<List<User>> {
 
         if (principal == null && !developmentMode) {
-            logger.warn("No principal found in request!")
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+            throw UnauthenticatedException.withUser("")
         }
         val users = keycloakService.getUsers(principal)
-        return if (users == null) {
-            ResponseEntity.status(500).body(null)
-        } else {
-            ResponseEntity.ok(users)
-        }
+        return ResponseEntity.ok(users)
     }
 
     override fun updateUser(id: String, user: User): ResponseEntity<Void> {
@@ -99,8 +94,8 @@ class UsersApiController : UsersApi {
 
     override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
 
-        val username = authUtils.getUsernameFromPrincipal(principal)
-        val user = keycloakService.getUser(principal, username)
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val user = keycloakService.getUser(principal, userId)
 
         val lastLogin = this.getLastLogin(principal, user.login)
         val dbIds = catalogService.getCatalogsForUser(user.login)
@@ -164,23 +159,15 @@ class UsersApiController : UsersApi {
             principal: Principal?,
             info: CatalogAdmin): ResponseEntity<UserInfo?> {
 
-        try {
-            dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
-                logger.info("Parameter: $info")
-                val userIds = info.userIds
-                val catalogName = info.catalogName
-                if (userIds.isEmpty()) {
-                    throw ApiException(500, "No user ids set to use as a catalog administrator")
-                }
+        val userIds = info.userIds
+        if (userIds.isEmpty()) {
+            throw InvalidParameterException.withInvalidParameters("info.userIds")
+        }
 
-                userIds.forEach { addOrUpdateCatalogAdmin(catalogName, it) }
-
-            }
-        } catch (e: JsonProcessingException) {
-            logger.error("Error processing JSON", e)
-            throw ApiException(e.message)
-        } catch (e: Exception) {
-            logger.error(e)
+        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+            logger.info("Parameter: $info")
+            val catalogName = info.catalogName
+            userIds.forEach { addOrUpdateCatalogAdmin(catalogName, it) }
         }
         return ResponseEntity.ok(null)
     }
@@ -228,17 +215,13 @@ class UsersApiController : UsersApi {
     override fun assignedUsers(principal: Principal?, id: String): ResponseEntity<List<String>> {
 
         val result: MutableList<String> = ArrayList()
-        try {
-            dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
-                val query = listOf(QueryField("catalogIds", id))
-                val findOptions = FindOptions(
-                        queryType = QueryType.CONTAINS,
-                        resolveReferences = false)
-                val infos = dbService.findAll(CatalogInfoType::class, query, findOptions)
-                infos.hits.forEach { result.add(it["userId"].asText()) }
-            }
-        } catch (e: Exception) {
-            logger.error("Could not get assigned Users", e)
+        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+            val query = listOf(QueryField("catalogIds", id))
+            val findOptions = FindOptions(
+                    queryType = QueryType.CONTAINS,
+                    resolveReferences = false)
+            val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
+            info.hits.forEach { result.add(it["userId"].asText()) }
         }
         return ResponseEntity.ok(result)
     }
@@ -246,29 +229,22 @@ class UsersApiController : UsersApi {
     override fun switchCatalog(principal: Principal?, catalogId: String): ResponseEntity<Void> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        try {
-            dbService.acquire(DBApi.DATABASE.USERS.dbName).use { _ ->
-                val query = listOf(QueryField("userId", userId))
-                val findOptions = FindOptions(
-                        queryType = QueryType.EXACT,
-                        resolveReferences = false)
-                val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
-                val objectNode = when (info.totalHits){
-                    0L -> ObjectMapper().createObjectNode()
-                    1L -> (info.hits[0] as ObjectNode)
-                    else -> {
-                        val message = "There are more than one User '$userId' defined in ${DBApi.DATABASE.USERS.dbName}-table"
-                        logger.error(message)
-                        throw ApiException(message)
-                    }
-                }.put("currentCatalogId", catalogId)
+        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+            val query = listOf(QueryField("userId", userId))
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    resolveReferences = false)
+            val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
+            val objectNode = when (info.totalHits) {
+                0L -> ObjectMapper().createObjectNode()
+                1L -> (info.hits[0] as ObjectNode)
+                else -> {
+                    throw PersistenceException.withMultipleEntities(userId, CatalogInfoType::class.simpleName, dbService.currentDatabase)
+                }
+            }.put("currentCatalogId", catalogId)
 
-                dbService.save(CatalogInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
-                return ResponseEntity.ok().build()
-            }
-        } catch (e: Exception) {
-            logger.error(e)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            dbService.save(CatalogInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
+            return ResponseEntity.ok().build()
         }
     }
 

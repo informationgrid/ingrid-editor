@@ -116,8 +116,8 @@ class ConcurrencyTest : FunSpec() {
 
             val ex = exceptionThrown.get()
             ex should beInstanceOf<ConcurrentModificationException>()
-            (ex as ConcurrentModificationException).recordVersion shouldBe 1
-            ex.databaseVersion shouldBe 2
+            (ex as ConcurrentModificationException).data?.get("recordVersion") shouldBe 1
+            ex.data?.get("databaseVersion") shouldBe 2
             dbService.acquire("test").use {
                 var person = dbService.findAll(UserInfoType::class)!![0]
                 person["name"].asText() shouldBe "UserB"

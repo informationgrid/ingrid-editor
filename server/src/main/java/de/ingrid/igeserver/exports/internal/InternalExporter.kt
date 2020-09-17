@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import org.springframework.stereotype.Service
-import java.io.IOException
 
 @Service
 class InternalExporter : IgeExporter {

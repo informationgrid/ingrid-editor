@@ -76,6 +76,11 @@ interface DBApi {
     val databases: Array<String>
 
     /**
+     * Get currently opened database if any (see acquire())
+     */
+    val currentDatabase: String?
+
+    /**
      * Create a database using the given name and return the name of the created database.
      */
     fun createDatabase(settings: Catalog): String?
@@ -91,10 +96,15 @@ interface DBApi {
     fun removeDatabase(name: String): Boolean
 
     /**
+     * Check if the database with the given name exists
+     */
+    fun databaseExists(name: String): Boolean
+
+    /**
      * Open a session to the database with the given name. With that it's possible to
      * begin, commit and rollback transactions.
      */
-    fun acquire(name: String?): Closeable?
+    fun acquire(name: String): Closeable
 
     /**
      * Start a transaction in the acquired session

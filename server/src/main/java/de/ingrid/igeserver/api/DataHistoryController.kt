@@ -40,25 +40,20 @@ class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryA
             sort: String?,
             sortOrder: String?
         ): ResponseEntity<SearchResult<DataHistoryRecord>> {
-        try {
-            val records = auditLogger.find(historyLogger, id, user, action, from, to, sort, sortOrder)
-            val searchResult = SearchResult<DataHistoryRecord>()
-            searchResult.totalHits = records.totalHits
-            searchResult.hits = records.hits.map { record: JsonNode ->
-                val message = record["message"]
-                dbService.removeInternalFields(message["data"])
-                DataHistoryRecord(
-                        id = message["target"].asText(),
-                        actor = message["actor"].asText(),
-                        action = message["action"].asText(),
-                        time = OffsetDateTime.parse(message["time"].asText()),
-                        data = message["data"])
-            }
-            return ResponseEntity.ok(searchResult)
+
+        val records = auditLogger.find(historyLogger, id, user, action, from, to, sort, sortOrder)
+        val searchResult = SearchResult<DataHistoryRecord>()
+        searchResult.totalHits = records.totalHits
+        searchResult.hits = records.hits.map { record: JsonNode ->
+            val message = record["message"]
+            dbService.removeInternalFields(message["data"])
+            DataHistoryRecord(
+                    id = message["target"].asText(),
+                    actor = message["actor"].asText(),
+                    action = message["action"].asText(),
+                    time = OffsetDateTime.parse(message["time"].asText()),
+                    data = message["data"])
         }
-        catch (e: Exception) {
-            log.error("Error retrieving dataset history", e)
-            throw ApiException(e.message)
-        }
+        return ResponseEntity.ok(searchResult)
     }
 }

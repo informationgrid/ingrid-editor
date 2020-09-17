@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.services.CodelistHandler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -25,7 +26,7 @@ class CodelistApiController : CodelistApi {
     }
 
     override fun updateCodelists(): ResponseEntity<List<CodeList>> {
-        val codelists = handler.fetchCodelists() ?: throw ApiException("Codelists could not be synchronized")
+        val codelists = handler.fetchCodelists() ?: throw ServerException.withReason("Failed to synchronize code lists")
         return ResponseEntity.ok(codelists)
     }
 }

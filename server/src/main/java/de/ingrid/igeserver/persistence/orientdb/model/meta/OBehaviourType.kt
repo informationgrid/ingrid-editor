@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.persistence.orientdb.model.meta
 
 import com.orientechnologies.orient.core.db.ODatabaseSession
-import com.orientechnologies.orient.core.metadata.schema.OType
 import de.ingrid.igeserver.persistence.orientdb.OrientDBEntityType
 import de.ingrid.igeserver.persistence.model.meta.BehaviourType
 import de.ingrid.igeserver.persistence.model.EntityType
@@ -31,8 +30,8 @@ class OBehaviourType : OrientDBEntityType {
     override fun initialize(session: ODatabaseSession) {
         val schema = session.metadata.schema
         if (!schema.existsClass(TYPE)) {
-            log.debug("Create class ${TYPE}")
-            val docClass = schema.createClass(TYPE)
+            log.debug("Create class $TYPE")
+            schema.createClass(TYPE)
         }
     }
 }

@@ -50,11 +50,7 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
             val publishedDoc = dbService.find(DocumentType::class, publishedDBID)
             val publishedVersion = publishedDoc?.get("@version")?.asInt()
             if (version != null && publishedVersion != null && publishedVersion > version) {
-                throw ConcurrentModificationException(
-                        "Could not update object with id '$publishedDBID'. The database version is newer than the record version.",
-                        publishedDBID,
-                        publishedDoc.get("@version").asInt(),
-                        version)
+                throw ConcurrentModificationException.withConflictingResource(publishedDBID, publishedDoc.get("@version").asInt(), version)
             }
         }
     }

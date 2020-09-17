@@ -2,10 +2,8 @@ package de.ingrid.igeserver.imports.internal
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.ige.api.IgeImporter
-import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.services.MapperService
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,12 +14,7 @@ class InternalImporter : IgeImporter {
     private val mapperService = MapperService()
 
     override fun run(data: Any): JsonNode {
-        try {
-            return mapperService.getJsonNode((data as String))
-        } catch (e: Exception) {
-            log.error("Error during conversion of document to JsonNode", e)
-            throw ApiException("Error during conversion of document to JsonNode: " + e.message)
-        }
+        return mapperService.getJsonNode((data as String))
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {

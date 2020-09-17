@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.orientechnologies.orient.core.exception.OStorageException
-import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
@@ -26,42 +24,37 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
 
     private val log = logger()
 
-    fun getCurrentCatalogForPrincipal(principal: Principal?): String? {
+    fun getCurrentCatalogForPrincipal(principal: Principal?): String {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         return getCurrentCatalogForUser(userId)
     }
 
-    fun getCurrentCatalogForUser(userId: String): String? {
+    fun getCurrentCatalogForUser(userId: String): String {
         val query = listOf(QueryField("userId", userId))
 
-        // TODO: use cache!
-        try {
-            dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
-                val findOptions = FindOptions(
-                        queryType = QueryType.EXACT,
-                        resolveReferences = false)
-                val list = dbService.findAll(UserInfoType::class, query, findOptions)
-                if (list.totalHits == 0L) {
-                    val msg = "The user does not seem to be assigned to any database: $userId"
-                    log.error(msg)
-                }
-
-                // TODO: can this exception be thrown? what about size check above?
-                val catInfo = list.hits.stream()
-                        .findFirst()
-                        .orElseThrow { ApiException(500, "No catalog Info found") }
-                var currentCatalogId = if (catInfo.has("currentCatalogId")) catInfo["currentCatalogId"].asText() else null
-                if (currentCatalogId == null || currentCatalogId.trim { it <= ' ' } == "") {
-                    val catalogIds = catInfo["catalogIds"] as ArrayNode
-                    if (catalogIds.size() > 0) {
-                        currentCatalogId = catalogIds[0].asText()
-                    }
-                }
-                return currentCatalogId
+        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    resolveReferences = false)
+            val list = dbService.findAll(UserInfoType::class, query, findOptions)
+            if (list.totalHits == 0L) {
+                throw NotFoundException.withMissingUserCatalog(userId)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
+
+            val catInfo = list.hits[0]
+            val currentCatalogId = if (catInfo.has("currentCatalogId")) catInfo["currentCatalogId"].asText() else null
+            return if (currentCatalogId != null && currentCatalogId.trim { it <= ' ' } != "") {
+                // return assigned current catalog ...
+                currentCatalogId
+            }
+            else {
+                // ... or first catalog, if existing
+                val catalogIds = catInfo["catalogIds"] as ArrayNode
+                if (catalogIds.size() == 0) {
+                    throw NotFoundException.withMissingUserCatalog(userId)
+                }
+                catalogIds[0].asText()
+            }
         }
     }
 
@@ -69,32 +62,23 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         val query = listOf(QueryField("userId", userId))
 
         // TODO: use cache!
-        try {
-            dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
-                val findOptions = FindOptions(
-                        queryType = QueryType.EXACT,
-                        resolveReferences = false)
-                val list = dbService.findAll(UserInfoType::class, query, findOptions)
-                if (list.totalHits == 0L) {
-                    val msg = "The user does not seem to be assigned to any database: $userId"
-                    log.error(msg)
-                    // throw new ApiException(500, "User has no assigned catalog");
+        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    resolveReferences = false)
+            val list = dbService.findAll(UserInfoType::class, query, findOptions)
+            return if (list.totalHits == 0L) {
+                log.error("The user '$userId' does not seem to be assigned to any database.")
+                HashSet()
+            } else {
+                val map = list.hits[0]
+                val catalogIdsArray = map["catalogIds"] as ArrayNode
+                val catalogIds: MutableSet<String> = HashSet()
+                for (jsonNode in catalogIdsArray) {
+                    catalogIds.add(jsonNode.asText())
                 }
-                return if (list.totalHits == 0L) {
-                    HashSet()
-                } else {
-                    val map = list.hits[0]
-                    val catalogIdsArray = map["catalogIds"] as ArrayNode
-                    val catalogIds: MutableSet<String> = HashSet()
-                    for (jsonNode in catalogIdsArray) {
-                        catalogIds.add(jsonNode.asText())
-                    }
-                    catalogIds
-                }
+                catalogIds
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return HashSet()
         }
     }
 
@@ -102,59 +86,44 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         val query = listOf(QueryField("userId", userId))
 
         // TODO: use cache?
-        try {
-            dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
-                val findOptions = FindOptions(
-                        queryType = QueryType.EXACT,
-                        resolveReferences = false)
-                val list = dbService.findAll(UserInfoType::class, query, findOptions)
-                if (list.totalHits == 0L) {
-                    val msg = "The user does not seem to be assigned to any database: $userId"
-                    log.error(msg)
-                    // throw new ApiException(500, "User has no assigned catalog");
+        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    resolveReferences = false)
+            val list = dbService.findAll(UserInfoType::class, query, findOptions)
+            return if (list.totalHits == 0L) {
+                log.error("The user '$userId' does not seem to be assigned to any database.")
+                mutableListOf<Date>()
+            } else {
+                val map = list.hits[0]
+                val recentLoginsArray = map["recentLogins"] as ArrayNode
+                val recentLogins = mutableListOf<Date>()
+                for (jsonNode in recentLoginsArray) {
+                    recentLogins.add(Date(jsonNode.asLong()))
                 }
-                return if (list.totalHits == 0L) {
-                    mutableListOf<Date>()
-                } else {
-                    val map = list.hits[0]
-                    val recentLoginsArray = map["recentLogins"] as ArrayNode
-                    val recentLogins = mutableListOf<Date>()
-                    for (jsonNode in recentLoginsArray) {
-                        recentLogins.add(Date(jsonNode.asLong()))
-                    }
-                    recentLogins
-                }
+                recentLogins
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return mutableListOf<Date>()
         }
     }
 
-    fun getCatalogById(id: String?): Catalog? {
-        try {
-            dbService.acquire(id).use {
-                val catalogInfo = dbService.findAll(CatalogInfoType::class)
-                if (catalogInfo != null && catalogInfo.isNotEmpty()) {
-                    val jsonNode = catalogInfo[0]!!
-                    return Catalog(
-                            id,
-                            jsonNode.get("name")?.asText() ?: "Unknown",
-                            if (jsonNode.has("description")) jsonNode["description"].asText() else "",
-                            jsonNode["type"].asText())
-                }
-            }
-        } catch (ex: OStorageException) {
-            // TODO: we don't want to catch implementation specific exceptions here. How can we handle this scenario alternativly?
-            // in case catalog has been deleted but reference is still there
-            // TODO: remove reference from user to deleted catalogs
-            log.error("User probably has deleted catalog reference", ex)
-            return null
-        } catch (ex: PersistenceException) {
-            log.error("The database does not exist: " + ex.message)
-            return null
+    fun getCatalogById(id: String): Catalog {
+        if (!dbService.databaseExists(id)) {
+            throw NotFoundException.withMissingResource(id, "Database")
         }
-        return null
+        dbService.acquire(id).use {
+            val catalogInfo = dbService.findAll(CatalogInfoType::class)
+            if (catalogInfo.isNotEmpty()) {
+                val jsonNode = catalogInfo[0]
+                return Catalog(
+                        id,
+                        jsonNode.get("name")?.asText() ?: "Unknown",
+                        if (jsonNode.has("description")) jsonNode["description"].asText() else "",
+                        jsonNode["type"].asText())
+            }
+            else {
+                throw NotFoundException.withMissingResource(id, "Database")
+            }
+        }
     }
 
     fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String?>?) {
@@ -168,32 +137,27 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
     private fun setFieldForUser(userId: String, fieldId: String, fieldValue: Any) {
         val query = listOf(QueryField("userId", userId))
 
-        try {
-            dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
-                val findOptions = FindOptions(
-                        queryType = QueryType.EXACT,
-                        resolveReferences = false)
-                val list = dbService.findAll(UserInfoType::class, query, findOptions)
-                val catUserRef: ObjectNode
-                val id: String?
-                if (list.hits.isEmpty()) {
-                    catUserRef = ObjectMapper().createObjectNode()
-                    id = null
-                } else {
-                    catUserRef = list.hits[0] as ObjectNode
-                    id = dbService.getRecordId(catUserRef)
-                    dbService.removeInternalFields(catUserRef)
-                }
-                catUserRef.putPOJO(fieldId, fieldValue)
-                dbService.save(UserInfoType::class, id, catUserRef.toString())
+        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    resolveReferences = false)
+            val list = dbService.findAll(UserInfoType::class, query, findOptions)
+            val catUserRef: ObjectNode
+            val id: String?
+            if (list.hits.isEmpty()) {
+                catUserRef = ObjectMapper().createObjectNode()
+                id = null
+            } else {
+                catUserRef = list.hits[0] as ObjectNode
+                id = dbService.getRecordId(catUserRef)
+                dbService.removeInternalFields(catUserRef)
             }
-        } catch (e: Exception) {
-            log.error("Error setting field in user table", e)
+            catUserRef.putPOJO(fieldId, fieldValue)
+            dbService.save(UserInfoType::class, id, catUserRef.toString())
         }
     }
 
     companion object {
-        @Throws(Exception::class)
         fun toJsonString(map: Any?): String {
             val mapper = ObjectMapper()
             mapper.configure(SerializationFeature.INDENT_OUTPUT, true)

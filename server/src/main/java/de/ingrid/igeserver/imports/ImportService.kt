@@ -25,7 +25,7 @@ class ImportService {
     @Autowired
     lateinit var dbService: DBApi
 
-    fun importFile(dbId: String?, file: MultipartFile): Pair<JsonNode, String> {
+    fun importFile(dbId: String, file: MultipartFile): Pair<JsonNode, String> {
         val type = file.contentType
         val fileContent = String(file.bytes, Charset.defaultCharset())
         val importer = factory.getImporter(type, fileContent)

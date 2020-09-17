@@ -27,10 +27,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
     private val log = logger()
 
-    private enum class CopyMoveOperation {
-        COPY, MOVE
-    }
-
     /**
      * Create dataset.
      */
@@ -41,17 +37,9 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             publish: Boolean): ResponseEntity<JsonNode> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
-        try {
-            dbService.acquire(dbId).use {
-
-                val resultDoc = documentService.createDocument(data, address)
-
-                return ResponseEntity.ok(resultDoc)
-            }
-        } catch (e: Exception) {
-            log.error("Error during creation of document", e)
-            throw ApiException(e.message)
+        dbService.acquire(dbId).use {
+            val resultDoc = documentService.createDocument(data, address)
+            return ResponseEntity.ok(resultDoc)
         }
     }
 
@@ -66,18 +54,12 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             revert: Boolean): ResponseEntity<JsonNode> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
         dbService.acquire(dbId).use {
-            if (dbId == null) {
-                throw NotFoundException(HttpStatus.NOT_FOUND.value(), "The user does not seem to be assigned to any database.")
-            }
-
             val resultDoc = if (revert) {
                 documentService.revertDocument(id)
             } else {
                 documentService.updateDocument(id, data, publish)
             }
-
             return ResponseEntity.ok(resultDoc)
         }
     }
@@ -85,13 +67,10 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     override fun deleteById(principal: Principal?, ids: Array<String>): ResponseEntity<String> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
         dbService.acquire(dbId).use {
             for (id in ids) {
-
                 // TODO: remove references to document!?
                 documentService.deleteRecursively(id)
-
             }
             return ResponseEntity.ok().build()
         }
@@ -103,12 +82,10 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             options: CopyOptions): ResponseEntity<List<JsonNode>> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
         dbService.acquire(dbId).use {
             val results = ids.map { id -> handleCopy(id, options) }
             return ResponseEntity.ok(results)
         }
-
     }
 
     override fun moveDatasets(
@@ -117,7 +94,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             options: CopyOptions): ResponseEntity<Void> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
         dbService.acquire(dbId).use {
 //            dbService.beginTransaction()
             ids.forEach { id -> handleMove(id, options) }
@@ -135,7 +111,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         if (options.includeTree) {
             validateCopyOperation(id, options.destId)
         }
-
 
         // add new parent to document
         doc.put(FIELD_PARENT, options.destId)
@@ -185,9 +160,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val doc = documentService.getLatestDocument(wrapper, false, false)
 
         if (id == options.destId) {
-            val msg = "Move Error: Source equals Destination"
-            log.error(msg)
-            throw ApiException(msg)
+            throw ConflictException.withReason("Cannot move '$id' to itself")
         }
         validateCopyOperation(id, options.destId)
 
@@ -210,9 +183,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         // check destination is not part of source
         val descIds = getAllDescendantIds(sourceId).drop(1)
         if (descIds.contains(destinationId)) {
-            val msg = "Copy Error: Source contains Destination ($destinationId)"
-            log.error(msg)
-            throw ApiException(msg)
+            throw ConflictException.withReason("Cannot copy '$sourceId' to contained '$destinationId'")
         }
     }
 
@@ -221,15 +192,15 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
      */
     private fun getAllDescendantIds(id: String): List<String> {
         val docs = documentService.findChildren(id)
-        if (docs.hits.isEmpty()) {
-            return List(1) { id }
+        return if (docs.hits.isEmpty()) {
+            List(1) { id }
         } else {
             val result = mutableListOf(id)
             docs.hits.forEach { doc: JsonNode ->
-                val id = doc.get(FIELD_ID).asText()
-                result.addAll(getAllDescendantIds(id))
+                val childId = doc.get(FIELD_ID).asText()
+                result.addAll(getAllDescendantIds(childId))
             }
-            return result
+            result
         }
     }
 
@@ -240,21 +211,15 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     ): ResponseEntity<List<ObjectNode>> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
-        try {
-            dbService.acquire(dbId).use {
-                val docs = documentService.findChildrenDocs(parentId, isAddress)
-                val childDocs = docs.hits
-                        .map { doc: JsonNode ->
-                            val node = documentService.getLatestDocument(doc, resolveLinks = false)
-                            node.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc, DocumentWrapperType::class))
-                            node
-                        }
-                return ResponseEntity.ok(childDocs)
-            }
-        } catch (e: Exception) {
-            log.error(e)
-            throw ApiException("Error occured getting children of " + parentId + ": " + e.message)
+        dbService.acquire(dbId).use {
+            val docs = documentService.findChildrenDocs(parentId, isAddress)
+            val childDocs = docs.hits
+                    .map { doc: JsonNode ->
+                        val node = documentService.getLatestDocument(doc, resolveLinks = false)
+                        node.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc, DocumentWrapperType::class))
+                        node
+                    }
+            return ResponseEntity.ok(childDocs)
         }
     }
 
@@ -262,7 +227,6 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         var docs: FindAllResults
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
         dbService.acquire(dbId).use {
             val cat = FIELD_CATEGORY + " == " + if (forAddress) "\"address\"" else "\"data\""
             val queryMap = listOf(
@@ -290,18 +254,18 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             publish: Boolean?): ResponseEntity<JsonNode> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
         dbService.acquire(dbId).use {
             val query = listOf(QueryField(FIELD_ID, id))
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = true)
             val docs = dbService.findAll(DocumentWrapperType::class, query, findOptions)
+
             return if (docs.totalHits > 0) {
                 val doc = documentService.getLatestDocument(docs.hits[0])
                 ResponseEntity.ok(doc)
             } else {
-                throw NotFoundException(404, "Document not found with id: $id")
+                throw NotFoundException.withMissingResource(id, DocumentWrapperType::class.simpleName)
             }
         }
     }
@@ -317,21 +281,17 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val path: MutableList<String> = ArrayList()
         path.add(id)
 
-        try {
-            dbService.acquire(dbId).use {
-                while (true) {
-                    val doc = documentService.getByDocumentId(parentId, DocumentWrapperType::class, false) ?: break
-                    val nextParentId = doc[FIELD_PARENT]?.textValue()
-                    if (nextParentId != null) {
-                        path.add(nextParentId)
-                        parentId = nextParentId
-                    } else {
-                        break
-                    }
+        dbService.acquire(dbId).use {
+            while (true) {
+                val doc = documentService.getByDocumentId(parentId, DocumentWrapperType::class, false) ?: break
+                val nextParentId = doc[FIELD_PARENT]?.textValue()
+                if (nextParentId != null) {
+                    path.add(nextParentId)
+                    parentId = nextParentId
+                } else {
+                    break
                 }
             }
-        } catch (e: Exception) {
-            log.error("Error getting path", e)
         }
 
         return ResponseEntity.ok(path.reversed())

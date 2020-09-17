@@ -1,8 +1,8 @@
 package de.ingrid.igeserver.exports
 
+import de.ingrid.igeserver.configuration.ConfigurationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.stream.Collectors
 
 @Service
 class ExporterFactory @Autowired constructor(val exporterList: List<IgeExporter>) {
@@ -11,7 +11,10 @@ class ExporterFactory @Autowired constructor(val exporterList: List<IgeExporter>
                 .map { exporter: IgeExporter -> exporter.typeInfo }
 
     fun getExporter(format: String): IgeExporter {
-        return exporterList.first { exporter: IgeExporter -> format == exporter.typeInfo.type }
+        try {
+            return exporterList.first { exporter: IgeExporter -> format == exporter.typeInfo.type }
+        } catch (e: NoSuchElementException) {
+            throw ConfigurationException.withReason("No exporter found for format '$format'.")
+        }
     }
-
 }

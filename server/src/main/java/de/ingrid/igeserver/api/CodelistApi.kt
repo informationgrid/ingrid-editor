@@ -19,17 +19,17 @@ import org.springframework.web.bind.annotation.RequestMethod
 @Tag(name = "Codelist", description = "the codelist API")
 interface CodelistApi {
 
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @Operation
     @RequestMapping(value = [""], produces = ["application/json"], method = [RequestMethod.GET])
     fun getAllCodelists(): ResponseEntity<List<CodeList>>
 
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @Operation
     @RequestMapping(value = [""], produces = ["application/json"], method = [RequestMethod.POST])
     fun updateCodelists(): ResponseEntity<List<CodeList>>
 
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @Operation
     @RequestMapping(value = ["/{ids}"], produces = ["application/json"], method = [RequestMethod.GET])
     fun getCodelistsByIds(

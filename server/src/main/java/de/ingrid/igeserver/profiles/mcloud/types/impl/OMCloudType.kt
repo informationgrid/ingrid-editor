@@ -2,9 +2,7 @@ package de.ingrid.igeserver.profiles.mcloud.types.impl
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.api.ApiException
 import de.ingrid.igeserver.api.NotFoundException
-import de.ingrid.igeserver.api.PublishedVersionNotFoundException
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.orientdb.OrientDBDocumentEntityType
@@ -43,18 +41,12 @@ class OMCloudType : OrientDBDocumentEntityType {
         val addresses = doc.path("addresses")
         for (address in addresses) {
             val wrapperId = address.path("ref").asText()
-            try {
-                val wrapper = docService.getByDocumentId(wrapperId, DocumentWrapperType::class, true)
-                if (wrapper != null) {
-                    // try to find published version of the linked document
-                    docService.getLatestDocument(wrapper, true)
-                } else {
-                    throw NotFoundException("Referenced Address could not be found: $wrapperId")
-                }
-            } catch (e: Exception) {
-                val ex = ApiException("Failed to check publish state of references in document '${doc.get("title")}' with ID '${doc.get(FIELD_ID).asText()}': ${e.message}", true)
-                log.error(ex)
-                throw ex
+            val wrapper = docService.getByDocumentId(wrapperId, DocumentWrapperType::class, true)
+            if (wrapper != null) {
+                // try to find published version of the linked document
+                docService.getLatestDocument(wrapper, true)
+            } else {
+                throw NotFoundException.withMissingResource(wrapperId, DocumentWrapperType::class.simpleName)
             }
         }
     }
@@ -93,16 +85,10 @@ class OMCloudType : OrientDBDocumentEntityType {
                 } else {
                     log.error("Referenced Address could not be found: $wrapperId")
                 }
-            } catch (e: Exception) {
+            } catch (e: NotFoundException) {
                 // TODO: what to do with removed references?
-                if (e is NotFoundException) {
-                    log.error("Referenced address was not found: $wrapperId -> Should we remove it?")
-                    continue
-                } else if (e is PublishedVersionNotFoundException) {
-                    throw ApiException("Problem with referenced addresses of document '${doc.get("title")}' with ID '${doc.get(FIELD_ID).asText()}': ${e.message}", true)
-                }
-                log.error(e)
-                throw e
+                log.error("Referenced address was not found: $wrapperId -> Should we remove it?")
+                continue
             }
         }
     }

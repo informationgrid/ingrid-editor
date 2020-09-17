@@ -50,7 +50,7 @@ class DBAccessTest : FunSpec() {
         {
             val sessionHash1 = CompletableFuture<Int>()
             val t1 = Thread(Runnable {
-                pool.acquire().use { _ ->
+                pool.acquire().use {
                     sessionHash1.complete(ODatabaseRecordThreadLocal.instance().get().hashCode())
                 }
             })
@@ -58,7 +58,7 @@ class DBAccessTest : FunSpec() {
 
             val sessionHash2 = CompletableFuture<Int>()
             val t2 = Thread(Runnable {
-                pool.acquire().use { _ ->
+                pool.acquire().use {
                     sessionHash2.complete(ODatabaseRecordThreadLocal.instance().get().hashCode())
                 }
             })

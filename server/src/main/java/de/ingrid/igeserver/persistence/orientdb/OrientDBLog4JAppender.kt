@@ -98,7 +98,7 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
 
         orientDB = orientDBDatabase.orientDB
         if (!orientDB.isOpen) {
-            throw PersistenceException("Failed to initialize OrientDBLog4JAppender. OrientDBDatabase is not initialized.")
+            throw PersistenceException.withReason("Failed to initialize OrientDBLog4JAppender because OrientDBDatabase is not initialized.")
         }
 
         try {
@@ -125,7 +125,7 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
                 }
             }
         } catch (e: Exception) {
-            throw PersistenceException("Failed to initialize OrientDBLog4JAppender", e)
+            throw PersistenceException.withReason("Failed to initialize OrientDBLog4JAppender.", e)
         }
     }
 
@@ -146,7 +146,7 @@ class OrientDBLog4JAppender(@Value("OrientDB") name: String?, filter: Filter?,
         var msg: JsonNode = try {
             jacksonObjectMapper().readTree(event.message.formattedMessage)
         }
-        catch(ex: Exception) {
+        catch (ex: Exception) {
             // message is no valid json
             jacksonObjectMapper().createObjectNode().apply {
                 put("text", event.message.formattedMessage)

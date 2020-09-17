@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.services
 
-import de.ingrid.igeserver.api.ApiException
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.HelpMessage
 import de.ingrid.igeserver.utils.markdown.MarkdownContextHelpItem
 import de.ingrid.igeserver.utils.markdown.MarkdownContextHelpItemKey
@@ -18,12 +18,7 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils) {
 
     fun getHelp(profile: String, docType: String, id: String): HelpMessage {
 
-        val help = getContextHelp(profile, docType, id)
-
-        if (help == null) {
-            throw ApiException("Context help could not be found")
-        }
-
+        val help = getContextHelp(profile, docType, id) ?: throw NotFoundException.withMissingResource(id, "ContextHelp")
         return HelpMessage(
                 fieldId = id,
                 docType = docType,
@@ -32,7 +27,6 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils) {
                 helpText = helpUtils.renderMarkdownFile(help.markDownFilename),
                 profile = profile
         )
-
     }
 
     fun getHelpIDs(profile: String, docType: String): List<String> {

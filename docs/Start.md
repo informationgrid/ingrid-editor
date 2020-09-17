@@ -46,6 +46,42 @@ IGE Server defines the following extension points:
 
 ### Error Handling
 
+IGE Server defines the following **exception hierarchy**:
+
+- `IgeException` is the base class for all exceptions that could visible to REST API clients. It contains the following properties:
+
+  - `statusCode` The HTTP status code send to the client.
+  - `errorId` The unique identifier of the exception for getting detail information from the log files.
+  - `errorCode` A custom error code written in uppercase letters with the underscore character as word separator (e.g. *ALREADY_EXISTS*), that allows clients to identify the error cause.
+  - `errorText` A custom error text that could presented to the user. Variables of the form `${variable}` will be replaced by the value of
+    the appropriate key if present in data.
+  - `data` An optional key-value map used to customize the error text.
+
+  The `statusCode` value will be used as the HTTP response code, while `errorId`, `errorCode`, `errorText` and `data` will be send as JSON encoded string inside the response body.
+
+- `ServerException` is the base class for all exceptions that occur while processing a valid request to the REST API. 
+
+  - Server exceptions have the `statusCode` value **500** if not set to more specific value of **5XX** in sub classes.
+  - Server exceptions will be logged with **log level ERROR**.
+
+- `ClientException` is the base class for exceptions that are caused by invalid request to the REST API. 
+
+  - Client exceptions have the `statusCode` value to **400** if not set to more specific value of **4XX** in sub classes.
+  - Client exceptions will be logged with **log level DEBUG**.
+
+- All other exceptions are sub classes of either `ServerException` or `ClientException`.
+
+All exceptions pass through `de.ingrid.igeserver.RestResponseEntityExceptionHandler` which ensures logging and the response body as described above.
+
+The following **guidelines** should be kept in mind when handling errors:
+
+- Exceptions should not be swallowed.
+- Only logging an exception is not a good practice, since it requires monitoring of the log files to discover them. It's better to let it pass to the client to signal that something went wrong.
+- Logging and rethrowing an exception is not necessary, since *all* exceptions are logged by the global exception handler (see above).
+- Exceptions should not be handled unless it's possible to handle them in a meaningful way at that point or it's necessary to add meaningful information.
+- Exceptions should be thrown instead of using `ResponseEntity.status(HttpStatus.XXX).build()`, because this will ensure the response body as described above.
+- Whenever possible, information should be added to the exception that helps to analyze the cause (e.g. which record was failed to update).
+
 ### Logging
 
 IGE Server uses the [Log4j Framework](https://logging.apache.org/log4j/2.x/) with the Log4j Kotlin API. The configuration is defined in the `log4j2.xml` file.

@@ -9,7 +9,6 @@ import org.commonmark.renderer.html.HtmlRenderer
 import org.springframework.stereotype.Service
 import java.io.File
 import java.io.IOException
-import java.net.URISyntaxException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -115,7 +114,6 @@ class MarkdownContextHelpUtils {
             return result
         }
 
-    @Throws(IOException::class, URISyntaxException::class)
     private fun getLanguageHelpFiles(sourcePath: File, profile: String): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
 
         val result = mutableMapOf<MarkdownContextHelpItemKey, MarkdownContextHelpItem>()
@@ -137,7 +135,6 @@ class MarkdownContextHelpUtils {
         return result
     }
 
-    @Throws(IOException::class, URISyntaxException::class)
     private fun getHelpFilesFromPath(sourcePath: File, language: String, profile: String): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
 
         return sourcePath.walk().maxDepth(1)
