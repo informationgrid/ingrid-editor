@@ -269,9 +269,11 @@ class OrientDBDatabase : DBApi {
             docToSave.field("@version", version)
         }
         docToSave.fromJSON(data)
-        val savedDoc = docToSave.save()
         try {
+            val savedDoc = docToSave.save()
             return mapODocumentToJson(savedDoc, true)
+        } catch (ex: OConcurrentModificationException) {
+            throw convertConcurrentException(ex)
         } catch (e: Exception) {
             log.error("Error saving document", e)
             throw PersistenceException("Error saving document" + e.message)
@@ -372,10 +374,14 @@ class OrientDBDatabase : DBApi {
         try {
             dBFromThread.commit()
         } catch (ex: OConcurrentModificationException) {
-            val id = ex.rid.toString()
-            throw ConcurrentModificationException("Could not update object with id $id. The database version is newer than the record version.",
-                    id, ex.enhancedDatabaseVersion, ex.enhancedRecordVersion)
+            throw convertConcurrentException(ex)
         }
+    }
+
+    private fun convertConcurrentException(ex: OConcurrentModificationException): ConcurrentModificationException {
+        val id = ex.rid.toString()
+        return ConcurrentModificationException("Could not update object with id $id. The database version is newer than the record version.",
+                id, ex.enhancedDatabaseVersion, ex.enhancedRecordVersion)
     }
 
     override fun rollbackTransaction() {

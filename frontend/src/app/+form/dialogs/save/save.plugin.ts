@@ -103,15 +103,15 @@ export class SavePlugin extends Plugin {
   /**
    * Handle version conflict errors during save
    *
-   * @param error
+   * @param response
    * @private
    */
-  private handleSaveError(error: HttpErrorResponse) {
-    if (error?.status === 409) {
+  private handleSaveError(response: HttpErrorResponse) {
+    if (response?.status === 409) {
       this.dialog.open(VersionConflictDialogComponent).afterClosed()
-        .subscribe(choice => this.handleAfterConflictChoice(choice, error.error));
+        .subscribe(choice => this.handleAfterConflictChoice(choice, response.error));
     } else {
-      throw error;
+      throw response;
     }
   }
 
