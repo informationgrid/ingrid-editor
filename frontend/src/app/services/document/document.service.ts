@@ -460,9 +460,11 @@ export class DocumentService {
     });
 
     // update parent in case it didn't have children before
-    store.update(parentId, {
-      _hasChildren: true
-    });
+    if (parentId) {
+      store.update(parentId, {
+        _hasChildren: true
+      });
+    }
   }
 
   private getChildrenIfNotDoneYet(parent: string, isAddress: boolean): Observable<DocumentAbstract[]> {
