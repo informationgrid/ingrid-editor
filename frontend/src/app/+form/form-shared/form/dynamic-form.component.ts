@@ -342,13 +342,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   toggleOptionals($event: MatSlideToggleChange) {
     if ($event.checked) {
-      document.querySelectorAll('.optional').forEach((e) => {
-        e.classList.remove('hidden');
-      });
+      document.querySelector("#form")?.classList.remove('hideOptionals');
     } else {
-      document.querySelectorAll('.optional').forEach((e) => {
-        e.classList.add('hidden');
-      });
+      document.querySelector("#form")?.classList.add('hideOptionals');
     }
   }
 }

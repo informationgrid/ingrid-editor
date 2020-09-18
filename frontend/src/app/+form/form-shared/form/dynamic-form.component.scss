@@ -102,6 +102,6 @@ pre {
   }
 }
 
-::ng-deep .hidden {
+::ng-deep #form.hideOptionals .optional {
   display: none;
 }

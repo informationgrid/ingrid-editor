@@ -56,8 +56,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
           startWith(''),
           filter(value => value !== undefined && value !== null),
           map(value => this._filter(<string>value)),
-          map(value => this._markSelected(value)),
-          tap(console.log)
+          map(value => this._markSelected(value))
         );
 
   }
