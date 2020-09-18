@@ -56,8 +56,9 @@ IGE Server defines the following **exception hierarchy**:
   - `errorText` A custom error text that could presented to the user. Variables of the form `${variable}` will be replaced by the value of
     the appropriate key if present in data.
   - `data` An optional key-value map used to customize the error text.
+  - `stackTrace` The stack trace of the exception (only if it was an unexpected exception).
 
-  The `statusCode` value will be used as the HTTP response code, while `errorId`, `errorCode`, `errorText` and `data` will be send as JSON encoded string inside the response body.
+  The `statusCode` value will be used as the HTTP response code, while `errorId`, `errorCode`, `errorText`, `data` and `stackTrace` will be send as JSON encoded string inside the response body.
 
 - `ServerException` is the base class for all exceptions that occur while processing a valid request to the REST API. 
 
@@ -79,7 +80,7 @@ The following **guidelines** should be kept in mind when handling errors:
 - Only logging an exception is not a good practice, since it requires monitoring of the log files to discover them. It's better to let it pass to the client to signal that something went wrong.
 - Logging and rethrowing an exception is not necessary, since *all* exceptions are logged by the global exception handler (see above).
 - Exceptions should not be handled unless it's possible to handle them in a meaningful way at that point or it's necessary to add meaningful information.
-- Exceptions should be thrown instead of using `ResponseEntity.status(HttpStatus.XXX).build()`, because this will ensure the response body as described above.
+- Exceptions should be thrown instead of using `ResponseEntity.status(HttpStatus.XXX).build()` or `HttpServletResponse.sendError(HttpServletResponse.XXX, msg)`, because this will ensure the response body as described above.
 - Whenever possible, information should be added to the exception that helps to analyze the cause (e.g. which record was failed to update).
 
 ### Logging

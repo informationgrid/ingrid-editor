@@ -1,6 +1,7 @@
 package de.ingrid.igeserver
 
 import de.ingrid.igeserver.api.InvalidParameterException
+import org.apache.commons.lang.exception.ExceptionUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -26,10 +27,16 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
      */
     @ExceptionHandler(value = [IgeException::class])
     protected fun handleIgeException(ex: IgeException, request: WebRequest): ResponseEntity<Any> {
-        val data = mapOf("ErrorId" to ex.errorId, "ErrorCode" to ex.errorCode, "ErrorText" to ex.errorText, "Data" to ex.data)
-                .filterValues { it != null }
+        val stacktraceOutput = if (ex is UnhandledException) ExceptionUtils.getFullStackTrace(ex.cause) else null
+        val data = mapOf(
+                "ErrorId" to ex.errorId,
+                "ErrorCode" to ex.errorCode,
+                "ErrorText" to ex.errorText,
+                "Data" to ex.data,
+                "Stacktrace" to stacktraceOutput
+        ).filterValues { it != null }
         val servletRequest = (request as ServletWebRequest).request
-        val logMessage = "Exception $data was thrown while processing the request '${servletRequest?.method} ${servletRequest?.requestURI}'"
+        val logMessage = "Exception $data was thrown while processing the request '${servletRequest.method} ${servletRequest.requestURI}'"
         if (ex is ServerException) {
             log.error(logMessage, ex)
         }
@@ -45,7 +52,7 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
     @ExceptionHandler(value = [Exception::class])
     protected fun handleUnhandledException(t: Throwable, request: WebRequest): ResponseEntity<Any> {
         // wrap into server exception
-        val igeException = ServerException.withReason(t.localizedMessage, t)
+        val igeException = UnhandledException.withCause(t)
         return handleIgeException(igeException, request)
     }
 
