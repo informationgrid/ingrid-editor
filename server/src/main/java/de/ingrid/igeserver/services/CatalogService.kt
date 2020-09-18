@@ -93,13 +93,15 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
             val list = dbService.findAll(UserInfoType::class, query, findOptions)
             return if (list.totalHits == 0L) {
                 log.error("The user '$userId' does not seem to be assigned to any database.")
-                mutableListOf<Date>()
+                mutableListOf()
             } else {
                 val map = list.hits[0]
-                val recentLoginsArray = map["recentLogins"] as ArrayNode
+                val recentLoginsArray = map["recentLogins"] as ArrayNode?
                 val recentLogins = mutableListOf<Date>()
-                for (jsonNode in recentLoginsArray) {
-                    recentLogins.add(Date(jsonNode.asLong()))
+                if (recentLoginsArray != null) {
+                    for (jsonNode in recentLoginsArray) {
+                        recentLogins.add(Date(jsonNode.asLong()))
+                    }
                 }
                 recentLogins
             }
