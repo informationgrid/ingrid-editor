@@ -4,9 +4,7 @@ import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/tool
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/operators';
-import {Subject} from 'rxjs';
 import {DocumentAbstract} from '../../../store/document/document.model';
-import {Router} from '@angular/router';
 import {TreeStore} from '../../../store/tree/tree.store';
 import {ShortTreeNode} from '../../sidebars/tree/tree.types';
 
@@ -18,7 +16,6 @@ export class HistoryPlugin extends Plugin {
   defaultActive = true;
 
   private stack: DocumentAbstract[] = [];
-  private stack$ = new Subject<DocumentAbstract[]>();
 
   // maximum of nodes in stack
   maxSize = 20;
@@ -34,8 +31,7 @@ export class HistoryPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private treeStore: TreeStore,
-              private treeQuery: TreeQuery,
-              private router: Router) {
+              private treeQuery: TreeQuery) {
     super();
   }
 
@@ -126,7 +122,7 @@ export class HistoryPlugin extends Plugin {
         active: false
       }
     ];
-    buttons.forEach((button, index) => this.formToolbarService.addButton(button));
+    buttons.forEach((button) => this.formToolbarService.addButton(button));
   }
 
   unregister() {
@@ -134,6 +130,12 @@ export class HistoryPlugin extends Plugin {
   }
 
   private handleNext() {
+
+    // prevent too fast clicks
+    if (this.ignoreNextPush) {
+      return;
+    }
+
     // in case of a long press this shall not be executed
     // if (evt.ignore) { return; }
 
@@ -150,6 +152,12 @@ export class HistoryPlugin extends Plugin {
   }
 
   private handlePrevious() {
+
+    // prevent too fast clicks
+    if (this.ignoreNextPush) {
+      return;
+    }
+
     // in case of a long press this shall not be executed
     // if (evt.ignore) { return; }
 
@@ -174,7 +182,6 @@ export class HistoryPlugin extends Plugin {
   }
 
   private gotoNode(item: DocumentAbstract) {
-    this.router.navigate(['/form', {id: item.id}]);
     this.treeStore.update({
       explicitActiveNode: new ShortTreeNode(item.id.toString(), item.title)
     });
