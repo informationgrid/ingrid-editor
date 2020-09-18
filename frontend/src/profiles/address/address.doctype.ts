@@ -29,8 +29,10 @@ export class AddressDoctype extends BaseDoctype {
       fieldGroup: [{
         wrappers: ['panel'],
         templateOptions: {
-          externalLabel: 'Name',
-          required: true
+          externalLabel: 'Organisation',
+        },
+        expressionProperties: {
+          'templateOptions.required': '(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0) || model.organization.length !== 0'
         },
         fieldGroup: [
           {
@@ -59,7 +61,46 @@ export class AddressDoctype extends BaseDoctype {
               },
               hideExpression: '!model.organization || model.organization.length === 0',
             }]
-          }, {
+          }]
+      },{
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Anrede',
+          required: false
+        },
+        fieldGroup: [
+          {
+            fieldGroupClassName: 'display-flex width-50',
+            fieldGroup: [{
+              key: 'salutation',
+              className: 'flex-1',
+              type: 'input',
+              templateOptions: {
+                label: 'Anrede',
+                appearance: 'outline'
+              },
+            },{
+              key: 'academic-title',
+              className: 'flex-1 pad-right',
+              type: 'select',
+              templateOptions: {
+                label: 'Titel',
+                appearance: 'outline',
+                options: this.getCodelistForSelect(4305)
+              },
+            }]
+          }],
+        hideExpression: '(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0)',
+      },{
+        wrappers: ['panel'],
+        templateOptions: {
+          externalLabel: 'Name',
+        },
+        expressionProperties: {
+          'templateOptions.required': '!model.organization || model.organization.length === 0'
+        },
+        fieldGroup: [
+          {
             fieldGroupClassName: 'display-flex',
             fieldGroup: [{
               key: 'firstName',
@@ -78,7 +119,7 @@ export class AddressDoctype extends BaseDoctype {
                 appearance: 'outline'
               }
             }]
-          }]
+          }],
       }],
     },
     {

@@ -155,6 +155,11 @@ export class DocumentService {
   save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean, path?: string[]): Promise<IgeDocument> {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
+    if (isAddress) {
+      //recreate address title, as it can not be changed manually for addresses
+      data.title = this.createAddressTitle(data);
+    }
+
     return this.dataService.save(data, isAddress)
       .toPromise().then(json => {
 
