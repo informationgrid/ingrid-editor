@@ -1,6 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Plugin} from '../../plugin';
-import {EventData, EventResponseHandler, EventService, IgeEvent, IgeEventResultType} from '../../../../services/event/event.service';
+import {
+  EventData,
+  EventResponseHandler,
+  EventService,
+  IgeEvent,
+  IgeEventResultType
+} from '../../../../services/event/event.service';
 import {TreeQuery} from '../../../../store/tree/tree.query';
 import {AddressTreeQuery} from '../../../../store/address-tree/address-tree.query';
 import {ModalService} from '../../../../services/modal/modal.service';
@@ -41,12 +47,12 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
 
     let success = true;
 
-    this.currentDocHasChildren()
-      .subscribe(hasChildren => {
-        if (hasChildren) {
+    this.activeDocsWithChildren()
+      .subscribe(docsWithChildren => {
+        if (docsWithChildren?.length) {
           // TODO: improve error generation
           const error = new IgeError();
-          error.setMessage('Um den Ordner zu löschen, muss dieser leer sein');
+          error.setMessage('Um Ordner zu löschen, müssen diese leer sein', docsWithChildren.join(' , '));
           this.modal.showIgeError(error);
           success = false;
         }
@@ -56,23 +62,22 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
       });
   }
 
-  private currentDocHasChildren(): Observable<boolean> {
+  private activeDocsWithChildren(): Observable<String[]> {
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
     // TODO: refactor openedDocument in store to another one, since it's of different format
     //       and not directly associated with tree-store
-    const doc = query.getOpenedDocument();
-    if (doc) {
-      // TODO: this strategy is used in several toolbar plugins to prevent too early execution
-      //       when opening page and hitting a toolbar button
-      return query.selectEntity(doc.id)
-        .pipe(
-          filter(entity => entity !== undefined),
-          take(1),
-          map(entity => entity._hasChildren)
-        );
-    } else {
-      return of(false);
-    }
+    return query.selectActive()
+      .pipe(
+        filter(entity => entity !== undefined),
+        take(1)
+      )
+      .pipe(map(docs => {
+        const docsWithChildren = []
+        docs.forEach(doc => {
+          if (doc._hasChildren) docsWithChildren.push(doc.title)
+        });
+        return docsWithChildren;
+      }));
   }
 
   private buildResponse(isSuccess: boolean): EventData {
