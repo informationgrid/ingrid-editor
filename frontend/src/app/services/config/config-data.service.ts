@@ -1,5 +1,6 @@
 import {Configuration, UserInfo} from './config.service';
 import {Catalog} from '../../+catalog/services/catalog.model';
+import {IgeException} from '../../error-handler';
 
 export class ConfigDataService {
 
@@ -29,15 +30,19 @@ export class ConfigDataService {
           lastLogin: new Date(json.lastLogin)
         } as UserInfo;
       })
-      .catch((e: string) => {
-        if (e.indexOf('Cannot GET /sso/login') !== -1) {
-          console.error('Not logged in to keycloak. Please login first from IgeServer (localhost:8550)');
-          return null;
-        } else if (e.indexOf('Error occured while trying to proxy to') !== -1) {
-          console.error('No running backend');
-          throw new Error('Backend does not seem to run');
+      .catch((e: IgeException | string) => {
+        if (typeof e === 'string') {
+          if (e.indexOf('Cannot GET /sso/login') !== -1) {
+            console.error('Not logged in to keycloak. Please login first from IgeServer (localhost:8550)');
+            return null;
+          } else if (e.indexOf('Error occured while trying to proxy to') !== -1) {
+            console.error('No running backend');
+            throw new Error('Backend does not seem to run');
+          } else {
+            console.error('Could not get current user info', e);
+          }
         } else {
-          console.error('Could not get current user info', e);
+          throw e;
         }
         return {
           assignedCatalogs: [],

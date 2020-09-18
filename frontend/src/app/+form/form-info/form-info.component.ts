@@ -20,7 +20,6 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProfileService} from '../../services/profile.service';
 import {AddressTreeQuery} from '../../store/address-tree/address-tree.query';
 import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE} from '../../store/document/document.model';
-import {ShortTreeNode} from '../sidebars/tree/tree.component';
 import {TreeStore} from '../../store/tree/tree.store';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 import {DocumentUtils} from '../../services/document.utils';
@@ -29,6 +28,7 @@ import {FormUtils} from '../form.utils';
 import {DocumentService} from '../../services/document/document.service';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {MatDialog} from '@angular/material/dialog';
+import {ShortTreeNode} from '../sidebars/tree/tree.types';
 
 export interface StickyHeaderInfo {
   show: boolean;

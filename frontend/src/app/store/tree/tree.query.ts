@@ -3,7 +3,7 @@ import {QueryEntity} from '@datorama/akita';
 import {TreeState, TreeStore} from './tree.store';
 import {DocumentAbstract} from '../document/document.model';
 import {Observable} from 'rxjs';
-import {ShortTreeNode} from '../../+form/sidebars/tree/tree.component';
+import {ShortTreeNode} from '../../+form/sidebars/tree/tree.types';
 
 @Injectable({
   providedIn: 'root'

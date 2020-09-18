@@ -8,7 +8,7 @@ import {Subject} from 'rxjs';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {Router} from '@angular/router';
 import {TreeStore} from '../../../store/tree/tree.store';
-import {ShortTreeNode} from '../../sidebars/tree/tree.component';
+import {ShortTreeNode} from '../../sidebars/tree/tree.types';
 
 @UntilDestroy()
 @Injectable()

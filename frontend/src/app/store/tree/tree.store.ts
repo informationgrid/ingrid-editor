@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {EntityState, EntityStore, MultiActiveState, StoreConfig} from '@datorama/akita';
 import {DocumentAbstract} from '../document/document.model';
-import {ShortTreeNode} from '../../+form/sidebars/tree/tree.component';
+import {ShortTreeNode} from '../../+form/sidebars/tree/tree.types';
 
 export interface TreeState extends EntityState<DocumentAbstract>, MultiActiveState {
   // TODO: what is this used for?

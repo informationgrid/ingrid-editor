@@ -2,7 +2,6 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Router} from '@angular/router';
 import {TreeStore} from '../../store/tree/tree.store';
 import {BehaviorSubject, Subject} from 'rxjs';
-import {ShortTreeNode, TreeAction} from './tree/tree.component';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
 import {NgFormsManager} from '@ngneat/forms-manager';
@@ -10,6 +9,7 @@ import {FormUtils} from '../form.utils';
 import {MatDialog} from '@angular/material/dialog';
 import {DocumentService} from '../../services/document/document.service';
 import {TreeService} from './tree/tree.service';
+import {ShortTreeNode, TreeAction} from './tree/tree.types';
 
 @UntilDestroy()
 @Component({

@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges
 import {TreeNode} from '../../../../store/tree/tree-node.model';
 import {BehaviorSubject, of} from 'rxjs';
 import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE, DocumentAbstract} from '../../../../store/document/document.model';
-import {ShortTreeNode} from '../../../sidebars/tree/tree.component';
+import {ShortTreeNode} from '../../../sidebars/tree/tree.types';
 
 @Component({
     selector: 'ige-destination-selection',

@@ -12,19 +12,10 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TreeService} from './tree.service';
 import {DocumentUtils} from '../../../services/document.utils';
 import {DragNDropUtils} from './dragndrop.utils';
+import {ShortTreeNode} from './tree.types';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
-}
-
-export class TreeAction {
-  constructor(public type: TreeActionType, public id: string) {
-  }
-}
-
-export class ShortTreeNode {
-  constructor(public id: string, public title: string) {
-  }
 }
 
 @UntilDestroy()

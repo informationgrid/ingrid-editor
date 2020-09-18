@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ShortTreeNode} from '../../sidebars/tree/tree.component';
+import {ShortTreeNode} from '../../sidebars/tree/tree.types';
 
 @Component({
   selector: 'ige-breadcrumb',

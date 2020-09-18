@@ -6,12 +6,12 @@ import {TreeQuery} from '../../../store/tree/tree.query';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {Router} from '@angular/router';
 import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE, DocumentAbstract} from '../../../store/document/document.model';
-import {ShortTreeNode} from '../../sidebars/tree/tree.component';
 import {FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {ProfileQuery} from '../../../store/profile/profile.query';
 import {DocType} from './create-doc.plugin';
 import {IgeDocument} from '../../../models/ige-document';
+import {ShortTreeNode} from '../../sidebars/tree/tree.types';
 
 export interface CreateOptions {
   parent: string;

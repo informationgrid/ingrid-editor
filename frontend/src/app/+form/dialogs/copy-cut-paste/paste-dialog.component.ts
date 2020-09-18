@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {ShortTreeNode} from '../../sidebars/tree/tree.component';
+import {ShortTreeNode} from '../../sidebars/tree/tree.types';
 
 export interface PasteDialogOptions {
   buttonText: string;
