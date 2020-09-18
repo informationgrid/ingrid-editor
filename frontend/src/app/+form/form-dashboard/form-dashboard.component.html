@@ -23,7 +23,7 @@
     </ige-card-box>
 </div>
 
-<div *ngIf="(treeDocs | async) === 0" class="banner text-center">
+<div *ngIf="!(childDocs$ | async)?.length" class="banner text-center">
     <div class="circle-wrapper">
         <mat-icon svgIcon="image-banner-dataset"></mat-icon>
     </div>
