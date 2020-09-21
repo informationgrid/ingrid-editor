@@ -1,11 +1,5 @@
 @import "src/variables";
 
-::ng-deep.mat-dialog-container {
-  //resize: both;
-  overflow: auto;
-  padding-bottom: 0;
-}
-
 .mat-dialog-content {
   resize: both;
   padding-top: 0;
@@ -19,6 +13,8 @@
 }
 
 :host {
+  margin-bottom: -24px;
+
   ::ng-deep h1 {
     font-size: 16px;
     font-weight: 500;
