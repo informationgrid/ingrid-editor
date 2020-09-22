@@ -171,16 +171,16 @@ describe('General create documents/folders', () => {
   describe('Dirty checks', () => {
     it('should show a dialog when a document was modified and another document was clicked', () => {
       const doc1Name = 'Leeres mCLOUD Test Objekt';
-      const doc2Name = 'Test mCLOUD Dokument';
+      const doc2Name = 'mCLOUD Dokument Test';
 
-      cy.get('#sidebar').findByText('Testdokumente').click();
-      cy.get('#sidebar').findByText(doc2Name).click();
+      DocumentPage.createDocument(doc2Name);
+
       cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('testestest');
 
       // reject dialog
       // check selected tree node === previous selected node
       cy.wait(500);
-      cy.get('span').contains(doc1Name).click();
+      cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
       cy.get(DocumentPage.title).should('have.text', doc2Name);
@@ -190,7 +190,7 @@ describe('General create documents/folders', () => {
       cy.wait(500);
       cy.get('span').contains(doc1Name).click();
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
-      cy.get('[data-cy=confirm-dialog-stay]').click();
+      cy.get('[data-cy=confirm-dialog-save]').click();
       cy.get(DocumentPage.title).should('have.text', doc1Name);
 
     });
@@ -207,16 +207,16 @@ describe('General create documents/folders', () => {
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
-      cy.get('[data-cy=confirm-dialog-cancel]').click();
+      cy.get('[data-cy=confirm-dialog-stay]').click();
 
       cy.get(DocumentPage.title).should('have.text', docname);
 
 
-      // accept -> should load new page
+      // accept (don't save) -> should load new page
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
-      cy.get('[data-cy=confirm-dialog-stay]').click();
+      cy.get('[data-cy=confirm-dialog-leave]').click();
 
       cy.get(DocumentPage.title).should('not.exist')
 

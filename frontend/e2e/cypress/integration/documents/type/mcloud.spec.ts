@@ -1,4 +1,5 @@
 import {DocumentPage} from '../../../pages/document.page';
+import {AddressPage} from "../../../pages/address.page";
 
 describe('mCLOUD documents', function () {
 
@@ -29,14 +30,20 @@ describe('mCLOUD documents', function () {
     });
 
     it('should create a minimal publishable document', () => {
+      const publishedAddress = 'Published Testorga';
+
+      cy.visit('/address')
+      AddressPage.createAddressAndPublish(publishedAddress);
+
+      cy.visit('form')
       DocumentPage.createDocument();
       // cy.visit('/form;id=642b8dde-96a9-4b1f-a2eb-e8894735f4cd');
 
       cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('Testbeschreibung');
 
       cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
-      DocumentPage.AddAddressDialog.searchAndAdd('Testorganisation', 'Herausgeber');
-      cy.get('[data-cy=Adressen]').contains('Testorganisation');
+      DocumentPage.AddAddressDialog.searchAndAdd(publishedAddress, 'Herausgeber');
+      cy.get('[data-cy=Adressen]').contains(publishedAddress);
 
       cy.get('[data-cy="mCLOUD Kategorie"]').contains('Hinzufügen').click();
       cy.get('[data-cy="chip-dialog-option-list"]').contains('Bahn').click();

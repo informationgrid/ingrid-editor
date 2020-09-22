@@ -32,9 +32,12 @@ export class Tree {
 
     // deleteHoleNodePath.forEach(node =>  cy.get('#sidebar').findByText(node).click())
     reverseNodePath.forEach(node => {
-      cy.get('#sidebar').findByText(node).click({multiple: true, ctrlKey:true});
+      // cy.get('#sidebar').findByText(node).click({multiple: true, ctrlKey:true});
+
+      cy.get('#sidebar').findByText(node).click();
+      DocumentPage.deleteLoadedNode();
     })
-    DocumentPage.deleteLoadedNode();
+    // DocumentPage.deleteLoadedNode();
   }
 
 }

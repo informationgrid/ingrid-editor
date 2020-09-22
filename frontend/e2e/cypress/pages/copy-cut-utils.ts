@@ -8,7 +8,6 @@ enum CopyOption {
 
 export class CopyCutUtils {
   static selectNodeWithChecks(nodeTitle: string, path: string[]){
-    //Tree.selectNodeWithTitle(nodeTitle); <-- just work for level 0 nodes
     cy.get('#sidebar').contains(nodeTitle).click();
     cy.get('ige-breadcrumb').should('have.text', path.join(SEPARATOR));
     cy.get('ige-header-title-row').contains(nodeTitle);

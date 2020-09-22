@@ -259,7 +259,8 @@ describe('Tree', () => {
       Tree.openNode([testFolder]);
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
 
-      Tree.deleteNode([testFolder, docName])
+      // Bug #2115
+      Tree.deleteNode([testFolder, docName]);
 
       Tree.openNode([ 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
 

@@ -158,10 +158,13 @@ describe('General create addresses/folders', () => {
   describe('Dirty checks', () => {
     it('should show a dialog when an address was modified and another address was clicked', () => {
       const adr1Name = 'Neue Testadressen';
-      const adr2Name = 'Testorganisation';
+      const adr2Name = 'Orga-Test'
 
-      cy.get('#sidebar').findByText('Testadressen').click();
-      cy.get('#sidebar').findByText(adr2Name).click();
+      cy.get(DocumentPage.Toolbar.NewDoc).click();
+      cy.get('[data-cy=create-address-organization]').type(adr2Name);
+      cy.get('[data-cy=create-action]').click();
+      cy.get('[data-cy=create-action]').should('not.be.visible');
+
       cy.get('.lastName ').type('testestest');
 
       // reject dialog
@@ -193,16 +196,16 @@ describe('General create addresses/folders', () => {
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
-      cy.get('[data-cy=confirm-dialog-cancel]').click();
+      cy.get('[data-cy=confirm-dialog-stay]').click();
 
       cy.get(DocumentPage.title).should('have.text', addressName);
 
 
-      // accept -> should load new page
+      // accept (don't safe) -> should load new page
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
-      cy.get('[data-cy=confirm-dialog-stay]').click();
+      cy.get('[data-cy=confirm-dialog-leave]').click();
 
       cy.get(DocumentPage.title).should('not.exist');
     });
