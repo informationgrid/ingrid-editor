@@ -1,0 +1,45 @@
+{# @pebvariable name="model" type="de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel" #}
+
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dcat="http://www.w3.org/ns/dcat#"
+  xmlns:dct="http://purl.org/dc/terms/"
+  xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
+  xmlns:dcatde="http://dcat-ap.de/def/dcatde/"
+>
+  <dcat:Catalog rdf:about="https://mcloud.de">
+    <dct:description>Dies ist das Portal der mCLOUD.</dct:description>
+    <dcat:dataset>
+      <dcat:Dataset rdf:about="http://mcloud-qs.wemove.com/web/guest/suche/-/results/detail/{{ model.uuid }}#dataset">
+        <dct:title>{{ model.title }}</dct:title>
+        {% for download in model.downloads %}
+        <dcat:distribution rdf:resource="{{ download.link }}#distribution"/>
+        {% endfor %}
+        <dcat:contactPoint>
+          <vcard:Individual rdf:nodeID="">
+            <vcard:fn>{{ model.getPublisher().organization }}</vcard:fn>
+            <vcard:hasTelephone></vcard:hasTelephone>
+          </vcard:Individual>
+        </dcat:contactPoint>
+        <dct:description>{{ model.description }}</dct:description>
+        <dcatde:contributorID rdf:resource="http://dcat-ap.de/def/contributors/mCloud"/>
+      </dcat:Dataset>
+    </dcat:dataset>
+    <dct:publisher>
+      <foaf:Agent rdf:about="https://mcloud.de/#publisher">
+        <foaf:name>Bundesministerium für Verkehr und digitale Infrastruktur</foaf:name>
+      </foaf:Agent>
+    </dct:publisher>
+    <dct:title>mCLOUD Portal</dct:title>
+  </dcat:Catalog>
+  {% for download in model.downloads %}
+  <dcat:Distribution rdf:about="{{ download.link }}#distribution">
+    <dcat:downloadURL rdf:resource="{{ download.link }}"/>
+    <dcat:accessURL rdf:resource="{{ download.link }}"/>
+    <dcatde:licenseAttributionByText></dcatde:licenseAttributionByText>
+    <dct:license rdf:resource="{{ model.license }}"/>
+  </dcat:Distribution>
+  {% endfor %}
+</rdf:RDF>
