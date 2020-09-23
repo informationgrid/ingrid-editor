@@ -37,14 +37,14 @@ export class AddressPage extends DocumentPage {
   // TODO: make an API Request to create a new address/document, since we do not test the address creation here,
   //       but just need an address for another test. After an API-Request we should reload the tree to get the
   //       changes made in the database.
-  static createAddressAndPublish (adrName: string) {
+  static createAddressAndPublish (adrName: string, chooseContact: string) {
     cy.get(DocumentPage.Toolbar.NewDoc).click();
     cy.get('[data-cy=create-address-organization]').type(adrName);
     cy.get('[data-cy=create-action]').click();
     cy.get('[data-cy=create-action]').should('not.be.visible');
     cy.get('[data-cy=Kommunikation]').find('ige-add-button').contains('Hinzufügen').click();
     cy.get('[data-cy=Kommunikation]').find('mat-select').click();
-    cy.get('mat-option').contains('E-Mail').click();
+    cy.get('mat-option').contains(chooseContact).click();
     cy.get('[data-cy=Kommunikation] input').type('Test');
     cy.wait(500);
     AddressPage.publishNow();
