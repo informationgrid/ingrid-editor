@@ -15,7 +15,7 @@
         <div fxLayout="column" style="width: 400px;">
 
             <div class="dlg-field-label required">Typ*</div>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" data-cy="spatial-dialog-type">
                 <mat-select (selectionChange)="updateView($event.value)" [value]="result.type">
                     <mat-option *ngFor="let menuItem of types" [value]="menuItem.id">
                         {{menuItem.label}}
@@ -41,13 +41,13 @@
                 Titel<span *ngIf="view === 'geo-name'">*</span>
             </div>
             <mat-form-field appearance="outline">
-                <input matInput
+                <input matInput data-cy="spatial-dialog-title"
                     [formControl]="titleInput"
                     placeholder="Eingeben...">
                 <mat-hint *ngIf="view === 'geo-name'">Geben Sie dem Raumbezug eine geographische Bezeichnung oder auch Eigennamen.</mat-hint>
             </mat-form-field>
 
-            <div [class.invisible]="view === 'geo-name'" #leafletDlg fxFlex></div>
+            <div [class.invisible]="view === 'geo-name'" #leafletDlg fxFlex data-cy="spatial-dialog-map"></div>
         </div>
     </div>
 
@@ -55,9 +55,9 @@
 </mat-dialog-content>
 <mat-dialog-actions>
 
-    <button mat-button color="primary" mat-dialog-close>Abbrechen</button>
+    <button mat-button color="primary" data-cy="confirm-dialog-cancel" mat-dialog-close>Abbrechen</button>
     <div fxFlex></div>
-    <button mat-stroked-button color="primary"
+    <button mat-stroked-button color="primary" data-cy="confirm-dialog-save"
             [disabled]="(view !== 'geo-name' && !result.value) || (view === 'geo-name' && !titleInput.value)"
             (click)="returnResult()">Übernehmen
     </button>
