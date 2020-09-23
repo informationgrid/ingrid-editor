@@ -11,7 +11,7 @@
             <div class="label">{{model[i] | codelist:to.codelistId | async}}</div>
         </ng-container>
 
-        <ng-template #simpleLabel>{{model[i]}}</ng-template>
+        <ng-template #simpleLabel><div class="label">{{model[i]}}</div></ng-template>
 
         <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
