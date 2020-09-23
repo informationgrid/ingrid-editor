@@ -38,7 +38,7 @@ export class RepeatChipComponent extends FieldArrayType {
   }
 
   private addValuesFromResponse(response) {
-    response.forEach(item => this.model.indexOf(item) === -1 ? this.add(null, item) : null);
+    response.forEach(item => (!this.model || this.model.indexOf(item) === -1) ? this.add(null, item) : null);
   }
 
   /**
