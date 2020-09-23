@@ -4,7 +4,7 @@
     <div *ngIf="!hasAnyLocations" class="spatialBtnText">
         Erstellen Sie einen Raumbezug<span *ngIf="to.required">*</span>
     </div>
-    <button type="button" mat-fab class="spatialBtn" color="primary" (click)="openSpatialDialog()"
+    <button type="button" mat-fab class="spatialBtn" data-cy="spatialButton" color="primary" (click)="openSpatialDialog()"
             [ngClass]="{ 'has-error': formFieldControl.errorState && formControl.errors?.required }">
         <mat-icon svgIcon="spatial-rect"></mat-icon>
     </button>
