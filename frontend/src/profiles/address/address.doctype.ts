@@ -26,6 +26,9 @@ export class AddressDoctype extends BaseDoctype {
       templateOptions: {
         label: 'Allgemeines'
       },
+      expressionProperties: {
+        'templateOptions.label': '(model.firstName || model.lastName) ? "Persönliche Daten" : "Organisationsdaten"'
+      },
       fieldGroup: [{
         wrappers: ['panel'],
         templateOptions: {
@@ -74,10 +77,11 @@ export class AddressDoctype extends BaseDoctype {
             fieldGroup: [{
               key: 'salutation',
               className: 'flex-1',
-              type: 'input',
+              type: 'autocomplete',
               templateOptions: {
                 label: 'Anrede',
-                appearance: 'outline'
+                appearance: 'outline',
+                options: this.getCodelistForSelect(4300)
               },
             },{
               key: 'academic-title',
@@ -86,7 +90,7 @@ export class AddressDoctype extends BaseDoctype {
               templateOptions: {
                 label: 'Titel',
                 appearance: 'outline',
-                options: this.getCodelistForSelect(4305)
+                options: this.getCodelistForSelect(4305).pipe(map(cl => [{label: '', value: ''}].concat(cl)))
               },
             }]
           }],
@@ -132,8 +136,9 @@ export class AddressDoctype extends BaseDoctype {
           key: 'contact',
           type: 'repeat',
           wrappers: ['panel'],
+          className: 'contact',
           templateOptions: {
-            externalLabel: 'Kommunikation',
+            externalLabel: 'Kontakt',
             required: true,
             minLength: 1
           },
@@ -223,23 +228,23 @@ export class AddressDoctype extends BaseDoctype {
             fieldGroupClassName: 'display-flex',
             fieldGroup: [{
               key: 'administrativeArea',
-              type: 'autocomplete',
+              type: 'select',
               className: 'flex-1',
               templateOptions: {
                 label: 'Verwaltungsgebiet',
                 appearance: 'outline',
                 placeholder: 'Bitte wählen',
-                options: this.getCodelistForSelect(110)
+                options: this.getCodelistForSelect(110).pipe(map(cl => [{label: '', value: ''}].concat(cl)))
               }
             }, {
               key: 'country',
-              type: 'autocomplete',
+              type: 'select',
               className: 'flex-1',
               templateOptions: {
                 label: 'Land',
                 appearance: 'outline',
                 placeholder: 'Bitte wählen',
-                options: this.getCodelistForSelect(6200)
+                options: this.getCodelistForSelect(6200).pipe(map(cl => [{label: '', value: ''}].concat(cl)))
               }
             }]
           }]
