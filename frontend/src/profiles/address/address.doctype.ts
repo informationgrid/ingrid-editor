@@ -32,7 +32,7 @@ export class AddressDoctype extends BaseDoctype {
           externalLabel: 'Organisation',
         },
         expressionProperties: {
-          'templateOptions.required': '(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0) || model.organization.length !== 0'
+          'templateOptions.required': '(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0) || (model.organization && model.organization.length !== 0)'
         },
         fieldGroup: [
           {
