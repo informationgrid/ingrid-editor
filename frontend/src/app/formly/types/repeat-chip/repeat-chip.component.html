@@ -8,7 +8,7 @@
         <mat-icon *ngIf="to.showLanguage" class="avatar gray" svgIcon="language-24px"></mat-icon>
 
         <ng-container *ngIf="to.codelistId > -1; else simpleLabel">
-            {{model[i] | codelist:to.codelistId | async}}
+            <div class="label">{{model[i] | codelist:to.codelistId | async}}</div>
         </ng-container>
 
         <ng-template #simpleLabel>{{model[i]}}</ng-template>

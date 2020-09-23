@@ -7,7 +7,9 @@
 }
 
 .mat-chip {
-  height: 36px;
+  max-width: calc(100% - 32px);
+  height: auto;
+  min-height: 36px;
   margin: 6px !important;
   font-weight: normal;
   font-size: 16px;
@@ -22,6 +24,11 @@
 
   &:active { /* press */
     box-shadow: none !important;
+  }
+
+  .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
