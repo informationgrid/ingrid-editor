@@ -117,21 +117,19 @@ describe('Tree', () => {
       const docName2 = 'Deep deep folder'
       const deepFolder ='Deep auto-expanding1'
       const deepFolder2 ='Deep auto-expanding2'
-      const deepFolder3 ='Deep auto-expanding3'
 
       DocumentPage.createDocument(docName);
       DocumentPage.createFolder(deepFolder);
       DocumentPage.createFolder(deepFolder2);
-      DocumentPage.createFolder(deepFolder3);
       DocumentPage.createDocument(docName2);
 
       // to close for checking auto-expanding by hovered node
       Tree.selectNodeWithTitle(deepFolder);
 
-      CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, deepFolder3, docName2], false);
+      CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, docName2], false);
 
       //check if nodes are expanded
-      CopyCutUtils.selectNodeWithChecks(docName2, ['Daten', deepFolder, deepFolder2, deepFolder3]);
+      CopyCutUtils.selectNodeWithChecks(docName2, ['Daten', deepFolder, deepFolder2]);
     });
   });
 
@@ -352,20 +350,19 @@ describe('Tree', () => {
     });
 
     it('should move a root folder into a folder', () => {
-      const testFolder = 'move me';
-      const testFolder2 = 'move me2';
+      // Bug #2091
+      const testFolder = 'move me1';
       const docName = 'iam under a moved folder'
 
       DocumentPage.createFolder(testFolder);
-      DocumentPage.createFolder(testFolder2);
       DocumentPage.createDocument(docName);
 
       Tree.selectNodeWithTitle(testFolder);
 
       CopyCutUtils.move(['Testdokumente']);
 
-      Tree.openNode([testFolder, testFolder2]);
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder, testFolder2]);
+      Tree.openNode([testFolder]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder]);
     });
 
     it('should move a root node into a deep folder', () => {

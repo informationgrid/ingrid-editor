@@ -45,6 +45,7 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy=Kommunikation] input').type('Test');
     cy.wait(500);
     AddressPage.publishNow();
+    cy.get('[data-cy="form-message"]').contains('Das Dokument wurde veröffentlicht.');
   }
 
   static saveChanges () {
