@@ -6,7 +6,7 @@ import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {MessageService} from '../../../services/message.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {merge} from 'rxjs';
+import {merge, Subscription} from 'rxjs';
 import {IgeDocument} from '../../../models/ige-document';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -65,7 +65,7 @@ export class PublishPlugin extends Plugin {
     });
 
     // add event handler for revert
-    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
+    const toolbarEventSubscription = this.formToolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'REVERT') {
         this.revert();
       } else if (eventId === 'PUBLISH') {
@@ -74,8 +74,9 @@ export class PublishPlugin extends Plugin {
     });
 
     // add behaviour to set active states for toolbar buttons
-    this.addBehaviour();
+    const behaviourSubscription = this.addBehaviour();
 
+    this.subscriptions.push(toolbarEventSubscription, behaviourSubscription);
   }
 
   publish() {
@@ -155,8 +156,8 @@ export class PublishPlugin extends Plugin {
   /**
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
-  private addBehaviour() {
-    merge(
+  private addBehaviour(): Subscription {
+    return merge(
       this.treeQuery.openedDocument$,
       this.addressTreeQuery.openedDocument$
     ).subscribe(loadedDocument => {

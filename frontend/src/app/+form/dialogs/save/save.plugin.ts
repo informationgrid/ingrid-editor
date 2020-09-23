@@ -9,7 +9,6 @@ import {IgeDocument} from '../../../models/ige-document';
 import {MatDialog} from '@angular/material/dialog';
 import {merge} from 'rxjs';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/operators';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {
@@ -18,7 +17,6 @@ import {
 } from '../version-conflict-dialog/version-conflict-dialog.component';
 import {HttpErrorResponse} from '@angular/common/http';
 
-@UntilDestroy()
 @Injectable()
 export class SavePlugin extends Plugin {
   id = 'plugin.publish';
@@ -38,7 +36,6 @@ export class SavePlugin extends Plugin {
               private formsManager: NgFormsManager,
               private documentService: DocumentService) {
     super();
-    this.isActive = true;
   }
 
   register() {
@@ -56,7 +53,7 @@ export class SavePlugin extends Plugin {
     });
 
     // add event handler for revert
-    this.formToolbarService.toolbarEvent$
+    const toolbarEventSubscription = this.formToolbarService.toolbarEvent$
       .pipe(
         filter(eventId => eventId === 'SAVE')
       )
@@ -70,11 +67,10 @@ export class SavePlugin extends Plugin {
       });
 
     // react on document selection
-    merge(
+    const treeSubscription = merge(
       this.treeQuery.openedDocument$,
       this.addressTreeQuery.openedDocument$
     )
-      .pipe(untilDestroyed(this))
       .subscribe((openedDoc) => {
         this.formToolbarService.setButtonState(
           'toolBtnSave',
@@ -84,6 +80,8 @@ export class SavePlugin extends Plugin {
         // openedDoc !== null ? this.form.enable() : this.form.disable();
 
       });
+
+    this.subscriptions.push(toolbarEventSubscription, treeSubscription);
 
   }
 
@@ -101,6 +99,8 @@ export class SavePlugin extends Plugin {
 
   unregister() {
     super.unregister();
+
+    this.formToolbarService.removeButton('toolBtnSave');
   }
 
   /**

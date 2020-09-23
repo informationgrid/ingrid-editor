@@ -34,6 +34,9 @@ export class AddressPage extends DocumentPage {
     this.CreateDialog.execute();
   }
 
+  // TODO: make an API Request to create a new address/document, since we do not test the address creation here,
+  //       but just need an address for another test. After an API-Request we should reload the tree to get the
+  //       changes made in the database.
   static createAddressAndPublish (adrName: string) {
     cy.get(DocumentPage.Toolbar.NewDoc).click();
     cy.get('[data-cy=create-address-organization]').type(adrName);

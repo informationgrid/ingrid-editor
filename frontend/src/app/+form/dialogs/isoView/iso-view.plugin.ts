@@ -28,7 +28,7 @@ export class IsoViewPlugin extends Plugin {
     });
 
     // react on event when button is clicked
-    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
+    const toolbarEventSubscription = this.formToolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'ISO') {
         this.showISODialog();
       }
@@ -41,6 +41,8 @@ export class IsoViewPlugin extends Plugin {
         data.length === 1 && data[0]._type.startsWith('ISO') );
     } );
 */
+
+    this.subscriptions.push(toolbarEventSubscription);
   };
 
   private showISODialog() {
@@ -50,5 +52,7 @@ export class IsoViewPlugin extends Plugin {
 
   unregister() {
     super.unregister();
+
+    this.formToolbarService.removeButton('toolBtnIso');
   }
 }

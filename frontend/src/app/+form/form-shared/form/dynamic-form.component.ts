@@ -39,7 +39,8 @@ import {TreeService} from '../../sidebars/tree/tree.service';
 @Component({
   selector: 'ige-form-wrapper',
   templateUrl: './dynamic-form.component.html',
-  styleUrls: ['./dynamic-form.component.scss']
+  styleUrls: ['./dynamic-form.component.scss'],
+  providers: [FormPluginsService]
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, AfterContentChecked {
@@ -81,7 +82,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   showJson = false;
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
-              private formPlugins: FormPluginsService,
+              private formPlugins: FormPluginsService, // this needs to be here for instantiation!!!
               private dialog: MatDialog,
               private documentService: DocumentService, private modalService: ModalService,
               private formsManager: NgFormsManager,
@@ -119,7 +120,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       .subscribe(() => this.auth.refreshSession().subscribe());
 
     if (this.address) {
-      this.formPlugins.setAddressConfiguration();
       this.formStateName = 'address';
       this.query = this.addressTreeQuery;
     } else {

@@ -20,8 +20,6 @@ export class UndoPlugin extends Plugin {
   private redoHistory: any[] = [];
   private actionTriggered = false;
 
-  formValueSubscription: Subscription;
-
   get name() {
     return this._name;
   }
@@ -60,7 +58,7 @@ export class UndoPlugin extends Plugin {
     });
 
     // add event handler for revert
-    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
+    const toolbarEventSubscription = this.formToolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === this.eventUndoId) {
         this.undo();
       } else if (eventId === this.eventRedoId) {
@@ -68,7 +66,7 @@ export class UndoPlugin extends Plugin {
       }
     });
 
-    this.storageService.afterLoadAndSet$.subscribe((data) => {
+    const afterLoadSubscription = this.storageService.afterLoadAndSet$.subscribe((data) => {
       if (data) {
         this.history = [];
         this.redoHistory = [];
@@ -76,17 +74,14 @@ export class UndoPlugin extends Plugin {
 
         this.formToolbarService.setButtonState('toolBtnUndo', false);
 
-        // remove old subscription
-        if (this.formValueSubscription) {
-          this.formValueSubscription.unsubscribe();
-        }
-
         // add behaviour to set active states for toolbar buttons
         // need to add behaviour after each load since form-object changes!
 
         // FIXME: form is not available when opening a document, going to dashboard and back to form again
         //        seems to be, because when clicking on form, the last opened document is being reloaded!?
         this.addBehaviour();
+
+        this.subscriptions.push(toolbarEventSubscription, afterLoadSubscription);
       }
     });
 
@@ -130,11 +125,9 @@ export class UndoPlugin extends Plugin {
   unregister() {
     super.unregister();
 
+    this.formToolbarService.removeButton('toolBtnUndoSeparator');
     this.formToolbarService.removeButton('toolBtnUndo');
-
-    if (this.formValueSubscription) {
-      this.formValueSubscription.unsubscribe();
-    }
+    this.formToolbarService.removeButton('toolBtnRedo');
   }
 
   /**

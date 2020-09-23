@@ -57,13 +57,14 @@ export class CreateDocumentPlugin extends Plugin {
     buttons.forEach((button) => this.toolbarService.addButton(button));
 
     // add event handler for revert
-    this.toolbarService.toolbarEvent$
-      .pipe(untilDestroyed(this))
+    const toolbarEventSubscription = this.toolbarService.toolbarEvent$
       .subscribe(eventId => {
         if (eventId === 'NEW_DOC') {
           this.newDoc();
         }
       });
+
+    this.subscriptions.push(toolbarEventSubscription);
   };
 
   async newDoc() {
@@ -115,5 +116,7 @@ export class CreateDocumentPlugin extends Plugin {
 
   unregister() {
     super.unregister();
+
+    this.toolbarService.removeButton('toolBtnNew');
   }
 }

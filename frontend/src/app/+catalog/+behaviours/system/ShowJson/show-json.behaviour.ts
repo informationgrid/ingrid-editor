@@ -36,11 +36,13 @@ export class ShowJsonBehaviour extends Plugin {
     });
 
     // add event handler for revert
-    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
+    const toolbarEventSubscription = this.formToolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === this.eventShowJsonId) {
         this.toggleJSONView();
       }
     });
+
+    this.subscriptions.push(toolbarEventSubscription);
   }
 
   private toggleJSONView() {
@@ -50,5 +52,13 @@ export class ShowJsonBehaviour extends Plugin {
         showJSONView: !state.ui.showJSONView
       }
     }));
+  }
+
+
+  unregister() {
+    super.unregister();
+
+    this.formToolbarService.removeButton('toolBtnShowJsonSeparator');
+    this.formToolbarService.removeButton('toolBtnShowJson');
   }
 }

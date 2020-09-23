@@ -2,13 +2,13 @@ import {Injectable} from '@angular/core';
 import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
 import {TreeQuery} from '../../../store/tree/tree.query';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/operators';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {TreeStore} from '../../../store/tree/tree.store';
 import {ShortTreeNode} from '../../sidebars/tree/tree.types';
+import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import {AddressTreeStore} from '../../../store/address-tree/address-tree.store';
 
-@UntilDestroy()
 @Injectable()
 export class HistoryPlugin extends Plugin {
   id = 'plugin.history';
@@ -29,9 +29,14 @@ export class HistoryPlugin extends Plugin {
   // the popup showing the last/next nodes
   popupMenu = null;
 
+  private tree: TreeQuery | AddressTreeQuery;
+  private treeStore: TreeStore | AddressTreeStore;
+
   constructor(private formToolbarService: FormToolbarService,
-              private treeStore: TreeStore,
-              private treeQuery: TreeQuery) {
+              private docTreeStore: TreeStore,
+              private addressTreeStore: AddressTreeStore,
+              private docTreeQuery: TreeQuery,
+              private addressTreeQuery: AddressTreeQuery) {
     super();
   }
 
@@ -40,21 +45,34 @@ export class HistoryPlugin extends Plugin {
   }
 
   register() {
+    this.setupFields();
+
+    console.log('Register history plugin for address:', this.forAddress);
     super.register();
 
     this.addToolbarButtons();
 
     this.handleEvents();
 
-    this.treeQuery.openedDocument$
+    const treeSubscription = this.tree.openedDocument$
       .pipe(
-        untilDestroyed(this),
         filter(doc => doc !== null)
       )
       .subscribe(doc => this.addDocToStack(doc));
 
+    this.subscriptions.push(treeSubscription);
   };
 
+
+  private setupFields() {
+    if (this.forAddress) {
+      this.tree = this.addressTreeQuery;
+      this.treeStore = this.addressTreeStore;
+    } else {
+      this.tree = this.docTreeQuery;
+      this.treeStore = this.docTreeStore;
+    }
+  }
 
   private addDocToStack(doc: DocumentAbstract) {
 
@@ -127,6 +145,13 @@ export class HistoryPlugin extends Plugin {
 
   unregister() {
     super.unregister();
+
+    this.formToolbarService.removeButton('toolBtnNewSeparator');
+    this.formToolbarService.removeButton('toolBtnPreviousInHistory');
+    this.formToolbarService.removeButton('toolBtnNextInHistory');
+
+    this.stack = [];
+    this.pointer = -1;
   }
 
   private handleNext() {

@@ -5,15 +5,13 @@ import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/tool
 import {UpdateType} from '../../../models/update-type.enum';
 import {ModalService} from '../../../services/modal/modal.service';
 import {PasteDialogComponent, PasteDialogOptions} from './paste-dialog.component';
-import {merge, Observable, Subscription} from 'rxjs';
+import {merge, Observable} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {MessageService} from '../../../services/message.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter, switchMap, take} from 'rxjs/operators';
 
-@UntilDestroy()
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
   id = 'plugin.copy.cut.paste';
@@ -23,7 +21,6 @@ export class CopyCutPastePlugin extends Plugin {
   description = `
     Diese Regeln beschreiben das Kopieren, Ausschneiden und Einfügen von Datensätzen.
   `;
-  subscription: Subscription;
 
   copiedDatasets: string[] = [];
   cutDatasets: string[] = [];
@@ -64,7 +61,7 @@ export class CopyCutPastePlugin extends Plugin {
     buttons.forEach((button) => this.toolbarService.addButton(button));
 
     // add event handler for revert
-    this.toolbarService.toolbarEvent$.subscribe(eventId => {
+    const toolbarEventSubscription = this.toolbarService.toolbarEvent$.subscribe(eventId => {
       if (eventId === 'COPY') {
         // this.handleEvent(UpdateType.Copy);
         this.copy();
@@ -76,17 +73,14 @@ export class CopyCutPastePlugin extends Plugin {
     });
 
     // set button state according to selected documents
-    merge(
+    const treeQuerySubscription = merge(
       this.treeQuery.selectActiveId(),
       this.addressTreeQuery.selectActiveId()
-    ).pipe(
-      untilDestroyed(this)
     ).subscribe(data => {
       if (data.length === 0) {
         this.toolbarService.setButtonState('toolBtnCopy', false);
       } else {
         this.toolbarService.setButtonState('toolBtnCopy', true);
-
 
         // set state of menu items
         this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPY', true);
@@ -99,6 +93,8 @@ export class CopyCutPastePlugin extends Plugin {
         });
       }
     });
+
+    this.subscriptions.push(toolbarEventSubscription, treeQuerySubscription);
   }
 
   private handleEvent(type: UpdateType) {
@@ -150,13 +146,9 @@ export class CopyCutPastePlugin extends Plugin {
 
   unregister() {
     super.unregister();
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
 
     // remove from same index since buttons take the neighbor place after deletion
     this.toolbarService.removeButton('toolBtnCopy');
-    // this.toolbarService.removeButton('toolBtnCut');
     this.toolbarService.removeButton('toolBtnCopyCutSeparator');
   }
 }
