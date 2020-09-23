@@ -9,6 +9,8 @@ import {LeafletService} from './leaflet.service';
 import {SpatialLocation, SpatialLocationWithColor} from './spatial-list/spatial-list.component';
 import {distinctUntilChanged, tap} from 'rxjs/operators';
 import {BehaviorSubject} from 'rxjs';
+import {ContextHelpService} from "../../../services/context-help/context-help.service";
+import {ConfigService} from "../../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -28,8 +30,14 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
   private drawnSpatialRefs: Rectangle[] = [];
   mapHasMoved = false;
 
+  private profile: string;
+  private docType: string;
+  private fieldId: string;
+
   constructor(private modalService: ModalService,
               private dialog: MatDialog,
+              private contextHelpService: ContextHelpService,
+              private configService: ConfigService,
               private leafletService: LeafletService,
               private _changeDetectionRef: ChangeDetectorRef) {
     super();
@@ -65,6 +73,13 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
       this.formControl.setValue([]);
       throw Error('Problem initializing the map component: ' + e.message);
     }
+
+
+
+      this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
+      // TODO: this.model is not the whole model!!! How to get the _type?
+      this.docType = this.to.docType ?? this.model?._type;
+      this.fieldId = <string>this.field.key;
 
   }
 
@@ -171,6 +186,12 @@ export class LeafletTypeComponent extends FieldType implements OnInit, AfterView
 
     this.mapHasMoved = this.locations.length === 1 ? false : index != null;
 
+  }
+
+  showContextHelp(evt: MouseEvent) {
+    const target = new ElementRef(evt.currentTarget);
+    const infoElement = target.nativeElement as HTMLElement;
+    this.contextHelpService.showContextHelp(this.profile, this.docType, this.fieldId, this.to.externalLabel, infoElement);
   }
 
 }

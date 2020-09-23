@@ -21,3 +21,7 @@
                   (selectLocation)="highlightLocation($event)"
                   (edit)="openSpatialDialog($event)"
                   (remove)="removeLocation($event)"></ige-spatial-list>
+
+<div class="spatialHelpText">
+    Erstellen Sie Informationen über die räumliche Zuordnung des beschriebenen Datenbestands. <a *ngIf="to.hasContextHelp" (click)="showContextHelp($event)">Hilfe zu Raumbezügen</a>
+</div>

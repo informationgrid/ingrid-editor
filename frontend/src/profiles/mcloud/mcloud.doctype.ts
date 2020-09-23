@@ -207,6 +207,7 @@ export class McloudDoctype extends BaseDoctype {
         wrappers: [],
         templateOptions: {
           mapOptions: {},
+          externalLabel: 'Raumbezüge',
           height: 386
         }
       }]
