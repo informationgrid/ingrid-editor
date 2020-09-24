@@ -223,7 +223,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
     if (id === undefined) {
       const previousOpenedDoc = this.query.getValue().openedDocument;
-      if (previousOpenedDoc) {
+      const comesFromOtherPage = !this.model?._id;
+      if (previousOpenedDoc && comesFromOtherPage) {
         this.documentService.setDocLoadingState(true, this.address);
         console.log('Opening previous selected node', previousOpenedDoc.id);
         id = previousOpenedDoc.id.toString();
