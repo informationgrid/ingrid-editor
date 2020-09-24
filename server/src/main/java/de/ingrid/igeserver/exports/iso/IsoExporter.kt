@@ -10,7 +10,7 @@ import javax.xml.bind.Marshaller
 
 class IsoExporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
-        get() = ExportTypeInfo("xxx", "IsoExporter", "", listOf())
+        get() = ExportTypeInfo("xxx", "IsoExporter", "", "text/xml", "xml", listOf())
 
     override fun run(jsonData: JsonNode): Any {
         return mapMetadata(jsonData)

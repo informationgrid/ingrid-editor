@@ -27,10 +27,10 @@
     <mat-step [stepControl]="secondFormGroup">
         <ng-template matStepLabel>Exportieren</ng-template>
 
-        <mat-form-field style="width: 300px">
+        <mat-form-field style="width: 300px; padding-top: 10px">
             <mat-label>Format</mat-label>
             <mat-select [(ngModel)]="formatSelection">
-                <mat-option *ngFor="let format of exportFormats | async" [value]="format.type">
+                <mat-option *ngFor="let format of exportFormats | async" [value]="format">
                     {{format.name}}
                 </mat-option>
             </mat-select>

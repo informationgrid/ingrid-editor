@@ -21,6 +21,8 @@ export interface ExportTypeInfo {
   type: string;
   name: string;
   description: string;
+  dataType: string;
+  fileExtension: string;
 }
 
 @Injectable({

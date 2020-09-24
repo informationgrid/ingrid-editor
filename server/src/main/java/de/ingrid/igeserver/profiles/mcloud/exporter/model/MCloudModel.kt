@@ -2,29 +2,30 @@ package de.ingrid.igeserver.profiles.mcloud.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import de.ingrid.igeserver.exports.interfaces.dcat.DCAT
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class MCloudModel(
-        @JsonProperty("_id") val uuid: String,
-        val title: String,
-        val description: String?,
+        @JsonProperty("_id") override val uuid: String,
+        override val title: String,
+        override val description: String?,
         val theme: String?,
         @JsonProperty("_created") val created: String,
         @JsonProperty("_modified") val modified: String,
         val origin: String?,
         val addresses: List<AddressRefModel>?,
         val usage: String?,
-        val downloads: List<DownloadModel>?,
+        override val downloads: List<DownloadModel>?,
         val categories: List<String>?,
-        val license: String?,
+        override val license: String?,
         @JsonProperty("geoReferenceVisual") val spatials: List<SpatialModel>?,
         val timeSpan: RangeModel?,
         val periodicity: String?,
         val mfundFKZ: String?,
         val mfundProject: String?
-) {
+): DCAT {
 
-    val publisher: AddressModel?
+    override val publisher: AddressModel?
     get() {
         return addresses
                 ?.firstOrNull { it.type == "10" }

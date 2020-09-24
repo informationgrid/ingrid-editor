@@ -80,6 +80,6 @@ class Iso19115Exporter : IgeExporter {
     }
 
     init {
-        info = ExportTypeInfo("iso19115", "ISO-19115", "Export in das ISO-19115 Format", listOf("ingrid"))
+        info = ExportTypeInfo("iso19115", "ISO-19115", "Export in das ISO-19115 Format", "text/xml", "xml", listOf("ingrid"))
     }
 }

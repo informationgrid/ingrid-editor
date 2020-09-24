@@ -21,6 +21,8 @@ class DcatApExporter : IgeExporter {
                     "mcloudDcat",
                     "mCLOUD DCAT-AP.de",
                     "Export von mCLOUD Datensätzen ins DCAT-AP.de Format.",
+                    "text/xml",
+                    "xml",
                     listOf("mcloud"))
         }
 

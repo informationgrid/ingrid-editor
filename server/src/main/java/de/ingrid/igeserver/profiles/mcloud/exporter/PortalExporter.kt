@@ -7,6 +7,7 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel
 import org.springframework.context.annotation.Profile
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.io.StringWriter
 import java.io.Writer
@@ -21,6 +22,8 @@ class PortalExporter : IgeExporter {
                     "portal",
                     "mCLOUD Portal",
                     "Export der Daten für die weitere Verwendung im Liferay Portal und Exporter.",
+                    MediaType.APPLICATION_JSON_VALUE,
+                    "json",
                     listOf("mcloud"))
         }
 

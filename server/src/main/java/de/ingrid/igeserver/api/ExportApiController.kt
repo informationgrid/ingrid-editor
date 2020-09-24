@@ -1,12 +1,12 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.model.ExportRequestParameter
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
-import de.ingrid.igeserver.services.CatalogService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -39,7 +39,8 @@ class ExportApiController : ExportApi {
             if (doc != null) {
                 val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
 
-                result = exportService.doExport(docVersion, data.exportFormat)
+                val exporter = exportService.getExporter(data.exportFormat)
+                result = exporter.run(docVersion) as String
             }
         }
         return ResponseEntity.ok(result)
