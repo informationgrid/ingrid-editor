@@ -12,13 +12,13 @@ open class UnauthenticatedException: ClientException {
         val STATUS_CODE = HttpStatus.UNAUTHORIZED
 
         private const val ERROR_CODE = "UNAUTHENTICATED"
-        private const val ERROR_TEXT = "Failed to authenticate '\$user' via Keycloak service"
+        private const val ERROR_TEXT = "Failed to authenticate user via Keycloak service"
 
         /**
          * Factory method for an unauthenticated user
          */
         fun withUser(user: String, cause: Throwable? = null) : UnauthenticatedException {
-            return UnauthenticatedException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("user" to user), cause)
+            return UnauthenticatedException(STATUS_CODE, ERROR_CODE, "$ERROR_TEXT: $user", mapOf("user" to user), cause)
         }
     }
 }

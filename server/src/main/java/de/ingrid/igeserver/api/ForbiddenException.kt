@@ -12,13 +12,13 @@ open class ForbiddenException: ClientException {
         val STATUS_CODE = HttpStatus.FORBIDDEN
 
         private const val ERROR_CODE = "FORBIDDEN"
-        private const val ERROR_TEXT = "Failed to authorize '\$user' for the requested operation."
+        private const val ERROR_TEXT = "Failed to authorize user for the requested operation"
 
         /**
          * Factory method for an unauthorized user
          */
         fun withUser(user: String, cause: Throwable? = null) : ForbiddenException {
-            return ForbiddenException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("user" to user), cause)
+            return ForbiddenException(STATUS_CODE, ERROR_CODE, "$ERROR_TEXT: $user", mapOf("user" to user), cause)
         }
     }
 }
