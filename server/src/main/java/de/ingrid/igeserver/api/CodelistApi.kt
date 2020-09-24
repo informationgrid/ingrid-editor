@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -21,17 +22,17 @@ interface CodelistApi {
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @Operation
-    @RequestMapping(value = [""], produces = ["application/json"], method = [RequestMethod.GET])
+    @RequestMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getAllCodelists(): ResponseEntity<List<CodeList>>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @Operation
-    @RequestMapping(value = [""], produces = ["application/json"], method = [RequestMethod.POST])
+    @RequestMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     fun updateCodelists(): ResponseEntity<List<CodeList>>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @Operation
-    @RequestMapping(value = ["/{ids}"], produces = ["application/json"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/{ids}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getCodelistsByIds(
             @Parameter(description = "The ID of the codelists.", required = true) @PathVariable("ids") ids: List<String>): ResponseEntity<List<CodeList>>
 }

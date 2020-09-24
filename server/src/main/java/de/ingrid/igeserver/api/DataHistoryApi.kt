@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
@@ -15,7 +16,7 @@ import java.time.LocalDate
 
 @Tag(name = "DataHistory", description = "the data history API")
 interface DataHistoryApi {
-    @GetMapping(value = ["/data-history"], produces = ["application/json"])
+    @GetMapping(value = ["/data-history"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(description = "Get the previous versions of datasets which match the given parameters. The results can also be sorted.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets found")])
     fun find(

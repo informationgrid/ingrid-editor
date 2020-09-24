@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -17,6 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod
 interface RefreshTokenApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns a new access token to the requested client")])
-    @RequestMapping(value = ["/refreshToken"], produces = ["application/json"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/refreshToken"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun refreshToken(): ResponseEntity<Void>
 }

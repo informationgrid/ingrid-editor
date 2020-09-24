@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -26,7 +27,7 @@ interface ProfileApi {
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    @RequestMapping(value = ["/profiles"], produces = ["application/json"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/profiles"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     fun uploadProfile(principal: Principal, @RequestParam("file") file: MultipartFile,
                       redirectAttributes: RedirectAttributes): ResponseEntity<String>
 }

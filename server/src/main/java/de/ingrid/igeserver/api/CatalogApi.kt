@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -21,24 +22,24 @@ import org.springframework.web.bind.annotation.*
 interface CatalogApi {
     @get:ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error", content = [Content(schema = Schema(implementation = InlineResponseDefault::class))])])
     @get:Operation(responses = [ApiResponse(content = [Content(schema = Schema(implementation = String::class))])], summary = "Get all catalogs")
-    @get:GetMapping(value = ["/catalogs"], produces = ["application/json"])
+    @get:GetMapping(value = ["/catalogs"], produces = [MediaType.APPLICATION_JSON_VALUE])
     val catalogs: ResponseEntity<List<Catalog>>
 
     // @PreAuthorize("hasRole('admin')")
-    @RequestMapping(value = ["/catalogs"], produces = ["application/json"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/catalogs"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     @Operation
     fun createCatalog(
             @Parameter(description = "The settings of the catalog to create.", required = true) @RequestBody settings: Catalog
     ): ResponseEntity<String>
 
-    @RequestMapping(value = ["/catalogs/{name}"], produces = ["application/json"], method = [RequestMethod.PUT])
+    @RequestMapping(value = ["/catalogs/{name}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.PUT])
     @Operation
     fun updateCatalog(
             @Parameter(description = "The name of the catalog to update.", required = true) @PathVariable("name") name: String,
             @Parameter(description = "The settings of the catalog to update.", required = true) @RequestBody settings: Catalog
     ): ResponseEntity<Void>
 
-    @RequestMapping(value = ["/catalogs/{name}"], produces = ["application/json"], method = [RequestMethod.DELETE])
+    @RequestMapping(value = ["/catalogs/{name}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.DELETE])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "404", description = "Unknown database")])
     fun deleteCatalog(

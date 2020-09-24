@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -19,12 +20,12 @@ import org.springframework.web.bind.annotation.RequestPart
 interface LoginApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Return the JWT"), ApiResponse(responseCode = "403", description = "Error when user is not accepted.")])
-    @RequestMapping(value = ["/login"], produces = ["application/json"], consumes = ["application/x-www-form-urlencoded"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/login"], produces = [MediaType.APPLICATION_JSON_VALUE], consumes = ["application/x-www-form-urlencoded"], method = [RequestMethod.POST])
     fun login(@Parameter @RequestPart(value = "username", required = false) username: String?,
               @Parameter @RequestPart(value = "password", required = false) password: String?): ResponseEntity<Void> //    @ApiOperation(value = "", notes = ""})
     //    @ApiResponses(value = {
     //            @ApiResponse(code = 200, message = "Return the JWT", response = Void.class),
     //            @ApiResponse(code = 403, message = "Error when user is not accepted.", response = Void.class) })
-    //    @RequestMapping(value = "/logout", produces = { "application/json" }, method = RequestMethod.POST)
+    //    @RequestMapping(value = "/logout", produces = { MediaType.APPLICATION_JSON_VALUE }, method = RequestMethod.POST)
     //    ResponseEntity<Void> logout();
 }

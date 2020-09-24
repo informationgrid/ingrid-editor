@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,7 +24,7 @@ import javax.validation.Valid
 interface ImportApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @RequestMapping(value = ["/import"], produces = ["application/json"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/import"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     fun importDataset(
             principal: Principal?,
             @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile): ResponseEntity<ImportAnalyzeInfo>

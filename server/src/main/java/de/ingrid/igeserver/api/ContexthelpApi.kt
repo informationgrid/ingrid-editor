@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam
 interface ContexthelpApi {
     @Operation(description = "Get the contexthelp text for a given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the role")])
-    @RequestMapping(value = ["/contexthelp"], produces = ["application/json"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/contexthelp"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getContextHelpText(
             @Parameter(description = "The unique id of the field.", required = true) @RequestParam("fieldId") id: String,
             @Parameter(description = "The active profile.", required = true) @RequestParam("profile") profile: String,
@@ -28,7 +29,7 @@ interface ContexthelpApi {
 
     @Operation(description = "Get all fields with contexthelptexts")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of field ids with contexthelptexts")])
-    @RequestMapping(value = ["/contexthelpIds"], produces = ["application/json"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/contexthelpIds"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun listContextHelpIds(
             @Parameter(description = "The active profile.", required = true) @RequestParam("profile") profile: String,
             @Parameter(description = "The current document type.", required = true) @RequestParam("docType") docType: String): ResponseEntity<List<String>>

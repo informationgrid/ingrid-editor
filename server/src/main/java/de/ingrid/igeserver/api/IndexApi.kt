@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
@@ -19,7 +20,7 @@ import javax.validation.Valid
 interface IndexApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @RequestMapping(value = ["/index"], produces = ["application/json"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/index"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     fun startIndexing(
             principal: Principal?,
             @Parameter(description = "The catalog ID for which the indexing process should be started", required = true)
@@ -27,7 +28,7 @@ interface IndexApi {
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @RequestMapping(value = ["/index/config"], produces = ["application/json"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/index/config"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     fun setConfig(
             principal: Principal?,
             @Parameter(description = "The catalog ID and the cron pattern for which the configuration is saved", required = true)
@@ -35,7 +36,7 @@ interface IndexApi {
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @RequestMapping(value = ["/index/config/{id}"], produces = ["application/json"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/index/config/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getConfig(
             principal: Principal?,
             @Parameter(description = "The catalog ID for which to get the configuration", required = true)
