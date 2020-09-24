@@ -198,8 +198,10 @@ describe('General create documents/folders', () => {
     it('should show a dialog when a document was modified and the page was changed', () => {
       const docname = 'Test mCLOUD Dokument';
 
+      // TODO: replace with Tree.openNode(). Also find other occurrences
       cy.get('#sidebar').findByText('Testdokumente').click();
       cy.get('#sidebar').findByText(docname).click();
+      // TODO: use better values in input field! The string 'testestest' seems strange, instead use 'modified' or similar
       cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('testestest');
 
       // TODO find out why clicking too fast does not open dialog
@@ -220,6 +222,29 @@ describe('General create documents/folders', () => {
 
       cy.get(DocumentPage.title).should('not.exist')
 
+    });
+
+    //
+    it('should not remember last dirty state when page has been left (#2121)', () => {
+
+      Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument'])
+      cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('modified field');
+
+      cy.wait(500);
+      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('[data-cy=confirm-dialog-leave]').click();
+
+      // check we are on dashboard page
+      cy.url().should('include', '/dashboard');
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.wait(500);
+      cy.get(DocumentPage.title).should('have.text', 'Test mCLOUD Dokument');
+
+      Tree.openNode(['Testdokumente'])
+
+      cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
 
     });
   });
