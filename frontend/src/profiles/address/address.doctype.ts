@@ -27,7 +27,7 @@ export class AddressDoctype extends BaseDoctype {
         label: 'Allgemeines'
       },
       expressionProperties: {
-        'templateOptions.label': '(model.firstName || model.lastName) ? "Persönliche Daten" : "Organisationsdaten"'
+        'templateOptions.label': 'model.organization ? "Organisationsdaten" : "Persönliche Daten"'
       },
       fieldGroup: [{
         wrappers: ['panel'],
@@ -79,6 +79,7 @@ export class AddressDoctype extends BaseDoctype {
               className: 'flex-1',
               type: 'autocomplete',
               templateOptions: {
+                hideDeleteButton: true,
                 label: 'Anrede',
                 appearance: 'outline',
                 options: this.getCodelistForSelect(4300)
@@ -90,7 +91,7 @@ export class AddressDoctype extends BaseDoctype {
               templateOptions: {
                 label: 'Titel',
                 appearance: 'outline',
-                options: this.getCodelistForSelect(4305).pipe(map(cl => [{label: '', value: ''}].concat(cl)))
+                options: this.getCodelistForSelect(4305).pipe(map(cl => [{label: '', value: undefined}].concat(cl)))
               },
             }]
           }],
@@ -234,7 +235,7 @@ export class AddressDoctype extends BaseDoctype {
                 label: 'Verwaltungsgebiet',
                 appearance: 'outline',
                 placeholder: 'Bitte wählen',
-                options: this.getCodelistForSelect(110).pipe(map(cl => [{label: '', value: ''}].concat(cl)))
+                options: this.getCodelistForSelect(110).pipe(map(cl => [{label: '', value: undefined}].concat(cl)))
               }
             }, {
               key: 'country',
@@ -244,7 +245,7 @@ export class AddressDoctype extends BaseDoctype {
                 label: 'Land',
                 appearance: 'outline',
                 placeholder: 'Bitte wählen',
-                options: this.getCodelistForSelect(6200).pipe(map(cl => [{label: '', value: ''}].concat(cl)))
+                options: this.getCodelistForSelect(6200).pipe(map(cl => [{label: '', value: undefined}].concat(cl)))
               }
             }]
           }]
