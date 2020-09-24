@@ -24,6 +24,10 @@
     font-size: 16px;
     font-weight: 500;
     color: $ige-text-color;
+    margin-bottom: 0;
+  }
+  ::ng-deep h2 + p {
+    margin-top: 0;
   }
 }
 
