@@ -213,6 +213,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   ngAfterContentChecked() {
     // TODO check if performance is impacted
     this.hasOptionalFields.next(document.querySelectorAll('.optional').length < 1);
+    this.sections = this.formularService.getSectionsFromProfile(this.fields);
   }
 
   /**
