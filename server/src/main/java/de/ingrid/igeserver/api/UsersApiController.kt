@@ -113,8 +113,12 @@ class UsersApiController : UsersApi {
         if (dbIds.size != assignedCatalogs.size) {
             catalogService.setCatalogIdsForUser(user.login, dbIdsValid)
         }
-        val currentCatalogForUser = catalogService.getCurrentCatalogForUser(user.login)
-        val catalog: Catalog? = catalogService.getCatalogById(currentCatalogForUser)
+
+        val catalog: Catalog? = try {
+            val currentCatalogForUser = catalogService.getCurrentCatalogForUser(user.login)
+            catalogService.getCatalogById(currentCatalogForUser)
+        } catch (ex: NotFoundException) { null }
+
         val userInfo = UserInfo(
                 userId = user.login,
                 name =  user.firstName + ' ' + user.lastName,
