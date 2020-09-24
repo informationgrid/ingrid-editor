@@ -34,6 +34,7 @@ import {AuthService} from '../../../services/security/auth.service';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeService} from '../../sidebars/tree/tree.service';
+import {ValidationError} from '../../../store/session.store';
 
 @UntilDestroy()
 @Component({
@@ -186,9 +187,26 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       .pipe(untilDestroyed(this))
       .subscribe(show => this.showJson = show);
 
+
+    this.handleServerSideValidationErrors();
   }
 
-  // noinspection JSUnusedGlobalSymbols
+  private handleServerSideValidationErrors() {
+    // handle server validation errors
+    // 1) wait for server publish validation errors
+    // 2) set error on control
+
+    this.session.selectServerValidationErrors$
+      .pipe(untilDestroyed(this))
+      .subscribe((errors: ValidationError[]) => {
+        errors.forEach(error => {
+          console.log('Received server side validation error', error);
+          this.form.controls[error.key]?.setErrors(error.messages[0]);
+        });
+      });
+  }
+
+// noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
 
     // add form errors check when saving/publishing

@@ -12,7 +12,13 @@ export interface SessionState {
     showJSONView?: boolean;
   },
   latestDocuments: DocumentAbstract[],
-  recentAddresses: DocumentAbstract[]
+  recentAddresses: DocumentAbstract[],
+  serverValidationErrors: ValidationError[]
+}
+
+export interface ValidationError {
+  key: string;
+  messages: { [x: string]: { message: string } }[];
 }
 
 export function createInitialState(): SessionState {
@@ -26,7 +32,8 @@ export function createInitialState(): SessionState {
       showJSONView: false
     },
     latestDocuments: [],
-    recentAddresses: []
+    recentAddresses: [],
+    serverValidationErrors: []
   };
 }
 

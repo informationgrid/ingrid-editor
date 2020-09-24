@@ -18,6 +18,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../../../dialogs/confirm/confirm-dialog.component';
 import {ErrorDialogComponent} from '../../../dialogs/error/error-dialog.component';
 import {IgeError} from '../../../models/ige-error';
+import {SessionStore} from '../../../store/session.store';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -36,6 +37,7 @@ export class PublishPlugin extends Plugin {
 
   constructor(private formToolbarService: FormToolbarService,
               private dialog: MatDialog,
+              private sessionStore: SessionStore,
               private modalService: ModalService,
               private messageService: MessageService,
               private treeQuery: TreeQuery,
@@ -179,9 +181,17 @@ export class PublishPlugin extends Plugin {
       this.dialog.open(VersionConflictDialogComponent).afterClosed()
         .subscribe(choice => this.handleAfterConflictChoice(choice, error.error));
     } else if (error?.status === 404 && error?.error.ErrorCode === 'PUBLISHED_VERSION_NOT_FOUND') {
+      this.sessionStore.update({
+        serverValidationErrors: [
+          {
+            key: 'addresses',
+            messages: [{'noPublishedRefs': {message: error.error.ErrorText}}]
+          }
+        ]
+      });
       this.dialog.open(ErrorDialogComponent, {
         data: new IgeError({
-          message: 'Eine Referenz besitzt keine veröffentlichte Version',
+          message: 'Beim Veröffentlichen wurden Fehler im Formular entdeckt',
           error: {message: error?.error?.ErrorText}
         })
       });

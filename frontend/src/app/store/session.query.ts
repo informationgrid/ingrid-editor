@@ -11,6 +11,7 @@ export class SessionQuery extends Query<SessionState> {
   latestDocuments$ = this.select(state => state.latestDocuments);
   recentAddresses$ = this.select(state => state.recentAddresses);
   showJSONView$ = this.select(state => state.ui.showJSONView);
+  selectServerValidationErrors$ = this.select(state => state.serverValidationErrors);
 
   constructor(protected store: SessionStore) {
     super(store);
