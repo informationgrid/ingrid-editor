@@ -102,6 +102,8 @@ export class DocumentPage extends BasePage {
 
   static publishNow() {
     cy.get('[data-cy=toolbar_publish_now]').click();
+    cy.get('[data-cy=confirm-dialog-confirm]').click();
+    cy.get('[data-cy="form-message"]').contains('veröffentlicht');
   }
 
   static publishLater() {
@@ -112,6 +114,11 @@ export class DocumentPage extends BasePage {
   static publishRevert() {
     cy.get(DocumentPage.Toolbar.Publish).click();
     cy.get('[data-cy=toolbar_publish_revert]').click();
+  }
+
+  static saveDocument() {
+    cy.get(DocumentPage.Toolbar.Save).click();
+    cy.get('[data-cy="form-message"]').contains('gespeichert');
   }
 
   static checkOnlyActiveToolbarButtons(buttonIds: string[]) {

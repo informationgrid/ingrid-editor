@@ -42,10 +42,10 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy=create-address-organization]').type(adrName);
     cy.get('[data-cy=create-action]').click();
     cy.get('[data-cy=create-action]').should('not.be.visible');
-    cy.get('[data-cy=Kommunikation]').find('ige-add-button').contains('Hinzufügen').click();
-    cy.get('[data-cy=Kommunikation]').find('mat-select').click();
+    cy.get('[data-cy=Kontakt]').find('ige-add-button').contains('Hinzufügen').click();
+    cy.get('[data-cy=Kontakt]').find('mat-select').click();
     cy.get('mat-option').contains(chooseContact).click();
-    cy.get('[data-cy=Kommunikation] input').type('Test');
+    cy.get('[data-cy=Kontakt] input').type('Test');
     cy.wait(500);
     AddressPage.publishNow();
     cy.get('[data-cy="form-message"]').contains('Das Dokument wurde veröffentlicht.');
