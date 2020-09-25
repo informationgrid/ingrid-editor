@@ -43,12 +43,12 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
     this.filteredOptions = this.formControl.valueChanges.pipe(
       untilDestroyed(this),
       startWith(''),
-      filter(item => item !== undefined && item !== null),
       map(value => this._filter(<string>value))
     );
   }
 
   _filter(value: string): SelectOption[] {
+    if (value === undefined || value === null) return this.parameterOptions;
     const filterValue = value.toLowerCase();
 
     return this.parameterOptions
@@ -63,7 +63,7 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
   }
 
   scrollEvent = (event: any): void => {
-    if(this.autocomplete.panelOpen){
+    if (this.autocomplete.panelOpen) {
       this.autocomplete.closePanel();
       //this.autocomplete.updatePosition();
     }
