@@ -14,6 +14,8 @@
 
 #### REST API / Swagger
 
+http://localhost:8550/v3/api-docs
+
 #### Controller / Services
 
 Services are annotated with `@Service` or `@Component` which makes them available to spring's dependency injection. Instances are singletons by default. A class that requires a service will typically access it through an `@Autowired` member variable.
@@ -52,13 +54,39 @@ IGE Server defines the following **exception hierarchy**:
 
   - `statusCode` The HTTP status code send to the client.
   - `errorId` The unique identifier of the exception for getting detail information from the log files.
-  - `errorCode` A custom error code written in uppercase letters with the underscore character as word separator (e.g. *ALREADY_EXISTS*), that allows clients to identify the error cause.
-  - `errorText` A custom error text that could presented to the user. Variables of the form `${variable}` will be replaced by the value of
+  - `errorCode` A custom error code written in uppercase letters with the underscore character as word separator (e.g. `ALREADY_EXISTS`), that allows clients to identify the error cause.
+  - `errorText` A custom error text that could presented to the user. Variables of the form ${variable} will be replaced by the value of
     the appropriate key if present in data.
   - `data` An optional key-value map used to customize the error text.
   - `stackTrace` The stack trace of the exception (only if it was an unexpected exception).
 
   The `statusCode` value will be used as the HTTP response code, while `errorId`, `errorCode`, `errorText`, `data` and `stackTrace` will be send as JSON encoded string inside the response body.
+
+  The following example shows how a validation error response could look like:
+
+  ```json
+  {
+      "errorId":"d6c386c7-5c5e-4886-aac3-d8a9ddedf625",
+      "errorCode":"VALIDATION_ERROR",
+      "errorText":"One or more fields are invalid: title, description.",
+      "data":{
+          "fields":[
+              {
+                  "name":"title",
+                  "errorCode":"REQUIRED"
+              },
+              {
+                  "name":"description",
+                  "errorCode":"STRING_LENGTH",
+                  "data":{
+                      "min":50,
+                      "max":250
+                  }
+              }
+          ]
+      }
+  }
+  ```
 
 - `ServerException` is the base class for all exceptions that occur while processing a valid request to the REST API. 
 

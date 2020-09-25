@@ -2,7 +2,9 @@ package de.ingrid.igeserver.profiles.mcloud.types.impl
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.api.InvalidField
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.orientdb.OrientDBDocumentEntityType
@@ -46,7 +48,7 @@ class OMCloudType : OrientDBDocumentEntityType {
                 // try to find published version of the linked document
                 docService.getLatestDocument(wrapper, true)
             } else {
-                throw NotFoundException.withMissingResource(wrapperId, DocumentWrapperType::class.simpleName)
+                throw ValidationException.withInvalidFields(InvalidField("address", "NOT_PUBLISHED", mapOf("id" to wrapperId)))
             }
         }
     }

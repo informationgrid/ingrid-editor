@@ -1,5 +1,7 @@
 package de.ingrid.igeserver
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.api.InvalidParameterException
 import org.apache.commons.lang.exception.ExceptionUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -22,19 +24,25 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
 
     val log = logger()
 
+    private val mapper: ObjectMapper by lazy {
+        val mapper = ObjectMapper()
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper
+    }
+
     /**
      * Handler for application specific exceptions
      */
     @ExceptionHandler(value = [IgeException::class])
     protected fun handleIgeException(ex: IgeException, request: WebRequest): ResponseEntity<Any> {
         val stacktraceOutput = if (ex is UnhandledException) ExceptionUtils.getFullStackTrace(ex.cause) else null
-        val data = mapOf(
-                "ErrorId" to ex.errorId,
-                "ErrorCode" to ex.errorCode,
-                "ErrorText" to ex.errorText,
-                "Data" to ex.data,
-                "Stacktrace" to stacktraceOutput
-        ).filterValues { it != null }
+        val data = mapper.writeValueAsString(mapOf(
+                "errorId" to ex.errorId,
+                "errorCode" to ex.errorCode,
+                "errorText" to ex.errorText,
+                "data" to ex.data,
+                "stacktrace" to stacktraceOutput
+        ))
         val servletRequest = (request as ServletWebRequest).request
         val logMessage = "Exception $data was thrown while processing the request '${servletRequest.method} ${servletRequest.requestURI}'"
         if (ex is ServerException) {
