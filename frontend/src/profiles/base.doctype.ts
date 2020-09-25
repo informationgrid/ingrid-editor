@@ -47,6 +47,11 @@ export abstract class BaseDoctype implements Doctype {
   }
 
 
+  getCodelistForSelectWithEmtpyOption(codelistId: number): Observable<SelectOption[]> {
+    return this.getCodelistForSelect(codelistId).pipe(map(cl => [{label: '', value: undefined}].concat(cl)))
+  }
+
+
   getCodelistForSelect(codelistId: number): Observable<SelectOption[]> {
 
     this.codelistService.byId(codelistId + '');

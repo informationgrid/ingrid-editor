@@ -91,7 +91,7 @@ export class AddressDoctype extends BaseDoctype {
               templateOptions: {
                 label: 'Titel',
                 appearance: 'outline',
-                options: this.getCodelistForSelect(4305).pipe(map(cl => [{label: '', value: undefined}].concat(cl)))
+                options: this.getCodelistForSelectWithEmtpyOption(4305)
               },
             }]
           }],
@@ -235,7 +235,7 @@ export class AddressDoctype extends BaseDoctype {
                 label: 'Verwaltungsgebiet',
                 appearance: 'outline',
                 placeholder: 'Bitte wählen',
-                options: this.getCodelistForSelect(110).pipe(map(cl => [{label: '', value: undefined}].concat(cl)))
+                options: this.getCodelistForSelectWithEmtpyOption(110)
               }
             }, {
               key: 'country',
@@ -245,7 +245,7 @@ export class AddressDoctype extends BaseDoctype {
                 label: 'Land',
                 appearance: 'outline',
                 placeholder: 'Bitte wählen',
-                options: this.getCodelistForSelect(6200).pipe(map(cl => [{label: '', value: undefined}].concat(cl)))
+                options: this.getCodelistForSelectWithEmtpyOption(6200)
               }
             }]
           }]
