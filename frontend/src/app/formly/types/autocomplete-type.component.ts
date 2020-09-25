@@ -21,6 +21,7 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
 
   ngOnInit() {
     super.ngOnInit();
+    window.addEventListener('scroll', this.scrollEvent, true);
 
     if (this.to.options instanceof Observable) {
       this.to.options
@@ -60,5 +61,12 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
     // temporary fix for https://github.com/angular/material2/issues/6728
     // (<any>this.autocomplete)._formField = this.formField;
   }
+
+  scrollEvent = (event: any): void => {
+    if(this.autocomplete.panelOpen){
+      this.autocomplete.closePanel();
+      //this.autocomplete.updatePosition();
+    }
+  };
 
 }
