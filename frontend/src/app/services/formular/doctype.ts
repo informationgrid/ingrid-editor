@@ -26,6 +26,10 @@ export interface Doctype {
    */
   isAddressType?: boolean;
 
+  /**
+   *
+   */
+  hasOptionalFields: boolean;
 
   behaviours?: any[];
 

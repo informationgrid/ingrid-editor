@@ -34,6 +34,8 @@ export abstract class BaseDoctype implements Doctype {
 
   helpIds: string[];
 
+  hasOptionalFields: boolean;
+
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery) {
   }
@@ -59,16 +61,25 @@ export abstract class BaseDoctype implements Doctype {
   init(help: string[]) {
     this.helpIds = help;
     this.fields.push(...this.documentFields());
-
+    this.hasOptionalFields = this.hasOptionals(this.fields);
     this.addContextHelp(this.fields);
     console.log('Profile initialized');
   }
 
-  private addContextHelp(fields: FormlyFieldConfig[], previousKey?: string) {
+  private hasOptionals(fields: FormlyFieldConfig[]): boolean {
+    return fields.some(field => {
+      if (field.className && field.className.indexOf('optional') !== -1) return true;
+      if (field.fieldGroup) {
+        if (this.hasOptionals(field.fieldGroup)) return true;
+      }
+    });
+  }
+
+  private addContextHelp(fields: FormlyFieldConfig[]) {
     fields.forEach(field => {
       let fieldKey = <string>field.key;
       if (field.fieldGroup) {
-        this.addContextHelp(field.fieldGroup, fieldKey);
+        this.addContextHelp(field.fieldGroup);
       }
       if (this.helpIds.indexOf(fieldKey) > -1) {
         if (!field.model?._type) field.templateOptions.docType = this.id;

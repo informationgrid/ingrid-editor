@@ -75,7 +75,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   showValidationErrors = false;
 
-  hasOptionalFields = new BehaviorSubject<boolean>(false);
+  hasOptionalFields = false;
 
   private formStateName: 'document' | 'address';
   private query: TreeQuery | AddressTreeQuery;
@@ -230,7 +230,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   ngAfterContentChecked() {
     // TODO check if performance is impacted
-    this.hasOptionalFields.next(document.querySelectorAll('.optional').length < 1);
     this.sections = this.formularService.getSectionsFromProfile(this.fields);
   }
 
@@ -294,6 +293,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       if (needsProfileSwitch) {
         this.fields = this.switchProfile(profile);
         this.sections = this.formularService.getSectionsFromProfile(this.fields);
+        this.hasOptionalFields = this.profileQuery.getProfile(profile).hasOptionalFields;
       }
 
       this.model = {...data};

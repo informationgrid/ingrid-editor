@@ -28,7 +28,7 @@
                                    [sections]="sections"
                                    [parentContainer]="scrollForm"
                                    (showStickyHeader)="updateContentPadding($event)"></ige-form-info>
-                    <div [class.hide]="hasOptionalFields | async" class="optional-fields-toggle">
+                    <div [class.hide]="!hasOptionalFields" class="optional-fields-toggle">
                         <div class="diagonal"></div>
                         <mat-slide-toggle checked (change)="toggleOptionals($event)">Alle</mat-slide-toggle>
                     </div>

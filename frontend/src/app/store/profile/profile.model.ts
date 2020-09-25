@@ -1,4 +1,3 @@
-import { ID } from '@datorama/akita';
 
 export interface ProfileAbstract {
   id: string;
@@ -6,6 +5,7 @@ export interface ProfileAbstract {
   isInitialized?: boolean;
   iconClass: string;
   isAddressProfile?: boolean;
+  hasOptionalFields?: boolean;
 }
 
 /**

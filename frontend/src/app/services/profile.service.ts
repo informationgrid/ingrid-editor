@@ -65,15 +65,16 @@ export class ProfileService {
 
   }
 
-  private mapDocumentTypes(doctypes: Doctype[]) {
+  private mapDocumentTypes(doctypes: Doctype[]): ProfileAbstract[] {
 
     return doctypes.map(doctype => {
-      return {
+      return <ProfileAbstract>{
         id: doctype.id,
         label: doctype.label,
         iconClass: doctype.iconClass,
-        isAddressProfile: doctype.isAddressType
-      } as ProfileAbstract;
+        isAddressProfile: doctype.isAddressType,
+        hasOptionalFields: doctype.hasOptionalFields
+      };
     });
 
   }

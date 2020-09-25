@@ -21,4 +21,8 @@ export class ProfileQuery extends QueryEntity<ProfileState, ProfileAbstract> {
     return this.getEntity(id).iconClass;
   }
 
+  getProfile(id: string): ProfileAbstract{
+    return this.getEntity(id);
+  }
+
 }
