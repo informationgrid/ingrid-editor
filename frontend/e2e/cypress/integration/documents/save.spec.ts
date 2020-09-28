@@ -1,6 +1,7 @@
 import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
+import {CopyCutUtils} from "../../pages/copy-cut-utils";
 
 describe('General create documents/folders', () => {
 
@@ -224,7 +225,6 @@ describe('General create documents/folders', () => {
 
     });
 
-    //
     it('should not remember last dirty state when page has been left (#2121)', () => {
 
       Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument'])
@@ -245,6 +245,21 @@ describe('General create documents/folders', () => {
       Tree.openNode(['Testdokumente'])
 
       cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
+
+    });
+
+    it('should not possible to delete a non-empty folder  (#2115)', () => {
+
+      Tree.selectNodeWithTitle('Testdokumente');
+
+      // check that selected node is not empty
+      CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
+
+      Tree.selectNodeWithTitle('Testdokumente');
+
+      cy.get(DocumentPage.Toolbar['Delete']).click();
+
+      cy.hasErrorDialog('Um Ordner zu löschen, müssen diese leer sein Testdokumente');
 
     });
   });
