@@ -1,17 +1,17 @@
 <div #host class="form-info-bar">
 
-    <ige-breadcrumb [path]="path"
-                    [rootName]="rootName"
-                    [hideLastSeparator]="true"
-                    [selectable]="true"
-                    (select)="scrollToTreeNode($event)"></ige-breadcrumb>
+    <div class="form-info-bar-inner">
+        <ige-breadcrumb [path]="path"
+                        [rootName]="rootName"
+                        [hideLastSeparator]="true"
+                        [selectable]="true"
+                        (select)="scrollToTreeNode($event)"></ige-breadcrumb>
 
-    <ige-header-title-row [form]="form"
-                          [model]="model"
-                          [sections]="sections"
-                          [disableEdit]="forAddress"></ige-header-title-row>
-
-
+        <ige-header-title-row [form]="form"
+                              [model]="model"
+                              [sections]="sections"
+                              [disableEdit]="forAddress"></ige-header-title-row>
+    </div>
 </div>
 
 <div #sticky_header class="navigation-header"

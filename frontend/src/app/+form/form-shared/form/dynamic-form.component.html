@@ -32,18 +32,19 @@
                         <div class="diagonal"></div>
                         <mat-slide-toggle checked (change)="toggleOptionals($event)">Alle</mat-slide-toggle>
                     </div>
-                    <form [formGroup]="form"
-                          [style.padding-top]="paddingWithHeader"
-                          [class.hide-validation]="!showValidationErrors"
-                          [class.hide]="model._type === 'FOLDER'">
-                        <div class="note-mandatory">*Pflichtfeld</div>
-                        <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
-
-                        <!--<pre>
-        JSON:
-        {{model | json}}
-                        </pre>-->
-                    </form>
+                    <div class="form-inner">
+                        <form [formGroup]="form"
+                              [style.padding-top]="paddingWithHeader"
+                              [class.hide-validation]="!showValidationErrors"
+                              [class.hide]="model._type === 'FOLDER'">
+                            <div class="note-mandatory">*Pflichtfeld</div>
+                            <formly-form [form]="form" [fields]="fields" [model]="model" [options]="formOptions"></formly-form>
+                            <!--<pre>
+            JSON:
+            {{model | json}}
+                            </pre>-->
+                        </form>
+                    </div>
 
                     <div *ngIf="model._type === 'FOLDER'" class="folder-content">
                         <ige-folder-dashboard [isAddress]="address" [parentId]="activeId | async"></ige-folder-dashboard>

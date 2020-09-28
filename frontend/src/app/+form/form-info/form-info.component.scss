@@ -79,8 +79,13 @@
 }
 
 .form-info-bar {
-  padding: 0 10px 2px 36px;
+  padding: 0 24px 2px 36px;
   // transition: all .2s ease;
+
+  .form-info-bar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
 }
 
 .navigation-header > div {

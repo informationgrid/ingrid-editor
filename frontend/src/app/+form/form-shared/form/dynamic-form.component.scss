@@ -21,20 +21,27 @@
   }
 }
 
-.form-content > form {
-  position: relative;
-  padding: 20px 24px 0 36px;
-  background-color: #ffffff;
-  min-width: 400px;
-  max-width: 1200px;
-  margin: 0 auto;
+.form-content {
 
-  .note-mandatory {
-    position: absolute;
-    left: 332px;
-    font-size: 14px;
-    line-height: 2.75;
-    color: $ige-placeholder-color;
+  .form-inner {
+    padding: 20px 24px 0 36px;
+    background-color: #ffffff;
+
+    > form {
+      position: relative;
+      min-width: 400px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 0 !important;
+
+      .note-mandatory {
+        position: absolute;
+        left: 296px;
+        font-size: 14px;
+        line-height: 2.75;
+        color: $ige-placeholder-color;
+      }
+    }
   }
 }
 
