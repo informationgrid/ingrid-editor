@@ -44,10 +44,12 @@ class OMCloudType : OrientDBDocumentEntityType {
         for (address in addresses) {
             val wrapperId = address.path("ref").asText()
             val wrapper = docService.getByDocumentId(wrapperId, DocumentWrapperType::class, true)
-            if (wrapper != null) {
-                // try to find published version of the linked document
-                docService.getLatestDocument(wrapper, true)
-            } else {
+                    ?: throw NotFoundException.withMissingResource(wrapperId, DocumentWrapperType::class.simpleName)
+            try {
+                    // try to find the published version of the linked document
+                    docService.getLatestDocument(wrapper, true)
+            }
+            catch (e: NotFoundException) {
                 throw ValidationException.withInvalidFields(InvalidField("address", "NOT_PUBLISHED", mapOf("id" to wrapperId)))
             }
         }
