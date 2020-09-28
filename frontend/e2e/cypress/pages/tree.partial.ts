@@ -2,6 +2,12 @@ import {DocumentPage} from "./document.page";
 
 export class Tree {
 
+  static clickOnNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true){
+    const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
+    const query = exact ? new RegExp('^' + nodeTitle + '$') : nodeTitle;
+    cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
+  }
+
   static containsNodeWithTitle(text: string, level?: number) {
 
     const label = cy.contains('mat-tree mat-tree-node .label', text);
@@ -16,17 +22,6 @@ export class Tree {
 
   }
 
-  static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true) {
-    const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
-    const query = exact ? new RegExp('^' + nodeTitle + '$') : nodeTitle;
-    cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
-    if (!isInsideDialog) cy.get(DocumentPage.title).should('have.text', nodeTitle);
-  }
-
-  static openNode(targetNodePath: string[]){
-    targetNodePath.forEach(node => Tree.selectNodeWithTitle(node));
-  }
-
   static deleteNode(deleteHoleNodePath: string[]){
     const reverseNodePath = deleteHoleNodePath.reverse();
 
@@ -38,6 +33,17 @@ export class Tree {
       DocumentPage.deleteLoadedNode();
     })
     // DocumentPage.deleteLoadedNode();
+  }
+
+  static openNode(targetNodePath: string[], isInsideDialog: boolean = false){
+    targetNodePath.forEach(node => Tree.selectNodeWithTitle(node, isInsideDialog));
+  }
+
+  static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true) {
+    const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
+    const query = exact ? new RegExp('^' + nodeTitle + '$') : nodeTitle;
+    cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
+    if (!isInsideDialog) cy.get(DocumentPage.title).should('have.text', nodeTitle);
   }
 
 }

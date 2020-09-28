@@ -2,6 +2,8 @@ import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
 import {CopyCutUtils} from "../../pages/copy-cut-utils";
+import {enterTestDataSteps} from "../../pages/enterTestDataSteps";
+import {DivOverlay} from "leaflet";
 
 describe('General create documents/folders', () => {
 
@@ -43,11 +45,11 @@ describe('General create documents/folders', () => {
   describe('Create folders', () => {
 
     xit('should insert new folder at correct place in tree (#1990)', function () {
-
+      // Tree.openNode([])
     });
 
     it('should not be possible to publish folders', function () {
-      cy.get('#sidebar').findByText('Testdokumente').click();
+      Tree.selectNodeWithTitle('Testdokumente');
       cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
       cy.visit('/form;id=bdde3ecb-3629-489c-86df-12ffac978ef5');
@@ -61,7 +63,7 @@ describe('General create documents/folders', () => {
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
-      cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(ROOT);
+      CopyCutUtils.checkPath([ROOT]);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
       cy.get('[data-cy=create-title]').type(folderName);
@@ -84,12 +86,12 @@ describe('General create documents/folders', () => {
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
-      cy.get('.mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
+      CopyCutUtils.checkPath([ROOT, parentFolder], true);
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 2);
-      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
+      CopyCutUtils.selectNodeWithChecks(folderName, ['Daten', parentFolder])
 
     });
 
@@ -99,16 +101,7 @@ describe('General create documents/folders', () => {
 
       Tree.selectNodeWithTitle(parentFolder);
 
-      cy.get(DocumentPage.Toolbar.NewFolder).click();
-      cy.get('[data-cy=create-title]').type(folderName);
-
-      cy.get('[data-cy=create-changeLocation]').click();
-      cy.get('ige-destination-selection mat-list-option').click();
-      //check if 'Daten' is chosen
-      cy.get("[aria-selected=true]").contains("Daten");
-
-      cy.get('[data-cy=create-applyLocation]').click();
-      cy.get('[data-cy=create-action]').click();
+      DocumentPage.createFolderAndChangeLocationToRoot(folderName, [ROOT]);
 
       Tree.containsNodeWithTitle(folderName, 1);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT);
@@ -119,14 +112,7 @@ describe('General create documents/folders', () => {
       const parentFolder = 'Neue Testdokumente';
       const folderName = 'Unterordner ' + Utils.randomString();
 
-      cy.get(DocumentPage.Toolbar.NewFolder).click();
-      cy.get('[data-cy=create-title]').type(folderName);
-
-      cy.get('[data-cy=create-changeLocation]').click();
-      Tree.selectNodeWithTitle(parentFolder, true);
-
-      cy.get('[data-cy=create-applyLocation]').click();
-      cy.get('[data-cy=create-action]').click();
+      DocumentPage.createFolderAndChangeLocation(folderName, [parentFolder]);
 
       Tree.containsNodeWithTitle(folderName, 2);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
@@ -137,31 +123,25 @@ describe('General create documents/folders', () => {
       const folderName = 'Löschtestordner' + Utils.randomString();
       const childName = 'Testdokument' + Utils.randomString();
 
-      cy.get(DocumentPage.Toolbar.NewFolder).click();
-      cy.get('[data-cy=create-title]').type(folderName);
-      cy.get('[data-cy=create-action]').click();
+      DocumentPage.createFolder(folderName);
       cy.get(DocumentPage.title).should('have.text', folderName);
       cy.wait(500);
       DocumentPage.createDocument(childName);
       cy.get(DocumentPage.title).should('have.text', childName);
 
-      cy.get('#sidebar').findByText(folderName).click();
+      Tree.selectNodeWithTitle(folderName);
       cy.get(DocumentPage.title).should('have.text', folderName);
       cy.get(DocumentPage.Toolbar.Delete).click();
 
       cy.get('[data-cy=error-dialog-close]').click();
-      cy.get('#sidebar').findByText(folderName).click();
 
-      cy.get('#sidebar').findByText(childName).click();
+      Tree.openNode([folderName, childName]);
       cy.get(DocumentPage.title).should('have.text', childName);
-      cy.get(DocumentPage.Toolbar.Delete).click();
-      cy.get('[data-cy=confirm-dialog-confirm]').click();
+      DocumentPage.deleteLoadedNode();
       cy.wait(500);
+      Tree.selectNodeWithTitle(folderName);
+      DocumentPage.deleteLoadedNode();
 
-      cy.get('#sidebar').findByText(folderName).click();
-      cy.get(DocumentPage.title).should('have.text', folderName);
-      cy.get(DocumentPage.Toolbar.Delete).click();
-      cy.get('[data-cy=confirm-dialog-confirm]').click();
       cy.get('#sidebar').findByText(folderName).should('not.exist');
       cy.url().should('be', 'form');
 
@@ -176,12 +156,12 @@ describe('General create documents/folders', () => {
 
       DocumentPage.createDocument(doc2Name);
 
-      cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('testestest');
+      enterTestDataSteps.setMcloudDescription('modified test description');
 
       // reject dialog
       // check selected tree node === previous selected node
       cy.wait(500);
-      cy.get('#sidebar').findByText('Testdokumente').click();
+      Tree.clickOnNodeWithTitle('Testdokumente');
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
       cy.get(DocumentPage.title).should('have.text', doc2Name);
@@ -189,7 +169,7 @@ describe('General create documents/folders', () => {
       // accept dialog
       // check selected tree node === newly selected node
       cy.wait(500);
-      cy.get('span').contains(doc1Name).click();
+      Tree.clickOnNodeWithTitle(doc1Name);
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
       cy.get('[data-cy=confirm-dialog-save]').click();
       cy.get(DocumentPage.title).should('have.text', doc1Name);
@@ -199,11 +179,9 @@ describe('General create documents/folders', () => {
     it('should show a dialog when a document was modified and the page was changed', () => {
       const docname = 'Test mCLOUD Dokument';
 
-      // TODO: replace with Tree.openNode(). Also find other occurrences
-      cy.get('#sidebar').findByText('Testdokumente').click();
-      cy.get('#sidebar').findByText(docname).click();
-      // TODO: use better values in input field! The string 'testestest' seems strange, instead use 'modified' or similar
-      cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('testestest');
+      Tree.openNode(['Testdokumente', docname]);
+
+      enterTestDataSteps.setMcloudDescription('modified test description');
 
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
@@ -213,7 +191,6 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=confirm-dialog-stay]').click();
 
       cy.get(DocumentPage.title).should('have.text', docname);
-
 
       // accept (don't save) -> should load new page
       cy.wait(500);
@@ -228,7 +205,7 @@ describe('General create documents/folders', () => {
     it('should not remember last dirty state when page has been left (#2121)', () => {
 
       Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument'])
-      cy.get('[data-cy=Beschreibung]').find('mat-form-field').type('modified field');
+      enterTestDataSteps.setMcloudDescription('modified test description');
 
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();

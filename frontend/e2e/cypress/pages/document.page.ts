@@ -100,6 +100,36 @@ export class DocumentPage extends BasePage {
     return objectName;
   }
 
+  static createFolderAndChangeLocation(folderName: string, targetNodePath: string[]){
+    cy.get(DocumentPage.Toolbar.NewFolder).click();
+    cy.get('[data-cy=create-title]').type(folderName);
+    cy.get('[data-cy=create-changeLocation]').click();
+    if (targetNodePath) {
+      targetNodePath.forEach(node => Tree.selectNodeWithTitle(node, true));
+    } else {
+      cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
+    }
+    cy.get('[data-cy=create-applyLocation]').click();
+    cy.get('[data-cy=create-action]').click();
+  }
+
+  static createFolderAndChangeLocationToRoot(folderName: string, targetNodePath: string[]){
+    cy.get(DocumentPage.Toolbar.NewFolder).click();
+    cy.get('[data-cy=create-title]').type(folderName);
+    cy.get('[data-cy=create-changeLocation]').click();
+    if (targetNodePath = ['Daten']){
+      cy.get('ige-destination-selection mat-list-option').click();
+      //check if 'Daten' is chosen
+      cy.get("[aria-selected=true]").contains("Daten");
+    } else if (targetNodePath = ['Adressen']) {
+      cy.get('ige-destination-selection mat-list-option').click();
+      //check if 'Adressen' is chosen
+      cy.get("[aria-selected=true]").contains("Adressen");
+    }
+    cy.get('[data-cy=create-applyLocation]').click();
+    cy.get('[data-cy=create-action]').click();
+  }
+
   static publishNow() {
     cy.get('[data-cy=toolbar_publish_now]').click();
     cy.get('[data-cy=confirm-dialog-confirm]').click();
