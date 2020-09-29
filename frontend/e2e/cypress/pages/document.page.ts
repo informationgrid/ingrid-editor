@@ -117,11 +117,11 @@ export class DocumentPage extends BasePage {
     cy.get(DocumentPage.Toolbar.NewFolder).click();
     cy.get('[data-cy=create-title]').type(folderName);
     cy.get('[data-cy=create-changeLocation]').click();
-    if (targetNodePath = ['Daten']){
+    if (targetNodePath[0] == 'Daten'){
       cy.get('ige-destination-selection mat-list-option').click();
       //check if 'Daten' is chosen
       cy.get("[aria-selected=true]").contains("Daten");
-    } else if (targetNodePath = ['Adressen']) {
+    } else if (targetNodePath[0] == 'Adressen') {
       cy.get('ige-destination-selection mat-list-option').click();
       //check if 'Adressen' is chosen
       cy.get("[aria-selected=true]").contains("Adressen");
