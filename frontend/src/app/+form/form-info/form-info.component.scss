@@ -91,3 +91,12 @@
 .navigation-header > div {
   align-items: center;
 }
+
+/* Safari 11+ only: don't reserve space for scrollbar */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) and (stroke-color:transparent) {
+    .sticky {
+      right: 0 !important;
+    }
+  }
+}
