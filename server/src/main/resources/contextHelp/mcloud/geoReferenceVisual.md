@@ -5,7 +5,7 @@ docType: mCloudDoc
 profile: mcloud
 ---
 
-Einen geografische Bezug können Sie durch drei unterschiedliche Raumbezugssysteme erstellen:
+Einen geografischen Bezug können Sie durch drei unterschiedliche Raumbezugssysteme erstellen:
 
 ## Freier Raumbezug
 Der "Freie Raumbezug" wird auf einer Karte festgelegt. Eine Ortssuche kann verwendet werden, um den Raumbezug ortsbezogen auszuwählen.
