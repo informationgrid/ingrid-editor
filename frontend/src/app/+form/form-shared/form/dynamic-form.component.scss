@@ -81,11 +81,20 @@ pre {
   flex-direction: row;
   justify-content: flex-end;
   height: 36px;
-  min-width: 460px;
+  min-width: 536px;
   max-width: 1260px;
   margin: 0 auto -36px;
   font-size: 14px;
   z-index: 1;
+
+  .cover {
+    position: absolute;
+    width: 1000px;
+    height: 36px;
+    left: 1260px;
+    background: $ige-background;
+    z-index: 1;
+  }
 
   .mat-slide-toggle {
     background: $ige-background;
@@ -105,7 +114,7 @@ pre {
   }
 
   mat-slide-toggle {
-    padding-right: 10px;
+    padding-right: 23px;
     height: inherit;
   }
 }
