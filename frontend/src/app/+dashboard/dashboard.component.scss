@@ -33,6 +33,10 @@ ige-quick-search, .welcome, .shortcut {
   padding: 0 36px 36px;
   max-width: 1024px;
   margin: 0 auto;
+
+  ige-card-box {
+    flex: 1 1 0% !important;
+  }
 }
 
 // if we have more than 5 datasets to show then we can introduce a scrollbar
