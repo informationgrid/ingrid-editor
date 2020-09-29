@@ -23,7 +23,7 @@ describe('mCLOUD documents', function () {
       DocumentPage.createDocument();
 
       cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
-      DocumentPage.publishNow();
+      cy.get('[data-cy=toolbar_publish_now]').click();
 
       cy.hasErrorDialog('Es müssen alle Felder korrekt');
 
@@ -52,6 +52,7 @@ describe('mCLOUD documents', function () {
 
       //needed to slow it down
       cy.get('[data-cy="Zeitbezug der Ressource"]').find('mat-form-field').contains('Datum');
+      cy.wait(500);
 
       DocumentPage.publishNow();
     });
@@ -80,6 +81,7 @@ describe('mCLOUD documents', function () {
 
       //needed to slow it down
       cy.get('[data-cy=Periodizität').find('mat-form-field').should('have.text', 'einmalig');
+      cy.wait(500);
 
       DocumentPage.saveDocument();
     });

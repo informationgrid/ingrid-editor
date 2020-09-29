@@ -40,6 +40,7 @@ export class enterTestDataSteps {
 
   static setMcloudLicense(license: string = 'Andere offene Lizenz'){
     cy.get('[data-cy=Lizenz] mat-form-field').click();
+    cy.get('[data-cy=Lizenz] mat-form-field').type(license);
     cy.get('mat-option').contains(license).click();
   }
 
