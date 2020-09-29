@@ -44,8 +44,18 @@ describe('General create documents/folders', () => {
 
   describe('Create folders', () => {
 
-    xit('should insert new folder at correct place in tree (#1990)', function () {
-      // Tree.openNode([])
+    it('should insert new folder at correct place in tree (#1990)', function () {
+      const folderName = 'x: a folder at place x';
+
+      Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
+      CopyCutUtils.selectNodeWithChecks('Test mCLOUD Dokument',[ROOT, 'Testdokumente']);
+
+      DocumentPage.createFolderAndChangeLocationToRoot(folderName, [ROOT]);
+      //check if created folder is in root
+      CopyCutUtils.selectNodeWithChecks(folderName, [ROOT]);
+
+      //check if at beginning selected document is at the same place as before
+      CopyCutUtils.selectNodeWithChecks('Test mCLOUD Dokument',[ROOT, 'Testdokumente']);
     });
 
     it('should not be possible to publish folders', function () {
