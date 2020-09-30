@@ -1,5 +1,9 @@
 @import "src/variables";
 
-  .matching {
-    background-color: $ige-mark-color;
+.matching {
+  background-color: $ige-mark-color !important;
+
+  &:hover, &.mat-active {
+    background-color: darken($ige-mark-color, 5%) !important;
   }
+}
