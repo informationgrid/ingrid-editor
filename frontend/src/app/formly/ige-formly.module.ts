@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {FormControl, FormsModule, ReactiveFormsModule, ValidationErrors} from '@angular/forms';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MAT_AUTOCOMPLETE_SCROLL_STRATEGY, MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -51,9 +51,14 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatRadioModule} from '@angular/material/radio';
 import {RepeatDetailListComponent} from './types/repeat-detail-list/repeat-detail-list.component';
 import {DragDropModule} from "@angular/cdk/drag-drop";
+import {CloseScrollStrategy, Overlay} from "@angular/cdk/overlay";
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};
+}
+
+export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
+  return () => overlay.scrollStrategies.close();
 }
 
 @NgModule({
@@ -112,7 +117,8 @@ export function IpValidator(control: FormControl): ValidationErrors {
     {
       provide: MAT_DATE_LOCALE,
       useValue: 'de-DE'
-    }
+    },
+    { provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY, useFactory: scrollFactory, deps: [Overlay] }
   ],
   declarations: [
     CodelistPipe, SelectOptionPipe,

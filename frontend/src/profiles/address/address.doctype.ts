@@ -79,6 +79,7 @@ export class AddressDoctype extends BaseDoctype {
               className: 'flex-1',
               type: 'autocomplete',
               templateOptions: {
+                highlightMatches: true,
                 hideDeleteButton: true,
                 label: 'Anrede',
                 appearance: 'outline',

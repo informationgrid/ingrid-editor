@@ -6,13 +6,14 @@
            [formlyAttributes]="field"
            [placeholder]="to.placeholder"
            (keyup)="_filter(formControl.value || '')"
+           (click)="openAutocompletePanel()"
            [errorStateMatcher]="errorStateMatcher">
     <button *ngIf="formControl.value?.length > 0 && !this.to.hideDeleteButton" mat-icon-button type="button" matSuffix class="field-close"
             (click)="formControl.setValue('')">
         <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
     </button>
     <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.label">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.label" [class.matching]="this.to.highlightMatches && !option.disabled && formControl.value">
             {{ option.label }}
         </mat-option>
     </mat-autocomplete>

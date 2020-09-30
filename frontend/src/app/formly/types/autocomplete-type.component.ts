@@ -10,7 +10,8 @@ import {SelectOption} from '../../services/codelist/codelist.service';
 @UntilDestroy()
 @Component({
   selector: 'ige-formly-autocomplete-type',
-  templateUrl: './autocomplete-type.component.html'
+  templateUrl: './autocomplete-type.component.html',
+  styleUrls: ['./autocomplete-type.component.scss']
 })
 export class AutocompleteTypeComponent extends FieldType implements OnInit, AfterViewInit {
   @ViewChild(MatInput, {static: true}) formFieldControl: MatInput;
@@ -21,7 +22,6 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
 
   ngOnInit() {
     super.ngOnInit();
-    window.addEventListener('scroll', this.scrollEvent, true);
 
     if (this.to.options instanceof Observable) {
       this.to.options
@@ -48,11 +48,14 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
   }
 
   _filter(value: string): SelectOption[] {
-    if (value === undefined || value === null) return this.parameterOptions;
+    if (value === undefined || value === null || this.to.doNotFilter) return this.parameterOptions;
     const filterValue = value.toLowerCase();
 
     return this.parameterOptions
-      ? this.parameterOptions.filter(option => option.label.toLowerCase().includes(filterValue))
+      ? this.parameterOptions?.map(option => {
+        option.disabled = !option.label.toLowerCase().includes(filterValue)
+        return option
+      }).filter(option => !option.disabled || this.to.highlightMatches)
       : [];
   }
 
@@ -62,11 +65,8 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
     // (<any>this.autocomplete)._formField = this.formField;
   }
 
-  scrollEvent = (event: any): void => {
-    if (this.autocomplete.panelOpen) {
-      this.autocomplete.closePanel();
-      //this.autocomplete.updatePosition();
-    }
-  };
+  openAutocompletePanel() {
+    this.autocomplete.openPanel();
+  }
 
 }
