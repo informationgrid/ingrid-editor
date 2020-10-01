@@ -64,7 +64,7 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
       cy.visit('/form;id=bdde3ecb-3629-489c-86df-12ffac978ef5');
       cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
-      cy.get(DocumentPage.Toolbar.Publish).should('be.disabled')
+      cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
     });
 
     it('should create a root folder', () => {
@@ -208,7 +208,7 @@ describe('General create documents/folders', () => {
       cy.get('.mat-dialog-title').contains('Änderungen sichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
-      cy.get(DocumentPage.title).should('not.exist')
+      cy.get(DocumentPage.title).should('not.exist');
 
     });
 
@@ -229,7 +229,7 @@ describe('General create documents/folders', () => {
       cy.wait(500);
       cy.get(DocumentPage.title).should('have.text', 'Test mCLOUD Dokument');
 
-      Tree.openNode(['Testdokumente'])
+      Tree.openNode(['Testdokumente']);
 
       cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
 
