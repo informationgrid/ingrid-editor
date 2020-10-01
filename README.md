@@ -137,3 +137,8 @@ Another problem occurs when running Keycloak and Application in a docker contain
 > 127.0.0.1 keycloak
 
 In your docker-compose file you would then use for your app the environment variable "KEYCLOAK_URL=http://keycloak:8080/auth" to access keycloak in the container. Moreover make sure the port mapping is the same "8080:8080" otherwise keycloak won't be able to map correctly. 
+
+## Add a new keycloak user
+
+When adding a new keycloak user, make sure to assign the correct roles: admin, superadmin
+Do not forget to assign the client-roles as well: realm-management -> manage-users
