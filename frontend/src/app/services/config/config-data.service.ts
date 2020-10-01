@@ -42,7 +42,7 @@ export class ConfigDataService {
             console.error('Could not get current user info', e);
           }
         } else {
-          throw new Error(e.ErrorText);
+          throw new Error(e.errorText);
         }
         return {
           assignedCatalogs: [],

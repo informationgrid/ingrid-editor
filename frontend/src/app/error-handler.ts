@@ -4,9 +4,9 @@ import {IgeError} from './models/ige-error';
 import {HttpErrorResponse} from '@angular/common/http';
 
 export interface IgeException {
-  ErrorCode: string;
-  ErrorId: string;
-  ErrorText: string;
+  errorCode: string;
+  errorId: string;
+  errorText: string;
 }
 
 @Injectable({
@@ -24,12 +24,18 @@ export class GlobalErrorHandler implements ErrorHandler {
     if (error instanceof IgeError) {
       this.modalService.showIgeError(error);
     } else if (error instanceof HttpErrorResponse) {
+      if (error.error?.errorCode) {
+        const e = new IgeError();
+        e.setMessage(error.error.errorText);
+        this.modalService.showIgeError(e);
+      } else {
+        const e = new IgeError();
+        e.setMessage(error.message, (error.error && error.error.message) ? error.error.message : error.error);
+        this.modalService.showIgeError(e);
+      }
+    } else if (error.errorCode) {
       const e = new IgeError();
-      e.setMessage(error.message, (error.error && error.error.message) ? error.error.message : error.error);
-      this.modalService.showIgeError(e);
-    } else if (error.ErrorCode) {
-      const e = new IgeError();
-      e.setMessage(error.ErrorText);
+      e.setMessage(error.errorText);
       this.modalService.showIgeError(e);
     } else if (error.rejection) {
       const e = new IgeError();

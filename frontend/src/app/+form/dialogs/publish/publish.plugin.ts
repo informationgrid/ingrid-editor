@@ -177,22 +177,22 @@ export class PublishPlugin extends Plugin {
    * @private
    */
   private handleSaveError(error: HttpErrorResponse) {
-    if (error?.error?.ErrorCode === 'VERSION_CONFLICT') {
+    if (error?.error?.errorCode === 'VERSION_CONFLICT') {
       this.dialog.open(VersionConflictDialogComponent).afterClosed()
         .subscribe(choice => this.handleAfterConflictChoice(choice, error.error));
-    } else if (error?.status === 404 && error?.error.ErrorCode === 'PUBLISHED_VERSION_NOT_FOUND') {
+    } else if (error?.status === 404 && error?.error.errorCode === 'PUBLISHED_VERSION_NOT_FOUND') {
       this.sessionStore.update({
         serverValidationErrors: [
           {
             key: 'addresses',
-            messages: [{'noPublishedRefs': {message: error.error.ErrorText}}]
+            messages: [{'noPublishedRefs': {message: error.error.errorText}}]
           }
         ]
       });
       this.dialog.open(ErrorDialogComponent, {
         data: new IgeError({
           message: 'Beim Veröffentlichen wurden Fehler im Formular entdeckt',
-          error: {message: error?.error?.ErrorText}
+          error: {message: error?.error?.errorText}
         })
       });
     } else {

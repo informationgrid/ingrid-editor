@@ -110,7 +110,7 @@ export class SavePlugin extends Plugin {
    * @private
    */
   private handleSaveError(response: HttpErrorResponse) {
-    if (response?.error?.ErrorCode === 'VERSION_CONFLICT') {
+    if (response?.error?.errorCode === 'VERSION_CONFLICT') {
       this.dialog.open(VersionConflictDialogComponent).afterClosed()
         .subscribe(choice => this.handleAfterConflictChoice(choice, response.error));
     } else {
