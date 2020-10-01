@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.tasks
 
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexInfo
@@ -10,6 +11,7 @@ import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.annotation.SchedulingConfigurer
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
@@ -32,6 +34,12 @@ class IndexingTask @Autowired constructor(
     private val scheduler: TaskScheduler = initScheduler()
     private val scheduledFutures: MutableCollection<IndexConfig> = mutableListOf()
 
+    @Value("\${elastic.alias}")
+    private lateinit var elasticsearchAlias: String
+
+    @Value("\${app.uuid}")
+    private lateinit var uuid: String
+
 
     private fun getIndexManager(): IIndexManager {
         return esIndexManager
@@ -48,7 +56,7 @@ class IndexingTask @Autowired constructor(
             //   indexName
 
             // pre phase
-            val info = indexPrePhase(database)
+            val info = indexPrePhase(elasticsearchAlias)
 
             // iterate over all documents
             // TODO: dynamically get target to send exported documents
@@ -57,36 +65,51 @@ class IndexingTask @Autowired constructor(
             val indexInfo = IndexInfo()
             indexInfo.realIndexName = info.second
             indexInfo.toType = "base"
-            indexInfo.toAlias = "igeng"
+            indexInfo.toAlias = elasticsearchAlias
             indexInfo.docIdField = "uuid"
             indexService.start(indexService.INDEX_PUBLISHED_DOCUMENTS(format))
                     .forEach { indexManager.update(indexInfo, convertToElasticDocument(it), false) }
 
 
             // post phase
-            indexPostPhase(database, info.first, info.second)
+            indexPostPhase(elasticsearchAlias, info.first, info.second)
 
         }
+
+        log.debug("Indexing finished")
     }
 
     private fun convertToElasticDocument(doc: Any): ElasticDocument? {
 
-        return jacksonObjectMapper().readValue(doc as String, ElasticDocument::class.java)
+        return jacksonObjectMapper()
+                .enable(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS)
+                .readValue(doc as String, ElasticDocument::class.java)
 
     }
 
 
-    private fun indexPrePhase(database: String): Pair<String, String> {
-        val oldIndex = indexManager.getIndexNameFromAliasName(database, "uuid");
-        val newIndex = IndexManager.getNextIndexName(database, "uuid", "ige-ng-test")
+    private fun indexPrePhase(alias: String): Pair<String, String> {
+        val oldIndex = indexManager.getIndexNameFromAliasName(alias, uuid)
+        val newIndex = IndexManager.getNextIndexName(alias, uuid, "ige-ng-test")
         indexManager.createIndex(newIndex, "base", indexManager.defaultMapping, indexManager.defaultSettings)
         return Pair(oldIndex, newIndex)
     }
 
-    private fun indexPostPhase(database: String, oldIndex: String, newIndex: String) {
+    private fun indexPostPhase(alias: String, oldIndex: String, newIndex: String) {
         // switch alias and delete old index
-        indexManager.switchAlias(database, oldIndex, newIndex);
-        indexManager.deleteIndex(oldIndex);
+        indexManager.switchAlias(alias, oldIndex, newIndex)
+        removeOldIndices(newIndex)
+    }
+
+    private fun removeOldIndices(newIndex: String) {
+        val delimiterPos = newIndex.lastIndexOf("_")
+        val indexGroup = newIndex.substring(0, delimiterPos + 1)
+        val indices: Array<String> = indexManager.getIndices(indexGroup)
+        for (indexToDelete in indices) {
+            if (indexToDelete != newIndex) {
+                indexManager.deleteIndex(indexToDelete)
+            }
+        }
     }
 
     // check out here: https://stackoverflow.com/questions/39152599/interrupt-spring-scheduler-task-before-next-invocation

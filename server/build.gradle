@@ -49,7 +49,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     compile "org.apache.logging.log4j:log4j-api-kotlin:1.0.0"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.2"
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -75,7 +75,7 @@ dependencies {
     implementation('de.ingrid:ingrid-codelist-service:5.4.0') {
         exclude group: 'log4j', module: 'log4j'
     }
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.2'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.2'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation "org.apache.logging.log4j:log4j-spring-cloud-config-client:$log4j2_version"
     implementation "org.apache.logging.log4j:log4j-api:$log4j2_version"
@@ -92,13 +92,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // iBus communication
-    implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {
-        exclude group: 'org.apache.logging.log4j'
-        exclude group: 'junit'
-    }
-
-    // iBus communication
-    implementation('de.ingrid:ingrid-elasticsearch-tools:5.4.0')
+     implementation('de.ingrid:ingrid-elasticsearch-tools:5.6.0-SNAPSHOT')
 //    compile 'org.elasticsearch:elasticsearch:6.8.4'
 
     implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {

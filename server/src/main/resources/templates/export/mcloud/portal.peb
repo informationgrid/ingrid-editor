@@ -20,11 +20,11 @@
         "organization": "{{ model.getPublisher().organization }}",
         "homepage": "{{ model.getPublisher().homepage }}"
     },
-    "accessRights": "{{ model.usage }}",
+    "accessRights": ["{{ model.usage }}"],
     "distribution": [
     {% for download in model.downloads %}
         {
-            "format": "{{ download.type }}",
+            "format": ["{{ download.type }}"],
             "accessURL": "{{ download.link }}",
             "title": "{{ download.title }}",
             "type": "{{ download.format }}"
@@ -67,10 +67,7 @@
             {% endif %}
         },
         "spatialText": "{{ model.spatialTitels | join(',') }}",
-        "temporal": {
-            "start": "{{ model.timeSpan.start }}",
-            "end": "{{ model.timeSpan.end }}"
-        },
+        "temporal": null,
         "groups": null,
         "displayContact": [{
             "name": "???",
