@@ -51,6 +51,7 @@ import {SessionTimeoutInterceptor} from './services/session-timeout.interceptor'
 import {SessionTimeoutInfoComponent} from './main-header/session-timeout-info/session-timeout-info.component';
 import {TimePipe} from './directives/time.pipe';
 import {FormFieldsModule} from './form-fields/form-fields.module';
+import {AnimationWrapper, AnimationWrapperComponent} from './animation-wrapper.component';
 
 registerLocaleData(de);
 
@@ -94,7 +95,8 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
     SideMenuComponent,
     TimePipe,
     MainHeaderComponent,
-    SessionTimeoutInfoComponent],
+    SessionTimeoutInfoComponent,
+    AnimationWrapperComponent],
     imports: [
         environment.production ? [] : AkitaNgDevtools.forRoot(),
         AngularSplitModule.forRoot(),
@@ -108,7 +110,11 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
                 {name: 'inline-help', component: InlineHelpWrapperComponent},
                 {name: 'panel', component: OneColumnWrapperComponent},
                 {name: 'full-panel', component: FullWidthWrapperComponent},
-                {name: 'section', component: SectionWrapper}
+                {name: 'section', component: SectionWrapper},
+                {name: 'animation', component: AnimationWrapperComponent},
+            ],
+            manipulators: [
+                {class: AnimationWrapper, method: 'run'}
             ]
         }),
         FormlyMaterialModule,

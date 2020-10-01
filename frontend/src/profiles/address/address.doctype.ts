@@ -60,7 +60,8 @@ export class AddressDoctype extends BaseDoctype {
               type: 'input',
               templateOptions: {
                 label: 'Abteilung/Referat',
-                appearance: 'outline'
+                appearance: 'outline',
+                animation: true
               },
               hideExpression: '!model.organization || model.organization.length === 0',
             }]
