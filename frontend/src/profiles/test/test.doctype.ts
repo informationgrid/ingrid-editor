@@ -40,8 +40,10 @@ export class TestDoctype extends BaseDoctype {
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Optionales Textfeld',
-          appearance: 'outline'
-        }
+          appearance: 'outline',
+          animation: true
+        },
+        hideExpression: 'formState.hideOptionals',
       }, {
         key: 'description',
         type: 'textarea',

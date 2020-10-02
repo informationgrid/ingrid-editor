@@ -52,13 +52,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   activeId = new BehaviorSubject<string>(null);
   sidebarWidth: number;
-  hideOptionals = false;
 
   fields: FormlyFieldConfig[] = [];
 
   formOptions: FormlyFormOptions = {
     formState: {
-      forPublish: false
+      forPublish: false,
+      hideOptionals: false
     }
   };
 
@@ -362,6 +362,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   }
 
   toggleOptionals($event: MatSlideToggleChange) {
-    this.hideOptionals = !$event.checked;
+    this.formOptions.formState.hideOptionals = !$event.checked;
   }
 }
