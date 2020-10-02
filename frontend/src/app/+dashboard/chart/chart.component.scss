@@ -30,3 +30,54 @@
   padding: 0 15%;
 }
 
+
+.chart {
+  display: block;
+  margin: 10px auto;
+  max-height: 200px;
+  animation: fadein 1s;
+
+  .circle-bg {
+    fill: none;
+    stroke: $ige-background;
+    stroke-width: 2;
+  }
+
+  .circle {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: butt;
+    transform-origin: center;
+    animation: progress 1s ease-out forwards;
+  }
+
+  @keyframes progress {
+    0% {
+      stroke-dasharray: 0 100;
+    }
+  }
+
+  @keyframes fadein {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .circle-1 {
+    stroke: $state-working-color;
+  }
+
+  .circle-2 {
+    stroke: $ige-icon-color;
+  }
+
+  .chart-text {
+    transform: translate(1px, 2px);
+    fill: $ige-icon-color;
+    font-size: 0.8em;
+    text-anchor: middle;
+  }
+}
