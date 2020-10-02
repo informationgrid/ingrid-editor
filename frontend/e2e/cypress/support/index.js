@@ -6,9 +6,21 @@ const addContext = require('mochawesome/addContext');
 
 Cypress.on('test:after:run', (test, runnable) => {
   if (test.state === 'failed') {
-    const screenshotFileName = `${runnable.parent.title} -- ${test.title} (failed).png`;
 
-    addContext({test}, `assets/${Cypress.spec.name}/${screenshotFileName}`);
+    let item = runnable
+    const nameParts = [runnable.title]
+
+    // Iterate through all parents and grab the titles
+    while (item.parent) {
+      nameParts.unshift(item.parent.title)
+      item = item.parent
+    }
+
+    const fullTestName = nameParts
+      .filter(Boolean)
+      .join(' -- ')           // this is how cypress joins the test title fragments
+
+    addContext({test}, `assets/${Cypress.spec.name}/${fullTestName} (failed).png`);
     addContext({test}, `assets/${Cypress.spec.name}.mp4`);
   }
 });
