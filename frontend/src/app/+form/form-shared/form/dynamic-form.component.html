@@ -10,7 +10,7 @@
         </as-split-area>
 
         <!-- The form -->
-        <as-split-area #scrollForm [size]="100-sidebarWidth" id="form" class="form-content" cdkScrollable>
+        <as-split-area #scrollForm [size]="100-sidebarWidth" id="form" class="form-content" [class.hideOptionals]="hideOptionals" cdkScrollable>
 
             <div *ngIf="isLoading" class="loading">
                 <div>Lade Dokument ...</div>
