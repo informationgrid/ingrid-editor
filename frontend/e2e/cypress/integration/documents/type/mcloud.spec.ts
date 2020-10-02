@@ -52,7 +52,6 @@ describe('mCLOUD documents', function () {
 
       //needed to slow it down
       cy.get('[data-cy="Zeitbezug der Ressource"]').find('mat-form-field').contains('Datum');
-      cy.wait(500);
 
       DocumentPage.publishNow();
     });
@@ -81,7 +80,6 @@ describe('mCLOUD documents', function () {
 
       //needed to slow it down
       cy.get('[data-cy=Periodizität').find('mat-form-field').should('have.text', 'einmalig');
-      cy.wait(500);
 
       DocumentPage.saveDocument();
     });
