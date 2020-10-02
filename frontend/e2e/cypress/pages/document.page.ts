@@ -131,6 +131,8 @@ export class DocumentPage extends BasePage {
   }
 
   static publishNow() {
+    // sometimes we're too fast, so that the form is not synched with the store
+    cy.wait(0);
     cy.get('[data-cy=toolbar_publish_now]').click();
     cy.get('[data-cy=confirm-dialog-confirm]').click();
     cy.get('[data-cy="form-message"]').contains('veröffentlicht');
@@ -147,6 +149,8 @@ export class DocumentPage extends BasePage {
   }
 
   static saveDocument() {
+    // sometimes we're too fast, so that the form is not synched with the store
+    cy.wait(0);
     cy.get(DocumentPage.Toolbar.Save).click();
     cy.get('[data-cy="form-message"]').contains('gespeichert');
   }
@@ -165,7 +169,6 @@ export class DocumentPage extends BasePage {
     cy.get(DocumentPage.treeSearchBar).type(searchTerm);
   }
 
-
   static getSearchResult(number?: number) {
     number = number == undefined ? 1 : number;
     return this.getSearchResults().eq(number - 1).parent();
@@ -182,5 +185,30 @@ export class DocumentPage extends BasePage {
 
   static refreshDashboard(){
     return cy.get('[data-cy=reload-button]').click()
+  }
+
+  static getDocument(docNameContains: string){
+    cy.get('#sidebar').contains(docNameContains).click();
+  }
+
+  static checkSpatialEntrytNotEmpty(){
+    cy.get('ige-spatial-list mat-list-item').should('not.empty');
+  }
+
+  static checkSpatialEntryExists(spatialName: string){
+    cy.wait(0);
+    cy.get('path.leaflet-interactive').should( 'exist');
+    // cy.get('ige-spatial-list .mat-list-item-content').contains(spatialName);
+    cy.get('div.mat-line.spatial-title').contains(spatialName);
+  }
+
+  static clickSpatialEntry(spatialName: string){
+    // cy.get('ige-spatial-list .mat-list-item-content').contains(spatialName).click();
+    cy.get('div.mat-line.spatial-title').contains(spatialName).click();
+  }
+
+  static clickLeafletMapResetBtn(){
+    cy.get('path.leaflet-interactive').should( 'exist');
+    cy.get('formly-field .mat-button-wrapper').contains('Zurücksetzen').click();
   }
 }

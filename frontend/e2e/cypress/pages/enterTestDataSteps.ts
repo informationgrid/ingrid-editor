@@ -63,14 +63,20 @@ export class enterTestDataSteps {
     cy.get('mat-option').contains(selectType).click();
   }
 
-  static setMcloudSpatialFree(title: string = 'Spaaaaatiaaal', locationText: string = 'Bremen'){
+  static setMcloudSpatialBbox(title: string = 'Spaaaaatiaaal', locationText: string = 'Bremen'){
     cy.get('[data-cy=spatialButton]').click();
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
     this.selectMcloudSpatialType('Freier Raumbezug');
     cy.get('[data-cy=spatial-dialog-free]').type(locationText).then(() => {
-      cy.get('mat-list :first-child').contains(locationText).click();});
+      cy.get('mat-list').contains(locationText).click();});
     cy.get('[data-cy=confirm-dialog-save]').click();
+    DocumentPage.checkSpatialEntrytNotEmpty()
   }
+
+  // static changeMcloudSpatialBBoxEntry(spatialName: string){
+  //   DocumentPage.clickSpatialEntry(spatialName);
+  //   cy.get(':nth-child(1) > .mat-list-item-content > .list-item-wrapper > :nth-child(2) > .mat-focus-indicator > .mat-button-wrapper > .mat-icon > svg').click();
+  // }
 
   static setMcloudSpatialWKT(title: string = 'Spaaaaatiaaal', locationText: string = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))'){
     cy.get('[data-cy=spatialButton]').click();
@@ -79,6 +85,7 @@ export class enterTestDataSteps {
     cy.get('[data-cy=spatial-dialog-wkt]').type(locationText).then(() => {
       cy.get('div > button').contains('Anzeigen').click();});
     cy.get('[data-cy=confirm-dialog-save]').click();
+    DocumentPage.checkSpatialEntrytNotEmpty()
   }
 
   static setMcloudSpatialGeoName(title: string = 'Spaaaaatiaaal'){
@@ -86,6 +93,7 @@ export class enterTestDataSteps {
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
     this.selectMcloudSpatialType('Geografischer Name');
     cy.get('[data-cy=confirm-dialog-save]').click();
+    DocumentPage.checkSpatialEntrytNotEmpty()
   }
 
   static setMcloudTimeReference(date: string = '23.09.2020', chooseType: string = 'Erstellung'){
