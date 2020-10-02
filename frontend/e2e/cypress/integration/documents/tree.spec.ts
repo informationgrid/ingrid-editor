@@ -146,8 +146,7 @@ describe('Tree', () => {
       cy.get('.mat-dialog-content').should('not.contain.value', docName);
     });
 
-    it('should not be possible to copy a node inside a folder into the same one', () => {
-      // Bug #2064
+    it('should not be possible to copy a node inside a folder into the same one (#2064)', () => {
       const testFolder = 'copy into myself1';
       const testFolder2 = 'copy into myself2';
 
@@ -157,7 +156,7 @@ describe('Tree', () => {
       CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten']);
 
       CopyCutUtils.copyObjectWithTree([testFolder, testFolder2]);
-      cy.get('error-dialog').contains('failure');
+      cy.get('error-dialog').find('[data-cy=error-dialog-title]').contains('Fehler');
     });
 
     it('should not be possible to copy a document/folder under a document', () => {
