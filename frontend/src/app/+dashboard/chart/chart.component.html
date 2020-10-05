@@ -2,30 +2,17 @@
 
 <div fxFlex fxLayout="column" *ngIf="data | async as dataSeq">
 
-    <svg viewBox="0 0 36 36" class="chart">
-      <path class="circle-bg" d="M18 2.0845
+    <svg viewBox="0 0 36 36" class="circular-chart">
+      <path class="circle circle-1" attr.stroke-dasharray="{{calculateAdjustedStrokeDash(dataSeq[0])}}, {{calculateStrokeDash(dataSeq[1])}}" d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-      <path class="circle circle-1" stroke-dasharray="84, 100" d="M18 2.0845
+      <path class="circle circle-2" attr.stroke-dasharray="0.00001, {{calculateStrokeDash(dataSeq[0])}}, {{calculateAdjustedStrokeDash(dataSeq[1])}}" d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-      <path transform="scale(-1,1)" class="circle circle-2" stroke-dasharray="16, 100" d="M18 2.0845
+      <path class="circle circle-3" stroke-dasharray="0.4, 99.2, 0.4" d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-      <text x="18" y="20.35" class="chart-text">{{total}}</text>
-    </svg>
-
-    <svg viewBox="0 0 160 160" class="circular-chart">
-
-        <circle *ngFor="let item of dataSeq; let i = index;" cx="80" cy="80"
-                attr.r="{{item === 0 ? 0 : radius}}"
-                attr.stroke="{{colors[i]}}"
-                attr.stroke-width="{{strokeWidth}}"
-                attr.stroke-dasharray="{{adjustedCircumference()}}"
-                attr.stroke-dashoffset="{{calculateStrokeDashOffset(item)}}"
-                attr.transform="rotate({{returnCircleTransformValue(i)}}, 80, 80)" fill="transparent"></circle>
-
-        <text x="80" y="95" class="percentage">{{total}}</text>
+      <text class="text" x="18.5" y="19" dominant-baseline="middle" text-anchor="middle">{{total}}</text>
     </svg>
 
     <div class="wrapper" fxFlex fxLayout="row" fxLayoutAlign="space-between">

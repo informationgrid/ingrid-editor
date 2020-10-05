@@ -3,8 +3,7 @@ import {Observable} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 /**
- * This functionality was much inspired by https://css-tricks.com/building-a-donut-chart-with-vue-and-svg/
- * and this codepen: https://codepen.io/soluhmin/pen/rqrBWK?editors=1010
+ * This functionality was much inspired by https://stackoverflow.com/questions/48601880/svg-counterclockwise
  */
 @UntilDestroy()
 @Component({
@@ -15,15 +14,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 export class ChartComponent implements OnInit {
 
   @Input() data: Observable<number[]>;
-  @Input() colors = ['#ff0000', '#00ff00', '#0000ff'];
 
-  private readonly CHART_GAP = 5;
-
-  strokeWidth = 8;
-  radius = 60;
-  private circumference = 2 * Math.PI * this.radius;
-  private chartData = [];
-  private angleOffset = -90;
   total: number;
 
   constructor() {
@@ -35,36 +26,19 @@ export class ChartComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(values => {
         this.total = this.calculateTotal(values);
-        this.chartData = [];
-        values.forEach((dataVal, index) => {
-          this.chartData.push({
-            degrees: this.angleOffset
-          });
-          this.angleOffset = this.dataPercentage(dataVal) * 360 + this.angleOffset;
-        });
       });
-
   }
 
-
-  adjustedCircumference() {
-    return this.circumference - this.CHART_GAP;
+  calculateStrokeDash(dataVal) {
+    // percentage of total
+    return Math.round(100 / this.total * dataVal);
   }
 
-  calculateStrokeDashOffset(dataVal) {
-    const strokeDiff = this.dataPercentage(dataVal) * this.circumference;
-    return this.circumference - strokeDiff;
-  }
-
-  dataPercentage(dataVal) {
-    return dataVal / this.total;
+  calculateAdjustedStrokeDash(dataVal) {
+    return this.calculateStrokeDash(dataVal) - 0.75;
   }
 
   calculateTotal(values: number[]) {
     return values.reduce((acc, val) => acc + val);
-  }
-
-  returnCircleTransformValue(index: number) {
-    return this.chartData[index].degrees;
   }
 }
