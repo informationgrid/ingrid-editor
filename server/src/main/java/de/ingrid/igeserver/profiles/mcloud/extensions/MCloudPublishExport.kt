@@ -11,6 +11,7 @@ import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.utils.ElasticDocument
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -18,11 +19,13 @@ import org.springframework.stereotype.Component
 @Component
 class MCloudPublishExport : Filter<PostPublishPayload> {
 
-    @Autowired
-    lateinit var indexService: IndexService;
+    val log = logger()
 
     @Autowired
-    lateinit var indexManager: IndexManager;
+    lateinit var indexService: IndexService
+
+    @Autowired
+    lateinit var indexManager: IndexManager
 
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
@@ -35,7 +38,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
 
-        val docId = payload.document[FIELD_ID].asText();
+        val docId = payload.document[FIELD_ID].asText()
         context.addMessage(Message(this, "Index document ${docId} to Elasticsearch"))
 
         // TODO: Refactor
@@ -51,7 +54,12 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         indexInfo.docIdField = "uuid"
 
         val export = indexService.start(indexService.INDEX_SINGLE_PUBLISHED_DOCUMENT("portal", docId))
-        indexManager.update(indexInfo, convertToElasticDocument(export[0]), false)
+
+        if (export.isNotEmpty()) {
+            indexManager.update(indexInfo, convertToElasticDocument(export[0]), false)
+        } else {
+            log.warn("Problem exporting document: $docId")
+        }
 
         return payload
     }

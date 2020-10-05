@@ -39,7 +39,9 @@ export class GlobalErrorHandler implements ErrorHandler {
       this.modalService.showIgeError(e);
     } else if (error.rejection) {
       const e = new IgeError();
-      e.setMessage(error.rejection.message, error.rejection.error?.message);
+      const message = error.rejection.error?.errorText ?? error.rejection.message;
+      const detail = error.rejection.error?.stacktrace;
+      e.setMessage(message, detail);
       this.modalService.showIgeError(e);
     } else {
       this.modalService.showJavascriptError(error.message, error.stack);
