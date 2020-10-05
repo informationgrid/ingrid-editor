@@ -152,16 +152,21 @@ export class DocumentService {
     });
   }
 
-  save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean, path?: string[]): Promise<IgeDocument> {
+  // TODO: Refactor to use options instead so many parameters
+  save(data: IgeDocument, isNewDoc?: boolean, isAddress?: boolean, path?: string[], noVisualUpdates = false): Promise<IgeDocument> {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     if (isAddress && data._type !== 'FOLDER') {
-      //recreate address title, as it can not be changed manually for addresses
+      // recreate address title, as it can not be changed manually for addresses
       data.title = this.createAddressTitle(data);
     }
 
     return this.dataService.save(data, isAddress)
       .toPromise().then(json => {
+
+        if (noVisualUpdates) {
+          return;
+        }
 
         this.messageService.sendInfo('Ihre Eingabe wurde gespeichert');
 

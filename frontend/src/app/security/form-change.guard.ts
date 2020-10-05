@@ -9,6 +9,7 @@ import {AddressComponent} from '../+address/address/address.component';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {TreeService} from '../+form/sidebars/tree/tree.service';
 import {DocumentService} from '../services/document/document.service';
+import {untilDestroyed} from '@ngneat/until-destroy';
 
 @Injectable({
   providedIn: 'root'
@@ -59,7 +60,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
 
     if (action === 'save') {
       const form = this.formsManager.getControl(type)?.value;
-      await this.documentService.save(form, false, isAddress);
+      await this.documentService.save(form, false, isAddress, null, true);
     } else if (action === 'stay') {
       this.treeService.selectTreeNode(isAddress, currentId);
     }
