@@ -4,28 +4,18 @@ import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.metadata.schema.OType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.model.document.impl.BaseDocumentWrapperType
 import de.ingrid.igeserver.persistence.orientdb.OrientDBDocumentEntityType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
-@Component()
+@Component
 @Order(2)
-class ODocumentWrapperType : OrientDBDocumentEntityType {
+class ODocumentWrapperType : BaseDocumentWrapperType(), OrientDBDocumentEntityType {
 
     private val log = logger()
-
-    companion object {
-        private const val TYPE = "DocumentWrapper"
-        private val PROFILES = arrayOf<String>()
-    }
-
-    override val profiles: Array<String>
-        get() = PROFILES
-
-    override val className: String
-        get() = TYPE
 
     override val entityType: KClass<out EntityType>
         get() = DocumentWrapperType::class

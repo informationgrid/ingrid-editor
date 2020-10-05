@@ -55,7 +55,7 @@ IGE Server defines the following **exception hierarchy**:
   - `statusCode` The HTTP status code send to the client.
   - `errorId` The unique identifier of the exception for getting detail information from the log files.
   - `errorCode` A custom error code written in uppercase letters with the underscore character as word separator (e.g. `ALREADY_EXISTS`), that allows clients to identify the error cause.
-  - `errorText` A custom error text that could presented to the user. Variables of the form ${variable} will be replaced by the value of
+  - `errorText` A custom error text that could presented to the user. Variables of the form `${variable}` will be replaced by the value of
     the appropriate key if present in data.
   - `data` An optional key-value map used to customize the error text.
   - `stackTrace` The stack trace of the exception (only if it was an unexpected exception).

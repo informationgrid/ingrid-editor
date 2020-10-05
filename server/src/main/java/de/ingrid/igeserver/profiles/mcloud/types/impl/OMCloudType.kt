@@ -17,23 +17,12 @@ import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
 @Component
-class OMCloudType : OrientDBDocumentEntityType {
+class OMCloudType : BaseMCloudType(), OrientDBDocumentEntityType {
 
     @Autowired
     private lateinit var docService: DocumentService
 
     private val log = logger()
-
-    companion object {
-        private const val TYPE = "mCloudDoc"
-        private val PROFILES = arrayOf("mcloud")
-    }
-
-    override val profiles: Array<String>
-        get() = PROFILES
-
-    override val className: String
-        get() = TYPE
 
     override val entityType: KClass<out EntityType>
         get() = MCloudType::class
