@@ -103,6 +103,10 @@ export class DocumentPage extends BasePage {
   static createFolderAndChangeLocation(folderName: string, targetNodePath: string[]){
     cy.get(DocumentPage.Toolbar.NewFolder).click();
     cy.get('[data-cy=create-title]').type(folderName);
+    this.changeLocation(targetNodePath);
+  }
+
+  static changeLocation(targetNodePath: string[]){
     cy.get('[data-cy=create-changeLocation]').click();
     if (targetNodePath) {
       targetNodePath.forEach(node => Tree.selectNodeWithTitle(node, true));
