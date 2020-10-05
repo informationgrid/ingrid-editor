@@ -3,10 +3,10 @@ import {ModalService} from './services/modal/modal.service';
 import {IgeError} from './models/ige-error';
 import {HttpErrorResponse} from '@angular/common/http';
 
-export interface IgeException {
+export interface IgeValidationError {
   errorCode: string;
-  errorId: string;
-  errorText: string;
+  data: { id: string };
+  name: string;
 }
 
 @Injectable({

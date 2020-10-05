@@ -39,7 +39,7 @@ class OMCloudType : BaseMCloudType(), OrientDBDocumentEntityType {
                     docService.getLatestDocument(wrapper, true)
             }
             catch (e: NotFoundException) {
-                throw ValidationException.withInvalidFields(InvalidField("address", "NOT_PUBLISHED", mapOf("id" to wrapperId)))
+                throw ValidationException.withInvalidFields(InvalidField("addresses", "NOT_PUBLISHED", mapOf("id" to wrapperId)))
             }
         }
     }

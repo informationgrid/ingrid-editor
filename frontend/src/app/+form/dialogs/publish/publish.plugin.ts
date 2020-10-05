@@ -10,15 +10,13 @@ import {merge, Subscription} from 'rxjs';
 import {IgeDocument} from '../../../models/ige-document';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {HttpErrorResponse} from '@angular/common/http';
-import {
-  VersionConflictChoice,
-  VersionConflictDialogComponent
-} from '../version-conflict-dialog/version-conflict-dialog.component';
+import {VersionConflictChoice, VersionConflictDialogComponent} from '../version-conflict-dialog/version-conflict-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../../../dialogs/confirm/confirm-dialog.component';
 import {ErrorDialogComponent} from '../../../dialogs/error/error-dialog.component';
 import {IgeError} from '../../../models/ige-error';
 import {SessionStore} from '../../../store/session.store';
+import {ServerValidation} from '../../../server-validation.util';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -180,19 +178,14 @@ export class PublishPlugin extends Plugin {
     if (error?.error?.errorCode === 'VERSION_CONFLICT') {
       this.dialog.open(VersionConflictDialogComponent).afterClosed()
         .subscribe(choice => this.handleAfterConflictChoice(choice, error.error));
-    } else if (error?.status === 404 && error?.error.errorCode === 'PUBLISHED_VERSION_NOT_FOUND') {
+    } else if (error?.status === 400 && error?.error.errorCode === 'VALIDATION_ERROR') {
       this.sessionStore.update({
-        serverValidationErrors: [
-          {
-            key: 'addresses',
-            messages: [{'noPublishedRefs': {message: error.error.errorText}}]
-          }
-        ]
+        serverValidationErrors: ServerValidation.prepareServerValidationErrors(error.error.data)
       });
       this.dialog.open(ErrorDialogComponent, {
         data: new IgeError({
-          message: 'Beim Veröffentlichen wurden Fehler im Formular entdeckt',
-          error: {message: error?.error?.errorText}
+          message: 'Beim Veröffentlichen wurden Fehler im Formular entdeckt'
+          // error: {message: ServerValidation.prepareServerError(error?.error)}
         })
       });
     } else {

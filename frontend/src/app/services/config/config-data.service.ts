@@ -1,6 +1,6 @@
 import {Configuration, UserInfo} from './config.service';
 import {Catalog} from '../../+catalog/services/catalog.model';
-import {IgeException} from '../../error-handler';
+import {IgeException} from '../../server-validation.util';
 
 export class ConfigDataService {
 
