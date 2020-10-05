@@ -78,6 +78,10 @@
   color: $ige-placeholder-color !important;
 }
 
+.mat-checkbox-label .mat-form-field-required-marker {
+  color: inherit !important;
+}
+
 .mat-form-field-prefix {
   .mat-icon {
     margin: 0 4px 0 -4px;
