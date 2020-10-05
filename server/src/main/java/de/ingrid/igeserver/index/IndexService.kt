@@ -24,6 +24,15 @@ class IndexService @Autowired constructor(private val dbService: DBApi, private 
 
         IndexOptions(onlyPublishedDocs, format)
     }
+    val INDEX_SINGLE_PUBLISHED_DOCUMENT = { format: String, uuid: String ->
+        val singlePublishedDoc = listOf(
+                QueryField(FIELD_PUBLISHED, null, true),
+                QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value),
+                QueryField(FIELD_ID, uuid)
+        )
+
+        IndexOptions(singlePublishedDoc, format)
+    }
 
     fun start(options: IndexOptions): List<Any> {
 
