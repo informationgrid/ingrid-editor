@@ -18,7 +18,7 @@ describe('Spatial References', () => {
 
     DocumentPage.createDocument(docName);
     enterTestDataSteps.setMcloudSpatialBbox('create spatial reference, bbox', 'Bremen');
-    DocumentPage.checkSpatialEntryExists('Bremen, Germany');
+    DocumentPage.checkSpatialEntryExists('Bremen');
 
     DocumentPage.saveDocument();
   });
