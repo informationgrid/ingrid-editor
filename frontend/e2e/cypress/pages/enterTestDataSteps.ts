@@ -96,32 +96,49 @@ export class enterTestDataSteps {
     DocumentPage.checkSpatialEntrytNotEmpty()
   }
 
-  static setMcloudTimeReference(date: string = '23.09.2020', chooseType: string = 'Erstellung'){
+  static setMcloudTimeReference(date: Date = new Date(2020,1,11), choose: string = 'Erstellung'){
     cy.get('[data-cy="Zeitbezug der Ressource"]').contains('Hinzufügen').click();
     // cy.get('[data-cy="Zeitbezug der Ressource"]').contains('Datum').parents('.mat-form-field').type(date);
     cy.get('[data-cy="Zeitbezug der Ressource"]').contains('Typ').parents('.mat-form-field').click();
-    cy.get('.mat-option-text').contains(chooseType).click();
-    this.selectDate(date);
+    cy.get('.mat-option-text').contains(choose).click();
+    this.selectDate('[data-cy="Zeitbezug der Ressource"]', date, choose);
   }
 
-  static selectDate(date: string){
-    const year = date.slice(6,10);
-    const monthNumber =  parseInt(date.slice(3,5));
-    const day = date.slice(0,2);
+
+  static selectDate(area: string, date: Date, choose: string, until?: Date){
+    const year = date.getFullYear();
+    const monthNumber =  date.getMonth();
+    const day = date.getDate();
     const months = ['JAN','FEB','MÄR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DEZ'];
     const month = months[monthNumber-1];
 
-    cy.get('[data-cy="Zeitbezug der Ressource"]').find('[aria-label="Open calendar"]').click();
-    cy.get('mat-calendar [aria-label="Choose month and year"]').click();
-    cy.get('.mat-calendar-table').contains(year).click();
-    cy.get('.mat-calendar-table').contains(month).click();
-    cy.get('.mat-calendar-table').contains(day).click();
+    if (choose == 'von - bis' && until !=null){
+      const year2 = until.getFullYear();
+      const monthNumber2 =  until.getMonth() + 1;
+      const day2 = until.getDate();
+      const month2 = months[monthNumber2-1];
+
+      cy.get(area).find('mat-form-field mat-datepicker-toggle button').last().click();
+      this.selectDateInCalendar(year, month, day);
+      this.selectDateInCalendar(year2, month2, day2);
+    } else {
+      cy.get(area).find('mat-form-field mat-datepicker-toggle button').first().click();
+      this.selectDateInCalendar(year, month, day);
+    }
   }
 
-  static setMcloudPeriodOfTime(chooseOption: string ='am', date: string ='23.9.2020'){
+  private static selectDateInCalendar (setYear: number, setMonth: string, setDay: number ){
+    cy.get('mat-calendar [aria-label="Choose month and year"]').click();
+    cy.get('.mat-calendar-table').contains(setYear).click();
+    cy.get('.mat-calendar-table').contains(setMonth).click();
+    cy.get('.mat-calendar-table').contains(setDay).click();
+  }
+
+  static setMcloudPeriodOfTime(choose: string ='am', date: Date = new Date(2020,1,11), until?: Date){
     cy.get('[data-cy=Zeitspanne]').contains('Wählen').click();
-    cy.get('.mat-option-text').contains(chooseOption).click();
-    cy.get('[data-cy=Zeitspanne] > .display-flex').type(date);
+    cy.get('.mat-option-text').contains(choose).click();
+    cy.wait(0);
+    this.selectDate('[data-cy="Zeitspanne"]', date, choose, until);
   }
 
   static setMcloudPeriodicity(chooseOption: string = 'einmalig'){
