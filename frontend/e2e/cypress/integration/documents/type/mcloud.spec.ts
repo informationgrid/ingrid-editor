@@ -1,5 +1,5 @@
 import {DocumentPage} from '../../../pages/document.page';
-import {AddressPage} from "../../../pages/address.page";
+import {Address, AddressPage} from "../../../pages/address.page";
 import {Tree} from "../../../pages/tree.partial";
 import {enterTestDataSteps} from "../../../pages/enterTestDataSteps";
 
@@ -36,7 +36,9 @@ describe('mCLOUD documents', function () {
       const docName = 'mCloudDoc1';
 
       cy.visit('/address')
-      AddressPage.createAddressAndPublish(PUBLISHED_ADDRESS,'E-Mail');
+      AddressPage.createAddress(new Address('','',PUBLISHED_ADDRESS));
+      AddressPage.addContact('E-Mail');
+      AddressPage.publishNow();
 
       cy.visit('form')
       DocumentPage.createDocument(docName);
@@ -58,6 +60,8 @@ describe('mCLOUD documents', function () {
 
     it('should create a complete mcloud document', () => {
       const docName = 'mCloudfullDoc1';
+      const dateNow = new Date();
+      const previousDate = new Date(2020, 1, 11)
 
       DocumentPage.createDocument(docName);
 
@@ -75,7 +79,7 @@ describe('mCLOUD documents', function () {
       enterTestDataSteps.setMcloudMfund();
       enterTestDataSteps.setMcloudSpatialWKT();
       enterTestDataSteps.setMcloudTimeReference();
-      enterTestDataSteps.setMcloudPeriodOfTime();
+      enterTestDataSteps.setMcloudPeriodOfTime('von - bis', previousDate, dateNow);
       enterTestDataSteps.setMcloudPeriodicity();
 
       //needed to slow it down
