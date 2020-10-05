@@ -33,7 +33,7 @@
                         <mat-slide-toggle checked (change)="toggleOptionals($event)">Alle</mat-slide-toggle>
                         <div class="cover"></div>
                     </div>
-                    <div class="form-inner">
+                    <div class="form-inner" [class.hide]="model._type === 'FOLDER'">
                         <form [formGroup]="form"
                               [style.padding-top]="paddingWithHeader"
                               [class.hide-validation]="!showValidationErrors"
