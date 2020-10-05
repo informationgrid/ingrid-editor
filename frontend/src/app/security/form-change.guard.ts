@@ -36,12 +36,12 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       return this.dialog.open(ConfirmDialogComponent, {
         disableClose: true,
         data: {
-          title: 'Änderungen sichern?',
+          title: 'Änderungen speichern?',
           message: 'Möchten Sie die Änderungen speichern bevor Sie die Seite verlassen?\nSie können die Änderungen auch verwerfen oder auf der Seite bleiben.',
           buttons: [
-            {text: 'Seite verlassen', id: 'leave'},
-            {text: 'Speichern und verlassen', id: 'save'},
-            {text: 'Auf Seite bleiben', emphasize: true, alignRight: true, id: 'stay'}
+            {text: 'Auf Seite bleiben', id: 'stay'},
+            {text: 'Seite verlassen', id: 'leave', alignRight: true},
+            {text: 'Speichern und verlassen', id: 'save', emphasize: true, alignRight: true}
           ]
         } as ConfirmDialogData
       }).afterClosed()

@@ -171,7 +171,7 @@ describe('General create addresses/folders', () => {
       // check selected tree node === previous selected node
       cy.wait(500);
       cy.get('#sidebar').findByText(adr1Name).click();
-      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
       cy.get(DocumentPage.title).should('have.text', adr2Name);
 
@@ -179,7 +179,7 @@ describe('General create addresses/folders', () => {
       // check selected tree node === newly selected node
       cy.wait(500);
       cy.get('#sidebar').findByText(adr1Name).click();
-      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-save]').click();
       cy.get(DocumentPage.title).should('have.text', adr1Name);
     });
@@ -195,7 +195,7 @@ describe('General create addresses/folders', () => {
       // reject -> should stay on page
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-stay]').click();
 
       cy.get(DocumentPage.title).should('have.text', addressName);
@@ -204,7 +204,7 @@ describe('General create addresses/folders', () => {
       // accept (don't safe) -> should load new page
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
       cy.get(DocumentPage.title).should('not.exist');

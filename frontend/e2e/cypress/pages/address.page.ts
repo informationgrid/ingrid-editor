@@ -64,17 +64,17 @@ export class AddressPage extends DocumentPage {
   // }
 
   static saveChanges () {
-    cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+    cy.get('.mat-dialog-title').contains('Änderungen speichern?');
     cy.get('[data-cy=confirm-dialog-save]').click();
   }
 
   static discardSaveChanges () {
-    cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+    cy.get('.mat-dialog-title').contains('Änderungen speichern?');
     cy.get('[data-cy=confirm-dialog-discard]').click();
   }
 
   static cancelSaveChanges () {
-    cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+    cy.get('.mat-dialog-title').contains('Änderungen speichern?');
     cy.get('[data-cy=confirm-dialog-cancel]').click();
   }
 

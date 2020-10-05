@@ -1,9 +1,9 @@
 import {FormToolbarService} from './form-shared/toolbar/form-toolbar.service';
-import {first} from "rxjs/operators";
-import {DocumentService} from "../services/document/document.service";
-import {ConfirmDialogComponent, ConfirmDialogData} from "../dialogs/confirm/confirm-dialog.component";
-import {MatDialog} from "@angular/material/dialog";
-import {NgFormsManager} from "@ngneat/forms-manager";
+import {first} from 'rxjs/operators';
+import {DocumentService} from '../services/document/document.service';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+import {NgFormsManager} from '@ngneat/forms-manager';
 
 export class FormUtils {
   static addHotkeys(event: KeyboardEvent, service: FormToolbarService) {
@@ -39,15 +39,15 @@ export class FormUtils {
     return dialog.open(ConfirmDialogComponent, {
       disableClose: true,
       data: <ConfirmDialogData>{
-        title: 'Änderungen sichern?',
+        title: 'Änderungen speichern?',
         message: 'Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?',
         buttons: [
-          {id: "cancel", text: 'Abbrechen'},
-          {id: "discard", text: 'Verwerfen', alignRight: true},
-          {id: "save", text: 'Speichern', alignRight: true, emphasize: true}
+          {id: 'cancel', text: 'Abbrechen'},
+          {id: 'discard', text: 'Verwerfen', alignRight: true},
+          {id: 'save', text: 'Speichern', alignRight: true, emphasize: true}
         ]
       } as ConfirmDialogData
-    }).afterClosed().pipe(first()).toPromise()
+    }).afterClosed().pipe(first()).toPromise();
   }
 
 }

@@ -172,7 +172,7 @@ describe('General create documents/folders', () => {
       // check selected tree node === previous selected node
       cy.wait(500);
       Tree.clickOnNodeWithTitle('Testdokumente');
-      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
       cy.get(DocumentPage.title).should('have.text', doc2Name);
 
@@ -180,7 +180,7 @@ describe('General create documents/folders', () => {
       // check selected tree node === newly selected node
       cy.wait(500);
       Tree.clickOnNodeWithTitle(doc1Name);
-      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-save]').click();
       cy.get(DocumentPage.title).should('have.text', doc1Name);
 
@@ -197,7 +197,7 @@ describe('General create documents/folders', () => {
       // reject -> should stay on page
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-stay]').click();
 
       cy.get(DocumentPage.title).should('have.text', docname);
@@ -205,7 +205,7 @@ describe('General create documents/folders', () => {
       // accept (don't save) -> should load new page
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
       cy.get(DocumentPage.title).should('not.exist');
@@ -219,7 +219,7 @@ describe('General create documents/folders', () => {
 
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-      cy.get('.mat-dialog-title').contains('Änderungen sichern?');
+      cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
       // check we are on dashboard page
