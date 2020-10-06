@@ -14,7 +14,8 @@
              (dragover)="dragManager.handleDragOver($event, null);"
              (drop)="drop($event, null)">
             <div class="zone">
-                <span>Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon> Daten</span>
+                <span>Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon>
+                    {{forAddresses ? "Adressen": "Daten"}}</span>
             </div>
         </div>
     </div>
