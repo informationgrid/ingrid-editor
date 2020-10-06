@@ -50,8 +50,8 @@ import {DateRangeTypeComponent} from './types/date-range-type/date-range-type.co
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatRadioModule} from '@angular/material/radio';
 import {RepeatDetailListComponent} from './types/repeat-detail-list/repeat-detail-list.component';
-import {DragDropModule} from "@angular/cdk/drag-drop";
-import {CloseScrollStrategy, Overlay} from "@angular/cdk/overlay";
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {CloseScrollStrategy, Overlay} from '@angular/cdk/overlay';
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : {'ip': true};

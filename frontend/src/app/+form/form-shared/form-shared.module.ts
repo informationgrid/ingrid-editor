@@ -36,13 +36,13 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {DynamicFormComponent} from './form/dynamic-form.component';
 import {SidebarComponent} from '../sidebars/sidebar.component';
 import {FormDashboardComponent} from '../form-dashboard/form-dashboard.component';
-import {FolderDashboardComponent} from '../form-shared/folder/folder-dashboard.component';
+import {FolderDashboardComponent} from './folder/folder-dashboard.component';
 import {AngularSplitModule} from 'angular-split';
 import {FormComponent} from '../form/form.component';
 import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {formPluginProvider} from '../../form-plugin.provider';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 
 @NgModule({
@@ -52,25 +52,25 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
     FormMessageComponent, DestinationSelectionComponent,
     DynamicFormComponent, SidebarComponent, FormDashboardComponent, FolderDashboardComponent
   ],
-    imports: [
-        CommonModule,
-        AngularSplitModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatMenuModule,
-        MatDividerModule,
-        MatInputModule,
-        MatButtonModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        FlexLayoutModule,
-        IgeFormlyModule,
-        MatTabsModule,
-        SharedModule,
-        MatTooltipModule,
-        MatProgressSpinnerModule,
-        MatSlideToggleModule
-    ],
+  imports: [
+    CommonModule,
+    AngularSplitModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    FlexLayoutModule,
+    IgeFormlyModule,
+    MatTabsModule,
+    SharedModule,
+    MatTooltipModule,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule
+  ],
   providers: [FormToolbarService, FormPluginsService, CreateDocumentPlugin, SavePlugin, CreateFolderPlugin, DeleteDocsPlugin,
     IsoViewPlugin, CopyCutPastePlugin, PublishPlugin, UndoPlugin, PrintViewPlugin, FormularService, HistoryPlugin,
 

@@ -81,6 +81,9 @@ export class SidebarComponent implements OnInit {
       return;
     }
 
+    // reset scroll position when loading a new document
+    this.treeStore.update({scrollPosition: 0});
+
     const handled = await FormUtils.handleDirtyForm(this.formsManager, this.documentService, this.dialog, this.address);
 
     if (handled) {

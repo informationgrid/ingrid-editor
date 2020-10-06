@@ -117,10 +117,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   ngOnInit() {
 
-    this.formsManager.valueChanges(this.address ? 'address' : 'document')
-      .pipe(debounceTime(3000)) // send request 3s after last form change
-      .subscribe(() => this.auth.refreshSession().subscribe());
-
     if (this.address) {
       this.formStateName = 'address';
       this.query = this.addressTreeQuery;
@@ -129,10 +125,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       this.query = this.treeQuery;
     }
 
-    this.formsManager.upsert(this.formStateName, this.form, {
-        withInitialValue: true
-      }
-    );
+    this.formsManager.valueChanges(this.formStateName)
+      .pipe(debounceTime(3000)) // send request 3s after last form change
+      .subscribe(() => this.auth.refreshSession().subscribe());
+
+    this.initializeFormStore();
 
     this.query.select('isDocLoading')
       .pipe(untilDestroyed(this))
@@ -192,6 +189,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
     this.handleServerSideValidationErrors();
   }
 
+  private initializeFormStore() {
+    const control = this.formsManager.getControl(this.formStateName);
+    if (!control) {
+      setTimeout(() => this.initializeFormStore(), 100);
+    }
+    this.formsManager.upsert(this.formStateName, this.form, {
+        withInitialValue: true
+      }
+    );
+  }
+
   private handleServerSideValidationErrors() {
     // handle server validation errors
     // 1) wait for server publish validation errors
@@ -241,25 +249,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   loadDocument(id: string) {
 
     if (id === undefined) {
-      const previousOpenedDoc = this.query.getValue().openedDocument;
-      const comesFromOtherPage = !this.model?._id;
-      if (previousOpenedDoc && comesFromOtherPage) {
-        this.documentService.setDocLoadingState(true, this.address);
-        console.log('Opening previous selected node', previousOpenedDoc.id);
-        id = previousOpenedDoc.id.toString();
-        setTimeout(() => this.scrollForm.nativeElement.scrollTop = this.treeQuery.getValue().scrollPosition, 1000);
-        // just change active id, which initiates another call to this function
-        this.activeId.next(id);
-        return;
-      } else {
-        this.fields = [];
-        this.formsManager.clear(this.formStateName);
-        this.activeId.next(null);
-        this.documentService.updateOpenedDocumentInTreestore(null, this.address, true);
-        return;
-      }
+      this.fields = [];
+      this.formsManager.clear(this.formStateName);
+      this.activeId.next(null);
+      this.documentService.updateOpenedDocumentInTreestore(null, this.address, true);
+      return;
     } else {
+      // form might not be available on first visit
       setTimeout(() => this.scrollForm.nativeElement.scrollTop = 0);
+      const scrollPosition = this.query.getValue().scrollPosition;
+      if (scrollPosition !== 0) {
+        setTimeout(() => this.scrollForm.nativeElement.scrollTop = scrollPosition, 500);
+      }
     }
 
     this.showValidationErrors = false;
