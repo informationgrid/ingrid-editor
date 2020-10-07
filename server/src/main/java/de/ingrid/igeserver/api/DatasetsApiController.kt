@@ -38,7 +38,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         dbService.acquire(dbId).use {
-            val resultDoc = documentService.createDocument(data, address)
+            val resultDoc = documentService.createDocument(data, address, publish)
             return ResponseEntity.ok(resultDoc)
         }
     }
@@ -124,7 +124,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         // when we copy the node, then we also have to reset the id
         doc.put(FIELD_ID, null as String?)
 
-        val copiedParent = documentService.createDocument(doc, isAddress) as ObjectNode
+        val copiedParent = documentService.createDocument(doc, isAddress, false) as ObjectNode
 
         if (options.includeTree) {
             val count = handleCopySubTree(doc, origParentId, options, isAddress)

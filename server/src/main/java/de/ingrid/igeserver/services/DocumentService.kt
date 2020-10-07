@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
@@ -112,7 +113,7 @@ class DocumentService : MapperService() {
         return checkNotNull(documentTypes.find { it.className == docType })
     }
 
-    fun createDocument(data: JsonNode, address: Boolean = false): JsonNode {
+    fun createDocument(data: JsonNode, address: Boolean = false, publish: Boolean = false): JsonNode {
         val filterContext = DefaultContext.withCurrentProfile(dbService)
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
@@ -125,7 +126,8 @@ class DocumentService : MapperService() {
         val newDocument = dbService.save(DocumentType::class, null, preCreatePayload.document.toString())
 
         // set wrapper to document association
-        preCreatePayload.wrapper.put(FIELD_DRAFT, dbService.getRecordId(newDocument))
+        val field = if (publish) FIELD_PUBLISHED else FIELD_DRAFT
+        preCreatePayload.wrapper.put(field, dbService.getRecordId(newDocument))
 
         // save wrapper
         val newWrapper = dbService.save(DocumentWrapperType::class, null, preCreatePayload.wrapper.toString())
@@ -133,9 +135,10 @@ class DocumentService : MapperService() {
         // run post-create pipe(s)
         val postCreatePayload = PostCreatePayload(docType, newDocument as ObjectNode, newWrapper as ObjectNode)
         postCreatePipe.runFilters(postCreatePayload, filterContext)
-        postPersistencePipe.runFilters(postCreatePayload as PostPersistencePayload, filterContext)
 
-        return getLatestDocument(postCreatePayload.wrapper)
+        // also run update pipes!
+        val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
+        return getLatestDocument(postWrapper)
     }
 
     fun updateDocument(id: String, data: JsonNode, publish: Boolean = false): JsonNode {
@@ -189,7 +192,11 @@ class DocumentService : MapperService() {
         // save wrapper
         val updatedWrapper = dbService.save(DocumentWrapperType::class, dbService.getRecordId(preUpdatePayload.wrapper), preUpdatePayload.wrapper.toString())
 
-        // run post-update pipe(s)
+        val postWrapper = runPostUpdatePipes(docType, updatedDocument, updatedWrapper, filterContext, publish)
+        return getLatestDocument(postWrapper)
+    }
+
+    private fun runPostUpdatePipes(docType: EntityType, updatedDocument: Any, updatedWrapper: Any, filterContext: Context, publish: Boolean): ObjectNode {
         val postUpdatePayload = PostUpdatePayload(docType, updatedDocument as ObjectNode, updatedWrapper as ObjectNode)
         postUpdatePipe.runFilters(postUpdatePayload, filterContext)
         return if (publish) {
@@ -197,11 +204,10 @@ class DocumentService : MapperService() {
             val postPublishPayload = PostPublishPayload(docType, postUpdatePayload.document, postUpdatePayload.wrapper)
             postPublishPipe.runFilters(postPublishPayload, filterContext)
             postPersistencePipe.runFilters(postPublishPayload as PostPersistencePayload, filterContext)
-            getLatestDocument(postPublishPayload.wrapper)
-        }
-        else {
+            postPublishPayload.wrapper
+        } else {
             postPersistencePipe.runFilters(postUpdatePayload as PostPersistencePayload, filterContext)
-            getLatestDocument(postUpdatePayload.wrapper)
+            postUpdatePayload.wrapper
         }
     }
 
@@ -360,11 +366,5 @@ class DocumentService : MapperService() {
         }
 
         return docData
-    }
-
-    private fun updateParent(dbDoc: String, parent: String?): JsonNode {
-        val map = getJsonNode(dbDoc) as ObjectNode
-        map.put(FIELD_PARENT, parent)
-        return map
     }
 }
