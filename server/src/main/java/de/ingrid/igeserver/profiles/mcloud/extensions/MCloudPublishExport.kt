@@ -48,6 +48,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         if (oldIndex == null) {
             oldIndex = IndexManager.getNextIndexName(elasticsearchAlias, uuid, "ige-ng-test")
             indexManager.createIndex(oldIndex, "base", indexManager.defaultMapping, indexManager.defaultSettings)
+            indexManager.addToAlias(elasticsearchAlias, oldIndex)
         }
         val indexInfo = IndexInfo()
         indexInfo.realIndexName = oldIndex
