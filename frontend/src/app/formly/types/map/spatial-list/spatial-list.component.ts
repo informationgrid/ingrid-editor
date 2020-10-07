@@ -2,15 +2,16 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {SpatialBoundingBox} from '../spatial-dialog/spatial-result.model';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
-import {ConfirmDialogComponent, ConfirmDialogData} from "../../../../dialogs/confirm/confirm-dialog.component";
-import {MatDialog} from "@angular/material/dialog";
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../../../dialogs/confirm/confirm-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 export type SpatialLocationType = 'free' | 'wkt' | 'geo-name';
 
 export interface SpatialLocation {
   title: string;
   type: SpatialLocationType,
-  value?: SpatialBoundingBox | string
+  value?: SpatialBoundingBox,
+  wkt?: string;
 }
 
 export interface SpatialLocationWithColor extends SpatialLocation {
@@ -79,7 +80,7 @@ export class SpatialListComponent implements OnInit {
       } as ConfirmDialogData
     }).afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.remove.next(location.indexNumber)
+        this.remove.next(location.indexNumber);
       }
     });
   }

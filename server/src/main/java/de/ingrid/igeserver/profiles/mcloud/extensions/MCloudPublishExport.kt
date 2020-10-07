@@ -58,6 +58,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         val export = indexService.start(indexService.INDEX_SINGLE_PUBLISHED_DOCUMENT("portal", docId))
 
         if (export.isNotEmpty()) {
+            log.debug("Exported document: " + export[0])
             indexManager.update(indexInfo, convertToElasticDocument(export[0]), false)
         } else {
             log.warn("Problem exporting document: $docId")

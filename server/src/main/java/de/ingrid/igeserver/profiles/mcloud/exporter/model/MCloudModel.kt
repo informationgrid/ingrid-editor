@@ -38,6 +38,9 @@ data class MCloudModel(
     val spatialTitels: List<String>?
     get() = spatials?.map { it.title }?.filterNotNull()
 
+    val realSpatials: List<SpatialModel>?
+    get() { return spatials?.filter { it.type == "free" } }
+
     val allData: List<String>?
     get() {
         if (mfundFKZ != null || mfundProject != null) {

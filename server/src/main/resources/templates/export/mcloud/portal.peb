@@ -53,21 +53,23 @@
         },
         "harvested_data": null,
         "subsection": null,
-        "spatial": {
+        "spatial":
             {% if not model.hasSingleSpatial %}
+            {
                 "type": "geometrycollection",
                 "geometries": [
             {% endif %}
-                {% for spatial in model.spatials %}
+                {% for spatial in model.realSpatials %}
                     {
-                        "type": "{{ spatial.type }}",
-                        "coordinates": "{{ spatial.coordinates }}"
+                        "type": "polygon",
+                        "coordinates": [{{ spatial.coordinates }}]
                     }{% if not loop.last %},{% endif %}
                 {% endfor %}
             {% if not model.hasSingleSpatial %}
                 ]
+            }
             {% endif %}
-        },
+        ,
         "spatialText": "{{ model.spatialTitels | join(',') }}",
         "temporal": null,
         "groups": null,

@@ -90,7 +90,7 @@ export class LeafletService {
 
     let bounds: LatLngBoundsExpression;
 
-    const wktLocations = locations.filter(location => location.type === 'wkt');
+    const wktLocations = locations.filter(location => location.type === 'wkt' && location.wkt);
     const boxLocations = locations.filter(location => location.type === 'free');
 
     const drawnWktLocations = this.drawWktLocations(map, wktLocations);
@@ -160,7 +160,7 @@ export class LeafletService {
   private drawWktLocations(map: Map, locations: SpatialLocationWithColor[]) {
 
     return locations
-      .map(location => this.wktTools.mapIt(map, <string>location.value, {
+      .map(location => this.wktTools.mapIt(map, location.wkt, {
           color: location.color,
           fillColor: location.color + '33',
           fillOpacity: 1

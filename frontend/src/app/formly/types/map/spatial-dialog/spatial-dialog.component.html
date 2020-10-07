@@ -30,8 +30,8 @@
                               (result)="updateBoundingBox($event);"></ige-free-spatial>
             <ige-wkt-spatial *ngSwitchCase="'wkt'"
                              [map]="leafletReference"
-                             [wktString]="data?.value"
-                             (result)="this.result.value = $event"></ige-wkt-spatial>
+                             [wktString]="data?.wkt"
+                             (result)="this.result.wkt = $event"></ige-wkt-spatial>
             <ige-draw-spatial *ngSwitchCase="'draw'"></ige-draw-spatial>
 <!--            <ige-name-spatial *ngSwitchCase="'geo-name'"></ige-name-spatial>-->
         </div>
@@ -58,7 +58,7 @@
     <button mat-button color="primary" data-cy="confirm-dialog-cancel" mat-dialog-close>Abbrechen</button>
     <div fxFlex></div>
     <button mat-stroked-button color="primary" data-cy="confirm-dialog-save"
-            [disabled]="(view !== 'geo-name' && !result.value) || (view === 'geo-name' && !titleInput.value)"
+            [disabled]="(view === 'free' && !result.value) || (view === 'wkt' && !result.wkt) || (view === 'geo-name' && !titleInput.value)"
             (click)="returnResult()">Übernehmen
     </button>
 

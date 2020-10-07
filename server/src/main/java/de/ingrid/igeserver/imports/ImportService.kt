@@ -51,12 +51,14 @@ class ImportService {
         val references = refType.pullReferences(doc)
 
         // save references
+        // TODO: use option if we want to publish it
         references
                 .filter { !referenceAlreadyExists(it) }
-                .forEach { documentService.createDocument(it) }
+                .forEach { documentService.createDocument(it, publish = false) }
 
         // save imported document
-        documentService.createDocument(doc)
+        // TODO: use option if we want to publish it
+        documentService.createDocument(doc, publish = false)
 
     }
 
