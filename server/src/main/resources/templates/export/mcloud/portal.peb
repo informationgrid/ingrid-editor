@@ -28,7 +28,7 @@
             "accessURL": "{{ download.link }}",
             "title": "{{ download.title }}",
             "type": "{{ download.format }}"
-        }
+        }{% if not loop.last %},{% endif %}
     {% endfor %}
     ],
     "extras": {
@@ -59,8 +59,10 @@
                 "geometries": [
             {% endif %}
                 {% for spatial in model.spatials %}
-                    "type": "{{ spatial.type }}",
-                    "coordinates": "{{ spatial.coordinates }}"
+                    {
+                        "type": "{{ spatial.type }}",
+                        "coordinates": "{{ spatial.coordinates }}"
+                    }{% if not loop.last %},{% endif %}
                 {% endfor %}
             {% if not model.hasSingleSpatial %}
                 ]
