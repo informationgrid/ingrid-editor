@@ -67,17 +67,29 @@ describe('Spatial References', () => {
     DocumentPage.clickLeafletMapResetBtn();
   });
 
-  xit('should update a spatial reference (bbox)', () => {
-    // DocumentPage.getDocument('bbox');
-    // enterTestDataSteps.changeMcloudSpatialBBoxEntry('Bremen')
+  it('should update a spatial reference (bbox)', () => {
+    DocumentPage.getDocument('bbox');
+
+    enterTestDataSteps.openSpatialMenuMcloudDoc('Berlin');
+    enterTestDataSteps.selectChangeInSpatialMenuMcloudDoc();
+
+    enterTestDataSteps.setOpenedMcloudSpatialBbox('update spatial reference, bbox', 'Hamburg');
+    DocumentPage.checkSpatialEntryExists('Hamburg');
+
+    DocumentPage.saveDocument();
   });
 
   xit('should update a spatial reference (WKT)', () => {
 
   });
 
-  xit('should remove spatial references', () => {
+  it('should remove spatial references', () => {
+    DocumentPage.getDocument('bbox');
 
+    enterTestDataSteps.openSpatialMenuMcloudDoc('Hamburg');
+    enterTestDataSteps.deleteSpatialReference('Hamburg');
+
+    DocumentPage.checkSpatialEntryExistsNot('Hamburg');
   });
 
   xit('should focus on a selected spatial reference and also reset view after pressing reset button', () => {
