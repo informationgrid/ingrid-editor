@@ -13,6 +13,11 @@ export class enterTestDataSteps {
     cy.get('[data-cy=Adressen]').contains(addressText);
     }
 
+  static getMCloudAddress(){
+    cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
+    DocumentPage.AddAddressDialog.search('Published Testorganization')
+  }
+
   static setMcloudUsageInstructions(text: string = 'Nutzungshinweise'){
     cy.get('[data-cy=Nutzungshinweise]').find('mat-form-field').type(text);
   }
@@ -64,7 +69,17 @@ export class enterTestDataSteps {
   }
 
   static setMcloudSpatialBbox(title: string = 'Spaaaaatiaaal', locationText: string = 'Bremen'){
+    // if ('ige-spatial-dialog mat-dialog-content:visible'){
+    //   this.handleMcloudSpatialBboxInput(title, locationText);
+    // } else if (!'ige-spatial-dialog mat-dialog-content:visible'){
+    //   cy.get('[data-cy=spatialButton]').click();
+    //   this.handleMcloudSpatialBboxInput(title, locationText);
+    // }
     cy.get('[data-cy=spatialButton]').click();
+    this.setOpenedMcloudSpatialBbox(title, locationText);
+  }
+
+  static setOpenedMcloudSpatialBbox(title: string, locationText: string){
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
     this.selectMcloudSpatialType('Freier Raumbezug');
     cy.get('[data-cy=spatial-dialog-free]').type(locationText).then(() => {
@@ -73,10 +88,24 @@ export class enterTestDataSteps {
     DocumentPage.checkSpatialEntrytNotEmpty()
   }
 
-  // static changeMcloudSpatialBBoxEntry(spatialName: string){
-  //   DocumentPage.clickSpatialEntry(spatialName);
-  //   cy.get(':nth-child(1) > .mat-list-item-content > .list-item-wrapper > :nth-child(2) > .mat-focus-indicator > .mat-button-wrapper > .mat-icon > svg').click();
-  // }
+  static openSpatialMenuMcloudDoc(spatialName: string){
+    DocumentPage.clickSpatialEntry(spatialName);
+    cy.get('ige-formly--type mat-list').find('.mat-list-item-content:contains(' + (spatialName) + ') [data-mat-icon-name="Mehr"]').click();
+  }
+
+  static selectChangeInSpatialMenuMcloudDoc(){
+    cy.get('[role="menu"]').contains('Bearbeiten').click();
+  }
+
+  static deleteSpatialReference(text: string){
+    this.selectDeleteInSpatialMenuMcloudDoc()
+    cy.get('mat-dialog-content').contains(text);
+    cy.get('[data-cy="confirm-dialog-ok"]').click();
+  }
+
+  private static selectDeleteInSpatialMenuMcloudDoc(){
+    cy.get('[role="menu"]').contains('Löschen').click();
+  }
 
   static setMcloudSpatialWKT(title: string = 'Spaaaaatiaaal', locationText: string = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))'){
     cy.get('[data-cy=spatialButton]').click();
@@ -103,7 +132,6 @@ export class enterTestDataSteps {
     cy.get('.mat-option-text').contains(choose).click();
     this.selectDate('[data-cy="Zeitbezug der Ressource"]', date, choose);
   }
-
 
   static selectDate(area: string, date: Date, choose: string, until?: Date){
     const year = date.getFullYear();

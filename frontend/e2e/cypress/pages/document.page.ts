@@ -201,18 +201,24 @@ export class DocumentPage extends BasePage {
 
   static checkSpatialEntryExists(spatialName: string){
     cy.wait(0);
-    cy.get('path.leaflet-interactive').should( 'exist');
-    // cy.get('ige-spatial-list .mat-list-item-content').contains(spatialName);
-    cy.get('div.mat-line.spatial-title').contains(spatialName);
+    cy.get('div.mat-line.spatial-title').contains(spatialName).should( 'exist');
+  }
+
+  static checkSpatialEntryExistsNot(spatialName: string){
+    cy.wait(0);
+    cy.get('div.mat-line.spatial-title').contains(spatialName).should( 'not.exist');
   }
 
   static clickSpatialEntry(spatialName: string){
-    // cy.get('ige-spatial-list .mat-list-item-content').contains(spatialName).click();
-    cy.get('div.mat-line.spatial-title').contains(spatialName).click();
+    cy.get('ige-formly--type mat-list').find('div.mat-line.spatial-title').contains(spatialName).click()
   }
 
   static clickLeafletMapResetBtn(){
     cy.get('path.leaflet-interactive').should( 'exist');
     cy.get('formly-field .mat-button-wrapper').contains('Zurücksetzen').click();
+  }
+
+  static checkURL(text: string){
+    cy.url().should('include', text);
   }
 }
