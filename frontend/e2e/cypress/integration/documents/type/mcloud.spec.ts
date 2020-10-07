@@ -15,7 +15,7 @@ describe('mCLOUD documents', function () {
   });
 
   describe('Publish documents', () => {
-    const PUBLISHED_ADDRESS = 'Published Testorga';
+    const PUBLISHED_ADDRESS = 'Published Testorganization';
 
     it('should show a validation error when a required field is not filled', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
@@ -35,12 +35,6 @@ describe('mCLOUD documents', function () {
     it('should create a minimal publishable document', () => {
       const docName = 'mCloudDoc1';
 
-      cy.visit('/address')
-      AddressPage.createAddress(new Address('','',PUBLISHED_ADDRESS));
-      AddressPage.addContact('E-Mail');
-      AddressPage.publishNow();
-
-      cy.visit('form')
       DocumentPage.createDocument(docName);
       // cy.visit('/form;id=642b8dde-96a9-4b1f-a2eb-e8894735f4cd');
 
@@ -87,6 +81,17 @@ describe('mCLOUD documents', function () {
 
       DocumentPage.saveDocument();
     });
+
+    it('should create a published address with an API-Call', () => {
+      const json = {firstName: "vor", lastName: "nach", organization: "org", title: "APICallPublishedAdr", _type: "AddressDoc", contact: [{type: 1, connection: "0123456789"}]}
+
+      DocumentPage.checkURL( '/form');
+      AddressPage.apiCreateAddress(json, true);
+
+      cy.visit('/address');
+      DocumentPage.checkURL('/address');
+      Tree.containsNodeWithTitle('APICallPublishedAdr');
+    })
 
   });
 });
