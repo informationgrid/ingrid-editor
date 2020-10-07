@@ -7,7 +7,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
 
     data class BoundingBoxModel(val lat1: Float, val lon1: Float, val lat2: Float, val lon2: Float)
 
-    val coordinates: String?
+    val polygon: String?
         get() {
             return when (type) {
                 "free" -> getFreeCoordinates()
@@ -21,7 +21,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
             return null
         }
 
-        return "[[${value.lat1}, ${value.lon1}], [${value.lat1}, ${value.lon2}], [${value.lat2}, ${value.lon1}], [${value.lat2}, ${value.lon2}]]";
+        return "[[${value.lat1}, ${value.lon1}], [${value.lat1}, ${value.lon2}], [${value.lat2}, ${value.lon2}], [${value.lat2}, ${value.lon1}], [${value.lat1}, ${value.lon1}]]";
 
     }
 

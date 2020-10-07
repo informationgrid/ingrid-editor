@@ -62,7 +62,7 @@
                 {% for spatial in model.realSpatials %}
                     {
                         "type": "polygon",
-                        "coordinates": [{{ spatial.coordinates }}]
+                        "coordinates": [{{ spatial.getPolygon }}]
                     }{% if not loop.last %},{% endif %}
                 {% endfor %}
             {% if not model.hasSingleSpatial %}
