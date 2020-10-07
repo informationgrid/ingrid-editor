@@ -17,6 +17,7 @@ import {ErrorDialogComponent} from '../../../dialogs/error/error-dialog.componen
 import {IgeError} from '../../../models/ige-error';
 import {SessionStore} from '../../../store/session.store';
 import {ServerValidation} from '../../../server-validation.util';
+import {Control} from '@ngneat/forms-manager/lib/types';
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -102,8 +103,15 @@ export class PublishPlugin extends Plugin {
         }
       });
     } else {
+      const errors = this.calculateErrors(this.getForm().controls).join(',');
+      console.warn('Invalid fields:', errors);
       this.modalService.showJavascriptError('Es müssen alle Felder korrekt ausgefüllt werden.');
     }
+  }
+
+  private calculateErrors(controls: { [p: string]: Control }) {
+    return Object.keys(controls)
+      .filter(key => controls[key].invalid);
   }
 
   private publishWithData(data) {
@@ -113,13 +121,17 @@ export class PublishPlugin extends Plugin {
   }
 
   private getFormValue(): IgeDocument {
-    const formDoc = this.forAddress ? 'address' : 'document';
-    const form = this.formsManager.getControl(formDoc);
+    const form = this.getForm();
     return form?.value;
   }
 
+  private getForm(): Control<any> {
+    const formDoc = this.forAddress ? 'address' : 'document';
+    return this.formsManager.getControl(formDoc);
+  }
+
   revert() {
-    const doc = this.formsManager.getControl('document').value;
+    const doc = this.getFormValue();
 
     const message = 'Wollen Sie diesen Datensatz wirklich auf die letzte Veröffentlichungsversion zurücksetzen?';
     this.dialog.open(ConfirmDialogComponent, {
