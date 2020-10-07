@@ -21,7 +21,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
             return null
         }
 
-        return "[[${value.lat1}, ${value.lon1}], [${value.lat1}, ${value.lon2}], [${value.lat2}, ${value.lon2}], [${value.lat2}, ${value.lon1}], [${value.lat1}, ${value.lon1}]]";
+        return "[[${value.lon1}, ${value.lat1}], [${value.lon2}, ${value.lat1}], [${value.lon2}, ${value.lat2}], [${value.lon1}, ${value.lat2}], [${value.lon1}, ${value.lat1}]]"
 
     }
 
