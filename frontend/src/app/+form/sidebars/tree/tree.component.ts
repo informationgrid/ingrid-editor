@@ -252,18 +252,20 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private deleteNode(updateInfo: UpdateDatasetInfo) {
-    const nodesWithParent = updateInfo['data']
-      .map(doc => this.dataSource.data.find(item => item._id === doc.id))
-      .map(node => this.getParentNode(node));
+    const treeNodes = updateInfo['data']
+      .map(doc => this.dataSource.data.find(item => item._id === doc.id));
 
     // update parent nodes in case they do not have any children anymore
-    nodesWithParent.forEach(parentNode => {
-      // first collapse nodes to be deleted to make sure all sub nodes are removed
-      this.treeControl.collapse(parentNode.node);
-      this.dataSource.removeNode(parentNode.node);
-      this.updateChildrenInfo(parentNode.parent)
-    });
+    treeNodes.forEach(node => this.handleNodeRemoval(node));
 
+  }
+
+  private handleNodeRemoval(node: TreeNode) {
+    let nodeInfo = this.getParentNode(node);
+    // first collapse nodes to be deleted to make sure all sub nodes are removed
+    this.treeControl.collapse(nodeInfo.node);
+    this.dataSource.removeNode(nodeInfo.node);
+    this.updateChildrenInfo(nodeInfo.parent);
   }
 
   private async addNewNode(updateInfo: UpdateDatasetInfo) {
@@ -501,7 +503,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     const treeNodes = srcDocIds
       .map(docId => this.dataSource.data.find(item => item._id === docId));
-    treeNodes.forEach(node => this.dataSource.removeNode(node));
+    treeNodes.forEach(node => this.handleNodeRemoval(node));
 
     // make sure new parent has correct children info
     if (destination) {

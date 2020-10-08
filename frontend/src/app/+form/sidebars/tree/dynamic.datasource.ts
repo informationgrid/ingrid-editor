@@ -125,13 +125,15 @@ export class DynamicDataSource {
   }
 
   removeNode(doc: TreeNode) {
-    // docs.forEach(doc => {
     const index = this.data.indexOf(doc);
+
     if (index !== -1) {
+      // make sure to collapse node so that all children are removed as well
+      this._treeControl.collapse(doc);
+
       this.data.splice(index, 1);
       this.dataChange.next(this.data);
     }
-    // });
   }
 
   updateNode(docs: DocumentAbstract[]) {

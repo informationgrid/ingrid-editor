@@ -446,6 +446,13 @@ export class DocumentService {
     ids.forEach(id => {
       store.update(id, {_parent: parent});
     });
+
+    if (parent !== null) {
+      store.update(parent, {
+        _hasChildren: true
+      });
+    }
+
   }
 
   public addToRecentAdresses(address: DocumentAbstract) {
