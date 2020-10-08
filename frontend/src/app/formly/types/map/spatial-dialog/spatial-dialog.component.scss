@@ -6,6 +6,7 @@
   .mat-dialog-content {
     display: flex;
     flex-direction: column;
+    max-height: none;
   }
 
   .spatial-wrapper {
