@@ -223,15 +223,15 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         }
     }
 
-    override fun find(principal: Principal?, query: String, size: Int, sort: String, sortOrder: String, forAddress: Boolean): ResponseEntity<SearchResult<ObjectNode>> {
+    override fun find(principal: Principal?, query: String?, size: Int?, sort: String?, sortOrder: String?, forAddress: Boolean): ResponseEntity<SearchResult<ObjectNode>> {
 
         var docs: FindAllResults
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         dbService.acquire(dbId).use {
             val cat = FIELD_CATEGORY + " == " + if (forAddress) "\"address\"" else "\"data\""
             val queryMap = listOf(
-                    QueryField("$cat AND draft.title", query),
-                    QueryField("$cat AND draft IS NULL AND published.title", query)
+                    QueryField("$cat AND draft.title", query  ?: ""),
+                    QueryField("$cat AND draft IS NULL AND published.title", query  ?: "")
             )
             val findOptions = FindOptions(
                     size = size,

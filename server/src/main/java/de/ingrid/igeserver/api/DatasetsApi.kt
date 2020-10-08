@@ -23,10 +23,10 @@ interface DatasetsApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets found")])
     fun find(
             principal: Principal?,
-            @Parameter(description = "Find datasets by a search query.") @RequestParam(value = "query", required = false) query: String,
-            @Parameter(description = "Define the maximum number of returned documents.", allowEmptyValue = true) @RequestParam(value = "size", required = false) size: Int,
-            @Parameter(description = "Sort by a given field.") @RequestParam(value = "sort", required = false) sort: String,
-            @Parameter(description = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") sortOrder: String,
+            @Parameter(description = "Find datasets by a search query.") @RequestParam(value = "query", required = false) query: String?,
+            @Parameter(description = "Define the maximum number of returned documents.", allowEmptyValue = true) @RequestParam(value = "size", required = false) size: Int?,
+            @Parameter(description = "Sort by a given field.") @RequestParam(value = "sort", required = false) sort: String?,
+            @Parameter(description = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") sortOrder: String?,
             @Parameter(description = "Search in addresses.") @RequestParam(value = "address", required = false) forAddress: Boolean): ResponseEntity<SearchResult<ObjectNode>>
 
     @PostMapping(value = ["/datasets"], produces = [MediaType.APPLICATION_JSON_VALUE])
