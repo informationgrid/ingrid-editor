@@ -25,7 +25,7 @@ class ImporterFactory {
 
     private fun handleEmptyOrMultipleImporter(responsibleImporter: List<IgeImporter>, contentType: String) {
         if (responsibleImporter.isEmpty()) {
-            throw ConfigurationException.withReason("No importer found for content type '$contentType'.")
+            throw ConfigurationException.withReason("No importer found for content type '$contentType' and its content.")
         } else if (responsibleImporter.size > 1) {
             val importerNames = responsibleImporter.joinToString(",") { it.name }
             throw ConfigurationException.withReason("More than one importer found for content type '$contentType': '$importerNames'.")
