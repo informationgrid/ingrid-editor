@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.services.DocumentService
@@ -53,16 +54,22 @@ class ImportService {
         // save references
         // TODO: use option if we want to publish it
         references
-                .filter { !referenceAlreadyExists(it) }
-                .forEach { documentService.createDocument(it, publish = false) }
+            .filter { !documentAlreadyExists(it) }
+            .forEach { documentService.createDocument(it, publish = false) }
 
         // save imported document
+
+        // TODO: option for new UUID or overwrite
+        if (documentAlreadyExists(doc)) {
+            (doc as ObjectNode).remove(FIELD_ID)
+        }
+        
         // TODO: use option if we want to publish it
         documentService.createDocument(doc, publish = false)
 
     }
 
-    private fun referenceAlreadyExists(ref: JsonNode): Boolean {
+    private fun documentAlreadyExists(ref: JsonNode): Boolean {
 
         // TODO: optimize by caching reference information
 
