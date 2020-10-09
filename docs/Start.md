@@ -8,6 +8,15 @@
 
 #### Profiles
 
+Several profiles can be activated via Spring. With each activated profile a separate configuration file can be used,
+which has the format `application-<profile>.properties` The following list explains each profile:
+
+|Profile|Description|
+|---|---|
+|dev|Contains configuration used during development for correct setup. It also disables Keycloak.|
+|elasticsearch|Activate export to Elasticsearch during publishing and indexing|
+|mcloud|Activates importer, exporter and datatypes for the mCLOUD-Profile|
+
 #### Dependency Injection
 
 ### Model View Controller
@@ -45,6 +54,31 @@ IGE Server defines the following extension points:
 - `Pipe<PostPublishPayload>` called **after** the persistence operation **publish**
 - `Pipe<PreDeletePayload>` called **before** the persistence operation **delete**
 - `Pipe<PostDeletePayload>` called **after** the persistence operation **delete**
+
+<details>
+  <summary>Beispiel</summary>
+
+```kotlin
+@Component
+class DefaultUpdateValidator : Filter<PreUpdatePayload> {
+  override val profiles: Array<String>?
+    get() = arrayOf<String>()
+
+  @Autowired
+  private lateinit var dbService: DBApi
+
+  override fun invoke(payload: PreUpdatePayload, context: Context): PreUpdatePayload {
+    val docId = payload.document[FIELD_ID].asText();
+
+    context.addMessage(Message(this, "Validate document data '$docId' before update"))
+
+    // do checks
+
+    return payload
+  }
+}
+```
+</details>
 
 ### Error Handling
 
@@ -238,9 +272,183 @@ A special category of audit log records are data history records. They are used 
 
 This means that data history records can be retrieved by filtering audit log records by a category value of *data-history*. Since the logger name *audit.data-history* is a descendent of the default audit log logger, it uses the same configuration by default (especially the same appender), but could be configured in a different way as well. The produced records look like the example mentioned in the audit log section.
 
-## Data model
+### Profiles
+
+A profile generally is created for every customer, who needs special requirements for entering and handling documents.
+An example of how to add a new profile can be found in FAQ.md.
+
+#### Document types
+
+A profile can contain one or more document/entity types. Each document type contains of a definition of fields for the form
+in the frontend and a definition in the backend. The definition should contain information about how to resolve references
+to other addresses/documents. 
+
+Moreover each type can control its publication and do some validations by overriding the `onPublish`-function
+
+The form fields are defined in a JSON format and will be used by the [ngx-formly](https://formly.dev/) library.
+It's also possible to add most of the validation logic within that definition. See also FAQ.md
+
+#### Importer
+
+An importer is a service which implements the interface `IgeImporter`. With the profile annotation you can define, that
+the importer is only initialized when a specified profile is active.
+
+The function `canHandleImportFile` is needed to check, if the given file can be imported by this importer. With the given
+content and its content-type we should be able to determine if the importer is suitable. 
+
+After an importer is run, we expect to receive a JsonNode object, which is filled with data coming from the imported file.
+
+<details>
+  <summary>Example</summary>
+
+```kotlin
+@Service
+@Profile("example")
+class ExampleImporter : IgeImporter {
+
+    private val log = logger()
+
+    private val mapperService = MapperService()
+
+    override fun run(data: Any): JsonNode {
+        return mapperService.getJsonNode((data as String))
+    }
+
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
+        val isJson = MediaType.APPLICATION_JSON_VALUE == contentType || MediaType.TEXT_PLAIN_VALUE == contentType
+        val hasNecessaryFields = fileContent.contains("\"_id\"") && fileContent.contains("\"_type\"") && fileContent.contains("\"_state\"")
+        return isJson && hasNecessaryFields
+    }
+
+    override fun getName(): String {
+        return "Internes Format"
+    }
+
+}
+```
+</details>
+
+#### Exporter
+
+A profile can offer multiple export formats. You need to create a new service, which should only be active if the profile
+is. This service must implement the interface `IgeExporter` and return a typeInfo with a description of the exporter. This
+is also used in the frontend, to choose from a collection of exporters.
+
+It's recommended to use the [Pebble template engine](https://pebbletemplates.io/) for creating the exported document. 
+In combination with a model-class, the template can be easily filled with all the information. When the model-class 
+implements one of the provided interfaces, e.g. `DCAT` then the same template can be used for multiple document types.
+
+<details>
+  <summary>Example Exporter</summary>
+
+```kotlin
+@Service
+@Profile("mcloud")
+class PortalExporter : IgeExporter {
+
+    override val typeInfo: ExportTypeInfo
+        get() {
+            return ExportTypeInfo(
+                    "portal",
+                    "mCLOUD Portal",
+                    "Export der Daten für die weitere Verwendung im Liferay Portal und Exporter.",
+                    MediaType.APPLICATION_JSON_VALUE,
+                    "json",
+                    listOf("mcloud"))
+        }
+
+    override fun run(jsonData: JsonNode): Any {
+        val engine = PebbleEngine.Builder()
+                .newLineTrimming(false)
+                .build()
+
+        val compiledTemplate = engine.getTemplate("templates/export/mcloud/portal.peb")
+
+        val writer: Writer = StringWriter()
+        val map = getMapFromObject(jsonData)
+        compiledTemplate.evaluate(writer, map)
+        return writer.toString().replace("\\s+\n".toRegex(), "\n")
+    }
+
+    override fun toString(exportedObject: Any): String {
+        return exportedObject.toString()
+    }
+
+    private fun getMapFromObject(json: JsonNode): Map<String, Any> {
+
+        return mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
+
+    }
+}
+```
+</details>
+
+<details>
+  <summary>Example Template</summary>
+
+```json
+{# @pebvariable name="model" type="de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel" #}
+
+{
+  "uuid": "{{ model.uuid }}",
+  "title": "{{ model.title }}",
+  "description": "{{ model.description }}",
+  ...
+}
+```
+</details
+
+## Database
+
+The database-system is [OrientDB](https://www.orientdb.org/), which is a NoSQL database which supports transaction.
+It's used as an embedded database, so that there's no need to install or configure another database. Since OrientDB 
+supports transactions, it's possible to execute big tasks on the database, with the possibility to rollback to the state
+before the task.
+
+### Data model
+
+Each catalog is a separate database. Another database `IgeUsers` is used to manage users and their permissions to access
+a catalog.
+
+A catalog consists of the following tables/classes:
+
+|Table/Class|Description|
+|---|---|
+|DocumentWrapper|Contains the fields draft, published and archive, where the related documents are stored as references.|
+|Document|Represents documents of any type. Next to the form data, the type information as well as creation and modified date and the parent are stored.|
+|Behaviours|Contains the active state of a behaviour and its parameters if any.|
+|Info|Contain general information about the catalog, like name, description, type and version.|
+
+Since it's a NoSQL database, the document can be extended without any schema changes and migrations. By just defining a
+new field, it's automatically stored in the document table.
+The DocumentWrapper manages a document with all its versions. With a query we can access the current document, the 
+published document or an older one from the archive. 
 
 ### Migrations
+
+When a migration is necessary, it has to be executed for every catalog. Tools like [Flyway](https://flywaydb.org/) won't help much, since we 
+would need to know, which catalogs/databases exist. Therefore a migration works like this:
+
+* create a new service which extends `MigrationBase`
+* set new version in `MigrationBase`-constructor
+* implement `exec()`-function to run migration for each database
+
+<details>
+  <summary>Example</summary>
+
+```kotlin
+@Service
+class M017_TestMigration : MigrationBase("0.17") {
+
+    private var log = logger()
+
+    override fun exec(databaseName: String) {
+        log.info("Executing migration 0.17")
+    }
+
+}
+```
+</details>
 
 ## Configuration
 
