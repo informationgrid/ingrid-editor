@@ -190,14 +190,29 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   }
 
   private initializeFormStore() {
-    const control = this.formsManager.getControl(this.formStateName);
-    if (!control) {
-      setTimeout(() => this.initializeFormStore(), 100);
-    }
+
     this.formsManager.upsert(this.formStateName, this.form, {
         withInitialValue: true
       }
     );
+
+    const shallOpenDoc = this.route.snapshot.params.id;
+    if (shallOpenDoc) {
+      // FIXME: Workaround when we revisit page with a previously opened document, the form state is not updated correctly
+      //        This might happen because of ngx-formly is building form after connected to formsManager!?
+      const update = () => {
+        if (this.form.value._id) {
+          // @ts-ignore
+          this.formsManager.updateStore(this.formStateName, this.form);
+        }
+        const hasBeenLoaded = this.formsManager.getControl(this.formStateName).value._id;
+        if (!hasBeenLoaded) {
+          setTimeout(() => update(), 100);
+        }
+      };
+
+      update();
+    }
   }
 
   private handleServerSideValidationErrors() {
