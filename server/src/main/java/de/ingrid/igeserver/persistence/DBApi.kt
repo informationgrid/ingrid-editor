@@ -81,24 +81,24 @@ interface DBApi {
     val currentDatabase: String?
 
     /**
-     * Create a database using the given name and return the name of the created database.
+     * Create a catalog using the given name and return the name of the created catalog.
      */
-    fun createDatabase(settings: Catalog): String?
+    fun createCatalog(settings: Catalog): String?
 
     /**
-     * Update an existing database with the given settings (like name property).
+     * Update an existing catalog with the given settings (like name property).
      */
-    fun updateDatabase(settings: Catalog)
+    fun updateCatalog(settings: Catalog)
 
     /**
-     * Delete the database with the given name.
+     * Delete the catalog with the given name.
      */
-    fun removeDatabase(name: String): Boolean
+    fun removeCatalog(name: String): Boolean
 
     /**
-     * Check if the database with the given name exists
+     * Check if the catalog with the given name exists
      */
-    fun databaseExists(name: String): Boolean
+    fun catalogExists(name: String): Boolean
 
     /**
      * Open a session to the database with the given name. With that it's possible to

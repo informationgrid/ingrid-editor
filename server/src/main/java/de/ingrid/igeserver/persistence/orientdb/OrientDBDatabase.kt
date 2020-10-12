@@ -313,7 +313,7 @@ class OrientDBDatabase : DBApi {
             return dBFromThread.name
         }
 
-    override fun createDatabase(settings: Catalog): String? {
+    override fun createCatalog(settings: Catalog): String? {
         settings.id = settings.name.toLowerCase().replace(" ".toRegex(), "_")
         val isNew = orientDB.createIfNotExists(settings.id, dbType)
         if (isNew) {
@@ -337,7 +337,7 @@ class OrientDBDatabase : DBApi {
         return settings.id
     }
 
-    override fun updateDatabase(settings: Catalog) {
+    override fun updateCatalog(settings: Catalog) {
         acquireImpl(settings.id!!).use {
             val list = this.findAll(CatalogInfoType::class)
             if (list.isEmpty()) {
@@ -352,7 +352,7 @@ class OrientDBDatabase : DBApi {
         }
     }
 
-    override fun removeDatabase(name: String): Boolean {
+    override fun removeCatalog(name: String): Boolean {
         orientDB.drop(name)
 
         // update registry
@@ -362,7 +362,7 @@ class OrientDBDatabase : DBApi {
         return true
     }
 
-    override fun databaseExists(name: String): Boolean {
+    override fun catalogExists(name: String): Boolean {
         return orientDB.exists(name)
     }
 

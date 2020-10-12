@@ -1,0 +1,65 @@
+DROP DATABASE IF EXISTS ige;
+
+CREATE DATABASE ige;
+
+\c ige;
+
+CREATE TABLE catalog (
+  id              serial PRIMARY KEY,
+  identifier      varchar(255) NOT NULL, -- derived from name, used in API
+  type            varchar(255) NOT NULL,
+  name            varchar(255) NOT NULL,
+  description     text,
+  version         varchar(255) -- version for migrations, could be different for different catalogs
+);
+
+CREATE TABLE user_info (
+  id              serial PRIMARY KEY,
+  user_id         varchar(255) NOT NULL,
+  cur_catalog_id  integer REFERENCES catalog(id) ON DELETE SET NULL -- can be null !!!
+);
+
+CREATE TABLE catalog_user_info (
+  catalog_id      integer REFERENCES catalog(id) ON DELETE CASCADE,
+  user_info_id    integer REFERENCES user_info(id) ON DELETE CASCADE,
+  PRIMARY KEY (catalog_id, user_info_id)
+);
+
+CREATE TABLE behaviour (
+  id              serial PRIMARY KEY,
+  catalog_id      integer NOT NULL REFERENCES catalog(id) ON DELETE CASCADE,
+  active          boolean NOT NULL,
+  data            jsonb
+);
+CREATE INDEX idx_behaviour_data ON behaviour USING gin (data);
+
+CREATE TABLE document (
+  id              serial PRIMARY KEY,
+  catalog_id      integer NOT NULL REFERENCES catalog(id) ON DELETE CASCADE,
+  uuid            varchar(255) NOT NULL,
+  type            varchar(255) NOT NULL,
+  title           varchar(255) NOT NULL,
+  data            jsonb,
+  version         integer, -- Record version for mvcc
+  created         timestamptz NOT NULL DEFAULT NOW(),
+  modified        timestamptz NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_document_data ON document USING gin (data);
+
+CREATE TABLE document_wrapper (
+  id              serial PRIMARY KEY,
+  catalog_id      integer NOT NULL REFERENCES catalog(id) ON DELETE CASCADE,
+  parent_id       integer REFERENCES document_wrapper(id) ON DELETE CASCADE,
+  uuid            varchar(255) NOT NULL,
+  type            varchar(255) NOT NULL,
+  category        varchar(255) NOT NULL,
+  draft           integer REFERENCES document(id) ON DELETE SET NULL, -- how to ensure that document is referenced only once in wrapper ?
+  published       integer REFERENCES document(id) ON DELETE SET NULL,
+  version         integer -- Record version for mvcc
+);
+
+CREATE TABLE document_archive (
+  wrapper_id      integer REFERENCES document_wrapper(id) ON DELETE CASCADE,
+  document_id     integer REFERENCES document(id) ON DELETE CASCADE,
+  PRIMARY KEY (wrapper_id, document_id)
+);

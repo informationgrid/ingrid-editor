@@ -28,17 +28,17 @@ class CatalogApiController : CatalogApi {
         }
 
     override fun createCatalog(settings: Catalog): ResponseEntity<String> {
-        val catalogId = dbService.createDatabase(settings)
+        val catalogId = dbService.createCatalog(settings)
         return ResponseEntity.ok().body("{ \"catalogId\": \"$catalogId\"}")
     }
 
     override fun updateCatalog(name: String, settings: Catalog): ResponseEntity<Void> {
-        dbService.updateDatabase(settings)
+        dbService.updateCatalog(settings)
         return ResponseEntity.ok().build()
     }
 
     override fun deleteCatalog(name: String): ResponseEntity<Void> {
-        dbService.removeDatabase(name)
+        dbService.removeCatalog(name)
         return ResponseEntity.ok().build()
     }
 }

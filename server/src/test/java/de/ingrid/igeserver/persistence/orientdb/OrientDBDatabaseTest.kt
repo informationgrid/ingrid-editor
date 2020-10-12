@@ -1,16 +1,17 @@
-package de.ingrid.igeserver.persistence
+package de.ingrid.igeserver.persistence.orientdb
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.orientechnologies.orient.core.db.*
 import com.orientechnologies.orient.core.id.ORecordId
 import com.orientechnologies.orient.core.metadata.schema.OType
-import de.ingrid.igeserver.persistence.orientdb.OrientDBDatabase
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.persistence.orientdb.model.document.ODocumentType
 import de.ingrid.igeserver.persistence.orientdb.model.meta.OUserInfoType
 import de.ingrid.igeserver.model.QueryField
+import de.ingrid.igeserver.persistence.FindOptions
+import de.ingrid.igeserver.persistence.QueryType
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.TestCase
 import io.kotest.matchers.shouldBe

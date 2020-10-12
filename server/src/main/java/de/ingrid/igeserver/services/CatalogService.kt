@@ -109,7 +109,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
     }
 
     fun getCatalogById(id: String): Catalog {
-        if (!dbService.databaseExists(id)) {
+        if (!dbService.catalogExists(id)) {
             throw NotFoundException.withMissingResource(id, "Database")
         }
         dbService.acquire(id).use {

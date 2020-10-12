@@ -1,10 +1,10 @@
-package de.ingrid.igeserver.persistence
+package de.ingrid.igeserver.persistence.orientdb
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.orientechnologies.orient.core.db.*
+import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
-import de.ingrid.igeserver.persistence.orientdb.OrientDBDatabase
 import de.ingrid.igeserver.persistence.orientdb.model.meta.OUserInfoType
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.TestCase
