@@ -173,4 +173,23 @@ export class enterTestDataSteps {
     cy.get('[data-cy=Periodizität').find('mat-form-field').click();
     cy.get('mat-option').contains(chooseOption).click();
   }
+
+  static enterFullDataInMcloudDoc(){
+    const dateNow = new Date();
+    const previousDate = new Date(2020, 1, 11)
+
+    enterTestDataSteps.setMcloudDescription();
+    enterTestDataSteps.setMcloudAddress('Published Testorganization');
+    enterTestDataSteps.setMcloudUsageInstructions();
+    enterTestDataSteps.setMcloudCategory();
+    enterTestDataSteps.setMcloudOpenDataCategory();
+    enterTestDataSteps.setMcloudAddDownload();
+    enterTestDataSteps.setMcloudLicense();
+    enterTestDataSteps.setMcloudSourceNote();
+    enterTestDataSteps.setMcloudMfund();
+    enterTestDataSteps.setMcloudSpatialWKT();
+    enterTestDataSteps.setMcloudTimeReference();
+    enterTestDataSteps.setMcloudPeriodOfTime('von - bis', previousDate, dateNow);
+    enterTestDataSteps.setMcloudPeriodicity();
+  }
 }

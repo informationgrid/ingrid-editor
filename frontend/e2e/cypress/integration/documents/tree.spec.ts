@@ -1,6 +1,7 @@
 import {DocumentPage} from "../../pages/document.page";
 import {CopyCutUtils} from "../../pages/copy-cut-utils";
 import {Tree} from "../../pages/tree.partial";
+import {enterTestDataSteps} from "../../pages/enterTestDataSteps";
 
 before(() => {
   cy.kcLogin('user');
@@ -214,8 +215,12 @@ describe('Tree', () => {
       Tree.selectNodeWithTitle('Neue Testdokumente');
       DocumentPage.createDocument(docName);
 
+      enterTestDataSteps.enterFullDataInMcloudDoc();
+      DocumentPage.saveDocument();
+
       CopyCutUtils.copyObject();
 
+      Tree.selectNodeWithTitle('Neue Testdokumente');
       CopyCutUtils.selectNodeWithChecks(docName,['Daten']);
     });
 
@@ -225,6 +230,10 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
 
       CopyCutUtils.copyObject(['Testdokumente']);
+      DocumentPage.deleteLoadedNode();
+
+      DocumentPage.search(testFolder);
+      DocumentPage.getSearchResult();
 
       CopyCutUtils.selectNodeWithChecks(testFolder,['Daten', 'Testdokumente']);
     });
@@ -298,7 +307,9 @@ describe('Tree', () => {
 
       Tree.selectNodeWithTitle(testFolder);
       CopyCutUtils.move();
+
       Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder, docName]);
 
       // check if path is the same like before
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
@@ -360,7 +371,10 @@ describe('Tree', () => {
 
       CopyCutUtils.move(['Testdokumente']);
 
-      Tree.openNode([testFolder]);
+      Tree.selectNodeWithTitle('Testdokumente')
+      DocumentPage.search(docName);
+      DocumentPage.getSearchResult().click();
+
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder]);
     });
 
@@ -375,7 +389,10 @@ describe('Tree', () => {
 
       CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
 
-      Tree.openNode([testFolder]);
+      Tree.selectNodeWithTitle('Testdokumente')
+      DocumentPage.search(docName);
+      DocumentPage.getSearchResult().click();
+
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
     });
 
