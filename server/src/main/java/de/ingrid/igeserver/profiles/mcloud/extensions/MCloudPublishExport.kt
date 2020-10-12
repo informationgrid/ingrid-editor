@@ -8,7 +8,13 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.index.IndexService
+import de.ingrid.igeserver.model.QueryField
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.FindOptions
+import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
+import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
@@ -29,6 +35,9 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     @Autowired
     lateinit var indexManager: IndexManager
 
+    @Autowired
+    lateinit var db: DBApi
+
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
 
@@ -41,8 +50,36 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
 
         val docId = payload.document[FIELD_ID].asText()
-        context.addMessage(Message(this, "Index document ${docId} to Elasticsearch"))
+        val docType = payload.document[FIELD_DOCUMENT_TYPE].asText()
 
+        when (docType) {
+            "mCloudDoc" -> indexMCloudDoc(context, docId)
+            "AddressDoc" -> indexReferencesMCloudDocs(context, docId)
+            else -> return payload
+        }
+
+        return payload
+
+    }
+
+    private fun indexReferencesMCloudDocs(context: Context, docId: String) {
+        context.addMessage(Message(this, "Index documents with referenced address ${docId} to Elasticsearch"))
+
+        val query = listOf(
+            QueryField("published.addresses.ref", docId)
+        )
+        val options = FindOptions(
+            queryType = QueryType.EXACT,
+            resolveReferences = true)
+        val docsWithReferences = db.findAll(DocumentWrapperType::class, query, options)
+
+        docsWithReferences.hits.forEach { indexMCloudDoc(context, it[FIELD_ID].asText()) }
+
+    }
+
+    private fun indexMCloudDoc(context: Context, docId: String) {
+
+        context.addMessage(Message(this, "Index document ${docId} to Elasticsearch"))
         // TODO: Refactor
         var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, uuid)
         if (oldIndex == null) {
@@ -65,7 +102,6 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
             log.warn("Problem exporting document: $docId")
         }
 
-        return payload
     }
 
 

@@ -18,7 +18,7 @@
     ],
     "publisher": {
         "organization": "{{ model.getPublisher().organization }}",
-        "homepage": "{{ model.getPublisher().homepage }}"
+        "homepage": "{{ model.getPublisher().getHomepage() }}"
     },
     "accessRights": ["{{ model.usage }}"],
     "distribution": [

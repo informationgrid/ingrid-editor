@@ -45,6 +45,9 @@ class IndexingTask @Autowired constructor(
         return esIndexManager
     }
 
+    /**
+     * Indexing of all published documents into an Elasticsearch index.
+     */
     fun startIndexing(database: String, format: String) {
         log.debug("Starting Indexing - Task for $database")
 
@@ -77,6 +80,14 @@ class IndexingTask @Autowired constructor(
         }
 
         log.debug("Indexing finished")
+    }
+
+    /**
+     * Indexing of a single document into an Elasticsearch index.
+     */
+    // TODO: implement
+    fun updateDocument(database: String, format: String, docId: String) {
+
     }
 
     private fun convertToElasticDocument(doc: Any): ElasticDocument? {
