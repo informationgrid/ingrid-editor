@@ -1,13 +1,3 @@
-----
-
-## On this page
-{:.no_toc}
-
-- TOC
-{:toc}
-
-----
-
 # Create a new profile
 
 ## Frontend
