@@ -213,8 +213,9 @@ describe('Tree', () => {
       const docName = 'copy me to the root';
 
       Tree.selectNodeWithTitle('Neue Testdokumente');
-      DocumentPage.createDocument(docName);
 
+      // TODO: Use API-call instead of entering data manually
+      DocumentPage.createDocument(docName);
       enterTestDataSteps.enterFullDataInMcloudDoc();
       DocumentPage.saveDocument();
 
