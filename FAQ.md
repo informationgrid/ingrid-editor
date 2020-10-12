@@ -1,3 +1,7 @@
+# TOC
+
+{:toc}
+
 # Create a new profile
 
 ## Frontend
