@@ -157,7 +157,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     private fun handleMove(id: String, options: CopyOptions) {
 
         val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
-        val doc = documentService.getLatestDocument(wrapper, false, false)
+        val doc = documentService.getLatestDocument(wrapper, false, true)
 
         if (id == options.destId) {
             throw ConflictException.withReason("Cannot move '$id' to itself")
