@@ -1,4 +1,4 @@
-<mat-card class="hover-elevate">
+<mat-card class="hover-elevate" [matTooltip]="getAddressInfo()">
     <mat-card-header>
         <div mat-card-avatar><mat-icon [svgIcon]="content.iconClass" [ngClass]="['document-icon', content.iconState]"></mat-icon></div>
         <mat-card-title fxFlex>{{address.type | codelist:"505" | async}}</mat-card-title>

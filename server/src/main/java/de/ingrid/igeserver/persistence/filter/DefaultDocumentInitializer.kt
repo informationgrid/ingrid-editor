@@ -46,7 +46,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
         val now = dateService.now().toString()
 
         with(payload.document) {
-            put(FIELD_HAS_CHILDREN, false)
+            put(FIELD_HAS_CHILDREN, false) // TODO: is this field necessary?
             put(FIELD_CREATED, now)
             put(FIELD_MODIFIED, now)
         }

@@ -41,7 +41,7 @@ export class AddressCardComponent implements OnInit {
       this.content = {
         title: 'Ungültige Adressreferenz',
         iconState: ''
-      }
+      };
       this.invalidAddressReference = true;
       return;
     }
@@ -53,7 +53,7 @@ export class AddressCardComponent implements OnInit {
       title: this.getTitle(this.address.ref),
       secondTitle: this.getSecondTitle(this.address.ref),
       emailOrPhone: this.getEmailOrTelephone(this.address.ref)
-    }
+    };
   }
 
   private getEmailOrTelephone(address: any) {
@@ -77,5 +77,16 @@ export class AddressCardComponent implements OnInit {
     return ref.organization?.length > 0
       ? ref.firstName + ' ' + ref.lastName
       : null;
+  }
+
+  getAddressInfo() {
+    switch (this.content.iconState) {
+      case 'working':
+        return 'Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.';
+      case 'workingWithPublished':
+        return 'Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen sie die Adresse, um die Daten aktuell zu halten.';
+      default:
+        return '';
+    }
   }
 }
