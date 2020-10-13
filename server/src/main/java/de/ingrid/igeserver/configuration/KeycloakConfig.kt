@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.session.SessionRegistryImpl
@@ -106,6 +107,10 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
     @ConditionalOnMissingBean(HttpSessionManager::class)
     override fun httpSessionManager(): HttpSessionManager {
         return HttpSessionManager()
+    }
+
+    override fun configure(web: WebSecurity) {
+        web.ignoring().antMatchers("/assets/icons/IGE-NG_apple-touch-icon.png")
     }
 
     /**
