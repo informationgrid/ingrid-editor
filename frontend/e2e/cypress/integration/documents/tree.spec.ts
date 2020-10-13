@@ -337,7 +337,7 @@ describe('Tree', () => {
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
     });
 
-    it('should move a root document into a deeply nested folder', () => {
+    it('should move a root document into a deep folder', () => {
       const docName = 'move me into a deep folder'
 
       DocumentPage.createDocument(docName);
@@ -345,6 +345,24 @@ describe('Tree', () => {
       CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
 
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
+    });
+
+    it('should move a root folder into a deep folder', () => {
+      const testFolder = 'move me to a folder';
+      const docName = 'iam under a folder'
+
+      DocumentPage.createFolder(testFolder);
+      DocumentPage.createDocument(docName);
+
+      Tree.selectNodeWithTitle(testFolder);
+
+      CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
+
+      Tree.selectNodeWithTitle('Testdokumente')
+      DocumentPage.search(docName);
+      DocumentPage.getSearchResult().click();
+
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
     });
 
     it('should move a document from a folder to the root', () => {
@@ -376,24 +394,6 @@ describe('Tree', () => {
       DocumentPage.getSearchResult().click();
 
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder]);
-    });
-
-    it('should move a root node into a deep folder', () => {
-      const testFolder = 'move me to a folder';
-      const docName = 'iam under a folder'
-
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
-
-      Tree.selectNodeWithTitle(testFolder);
-
-      CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
-
-      Tree.selectNodeWithTitle('Testdokumente')
-      DocumentPage.search(docName);
-      DocumentPage.getSearchResult().click();
-
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
     });
 
     it('should move a node within a folder to the root', () => {
