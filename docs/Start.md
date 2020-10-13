@@ -290,45 +290,23 @@ It's also possible to add most of the validation logic within that definition. S
 
 #### Importer
 
+An importer is used to import a file of a defined format. Multiple importer can be written, which can be chosen during
+the import process, if several importer can handle the input format.
+
 An importer is a service which implements the interface `IgeImporter`. With the profile annotation you can define, that
 the importer is only initialized when a specified profile is active.
 
 The function `canHandleImportFile` is needed to check, if the given file can be imported by this importer. With the given
-content and its content-type we should be able to determine if the importer is suitable. 
+content and its content-type we should be able to determine if the importer is suitable. If multiple importer say that 
+they can handle the input file, then the user is presented a choice dialog, to select the correct importer.  
 
 After an importer is run, we expect to receive a JsonNode object, which is filled with data coming from the imported file.
-
-<details>
-  <summary>Example</summary>
-
-```kotlin
-@Service
-@Profile("example")
-class ExampleImporter : IgeImporter {
-
-    private val log = logger()
-
-    private val mapperService = MapperService()
-
-    override fun run(data: Any): JsonNode {
-        return mapperService.getJsonNode((data as String))
-    }
-
-    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
-        val isJson = MediaType.APPLICATION_JSON_VALUE == contentType || MediaType.TEXT_PLAIN_VALUE == contentType
-        val hasNecessaryFields = fileContent.contains("\"_id\"") && fileContent.contains("\"_type\"") && fileContent.contains("\"_state\"")
-        return isJson && hasNecessaryFields
-    }
-
-    override fun getName(): String {
-        return "Internes Format"
-    }
-
-}
-```
-</details>
+The object should represent the JSON format, in which the document is stored in the database.
 
 #### Exporter
+
+An exporter is used to transform the data of a document into another format. Multiple exporter can be written, which can
+be chosen during the export process in the frontend.
 
 A profile can offer multiple export formats. You need to create a new service, which should only be active if the profile
 is. This service must implement the interface `IgeExporter` and return a typeInfo with a description of the exporter. This
@@ -336,67 +314,7 @@ is also used in the frontend, to choose from a collection of exporters.
 
 It's recommended to use the [Pebble template engine](https://pebbletemplates.io/) for creating the exported document. 
 In combination with a model-class, the template can be easily filled with all the information. When the model-class 
-implements one of the provided interfaces, e.g. `DCAT` then the same template can be used for multiple document types.
-
-<details>
-  <summary>Example Exporter</summary>
-
-```kotlin
-@Service
-@Profile("mcloud")
-class PortalExporter : IgeExporter {
-
-    override val typeInfo: ExportTypeInfo
-        get() {
-            return ExportTypeInfo(
-                    "portal",
-                    "mCLOUD Portal",
-                    "Export der Daten für die weitere Verwendung im Liferay Portal und Exporter.",
-                    MediaType.APPLICATION_JSON_VALUE,
-                    "json",
-                    listOf("mcloud"))
-        }
-
-    override fun run(jsonData: JsonNode): Any {
-        val engine = PebbleEngine.Builder()
-                .newLineTrimming(false)
-                .build()
-
-        val compiledTemplate = engine.getTemplate("templates/export/mcloud/portal.peb")
-
-        val writer: Writer = StringWriter()
-        val map = getMapFromObject(jsonData)
-        compiledTemplate.evaluate(writer, map)
-        return writer.toString().replace("\\s+\n".toRegex(), "\n")
-    }
-
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
-
-    private fun getMapFromObject(json: JsonNode): Map<String, Any> {
-
-        return mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
-
-    }
-}
-```
-</details>
-
-<details>
-  <summary>Example Template</summary>
-
-```json
-{# @pebvariable name="model" type="de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel" #}
-
-{
-  "uuid": "{{ model.uuid }}",
-  "title": "{{ model.title }}",
-  "description": "{{ model.description }}",
-  ...
-}
-```
-</details
+implements one of the provided interfaces, e.g. `DCAT` then the same template can be even used for multiple document types.
 
 ## Database
 
@@ -410,19 +328,22 @@ before the task.
 Each catalog is a separate database. Another database `IgeUsers` is used to manage users and their permissions to access
 a catalog.
 
-A catalog consists of the following tables/classes:
+The data model is shown here:
 
-|Table/Class|Description|
-|---|---|
-|DocumentWrapper|Contains the fields draft, published and archive, where the related documents are stored as references.|
-|Document|Represents documents of any type. Next to the form data, the type information as well as creation and modified date and the parent are stored.|
-|Behaviours|Contains the active state of a behaviour and its parameters if any.|
-|Info|Contain general information about the catalog, like name, description, type and version.|
+![data model](images/DocumentWrapper.svg)
 
+A `DocumentWrapper` manages different versions of a document. A document is normally stored in the draft-field. When it's
+being published it's removed from the draft-field and put into the published-field. In case another document version has
+been in the published-field, it's moved to the archive-field, which can contain a number of documents.
+
+A `Document` can be any kind of data, which has at least a title, the document type and the creation and modification date.
 Since it's a NoSQL database, the document can be extended without any schema changes and migrations. By just defining a
 new field, it's automatically stored in the document table.
-The DocumentWrapper manages a document with all its versions. With a query we can access the current document, the 
-published document or an older one from the archive. 
+
+The `Info` contains information about the catalog itself. It can also store settings, like a time pattern for indexing.
+
+The `Behaviours` store the state of a behaviour, which can be changed in the catalog settings of the IGE-NG. A behaviour
+can be active or inactive. It can also contain optional parameters for easier configuration and more flexibility.
 
 ### Migrations
 
