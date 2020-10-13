@@ -49,7 +49,7 @@ export class AddressPage extends DocumentPage {
 
   static apiCreateAddress(json: any, published?: boolean) {
     cy
-      .request('POST', `http://192.168.0.223/api/datasets?address=true&publish=${published}`, json)
+      .request('POST', (Cypress.config("baseUrl")) + `/api/datasets?address=true&publish=${published}`, json);
   }
 
   static saveChanges () {
