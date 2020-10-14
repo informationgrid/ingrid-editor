@@ -84,7 +84,7 @@ export class AddressCardComponent implements OnInit {
       case 'working':
         return 'Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.';
       case 'workingWithPublished':
-        return 'Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen sie die Adresse, um die Daten aktuell zu halten.';
+        return 'Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen Sie die Adresse, um die Daten aktuell zu halten.';
       default:
         return '';
     }
