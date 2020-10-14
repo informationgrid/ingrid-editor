@@ -60,7 +60,7 @@ class DocumentService : MapperService() {
         DRAFT("W")
     }
 
-    fun <T : EntityType> getByDocumentId(id: String, type: KClass<T>, withReferences: Boolean): JsonNode? {
+    fun <T : EntityType> getByDocumentId(id: String, type: KClass<T>, withReferences: Boolean, ignoreMultipleCheck: Boolean = false): JsonNode? {
 
         val query = listOf(QueryField(FIELD_ID, id))
         val findOptions = FindOptions(
@@ -71,7 +71,11 @@ class DocumentService : MapperService() {
             0L -> throw NotFoundException.withMissingResource(id, type.simpleName)
             1L -> docs.hits[0]
             else -> {
-                throw PersistenceException.withMultipleEntities(id, type.simpleName, dbService.currentDatabase)
+                if (ignoreMultipleCheck) {
+                    docs.hits[0]
+                } else {
+                    throw PersistenceException.withMultipleEntities(id, type.simpleName, dbService.currentDatabase)
+                }
             }
         }
     }
@@ -215,7 +219,7 @@ class DocumentService : MapperService() {
         val filterContext = DefaultContext.withCurrentProfile(dbService)
 
         // run pre-delete pipe(s)
-        val data = getByDocumentId(id, DocumentType::class, false)
+        val data = getByDocumentId(id, DocumentType::class, false, true)
         if (data != null) {
             val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
             val docType = getDocumentType(docTypeName)

@@ -75,7 +75,8 @@ class ImportService {
 
         val id = ref.path(FIELD_ID).textValue()
         try {
-            documentService.getByDocumentId(id, DocumentType::class, false)
+            // TODO: use DocumentWrapper instead?
+            documentService.getByDocumentId(id, DocumentType::class, false, true)
             return true
         } catch (e: RuntimeException) {
             return false
