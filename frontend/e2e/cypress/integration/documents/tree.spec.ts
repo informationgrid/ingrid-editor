@@ -231,10 +231,7 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
 
       CopyCutUtils.copyObject(['Testdokumente']);
-      DocumentPage.deleteLoadedNode();
-
-      DocumentPage.search(testFolder);
-      DocumentPage.getSearchResult();
+      //DocumentPage.deleteLoadedNode();
 
       CopyCutUtils.selectNodeWithChecks(testFolder,['Daten', 'Testdokumente']);
     });
@@ -247,10 +244,14 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName);
 
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
-
       CopyCutUtils.copyObject();
+      CopyCutUtils.checkPath(['Daten', testFolder]);
+      DocumentPage.deleteLoadedNode();
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+      DocumentPage.search(docName);
+      DocumentPage.getSearchResult().click();
+
+      CopyCutUtils.checkPath(['Daten']);
     });
 
     it('should copy a root tree to a sub folder', () => {
@@ -349,21 +350,14 @@ describe('Tree', () => {
     });
 
     it('should move a root folder into a deep folder', () => {
-      const testFolder = 'move me to a folder';
-      const docName = 'iam under a folder'
+      const testFolder = 'move me to a deep folder';
 
       DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
 
       Tree.selectNodeWithTitle(testFolder);
-
       CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
 
-      Tree.selectNodeWithTitle('Testdokumente')
-      DocumentPage.search(docName);
-      DocumentPage.getSearchResult().click();
-
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
+      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
     });
 
     it('should move a document from a folder to the root', () => {
@@ -372,7 +366,6 @@ describe('Tree', () => {
       Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
 
       DocumentPage.createDocument(docName);
-
       CopyCutUtils.move();
 
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
@@ -381,20 +374,13 @@ describe('Tree', () => {
     it('should move a root folder into a folder', () => {
       // Bug #2091
       const testFolder = 'move me1';
-      const docName = 'iam under a moved folder'
 
       DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
 
       Tree.selectNodeWithTitle(testFolder);
-
       CopyCutUtils.move(['Testdokumente']);
 
-      Tree.selectNodeWithTitle('Testdokumente')
-      DocumentPage.search(docName);
-      DocumentPage.getSearchResult().click();
-
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder]);
+      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten', 'Testdokumente']);
     });
 
     it('should move a node within a folder to the root', () => {
@@ -407,7 +393,6 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName);
 
       Tree.selectNodeWithTitle(testFolder);
-
       CopyCutUtils.move();
 
       Tree.openNode([testFolder]);
