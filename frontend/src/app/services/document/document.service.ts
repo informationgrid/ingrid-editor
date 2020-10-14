@@ -329,6 +329,8 @@ export class DocumentService {
           data: srcIDs.map(id => ({id: id})),
           parent: dest
         });
+
+        this.reloadDocumentIfOpenedChanged(isAddress, srcIDs);
       })
     );
 
@@ -357,6 +359,15 @@ export class DocumentService {
         );
     } else {
       return moveOperation();
+    }
+  }
+
+  private reloadDocumentIfOpenedChanged(isAddress: boolean, srcIDs: string[]) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+    const openedDocId = store.getValue().openedDocument?.id.toString();
+    const openedDocWasMoved = srcIDs.indexOf(openedDocId) !== -1;
+    if (openedDocWasMoved) {
+      this.reload$.next(openedDocId);
     }
   }
 
