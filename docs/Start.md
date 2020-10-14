@@ -293,6 +293,8 @@ It's also possible to add most of the validation logic within that definition. S
 An importer is used to import a file of a defined format. Multiple importer can be written, which can be chosen during
 the import process, if several importer can handle the input format.
 
+![data model](images/Importer.svg)
+
 An importer is a service which implements the interface `IgeImporter`. With the profile annotation you can define, that
 the importer is only initialized when a specified profile is active.
 
@@ -307,6 +309,8 @@ The object should represent the JSON format, in which the document is stored in 
 
 An exporter is used to transform the data of a document into another format. Multiple exporter can be written, which can
 be chosen during the export process in the frontend.
+
+![data model](images/Exporter.svg)
 
 A profile can offer multiple export formats. You need to create a new service, which should only be active if the profile
 is. This service must implement the interface `IgeExporter` and return a typeInfo with a description of the exporter. This
