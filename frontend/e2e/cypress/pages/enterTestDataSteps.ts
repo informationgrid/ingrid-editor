@@ -1,8 +1,10 @@
 import {Utils} from "./utils";
 import {DocumentPage} from "./document.page";
 
+// TODO: this class should only help to enter data for mCLOUD documents, so better name for class
 export class enterTestDataSteps {
 
+  // TODO: when class is only for mCLOUD documents then the methods do not need mcloud in the name!
   static setMcloudDescription(text: string = 'Testbeschreibung'){
     cy.get('[data-cy=Beschreibung]').find('mat-form-field').type(text);
   }
@@ -83,7 +85,9 @@ export class enterTestDataSteps {
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
     this.selectMcloudSpatialType('Freier Raumbezug');
     cy.get('[data-cy=spatial-dialog-free]').type(locationText).then(() => {
-      cy.get('mat-list').contains(locationText).click();});
+      cy.wait(1000);
+      cy.get('.result-wrapper mat-list').contains(locationText).click();
+    });
     cy.get('[data-cy=confirm-dialog-save]').click();
     DocumentPage.checkSpatialEntrytNotEmpty()
   }
@@ -172,5 +176,24 @@ export class enterTestDataSteps {
   static setMcloudPeriodicity(chooseOption: string = 'einmalig'){
     cy.get('[data-cy=Periodizität').find('mat-form-field').click();
     cy.get('mat-option').contains(chooseOption).click();
+  }
+
+  static enterFullDataInMcloudDoc(){
+    const dateNow = new Date();
+    const previousDate = new Date(2020, 1, 11)
+
+    enterTestDataSteps.setMcloudDescription();
+    enterTestDataSteps.setMcloudAddress('Published Testorganization');
+    enterTestDataSteps.setMcloudUsageInstructions();
+    enterTestDataSteps.setMcloudCategory();
+    enterTestDataSteps.setMcloudOpenDataCategory();
+    enterTestDataSteps.setMcloudAddDownload();
+    enterTestDataSteps.setMcloudLicense();
+    enterTestDataSteps.setMcloudSourceNote();
+    enterTestDataSteps.setMcloudMfund();
+    enterTestDataSteps.setMcloudSpatialWKT();
+    enterTestDataSteps.setMcloudTimeReference();
+    enterTestDataSteps.setMcloudPeriodOfTime('von - bis', previousDate, dateNow);
+    enterTestDataSteps.setMcloudPeriodicity();
   }
 }

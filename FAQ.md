@@ -35,6 +35,128 @@ to extend from `OrientDBDocumentEntityType`. Have a look at `MCloudType.kt`.
 For the export feature add a service inside the exporter-package which implements `IgeExporter`.
 Pebbles template engine is used for easier export. Check out `PortalExporter`.
 
+<details>
+  <summary>Example Exporter</summary>
+
+```kotlin
+@Service
+@Profile("mcloud")
+class PortalExporter : IgeExporter {
+
+    override val typeInfo: ExportTypeInfo
+        get() {
+            return ExportTypeInfo(
+                    "portal",
+                    "mCLOUD Portal",
+                    "Export der Daten für die weitere Verwendung im Liferay Portal und Exporter.",
+                    MediaType.APPLICATION_JSON_VALUE,
+                    "json",
+                    listOf("mcloud"))
+        }
+
+    override fun run(jsonData: JsonNode): Any {
+        val engine = PebbleEngine.Builder()
+                .newLineTrimming(false)
+                .build()
+
+        val compiledTemplate = engine.getTemplate("templates/export/mcloud/portal.peb")
+
+        val writer: Writer = StringWriter()
+        val map = getMapFromObject(jsonData)
+        compiledTemplate.evaluate(writer, map)
+        return writer.toString().replace("\\s+\n".toRegex(), "\n")
+    }
+
+    override fun toString(exportedObject: Any): String {
+        return exportedObject.toString()
+    }
+
+    private fun getMapFromObject(json: JsonNode): Map<String, Any> {
+
+        return mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
+
+    }
+}
+```
+</details>
+
+<details>
+  <summary>Example Template</summary>
+
+```json
+{# @pebvariable name="model" type="de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel" #}
+
+{
+  "uuid": "{{ model.uuid }}",
+  "title": "{{ model.title }}",
+  "description": "{{ model.description }}",
+  ...
+}
+```
+</details>
+
+### Import
+
+When writing a new importer for a specific document type, we first have to check if the file to be imported is 
+recognized. Then the model should be used, which already might have been created for an exporter in this profile.
+Here are the steps you should follow:
+
+* create a service which implements `IgeImporter`-interface.
+* implement `run()`-method
+  * return a JsonNode which contains the mapped imported document
+* implement `canHandleImportFile()`-method
+  * check if this importer can handle the import, by analyzing contentType and file content
+* implement `getName()`-method to return the name of the importer
+
+<details>
+  <summary>Example</summary>
+
+```kotlin
+@Service
+@Profile("example")
+class ExampleImporter : IgeImporter {
+
+    private val log = logger()
+
+    private val mapperService = MapperService()
+
+    override fun run(data: Any): JsonNode {
+        return mapperService.getJsonNode((data as String))
+    }
+
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
+        val isJson = MediaType.APPLICATION_JSON_VALUE == contentType || MediaType.TEXT_PLAIN_VALUE == contentType
+        val hasNecessaryFields = fileContent.contains("\"_id\"") && fileContent.contains("\"_type\"") && fileContent.contains("\"_state\"")
+        return isJson && hasNecessaryFields
+    }
+
+    override fun getName(): String {
+        return "Internes Format"
+    }
+
+}
+```
+</details>
+
+### Indexing
+
+Indexing is done after a document is published. For this we can implement a filter to be executed at the specific time.
+Here are the steps:
+
+* create a new component for your profile implementing `Filter<PostPublishPayload>`
+  * when using elasticsearch for indexing, make sure to enable profile
+* implement `invoke()`-method
+
+```kotlin
+@Component
+@Profile("mcloud & elasticsearch")
+class MCloudPublishExport : Filter<PostPublishPayload> {
+  override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
+      
+  }
+}
+```
+
 # Add / Update / Remove form field
 
 Open the according document type file under `de/ingrid/igeserver/profiles/<profile-name>` and edit the

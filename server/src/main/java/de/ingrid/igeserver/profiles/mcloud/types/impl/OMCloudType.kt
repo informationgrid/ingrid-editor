@@ -32,7 +32,7 @@ class OMCloudType : BaseMCloudType(), OrientDBDocumentEntityType {
         val addresses = doc.path("addresses")
         for (address in addresses) {
             val wrapperId = address.path("ref").asText()
-            val wrapper = docService.getByDocumentId(wrapperId, DocumentWrapperType::class, true)
+            val wrapper = docService.getWrapperByDocumentId(wrapperId, true)
                     ?: throw NotFoundException.withMissingResource(wrapperId, DocumentWrapperType::class.simpleName)
             try {
                     // try to find the published version of the linked document
@@ -71,7 +71,7 @@ class OMCloudType : BaseMCloudType(), OrientDBDocumentEntityType {
         for (address in addresses) {
             val wrapperId = address.path("ref").asText()
             try {
-                val wrapper = docService.getByDocumentId(wrapperId, DocumentWrapperType::class, true)
+                val wrapper = docService.getWrapperByDocumentId(wrapperId, true)
                 if (wrapper != null) {
                     val latestDocument = docService.getLatestDocument(wrapper, onlyPublished)
                     (address as ObjectNode).replace("ref", latestDocument)

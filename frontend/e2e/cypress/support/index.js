@@ -60,3 +60,7 @@ Cypress.Commands.add('fieldIsInvalid', (fieldClass, content) => {
       .should('contain.text', content);
   }
 });
+
+Cypress.Commands.add('containsFormErrors', (count) => {
+  cy.get('.mat-error:not(.invisible)').should('have.length', count);
+});

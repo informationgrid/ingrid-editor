@@ -287,6 +287,10 @@ describe('TreeComponent', () => {
 
   }));
 
+  xit('should delete a node which has multiple versions (draft, published, ...)', fakeAsync(() => {
+
+  }));
+
   it('should copy a root node to root', fakeAsync(() => {
 
     db.initialData.and.returnValue(of(recentDocuments));

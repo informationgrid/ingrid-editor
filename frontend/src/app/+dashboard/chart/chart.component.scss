@@ -20,10 +20,19 @@
     animation: progress 1s ease-in-out forwards;
   }
 
+  // don't animate cicles on ios safari
+  @media not all and (min-resolution:.001dpcm) {
+    @supports (-webkit-appearance:none) {
+      .circle {
+        animation: none;
+      }
+    }
+  }
+
   @keyframes progress {
     0% {
       stroke-dasharray: 0 100;
-      transform: rotate(359deg);
+      transform: rotate(330deg); // starting angle of animation
     }
   }
 

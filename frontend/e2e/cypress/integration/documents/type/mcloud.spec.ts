@@ -1,7 +1,7 @@
 import {DocumentPage} from '../../../pages/document.page';
-import {Address, AddressPage} from "../../../pages/address.page";
-import {Tree} from "../../../pages/tree.partial";
-import {enterTestDataSteps} from "../../../pages/enterTestDataSteps";
+import {AddressPage} from '../../../pages/address.page';
+import {Tree} from '../../../pages/tree.partial';
+import {enterTestDataSteps} from '../../../pages/enterTestDataSteps';
 
 describe('mCLOUD documents', function () {
 
@@ -27,8 +27,10 @@ describe('mCLOUD documents', function () {
 
       cy.hasErrorDialog('Es müssen alle Felder korrekt');
 
-      // should show exactly x validation errors on the following fields
+      // should show exactly 6 validation errors on the following fields
+      cy.containsFormErrors(6);
 
+      // TODO: check all necessary fields!
       cy.fieldIsInvalid('description', 'Dieses Feld muss ausgefüllt sein');
     });
 
@@ -36,7 +38,6 @@ describe('mCLOUD documents', function () {
       const docName = 'mCloudDoc1';
 
       DocumentPage.createDocument(docName);
-      // cy.visit('/form;id=642b8dde-96a9-4b1f-a2eb-e8894735f4cd');
 
       enterTestDataSteps.setMcloudDescription();
       enterTestDataSteps.setMcloudAddress(PUBLISHED_ADDRESS);
@@ -44,10 +45,6 @@ describe('mCLOUD documents', function () {
       enterTestDataSteps.setMcloudOpenDataCategory();
       enterTestDataSteps.setMcloudAddDownload();
       enterTestDataSteps.setMcloudLicense();
-      enterTestDataSteps.setMcloudTimeReference();
-
-      //needed to slow it down
-      cy.get('[data-cy="Zeitbezug der Ressource"]').find('mat-form-field').contains('Datum');
 
       DocumentPage.publishNow();
     });
@@ -55,11 +52,11 @@ describe('mCLOUD documents', function () {
     it('should create a complete mcloud document', () => {
       const docName = 'mCloudfullDoc1';
       const dateNow = new Date();
-      const previousDate = new Date(2020, 1, 11)
+      const previousDate = new Date(2020, 1, 11);
 
       DocumentPage.createDocument(docName);
 
-      //check if created document is a mCloud-Document
+      // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
 
       enterTestDataSteps.setMcloudDescription();
@@ -76,22 +73,29 @@ describe('mCLOUD documents', function () {
       enterTestDataSteps.setMcloudPeriodOfTime('von - bis', previousDate, dateNow);
       enterTestDataSteps.setMcloudPeriodicity();
 
-      //needed to slow it down
+      // needed to slow it down
       cy.get('[data-cy=Periodizität').find('mat-form-field').should('have.text', 'einmalig');
 
       DocumentPage.saveDocument();
     });
 
     it('should create a published address with an API-Call', () => {
-      const json = {firstName: "vor", lastName: "nach", organization: "org", title: "APICallPublishedAdr", _type: "AddressDoc", contact: [{type: 1, connection: "0123456789"}]}
+      const json = {
+        firstName: 'vor',
+        lastName: 'nach',
+        organization: 'org',
+        title: 'APICallPublishedAdr',
+        _type: 'AddressDoc',
+        contact: [{type: 1, connection: '0123456789'}]
+      };
 
-      DocumentPage.checkURL( '/form');
+      DocumentPage.checkURL('/form');
       AddressPage.apiCreateAddress(json, true);
 
       cy.visit('/address');
       DocumentPage.checkURL('/address');
       Tree.containsNodeWithTitle('APICallPublishedAdr');
-    })
+    });
 
   });
 });

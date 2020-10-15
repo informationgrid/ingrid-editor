@@ -6,54 +6,62 @@ import de.ingrid.igeserver.exports.interfaces.dcat.DCAT
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class MCloudModel(
-        @JsonProperty("_id") override val uuid: String,
-        override val title: String,
-        override val description: String?,
-        val theme: String?,
-        @JsonProperty("_created") val created: String,
-        @JsonProperty("_modified") val modified: String,
-        val origin: String?,
-        val addresses: List<AddressRefModel>?,
-        val usage: String?,
-        override val downloads: List<DownloadModel>?,
-        val categories: List<String>?,
-        override val license: String?,
-        @JsonProperty("geoReferenceVisual") val spatials: List<SpatialModel>?,
-        val timeSpan: RangeModel?,
-        val periodicity: String?,
-        val mfundFKZ: String?,
-        val mfundProject: String?
-): DCAT {
+    @JsonProperty("_id") override val uuid: String,
+    override val title: String,
+    override val description: String?,
+    val mCloudCategories: List<String>?,
+    private val openDataCategories: List<String>?,
+    @JsonProperty("_created") val created: String,
+    @JsonProperty("_modified") val modified: String,
+    val origin: String?,
+    val addresses: List<AddressRefModel>?,
+    val usage: String?,
+    override val downloads: List<DownloadModel>?,
+    override val license: String?,
+    @JsonProperty("geoReferenceVisual") val spatials: List<SpatialModel>?,
+    val timeSpan: RangeModel?,
+    val periodicity: String?,
+    val mfundFKZ: String?,
+    val mfundProject: String?
+) : DCAT {
 
     override val publisher: AddressModel?
-    get() {
-        return addresses
+        get() {
+            return addresses
                 ?.firstOrNull { it.type == "10" }
                 ?.ref;
-    }
+        }
 
     val hasSingleSpatial: Boolean
-    get() = spatials?.size == 1
+        get() = spatials?.size == 1
 
     val spatialTitels: List<String>?
-    get() = spatials?.map { it.title }?.filterNotNull()
+        get() = spatials?.map { it.title }?.filterNotNull()
 
     val realSpatials: List<SpatialModel>?
-    get() { return spatials?.filter { it.type == "free" } }
+        get() {
+            return spatials?.filter { it.type == "free" }
+        }
 
     val allData: List<String>?
-    get() {
-        if (mfundFKZ != null || mfundProject != null) {
-            val result = mutableListOf("mfund")
-            if (mfundFKZ != null) {
-                result.add("mFUND-FKZ: $mfundFKZ")
+        get() {
+            if (mfundFKZ != null || mfundProject != null) {
+                val result = mutableListOf("mfund")
+                if (mfundFKZ != null) {
+                    result.add("mFUND-FKZ: $mfundFKZ")
+                }
+                if (mfundProject != null) {
+                    result.add("mFUND-Projekt: $mfundProject")
+                }
+                return result
             }
-            if (mfundProject != null) {
-                result.add("mFUND-Projekt: $mfundProject")
-            }
-            return result
+            return null
         }
-        return null
+
+    fun getThemes(): List<String> {
+        if (openDataCategories == null) return emptyList()
+        return openDataCategories
+            .map { "http://publications.europa.eu/resource/authority/data-theme/$it" }
     }
 
     fun isValid(): Boolean {

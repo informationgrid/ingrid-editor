@@ -136,7 +136,7 @@ export class DocumentPage extends BasePage {
 
   static publishNow() {
     // sometimes we're too fast, so that the form is not synched with the store
-    cy.wait(0);
+    cy.wait(300);
     cy.get('[data-cy=toolbar_publish_now]').click();
     cy.get('[data-cy=confirm-dialog-confirm]').click();
     cy.get('[data-cy="form-message"]').contains('veröffentlicht');
@@ -154,7 +154,7 @@ export class DocumentPage extends BasePage {
 
   static saveDocument() {
     // sometimes we're too fast, so that the form is not synched with the store
-    cy.wait(0);
+    cy.wait(300);
     cy.get(DocumentPage.Toolbar.Save).click();
     cy.get('[data-cy="form-message"]').contains('gespeichert');
   }
@@ -191,6 +191,11 @@ export class DocumentPage extends BasePage {
     return cy.get('[data-cy=reload-button]').click()
   }
 
+  /**
+   * TODO: we should not open a document that contains some string, the depending tests can break easily!
+   * use Tree.openNode() instead!
+   * @deprecated
+   */
   static getDocument(docNameContains: string){
     cy.get('#sidebar').contains(docNameContains).click();
   }
@@ -200,12 +205,12 @@ export class DocumentPage extends BasePage {
   }
 
   static checkSpatialEntryExists(spatialName: string){
-    cy.wait(0);
+    cy.wait(50);
     cy.get('div.mat-line.spatial-title').contains(spatialName).should( 'exist');
   }
 
   static checkSpatialEntryExistsNot(spatialName: string){
-    cy.wait(0);
+    cy.wait(50);
     cy.get('div.mat-line.spatial-title').contains(spatialName).should( 'not.exist');
   }
 

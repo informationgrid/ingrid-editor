@@ -1,6 +1,7 @@
 import {DocumentPage} from "../../pages/document.page";
 import {CopyCutUtils} from "../../pages/copy-cut-utils";
 import {Tree} from "../../pages/tree.partial";
+import {enterTestDataSteps} from "../../pages/enterTestDataSteps";
 
 before(() => {
   cy.kcLogin('user');
@@ -212,10 +213,15 @@ describe('Tree', () => {
       const docName = 'copy me to the root';
 
       Tree.selectNodeWithTitle('Neue Testdokumente');
+
+      // TODO: Use API-call instead of entering data manually
       DocumentPage.createDocument(docName);
+      enterTestDataSteps.enterFullDataInMcloudDoc();
+      DocumentPage.saveDocument();
 
       CopyCutUtils.copyObject();
 
+      Tree.selectNodeWithTitle('Neue Testdokumente');
       CopyCutUtils.selectNodeWithChecks(docName,['Daten']);
     });
 
@@ -225,6 +231,7 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
 
       CopyCutUtils.copyObject(['Testdokumente']);
+      //DocumentPage.deleteLoadedNode();
 
       CopyCutUtils.selectNodeWithChecks(testFolder,['Daten', 'Testdokumente']);
     });
@@ -237,10 +244,14 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName);
 
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
-
       CopyCutUtils.copyObject();
+      CopyCutUtils.checkPath(['Daten', testFolder]);
+      DocumentPage.deleteLoadedNode();
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+      DocumentPage.search(docName);
+      DocumentPage.getSearchResult().click();
+
+      CopyCutUtils.checkPath(['Daten']);
     });
 
     it('should copy a root tree to a sub folder', () => {
@@ -256,11 +267,16 @@ describe('Tree', () => {
       Tree.openNode([testFolder]);
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
 
-      // Bug #2115
-      Tree.deleteNode([testFolder, docName]);
+      // Bug/Feature #2115: empty folders cannot be deleted
+      Tree.selectNodeWithTitle(docName);
+      DocumentPage.deleteLoadedNode();
+      cy.wait(300);
+      Tree.selectNodeWithTitle(testFolder);
+      DocumentPage.deleteLoadedNode();
 
       Tree.openNode([ 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
 
+      // TODO: the function "selectNodeWithChecks" does not belong to CopyCutUtils, right?
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
     });
 
@@ -298,7 +314,9 @@ describe('Tree', () => {
 
       Tree.selectNodeWithTitle(testFolder);
       CopyCutUtils.move();
+
       Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder, docName]);
 
       // check if path is the same like before
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
@@ -326,7 +344,7 @@ describe('Tree', () => {
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
     });
 
-    it('should move a root document into a deeply nested folder', () => {
+    it('should move a root document into a deep folder', () => {
       const docName = 'move me into a deep folder'
 
       DocumentPage.createDocument(docName);
@@ -336,13 +354,23 @@ describe('Tree', () => {
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
     });
 
+    it('should move a root folder into a deep folder', () => {
+      const testFolder = 'move me to a deep folder';
+
+      DocumentPage.createFolder(testFolder);
+
+      Tree.selectNodeWithTitle(testFolder);
+      CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
+
+      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
+    });
+
     it('should move a document from a folder to the root', () => {
       const docName = 'move me from a deep folder'
 
       Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
 
       DocumentPage.createDocument(docName);
-
       CopyCutUtils.move();
 
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
@@ -351,32 +379,13 @@ describe('Tree', () => {
     it('should move a root folder into a folder', () => {
       // Bug #2091
       const testFolder = 'move me1';
-      const docName = 'iam under a moved folder'
 
       DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
 
       Tree.selectNodeWithTitle(testFolder);
-
       CopyCutUtils.move(['Testdokumente']);
 
-      Tree.openNode([testFolder]);
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', testFolder]);
-    });
-
-    it('should move a root node into a deep folder', () => {
-      const testFolder = 'move me to a folder';
-      const docName = 'iam under a folder'
-
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
-
-      Tree.selectNodeWithTitle(testFolder);
-
-      CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
-
-      Tree.openNode([testFolder]);
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
+      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten', 'Testdokumente']);
     });
 
     it('should move a node within a folder to the root', () => {
@@ -389,7 +398,6 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName);
 
       Tree.selectNodeWithTitle(testFolder);
-
       CopyCutUtils.move();
 
       Tree.openNode([testFolder]);

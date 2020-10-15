@@ -4,7 +4,9 @@
     "uuid": "{{ model.uuid }}",
     "title": "{{ model.title }}",
     "description": "{{ model.description }}",
-    "theme": "{{ model.theme }}",
+    "theme": [
+      "{{ model.getThemes() | join('","') | raw }}"
+    ],
     "issued": "{{ model.created }}",
     "modified": "{{ model.modified }}",
     "accrualPeriodicity": null,
@@ -44,7 +46,7 @@
         },
         "generated_id": "{{ model.uuid }}",
         "subgroups": [
-            "{{ model.categories | join(',') }}"
+            "{{ model.mCloudCategories | join('","') | raw }}"
         ],
         "license": {
             "id": "{{ model.license }}",
