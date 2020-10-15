@@ -104,7 +104,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
     private fun handleCopy(id: String, options: CopyOptions): JsonNode {
 
-        val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
+        val wrapper = documentService.getWrapperByDocumentId(id, true) as ObjectNode
 
         val doc = documentService.getLatestDocument(wrapper, false, false)
 
@@ -143,7 +143,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         docs.hits.forEach { doc: JsonNode ->
 
             val id = doc.get(FIELD_ID).asText()
-            val child = documentService.getByDocumentId(id, DocumentWrapperType::class, true)
+            val child = documentService.getWrapperByDocumentId(id, true)
             child?.let {
                 val childVersion = documentService.getLatestDocument(it, false, false)
                 childVersion.put(FIELD_PARENT, parentId)
@@ -156,7 +156,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
     private fun handleMove(id: String, options: CopyOptions) {
 
-        val wrapper = documentService.getByDocumentId(id, DocumentWrapperType::class, true) as ObjectNode
+        val wrapper = documentService.getWrapperByDocumentId(id, true) as ObjectNode
         val doc = documentService.getLatestDocument(wrapper, false, true)
 
         if (id == options.destId) {
@@ -173,7 +173,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         documentService.updateDocument(id, doc, published)
 
         // updateWrapper
-        val wrapperWithLinks = documentService.getByDocumentId(id, DocumentWrapperType::class, false) as ObjectNode
+        val wrapperWithLinks = documentService.getWrapperByDocumentId(id, false) as ObjectNode
         wrapperWithLinks.put(FIELD_PARENT, options.destId)
         val wrapperId = dbService.getRecordId(wrapperWithLinks)
         dbService.save(DocumentWrapperType::class, wrapperId, wrapperWithLinks.toString())
@@ -283,7 +283,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         dbService.acquire(dbId).use {
             while (true) {
-                val doc = documentService.getByDocumentId(parentId, DocumentWrapperType::class, false) ?: break
+                val doc = documentService.getWrapperByDocumentId(parentId, false) ?: break
                 val nextParentId = doc[FIELD_PARENT]?.textValue()
                 if (nextParentId != null) {
                     path.add(nextParentId)

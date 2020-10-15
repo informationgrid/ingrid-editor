@@ -38,7 +38,7 @@ class M018_FixParents : MigrationBase("0.18") {
                     .forEach {
                         count++
                         try {
-                            val wrapper = docService.getByDocumentId(it.get(FIELD_ID).asText(), DocumentWrapperType::class, false)
+                            val wrapper = docService.getWrapperByDocumentId(it.get(FIELD_ID).asText(), false)
                             if (wrapper != null) {
                                 val wrapperParent = wrapper.get(FIELD_PARENT)
                                 if (wrapperParent != null && !wrapperParent.asText().isEmpty() && wrapperParent.asText() != "null") {

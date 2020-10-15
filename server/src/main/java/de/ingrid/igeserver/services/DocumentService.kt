@@ -12,15 +12,12 @@ import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
-import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
 @Service
 class DocumentService : MapperService() {
-
-    private val log = logger()
 
     @Autowired
     private lateinit var documentTypes: List<EntityType>
@@ -60,8 +57,12 @@ class DocumentService : MapperService() {
         DRAFT("W")
     }
 
-    fun <T : EntityType> getByDocumentId(id: String, type: KClass<T>, withReferences: Boolean, ignoreMultipleCheck: Boolean = false): JsonNode? {
+    /**
+     * Get the DocumentWrapper with the given document uuid
+     */
+    fun getWrapperByDocumentId(id: String, withReferences: Boolean): JsonNode? {
 
+        val type = DocumentWrapperType::class
         val query = listOf(QueryField(FIELD_ID, id))
         val findOptions = FindOptions(
                 queryType = QueryType.EXACT,
@@ -70,13 +71,7 @@ class DocumentService : MapperService() {
         return when (docs.totalHits) {
             0L -> throw NotFoundException.withMissingResource(id, type.simpleName)
             1L -> docs.hits[0]
-            else -> {
-                if (ignoreMultipleCheck) {
-                    docs.hits[0]
-                } else {
-                    throw PersistenceException.withMultipleEntities(id, type.simpleName, dbService.currentDatabase)
-                }
-            }
+            else -> throw PersistenceException.withMultipleEntities(id, type.simpleName, dbService.currentDatabase)
         }
     }
 
@@ -105,11 +100,16 @@ class DocumentService : MapperService() {
         return dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
     }
 
-    fun getLatestDocument(doc: JsonNode, onlyPublished: Boolean = false, resolveLinks: Boolean = true): ObjectNode {
+    /**
+     * Get the latest version of the document associated with the given wrapper
+     * If onlyPublished is true, the method will return the published version and will throw an exception,
+     * if it does not exist. If onlyPublished is false, it will prefer the draft version, if it exists.
+     */
+    fun getLatestDocument(wrapper: JsonNode, onlyPublished: Boolean = false, resolveLinks: Boolean = true): ObjectNode {
 
-        val docData: ObjectNode = getDocumentVersion(doc, onlyPublished)
+        val docData: ObjectNode = getLatestDocumentVersion(wrapper, onlyPublished)
 
-        return prepareDocument(docData, doc[FIELD_DOCUMENT_TYPE].asText(), onlyPublished, resolveLinks)
+        return prepareDocument(docData, wrapper[FIELD_DOCUMENT_TYPE].asText(), onlyPublished, resolveLinks)
     }
 
     fun getDocumentType(docType: String): EntityType {
@@ -151,7 +151,7 @@ class DocumentService : MapperService() {
         val docType = getDocumentType(docTypeName)
 
         // run pre-update pipe(s)
-        val wrapper = getByDocumentId(id, DocumentWrapperType::class, false)
+        val wrapper = getWrapperByDocumentId(id, false)
         val preUpdatePayload = PreUpdatePayload(docType, data as ObjectNode, wrapper as ObjectNode)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
         if (publish) {
@@ -188,7 +188,9 @@ class DocumentService : MapperService() {
                 if (draftId.isNull) {
                     // TODO: db_id is ORecord!
                     put(FIELD_DRAFT, updatedRecordId)
-                } else {
+                }
+                else {
+                    // 'if' must have both main and 'else' branches if used as an expression
                 }
             }
         }
@@ -219,13 +221,13 @@ class DocumentService : MapperService() {
         val filterContext = DefaultContext.withCurrentProfile(dbService)
 
         // run pre-delete pipe(s)
-        val data = getByDocumentId(id, DocumentType::class, false, true)
-        if (data != null) {
+        val wrapper = getWrapperByDocumentId(id, false)
+        if (wrapper != null) {
+            val data = getLatestDocumentVersion(wrapper, false)
             val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
             val docType = getDocumentType(docTypeName)
 
-            val wrapper = getByDocumentId(id, DocumentWrapperType::class, true)
-            val preDeletePayload = PreDeletePayload(docType, data as ObjectNode, wrapper as ObjectNode)
+            val preDeletePayload = PreDeletePayload(docType, data, wrapper as ObjectNode)
             preDeletePipe.runFilters(preDeletePayload, filterContext)
 
             findChildrenDocs(id, isAddress(wrapper)).hits.forEach {
@@ -248,7 +250,7 @@ class DocumentService : MapperService() {
     fun revertDocument(id: String): JsonNode {
 
         // remove draft version
-        val wrapper = getByDocumentId(id, DocumentWrapperType::class, false) as ObjectNode
+        val wrapper = getWrapperByDocumentId(id, false) as ObjectNode
 
         val publishedId = wrapper.get(FIELD_PUBLISHED)
 
@@ -322,12 +324,12 @@ class DocumentService : MapperService() {
                 .category
     }
 
-    private fun getDocumentVersion(doc: JsonNode, onlyPublished: Boolean): ObjectNode {
-        val draft = doc[FIELD_DRAFT]
-        val published = doc[FIELD_PUBLISHED]
+    private fun getLatestDocumentVersion(wrapper: JsonNode, onlyPublished: Boolean): ObjectNode {
+        val draft = wrapper[FIELD_DRAFT]
+        val published = wrapper[FIELD_PUBLISHED]
 
         if (onlyPublished && published.isNull) {
-            throw NotFoundException.withMissingPublishedVersion(doc.get(FIELD_ID).asText())
+            throw NotFoundException.withMissingPublishedVersion(wrapper.get(FIELD_ID).asText())
         }
 
         // TODO: check if isNull function really works or if we need a null comparison
@@ -337,7 +339,7 @@ class DocumentService : MapperService() {
             draft as ObjectNode
         }
 
-        objectNode.put(FIELD_STATE, if (onlyPublished) DocumentState.PUBLISHED.value else determineState(doc))
+        objectNode.put(FIELD_STATE, if (onlyPublished) DocumentState.PUBLISHED.value else determineState(wrapper))
 
         return objectNode
     }

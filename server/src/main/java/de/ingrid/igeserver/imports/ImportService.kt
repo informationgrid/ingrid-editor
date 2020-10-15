@@ -3,7 +3,6 @@ package de.ingrid.igeserver.imports
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_ID
@@ -74,12 +73,11 @@ class ImportService {
         // TODO: optimize by caching reference information
 
         val id = ref.path(FIELD_ID).textValue()
-        try {
-            // TODO: use DocumentWrapper instead?
-            documentService.getByDocumentId(id, DocumentType::class, false, true)
-            return true
+        return try {
+            documentService.getWrapperByDocumentId(id, false)
+            true
         } catch (e: RuntimeException) {
-            return false
+            false
         }
 
     }

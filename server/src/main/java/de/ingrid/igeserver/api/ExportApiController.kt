@@ -3,7 +3,6 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.model.ExportRequestParameter
 import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
@@ -35,7 +34,7 @@ class ExportApiController : ExportApi {
         // TODO: option to export addresses too?
         var result: String? = ""
         dbService.acquire(dbId).use {
-            val doc = documentService.getByDocumentId(data.id, DocumentWrapperType::class, true)
+            val doc = documentService.getWrapperByDocumentId(data.id, true)
             if (doc != null) {
                 val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
 
