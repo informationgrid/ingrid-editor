@@ -27,7 +27,7 @@ class M018_FixParents : MigrationBase("0.18") {
         log.info("Executing migration 0.18")
 
 
-        dbService.acquire(databaseName).use {
+        dbService.acquireCatalog(databaseName).use {
             val allDocs = dbService.findAll(DocumentType::class)
             var count = 0
             var successful = 0

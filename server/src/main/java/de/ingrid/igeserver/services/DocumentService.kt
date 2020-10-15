@@ -71,7 +71,7 @@ class DocumentService : MapperService() {
             0L -> throw NotFoundException.withMissingResource(id, type.simpleName)
             1L -> docs.hits[0]
             else -> {
-                throw PersistenceException.withMultipleEntities(id, type.simpleName, dbService.currentDatabase)
+                throw PersistenceException.withMultipleEntities(id, type.simpleName, dbService.currentCatalog)
             }
         }
     }

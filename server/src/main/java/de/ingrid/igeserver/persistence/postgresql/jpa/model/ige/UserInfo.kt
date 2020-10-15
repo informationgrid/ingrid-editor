@@ -1,7 +1,8 @@
-package de.ingrid.igeserver.persistence.postgresql.jpa.model
+package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.EntityBase
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import javax.persistence.*
 
 @NoArgs
@@ -16,6 +17,7 @@ class UserInfo(
     val curCatalog: Catalog
 ) : EntityBase() {
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy="users")
+    @JsonIgnore
     var catalogs: Set<Catalog> = setOf()
 }

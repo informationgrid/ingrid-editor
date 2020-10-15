@@ -159,7 +159,7 @@ class OrientDBDatabase : DBApi {
                 docs.close()
                 return doc.identity.get().toString()
             } else {
-                throw PersistenceException.withMultipleEntities(docUuid, type.simpleName, currentDatabase)
+                throw PersistenceException.withMultipleEntities(docUuid, type.simpleName, currentCatalog)
             }
         }
         return null
@@ -303,12 +303,12 @@ class OrientDBDatabase : DBApi {
         return true
     }
 
-    override val databases: Array<String>
+    override val catalogs: Array<String>
         get() {
             return catalogDatabases.toTypedArray()
         }
 
-    override val currentDatabase: String?
+    override val currentCatalog: String?
         get() {
             return dBFromThread.name
         }
@@ -366,7 +366,12 @@ class OrientDBDatabase : DBApi {
         return orientDB.exists(name)
     }
 
-    override fun acquire(name: String): Closeable {
+    override fun acquireCatalog(name: String): Closeable {
+        // each catalog resides in it's own database
+        return acquireDatabase(name)
+    }
+
+    override fun acquireDatabase(name: String): Closeable {
         return acquireImpl(name)
     }
 

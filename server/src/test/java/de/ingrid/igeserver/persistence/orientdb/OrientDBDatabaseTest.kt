@@ -38,7 +38,7 @@ class OrientDBDatabaseTest : FunSpec() {
     }
 
     private fun addTestData() {
-        dbService.acquire("test").use {
+        dbService.acquireCatalog("test").use {
             val person1Map = "{ \"name\": \"John\", \"age\": \"35\"}"
             dbService.save(UserInfoType::class, null, person1Map)
             val person2Map = "{ \"name\": \"Mike\", \"age\": \"48\"}"
@@ -54,7 +54,7 @@ class OrientDBDatabaseTest : FunSpec() {
             Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { ctx1 ->
                 Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { ctx2 ->
                     runBlocking(ctx1) {
-                        dbService.acquire("test").use {
+                        dbService.acquireCatalog("test").use {
                             // start transaction in first session
                             dbService.beginTransaction()
 
@@ -63,7 +63,7 @@ class OrientDBDatabaseTest : FunSpec() {
 
                             // new person is not yet visible outside of the session
                             withContext(ctx2) {
-                                dbService.acquire("test").use {
+                                dbService.acquireCatalog("test").use {
                                     dbService.findAll(UserInfoType::class).size shouldBe 0
                                 }
                             }
@@ -73,7 +73,7 @@ class OrientDBDatabaseTest : FunSpec() {
 
                             // new person is visible outside of the session
                             withContext(ctx2) {
-                                dbService.acquire("test").use {
+                                dbService.acquireCatalog("test").use {
                                     dbService.findAll(UserInfoType::class).size shouldBe 1
                                 }
                             }
@@ -86,7 +86,7 @@ class OrientDBDatabaseTest : FunSpec() {
         test("findAll should find all documents of type")
         {
             addTestData()
-            dbService.acquire("test").use {
+            dbService.acquireCatalog("test").use {
                 dbService.findAll(UserInfoType::class).size shouldBe 2
             }
         }
@@ -94,7 +94,7 @@ class OrientDBDatabaseTest : FunSpec() {
         test("findAll with query should find only documents matching the query")
         {
             addTestData()
-            dbService.acquire("test").use {
+            dbService.acquireCatalog("test").use {
                 val query: MutableList<QueryField> = ArrayList()
                 query.add(QueryField("age", "48", false))
                 val options = FindOptions(
@@ -116,7 +116,7 @@ class OrientDBDatabaseTest : FunSpec() {
 
             // modify document in first session
             var id: String
-            id = dbService.acquire("test").use {
+            id = dbService.acquireCatalog("test").use {
                 val options = FindOptions(
                         queryType = QueryType.LIKE,
                         resolveReferences = false)
@@ -132,7 +132,7 @@ class OrientDBDatabaseTest : FunSpec() {
             }
 
             // changes are visible in second session
-            dbService.acquire("test").use {
+            dbService.acquireCatalog("test").use {
                 val options = FindOptions(
                         queryType = QueryType.LIKE,
                         resolveReferences = false)
@@ -146,7 +146,7 @@ class OrientDBDatabaseTest : FunSpec() {
 
         test("save should support creating references")
         {
-            dbService.acquire("test").use {
+            dbService.acquireCatalog("test").use {
                 // add first document
                 val doc1 = "{\"title\": \"my document\"}"
                 val doc1Result = dbService.save(DocumentType::class, null, doc1)
@@ -160,7 +160,7 @@ class OrientDBDatabaseTest : FunSpec() {
                 doc2Result shouldNotBe null
             }
 
-            dbService.acquire("test").use {
+            dbService.acquireCatalog("test").use {
                 // check reference in second document
                 val docs = dbService.findAll(DocumentType::class)
 

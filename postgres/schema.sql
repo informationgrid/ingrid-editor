@@ -63,3 +63,17 @@ CREATE TABLE document_archive (
   document_id     integer REFERENCES document(id) ON DELETE CASCADE,
   PRIMARY KEY (wrapper_id, document_id)
 );
+
+CREATE TABLE audit_log (
+  id              serial PRIMARY KEY,
+  type            varchar(255) NOT NULL,
+  message         jsonb,
+  file            varchar(255),
+  class           varchar(255),
+  method          varchar(255),
+  line            varchar(255),
+  logger          varchar(255),
+  thread          varchar(255),
+  level           varchar(255),
+  timestamp       timestamptz NOT NULL DEFAULT NOW()
+);

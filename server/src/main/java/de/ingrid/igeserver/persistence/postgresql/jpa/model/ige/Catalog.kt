@@ -1,7 +1,8 @@
-package de.ingrid.igeserver.persistence.postgresql.jpa.model
+package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.EntityBase
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import javax.persistence.*
 
 @NoArgs
@@ -28,9 +29,10 @@ class Catalog(
 
     @ManyToMany(cascade=[CascadeType.ALL], fetch=FetchType.LAZY)
     @JoinTable(
-            name = "catalog_user_info",
-            joinColumns = [JoinColumn(name = "catalog_id")],
-            inverseJoinColumns = [JoinColumn(name = "user_info_id")]
+            name="catalog_user_info",
+            joinColumns=[JoinColumn(name = "catalog_id")],
+            inverseJoinColumns=[JoinColumn(name = "user_info_id")]
     )
+    @JsonIgnore
     var users: Set<UserInfo> = setOf()
 }

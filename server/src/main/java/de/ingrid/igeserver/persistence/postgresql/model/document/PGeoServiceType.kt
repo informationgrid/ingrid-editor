@@ -4,8 +4,8 @@ import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.document.GeoServiceType
 import de.ingrid.igeserver.persistence.model.document.impl.BaseGeoServiceType
 import de.ingrid.igeserver.persistence.postgresql.PostgreSQLEntityType
-import de.ingrid.igeserver.persistence.postgresql.jpa.EntityBase
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 

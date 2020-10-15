@@ -34,7 +34,7 @@ class ExportApiController : ExportApi {
 
         // TODO: option to export addresses too?
         var result: String? = ""
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val doc = documentService.getByDocumentId(data.id, DocumentWrapperType::class, true)
             if (doc != null) {
                 val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)

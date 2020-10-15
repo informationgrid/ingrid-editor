@@ -31,7 +31,7 @@ class ProfileApiController : ProfileApi {
         // ClassPathResource resource = new ClassPathResource( "/profile-uvp.chunk.js" );
         var profile: String? = null // String profile = new String( Files.readAllBytes( Paths.get( resource.getURI() ) ) );
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val allFrom = dbService.findAll(CatalogInfoType::class)
             profile = if (allFrom!!.isNotEmpty()) {
                 val map = allFrom[0]
@@ -57,7 +57,7 @@ class ProfileApiController : ProfileApi {
         // manipulate file content by replacing dynamic variable name with a static one
         // this way it can be used by the frontend, after it has been loaded
         fileContent = prepareProfileContent(fileContent)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val infos = dbService.findAll(CatalogInfoType::class)
             if (infos.isNotEmpty()) {
                 val rid = dbService.getRecordId(infos[0])!!

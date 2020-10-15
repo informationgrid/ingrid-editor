@@ -6,7 +6,7 @@ import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import java.io.Closeable
 
-class ClosableTransaction(private val tm: PlatformTransactionManager) : Closeable {
+class ClosableTransaction(private val tm: PlatformTransactionManager, private val callback: (() -> Unit)? = null) : Closeable {
 
     companion object {
         private val definition: DefaultTransactionDefinition = DefaultTransactionDefinition()
@@ -23,5 +23,6 @@ class ClosableTransaction(private val tm: PlatformTransactionManager) : Closeabl
 
     override fun close() {
         tm.commit(status)
+        callback?.invoke()
     }
 }

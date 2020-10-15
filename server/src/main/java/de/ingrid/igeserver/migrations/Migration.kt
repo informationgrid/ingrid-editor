@@ -27,7 +27,7 @@ class Migration {
     }
 
     private fun update() {
-        val databases = dbService.databases
+        val databases = dbService.catalogs
         for (database in databases) {
             executeMigrationsForDatabase(database)
         }
@@ -56,7 +56,7 @@ class Migration {
 
 
     private fun getVersion(database: String): String {
-        dbService.acquire(database).use {
+        dbService.acquireCatalog(database).use {
             val info = dbService.findAll(CatalogInfoType::class)
             val infoDoc = info?.get(0)
             val version = infoDoc?.get("version")
@@ -65,7 +65,7 @@ class Migration {
     }
 
     private fun setVersion(database: String, version: String) {
-        dbService.acquire(database).use {
+        dbService.acquireCatalog(database).use {
             val info = dbService.findAll(CatalogInfoType::class)
             val infoDoc = info?.get(0)
             if (infoDoc != null) {

@@ -7,14 +7,14 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.persistence.postgresql.jpa.EntityWithEmbeddedData
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
 
 /**
  * Jackson Serializer used when mapping instances of EntityWithEmbeddedData to strings.
  */
 class EmbeddedDataSerializer(
         val defaultSerializer: JsonSerializer<*>
-) : StdSerializer<EntityWithEmbeddedData>(EntityWithEmbeddedData::class.java) {
+) : StdSerializer<EntityWithEmbeddedData<*>>(EntityWithEmbeddedData::class.java) {
 
     companion object {
         private val defaultMapper: ObjectMapper by lazy {
@@ -24,12 +24,12 @@ class EmbeddedDataSerializer(
         }
     }
 
-    override fun serialize(value: EntityWithEmbeddedData, gen: JsonGenerator, provider: SerializerProvider) {
+    override fun serialize(value: EntityWithEmbeddedData<*>, gen: JsonGenerator, provider: SerializerProvider) {
         val node: ObjectNode = defaultMapper.valueToTree(value)
-        node["data"].fields().forEach {entry ->
+        val data = node.remove("data")
+        data.fields().forEach { entry ->
             node.replace(entry.key, entry.value)
         }
-        node.remove("data")
         gen.writeTree(node)
     }
 }

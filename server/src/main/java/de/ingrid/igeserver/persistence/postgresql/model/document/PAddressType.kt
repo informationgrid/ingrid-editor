@@ -5,9 +5,9 @@ import de.ingrid.igeserver.persistence.model.document.AddressType
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.document.impl.BaseAddressType
 import de.ingrid.igeserver.persistence.postgresql.PostgreSQLEntityType
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedData
-import de.ingrid.igeserver.persistence.postgresql.jpa.EntityBase
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 

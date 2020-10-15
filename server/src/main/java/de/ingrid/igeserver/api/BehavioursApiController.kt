@@ -27,7 +27,7 @@ class BehavioursApiController : BehavioursApi, Logging {
     override fun getBehaviours(principal: Principal?): ResponseEntity<List<Behaviour>> {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val behaviours = dbService.findAll(BehaviourType::class)!!
             val result = behaviours
                     .map {
@@ -46,7 +46,7 @@ class BehavioursApiController : BehavioursApi, Logging {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             for (behaviour in behaviours) {
                 val rid = dbService.getRecordId(BehaviourType::class, behaviour._id)
                 dbService.save(BehaviourType::class, rid, mapperService.getJsonNodeFromClass(behaviour))

@@ -1,8 +1,10 @@
-package de.ingrid.igeserver.persistence.postgresql.jpa.model
+package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.EntityBase
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithUuid
 import java.util.*
 import javax.persistence.*
 
@@ -12,7 +14,7 @@ import javax.persistence.*
 class DocumentWrapper(
 
     @Column(nullable=false)
-    val uuid: UUID = UUID.randomUUID(),
+    override val uuid: String = UUID.randomUUID().toString(),
 
     @Column(nullable=false)
     val type: String,
@@ -40,13 +42,14 @@ class DocumentWrapper(
     @JsonIgnore
     val published: Document?
 
-) : EntityBase(), EntityWithCatalog {
+) : EntityBase(), EntityWithUuid, EntityWithCatalog {
 
     @ManyToMany(cascade=[CascadeType.ALL], fetch=FetchType.LAZY)
     @JoinTable(
-            name = "document_archive",
-            joinColumns = [JoinColumn(name = "wrapper_id")],
-            inverseJoinColumns = [JoinColumn(name = "document_id")]
+            name="document_archive",
+            joinColumns=[JoinColumn(name = "wrapper_id")],
+            inverseJoinColumns=[JoinColumn(name = "document_id")]
     )
+    @JsonIgnore
     var archive: Set<Document> = setOf()
 }

@@ -20,7 +20,7 @@ class CatalogApiController : CatalogApi {
 
     override val catalogs: ResponseEntity<List<Catalog>>
         get() {
-            val catalogs = dbService.databases
+            val catalogs = dbService.catalogs
                     .map { catalogService.getCatalogById(it) }
                     .filterNotNull()
 

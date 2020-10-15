@@ -70,7 +70,7 @@ class AuditLogger {
                 if (to != null) QueryField("message.time", " <=", to.plusDays(1).format(ISO_LOCAL_DATE)) else null
         ).toList()
 
-        dbService.acquire(auditLogDB!!).use {
+        dbService.acquireDatabase(auditLogDB!!).use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false,

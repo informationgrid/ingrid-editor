@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import kotlin.reflect.KClass
 
 /**

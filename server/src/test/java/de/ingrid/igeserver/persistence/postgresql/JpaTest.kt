@@ -2,8 +2,8 @@ package de.ingrid.igeserver.persistence.postgresql
 
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.persistence.postgresql.jpa.embeddedMapOf
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.Catalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.model.document.AddressData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test

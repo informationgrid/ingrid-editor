@@ -168,7 +168,7 @@ class UsersApiController : UsersApi {
             throw InvalidParameterException.withInvalidParameters("info.userIds")
         }
 
-        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
             logger.info("Parameter: $info")
             val catalogName = info.catalogName
             userIds.forEach { addOrUpdateCatalogAdmin(catalogName, it) }
@@ -219,7 +219,7 @@ class UsersApiController : UsersApi {
     override fun assignedUsers(principal: Principal?, id: String): ResponseEntity<List<String>> {
 
         val result: MutableList<String> = ArrayList()
-        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
             val query = listOf(QueryField("catalogIds", id))
             val findOptions = FindOptions(
                     queryType = QueryType.CONTAINS,
@@ -233,7 +233,7 @@ class UsersApiController : UsersApi {
     override fun switchCatalog(principal: Principal?, catalogId: String): ResponseEntity<Void> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
             val query = listOf(QueryField("userId", userId))
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
@@ -243,7 +243,7 @@ class UsersApiController : UsersApi {
                 0L -> ObjectMapper().createObjectNode()
                 1L -> (info.hits[0] as ObjectNode)
                 else -> {
-                    throw PersistenceException.withMultipleEntities(userId, CatalogInfoType::class.simpleName, dbService.currentDatabase)
+                    throw PersistenceException.withMultipleEntities(userId, CatalogInfoType::class.simpleName, dbService.currentCatalog)
                 }
             }.put("currentCatalogId", catalogId)
 

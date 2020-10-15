@@ -1,12 +1,18 @@
-package de.ingrid.igeserver.persistence.postgresql.jpa.model
+package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.EntityWithEmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedData
+import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedMap
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithUuid
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithVersion
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.DefaultEntityWithEmbeddedData
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
+import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -17,7 +23,7 @@ import javax.persistence.*
 class Document(
 
     @Column(nullable=false)
-    val uuid: UUID = UUID.randomUUID(),
+    override val uuid: String = UUID.randomUUID().toString(),
 
     @Column(nullable=false)
     val title: String,
@@ -27,11 +33,14 @@ class Document(
     @JsonIgnore
     override var catalog: Catalog?,
 
-    data: EmbeddedData?
+    @Type(type="embeddedData")
+    @Column(columnDefinition="jsonb")
+    override var data: EmbeddedData? = EmbeddedMap()
 
-) : EntityWithEmbeddedData(data), EntityWithCatalog, EntityWithVersion {
+) : DefaultEntityWithEmbeddedData(type = data?.typeColumnValue),
+        EntityWithEmbeddedData<EmbeddedData>, EntityWithUuid, EntityWithCatalog, EntityWithVersion {
 
-    @ManyToMany(mappedBy = "archive")
+    @ManyToMany(mappedBy="archive")
     @JsonIgnore
     var archiveWrapper: Set<DocumentWrapper> = setOf()
 

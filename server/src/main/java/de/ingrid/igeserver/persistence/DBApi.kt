@@ -71,14 +71,14 @@ interface DBApi {
     fun <T : EntityType> remove(type: KClass<T>, query: Map<String, String>): Boolean
 
     /**
-     * Get all database names
+     * Get all catalog names
      */
-    val databases: Array<String>
+    val catalogs: Array<String>
 
     /**
-     * Get currently opened database if any (see acquire())
+     * Get currently opened catalog if any (see acquireCatalog())
      */
-    val currentDatabase: String?
+    val currentCatalog: String?
 
     /**
      * Create a catalog using the given name and return the name of the created catalog.
@@ -101,10 +101,16 @@ interface DBApi {
     fun catalogExists(name: String): Boolean
 
     /**
+     * Open a session to the catalog with the given name. With that it's possible to
+     * begin, commit and rollback transactions.
+     */
+    fun acquireCatalog(name: String): Closeable
+
+    /**
      * Open a session to the database with the given name. With that it's possible to
      * begin, commit and rollback transactions.
      */
-    fun acquire(name: String): Closeable
+    fun acquireDatabase(name: String): Closeable
 
     /**
      * Start a transaction in the acquired session

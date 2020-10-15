@@ -24,7 +24,7 @@ class IndexApiController @Autowired constructor(private val catalogService: Cata
 
     override fun setConfig(principal: Principal?, config: IndexConfigOptions): ResponseEntity<Void> {
 
-        dbService.acquire(config.catalogId).use {
+        dbService.acquireCatalog(config.catalogId).use {
             indexService.updateConfig(config.cronPattern)
             indexingTask.updateTaskTrigger(config.catalogId, config.cronPattern)
         }
@@ -34,7 +34,7 @@ class IndexApiController @Autowired constructor(private val catalogService: Cata
 
     override fun getConfig(principal: Principal?, id: String): ResponseEntity<IndexConfigOptions> {
 
-        dbService.acquire(id).use {
+        dbService.acquireCatalog(id).use {
             return ResponseEntity.ok(IndexConfigOptions(id, indexService.getConfig() ?: ""))
         }
 

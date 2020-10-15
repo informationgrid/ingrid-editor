@@ -32,7 +32,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
     fun getCurrentCatalogForUser(userId: String): String {
         val query = listOf(QueryField("userId", userId))
 
-        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false)
@@ -62,7 +62,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         val query = listOf(QueryField("userId", userId))
 
         // TODO: use cache!
-        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false)
@@ -86,7 +86,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         val query = listOf(QueryField("userId", userId))
 
         // TODO: use cache?
-        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false)
@@ -112,7 +112,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         if (!dbService.catalogExists(id)) {
             throw NotFoundException.withMissingResource(id, "Database")
         }
-        dbService.acquire(id).use {
+        dbService.acquireCatalog(id).use {
             val catalogInfo = dbService.findAll(CatalogInfoType::class)
             if (catalogInfo.isNotEmpty()) {
                 val jsonNode = catalogInfo[0]
@@ -139,7 +139,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
     private fun setFieldForUser(userId: String, fieldId: String, fieldValue: Any) {
         val query = listOf(QueryField("userId", userId))
 
-        dbService.acquire(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false)

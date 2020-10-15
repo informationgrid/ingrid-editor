@@ -37,7 +37,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             publish: Boolean): ResponseEntity<JsonNode> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val resultDoc = documentService.createDocument(data, address, publish)
             return ResponseEntity.ok(resultDoc)
         }
@@ -54,7 +54,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             revert: Boolean): ResponseEntity<JsonNode> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val resultDoc = if (revert) {
                 documentService.revertDocument(id)
             } else {
@@ -67,7 +67,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     override fun deleteById(principal: Principal?, ids: Array<String>): ResponseEntity<String> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             for (id in ids) {
                 // TODO: remove references to document!?
                 documentService.deleteRecursively(id)
@@ -82,7 +82,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             options: CopyOptions): ResponseEntity<List<JsonNode>> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val results = ids.map { id -> handleCopy(id, options) }
             return ResponseEntity.ok(results)
         }
@@ -94,7 +94,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             options: CopyOptions): ResponseEntity<Void> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
 //            dbService.beginTransaction()
             ids.forEach { id -> handleMove(id, options) }
 //            dbService.commitTransaction()
@@ -211,7 +211,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
     ): ResponseEntity<List<ObjectNode>> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val docs = documentService.findChildrenDocs(parentId, isAddress)
             val childDocs = docs.hits
                     .map { doc: JsonNode ->
@@ -227,7 +227,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
 
         var docs: FindAllResults
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val cat = FIELD_CATEGORY + " == " + if (forAddress) "\"address\"" else "\"data\""
             val queryMap = listOf(
                     QueryField("$cat AND draft.title", query  ?: ""),
@@ -254,7 +254,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             publish: Boolean?): ResponseEntity<JsonNode> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             val query = listOf(QueryField(FIELD_ID, id))
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
@@ -281,7 +281,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         val path: MutableList<String> = ArrayList()
         path.add(id)
 
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             while (true) {
                 val doc = documentService.getByDocumentId(parentId, DocumentWrapperType::class, false) ?: break
                 val nextParentId = doc[FIELD_PARENT]?.textValue()
