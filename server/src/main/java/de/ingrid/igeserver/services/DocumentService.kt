@@ -221,7 +221,7 @@ class DocumentService : MapperService() {
         val filterContext = DefaultContext.withCurrentProfile(dbService)
 
         // run pre-delete pipe(s)
-        val wrapper = getWrapperByDocumentId(id, false)
+        val wrapper = getWrapperByDocumentId(id, true)
         if (wrapper != null) {
             val data = getLatestDocumentVersion(wrapper, false)
             val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
