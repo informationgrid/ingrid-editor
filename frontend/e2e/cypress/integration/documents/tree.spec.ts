@@ -267,11 +267,16 @@ describe('Tree', () => {
       Tree.openNode([testFolder]);
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
 
-      // Bug #2115
-      Tree.deleteNode([testFolder, docName]);
+      // Bug/Feature #2115: empty folders cannot be deleted
+      Tree.selectNodeWithTitle(docName);
+      DocumentPage.deleteLoadedNode();
+      cy.wait(300);
+      Tree.selectNodeWithTitle(testFolder);
+      DocumentPage.deleteLoadedNode();
 
       Tree.openNode([ 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
 
+      // TODO: the function "selectNodeWithChecks" does not belong to CopyCutUtils, right?
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
     });
 

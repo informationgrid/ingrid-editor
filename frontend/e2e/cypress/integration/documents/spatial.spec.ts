@@ -35,6 +35,8 @@ describe('Spatial References', () => {
   });
 
   it('should add additional a spatial reference (bbox)', () => {
+    // TODO: this test should not depend on other test 'should create a new spatial reference (bbox)'
+    //       if another document with this this name exists, then this test breaks
     DocumentPage.getDocument('bbox');
 
     enterTestDataSteps.setMcloudSpatialBbox('add spatial reference, bbox', 'Berlin');
@@ -53,6 +55,7 @@ describe('Spatial References', () => {
   it('should add additional a spatial reference (WKT)', () => {
     const poly = 'POLYGON((1 5, 5 9, 1 7, 2 1, 3 5)(5 5, 5 7, 7 7, 7 5, 5 5))'
 
+    // TODO: this test should not depend on other test
     DocumentPage.getDocument('wkt');
 
     enterTestDataSteps.setMcloudSpatialWKT('add spatial reference, wkt-2', poly);
@@ -68,6 +71,7 @@ describe('Spatial References', () => {
   });
 
   it('should update a spatial reference (bbox)', () => {
+    // TODO: this test should not depend on other test
     DocumentPage.getDocument('bbox');
 
     enterTestDataSteps.openSpatialMenuMcloudDoc('Berlin');
@@ -84,6 +88,7 @@ describe('Spatial References', () => {
   });
 
   it('should remove spatial references', () => {
+    // TODO: this test should not depend on other test
     DocumentPage.getDocument('bbox');
 
     enterTestDataSteps.openSpatialMenuMcloudDoc('Hamburg');

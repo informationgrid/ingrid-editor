@@ -59,3 +59,4 @@ frontend/cypress/mochawesome-reports/
 /server/.gradle/
 server/src/main/resources/static/
 server/server/build/tmp/
+/codelists/

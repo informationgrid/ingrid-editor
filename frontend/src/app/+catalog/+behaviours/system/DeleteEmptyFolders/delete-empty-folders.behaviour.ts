@@ -72,11 +72,9 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
         take(1)
       )
       .pipe(map(docs => {
-        const docsWithChildren = []
-        docs.forEach(doc => {
-          if (doc._hasChildren) docsWithChildren.push(doc.title)
-        });
-        return docsWithChildren;
+        return docs
+          .filter(doc => doc._hasChildren)
+          .map(doc => doc.title);
       }));
   }
 

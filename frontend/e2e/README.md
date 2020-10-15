@@ -38,6 +38,11 @@ If we are all set, then we can run the test by executing the following command i
 npm run cypress:run
 ```
 
+And to run a single test:
+```bash
+npm run cypress:run -- --record --spec "cypress/integration/documents/type/mcloud.spec.ts"
+```
+
 # Tests Convention
 
 For each topic a spec file should be written It's also possible to define multiple
