@@ -14,19 +14,17 @@ interface DBApi {
     }
 
     /**
-     * Get the database record ID of a document of the given type and UUID.
+     * Get the database record ID of a document of the given type and an document id.
+     * NOTE The id is a domain specific identifier that is used to distinguish instances of the same type,
+     * e.g. UUID for document wrappers or name for behaviours. If a type does not define a identifier an exception
+     * will be thrown.
      */
-    fun <T : EntityType> getRecordId(type: KClass<T>, docUuid: String): String?
+    fun <T : EntityType> getRecordId(type: KClass<T>, docId: String): String?
 
     /**
      * Get the database record ID of a document.
      */
     fun getRecordId(doc: JsonNode): String?
-
-    /**
-     * Get the database version of a document.
-     */
-    fun getVersion(doc: JsonNode): Int?
 
     /**
      * Remove the internal fields added by the database from a document.

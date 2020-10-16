@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import javax.persistence.*
@@ -11,6 +12,7 @@ import javax.persistence.*
 class Catalog(
 
     @Column(nullable=false)
+    @JsonProperty("id")
     val identifier: String,
 
     @Column(nullable=false)
@@ -23,6 +25,7 @@ class Catalog(
     val description: String? = null,
 
     @Column
+    @JsonIgnore
     val version: String? = null,
 
 ) : EntityBase() {

@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
-import org.springframework.test.context.transaction.TestTransaction
+//import org.springframework.test.context.transaction.TestTransaction
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IgeServer::class])

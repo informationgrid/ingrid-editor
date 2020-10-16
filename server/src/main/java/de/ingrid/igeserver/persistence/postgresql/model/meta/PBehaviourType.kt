@@ -12,9 +12,16 @@ import kotlin.reflect.KClass
 @Component
 class PBehaviourType : BaseBehaviourType(), PostgreSQLEntityType {
 
+    companion object {
+        private const val ID_ATTRIBUTE = "name"
+    }
+
     override val entityType: KClass<out EntityType>
         get() = BehaviourType::class
 
     override val jpaType: KClass<out EntityBase>
         get() = Behaviour::class
+
+    override val idAttribute: String?
+        get() = ID_ATTRIBUTE
 }

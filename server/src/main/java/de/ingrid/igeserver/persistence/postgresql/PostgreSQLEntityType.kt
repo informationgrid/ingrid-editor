@@ -15,4 +15,11 @@ interface PostgreSQLEntityType : JpaEntityType {
      * The implemented entity type.
      */
     val entityType: KClass<out EntityType>
+
+    /**
+     * The name of attribute which holds the domain specific identifier used to distinguish instances.
+     * NOTE This is not the database record ID, but a domain specific value if existing (e.g. uuid of a document wrapper)
+     */
+    val idAttribute: String?
+        get() = null
 }

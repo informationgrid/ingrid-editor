@@ -12,9 +12,16 @@ import kotlin.reflect.KClass
 @Component
 class PUserInfoType : BaseUserInfoType(), PostgreSQLEntityType {
 
+    companion object {
+        private const val ID_ATTRIBUTE = "userId"
+    }
+
     override val entityType: KClass<out EntityType>
         get() = UserInfoType::class
 
     override val jpaType: KClass<out EntityBase>
         get() = UserInfo::class
+
+    override val idAttribute: String?
+        get() = ID_ATTRIBUTE
 }

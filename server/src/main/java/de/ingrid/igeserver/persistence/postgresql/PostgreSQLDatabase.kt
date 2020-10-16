@@ -18,7 +18,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataTypeRe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithRecordId
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithUuid
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import de.ingrid.igeserver.services.FIELD_VERSION
 import org.apache.logging.log4j.kotlin.logger
@@ -34,13 +33,12 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 
-
 @Service
 class PostgreSQLDatabase : DBApi {
 
     companion object {
-        private const val DB_ID = "id"
-        private const val DB_VERSION = "version"
+        private const val DB_ID = "db_id"
+        private const val DB_VERSION = "db_version"
 
         private val INTERNAL_FIELDS = listOf(DB_ID, DB_VERSION)
     }
@@ -108,14 +106,21 @@ class PostgreSQLDatabase : DBApi {
 
     private val log = logger()
 
-    override fun <T : EntityType> getRecordId(type: KClass<T>, docUuid: String): String? {
+    override fun <T : EntityType> getRecordId(type: KClass<T>, docId: String): String? {
         val typeImpl = getEntityTypeImpl(type)
-        // the record id can only be determined if type has a uuid and a record id
-        return if (typeImpl.jpaType.isSubclassOf(EntityWithRecordId::class) && typeImpl.jpaType.isSubclassOf(EntityWithUuid::class)) {
-            val queryStr = "SELECT e FROM ${typeImpl.jpaType.simpleName} e WHERE e.uuid = :uuid"
-            val entity = entityManager.createQuery(queryStr, typeImpl.jpaType.java).
-                    setParameter("uuid", docUuid).singleResult
-            return (entity as EntityWithRecordId).id?.toString()
+        if (typeImpl.idAttribute == null) {
+            throw PersistenceException.withReason("Entity type '$type' does not define an id attribute.")
+        }
+        // the record id can only be determined if type has a record id
+        return if (typeImpl.jpaType.isSubclassOf(EntityWithRecordId::class)) {
+            val queryStr = "SELECT e FROM ${typeImpl.jpaType.simpleName} e WHERE e.${typeImpl.idAttribute} = :docId"
+            val entities = entityManager.createQuery(queryStr, typeImpl.jpaType.java).
+                    setParameter("docId", docId).resultList
+            if (entities.size == 1) {
+                (entities[0] as EntityWithRecordId).id?.toString()
+            } else {
+                throw PersistenceException.withMultipleEntities(docId, type.simpleName, currentCatalog)
+            }
         } else null
     }
 
@@ -123,16 +128,12 @@ class PostgreSQLDatabase : DBApi {
         return doc[DB_ID]?.asText()
     }
 
-    override fun getVersion(doc: JsonNode): Int? {
-        return doc[DB_VERSION]?.asInt()
-    }
-
     override fun removeInternalFields(doc: JsonNode) {
         val objNode = doc as ObjectNode
 
-        val version = getVersion(doc)
+        val version = if (doc.hasNonNull(DB_VERSION)) doc[DB_VERSION].intValue() else null
         if (version != null) {
-            objNode.put(FIELD_VERSION, version)
+            objNode.put(FIELD_VERSION, version.toString())
         }
 
         INTERNAL_FIELDS.forEach {
@@ -244,7 +245,7 @@ class PostgreSQLDatabase : DBApi {
 
     override val catalogs: Array<String>
         get() {
-            return findAll(CatalogInfoType::class).map { it["identifier"].textValue() }.toTypedArray()
+            return findAll(CatalogInfoType::class).map { it["id"].textValue() }.toTypedArray()
         }
 
     override val currentCatalog: String?

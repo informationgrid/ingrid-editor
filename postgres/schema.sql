@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS ige;
 
-CREATE DATABASE ige;
+CREATE DATABASE ige ENCODING 'UTF8';
 
 \c ige;
 
@@ -28,6 +28,7 @@ CREATE TABLE catalog_user_info (
 CREATE TABLE behaviour (
   id              serial PRIMARY KEY,
   catalog_id      integer NOT NULL REFERENCES catalog(id) ON DELETE CASCADE,
+  name            varchar(255) NOT NULL,
   active          boolean NOT NULL,
   data            jsonb
 );

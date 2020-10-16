@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
@@ -10,8 +11,12 @@ import javax.persistence.*
 
 @NoArgs
 @Entity
-@Table(name="user_info")
+@Table(name="behaviour")
 class Behaviour(
+
+    @Column(nullable=false)
+    @JsonProperty("_id")
+    val name: String,
 
     @Column(nullable=false)
     val active: Boolean,

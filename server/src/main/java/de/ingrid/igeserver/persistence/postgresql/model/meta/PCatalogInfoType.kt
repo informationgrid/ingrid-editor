@@ -12,9 +12,16 @@ import kotlin.reflect.KClass
 @Component
 class PCatalogInfoType : BaseCatalogInfoType(), PostgreSQLEntityType {
 
+    companion object {
+        private const val ID_ATTRIBUTE = "identifier"
+    }
+
     override val entityType: KClass<out EntityType>
         get() = CatalogInfoType::class
 
     override val jpaType: KClass<out EntityBase>
         get() = Catalog::class
+
+    override val idAttribute: String?
+        get() = ID_ATTRIBUTE
 }

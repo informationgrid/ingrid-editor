@@ -8,8 +8,10 @@ import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
+import de.ingrid.igeserver.persistence.model.meta.BehaviourType
+import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
+import de.ingrid.igeserver.services.*
 import org.assertj.core.api.Assertions
-import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,69 +19,17 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.format.DateTimeFormatter
 
 @RunWith(SpringRunner::class)
-@SpringBootTest(classes=[IgeServer::class])
+@SpringBootTest(classes = [IgeServer::class])
 @ActiveProfiles("postgresql")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(statements = [
-    "TRUNCATE TABLE document RESTART IDENTITY CASCADE;",
-    "TRUNCATE TABLE catalog RESTART IDENTITY CASCADE;",
-    "TRUNCATE TABLE audit_log RESTART IDENTITY CASCADE;",
-    "INSERT INTO catalog VALUES (1000, 'test_catalog', 'uvp', 'Test Catalog', NULL, NULL);",
-    """
-    INSERT INTO document VALUES (1000, 1000, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'Test Document', '{
-            "company": "LWL-Schulverwaltung Münster",
-            "lastName": "Mustermann",
-            "firstName": "Petra"
-        }',
-        0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00'
-    );
-    """,
-    """
-    INSERT INTO audit_log VALUES (1000, 'AuditLog', '{
-            "cat": "data-history", 
-            "data": {
-                "uuid": "36169aa1-5faf-4d8e-9dd6-18c95012312d", "id": "41", "type": "mCloudDoc", 
-                "title": "Test", "version": 1, "created": "2020-10-01T21:06:43.353678100+02:00", "modified": "2020-10-01T21:06:43.353678100+02:00"
-            },
-            "time": "2020-10-01T21:06:43.389732400+02:00", "actor": "user1", "action": "create", "target": "36169aa1-5faf-4d8e-9dd6-18c95012312d"
-        }',
-        'AuditLogger.kt', 'de.ingrid.igeserver.services.AuditLogger', 'log', '52', 'audit.data-history', 'http-nio-8550-exec-6', 'INFO',
-        '2020-10-13 14:00:54.551484+00'
-    );
-    """,
-    """
-    INSERT INTO audit_log VALUES (1001, 'AuditLog', '{
-            "cat": "data-history", 
-            "data": {
-                "uuid": "36169aa1-5faf-4d8e-9dd6-18c95012312d", "id": "41", "type": "mCloudDoc", 
-                "title": "Test", "description": "Test description", "version": 1, "created": "2020-10-01T21:06:43.353678100+02:00", "modified": "2020-10-01T21:06:43.353678100+02:00"
-            },
-            "time": "2020-10-01T21:06:43.389732400+02:00", "actor": "user1", "action": "update", "target": "36169aa1-5faf-4d8e-9dd6-18c95012312d"
-        }',
-        'AuditLogger.kt', 'de.ingrid.igeserver.services.AuditLogger', 'log', '52', 'audit.data-history', 'http-nio-8550-exec-6', 'INFO',
-        '2020-10-13 14:01:54.551484+00'
-    );
-    """,
-    """
-    INSERT INTO audit_log VALUES (1002, 'AuditLog', '{
-            "cat": "data-history", 
-            "data": {
-                "uuid": "4e91e8f8-1e16-c4d2-6689-02adc03fb352", "id": "41", "type": "mCloudDoc", 
-                "title": "Test2", "version": 1, "created": "2020-10-01T21:06:43.353678100+02:00", "modified": "2020-10-01T21:06:43.353678100+02:00"
-            },
-            "time": "2020-10-01T21:06:43.389732400+02:00", "actor": "user1", "action": "delete", "target": "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
-        }',
-        'AuditLogger.kt', 'de.ingrid.igeserver.services.AuditLogger', 'log', '52', 'audit.data-history', 'http-nio-8550-exec-6', 'INFO',
-        '2020-10-13 14:02:54.551484+00'
-    );
-    """
-])
+@Sql(scripts=["/test_data.sql"], config=SqlConfig(encoding="UTF-8"))
 class PostgreSQLDatabaseTest {
 
     @Autowired
@@ -91,31 +41,38 @@ class PostgreSQLDatabaseTest {
 
         val loadedDoc = dbService.find(DocumentType::class, id)!!
 
-        Assertions.assertThat(loadedDoc["id"].toString()).isEqualTo(id)
-        Assertions.assertThat(loadedDoc["version"].intValue()).isEqualTo(0)
-        Assertions.assertThat(loadedDoc["uuid"].textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(loadedDoc["db_id"].intValue()).isEqualTo(1000)
+        Assertions.assertThat(loadedDoc["db_version"].intValue()).isEqualTo(0)
+        Assertions.assertThat(dbService.getRecordId(loadedDoc)).isEqualTo("1000")
+
+        Assertions.assertThat(loadedDoc[FIELD_ID].textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(loadedDoc[FIELD_DOCUMENT_TYPE].textValue()).isEqualTo("AddressDoc")
+        Assertions.assertThat(loadedDoc[FIELD_CREATED].textValue()).isEqualTo("2020-10-10 00:48:28")
+        Assertions.assertThat(loadedDoc[FIELD_MODIFIED].textValue()).isEqualTo("2020-10-10 00:48:28")
         Assertions.assertThat(loadedDoc["title"].textValue()).isEqualTo("Test Document")
         Assertions.assertThat(loadedDoc["firstName"].textValue()).isEqualTo("Petra")
         Assertions.assertThat(loadedDoc["lastName"].textValue()).isEqualTo("Mustermann")
         Assertions.assertThat(loadedDoc["company"].textValue()).isEqualTo("LWL-Schulverwaltung Münster")
-        Assertions.assertThat(loadedDoc["type"].textValue()).isEqualTo("AddressDoc")
         Assertions.assertThat(loadedDoc.has("data")).isFalse
         Assertions.assertThat(loadedDoc.has("dataFields")).isFalse
 
-        Assertions.assertThat(dbService.getRecordId(loadedDoc)).isEqualTo("1000")
-        Assertions.assertThat(dbService.getVersion(loadedDoc)).isEqualTo(0)
+        dbService.removeInternalFields(loadedDoc)
+
+        Assertions.assertThat(loadedDoc.has("db_id")).isFalse
+        Assertions.assertThat(loadedDoc.has("db_version")).isFalse
+        Assertions.assertThat(loadedDoc[FIELD_VERSION].intValue()).isEqualTo(0)
     }
 
     @Test
     fun `creating a document`() {
         val doc = """
             {
-                "uuid":"e68c9447-9c4e-45cc-9db7-557b3bcc1db9",
+                "_id":"e68c9447-9c4e-45cc-9db7-557b3bcc1db9",
+                "_type":"AddressDoc",
                 "title":"Test Document",
                 "firstName":"Petra",
                 "lastName":"Mustermann",
-                "company":"LWL-Schulverwaltung Münster",
-                "type":"AddressDoc"
+                "company":"LWL-Schulverwaltung Münster"
             }
         """
 
@@ -124,14 +81,18 @@ class PostgreSQLDatabaseTest {
             savedDoc = dbService.save(DocumentType::class, null, doc)
         }
 
-        Assertions.assertThat(savedDoc?.get("id")?.intValue()).isNotNull
-        Assertions.assertThat(savedDoc?.get("version")?.intValue()).isEqualTo(0)
-        Assertions.assertThat(savedDoc?.get("uuid")?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
+        Assertions.assertThat(savedDoc?.get("db_id")?.intValue()).isNotNull
+        Assertions.assertThat(savedDoc?.get("db_version")?.intValue()).isEqualTo(0)
+        Assertions.assertThat(dbService.getRecordId(savedDoc!!)).isNotNull
+
+        Assertions.assertThat(savedDoc?.get(FIELD_ID)?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
+        Assertions.assertThat(savedDoc?.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("AddressDoc")
+        Assertions.assertThat(savedDoc?.get(FIELD_CREATED)?.textValue()).isNotNull
+        Assertions.assertThat(savedDoc?.get(FIELD_MODIFIED)?.textValue()).isNotNull
         Assertions.assertThat(savedDoc?.get("title")?.textValue()).isEqualTo("Test Document")
         Assertions.assertThat(savedDoc?.get("firstName")?.textValue()).isEqualTo("Petra")
         Assertions.assertThat(savedDoc?.get("lastName")?.textValue()).isEqualTo("Mustermann")
         Assertions.assertThat(savedDoc?.get("company")?.textValue()).isEqualTo("LWL-Schulverwaltung Münster")
-        Assertions.assertThat(savedDoc?.get("type")?.textValue()).isEqualTo("AddressDoc")
         Assertions.assertThat(savedDoc?.has("data")).isFalse
         Assertions.assertThat(savedDoc?.has("dataFields")).isFalse
     }
@@ -140,11 +101,11 @@ class PostgreSQLDatabaseTest {
     fun `updating a document`() {
         val doc = """
             {
-                "uuid":"e68c9447-9c4e-45cc-9db7-557b3bcc1db9",
+                "_id":"e68c9447-9c4e-45cc-9db7-557b3bcc1db9",
+                "_type":"AddressDoc",
                 "title":"Test Document Geändert",
                 "firstName":"Peter",
-                "company":"LWL-Kliniken",
-                "type":"AddressDoc"
+                "company":"LWL-Kliniken"
             }
         """
 
@@ -153,30 +114,34 @@ class PostgreSQLDatabaseTest {
             savedDoc = dbService.save(DocumentType::class, "1000", doc)
         }
 
-        Assertions.assertThat(savedDoc?.get("id")?.intValue()).isNotNull
-        Assertions.assertThat(savedDoc?.get("version")?.intValue()).isEqualTo(1)
-        Assertions.assertThat(savedDoc?.get("uuid")?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
+        Assertions.assertThat(savedDoc?.get("db_id")?.intValue()).isEqualTo(1000)
+        Assertions.assertThat(savedDoc?.get("db_version")?.intValue()).isEqualTo(1)
+        Assertions.assertThat(dbService.getRecordId(savedDoc!!)).isEqualTo("1000")
+
+        Assertions.assertThat(savedDoc?.get(FIELD_ID)?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
+        Assertions.assertThat(savedDoc?.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("AddressDoc")
+        Assertions.assertThat(savedDoc?.get(FIELD_CREATED)?.textValue()).isNotNull
+        Assertions.assertThat(savedDoc?.get(FIELD_MODIFIED)?.textValue()).isNotNull
         Assertions.assertThat(savedDoc?.get("title")?.textValue()).isEqualTo("Test Document Geändert")
         Assertions.assertThat(savedDoc?.get("firstName")?.textValue()).isEqualTo("Peter")
         Assertions.assertThat(savedDoc?.get("lastName")?.textValue()).isEqualTo("Mustermann")
         Assertions.assertThat(savedDoc?.get("company")?.textValue()).isEqualTo("LWL-Kliniken")
-        Assertions.assertThat(savedDoc?.get("type")?.textValue()).isEqualTo("AddressDoc")
         Assertions.assertThat(savedDoc?.has("data")).isFalse
         Assertions.assertThat(savedDoc?.has("dataFields")).isFalse
     }
 
     @Test
     fun `getting a record id`() {
-        val uuid = "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
+        val catalogId = dbService.getRecordId(CatalogInfoType::class, "test_catalog")!!
+        Assertions.assertThat(catalogId).isEqualTo("100")
 
-        val recordId = dbService.getRecordId(DocumentType::class, uuid)!!
-
-        Assertions.assertThat(recordId).isEqualTo("1000")
+        val behaviourId = dbService.getRecordId(BehaviourType::class, "plugin.sort.tree.by.type")!!
+        Assertions.assertThat(behaviourId).isEqualTo("201")
     }
 
     @Test
     fun `finding all documents`() {
-        var result: List<JsonNode>? = null
+        var result: List<JsonNode>?
         dbService.acquireDatabase("audit_log").use {
             result = dbService.findAll(AuditLogRecordType::class)
         }
@@ -197,7 +162,7 @@ class PostgreSQLDatabaseTest {
                 QueryField("message.data.description", "Test description")
         ).toList()
 
-        var result: FindAllResults? = null
+        var result: FindAllResults?
         dbService.acquireDatabase("audit_log").use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
@@ -225,7 +190,7 @@ class PostgreSQLDatabaseTest {
                 QueryField("data.data.description", "Test description")
         ).toList()
 
-        var result: FindAllResults? = null
+        var result: FindAllResults?
         dbService.acquireDatabase("audit_log").use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
@@ -250,11 +215,11 @@ class PostgreSQLDatabaseTest {
                 QueryField("actor", "user1"),
                 QueryField("time", " >=", from.format(DateTimeFormatter.ISO_LOCAL_DATE)),
                 QueryField("time", " <=", from.plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)),
-                // NOTE because "data.description" is ambiguous, wen need to specify the full path
+                // NOTE because "data.description" is ambiguous, we need to specify the full path
                 QueryField("message.data.description", "Test description")
         ).toList()
 
-        var result: FindAllResults? = null
+        var result: FindAllResults?
         dbService.acquireDatabase("audit_log").use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,

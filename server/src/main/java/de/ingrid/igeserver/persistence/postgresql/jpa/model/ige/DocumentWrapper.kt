@@ -1,10 +1,10 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithUuid
 import java.util.*
 import javax.persistence.*
 
@@ -14,17 +14,20 @@ import javax.persistence.*
 class DocumentWrapper(
 
     @Column(nullable=false)
-    override val uuid: String = UUID.randomUUID().toString(),
+    @JsonProperty("_id")
+    val uuid: String = UUID.randomUUID().toString(),
 
     @Column(nullable=false)
+    @JsonProperty("_type")
     val type: String,
 
     @Column(nullable=false)
+    @JsonIgnore
     val category: String,
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="parent_id", nullable=true)
-    @JsonIgnore
+    @JsonProperty("_parent")
     val parent: DocumentWrapper?,
 
     @ManyToOne(fetch=FetchType.LAZY)
@@ -42,7 +45,7 @@ class DocumentWrapper(
     @JsonIgnore
     val published: Document?
 
-) : EntityBase(), EntityWithUuid, EntityWithCatalog {
+) : EntityBase(), EntityWithCatalog {
 
     @ManyToMany(cascade=[CascadeType.ALL], fetch=FetchType.LAZY)
     @JoinTable(

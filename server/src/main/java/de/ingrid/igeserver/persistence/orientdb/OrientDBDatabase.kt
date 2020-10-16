@@ -149,9 +149,9 @@ class OrientDBDatabase : DBApi {
     /**
      * DBApi interface implementation
      */
-    override fun <T : EntityType> getRecordId(type: KClass<T>, docUuid: String): String? {
+    override fun <T : EntityType> getRecordId(type: KClass<T>, docId: String): String? {
         val typeImpl = getEntityTypeImpl(type)
-        val queryString = "SELECT * FROM ${typeImpl.className} WHERE _id == '$docUuid'"
+        val queryString = "SELECT * FROM ${typeImpl.className} WHERE _id == '$docId'"
         val docs = dBFromThread.query(queryString)
         if (docs.hasNext()) {
             val doc = docs.next()
@@ -159,7 +159,7 @@ class OrientDBDatabase : DBApi {
                 docs.close()
                 return doc.identity.get().toString()
             } else {
-                throw PersistenceException.withMultipleEntities(docUuid, type.simpleName, currentCatalog)
+                throw PersistenceException.withMultipleEntities(docId, type.simpleName, currentCatalog)
             }
         }
         return null
@@ -169,14 +169,10 @@ class OrientDBDatabase : DBApi {
         return doc[DB_ID]?.asText()
     }
 
-    override fun getVersion(doc: JsonNode): Int? {
-        return doc[DB_VERSION]?.asInt()
-    }
-
     override fun removeInternalFields(doc: JsonNode) {
         val objNode = doc as ObjectNode
 
-        val version = getVersion(doc)
+        val version = doc[DB_VERSION].textValue()
         if (version != null) {
             objNode.put(FIELD_VERSION, version)
         }

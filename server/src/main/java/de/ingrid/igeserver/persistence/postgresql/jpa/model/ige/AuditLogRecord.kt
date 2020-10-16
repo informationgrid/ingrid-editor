@@ -2,7 +2,6 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.DefaultEntityWithEmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.AuditLogRecordData
 import org.hibernate.annotations.Type
@@ -17,8 +16,11 @@ class AuditLogRecord(
     @Column(name="message", columnDefinition="jsonb")
     override var data: AuditLogRecordData?
 
-) : DefaultEntityWithEmbeddedData(type = data?.typeColumnValue),
-        EntityWithEmbeddedData<AuditLogRecordData> {
+) : DefaultEntityWithEmbeddedData<AuditLogRecordData>() {
+
+    @Column(nullable=false)
+    @JsonProperty("_type")
+    override var type: String? = data?.typeColumnValue
 
     @Column
     val file: String? = null

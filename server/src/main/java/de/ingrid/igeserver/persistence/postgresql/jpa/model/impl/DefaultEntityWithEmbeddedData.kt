@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import de.ingrid.igeserver.annotations.NoArgs
+import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataUserType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.TypeDefs
 import java.util.*
-import javax.persistence.Column
 import javax.persistence.MappedSuperclass
 
 /**
@@ -21,12 +22,7 @@ import javax.persistence.MappedSuperclass
         TypeDef(name = "jsonb", typeClass = JsonBinaryType::class),
         TypeDef(name = "embeddedData", typeClass = EmbeddedDataUserType::class)
 )
-abstract class DefaultEntityWithEmbeddedData(
-
-    @Column(nullable=false)
-    var type: String?
-
-) : EntityBase() {
+abstract class DefaultEntityWithEmbeddedData<T: EmbeddedData> : EntityBase(), EntityWithEmbeddedData<T> {
 
     /**
      * Collects data fields into map when deserializing to be used by deserializer later
@@ -35,5 +31,5 @@ abstract class DefaultEntityWithEmbeddedData(
     @JsonAnySetter
     @Transient
     @get:JsonIgnore
-    var dataFields: Map<String, Any>? = HashMap()
+    override var dataFields: Map<String, Any>? = HashMap()
 }
