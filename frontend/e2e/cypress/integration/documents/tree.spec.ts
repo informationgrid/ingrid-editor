@@ -315,6 +315,9 @@ describe('Tree', () => {
       Tree.selectNodeWithTitle(testFolder);
       CopyCutUtils.move();
 
+      // wait a bit after move so that we use the right dom state
+      cy.wait(200);
+
       Tree.selectNodeWithTitle(testFolder);
       Tree.openNode([testFolder, docName]);
 
