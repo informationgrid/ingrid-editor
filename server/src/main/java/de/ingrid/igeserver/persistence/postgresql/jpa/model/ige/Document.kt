@@ -22,7 +22,7 @@ import javax.persistence.*
 class Document(
 
     @Column(nullable=false)
-    @JsonProperty("_id")
+    @field:JsonProperty("_id")
     val uuid: String = UUID.randomUUID().toString(),
 
     @Column(nullable=false)
@@ -40,7 +40,7 @@ class Document(
 ) : DefaultEntityWithEmbeddedData<EmbeddedData>(), EntityWithCatalog, EntityWithVersion {
 
     @Column(nullable=false)
-    @JsonProperty("_type")
+    @field:JsonProperty("_type")
     override var type: String? = data?.typeColumnValue
 
     @ManyToMany(mappedBy="archive")
@@ -48,17 +48,17 @@ class Document(
     var archiveWrapper: Set<DocumentWrapper> = setOf()
 
     @Version
-    @JsonProperty("db_version")
+    @field:JsonProperty("db_version")
     override var version: Int? = null
 
     @Column
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", shape=JsonFormat.Shape.STRING)
-    @JsonProperty("_created")
+    @field:JsonProperty("_created")
     var created: LocalDateTime? = null
 
     @Column
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", shape=JsonFormat.Shape.STRING)
-    @JsonProperty("_modified")
+    @field:JsonProperty("_modified")
     var modified: LocalDateTime? = null
 
     @PrePersist

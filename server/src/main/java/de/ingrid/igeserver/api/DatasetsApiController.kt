@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
@@ -216,7 +213,7 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             val childDocs = docs.hits
                     .map { doc: JsonNode ->
                         val node = documentService.getLatestDocument(doc, resolveLinks = false)
-                        node.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc, DocumentWrapperType::class))
+                        node.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc))
                         node
                     }
             return ResponseEntity.ok(childDocs)
@@ -228,18 +225,31 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
         var docs: FindAllResults
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         dbService.acquireCatalog(dbId).use {
-            val cat = FIELD_CATEGORY + " == " + if (forAddress) "\"address\"" else "\"data\""
-            val queryMap = listOf(
-                    QueryField("$cat AND draft.title", query  ?: ""),
-                    QueryField("$cat AND draft IS NULL AND published.title", query  ?: "")
-            )
-            val findOptions = FindOptions(
-                    size = size,
+            val cat = if (forAddress) "address" else "data"
+
+            val queryOptions = QueryOptions(
                     queryType = QueryType.LIKE,
+                    queryOperator = QueryOperator.AND
+            )
+            val queryMap = listOf(
+                    Pair(listOf(
+                            QueryField(FIELD_CATEGORY, " =", cat),
+                            QueryField("draft.title", query  ?: "")
+                    ), queryOptions),
+                    Pair(listOf(
+                            QueryField(FIELD_CATEGORY, " =", cat),
+                            QueryField("draft", null),
+                            QueryField("published.title", query  ?: "")
+                    ), queryOptions)
+            )
+
+            val findOptions = FindOptions(
+                    queryOperator = QueryOperator.OR,
+                    size = size,
                     sortField = sort,
                     sortOrder = sortOrder,
                     resolveReferences = true)
-            docs = dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
+            docs = dbService.findAllExt(DocumentWrapperType::class, queryMap, findOptions)
             val searchResult = SearchResult<ObjectNode>()
             searchResult.totalHits = docs.totalHits
             searchResult.hits = docs.hits

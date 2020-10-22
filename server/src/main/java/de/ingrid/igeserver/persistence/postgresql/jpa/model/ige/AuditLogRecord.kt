@@ -19,14 +19,14 @@ class AuditLogRecord(
 ) : DefaultEntityWithEmbeddedData<AuditLogRecordData>() {
 
     @Column(nullable=false)
-    @JsonProperty("_type")
+    @field:JsonProperty("_type")
     override var type: String? = data?.typeColumnValue
 
     @Column
     val file: String? = null
 
     @Column(name="class")
-    @JsonProperty("class")
+    @field:JsonProperty("class")
     val clazz: String? = null
 
     @Column

@@ -6,6 +6,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.model.document.AddressData
 import org.assertj.core.api.Assertions.assertThat
+import org.hibernate.query.NativeQuery
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -135,5 +136,13 @@ class JpaTest {
         assertThat(addressData.firstName).isEqualTo("Petra")
         assertThat(addressData.lastName).isEqualTo("Mustermann")
         assertThat(addressData.company).isEqualTo("LWL-Schulverwaltung Münster")
+
+        val q2 = em.createNativeQuery("SELECT * FROM document d JOIN catalog c ON d.catalog_id = c.id WHERE c.type = :type")
+                .unwrap(NativeQuery::class.java)
+                .addEntity("doc", Document::class.java)
+                //.addJoin("c", "doc.catalog")
+                .setParameter("type", "uvp")
+        val result2 = q2.resultList
+        assertThat(result2.size).isEqualTo(4)
     }
 }

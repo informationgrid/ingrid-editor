@@ -15,7 +15,7 @@ import javax.persistence.*
 class Behaviour(
 
     @Column(nullable=false)
-    @JsonProperty("_id")
+    @field:JsonProperty("_id")
     val name: String,
 
     @Column(nullable=false)

@@ -3,10 +3,9 @@ package de.ingrid.igeserver.persistence.postgresql
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.document.DocumentType
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
 import de.ingrid.igeserver.persistence.model.meta.BehaviourType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
@@ -140,6 +139,12 @@ class PostgreSQLDatabaseTest {
     }
 
     @Test
+    fun `counting children`() {
+        val count = dbService.countChildren("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(count).isEqualTo(2)
+    }
+
+    @Test
     fun `finding all documents`() {
         var result: List<JsonNode>?
         dbService.acquireDatabase("audit_log").use {
@@ -151,7 +156,7 @@ class PostgreSQLDatabaseTest {
     }
 
     @Test
-    fun `finding documents by query, include embedded data column name`() {
+    fun `finding documents by query, query embedded json by data column name`() {
         val from = LocalDateTime.of(2020, Month.OCTOBER, 1, 0, 0, 0)
         val queryMap = listOfNotNull(
                 QueryField("logger", "audit.data-history"),
@@ -165,11 +170,7 @@ class PostgreSQLDatabaseTest {
         var result: FindAllResults?
         dbService.acquireDatabase("audit_log").use {
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false,
-                    queryOperator = "AND",
-                    sortField = "",
-                    sortOrder = ""
+                    queryOperator = QueryOperator.AND
             )
             result = dbService.findAll(AuditLogRecordType::class, queryMap, findOptions)
         }
@@ -179,7 +180,7 @@ class PostgreSQLDatabaseTest {
     }
 
     @Test
-    fun `finding documents by query, include embedded data property name`() {
+    fun `finding documents by query, query embedded json by data property name`() {
         val from = LocalDateTime.of(2020, Month.OCTOBER, 1, 0, 0, 0)
         val queryMap = listOfNotNull(
                 QueryField("logger", "audit.data-history"),
@@ -193,11 +194,7 @@ class PostgreSQLDatabaseTest {
         var result: FindAllResults?
         dbService.acquireDatabase("audit_log").use {
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false,
-                    queryOperator = "AND",
-                    sortField = "",
-                    sortOrder = ""
+                    queryOperator = QueryOperator.AND
             )
             result = dbService.findAll(AuditLogRecordType::class, queryMap, findOptions)
         }
@@ -207,7 +204,7 @@ class PostgreSQLDatabaseTest {
     }
 
     @Test
-    fun `finding documents by query, exclude embedded data property or column name`() {
+    fun `finding documents by query, query embedded json directly (without property name)`() {
         val from = LocalDateTime.of(2020, Month.OCTOBER, 1, 0, 0, 0)
         val queryMap = listOfNotNull(
                 QueryField("logger", "audit.data-history"),
@@ -222,17 +219,69 @@ class PostgreSQLDatabaseTest {
         var result: FindAllResults?
         dbService.acquireDatabase("audit_log").use {
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false,
-                    queryOperator = "AND",
-                    sortField = "",
-                    sortOrder = ""
+                    queryOperator = QueryOperator.AND
             )
             result = dbService.findAll(AuditLogRecordType::class, queryMap, findOptions)
         }
 
         Assertions.assertThat(result?.totalHits).isEqualTo(1)
         Assertions.assertThat(result?.hits?.get(0)?.get("data")?.get("uuid")?.textValue()).isEqualTo("36169aa1-5faf-4d8e-9dd6-18c95012312d")
+    }
+
+    @Test
+    fun `finding documents by query, query by attribute name or json property name`() {
+        val docId = "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
+
+        // query by attribute name (uuid)
+        val wrapper1 = dbService.acquireDatabase("test_catalog").use {
+            val result = dbService.findAll(DocumentWrapperType::class, listOf(QueryField("uuid", docId)), FindOptions())
+            Assertions.assertThat(result.totalHits).isEqualTo(1)
+            result.hits[0]
+        }
+
+        // query by json property name (_id)
+        val wrapper2 = dbService.acquireDatabase("test_catalog").use {
+            val result = dbService.findAll(DocumentWrapperType::class, listOf(QueryField("_id", docId)), FindOptions())
+            Assertions.assertThat(result.totalHits).isEqualTo(1)
+            result.hits[0]
+        }
+
+        Assertions.assertThat(wrapper1["db_id"]).isNotNull
+        Assertions.assertThat(wrapper2["db_id"]).isNotNull
+        Assertions.assertThat(wrapper1["db_id"]).isEqualTo(wrapper2["db_id"])
+    }
+
+    @Test
+    fun `finding documents by query with joins`() {
+        val query = "Test Doc"
+        val cat = "address"
+
+        val queryOptions = QueryOptions(
+                queryType = QueryType.LIKE,
+                queryOperator = QueryOperator.AND
+        )
+        val queryMap = listOf(
+                Pair(listOf(
+                        QueryField(FIELD_CATEGORY, " =", cat),
+                        QueryField("draft.title", query)
+                ), queryOptions),
+                Pair(listOf(
+                        QueryField(FIELD_CATEGORY, " =", cat),
+                        QueryField("draft", null),
+                        QueryField("published.title", query)
+                ), queryOptions)
+        )
+
+        val findOptions = FindOptions(
+                queryOperator = QueryOperator.OR,
+                size = 10,
+                sortField = "_modified",
+                sortOrder = "ASC",
+                resolveReferences = true)
+        val result = dbService.acquireCatalog("test_catalog").use {
+            dbService.findAllExt(DocumentWrapperType::class, queryMap, findOptions)
+        }
+        Assertions.assertThat(result.totalHits).isEqualTo(1)
     }
 
     @Test
@@ -246,5 +295,22 @@ class PostgreSQLDatabaseTest {
             Assertions.assertThat(dbService.currentCatalog).isEqualTo("test_catalog")
         }
         Assertions.assertThat(dbService.currentCatalog).isNull()
+    }
+
+    @Test
+    fun `deleting a document`() {
+        val docId = "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
+        val queryMap = listOfNotNull(
+                QueryField("_id", docId)
+        ).toList()
+
+        dbService.acquireDatabase("test_catalog").use {
+            Assertions.assertThat(dbService.findAll(DocumentType::class, queryMap, FindOptions()).totalHits).isEqualTo(3)
+            dbService.remove(DocumentType::class, docId)
+        }
+
+        dbService.acquireDatabase("test_catalog").use {
+            Assertions.assertThat(dbService.findAll(DocumentType::class, queryMap, FindOptions()).totalHits).isEqualTo(0)
+        }
     }
 }

@@ -14,7 +14,7 @@ interface DBApi {
     }
 
     /**
-     * Get the database record ID of a document of the given type and an document id.
+     * Get the database record ID of a document of the given type and an document ID.
      * NOTE The id is a domain specific identifier that is used to distinguish instances of the same type,
      * e.g. UUID for document wrappers or name for behaviours. If a type does not define a identifier an exception
      * will be thrown.
@@ -25,6 +25,11 @@ interface DBApi {
      * Get the database record ID of a document.
      */
     fun getRecordId(doc: JsonNode): String?
+
+    /**
+     * Get the number of children belonging to the parent with the given document ID.
+     */
+    fun countChildren(docId: String): Long
 
     /**
      * Remove the internal fields added by the database from a document.
@@ -47,9 +52,9 @@ interface DBApi {
     fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions): FindAllResults
 
     /**
-     * Get the number of children of the specified type belonging to the parent with the given record ID.
+     * Get all documents of the given type matching the combination of the given queries.
      */
-    fun <T : EntityType> countChildrenOfType(id: String, type: KClass<T>): Map<String, Long>
+    fun <T : EntityType> findAllExt(type: KClass<T>, queries: List<Pair<List<QueryField>?, QueryOptions>>, options: FindOptions): FindAllResults
 
     /**
      * Save the given data using the given type, record ID and version (like file uploads).
@@ -58,15 +63,10 @@ interface DBApi {
     fun <T : EntityType> save(type: KClass<T>, id: String?, data: String, version: String? = null): JsonNode
 
     /**
-     * Delete a document of the given type with the given record ID. If multiple documents with same ID exist
+     * Delete a document of the given type with the given document ID. If multiple documents with same ID exist
      * then all will be removed. If none exists then a PersistenceException is thrown.
      */
-    fun <T : EntityType> remove(type: KClass<T>, id: String): Boolean
-
-    /**
-     * Delete all documents of the given type matching the given query.
-     */
-    fun <T : EntityType> remove(type: KClass<T>, query: Map<String, String>): Boolean
+    fun <T : EntityType> remove(type: KClass<T>, docId: String): Boolean
 
     /**
      * Get all catalog names

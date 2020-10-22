@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.deser.ResolvableDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
+import org.apache.logging.log4j.kotlin.logger
 
 /**
  * Jackson Deserializer used when mapping serialized instances of EntityWithEmbeddedData to entity instances.
@@ -28,13 +28,16 @@ class EmbeddedDataDeserializer(
         }
     }
 
+    private val log = logger()
+
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): EntityWithEmbeddedData<EmbeddedData> {
         // deserialize entity with default deserializer
         // NOTE unknown fields belong to embedded data and will be collected in the dataFields property
         val entity = defaultDeserializer.deserialize(jp, ctxt) as EntityWithEmbeddedData<EmbeddedData>
         if (entity.type.isNullOrEmpty()) {
-            throw PersistenceException.withReason("Could not deserialize entity with embedded data because 'type' parameter is missing: " +
-                    "'${jp.currentLocation.sourceRef}'")
+            // fallback to EmbeddedMap
+            entity.type = ""
+            log.warn("Did not find 'type' parameter in '${jp.currentLocation.sourceRef}'. Deserializing embedded data into map.")
         }
 
         // deserialize embedded data from dataFields property

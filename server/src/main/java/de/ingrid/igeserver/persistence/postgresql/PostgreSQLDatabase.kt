@@ -10,8 +10,10 @@ import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
+import de.ingrid.igeserver.persistence.postgresql.jpa.ModelRegistry
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataSerializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataTypeRegistry
@@ -21,8 +23,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithRecordId
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import de.ingrid.igeserver.services.FIELD_VERSION
 import org.apache.logging.log4j.kotlin.logger
-import org.hibernate.metamodel.spi.MetamodelImplementor
-import org.hibernate.persister.entity.AbstractEntityPersister
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
@@ -31,7 +31,6 @@ import java.math.BigInteger
 import javax.persistence.EntityManager
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.memberProperties
 
 @Service
 class PostgreSQLDatabase : DBApi {
@@ -39,6 +38,10 @@ class PostgreSQLDatabase : DBApi {
     companion object {
         private const val DB_ID = "db_id"
         private const val DB_VERSION = "db_version"
+        private const val SORT_FIELD_ALIAS = "query_sort_field"
+
+        private val PARAMETER_REGEX = Regex(":([^\\s)]+)")
+        private val COUNT_QUERY_REGEX = Regex("SELECT .*? FROM")
 
         private val INTERNAL_FIELDS = listOf(DB_ID, DB_VERSION)
     }
@@ -55,6 +58,9 @@ class PostgreSQLDatabase : DBApi {
     @Autowired
     private lateinit var embeddedDataTypes: EmbeddedDataTypeRegistry
 
+    @Autowired
+    private lateinit var modelRegistry: ModelRegistry
+
     /**
      * Id of the catalog that is acquired on the current thread
      */
@@ -65,6 +71,7 @@ class PostgreSQLDatabase : DBApi {
      */
     private val mapper: ObjectMapper by lazy {
         val mapper = jacksonObjectMapper()
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         mapper.findAndRegisterModules()
 
         val module = SimpleModule()
@@ -108,14 +115,10 @@ class PostgreSQLDatabase : DBApi {
 
     override fun <T : EntityType> getRecordId(type: KClass<T>, docId: String): String? {
         val typeImpl = getEntityTypeImpl(type)
-        if (typeImpl.idAttribute == null) {
-            throw PersistenceException.withReason("Entity type '$type' does not define an id attribute.")
-        }
+
         // the record id can only be determined if type has a record id
         return if (typeImpl.jpaType.isSubclassOf(EntityWithRecordId::class)) {
-            val queryStr = "SELECT e FROM ${typeImpl.jpaType.simpleName} e WHERE e.${typeImpl.idAttribute} = :docId"
-            val entities = entityManager.createQuery(queryStr, typeImpl.jpaType.java).
-                    setParameter("docId", docId).resultList
+            val entities = getEntitiesByIdentifier(type, docId)
             if (entities.size == 1) {
                 (entities[0] as EntityWithRecordId).id?.toString()
             } else {
@@ -126,6 +129,12 @@ class PostgreSQLDatabase : DBApi {
 
     override fun getRecordId(doc: JsonNode): String? {
         return doc[DB_ID]?.asText()
+    }
+
+    override fun countChildren(docId: String): Long {
+        val typeImpl = getEntityTypeImpl(DocumentWrapperType::class)
+        val queryStr = "SELECT count(e) FROM ${typeImpl.jpaType.simpleName} e WHERE e.parent.uuid = :docId"
+        return entityManager.createQuery(queryStr).setParameter("docId", docId).singleResult as Long
     }
 
     override fun removeInternalFields(doc: JsonNode) {
@@ -155,29 +164,88 @@ class PostgreSQLDatabase : DBApi {
     }
 
     override fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions): FindAllResults {
-        val typeImpl = getEntityTypeImpl(type)
+        return findAllExt(type, listOf(Pair(query, options)), options)
+    }
 
-        // create an entity and count query
+    override fun <T : EntityType> findAllExt(type: KClass<T>, queries: List<Pair<List<QueryField>?, QueryOptions>>, options: FindOptions): FindAllResults {
+        val typeImpl = getEntityTypeImpl(type)
+        val typeInfo = modelRegistry.getTypeInfo(typeImpl.jpaType)
+                ?: throw PersistenceException.withReason("Type '$type' is not mapped to the database.")
+
         // NOTE we need to use a native query to use jsonb operators
-        val tableName = getTableName(typeImpl.jpaType)
-        var queryStr = "SELECT * FROM $tableName"
-        var countQueryStr = "SELECT count(*) as count FROM $tableName"
 
         // process query criteria
-        var criteria: Map<String, Any?>? = null
-        if (!query.isNullOrEmpty()) {
-            criteria = processCriteria(typeImpl.jpaType, query, options)
-            val whereString = criteria.keys.joinToString(separator = " ${options.queryOperator} ") { it }
-            if (!options.sortField.isNullOrEmpty()) {
-                queryStr += " LET \$temp = max( draft.${options.sortField}, published.${options.sortField} )"
+        val criteria = mutableMapOf<String, Any?>()
+        val conditions = mutableListOf<String>()
+        val joins = mutableListOf<JoinInfo>()
+        if (!queries.isNullOrEmpty()) {
+            queries.forEachIndexed { i, query ->
+                val queryFields = query.first
+                if (!queryFields.isNullOrEmpty()) {
+                    val queryOptions = query.second
+                    val processedCriteria = processCriteria(typeImpl.jpaType, queryFields, queryOptions, i+1)
+                    processedCriteria.first.forEach {
+                        criteria[it.key] = it.value
+                    }
+                    conditions.add(" (" + processedCriteria.first.keys.joinToString(separator = " ${queryOptions.queryOperator} ") { it } + ") ")
+                    joins.addAll(processedCriteria.second)
+                }
             }
-            queryStr += " WHERE ($whereString)"
-            countQueryStr += " WHERE ($whereString)"
         }
+
+        // resolve sort value
+        val sortColumn = if (!options.sortField.isNullOrEmpty()) {
+            // check if the sort field exists in the searched entity type
+            val fieldInfo = modelRegistry.getFieldInfo(typeInfo, options.sortField)
+            if (fieldInfo != null) {
+                "${fieldInfo.columnName} as $SORT_FIELD_ALIAS"
+            }
+            // if the sort field does not exist in the searched entity type, we search in related entities
+            else {
+                val relatedTypes = typeInfo.relatedTypes
+                val candidates = relatedTypes.filter { (type) ->
+                    modelRegistry.getFieldInfo(modelRegistry.getTypeInfo(type)!!, options.sortField, true) != null
+                }
+                if (candidates.size == 1) {
+                    val candidate = candidates.entries.first()
+                    val relatedTypeInfo = modelRegistry.getTypeInfo(candidate.key)!!
+                    val sortFieldInfo = modelRegistry.getFieldInfo(relatedTypeInfo, options.sortField, true)!!
+                    val relationFieldInfos = candidate.value
+                    val sortColumns = mutableSetOf<String>()
+                    relationFieldInfos.filter { it.fkName != null }.forEachIndexed { i, relationFieldInfo ->
+                        // add join if not existing yet
+                        val joinInfos = joins.filter { j -> j.relationColumn == relationFieldInfo.columnName }
+                        val joinInfo = if (joinInfos.isEmpty()) {
+                            val joinInfo = JoinInfo(typeInfo, relatedTypeInfo, relationFieldInfo, 1, i+1)
+                            joins.add(joinInfo)
+                            joinInfo
+                        }
+                        else {
+                            joinInfos[0]
+                        }
+                        sortColumns.add(joinInfo.joinedTableAlias+"."+sortFieldInfo.columnName)
+                    }
+
+                    "GREATEST(${sortColumns.joinToString(", ")}) as $SORT_FIELD_ALIAS"
+                }
+                else {
+                    throw PersistenceException.withReason("Cannot resolve sort field '${options.sortField}'.")
+                }
+            }
+        }
+        else ""
+
+        val join = joins.joinToString(separator = " ") { it.joinString }
+        val where = conditions.joinToString(separator = " ${options.queryOperator} ") { it }
+
+        var queryStr = "SELECT * FROM ${typeInfo.tableName} ${typeInfo.aliasName()} $join " +
+                if (where.isNotBlank()) "WHERE $where" else ""
+        val countQueryStr = COUNT_QUERY_REGEX.replace(queryStr, "SELECT count(*) as count FROM")
 
         // add sort order
         if (!options.sortField.isNullOrEmpty()) {
-            queryStr += " ORDER BY \$temp ${options.sortOrder}"
+            queryStr = queryStr.replace("SELECT * ", "SELECT *, $sortColumn ")
+            queryStr += " ORDER BY $SORT_FIELD_ALIAS ${options.sortOrder}"
         }
 
         // add limit
@@ -189,11 +257,14 @@ class PostgreSQLDatabase : DBApi {
         log.debug("Query-String: $queryStr")
         val typedQuery = entityManager.createNativeQuery(queryStr, typeImpl.jpaType.java)
         val typedCountQuery = entityManager.createNativeQuery(countQueryStr)
-        if (!criteria.isNullOrEmpty()) {
-            for ((i, value) in criteria.values.iterator().withIndex()) {
+        if (criteria.isNotEmpty()) {
+            criteria.forEach { (condition, value) ->
                 if (value != null) {
-                    typedQuery.setParameter("c$i", value)
-                    typedCountQuery.setParameter("c$i", value)
+                    val parameterName = PARAMETER_REGEX.find(condition)?.groups?.get(1)?.value
+                    if (parameterName != null) {
+                        typedQuery.setParameter(parameterName, value)
+                        typedCountQuery.setParameter(parameterName, value)
+                    }
                 }
             }
         }
@@ -205,10 +276,6 @@ class PostgreSQLDatabase : DBApi {
             // TODO what is expected here?
         }
         return FindAllResults(numDocs.toLong(), docs.map { mapEntityToJson(it) })
-    }
-
-    override fun <T : EntityType> countChildrenOfType(id: String, type: KClass<T>): Map<String, Long> {
-        TODO("Not yet implemented")
     }
 
     override fun <T : EntityType> save(type: KClass<T>, id: String?, data: String, version: String?): JsonNode {
@@ -235,12 +302,15 @@ class PostgreSQLDatabase : DBApi {
         return mapEntityToJson(persistedEntity)
     }
 
-    override fun <T : EntityType> remove(type: KClass<T>, id: String): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun <T : EntityType> remove(type: KClass<T>, query: Map<String, String>): Boolean {
-        TODO("Not yet implemented")
+    override fun <T : EntityType> remove(type: KClass<T>, docId: String): Boolean {
+        val entities = getEntitiesByIdentifier(type, docId)
+        val count = entities.size
+        if (count == 0) {
+            throw PersistenceException.withReason("Failed to delete non-existing document of type '${type.simpleName}' with id '$docId'.")
+        }
+        entities.forEach { entityManager.remove(it) }
+        log.debug("Deleted $count records of type '$type' with id '$docId'.")
+        return true
     }
 
     override val catalogs: Array<String>
@@ -307,6 +377,15 @@ class PostgreSQLDatabase : DBApi {
         return entityTypeMap[type] ?: throw PersistenceException.withReason("No entity type '$type' registered.")
     }
 
+    private fun <T : EntityType> getEntitiesByIdentifier(type: KClass<T>, docId: String) : List<EntityBase> {
+        val typeImpl = getEntityTypeImpl(type)
+        if (typeImpl.idAttribute == null) {
+            throw PersistenceException.withReason("Entity type '$type' does not define an id attribute.")
+        }
+        val queryStr = "SELECT e FROM ${typeImpl.jpaType.simpleName} e WHERE e.${typeImpl.idAttribute} = :docId"
+        return entityManager.createQuery(queryStr, typeImpl.jpaType.java).setParameter("docId", docId).resultList
+    }
+
     private fun mapEntityToJson(obj: EntityBase): JsonNode {
         // NOTE this is not as optimized as mapper.valueToTree(obj), but allows to use serialization annotations
         return mapper.readTree(mapper.writeValueAsString(obj))
@@ -319,87 +398,126 @@ class PostgreSQLDatabase : DBApi {
         else null
     }
 
-    private fun processCriteria(type: KClass<out EntityBase>, query: List<QueryField>, options: FindOptions?): Map<String, Any?> {
-        val result: HashMap<String, Any?> = LinkedHashMap()
-        for ((i, criteria) in query.iterator().withIndex()) {
-            val field = criteria.field
-            val value = criteria.value
-            val invert = criteria.invert
+    private class JoinInfo(
+            val thisType: ModelRegistry.TypeInfo,
+            val otherType: ModelRegistry.TypeInfo,
+            val relationField: ModelRegistry.FieldInfo,
+            val thisAliasIndex: Int = 1,
+            val otherAliasIndex: Int = 1
+    ) {
+        val relationColumn: String?
+            get() = relationField.fkName
 
-            // resolve the field to the column
-            val declaredPropertyList = type.memberProperties.filter { p -> p.name == field }
-            val fieldQueryName = when {
-                // check if the field is directly declared in the entity
-                declaredPropertyList.isNotEmpty() -> {
-                    getColumnName(type, field)
-                }
-                // if the field is not declared in the entity it could be a property of the embedded data
-                EntityWithEmbeddedData::class.java.isAssignableFrom(type.java) -> {
-                    // NOTE we allow embedded data properties to be queried in one of the following ways:
-                    // * unwrapped property: e.g. { "firstName": "Petra" }
-                    // * property inside embedded data property: e.g. { "data.firstName": "Petra" }
-                    // * property inside embedded data column: e.g. { "message.action": "update" }
-                    val dataColumn = getColumnName(type, "data")
-                    val propertyWithoutRoot = if (field.startsWith("$dataColumn.")) field.removePrefix("$dataColumn.")
-                        else field.removePrefix("data.")
-                    val propertyPath = propertyWithoutRoot.split('.')
-                    var queryPath = dataColumn
-                    for ((j, part) in propertyPath.iterator().withIndex()) {
-                        queryPath += (if (j == propertyPath.size-1) "->>" else "->") + "'${part}'"
-                    }
-                    queryPath
-                }
-                else -> {
-                    throw PersistenceException.withReason("Unknown field '$field' in query.")
-                }
-            }
+        val joinedTableAlias: String
+            get() = otherType.aliasName(otherAliasIndex)
 
-            // make criteria
-            if (value == null) {
-                result["$fieldQueryName IS " + (if (invert) "NOT " else "") + "NULL"] = null
-            }
-            else if (!criteria.operator.isNullOrEmpty()) {
-                result["$fieldQueryName${criteria.operator} :c$i"] = value
-            }
-            else {
-                val operator = when (options?.queryType) {
-                    QueryType.LIKE -> {
-                        if (invert) "NOT LIKE" else "LIKE"
-                    }
-                    QueryType.EXACT -> {
-                        if (invert) " !=" else " ="
-                    }
-                    QueryType.CONTAINS -> {
-                        if (invert) " NOT IN" else " IN"
-                    }
-                    else -> "="
+        val joinString: String
+            get() = "JOIN ${otherType.tableName} ${otherType.aliasName(otherAliasIndex)} ON " +
+                    "${thisType.aliasName(thisAliasIndex)}.${relationField.fkName} = " +
+                    "${otherType.aliasName(otherAliasIndex)}.${otherType.pkName}"
+    }
+
+    /**
+     * Extract value and join conditions for the given query
+     * The result is a pair with the following content
+     * - first: Map of condition strings for WHERE clause and their parameters
+     * - second: List of JoinInfo instances that are necessary to select the query fields
+     * The index parameter might be used to generate table aliases for joins
+     */
+    private fun processCriteria(type: KClass<out EntityBase>, query: List<QueryField>, options: QueryOptions, index: Int): Pair<Map<String, Any?>, Set<JoinInfo>> {
+        val where: HashMap<String, Any?> = LinkedHashMap()
+        val joins = mutableSetOf<JoinInfo>()
+
+        val typeInfo = modelRegistry.getTypeInfo(type)
+        if (typeInfo != null) {
+            query.forEachIndexed { i, criteria ->
+                // resolve field
+                val fieldData = resolveField(typeInfo, criteria.field, index)
+                val queryFieldName = fieldData.first
+                joins.addAll(fieldData.second)
+
+                // make criteria
+                val value = criteria.value
+                val invert = criteria.invert
+                val parameterName = "p${index}_$i"
+                if (value == null) {
+                    where["$queryFieldName IS " + (if (invert) "NOT " else "") + "NULL"] = null
                 }
-                result["$fieldQueryName$operator :c$i"] =
-                        if (options?.queryType == QueryType.LIKE) "%${value.toLowerCase()}%" else value
+                else if (!criteria.operator.isNullOrEmpty()) {
+                    where["$queryFieldName${criteria.operator} :$parameterName"] = value
+                }
+                else {
+                    val operator = when (options.queryType) {
+                        QueryType.LIKE -> {
+                            if (invert) " NOT ILIKE" else " ILIKE"
+                        }
+                        QueryType.EXACT -> {
+                            if (invert) " !=" else " ="
+                        }
+                        QueryType.CONTAINS -> {
+                            if (invert) " NOT IN" else " IN"
+                        }
+                    }
+                    where["$queryFieldName$operator :$parameterName"] =
+                            if (options.queryType == QueryType.LIKE) "%${value.toLowerCase()}%" else value
+                }
             }
         }
-        return result
+        return Pair(where, joins)
     }
 
-    /**
-     * Get the table name for an entity class
-     */
-    private fun getTableName(type: KClass<out EntityBase>): String {
-        return getMetaData(type).tableName
-    }
+    private fun resolveField(typeInfo: ModelRegistry.TypeInfo, field: String, index: Int): Pair<String, Set<JoinInfo>> {
+        val joins = mutableSetOf<JoinInfo>()
 
-    /**
-     * Get the table name for a property of an entity class
-     */
-    private fun getColumnName(type: KClass<out EntityBase>, propertyName: String): String {
-        return getMetaData(type).getPropertyColumnNames(propertyName)[0]
-    }
+        // field might contain dots to define a path
+        val fieldPath = field.split(delimiters = arrayOf("."), limit = 2).let {
+            Pair(it[0], it.getOrNull(1) ?: "")
+        }
+        val fieldInfo = modelRegistry.getFieldInfo(typeInfo, fieldPath.first, true)
 
-    /**
-     * Get the persistence mapping meta data for an entity class
-     */
-    private fun getMetaData(type: KClass<out EntityBase>): AbstractEntityPersister {
-        val metamodel = entityManager.entityManagerFactory.metamodel
-        return (metamodel as MetamodelImplementor).entityPersister(type.java.name) as AbstractEntityPersister
+        // resolve the field to the column
+        val queryFieldName = when {
+            // simple field or relation field with no path to related entity attribute
+            fieldInfo != null && fieldPath.second.isBlank() -> {
+                "${typeInfo.aliasName()}.${fieldInfo.columnName}"
+            }
+            // relation field
+            fieldInfo != null && fieldInfo.isRelation && fieldInfo.relatedEntityType != null -> {
+                // TODO resolve recursive, if paths with length > 2 should be handled
+                val otherFieldName = fieldPath.second
+                val otherTypeInfo = modelRegistry.getTypeInfo(fieldInfo.relatedEntityType)!!
+                val otherFieldInfo = modelRegistry.getFieldInfo(otherTypeInfo, otherFieldName, true)
+                        ?: throw PersistenceException.withReason("Unable to resolve field '$otherFieldName' in entity type '${otherTypeInfo.type}'.")
+                if (fieldInfo.fkName == null) {
+                    throw PersistenceException.withReason("Field '${fieldInfo.name}' in entity type '${typeInfo.type}' defines a " +
+                            "(one|many)-to-many relation that can't be queried.")
+                }
+                joins.add(JoinInfo(typeInfo, otherTypeInfo, fieldInfo, 1, index))
+                "${otherTypeInfo.aliasName(index)}.${otherFieldInfo.columnName}"
+            }
+            // if the field is not declared in the entity it could be a property of the embedded data
+            EntityWithEmbeddedData::class.java.isAssignableFrom(typeInfo.type.java) -> {
+                // NOTE we allow embedded data properties to be queried in one of the following ways:
+                // * unwrapped property: e.g. { "firstName": "Petra" }
+                // * property inside embedded data property: e.g. { "data.firstName": "Petra" }
+                // * property inside embedded data column: e.g. { "message.action": "update" }
+                val dataField = modelRegistry.getFieldInfo(typeInfo, "data")
+                        ?: throw PersistenceException.withReason("No 'data' field defined in entity type '{$typeInfo.type}'.")
+                val dataColumn = dataField.columnName
+                val propertyWithoutRoot = if (field.startsWith("$dataColumn.")) field.removePrefix("$dataColumn.")
+                    else field.removePrefix("data.")
+                val propertyPath = propertyWithoutRoot.split('.')
+
+                var queryPath = "${typeInfo.aliasName()}.${dataColumn}"
+                propertyPath.forEachIndexed { j, part ->
+                    queryPath += (if (j == propertyPath.size-1) "->>" else "->") + "'${part}'"
+                }
+                queryPath
+            }
+            else -> {
+                throw PersistenceException.withReason("Unknown field '$field' in query (entity type '{$typeInfo.type}').")
+            }
+        }
+        return Pair(queryFieldName, joins)
     }
 }

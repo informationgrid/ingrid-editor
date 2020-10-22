@@ -14,7 +14,6 @@ import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import kotlin.reflect.KClass
 
 @Service
 class DocumentService : MapperService() {
@@ -75,12 +74,9 @@ class DocumentService : MapperService() {
         }
     }
 
-    fun <T : EntityType> determineHasChildren(doc: JsonNode, type: KClass<T>): Boolean {
+    fun determineHasChildren(doc: JsonNode): Boolean {
         val id = doc[FIELD_ID].asText()
-        val countMap = dbService.countChildrenOfType(id, type)
-        return if (countMap.containsKey(id)) {
-            countMap.getValue(id) > 0
-        } else false
+        return dbService.countChildren(id) > 0
     }
 
     fun findChildrenDocs(parentId: String?, isAddress: Boolean): FindAllResults {
@@ -96,7 +92,7 @@ class DocumentService : MapperService() {
         val findOptions = FindOptions(
                 queryType = QueryType.EXACT,
                 resolveReferences = true,
-                queryOperator = "AND")
+                queryOperator = QueryOperator.AND)
         return dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
     }
 
@@ -293,7 +289,7 @@ class DocumentService : MapperService() {
         )
 
         val options = FindOptions(
-                queryOperator = "AND",
+                queryOperator = QueryOperator.AND,
                 queryType = QueryType.EXACT)
 
         val allData = dbService.findAll(DocumentWrapperType::class, allDocumentQuery, options)

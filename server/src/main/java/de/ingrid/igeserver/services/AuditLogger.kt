@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
 import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
@@ -74,7 +71,7 @@ class AuditLogger {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false,
-                    queryOperator = "AND",
+                    queryOperator = QueryOperator.AND,
                     sortField = sort,
                     sortOrder = sortOrder
             )

@@ -37,6 +37,14 @@ INSERT INTO document_wrapper VALUES (1000, 100, NULL, '4e91e8f8-1e16-c4d2-6689-0
     1000, 1001, 0
 );
 
+INSERT INTO document_wrapper VALUES (1001, 100, 1000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'AddressDoc', 'address',
+    NULL, NULL, 0
+);
+
+INSERT INTO document_wrapper VALUES (1002, 100, 1000, 'e8f891e4-c4d2-61e1-8669-b350203fadc2', 'AddressDoc', 'address',
+    NULL, NULL, 0
+);
+
 INSERT INTO document_archive VALUES (1000, 1002);
 
 -- behaviours

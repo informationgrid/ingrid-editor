@@ -15,6 +15,6 @@ open class EntityBase : EntityWithRecordId {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @JsonProperty("db_id")
+    @field:JsonProperty("db_id")
     override var id: Int? = null
 }

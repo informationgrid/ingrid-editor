@@ -12,7 +12,7 @@ import javax.persistence.*
 class Catalog(
 
     @Column(nullable=false)
-    @JsonProperty("id")
+    @field:JsonProperty("id")
     val identifier: String,
 
     @Column(nullable=false)

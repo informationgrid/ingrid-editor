@@ -23,7 +23,7 @@ import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.*
-import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.services.FIELD_VERSION
 import de.ingrid.igeserver.services.MapperService
 import org.apache.logging.log4j.kotlin.logger
@@ -169,6 +169,19 @@ class OrientDBDatabase : DBApi {
         return doc[DB_ID]?.asText()
     }
 
+    override fun countChildren(docId: String): Long {
+        val typeImpl = getEntityTypeImpl(DocumentWrapperType::class)
+        var response: Long = 0
+        val query = "SELECT count(_id) FROM ${typeImpl.className} WHERE _parent = '$docId'"
+        val countQuery = dBFromThread.query(query)
+        while (countQuery.hasNext()) {
+            val next = countQuery.next()
+            response = next.getProperty("count(_id)")
+        }
+        countQuery.close()
+        return response
+    }
+
     override fun removeInternalFields(doc: JsonNode) {
         val objNode = doc as ObjectNode
 
@@ -204,17 +217,29 @@ class OrientDBDatabase : DBApi {
     }
 
     override fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions): FindAllResults {
+        return findAllExt(type, listOf(Pair(query, options)), options)
+    }
+
+    override fun <T : EntityType> findAllExt(type: KClass<T>, queries: List<Pair<List<QueryField>?, QueryOptions>>, options: FindOptions): FindAllResults {
         val typeImpl = getEntityTypeImpl(type)
         var queryString: String
         val countQuery: String
         val fetchPlan = if (options.resolveReferences) ",fetchPlan:*:-1" else ""
-        if (query == null || query.isEmpty()) {
+        if (queries.isEmpty()) {
             queryString = "SELECT @this.toJSON('rid,class,version$fetchPlan') as jsonDoc FROM ${typeImpl.className}"
             countQuery = "SELECT count(*) FROM ${typeImpl.className}"
         } else {
             // TODO: try to use Elasticsearch as an alternative!
-            val where = createWhereClause(query, options)
-            val whereString = where.joinToString(separator = " ${options.queryOperator} ") { it }
+            val conditions = mutableListOf<String>()
+            queries.forEach { query ->
+                val queryFields = query.first
+                if (!queryFields.isNullOrEmpty()) {
+                    val queryOptions = query.second
+                    val where = createWhereClause(queryFields, queryOptions)
+                    conditions.add(" (" + where.joinToString(separator = " ${queryOptions.queryOperator} ") { it } + ") ")
+                }
+            }
+            val whereString = conditions.joinToString(separator = " ${options.queryOperator} ") { it }
             queryString = if (options.sortField != null) {
                 "SELECT @this.toJSON('rid,class,version$fetchPlan') as jsonDoc FROM ${typeImpl.className} LET \$temp = max( draft.${options.sortField}, published.${options.sortField} ) WHERE ($whereString)"
             } else {
@@ -236,20 +261,6 @@ class OrientDBDatabase : DBApi {
         return mapFindAllResults(docs, countDocs)
     }
 
-    override fun <T : EntityType> countChildrenOfType(id: String, type: KClass<T>): Map<String, Long> {
-        val typeImpl = getEntityTypeImpl(type)
-        val response: MutableMap<String, Long> = HashMap()
-        val query = "select _parent,count(_id) from ${typeImpl.className} " +
-                "where _parent IN ['$id']" +
-                "group by _parent"
-        val countQuery = dBFromThread.query(query)
-        while (countQuery.hasNext()) {
-            val next = countQuery.next()
-            response[next.getProperty(FIELD_PARENT)] = next.getProperty("count(_id)")
-        }
-        countQuery.close()
-        return response
-    }
 
     override fun <T : EntityType> save(type: KClass<T>, id: String?, data: String, version: String?): JsonNode {
         // TODO: we shouldn't use DB-ID but document ID here
@@ -275,27 +286,19 @@ class OrientDBDatabase : DBApi {
         }
     }
 
-    override fun <T : EntityType> remove(type: KClass<T>, id: String): Boolean {
+    override fun <T : EntityType> remove(type: KClass<T>, docId: String): Boolean {
         val typeImpl = getEntityTypeImpl(type)
-        val result = dBFromThread.command("select * from ${typeImpl.className} where _id = '$id'")
+        val result = dBFromThread.command("select * from ${typeImpl.className} where _id = '$docId'")
 
         val count = result.elementStream()
                 .map { it.delete<ORecordAbstract>() }
                 .count()
-        log.debug("Deleted $count records of type: $type with _id: $id")
+        log.debug("Deleted $count records of type: $type with _id: $docId")
 
         result.close()
         if (count == 0L) {
-            throw PersistenceException.withReason("Failed to delete non-existing document of type '${type.simpleName}' with id '$id'.")
+            throw PersistenceException.withReason("Failed to delete non-existing document of type '${type.simpleName}' with id '$docId'.")
         }
-        return true
-    }
-
-    override fun <T : EntityType> remove(type: KClass<T>, query: Map<String, String>): Boolean {
-        // TODO: finish implementation
-        val typeImpl = getEntityTypeImpl(type)
-        val command = dBFromThread.command("DROP CLASS ${typeImpl.className} IF EXISTS")
-        command.close()
         return true
     }
 
@@ -466,7 +469,7 @@ class OrientDBDatabase : DBApi {
         return first
     }
 
-    private fun createWhereClause(query: List<QueryField>, options: FindOptions?): List<String> {
+    private fun createWhereClause(query: List<QueryField>, options: QueryOptions): List<String> {
         val where: MutableList<String> = ArrayList()
         for (field in query) {
             val key = field.field
@@ -478,7 +481,7 @@ class OrientDBDatabase : DBApi {
                 where.add("$key${field.operator} '$value'")
             } else {
                 var operator: String
-                when (options?.queryType) {
+                when (options.queryType) {
                     QueryType.LIKE -> {
                         operator = if (invert) "not like" else "like"
                         where.add(key + ".toLowerCase() " + operator + " '%" + value.toLowerCase() + "%'")
@@ -491,7 +494,6 @@ class OrientDBDatabase : DBApi {
                         operator = if (invert) " not contains" else " contains"
                         where.add("$key$operator '$value'")
                     }
-                    else -> where.add("$key == '$value'")
                 }
             }
         }
