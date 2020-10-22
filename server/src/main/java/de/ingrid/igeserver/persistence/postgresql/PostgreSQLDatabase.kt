@@ -176,65 +176,26 @@ class PostgreSQLDatabase : DBApi {
 
         // process query criteria
         val criteria = mutableMapOf<String, Any?>()
-        val conditions = mutableListOf<String>()
-        val joins = mutableListOf<JoinInfo>()
+        val conditions = mutableSetOf<String>()
+        val joins = mutableSetOf<JoinInfo>()
         if (!queries.isNullOrEmpty()) {
             queries.forEachIndexed { i, query ->
                 val queryFields = query.first
                 if (!queryFields.isNullOrEmpty()) {
                     val queryOptions = query.second
-                    val processedCriteria = processCriteria(typeImpl.jpaType, queryFields, queryOptions, i+1)
-                    processedCriteria.first.forEach {
+                    val processedCriteria = processCriteria(typeImpl.jpaType, queryFields, queryOptions, i+1, joins)
+                    processedCriteria.forEach {
                         criteria[it.key] = it.value
                     }
-                    conditions.add(" (" + processedCriteria.first.keys.joinToString(separator = " ${queryOptions.queryOperator} ") { it } + ") ")
-                    joins.addAll(processedCriteria.second)
+                    conditions.add(" (" + processedCriteria.keys.joinToString(separator = " ${queryOptions.queryOperator} ") { it } + ") ")
                 }
             }
         }
 
         // resolve sort value
-        val sortColumn = if (!options.sortField.isNullOrEmpty()) {
-            // check if the sort field exists in the searched entity type
-            val fieldInfo = modelRegistry.getFieldInfo(typeInfo, options.sortField)
-            if (fieldInfo != null) {
-                "${fieldInfo.columnName} as $SORT_FIELD_ALIAS"
-            }
-            // if the sort field does not exist in the searched entity type, we search in related entities
-            else {
-                val relatedTypes = typeInfo.relatedTypes
-                val candidates = relatedTypes.filter { (type) ->
-                    modelRegistry.getFieldInfo(modelRegistry.getTypeInfo(type)!!, options.sortField, true) != null
-                }
-                if (candidates.size == 1) {
-                    val candidate = candidates.entries.first()
-                    val relatedTypeInfo = modelRegistry.getTypeInfo(candidate.key)!!
-                    val sortFieldInfo = modelRegistry.getFieldInfo(relatedTypeInfo, options.sortField, true)!!
-                    val relationFieldInfos = candidate.value
-                    val sortColumns = mutableSetOf<String>()
-                    relationFieldInfos.filter { it.fkName != null }.forEachIndexed { i, relationFieldInfo ->
-                        // add join if not existing yet
-                        val joinInfos = joins.filter { j -> j.relationColumn == relationFieldInfo.columnName }
-                        val joinInfo = if (joinInfos.isEmpty()) {
-                            val joinInfo = JoinInfo(typeInfo, relatedTypeInfo, relationFieldInfo, 1, i+1)
-                            joins.add(joinInfo)
-                            joinInfo
-                        }
-                        else {
-                            joinInfos[0]
-                        }
-                        sortColumns.add(joinInfo.joinedTableAlias+"."+sortFieldInfo.columnName)
-                    }
+        val sortColumn = if (!options.sortField.isNullOrEmpty()) resolveSortField(typeInfo, options.sortField, joins) else ""
 
-                    "GREATEST(${sortColumns.joinToString(", ")}) as $SORT_FIELD_ALIAS"
-                }
-                else {
-                    throw PersistenceException.withReason("Cannot resolve sort field '${options.sortField}'.")
-                }
-            }
-        }
-        else ""
-
+        // create query string
         val join = joins.joinToString(separator = " ") { it.joinString }
         val where = conditions.joinToString(separator = " ${options.queryOperator} ") { it }
 
@@ -358,15 +319,15 @@ class PostgreSQLDatabase : DBApi {
     }
 
     override fun beginTransaction() {
-        TODO("Not yet implemented")
+        entityManager.transaction.begin()
     }
 
     override fun commitTransaction() {
-        TODO("Not yet implemented")
+        entityManager.transaction.commit()
     }
 
     override fun rollbackTransaction() {
-        TODO("Not yet implemented")
+        entityManager.transaction.rollback()
     }
 
     /**
@@ -418,23 +379,18 @@ class PostgreSQLDatabase : DBApi {
     }
 
     /**
-     * Extract value and join conditions for the given query
-     * The result is a pair with the following content
-     * - first: Map of condition strings for WHERE clause and their parameters
-     * - second: List of JoinInfo instances that are necessary to select the query fields
+     * Extract value and join conditions and necessary joins for the given query
+     * The result is a map of condition strings for the WHERE clause and their parameters
      * The index parameter might be used to generate table aliases for joins
      */
-    private fun processCriteria(type: KClass<out EntityBase>, query: List<QueryField>, options: QueryOptions, index: Int): Pair<Map<String, Any?>, Set<JoinInfo>> {
+    private fun processCriteria(type: KClass<out EntityBase>, query: List<QueryField>, options: QueryOptions, index: Int, joins: MutableSet<JoinInfo>): Map<String, Any?> {
         val where: HashMap<String, Any?> = LinkedHashMap()
-        val joins = mutableSetOf<JoinInfo>()
 
         val typeInfo = modelRegistry.getTypeInfo(type)
         if (typeInfo != null) {
             query.forEachIndexed { i, criteria ->
                 // resolve field
-                val fieldData = resolveField(typeInfo, criteria.field, index)
-                val queryFieldName = fieldData.first
-                joins.addAll(fieldData.second)
+                val queryFieldName = resolveField(typeInfo, criteria.field, index, joins)
 
                 // make criteria
                 val value = criteria.value
@@ -463,12 +419,13 @@ class PostgreSQLDatabase : DBApi {
                 }
             }
         }
-        return Pair(where, joins)
+        return where
     }
 
-    private fun resolveField(typeInfo: ModelRegistry.TypeInfo, field: String, index: Int): Pair<String, Set<JoinInfo>> {
-        val joins = mutableSetOf<JoinInfo>()
-
+    /**
+     * Get the query field term and necessary joins for the given field starting from the given type
+     */
+    private fun resolveField(typeInfo: ModelRegistry.TypeInfo, field: String, index: Int, joins: MutableSet<JoinInfo>): String {
         // field might contain dots to define a path
         val fieldPath = field.split(delimiters = arrayOf("."), limit = 2).let {
             Pair(it[0], it.getOrNull(1) ?: "")
@@ -476,7 +433,7 @@ class PostgreSQLDatabase : DBApi {
         val fieldInfo = modelRegistry.getFieldInfo(typeInfo, fieldPath.first, true)
 
         // resolve the field to the column
-        val queryFieldName = when {
+        return when {
             // simple field or relation field with no path to related entity attribute
             fieldInfo != null && fieldPath.second.isBlank() -> {
                 "${typeInfo.aliasName()}.${fieldInfo.columnName}"
@@ -518,6 +475,50 @@ class PostgreSQLDatabase : DBApi {
                 throw PersistenceException.withReason("Unknown field '$field' in query (entity type '{$typeInfo.type}').")
             }
         }
-        return Pair(queryFieldName, joins)
+    }
+
+    /**
+     * Get the sort column and necessary joins for the given field starting from the given type
+     */
+    private fun resolveSortField(typeInfo: ModelRegistry.TypeInfo, sortField: String?, joins: MutableSet<JoinInfo>): String {
+        return if (!sortField.isNullOrEmpty()) {
+            // check if the sort field exists in the searched entity type
+            val fieldInfo = modelRegistry.getFieldInfo(typeInfo, sortField)
+            if (fieldInfo != null) {
+                "${fieldInfo.columnName} as $SORT_FIELD_ALIAS"
+            }
+            // if the sort field does not exist in the searched entity type, we search in related entities
+            else {
+                val relatedTypes = typeInfo.relatedTypes
+                val candidates = relatedTypes.filter { (type) ->
+                    modelRegistry.getFieldInfo(modelRegistry.getTypeInfo(type)!!, sortField, true) != null
+                }
+                if (candidates.size == 1) {
+                    val candidate = candidates.entries.first()
+                    val relatedTypeInfo = modelRegistry.getTypeInfo(candidate.key)!!
+                    val sortFieldInfo = modelRegistry.getFieldInfo(relatedTypeInfo, sortField, true)!!
+                    val relationFieldInfos = candidate.value
+                    val sortColumns = mutableSetOf<String>()
+                    relationFieldInfos.filter { it.fkName != null }.forEachIndexed { i, relationFieldInfo ->
+                        // add join if not existing yet
+                        val joinInfos = joins.filter { j -> j.relationColumn == relationFieldInfo.columnName }
+                        val joinInfo = if (joinInfos.isEmpty()) {
+                            val joinInfo = JoinInfo(typeInfo, relatedTypeInfo, relationFieldInfo, 1, i+1)
+                            joins.add(joinInfo)
+                            joinInfo
+                        }
+                        else {
+                            joinInfos[0]
+                        }
+                        sortColumns.add(joinInfo.joinedTableAlias+"."+sortFieldInfo.columnName)
+                    }
+                    "GREATEST(${sortColumns.joinToString(", ")}) as $SORT_FIELD_ALIAS"
+                }
+                else {
+                    throw PersistenceException.withReason("Cannot resolve sort field '${sortField}'.")
+                }
+            }
+        }
+        else ""
     }
 }
