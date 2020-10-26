@@ -406,5 +406,43 @@ describe('Tree', () => {
       Tree.openNode([testFolder]);
       CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
     });
+
+    it('should move a folder with sub-tree without splitting them (#2091)', () => {
+      const testFolder = 'move me ' + Utils.randomString();
+      const docName = 'level two ' + Utils.randomString();
+
+      DocumentPage.createFolder(testFolder);
+      DocumentPage.createDocument(docName);
+
+      // move from root to root
+      Tree.selectNodeWithTitle(testFolder);
+      CopyCutUtils.move();
+
+      // wait a bit after move so that we use the right dom state
+      cy.wait(200);
+
+      Tree.openNode([testFolder, docName]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+
+      // move from root to a folder
+      Tree.selectNodeWithTitle(testFolder);
+      CopyCutUtils.move(['Neue Testdokumente']);
+
+      // wait a bit after move so that we use the right dom state
+      cy.wait(200);
+
+      Tree.openNode(['Neue Testdokumente', testFolder, docName]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Neue Testdokumente', testFolder]);
+
+      // move from a folder to root
+      Tree.selectNodeWithTitle(testFolder);
+      CopyCutUtils.move();
+
+      // wait a bit after move so that we use the right dom state
+      cy.wait(200);
+
+      Tree.openNode([testFolder, docName]);
+      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+    });
   });
 });
