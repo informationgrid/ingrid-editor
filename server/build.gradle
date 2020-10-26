@@ -92,7 +92,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // iBus communication
-     implementation('de.ingrid:ingrid-elasticsearch-tools:5.6.0-SNAPSHOT')
+     implementation('de.ingrid:ingrid-elasticsearch-tools:5.6.0')
 //    compile 'org.elasticsearch:elasticsearch:6.8.4'
 
     implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {
