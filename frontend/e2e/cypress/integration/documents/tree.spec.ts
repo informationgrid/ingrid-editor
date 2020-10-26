@@ -2,6 +2,7 @@ import {DocumentPage} from "../../pages/document.page";
 import {CopyCutUtils} from "../../pages/copy-cut-utils";
 import {Tree} from "../../pages/tree.partial";
 import {enterTestDataSteps} from "../../pages/enterTestDataSteps";
+import {Utils} from "../../pages/utils";
 
 before(() => {
   cy.kcLogin('user');
@@ -303,8 +304,8 @@ describe('Tree', () => {
 
     it('should be possible to move a root node under the root node', () => {
       // at the moment it's allowed since there's no harm
-      const testFolder = 'move me under the root node'
-      const docName = 'document at level 2'
+      const testFolder = 'move me under root node ' + Utils.randomString()
+      const docName = 'document level 2 ' + Utils.randomString()
 
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
@@ -318,7 +319,6 @@ describe('Tree', () => {
       // wait a bit after move so that we use the right dom state
       cy.wait(200);
 
-      Tree.selectNodeWithTitle(testFolder);
       Tree.openNode([testFolder, docName]);
 
       // check if path is the same like before
