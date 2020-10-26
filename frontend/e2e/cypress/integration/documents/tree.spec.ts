@@ -1,7 +1,7 @@
 import {DocumentPage} from "../../pages/document.page";
 import {CopyCutUtils} from "../../pages/copy-cut-utils";
 import {Tree} from "../../pages/tree.partial";
-import {enterTestDataSteps} from "../../pages/enterTestDataSteps";
+import {enterMcloudDocTestData} from "../../pages/enterMcloudDocTestData";
 import {Utils} from "../../pages/utils";
 
 before(() => {
@@ -23,7 +23,7 @@ describe('Tree', () => {
 
   it('should expand and select the same node when reloading page', () => {
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
-    CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
+    Tree.selectNodeAndCheckPath('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
 
     DocumentPage.refreshDashboard();
     // when 'Ordner 2. Ebene is visible, the other folders are expanded
@@ -50,11 +50,11 @@ describe('Tree', () => {
 
       DocumentPage.createDocument(docName);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten']);
 
       CopyCutUtils.dragdropWithoutAutoExpand(docName, 'Neue Testdokumente', true);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Neue Testdokumente']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Neue Testdokumente']);
     });
 
     it('should move a document into a deeply nested folder with hovered node', () => {
@@ -68,11 +68,11 @@ describe('Tree', () => {
       DocumentPage.createFolder(deepFolder2);
       DocumentPage.createFolder(deepFolder3);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten']);
 
       CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, deepFolder3], true);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', deepFolder, deepFolder2, deepFolder3]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', deepFolder, deepFolder2, deepFolder3]);
     });
 
     it('should move a document into a not expanded node (other children should be there)', () => {
@@ -83,14 +83,14 @@ describe('Tree', () => {
 
       DocumentPage.createDocument(docName);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten']);
 
       CopyCutUtils.dragdropWithoutAutoExpand(docName, 'Testdokumente', true);
 
       // when dragging a node onto a folder, the folder expands automatically after a few milliseconds
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Testdokumente']);
       // chek if other expected children are available under destination folder
-      CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
+      Tree.selectNodeAndCheckPath('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
     });
 
     it('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
@@ -106,12 +106,12 @@ describe('Tree', () => {
       //to close for checking auto-expanding by hovered node
       Tree.selectNodeWithTitle(dropFolder);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten']);
 
       CopyCutUtils.dragdrop(docName, [dropFolder, dropFolder2], true);
 
       //check if document is moved
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', dropFolder, dropFolder2]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', dropFolder, dropFolder2]);
     });
 
     it('should auto-expand a deeply nested folder', () =>{
@@ -131,7 +131,7 @@ describe('Tree', () => {
       CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, docName2], false);
 
       //check if nodes are expanded
-      CopyCutUtils.selectNodeWithChecks(docName2, ['Daten', deepFolder, deepFolder2]);
+      Tree.selectNodeAndCheckPath(docName2, ['Daten', deepFolder, deepFolder2]);
     });
   });
 
@@ -155,7 +155,7 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
       DocumentPage.createFolder(testFolder2);
 
-      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten']);
+      Tree.selectNodeAndCheckPath(testFolder, ['Daten']);
 
       CopyCutUtils.copyObjectWithTree([testFolder, testFolder2]);
       cy.get('error-dialog').find('[data-cy=error-dialog-title]').contains('Fehler');
@@ -171,7 +171,7 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName2);
       DocumentPage.createFolder(testFolder);
 
-      CopyCutUtils.selectNodeWithChecks(docName2, ['Daten']);
+      Tree.selectNodeAndCheckPath(docName2, ['Daten']);
 
       // because of 'not.contain.value' we can not use CopyCutUtils.copyObject()
       cy.get('[data-cy=toolbar_COPY]').click()
@@ -195,7 +195,7 @@ describe('Tree', () => {
 
       CopyCutUtils.copyObject(['Testdokumente'])
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Testdokumente']);
     });
 
     it('should copy a root document into a deeply nested folder', () => {
@@ -207,23 +207,20 @@ describe('Tree', () => {
       DocumentPage.deleteLoadedNode();
 
       Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
     });
 
     it('should copy a document from a folder to the root', () => {
       const docName = 'copy me to the root';
 
-      Tree.selectNodeWithTitle('Neue Testdokumente');
+      DocumentPage.CreateFullMcloudDocumentWithAPI(docName,false);
 
-      // TODO: Use API-call instead of entering data manually
-      DocumentPage.createDocument(docName);
-      enterTestDataSteps.enterFullDataInMcloudDoc();
-      DocumentPage.saveDocument();
-
+      Tree.openNode(['Neue Testdokumente', docName]);
+      Tree.selectNodeWithTitle(docName);
       CopyCutUtils.copyObject();
 
       Tree.selectNodeWithTitle('Neue Testdokumente');
-      CopyCutUtils.selectNodeWithChecks(docName,['Daten']);
+      Tree.selectNodeAndCheckPath(docName,['Daten']);
     });
 
     it('should copy a root folder (without sub-tree) into a folder', () => {
@@ -234,7 +231,7 @@ describe('Tree', () => {
       CopyCutUtils.copyObject(['Testdokumente']);
       //DocumentPage.deleteLoadedNode();
 
-      CopyCutUtils.selectNodeWithChecks(testFolder,['Daten', 'Testdokumente']);
+      Tree.selectNodeAndCheckPath(testFolder,['Daten', 'Testdokumente']);
     });
 
     it('should copy a root folder (with sub-tree) into a folder', () => {
@@ -244,15 +241,15 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
       CopyCutUtils.copyObject();
-      CopyCutUtils.checkPath(['Daten', testFolder]);
+      Tree.checkPath(['Daten', testFolder]);
       DocumentPage.deleteLoadedNode();
 
       DocumentPage.search(docName);
       DocumentPage.getSearchResult().click();
 
-      CopyCutUtils.checkPath(['Daten']);
+      Tree.checkPath(['Daten']);
     });
 
     it('should copy a root tree to a sub folder', () => {
@@ -266,7 +263,7 @@ describe('Tree', () => {
       CopyCutUtils.copyObjectWithTree(['Testdokumente', 'Ordner 2. Ebene']);
 
       Tree.openNode([testFolder]);
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
 
       // Bug/Feature #2115: empty folders cannot be deleted
       Tree.selectNodeWithTitle(docName);
@@ -277,8 +274,7 @@ describe('Tree', () => {
 
       Tree.openNode([ 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
 
-      // TODO: the function "selectNodeWithChecks" does not belong to CopyCutUtils, right?
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
     });
 
     it('should copy a tree inside a folder to root', () => {
@@ -296,7 +292,7 @@ describe('Tree', () => {
       Tree.selectNodeWithTitle('Testdokumente');
       Tree.openNode([testFolder]);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
     });
   });
 
@@ -311,7 +307,7 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName);
 
       // Check path
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
 
       Tree.selectNodeWithTitle(testFolder);
       CopyCutUtils.move();
@@ -322,7 +318,7 @@ describe('Tree', () => {
       Tree.openNode([testFolder, docName]);
 
       // check if path is the same like before
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
     });
 
     it('should be possible to move a node inside a folder into the same one', () => {
@@ -334,7 +330,7 @@ describe('Tree', () => {
 
       CopyCutUtils.move(['Testdokumente']);
 
-      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten', 'Testdokumente']);
+      Tree.selectNodeAndCheckPath(testFolder, ['Daten', 'Testdokumente']);
     });
 
     it('should move a root document into a folder', () => {
@@ -344,7 +340,7 @@ describe('Tree', () => {
 
       CopyCutUtils.move(['Testdokumente']);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Testdokumente']);
     });
 
     it('should move a root document into a deep folder', () => {
@@ -354,7 +350,7 @@ describe('Tree', () => {
 
       CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
     });
 
     it('should move a root folder into a deep folder', () => {
@@ -365,7 +361,7 @@ describe('Tree', () => {
       Tree.selectNodeWithTitle(testFolder);
       CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
 
-      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
+      Tree.selectNodeAndCheckPath(testFolder, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
     });
 
     it('should move a document from a folder to the root', () => {
@@ -376,7 +372,7 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName);
       CopyCutUtils.move();
 
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten']);
     });
 
     it('should move a root folder into a folder', () => {
@@ -388,7 +384,7 @@ describe('Tree', () => {
       Tree.selectNodeWithTitle(testFolder);
       CopyCutUtils.move(['Testdokumente']);
 
-      CopyCutUtils.selectNodeWithChecks(testFolder, ['Daten', 'Testdokumente']);
+      Tree.selectNodeAndCheckPath(testFolder, ['Daten', 'Testdokumente']);
     });
 
     it('should move a node within a folder to the root', () => {
@@ -404,7 +400,7 @@ describe('Tree', () => {
       CopyCutUtils.move();
 
       Tree.openNode([testFolder]);
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
     });
 
     it('should move a folder with sub-tree without splitting them (#2091)', () => {
@@ -422,7 +418,7 @@ describe('Tree', () => {
       cy.wait(200);
 
       Tree.openNode([testFolder, docName]);
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
 
       // move from root to a folder
       Tree.selectNodeWithTitle(testFolder);
@@ -432,7 +428,7 @@ describe('Tree', () => {
       cy.wait(200);
 
       Tree.openNode(['Neue Testdokumente', testFolder, docName]);
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', 'Neue Testdokumente', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Neue Testdokumente', testFolder]);
 
       // move from a folder to root
       Tree.selectNodeWithTitle(testFolder);
@@ -442,7 +438,7 @@ describe('Tree', () => {
       cy.wait(200);
 
       Tree.openNode([testFolder, docName]);
-      CopyCutUtils.selectNodeWithChecks(docName, ['Daten', testFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
     });
   });
 });

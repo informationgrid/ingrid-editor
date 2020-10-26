@@ -106,7 +106,7 @@ describe('General create addresses/folders', () => {
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
-      CopyCutUtils.selectNodeWithChecks(folderName, ['Adressen']);
+      Tree.selectNodeAndCheckPath(folderName, ['Adressen']);
       cy.get(DocumentPage.title).should('have.text', folderName)
     });
 

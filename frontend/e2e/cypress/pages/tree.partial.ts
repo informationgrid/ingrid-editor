@@ -1,4 +1,4 @@
-import {DocumentPage} from "./document.page";
+import {DocumentPage, SEPARATOR} from "./document.page";
 
 export class Tree {
 
@@ -50,6 +50,20 @@ export class Tree {
     }
     if (!isInsideDialog) {
       cy.get(DocumentPage.title).should('have.text', nodeTitle);
+    }
+  }
+
+  static selectNodeAndCheckPath(nodeTitle: string, path: string[]){
+    cy.get('#sidebar').contains(nodeTitle).click();
+    this.checkPath(path);
+    cy.get('ige-header-title-row').contains(nodeTitle);
+  }
+
+  static checkPath(path: string[], isInsideDialog = false){
+    if (isInsideDialog){
+      cy.get('.mat-dialog-container ige-breadcrumb').should('have.text', path.join(SEPARATOR));
+    } else {
+      cy.get('ige-breadcrumb').should('have.text', path.join(SEPARATOR));
     }
   }
 
