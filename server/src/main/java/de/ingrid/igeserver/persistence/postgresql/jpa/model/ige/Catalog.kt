@@ -19,10 +19,10 @@ class Catalog(
     val type: String,
 
     @Column(nullable=false)
-    val name: String,
+    var name: String,
 
     @Column
-    val description: String? = null,
+    var description: String? = null,
 
     @Column
     @JsonIgnore

@@ -20,6 +20,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataTypeRe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithRecordId
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog as CatalogEntity
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import de.ingrid.igeserver.services.FIELD_VERSION
 import org.apache.logging.log4j.kotlin.logger
@@ -65,6 +66,11 @@ class PostgreSQLDatabase : DBApi {
      * Id of the catalog that is acquired on the current thread
      */
     private val catalogId = ThreadLocal<Int?>()
+
+    /**
+     * Last query string on the current thread
+     */
+    private val lastQuery = ThreadLocal<String?>()
 
     /**
      * Jackson mapper used for deserialization of incoming JSON strings
@@ -119,10 +125,10 @@ class PostgreSQLDatabase : DBApi {
         // the record id can only be determined if type has a record id
         return if (typeImpl.jpaType.isSubclassOf(EntityWithRecordId::class)) {
             val entities = getEntitiesByIdentifier(type, docId)
-            if (entities.size == 1) {
-                (entities[0] as EntityWithRecordId).id?.toString()
-            } else {
-                throw PersistenceException.withMultipleEntities(docId, type.simpleName, currentCatalog)
+            when {
+                entities.size == 1 -> (entities[0] as EntityWithRecordId).id?.toString()
+                entities.size > 1 -> throw PersistenceException.withMultipleEntities(docId, type.simpleName, currentCatalog)
+                else -> null
             }
         } else null
     }
@@ -183,10 +189,12 @@ class PostgreSQLDatabase : DBApi {
                 val queryFields = query.first
                 if (!queryFields.isNullOrEmpty()) {
                     val queryOptions = query.second
-                    val processedCriteria = processCriteria(typeImpl.jpaType, queryFields, queryOptions, i+1, joins)
+                    val queryJoins = mutableSetOf<JoinInfo>()
+                    val processedCriteria = processCriteria(typeImpl.jpaType, queryFields, queryOptions, i+1, queryJoins)
                     processedCriteria.forEach {
                         criteria[it.key] = it.value
                     }
+                    joins.addAll(queryJoins)
                     conditions.add(" (" + processedCriteria.keys.joinToString(separator = " ${queryOptions.queryOperator} ") { it } + ") ")
                 }
             }
@@ -216,6 +224,7 @@ class PostgreSQLDatabase : DBApi {
 
         // execute a native query
         log.debug("Query-String: $queryStr")
+        lastQuery.set(queryStr)
         val typedQuery = entityManager.createNativeQuery(queryStr, typeImpl.jpaType.java)
         val typedCountQuery = entityManager.createNativeQuery(countQueryStr)
         if (criteria.isNotEmpty()) {
@@ -285,31 +294,62 @@ class PostgreSQLDatabase : DBApi {
         }
 
     override fun createCatalog(settings: Catalog): String? {
-        TODO("Not yet implemented")
+        val id = settings.name.toLowerCase().replace(" ".toRegex(), "_")
+        if (!catalogExists(id)) {
+            settings.id = acquireDatabase("").use {
+                val catalog = CatalogEntity(
+                        identifier = id,
+                        name = settings.name,
+                        description = settings.description,
+                        type = settings.type
+                )
+                entityManager.persist(catalog)
+                id
+            }
+        }
+        return settings.id
     }
 
     override fun updateCatalog(settings: Catalog) {
-        TODO("Not yet implemented")
+        if (settings.id == null || !catalogExists(settings.id!!)) {
+            throw PersistenceException.withReason("Catalog '${settings.id}' does not exist.")
+        }
+        acquireDatabase("").use {
+            val catalog = getCatalog(settings.id!!)!!
+            catalog.name = settings.name
+            catalog.description = settings.description
+            entityManager.merge(catalog)
+        }
     }
 
     override fun removeCatalog(name: String): Boolean {
-        TODO("Not yet implemented")
+        return if (catalogExists(name)) {
+            acquireDatabase("").use {
+                val catalog = getCatalog(name)!!
+                entityManager.remove(catalog)
+            }
+            true
+        }
+        else {
+            throw PersistenceException.withReason("Failed to delete non-existing catalog with name '$name'.")
+        }
     }
 
     override fun catalogExists(name: String): Boolean {
-        TODO("Not yet implemented")
+        return getCatalog(name) != null
     }
 
     override fun acquireCatalog(name: String): Closeable {
-        // find the catalog by name
-        val typeImpl = getEntityTypeImpl(CatalogInfoType::class)
-        val queryStr = "SELECT e FROM ${typeImpl.jpaType.simpleName} e WHERE e.identifier = :name"
-        val catalog = entityManager.createQuery(queryStr, typeImpl.jpaType.java).
-                setParameter("name", name).singleResult
-        catalogId.set(catalog.id)
+        val catalog = getCatalog(name)
+        return if (catalog != null) {
+            catalogId.set(catalog.id)
 
-        // start a transaction that will be committed when closed
-        return ClosableTransaction(transactionManager) { catalogId.set(null) }
+            // start a transaction that will be committed when closed
+            ClosableTransaction(transactionManager) { catalogId.set(null) }
+        }
+        else {
+            throw PersistenceException.withReason("Catalog '$name' does not exist.")
+        }
     }
 
     override fun acquireDatabase(name: String): Closeable {
@@ -330,12 +370,39 @@ class PostgreSQLDatabase : DBApi {
         entityManager.transaction.rollback()
     }
 
+    fun getLastQuery(): String? {
+        return lastQuery.get()
+    }
+
     /**
      * Private interface
      */
 
     private fun <T : EntityType> getEntityTypeImpl(type: KClass<T>): PostgreSQLEntityType {
         return entityTypeMap[type] ?: throw PersistenceException.withReason("No entity type '$type' registered.")
+    }
+
+    private fun mapEntityToJson(obj: EntityBase): JsonNode {
+        // NOTE this is not as optimized as mapper.valueToTree(obj), but allows to use serialization annotations
+        return mapper.readTree(mapper.writeValueAsString(obj))
+    }
+
+    private fun getCatalog(name: String): CatalogEntity? {
+        // find the catalog by name
+        val typeImpl = getEntityTypeImpl(CatalogInfoType::class)
+        val catalogs = getEntitiesByIdentifier(CatalogInfoType::class, name)
+        return when {
+            catalogs.size == 1 -> catalogs[0] as CatalogEntity
+            catalogs.size > 1 -> throw PersistenceException.withMultipleEntities(name, typeImpl.entityType.simpleName, null)
+            else -> null
+        }
+    }
+
+    private fun currentCatalog(): CatalogEntity? {
+        val catId = catalogId.get()
+        return if (catId != null)
+            entityManager.getReference(CatalogEntity::class.java, catId)
+        else null
     }
 
     private fun <T : EntityType> getEntitiesByIdentifier(type: KClass<T>, docId: String) : List<EntityBase> {
@@ -345,18 +412,6 @@ class PostgreSQLDatabase : DBApi {
         }
         val queryStr = "SELECT e FROM ${typeImpl.jpaType.simpleName} e WHERE e.${typeImpl.idAttribute} = :docId"
         return entityManager.createQuery(queryStr, typeImpl.jpaType.java).setParameter("docId", docId).resultList
-    }
-
-    private fun mapEntityToJson(obj: EntityBase): JsonNode {
-        // NOTE this is not as optimized as mapper.valueToTree(obj), but allows to use serialization annotations
-        return mapper.readTree(mapper.writeValueAsString(obj))
-    }
-
-    private fun currentCatalog(): de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog? {
-        val catId = catalogId.get()
-        return if (catId != null)
-            entityManager.getReference(de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog::class.java, catId)
-        else null
     }
 
     private class JoinInfo(
@@ -376,6 +431,10 @@ class PostgreSQLDatabase : DBApi {
             get() = "JOIN ${otherType.tableName} ${otherType.aliasName(otherAliasIndex)} ON " +
                     "${thisType.aliasName(thisAliasIndex)}.${relationField.fkName} = " +
                     "${otherType.aliasName(otherAliasIndex)}.${otherType.pkName}"
+
+        override fun toString(): String {
+            return "${thisType.aliasName(thisAliasIndex)}.${relationField} -> ${otherType.aliasName(otherAliasIndex)}"
+        }
     }
 
     /**
@@ -425,32 +484,40 @@ class PostgreSQLDatabase : DBApi {
     /**
      * Get the query field term and necessary joins for the given field starting from the given type
      */
-    private fun resolveField(typeInfo: ModelRegistry.TypeInfo, field: String, index: Int, joins: MutableSet<JoinInfo>): String {
+    private fun resolveField(typeInfo: ModelRegistry.TypeInfo, field: String, index: Int, joins: MutableSet<JoinInfo>, depth: Int = 0): String {
         // field might contain dots to define a path
         val fieldPath = field.split(delimiters = arrayOf("."), limit = 2).let {
             Pair(it[0], it.getOrNull(1) ?: "")
         }
         val fieldInfo = modelRegistry.getFieldInfo(typeInfo, fieldPath.first, true)
 
+        // alias index is always 1 if we resolve a root field
+        val thisAliasIndex = if (depth == 0) 1 else index
+
         // resolve the field to the column
         return when {
             // simple field or relation field with no path to related entity attribute
             fieldInfo != null && fieldPath.second.isBlank() -> {
-                "${typeInfo.aliasName()}.${fieldInfo.columnName}"
+                "${typeInfo.aliasName(thisAliasIndex)}.${fieldInfo.columnName}"
             }
             // relation field
             fieldInfo != null && fieldInfo.isRelation && fieldInfo.relatedEntityType != null -> {
-                // TODO resolve recursive, if paths with length > 2 should be handled
-                val otherFieldName = fieldPath.second
-                val otherTypeInfo = modelRegistry.getTypeInfo(fieldInfo.relatedEntityType)!!
-                val otherFieldInfo = modelRegistry.getFieldInfo(otherTypeInfo, otherFieldName, true)
-                        ?: throw PersistenceException.withReason("Unable to resolve field '$otherFieldName' in entity type '${otherTypeInfo.type}'.")
                 if (fieldInfo.fkName == null) {
                     throw PersistenceException.withReason("Field '${fieldInfo.name}' in entity type '${typeInfo.type}' defines a " +
-                            "(one|many)-to-many relation that can't be queried.")
+                            "(one|many)-to-many relation that cannot be joined for querying.")
                 }
-                joins.add(JoinInfo(typeInfo, otherTypeInfo, fieldInfo, 1, index))
-                "${otherTypeInfo.aliasName(index)}.${otherFieldInfo.columnName}"
+                val otherFieldName = fieldPath.second
+                val otherTypeInfo = modelRegistry.getTypeInfo(fieldInfo.relatedEntityType)!!
+
+                // add join, if not existing yet
+                val existingJoins = joins.filter { j -> j.relationField == fieldInfo }
+                val join = if (existingJoins.isNotEmpty()) existingJoins.first() else {
+                    val newJoin = JoinInfo(typeInfo, otherTypeInfo, fieldInfo, thisAliasIndex, index)
+                    joins.add(newJoin)
+                    newJoin
+                }
+
+                resolveField(otherTypeInfo, otherFieldName, join.otherAliasIndex, joins, depth+1)
             }
             // if the field is not declared in the entity it could be a property of the embedded data
             EntityWithEmbeddedData::class.java.isAssignableFrom(typeInfo.type.java) -> {
@@ -465,7 +532,7 @@ class PostgreSQLDatabase : DBApi {
                     else field.removePrefix("data.")
                 val propertyPath = propertyWithoutRoot.split('.')
 
-                var queryPath = "${typeInfo.aliasName()}.${dataColumn}"
+                var queryPath = "${typeInfo.aliasName(thisAliasIndex)}.${dataColumn}"
                 propertyPath.forEachIndexed { j, part ->
                     queryPath += (if (j == propertyPath.size-1) "->>" else "->") + "'${part}'"
                 }
@@ -485,7 +552,7 @@ class PostgreSQLDatabase : DBApi {
             // check if the sort field exists in the searched entity type
             val fieldInfo = modelRegistry.getFieldInfo(typeInfo, sortField)
             if (fieldInfo != null) {
-                "${fieldInfo.columnName} as $SORT_FIELD_ALIAS"
+                "${typeInfo.aliasName()}.${fieldInfo.columnName} as $SORT_FIELD_ALIAS"
             }
             // if the sort field does not exist in the searched entity type, we search in related entities
             else {
@@ -510,7 +577,7 @@ class PostgreSQLDatabase : DBApi {
                         else {
                             joinInfos[0]
                         }
-                        sortColumns.add(joinInfo.joinedTableAlias+"."+sortFieldInfo.columnName)
+                        sortColumns.add("${joinInfo.joinedTableAlias}.${sortFieldInfo.columnName}")
                     }
                     "GREATEST(${sortColumns.joinToString(", ")}) as $SORT_FIELD_ALIAS"
                 }

@@ -44,6 +44,10 @@ class ModelRegistry {
         fun aliasName(i: Int = 1): String {
             return tableName.toLowerCase() + i.toString()
         }
+
+        override fun toString(): String {
+            return type.toString()
+        }
     }
 
     class FieldInfo(
@@ -56,6 +60,10 @@ class ModelRegistry {
     ) {
         val isRelation: Boolean
             get() = relatedEntityType != null
+
+        override fun toString(): String {
+            return name
+        }
     }
 
     @Autowired
