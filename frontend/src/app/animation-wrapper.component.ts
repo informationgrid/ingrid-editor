@@ -45,7 +45,7 @@ import {
   ],
   // disable hide default behavior
   styles: [`
-    ::ng-deep formly-field {
+    ::ng-deep formly-field.animated{
       display: block !important;
     }
   `]

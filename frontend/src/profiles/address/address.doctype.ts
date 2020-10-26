@@ -56,7 +56,7 @@ export class AddressDoctype extends BaseDoctype {
             fieldGroupClassName: 'display-flex',
             fieldGroup: [{
               key: 'department',
-              className: 'width-100 organization',
+              className: 'width-100 organization animated',
               type: 'input',
               templateOptions: {
                 label: 'Abteilung/Referat',
