@@ -1,4 +1,4 @@
-import {enterTestDataSteps} from "../../pages/enterTestDataSteps";
+import {enterMcloudDocTestData} from "../../pages/enterMcloudDocTestData";
 import {DocumentPage} from "../../pages/document.page";
 import {Utils} from "../../pages/utils";
 
@@ -17,7 +17,7 @@ describe('Spatial References', () => {
     const docName = 'spatialbbox-' + Utils.randomString()
 
     DocumentPage.createDocument(docName);
-    enterTestDataSteps.setMcloudSpatialBbox('create spatial reference, bbox', 'Bremen');
+    enterMcloudDocTestData.setSpatialBbox('create spatial reference, bbox', 'Bremen');
     DocumentPage.checkSpatialEntryExists('Bremen');
 
     DocumentPage.saveDocument();
@@ -28,7 +28,7 @@ describe('Spatial References', () => {
     const poly = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))'
 
     DocumentPage.createDocument(docName);
-    enterTestDataSteps.setMcloudSpatialWKT('create spatial reference, wkt-1', poly);
+    enterMcloudDocTestData.setSpatialWKT('create spatial reference, wkt-1', poly);
     DocumentPage.checkSpatialEntryExists('reference, wkt-1');
 
     DocumentPage.saveDocument();
@@ -39,7 +39,7 @@ describe('Spatial References', () => {
     //       if another document with this this name exists, then this test breaks
     DocumentPage.getDocument('bbox');
 
-    enterTestDataSteps.setMcloudSpatialBbox('add spatial reference, bbox', 'Berlin');
+    enterMcloudDocTestData.setSpatialBbox('add spatial reference, bbox', 'Berlin');
 
     DocumentPage.checkSpatialEntryExists('Berlin');
 
@@ -58,7 +58,7 @@ describe('Spatial References', () => {
     // TODO: this test should not depend on other test
     DocumentPage.getDocument('wkt');
 
-    enterTestDataSteps.setMcloudSpatialWKT('add spatial reference, wkt-2', poly);
+    enterMcloudDocTestData.setSpatialWKT('add spatial reference, wkt-2', poly);
     DocumentPage.checkSpatialEntryExists('reference, wkt-2');
 
     DocumentPage.saveDocument();
@@ -74,10 +74,10 @@ describe('Spatial References', () => {
     // TODO: this test should not depend on other test
     DocumentPage.getDocument('bbox');
 
-    enterTestDataSteps.openSpatialMenuMcloudDoc('Berlin');
-    enterTestDataSteps.selectChangeInSpatialMenuMcloudDoc();
+    enterMcloudDocTestData.openSpatialMenuDoc('Berlin');
+    enterMcloudDocTestData.selectChangeInSpatialMenuDoc();
 
-    enterTestDataSteps.setOpenedMcloudSpatialBbox('update spatial reference, bbox', 'Hamburg');
+    enterMcloudDocTestData.setOpenedSpatialBbox('update spatial reference, bbox', 'Hamburg');
     DocumentPage.checkSpatialEntryExists('Hamburg');
 
     DocumentPage.saveDocument();
@@ -91,8 +91,8 @@ describe('Spatial References', () => {
     // TODO: this test should not depend on other test
     DocumentPage.getDocument('bbox');
 
-    enterTestDataSteps.openSpatialMenuMcloudDoc('Hamburg');
-    enterTestDataSteps.deleteSpatialReference('Hamburg');
+    enterMcloudDocTestData.openSpatialMenuDoc('Hamburg');
+    enterMcloudDocTestData.deleteSpatialReference('Hamburg');
 
     DocumentPage.checkSpatialEntryExistsNot('Hamburg');
   });
