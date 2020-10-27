@@ -143,7 +143,7 @@ class KeycloakService : UserManagementService {
     }
 
     override fun getCurrentPrincipal(): Principal? {
-        val securityContext: SecurityContext = SecurityContextHolder.getContext()
-        return securityContext.authentication.principal as KeycloakPrincipal<*>
+        val securityContext: SecurityContext? = SecurityContextHolder.getContext()
+        return securityContext?.authentication?.principal as KeycloakPrincipal<*>?
     }
 }

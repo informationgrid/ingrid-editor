@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30"
-               packages="de.ingrid.igeserver.persistence.orientdb"
+               packages="de.ingrid.igeserver.persistence.postgresql"
 >
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
@@ -13,7 +13,7 @@
       </Policies>
       <DefaultRolloverStrategy max="9" />
     </RollingFile>
-    <OrientDBAppender name="AuditLogDB" database="${spring:audit.log.database}" table="${spring:audit.log.table}" />
+    <PostgreSQLAppender name="AuditLogDB" table="${spring:audit.log.table}" />
   </Appenders>
   <Loggers>
     <!-- audit logger -->
