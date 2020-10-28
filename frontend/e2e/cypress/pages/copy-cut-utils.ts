@@ -7,19 +7,7 @@ enum CopyOption {
 
 
 export class CopyCutUtils {
-  static selectNodeWithChecks(nodeTitle: string, path: string[]){
-    cy.get('#sidebar').contains(nodeTitle).click();
-    this.checkPath(path);
-    cy.get('ige-header-title-row').contains(nodeTitle);
-  }
 
-  static checkPath(path: string[], isInsideDialog = false){
-    if (isInsideDialog){
-      cy.get('.mat-dialog-container ige-breadcrumb').should('have.text', path.join(SEPARATOR));
-    } else {
-      cy.get('ige-breadcrumb').should('have.text', path.join(SEPARATOR));
-    }
-  }
 
   static copyObjectWithTree(targetNodePath?: string[]){
 

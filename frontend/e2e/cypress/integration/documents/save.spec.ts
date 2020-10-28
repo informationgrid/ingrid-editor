@@ -2,7 +2,7 @@ import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
 import {CopyCutUtils} from "../../pages/copy-cut-utils";
-import {enterTestDataSteps} from "../../pages/enterTestDataSteps";
+import {enterMcloudDocTestData} from "../../pages/enterMcloudDocTestData";
 import {DivOverlay} from "leaflet";
 
 describe('General create documents/folders', () => {
@@ -48,14 +48,14 @@ describe('General create documents/folders', () => {
       const folderName = 'x: a folder at place x';
 
       Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
-      CopyCutUtils.selectNodeWithChecks('Test mCLOUD Dokument',[ROOT, 'Testdokumente']);
+      Tree.selectNodeAndCheckPath('Test mCLOUD Dokument',[ROOT, 'Testdokumente']);
 
       DocumentPage.createFolderAndChangeLocationToRoot(folderName, [ROOT]);
       //check if created folder is in root
-      CopyCutUtils.selectNodeWithChecks(folderName, [ROOT]);
+      Tree.selectNodeAndCheckPath(folderName, [ROOT]);
 
       //check if at beginning selected document is at the same place as before
-      CopyCutUtils.selectNodeWithChecks('Test mCLOUD Dokument',[ROOT, 'Testdokumente']);
+      Tree.selectNodeAndCheckPath('Test mCLOUD Dokument',[ROOT, 'Testdokumente']);
     });
 
     it('should not be possible to publish folders', function () {
@@ -73,7 +73,7 @@ describe('General create documents/folders', () => {
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
-      CopyCutUtils.checkPath([ROOT]);
+      Tree.checkPath([ROOT]);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
       cy.get('[data-cy=create-title]').type(folderName);
@@ -96,12 +96,12 @@ describe('General create documents/folders', () => {
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
-      CopyCutUtils.checkPath([ROOT, parentFolder], true);
+      Tree.checkPath([ROOT, parentFolder], true);
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 2);
-      CopyCutUtils.selectNodeWithChecks(folderName, ['Daten', parentFolder])
+      Tree.selectNodeAndCheckPath(folderName, ['Daten', parentFolder])
 
     });
 
@@ -166,7 +166,7 @@ describe('General create documents/folders', () => {
 
       DocumentPage.createDocument(doc2Name);
 
-      enterTestDataSteps.setMcloudDescription('modified test description');
+      enterMcloudDocTestData.setDescription('modified test description');
 
       // reject dialog
       // check selected tree node === previous selected node
@@ -191,7 +191,7 @@ describe('General create documents/folders', () => {
 
       Tree.openNode(['Testdokumente', docname]);
 
-      enterTestDataSteps.setMcloudDescription('modified test description');
+      enterMcloudDocTestData.setDescription('modified test description');
 
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
@@ -215,7 +215,7 @@ describe('General create documents/folders', () => {
     it('should not remember last dirty state when page has been left (#2121)', () => {
 
       Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument'])
-      enterTestDataSteps.setMcloudDescription('modified test description');
+      enterMcloudDocTestData.setDescription('modified test description');
 
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
@@ -240,7 +240,7 @@ describe('General create documents/folders', () => {
       Tree.selectNodeWithTitle('Testdokumente');
 
       // check that selected node is not empty
-      CopyCutUtils.selectNodeWithChecks('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
+      Tree.selectNodeAndCheckPath('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
 
       Tree.selectNodeWithTitle('Testdokumente');
 

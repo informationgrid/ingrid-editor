@@ -17,6 +17,8 @@ export class DateRangeTypeComponent extends FieldType implements OnInit {
   });
 
   ngOnInit(): void {
+    this.rangeFormGroup.setValue(this.formControl.value ?? {start: null, end: null})
+
     this.formControl.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe(value => {

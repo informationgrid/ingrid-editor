@@ -36,7 +36,7 @@ export class TestDoctype extends BaseDoctype {
       }, {
         key: 'optionalText',
         type: 'input',
-        className: 'optional',
+        className: 'optional animated',
         wrappers: ['panel', 'form-field'],
         templateOptions: {
           externalLabel: 'Optionales Textfeld',

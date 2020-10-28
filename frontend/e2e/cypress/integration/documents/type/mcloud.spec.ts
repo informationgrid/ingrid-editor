@@ -1,7 +1,7 @@
 import {DocumentPage} from '../../../pages/document.page';
 import {AddressPage} from '../../../pages/address.page';
 import {Tree} from '../../../pages/tree.partial';
-import {enterTestDataSteps} from '../../../pages/enterTestDataSteps';
+import {enterMcloudDocTestData} from '../../../pages/enterMcloudDocTestData';
 
 describe('mCLOUD documents', function () {
 
@@ -39,12 +39,7 @@ describe('mCLOUD documents', function () {
 
       DocumentPage.createDocument(docName);
 
-      enterTestDataSteps.setMcloudDescription();
-      enterTestDataSteps.setMcloudAddress(PUBLISHED_ADDRESS);
-      enterTestDataSteps.setMcloudCategory();
-      enterTestDataSteps.setMcloudOpenDataCategory();
-      enterTestDataSteps.setMcloudAddDownload();
-      enterTestDataSteps.setMcloudLicense();
+      enterMcloudDocTestData.enterNecessaryData();
 
       DocumentPage.publishNow();
     });
@@ -59,19 +54,19 @@ describe('mCLOUD documents', function () {
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
 
-      enterTestDataSteps.setMcloudDescription();
-      enterTestDataSteps.setMcloudAddress(PUBLISHED_ADDRESS);
-      enterTestDataSteps.setMcloudUsageInstructions();
-      enterTestDataSteps.setMcloudCategory();
-      enterTestDataSteps.setMcloudOpenDataCategory();
-      enterTestDataSteps.setMcloudAddDownload();
-      enterTestDataSteps.setMcloudLicense();
-      enterTestDataSteps.setMcloudSourceNote();
-      enterTestDataSteps.setMcloudMfund();
-      enterTestDataSteps.setMcloudSpatialWKT();
-      enterTestDataSteps.setMcloudTimeReference();
-      enterTestDataSteps.setMcloudPeriodOfTime('von - bis', previousDate, dateNow);
-      enterTestDataSteps.setMcloudPeriodicity();
+      enterMcloudDocTestData.setDescription();
+      enterMcloudDocTestData.setAddress(PUBLISHED_ADDRESS);
+      enterMcloudDocTestData.setUsageInstructions();
+      enterMcloudDocTestData.setCategory();
+      enterMcloudDocTestData.setOpenDataCategory();
+      enterMcloudDocTestData.setAddDownload();
+      enterMcloudDocTestData.setLicense();
+      enterMcloudDocTestData.setSourceNote();
+      enterMcloudDocTestData.setMfund();
+      enterMcloudDocTestData.setSpatialWKT();
+      enterMcloudDocTestData.setTimeReference();
+      enterMcloudDocTestData.setPeriodOfTime('von - bis', previousDate, dateNow);
+      enterMcloudDocTestData.setPeriodicity();
 
       // needed to slow it down
       cy.get('[data-cy=Periodizität').find('mat-form-field').should('have.text', 'einmalig');
