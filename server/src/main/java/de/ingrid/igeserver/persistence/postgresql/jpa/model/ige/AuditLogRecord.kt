@@ -2,7 +2,7 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.DefaultEntityWithEmbeddedData
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.AbstractEntityWithEmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.AuditLogRecordData
 import org.hibernate.annotations.Type
 import javax.persistence.*
@@ -10,40 +10,42 @@ import javax.persistence.*
 @NoArgs
 @Entity
 @Table(name="audit_log")
-class AuditLogRecord(
+class AuditLogRecord : AbstractEntityWithEmbeddedData<AuditLogRecordData>() {
 
     @Type(type="embeddedData")
     @Column(name="message", columnDefinition="jsonb")
-    override var data: AuditLogRecordData?
-
-) : DefaultEntityWithEmbeddedData<AuditLogRecordData>() {
+    override var data: AuditLogRecordData? = null
+        set(value) {
+            type = value?.typeColumnValue
+            field = value
+        }
 
     @Column(nullable=false)
-    @field:JsonProperty("_type")
-    override var type: String? = data?.typeColumnValue
+    @JsonProperty("_type")
+    override var type: String? = null
 
     @Column
-    val file: String? = null
+    var file: String? = null
 
     @Column(name="class")
-    @field:JsonProperty("class")
-    val clazz: String? = null
+    @JsonProperty("class")
+    var clazz: String? = null
 
     @Column
-    val method: String? = null
+    var method: String? = null
 
     @Column
-    val line: String? = null
+    var line: String? = null
 
     @Column
-    val logger: String? = null
+    var logger: String? = null
 
     @Column
-    val thread: String? = null
+    var thread: String? = null
 
     @Column
-    val level: String? = null
+    var level: String? = null
 
     @Column
-    val timestamp: String? = null
+    var timestamp: String? = null
 }

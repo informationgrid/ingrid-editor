@@ -30,11 +30,19 @@ class JpaTest {
 
     @Test
     fun `saving a document with typed embedded data`() {
-        val cat = Catalog(name = "Test Catalog", identifier = "test_catalog", type = "uvp")
+        val cat = Catalog().apply {
+            name = "Test Catalog"
+            identifier = "test_catalog"
+            type = "uvp"
+        }
         em.persist(cat)
 
         val address = AddressData(firstName = "Petra", lastName = "Mustermann", company = "LWL-Schulverwaltung Münster")
-        val doc = Document(title = "Test Document", catalog = cat, data = address)
+        val doc = Document().apply {
+            title = "Test Document"
+            data = address
+            catalog = cat
+        }
         em.persist(doc)
 
         em.flush()
@@ -68,11 +76,19 @@ class JpaTest {
 
     @Test
     fun `saving a document with generic embedded data`() {
-        val cat = Catalog(name = "Test Catalog", identifier = "test_catalog", type = "uvp")
+        val cat = Catalog().apply {
+            name = "Test Catalog"
+            identifier = "test_catalog"
+            type = "uvp"
+        }
         em.persist(cat)
 
         val address = embeddedMapOf("firstName" to "Petra", "lastName" to "Mustermann", "company" to "LWL-Schulverwaltung Münster")
-        val doc = Document(title = "Test Document", catalog = cat, data = address)
+        val doc = Document().apply {
+            title = "Test Document"
+            data = address
+            catalog = cat
+        }
         em.persist(doc)
 
         em.flush()
@@ -106,11 +122,19 @@ class JpaTest {
 
     @Test
     fun `querying a document`() {
-        val cat = Catalog(name = "Test Catalog", identifier = "test_catalog", type = "uvp")
+        val cat = Catalog().apply {
+            name = "Test Catalog"
+            identifier = "test_catalog"
+            type = "uvp"
+        }
         em.persist(cat)
 
         val address = AddressData(firstName = "Petra", lastName = "Mustermann", company = "LWL-Schulverwaltung Münster")
-        val doc = Document(title = "Test Document", catalog = cat, data = address)
+        val doc = Document().apply {
+            title = "Test Document"
+            data = address
+            catalog = cat
+        }
         em.persist(doc)
 
         em.flush()
@@ -143,6 +167,6 @@ class JpaTest {
                 //.addJoin("c", "doc.catalog")
                 .setParameter("type", "uvp")
         val result2 = q2.resultList
-        assertThat(result2.size).isEqualTo(4)
+        assertThat(result2.size).isEqualTo(7)
     }
 }

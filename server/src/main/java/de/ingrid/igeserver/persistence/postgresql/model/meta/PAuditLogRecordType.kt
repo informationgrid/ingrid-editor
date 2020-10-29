@@ -22,6 +22,9 @@ class PAuditLogRecordType : BaseAuditLogRecordType(), PostgreSQLEntityType {
         get() = AuditLogRecord::class
 }
 
+/**
+ * EmbeddedData type used by AuditLogRecord instances
+ */
 @Component
 class AuditLogRecordData(
         val cat: String? = null,

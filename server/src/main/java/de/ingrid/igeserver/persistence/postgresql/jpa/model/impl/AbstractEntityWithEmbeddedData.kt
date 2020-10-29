@@ -13,16 +13,16 @@ import java.util.*
 import javax.persistence.MappedSuperclass
 
 /**
- * Default implementation of EntityWithEmbeddedData interface. Subclasses must define the data property
+ * Default implementation of EntityWithEmbeddedData interface. Subclasses must define the data and type properties
  * with the appropriate JPA mapping annotations.
  */
 @NoArgs
 @MappedSuperclass
 @TypeDefs(
-        TypeDef(name = "jsonb", typeClass = JsonBinaryType::class),
-        TypeDef(name = "embeddedData", typeClass = EmbeddedDataUserType::class)
+        TypeDef(name="jsonb", typeClass=JsonBinaryType::class),
+        TypeDef(name="embeddedData", typeClass=EmbeddedDataUserType::class)
 )
-abstract class DefaultEntityWithEmbeddedData<T: EmbeddedData> : EntityBase(), EntityWithEmbeddedData<T> {
+abstract class AbstractEntityWithEmbeddedData<T: EmbeddedData> : EntityBase(), EntityWithEmbeddedData<T> {
 
     /**
      * Collects data fields into map when deserializing to be used by deserializer later
@@ -32,4 +32,8 @@ abstract class DefaultEntityWithEmbeddedData<T: EmbeddedData> : EntityBase(), En
     @Transient
     @get:JsonIgnore
     override var dataFields: Map<String, Any>? = HashMap()
+
+    @Transient
+    @JsonIgnore
+    override var unwrapData: Boolean = true
 }

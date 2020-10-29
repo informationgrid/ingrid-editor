@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.persistence.postgresql
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
@@ -10,6 +11,7 @@ import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
 import de.ingrid.igeserver.persistence.model.meta.BehaviourType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
+import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.services.*
 import io.kotest.assertions.throwables.shouldThrow
 import org.assertj.core.api.Assertions
@@ -25,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IgeServer::class])
@@ -89,16 +92,127 @@ class PostgreSQLDatabaseTest {
         Assertions.assertThat(savedDoc.get("db_version")?.intValue()).isEqualTo(0)
         Assertions.assertThat(dbService.getRecordId(savedDoc)).isNotNull
 
-        Assertions.assertThat(savedDoc.get(FIELD_ID)?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
-        Assertions.assertThat(savedDoc.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("AddressDoc")
-        Assertions.assertThat(savedDoc.get(FIELD_CREATED)?.textValue()).isNotNull
-        Assertions.assertThat(savedDoc.get(FIELD_MODIFIED)?.textValue()).isNotNull
-        Assertions.assertThat(savedDoc.get("title")?.textValue()).isEqualTo("Test Document")
-        Assertions.assertThat(savedDoc.get("firstName")?.textValue()).isEqualTo("Petra")
-        Assertions.assertThat(savedDoc.get("lastName")?.textValue()).isEqualTo("Mustermann")
-        Assertions.assertThat(savedDoc.get("company")?.textValue()).isEqualTo("LWL-Schulverwaltung Münster")
-        Assertions.assertThat(savedDoc.has("data")).isFalse
-        Assertions.assertThat(savedDoc.has("dataFields")).isFalse
+        val loadedDoc = dbService.find(DocumentType::class, savedDoc.get("db_id").intValue().toString())
+        Assertions.assertThat(loadedDoc as JsonNode).isNotNull
+        Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
+        Assertions.assertThat(loadedDoc.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("AddressDoc")
+        Assertions.assertThat(loadedDoc.get(FIELD_CREATED)?.textValue()).isNotNull
+        Assertions.assertThat(loadedDoc.get(FIELD_MODIFIED)?.textValue()).isNotNull
+        Assertions.assertThat(loadedDoc.get("title")?.textValue()).isEqualTo("Test Document")
+        Assertions.assertThat(loadedDoc.get("firstName")?.textValue()).isEqualTo("Petra")
+        Assertions.assertThat(loadedDoc.get("lastName")?.textValue()).isEqualTo("Mustermann")
+        Assertions.assertThat(loadedDoc.get("company")?.textValue()).isEqualTo("LWL-Schulverwaltung Münster")
+        Assertions.assertThat(loadedDoc.has("data")).isFalse
+        Assertions.assertThat(loadedDoc.has("dataFields")).isFalse
+    }
+
+    @Test
+    fun `creating a document wrapper`() {
+        val doc = """
+            {
+                "_id":"bc365545-e4b5-4359-bfb5-84367513752e",
+                "_parent":"5d2ff598-45fd-4516-b843-0b1787bd8264",
+                "_type":"FOLDER",
+                "_category":"data",
+                "draft":"1003",
+                "published":null,
+                "archive":["1004","1005"]
+            }
+        """
+
+        val oldCount = dbService.findAll(DocumentWrapperType::class).size
+
+        val savedDoc = dbService.acquireCatalog("test_catalog").use {
+            dbService.save(DocumentWrapperType::class, null, doc)
+        }
+
+        Assertions.assertThat(dbService.findAll(DocumentWrapperType::class).size).isEqualTo(oldCount + 1)
+
+        Assertions.assertThat(savedDoc.get("db_id")?.intValue()).isNotNull
+        Assertions.assertThat(dbService.getRecordId(savedDoc)).isNotNull
+
+        val loadedDoc = dbService.find(DocumentWrapperType::class, savedDoc.get("db_id").intValue().toString())
+        Assertions.assertThat(loadedDoc as JsonNode).isNotNull
+        Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("bc365545-e4b5-4359-bfb5-84367513752e")
+        Assertions.assertThat(loadedDoc.get(FIELD_PARENT)?.textValue()).isEqualTo("5d2ff598-45fd-4516-b843-0b1787bd8264")
+        Assertions.assertThat(loadedDoc.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("FOLDER")
+        Assertions.assertThat(loadedDoc.get(FIELD_CATEGORY)?.textValue()).isEqualTo("data")
+        Assertions.assertThat(loadedDoc.get(FIELD_DRAFT)?.textValue()).isEqualTo("1003")
+        Assertions.assertThat(loadedDoc.get(FIELD_PUBLISHED)?.isNull).isTrue
+        Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE)?.isArray).isTrue
+        Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE).size()).isEqualTo(2)
+        Assertions.assertThat((loadedDoc.get(FIELD_ARCHIVE) as ArrayNode).any { it.textValue() == "1004" }).isTrue
+        Assertions.assertThat((loadedDoc.get(FIELD_ARCHIVE) as ArrayNode).any { it.textValue() == "1005" }).isTrue
+    }
+
+    @Test
+    fun `creating a user`() {
+        val doc = """
+            {
+                "userId":"user1",
+                "curCatalog":"test_catalog",
+                "catalogIds":["test_catalog","test_catalog_2"],
+                "recentLogins":[1603907361961,1603907397517]
+            }
+        """
+
+        val oldCount = dbService.findAll(UserInfoType::class).size
+
+        val savedDoc = dbService.acquireCatalog("test_catalog").use {
+            dbService.save(UserInfoType::class, null, doc)
+        }
+
+        Assertions.assertThat(dbService.findAll(UserInfoType::class).size).isEqualTo(oldCount + 1)
+
+        Assertions.assertThat(savedDoc.get("db_id")?.intValue()).isNotNull
+        Assertions.assertThat(dbService.getRecordId(savedDoc)).isNotNull
+
+        val loadedDoc = dbService.find(UserInfoType::class, savedDoc.get("db_id").intValue().toString())
+        Assertions.assertThat(loadedDoc as JsonNode).isNotNull
+        Assertions.assertThat(loadedDoc.get("userId")?.textValue()).isEqualTo("user1")
+        Assertions.assertThat(loadedDoc.get("curCatalog")?.textValue()).isEqualTo("test_catalog")
+        Assertions.assertThat(loadedDoc.get("catalogIds")?.isArray).isTrue
+        Assertions.assertThat(loadedDoc.get("catalogIds")?.size()).isEqualTo(2)
+        Assertions.assertThat((loadedDoc.get("catalogIds") as ArrayNode).any { it.textValue() == "test_catalog" }).isTrue
+        Assertions.assertThat((loadedDoc.get("catalogIds") as ArrayNode).any { it.textValue() == "test_catalog_2" }).isTrue
+        Assertions.assertThat(loadedDoc.get("recentLogins")?.isArray).isTrue
+        Assertions.assertThat(loadedDoc.get("recentLogins")?.size()).isEqualTo(2)
+        Assertions.assertThat(loadedDoc.get("recentLogins")?.get(0)?.longValue()).isEqualTo(1603907361961)
+        Assertions.assertThat(loadedDoc.get("recentLogins")?.get(1)?.longValue()).isEqualTo(1603907397517)
+        Assertions.assertThat(loadedDoc.has("data")).isFalse
+        Assertions.assertThat(loadedDoc.has("dataFields")).isFalse
+    }
+
+    @Test
+    fun `creating a behaviour`() {
+        val doc = """
+            {
+                "_id": "plugin.session.timeout2",
+                "active": false,
+                "data": {
+                    "duration": 500
+                }
+            }
+        """
+
+        val oldCount = dbService.findAll(BehaviourType::class).size
+
+        val savedDoc = dbService.acquireCatalog("test_catalog").use {
+            dbService.save(BehaviourType::class, null, doc)
+        }
+
+        Assertions.assertThat(dbService.findAll(BehaviourType::class).size).isEqualTo(oldCount + 1)
+
+        Assertions.assertThat(savedDoc.get("db_id")?.intValue()).isNotNull
+        Assertions.assertThat(dbService.getRecordId(savedDoc)).isNotNull
+
+        val loadedDoc = dbService.find(BehaviourType::class, savedDoc.get("db_id").intValue().toString())
+        Assertions.assertThat(loadedDoc as JsonNode).isNotNull
+        Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("plugin.session.timeout2")
+        Assertions.assertThat(loadedDoc.get("active")?.booleanValue()).isEqualTo(false)
+        Assertions.assertThat(loadedDoc.get("data")?.isObject).isTrue
+        Assertions.assertThat(loadedDoc.get("data")?.get("duration")?.intValue()).isEqualTo(500)
+        Assertions.assertThat(loadedDoc.has("dataFields")).isFalse
     }
 
     @Test
@@ -126,16 +240,18 @@ class PostgreSQLDatabaseTest {
         Assertions.assertThat(savedDoc.get("db_version")?.intValue()).isEqualTo(1)
         Assertions.assertThat(dbService.getRecordId(savedDoc)).isEqualTo(id.toString())
 
-        Assertions.assertThat(savedDoc.get(FIELD_ID)?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
-        Assertions.assertThat(savedDoc.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("AddressDoc")
-        Assertions.assertThat(savedDoc.get(FIELD_CREATED)?.textValue()).isNotNull
-        Assertions.assertThat(savedDoc.get(FIELD_MODIFIED)?.textValue()).isNotNull
-        Assertions.assertThat(savedDoc.get("title")?.textValue()).isEqualTo("Test Document Geändert")
-        Assertions.assertThat(savedDoc.get("firstName")?.textValue()).isEqualTo("Peter")
-        Assertions.assertThat(savedDoc.get("lastName")?.textValue()).isEqualTo("Mustermann")
-        Assertions.assertThat(savedDoc.get("company")?.textValue()).isEqualTo("LWL-Kliniken")
-        Assertions.assertThat(savedDoc.has("data")).isFalse
-        Assertions.assertThat(savedDoc.has("dataFields")).isFalse
+        val loadedDoc = dbService.find(DocumentType::class, id.toString())
+        Assertions.assertThat(loadedDoc as JsonNode).isNotNull
+        Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
+        Assertions.assertThat(loadedDoc.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("AddressDoc")
+        Assertions.assertThat(loadedDoc.get(FIELD_CREATED)?.textValue()).isNotNull
+        Assertions.assertThat(loadedDoc.get(FIELD_MODIFIED)?.textValue()).isNotNull
+        Assertions.assertThat(loadedDoc.get("title")?.textValue()).isEqualTo("Test Document Geändert")
+        Assertions.assertThat(loadedDoc.get("firstName")?.textValue()).isEqualTo("Peter")
+        Assertions.assertThat(loadedDoc.get("lastName")?.textValue()).isEqualTo("Mustermann")
+        Assertions.assertThat(loadedDoc.get("company")?.textValue()).isEqualTo("LWL-Kliniken")
+        Assertions.assertThat(loadedDoc.has("data")).isFalse
+        Assertions.assertThat(loadedDoc.has("dataFields")).isFalse
     }
 
     @Test
@@ -196,8 +312,8 @@ class PostgreSQLDatabaseTest {
         val catalogRecordId = dbService.getRecordId(CatalogInfoType::class, "test_catalog")!!
         Assertions.assertThat(catalogRecordId).isEqualTo("100")
 
-        val behaviourRecordId = dbService.getRecordId(BehaviourType::class, "plugin.sort.tree.by.type")!!
-        Assertions.assertThat(behaviourRecordId).isEqualTo("201")
+        val behaviourRecordId = dbService.getRecordId(BehaviourType::class, "plugin.address.title")!!
+        Assertions.assertThat(behaviourRecordId).isEqualTo("202")
     }
 
     @Test
@@ -362,10 +478,37 @@ class PostgreSQLDatabaseTest {
     }
 
     @Test
+    fun `finding documents by query, resolve references`() {
+        val queryMap = listOfNotNull(
+                QueryField("_id", "8f891e4e-161e-4d2c-6869-03f02ab352dc"),
+        ).toList()
+
+        val result = dbService.acquireDatabase("").use {
+            val findOptions = FindOptions(
+                    queryOperator = QueryOperator.AND,
+                    resolveReferences = true
+            )
+            dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
+        }
+
+        Assertions.assertThat(result.totalHits).isEqualTo(1)
+        Assertions.assertThat(result.hits[0].get("_id")?.textValue()).isEqualTo("8f891e4e-161e-4d2c-6869-03f02ab352dc")
+
+        val loadedDoc = result.hits[0]
+        Assertions.assertThat(loadedDoc.get(FIELD_DRAFT)?.isObject).isTrue
+        Assertions.assertThat(loadedDoc.get(FIELD_DRAFT)?.get(FIELD_ID)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(loadedDoc.get(FIELD_PUBLISHED)?.get(FIELD_ID)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE)?.isArray).isTrue
+        Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE).size()).isEqualTo(1)
+        Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE).get(0).get(FIELD_ID)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+    }
+
+    @Test
     fun `finding all catalogs`() {
         val catalogs = dbService.catalogs
-        Assertions.assertThat(catalogs.size).isEqualTo(1)
+        Assertions.assertThat(catalogs.size).isEqualTo(2)
         Assertions.assertThat(catalogs[0]).isEqualTo("test_catalog")
+        Assertions.assertThat(catalogs[1]).isEqualTo("test_catalog_2")
 
         Assertions.assertThat(dbService.currentCatalog).isNull()
         dbService.acquireCatalog("test_catalog").use {
@@ -382,32 +525,34 @@ class PostgreSQLDatabaseTest {
 
     @Test
     fun `creating a catalog`() {
-        val settings = Catalog(null, "Test Catalog 2", "Test Catalog 2 description", "mcloud")
+        val settings = Catalog(null, "Test Catalog 3", "Test Catalog 3 description", "mcloud")
         val oldCount = dbService.findAll(CatalogInfoType::class).size
 
         val catalogId = dbService.createCatalog(settings)
 
         Assertions.assertThat(dbService.findAll(CatalogInfoType::class).size).isEqualTo(oldCount + 1)
-        Assertions.assertThat(catalogId).isEqualTo("test_catalog_2")
+        Assertions.assertThat(catalogId).isEqualTo("test_catalog_3")
 
         val catalogs = dbService.catalogs
-        Assertions.assertThat(catalogs.size).isEqualTo(2)
+        Assertions.assertThat(catalogs.size).isEqualTo(3)
         Assertions.assertThat(catalogs[0]).isEqualTo("test_catalog")
         Assertions.assertThat(catalogs[1]).isEqualTo("test_catalog_2")
+        Assertions.assertThat(catalogs[2]).isEqualTo("test_catalog_3")
 
         var result: List<JsonNode>?
         dbService.acquireDatabase("is_not_used_by_postgresql").use {
             result = dbService.findAll(CatalogInfoType::class)
         }
         Assertions.assertThat(result).isNotNull
-        Assertions.assertThat(result?.size).isEqualTo(2)
+        Assertions.assertThat(result?.size).isEqualTo(3)
 
-        val loadedCatalog = result?.get(1)
-        Assertions.assertThat(loadedCatalog?.get("db_id")).isNotNull
-        Assertions.assertThat(loadedCatalog?.get("id")?.textValue()).isEqualTo("test_catalog_2")
-        Assertions.assertThat(loadedCatalog?.get("name")?.textValue()).isEqualTo("Test Catalog 2")
-        Assertions.assertThat(loadedCatalog?.get("description")?.textValue()).isEqualTo("Test Catalog 2 description")
-        Assertions.assertThat(loadedCatalog?.get("type")?.textValue()).isEqualTo("mcloud")
+        val loadedCatalog = result?.first { t -> t.get("id").textValue() == "test_catalog_3" }
+        Assertions.assertThat(loadedCatalog as JsonNode).isNotNull
+        Assertions.assertThat(loadedCatalog.get("db_id")).isNotNull
+        Assertions.assertThat(loadedCatalog.get("id")?.textValue()).isEqualTo("test_catalog_3")
+        Assertions.assertThat(loadedCatalog.get("name")?.textValue()).isEqualTo("Test Catalog 3")
+        Assertions.assertThat(loadedCatalog.get("description")?.textValue()).isEqualTo("Test Catalog 3 description")
+        Assertions.assertThat(loadedCatalog.get("type")?.textValue()).isEqualTo("mcloud")
     }
 
     @Test
@@ -421,22 +566,24 @@ class PostgreSQLDatabaseTest {
         Assertions.assertThat(dbService.findAll(CatalogInfoType::class).size).isEqualTo(oldCount)
 
         val catalogs = dbService.catalogs
-        Assertions.assertThat(catalogs.size).isEqualTo(1)
-        Assertions.assertThat(catalogs[0]).isEqualTo("test_catalog")
+        Assertions.assertThat(catalogs.size).isEqualTo(2)
+        Assertions.assertThat(Arrays.stream(catalogs).anyMatch { t -> t == "test_catalog" }).isTrue
+        Assertions.assertThat(Arrays.stream(catalogs).anyMatch { t -> t == "test_catalog_2" }).isTrue
 
         var result: List<JsonNode>?
         dbService.acquireDatabase("is_not_used_by_postgresql").use {
             result = dbService.findAll(CatalogInfoType::class)
         }
         Assertions.assertThat(result).isNotNull
-        Assertions.assertThat(result?.size).isEqualTo(1)
+        Assertions.assertThat(result?.size).isEqualTo(2)
 
-        val loadedCatalog = result?.get(0)
-        Assertions.assertThat(loadedCatalog?.get("db_id")?.intValue()).isEqualTo(catalogId)
-        Assertions.assertThat(loadedCatalog?.get("id")?.textValue()).isEqualTo("test_catalog")
-        Assertions.assertThat(loadedCatalog?.get("name")?.textValue()).isEqualTo("Test Catalog 2")
-        Assertions.assertThat(loadedCatalog?.get("description")?.textValue()).isEqualTo("Test Catalog 2 description")
-        Assertions.assertThat(loadedCatalog?.get("type")?.textValue()).isEqualTo("uvp") // type cannot be changed
+        val loadedCatalog = result?.first { t -> t.get("id").textValue() == "test_catalog" }
+        Assertions.assertThat(loadedCatalog as JsonNode).isNotNull
+        Assertions.assertThat(loadedCatalog.get("db_id")?.intValue()).isEqualTo(catalogId)
+        Assertions.assertThat(loadedCatalog.get("id")?.textValue()).isEqualTo("test_catalog")
+        Assertions.assertThat(loadedCatalog.get("name")?.textValue()).isEqualTo("Test Catalog 2")
+        Assertions.assertThat(loadedCatalog.get("description")?.textValue()).isEqualTo("Test Catalog 2 description")
+        Assertions.assertThat(loadedCatalog.get("type")?.textValue()).isEqualTo("uvp") // type cannot be changed
     }
 
     @Test

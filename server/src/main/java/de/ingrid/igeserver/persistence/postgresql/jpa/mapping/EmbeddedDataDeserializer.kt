@@ -33,17 +33,19 @@ class EmbeddedDataDeserializer(
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): EntityWithEmbeddedData<EmbeddedData> {
         // deserialize entity with default deserializer
         // NOTE unknown fields belong to embedded data and will be collected in the dataFields property
+        @Suppress("UNCHECKED_CAST")
         val entity = defaultDeserializer.deserialize(jp, ctxt) as EntityWithEmbeddedData<EmbeddedData>
-        if (entity.type.isNullOrEmpty()) {
-            // fallback to EmbeddedMap
-            entity.type = ""
-            log.warn("Did not find 'type' parameter in '${jp.currentLocation.sourceRef}'. Deserializing embedded data into map.")
-        }
 
         // deserialize embedded data from dataFields property
-        val dataType = embeddedDataTypes.getType(entity.type!!)
-        val serializedData = embeddedDataMapper.writeValueAsString(entity.dataFields)
-        entity.data = embeddedDataMapper.readValue(serializedData, dataType.java) as EmbeddedData
+        if (entity.unwrapData) {
+            if (entity.type.isNullOrEmpty()) {
+                // fallback to EmbeddedMap
+                log.debug("Did not find 'type' parameter in '${jp.currentLocation.sourceRef}'. Deserializing embedded data into map.")
+            }
+            val dataType = embeddedDataTypes.getType(entity.type)
+            val serializedData = embeddedDataMapper.writeValueAsString(entity.dataFields)
+            entity.data = embeddedDataMapper.readValue(serializedData, dataType::class.java) as EmbeddedData
+        }
 
         return entity
     }

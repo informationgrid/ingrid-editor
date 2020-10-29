@@ -2,32 +2,30 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
-import org.hibernate.annotations.Type
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityWithEmbeddedMap
 import javax.persistence.*
+import kotlin.jvm.Transient
 
 @NoArgs
 @Entity
 @Table(name="behaviour")
-class Behaviour(
+class Behaviour : EntityWithEmbeddedMap(), EntityWithCatalog {
 
     @Column(nullable=false)
-    @field:JsonProperty("_id")
-    val name: String,
+    @JsonProperty("_id")
+    var name: String? = null
 
     @Column(nullable=false)
-    val active: Boolean,
-
-    @Type(type="jsonb")
-    @Column(columnDefinition="jsonb")
-    val data: JsonNode,
+    var active: Boolean? = null
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="catalog_id", nullable=false)
     @JsonIgnore
-    override var catalog: Catalog?
+    override var catalog: Catalog? = null
 
-) : EntityBase(), EntityWithCatalog
+    @Transient
+    @JsonIgnore
+    override var unwrapData: Boolean = false
+}

@@ -22,6 +22,11 @@ class AuditLogger {
     companion object {
         private const val DEFAULT_LOGGER = "audit"
 
+        // used to give appender implementations a hint about the record content
+        private const val RECORD_TYPE = "record_type"
+        private const val RECORD_TYPE_VALUE = "AuditLog"
+
+        // actual message fields
         private const val CATEGORY = "cat"
         private const val ACTION = "action"
         private const val ACTOR = "actor"
@@ -91,6 +96,7 @@ class AuditLogger {
      */
     private fun createLogMessage(category: String, action: String, target: String?, data: JsonNode?): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
+            put(RECORD_TYPE, RECORD_TYPE_VALUE)
             put(CATEGORY, category)
             put(ACTION, action)
             put(ACTOR, userService.getCurrentPrincipal()?.name)

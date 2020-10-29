@@ -90,7 +90,7 @@ class ModelRegistry {
     /**
      * Get the meta information for field with the given name.
      * The method will search for a field with the given name. If resolveJson is true, it will also search
-     * for a field with the given json name, if there is no such field.
+     * for a field with the given JSON name, if there is no such field.
      * The method will return null, if the field does not exist.
      */
     fun getFieldInfo(type: TypeInfo, field: String, resolveJson: Boolean = false): FieldInfo? {

@@ -15,7 +15,7 @@ import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.ModelRegistry
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataDeserializer
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataSerializer
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EntitySerializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataTypeRegistry
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
@@ -73,34 +73,17 @@ class PostgreSQLDatabase : DBApi {
     private val lastQuery = ThreadLocal<String?>()
 
     /**
-     * Jackson mapper used for deserialization of incoming JSON strings
+     * Jackson mapper used for mapping entities to JSON with references replaced by identifiers
      */
     private val mapper: ObjectMapper by lazy {
-        val mapper = jacksonObjectMapper()
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        mapper.findAndRegisterModules()
+        getMapper(false)
+    }
 
-        val module = SimpleModule()
-        // register custom deserializer for embedded data
-        module.setDeserializerModifier(object : BeanDeserializerModifier() {
-            override fun modifyDeserializer(config: DeserializationConfig,
-                                            beanDesc: BeanDescription,
-                                            deserializer: JsonDeserializer<*>): JsonDeserializer<*> {
-                return if (EntityWithEmbeddedData::class.java.isAssignableFrom(beanDesc.beanClass))
-                    EmbeddedDataDeserializer(deserializer, embeddedDataTypes) else deserializer
-            }
-        })
-        // register custom serializer for embedded data
-        module.setSerializerModifier(object : BeanSerializerModifier() {
-            override fun modifySerializer(config: SerializationConfig,
-                                          beanDesc: BeanDescription,
-                                          serializer: JsonSerializer<*>): JsonSerializer<*> {
-                return if (EntityWithEmbeddedData::class.java.isAssignableFrom(beanDesc.beanClass))
-                    EmbeddedDataSerializer(serializer) else serializer
-            }
-        })
-        mapper.registerModule(module)
-        mapper
+    /**
+     * Jackson mapper used for mapping entities to JSON with resolved references
+     */
+    private val resolvingMapper: ObjectMapper by lazy {
+        getMapper(true)
     }
 
     /**
@@ -144,29 +127,36 @@ class PostgreSQLDatabase : DBApi {
     }
 
     override fun removeInternalFields(doc: JsonNode) {
-        val objNode = doc as ObjectNode
+        if (doc is ObjectNode) {
+            val version = if (doc.hasNonNull(DB_VERSION)) doc[DB_VERSION].intValue() else null
+            if (version != null) {
+                doc.put(FIELD_VERSION, version.toString())
+            }
 
-        val version = if (doc.hasNonNull(DB_VERSION)) doc[DB_VERSION].intValue() else null
-        if (version != null) {
-            objNode.put(FIELD_VERSION, version.toString())
-        }
+            INTERNAL_FIELDS.forEach {
+                doc.remove(it)
+            }
 
-        INTERNAL_FIELDS.forEach {
-            objNode.remove(it)
+            // recurse into sub-nodes
+            doc.elements().forEach {
+                if (it is ObjectNode) {
+                    removeInternalFields(it)
+                }
+            }
         }
     }
 
     override fun <T : EntityType> find(type: KClass<T>, id: String?): JsonNode? {
         val typeImpl = getEntityTypeImpl(type)
         val result = entityManager.find(typeImpl.jpaType.java, id?.toInt())
-        return if (result !== null) mapEntityToJson(result) else null
+        return if (result !== null) mapEntityToJson(result, false) else null
     }
 
     override fun <T : EntityType> findAll(type: KClass<T>): List<JsonNode> {
         val typeImpl = getEntityTypeImpl(type)
 
         val queryStr = "SELECT e FROM ${typeImpl.jpaType.simpleName} e"
-        return entityManager.createQuery(queryStr, typeImpl.jpaType.java).resultList.map { mapEntityToJson(it) }
+        return entityManager.createQuery(queryStr, typeImpl.jpaType.java).resultList.map { mapEntityToJson(it, false) }
     }
 
     override fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions): FindAllResults {
@@ -242,10 +232,7 @@ class PostgreSQLDatabase : DBApi {
         val docs = typedQuery.resultList as List<EntityBase>
         val numDocs = typedCountQuery.singleResult as BigInteger
 
-        if (options.resolveReferences) {
-            // TODO what is expected here?
-        }
-        return FindAllResults(numDocs.toLong(), docs.map { mapEntityToJson(it) })
+        return FindAllResults(numDocs.toLong(), docs.map { mapEntityToJson(it, options.resolveReferences) })
     }
 
     override fun <T : EntityType> save(type: KClass<T>, id: String?, data: String, version: String?): JsonNode {
@@ -255,7 +242,7 @@ class PostgreSQLDatabase : DBApi {
         val persistedEntity = (if (existingEntity == null) {
             val entity = mapper.readValue(data, typeImpl.jpaType.java)
             entity.id = null // prevent 'detached entity passed to persist' errors if the id is set already
-            (entity as? EntityWithCatalog)?.catalog = currentCatalog()
+            prepareForSave(entity)
             entityManager.persist(entity)
             entity
         } else {
@@ -263,13 +250,13 @@ class PostgreSQLDatabase : DBApi {
             val existingData = mapper.readTree(mapper.writeValueAsString(existingEntity))
             val mergedData = mapper.writeValueAsString(mapper.readerForUpdating(existingData).readValue(data))
             val entity = mapper.readValue(mergedData, typeImpl.jpaType.java)
-            (entity as? EntityWithCatalog)?.catalog = currentCatalog()
+            prepareForSave(entity)
             entityManager.merge(entity)
         }) as EntityBase
 
         // synchronize with database (e.g. update version attribute if existing)
         entityManager.flush()
-        return mapEntityToJson(persistedEntity)
+        return mapEntityToJson(persistedEntity, false)
     }
 
     override fun <T : EntityType> remove(type: KClass<T>, docId: String): Boolean {
@@ -297,12 +284,12 @@ class PostgreSQLDatabase : DBApi {
         val id = settings.name.toLowerCase().replace(" ".toRegex(), "_")
         if (!catalogExists(id)) {
             settings.id = acquireDatabase("").use {
-                val catalog = CatalogEntity(
-                        identifier = id,
-                        name = settings.name,
-                        description = settings.description,
-                        type = settings.type
-                )
+                val catalog = CatalogEntity().apply {
+                    identifier = id
+                    name = settings.name
+                    description = settings.description
+                    type = settings.type
+                }
                 entityManager.persist(catalog)
                 id
             }
@@ -382,11 +369,6 @@ class PostgreSQLDatabase : DBApi {
         return entityTypeMap[type] ?: throw PersistenceException.withReason("No entity type '$type' registered.")
     }
 
-    private fun mapEntityToJson(obj: EntityBase): JsonNode {
-        // NOTE this is not as optimized as mapper.valueToTree(obj), but allows to use serialization annotations
-        return mapper.readTree(mapper.writeValueAsString(obj))
-    }
-
     private fun getCatalog(name: String): CatalogEntity? {
         // find the catalog by name
         val typeImpl = getEntityTypeImpl(CatalogInfoType::class)
@@ -412,6 +394,51 @@ class PostgreSQLDatabase : DBApi {
         }
         val queryStr = "SELECT e FROM ${typeImpl.jpaType.simpleName} e WHERE e.${typeImpl.idAttribute} = :docId"
         return entityManager.createQuery(queryStr, typeImpl.jpaType.java).setParameter("docId", docId).resultList
+    }
+
+    private fun prepareForSave(entity: EntityBase) {
+        (entity as? EntityWithCatalog)?.catalog = currentCatalog()
+        entity.beforePersist(entityManager)
+    }
+
+    private fun mapEntityToJson(obj: EntityBase, resolveReferences: Boolean): JsonNode {
+        // NOTE this is not as optimized as mapper.valueToTree(obj), but allows to use serialization annotations
+        val serializer = if (resolveReferences) resolvingMapper else mapper
+        return mapper.readTree(serializer.writeValueAsString(obj))
+    }
+
+    private fun getMapper(resolveReferences: Boolean): ObjectMapper {
+        val mapper = jacksonObjectMapper()
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        mapper.findAndRegisterModules()
+
+        val module = SimpleModule()
+        // register custom deserializer for embedded data
+        module.setDeserializerModifier(object : BeanDeserializerModifier() {
+            override fun modifyDeserializer(config: DeserializationConfig,
+                                            beanDesc: BeanDescription,
+                                            deserializer: JsonDeserializer<*>): JsonDeserializer<*> {
+                return when {
+                    EntityWithEmbeddedData::class.java.isAssignableFrom(beanDesc.beanClass) ->
+                        EmbeddedDataDeserializer(deserializer, embeddedDataTypes)
+                    else -> deserializer
+                }
+            }
+        })
+        // register custom serializer for entities
+        module.setSerializerModifier(object : BeanSerializerModifier() {
+            override fun modifySerializer(config: SerializationConfig,
+                                          beanDesc: BeanDescription,
+                                          serializer: JsonSerializer<*>): JsonSerializer<*> {
+                return when {
+                    EntityBase::class.java.isAssignableFrom(beanDesc.beanClass) ->
+                        EntitySerializer(serializer, mapper, resolveReferences)
+                    else -> serializer
+                }
+            }
+        })
+        mapper.registerModule(module)
+        return mapper
     }
 
     private class JoinInfo(

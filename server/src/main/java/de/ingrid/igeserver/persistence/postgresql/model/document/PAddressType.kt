@@ -21,6 +21,9 @@ class PAddressType : BaseAddressType(), PostgreSQLEntityType {
         get() = Document::class
 }
 
+/**
+ * EmbeddedData type used by Document instances with address data
+ */
 @Component
 class AddressData(
     val firstName: String? = null,

@@ -3,6 +3,7 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.mapping
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.PersistenceException
+import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedData
 import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.usertype.UserType
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +12,6 @@ import java.io.*
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Types
-import kotlin.reflect.KClass
 
 /**
  * Hibernate UserType for storing and receiving de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedData instances
@@ -49,7 +49,7 @@ class EmbeddedDataUserType : UserType {
         Companion.embeddedDataTypes = embeddedDataTypes
     }
 
-    private fun getEmbeddedDataType(rs: ResultSet): KClass<out Any> {
+    private fun getEmbeddedDataType(rs: ResultSet): EmbeddedData {
         if (embeddedDataTypes == null) {
             throw PersistenceException.withReason("Data type registry not initialized.")
         }
@@ -63,11 +63,8 @@ class EmbeddedDataUserType : UserType {
                 break
             }
         }
-        if (typeColumnIndex == null) {
-            throw PersistenceException.withReason("No type column found in result set.")
-        }
-        // get type name
-        val type = rs.getString(typeColumnIndex)
+        // get type name (null will result in EmbeddedMap)
+        val type = if (typeColumnIndex != null) rs.getString(typeColumnIndex) else null
         return embeddedDataTypes!!.getType(type)
     }
 
@@ -87,7 +84,7 @@ class EmbeddedDataUserType : UserType {
         val value = rs.getString(names[0]) ?: return null
         val type = getEmbeddedDataType(rs)
         return try {
-            mapper.readValue(value.toByteArray(charset("UTF-8")), type.java)
+            mapper.readValue(value.toByteArray(charset("UTF-8")), type::class.java)
         }
         catch (ex: Exception) {
             throw PersistenceException.withReason("Failed to convert string to EmbeddedData of type '$type': ${ex.message}", ex)
@@ -136,7 +133,7 @@ class EmbeddedDataUserType : UserType {
         return this.deepCopy(cached)
     }
 
-    override fun replace(original: Any?, target: Any, owner: Any): Any {
+    override fun replace(original: Any?, target: Any?, owner: Any): Any {
         return this.deepCopy(original)
     }
 

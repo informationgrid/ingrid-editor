@@ -16,7 +16,8 @@ CREATE TABLE catalog (
 CREATE TABLE user_info (
   id              serial PRIMARY KEY,
   user_id         varchar(255) NOT NULL,
-  cur_catalog_id  integer REFERENCES catalog(id) ON DELETE SET NULL -- can be null !!!
+  cur_catalog_id  integer REFERENCES catalog(id) ON DELETE SET NULL, -- can be null !!!
+  data            jsonb
 );
 
 CREATE TABLE catalog_user_info (
@@ -41,7 +42,7 @@ CREATE TABLE document (
   type            varchar(255) NOT NULL,
   title           varchar(255) NOT NULL,
   data            jsonb,
-  version         integer, -- Record version for mvcc
+  version         integer, -- record version for mvcc
   created         timestamptz NOT NULL DEFAULT NOW(),
   modified        timestamptz NOT NULL DEFAULT NOW()
 );
@@ -56,7 +57,7 @@ CREATE TABLE document_wrapper (
   category        varchar(255) NOT NULL,
   draft           integer REFERENCES document(id) ON DELETE SET NULL, -- how to ensure that document is referenced only once in wrapper ?
   published       integer REFERENCES document(id) ON DELETE SET NULL,
-  version         integer -- Record version for mvcc
+  version         integer -- record version for mvcc
 );
 
 CREATE TABLE document_archive (
@@ -67,7 +68,7 @@ CREATE TABLE document_archive (
 
 CREATE TABLE audit_log (
   id              serial PRIMARY KEY,
-  type            varchar(255) NOT NULL,
+  type            varchar(255) NOT NULL, -- used to define the type of message content
   message         jsonb,
   file            varchar(255),
   class           varchar(255),
