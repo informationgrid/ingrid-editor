@@ -148,6 +148,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
             val id: String?
             if (list.hits.isEmpty()) {
                 catUserRef = ObjectMapper().createObjectNode()
+                catUserRef.put("userId", userId)
                 id = null
             } else {
                 catUserRef = list.hits[0] as ObjectNode

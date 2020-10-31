@@ -20,9 +20,9 @@ class OCatalogInfoType : BaseCatalogInfoType(), OrientDBEntityType {
 
     override fun initialize(session: ODatabaseSession) {
         val schema = session.metadata.schema
-        if (!schema.existsClass(TYPE)) {
-            log.debug("Create class $TYPE")
-            val docClass = schema.createClass(TYPE)
+        if (!schema.existsClass(className)) {
+            log.debug("Create class $className")
+            val docClass = schema.createClass(className)
             docClass.createProperty("name", OType.STRING)
             docClass.createProperty("type", OType.STRING)
             docClass.createProperty("version", OType.STRING)

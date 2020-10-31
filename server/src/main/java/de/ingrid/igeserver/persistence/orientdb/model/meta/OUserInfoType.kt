@@ -20,9 +20,9 @@ class OUserInfoType : BaseUserInfoType(), OrientDBEntityType {
 
     override fun initialize(session: ODatabaseSession) {
         val schema = session.metadata.schema
-        if (!schema.existsClass(TYPE)) {
-            log.debug("Create class $TYPE")
-            val docClass = schema.createClass(TYPE)
+        if (!schema.existsClass(className)) {
+            log.debug("Create class $className")
+            val docClass = schema.createClass(className)
             docClass.createProperty("userId", OType.STRING)
             docClass.createProperty("currentCatalogId", OType.STRING)
             docClass.createProperty("catalogIds", OType.EMBEDDEDLIST, OType.STRING)

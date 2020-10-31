@@ -248,6 +248,7 @@ class PostgreSQLDatabase : DBApi {
         } else {
             // merge json from existing entity with incoming data
             val existingData = mapper.readTree(mapper.writeValueAsString(existingEntity))
+            // TODO prevent data duplication when merging arrays (e.g. recentlogins)
             val mergedData = mapper.writeValueAsString(mapper.readerForUpdating(existingData).readValue(data))
             val entity = mapper.readValue(mergedData, typeImpl.jpaType.java)
             prepareForSave(entity)

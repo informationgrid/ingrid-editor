@@ -2,6 +2,8 @@ package de.ingrid.igeserver.persistence.postgresql
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
@@ -149,7 +151,7 @@ class PostgreSQLDatabaseTest {
     fun `creating a user`() {
         val doc = """
             {
-                "userId":"user1",
+                "userId":"user2",
                 "curCatalog":"test_catalog",
                 "catalogIds":["test_catalog","test_catalog_2"],
                 "recentLogins":[1603907361961,1603907397517]
@@ -169,7 +171,7 @@ class PostgreSQLDatabaseTest {
 
         val loadedDoc = dbService.find(UserInfoType::class, savedDoc.get("db_id").intValue().toString())
         Assertions.assertThat(loadedDoc as JsonNode).isNotNull
-        Assertions.assertThat(loadedDoc.get("userId")?.textValue()).isEqualTo("user1")
+        Assertions.assertThat(loadedDoc.get("userId")?.textValue()).isEqualTo("user2")
         Assertions.assertThat(loadedDoc.get("curCatalog")?.textValue()).isEqualTo("test_catalog")
         Assertions.assertThat(loadedDoc.get("catalogIds")?.isArray).isTrue
         Assertions.assertThat(loadedDoc.get("catalogIds")?.size()).isEqualTo(2)
@@ -280,6 +282,72 @@ class PostgreSQLDatabaseTest {
         Assertions.assertThat(savedDoc.get("db_id")?.intValue()).isNotEqualTo(id)
     }
 
+    @Test
+    fun `updating a user`() {
+        val id = 10
+        val userId = "user1"
+        val catalogName = "test_catalog"
+
+        val savedDoc = dbService.acquireDatabase("").use {
+            val query = listOf(QueryField("userId", userId))
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    resolveReferences = false)
+            val list = dbService.findAll(UserInfoType::class, query, findOptions)
+            val user = list.hits[0] as ObjectNode
+
+            user.replace("catalogIds", jacksonObjectMapper().createArrayNode().add(catalogName))
+            user.put("curCatalog", catalogName)
+
+            val recordId = dbService.getRecordId(user)
+            dbService.save(UserInfoType::class, recordId, user.toString())
+        }
+
+        Assertions.assertThat(savedDoc.get("db_id")?.intValue()).isEqualTo(id)
+        Assertions.assertThat(dbService.getRecordId(savedDoc)).isEqualTo(id.toString())
+
+        val loadedDoc = dbService.find(UserInfoType::class, id.toString())
+        Assertions.assertThat(loadedDoc as JsonNode).isNotNull
+        Assertions.assertThat(loadedDoc.get("curCatalog")?.textValue()).isEqualTo("test_catalog")
+        Assertions.assertThat(loadedDoc.get("catalogIds")?.isArray).isTrue
+        Assertions.assertThat(loadedDoc.get("catalogIds").size()).isEqualTo(1)
+        Assertions.assertThat(loadedDoc.get("catalogIds").get(0).textValue()).isEqualTo("test_catalog")
+    }
+
+
+    @Test
+    fun `updating a document wrapper`() {
+        val id = 2002
+        val uuid = "8f891e4e-161e-4d2c-6869-03f02ab352dc"
+
+        val savedDoc = dbService.acquireCatalog("test_catalog").use {
+            val query = listOf(QueryField(FIELD_ID, uuid))
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    resolveReferences = false)
+            val list = dbService.findAll(DocumentWrapperType::class, query, findOptions)
+            val wrapper = list.hits[0] as ObjectNode
+
+            wrapper.put(FIELD_DRAFT, "1001")
+            wrapper.replace(FIELD_PUBLISHED, null)
+            wrapper.replace(FIELD_ARCHIVE, jacksonObjectMapper().createArrayNode().add("1001").add("1002"))
+
+            val recordId = dbService.getRecordId(wrapper)
+            dbService.save(DocumentWrapperType::class, recordId, wrapper.toString())
+        }
+
+        Assertions.assertThat(savedDoc.get("db_id")?.intValue()).isEqualTo(id)
+        Assertions.assertThat(dbService.getRecordId(savedDoc)).isEqualTo(id.toString())
+
+        val loadedDoc = dbService.find(DocumentWrapperType::class, id.toString())
+        Assertions.assertThat(loadedDoc as JsonNode).isNotNull
+        Assertions.assertThat(loadedDoc.get(FIELD_DRAFT)?.textValue()).isEqualTo("1001")
+        Assertions.assertThat(loadedDoc.get(FIELD_PUBLISHED).isNull).isTrue
+        Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE)?.isArray).isTrue
+        Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE).size()).isEqualTo(2)
+        Assertions.assertThat((loadedDoc.get(FIELD_ARCHIVE) as ArrayNode).any { it.textValue() == "1001" }).isTrue
+        Assertions.assertThat((loadedDoc.get(FIELD_ARCHIVE) as ArrayNode).any { it.textValue() == "1002" }).isTrue
+    }
     @Test
     fun `deleting a document`() {
         val docId = "4e91e8f8-1e16-c4d2-6689-02adc03fb352"

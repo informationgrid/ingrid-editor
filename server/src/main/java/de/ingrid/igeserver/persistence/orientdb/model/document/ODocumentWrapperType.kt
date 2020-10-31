@@ -22,9 +22,9 @@ class ODocumentWrapperType : BaseDocumentWrapperType(), OrientDBDocumentEntityTy
 
     override fun initialize(session: ODatabaseSession) {
         val schema = session.metadata.schema
-        if (!schema.existsClass(TYPE)) {
-            log.debug("Create class $TYPE")
-            val docClass = schema.createClass(TYPE)
+        if (!schema.existsClass(className)) {
+            log.debug("Create class $className")
+            val docClass = schema.createClass(className)
 
             val documentClass = session.getClass("Document");
 

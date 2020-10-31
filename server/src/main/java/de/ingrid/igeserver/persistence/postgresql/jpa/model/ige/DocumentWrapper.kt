@@ -138,11 +138,15 @@ class DocumentWrapper : EntityBase(), EntityWithCatalog {
         parent = getByUuid(entityManager, parentUuid)
         draft = Document.getById(entityManager, draftId?.toInt())
         published = Document.getById(entityManager, publishedId?.toInt())
-        archiveIds?.forEach {
-            Document.getById(entityManager, it.toInt())?.let { d ->
+        archiveIds?.forEach { docId ->
+            Document.getById(entityManager, docId.toInt())?.let { doc ->
                 run {
-                    archive.add(d)
-                    d.archiveWrapper.add(this)
+                    if (!archive.any { d -> d.id == doc.id }) {
+                        archive.add(doc)
+                    }
+                    if (!doc.archiveWrapper.any { dw -> dw.id == this.id }) {
+                        doc.archiveWrapper.add(this)
+                    }
                 }
             }
         }

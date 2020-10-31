@@ -19,9 +19,9 @@ class OBehaviourType : BaseBehaviourType(), OrientDBEntityType {
 
     override fun initialize(session: ODatabaseSession) {
         val schema = session.metadata.schema
-        if (!schema.existsClass(TYPE)) {
-            log.debug("Create class $TYPE")
-            schema.createClass(TYPE)
+        if (!schema.existsClass(className)) {
+            log.debug("Create class $className")
+            schema.createClass(className)
         }
     }
 }

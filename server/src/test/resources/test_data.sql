@@ -11,7 +11,9 @@ TRUNCATE TABLE catalog RESTART IDENTITY CASCADE;
 INSERT INTO catalog VALUES (100, 'test_catalog', 'uvp', 'Test Catalog', 'Test Catalog Description', NULL);
 INSERT INTO catalog VALUES (101, 'test_catalog_2', 'mcloud', 'Test Catalog 2', NULL, NULL);
 
--- documents and wrappers
+-- users
+INSERT INTO user_info VALUES (10, 'user1', NULL, '{"recentLogins": [1604100256021, 1604100256021]}');
+
 -- documents and wrappers
 
 -- draft version

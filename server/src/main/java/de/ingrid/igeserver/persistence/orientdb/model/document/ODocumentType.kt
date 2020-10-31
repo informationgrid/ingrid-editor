@@ -22,9 +22,9 @@ class ODocumentType : BaseDocumentType(), OrientDBDocumentEntityType {
 
     override fun initialize(session: ODatabaseSession) {
         val schema = session.metadata.schema
-        if (!schema.existsClass(TYPE)) {
-            log.debug("Create class $TYPE")
-            val docClass = schema.createClass(TYPE)
+        if (!schema.existsClass(className)) {
+            log.debug("Create class $className")
+            val docClass = schema.createClass(className)
 
             docClass.createProperty("_id", OType.STRING)
             docClass.createProperty("_parent", OType.STRING)

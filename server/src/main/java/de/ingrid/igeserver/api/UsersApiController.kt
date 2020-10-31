@@ -8,7 +8,7 @@ import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.QueryType
-import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
+import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
@@ -182,7 +182,7 @@ class UsersApiController : UsersApi {
         val findOptions = FindOptions(
                 queryType = QueryType.EXACT,
                 resolveReferences = false)
-        val list = dbService.findAll(CatalogInfoType::class, query, findOptions)
+        val list = dbService.findAll(UserInfoType::class, query, findOptions)
 
         val isNewEntry = list.totalHits == 0L
         val objectMapper = ObjectMapper()
@@ -213,7 +213,7 @@ class UsersApiController : UsersApi {
         if (!isNewEntry) {
             recordId = dbService.getRecordId(catInfo)
         }
-        dbService.save(CatalogInfoType::class, recordId, catInfo.toString())
+        dbService.save(UserInfoType::class, recordId, catInfo.toString())
     }
 
     override fun assignedUsers(principal: Principal?, id: String): ResponseEntity<List<String>> {
@@ -224,7 +224,7 @@ class UsersApiController : UsersApi {
             val findOptions = FindOptions(
                     queryType = QueryType.CONTAINS,
                     resolveReferences = false)
-            val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
+            val info = dbService.findAll(UserInfoType::class, query, findOptions)
             info.hits.forEach { result.add(it["userId"].asText()) }
         }
         return ResponseEntity.ok(result)
@@ -238,16 +238,16 @@ class UsersApiController : UsersApi {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false)
-            val info = dbService.findAll(CatalogInfoType::class, query, findOptions)
+            val info = dbService.findAll(UserInfoType::class, query, findOptions)
             val objectNode = when (info.totalHits) {
                 0L -> ObjectMapper().createObjectNode()
                 1L -> (info.hits[0] as ObjectNode)
                 else -> {
-                    throw PersistenceException.withMultipleEntities(userId, CatalogInfoType::class.simpleName, dbService.currentCatalog)
+                    throw PersistenceException.withMultipleEntities(userId, UserInfoType::class.simpleName, dbService.currentCatalog)
                 }
             }.put("currentCatalogId", catalogId)
 
-            dbService.save(CatalogInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
+            dbService.save(UserInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
             return ResponseEntity.ok().build()
         }
     }

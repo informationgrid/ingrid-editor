@@ -23,7 +23,7 @@ class UserInfo : EntityWithEmbeddedMap() {
      */
     @ManyToMany(mappedBy="users", fetch=FetchType.EAGER)
     @JsonIgnore
-    private var catalogs: MutableSet<Catalog> = LinkedHashSet<Catalog>()
+    var catalogs: MutableSet<Catalog> = LinkedHashSet<Catalog>()
 
     @Transient
     @JsonSetter("catalogIds")
@@ -45,7 +45,7 @@ class UserInfo : EntityWithEmbeddedMap() {
     @ManyToOne
     @JoinColumn(name="cur_catalog_id")
     @JsonIgnore
-    private var curCatalog: Catalog? = null
+    var curCatalog: Catalog? = null
 
     @Transient
     @JsonSetter("curCatalog")
@@ -64,11 +64,15 @@ class UserInfo : EntityWithEmbeddedMap() {
      */
     override fun beforePersist(entityManager: EntityManager) {
         curCatalog = Catalog.getByIdentifier(entityManager, curCatalogId)
-        catalogIds?.forEach {
-            Catalog.getByIdentifier(entityManager, it)?.let { c ->
+        catalogIds?.forEach {catalogId ->
+            Catalog.getByIdentifier(entityManager, catalogId)?.let { catalog ->
                 run {
-                    catalogs.add(c)
-                    c.users.add(this)
+                    if (!catalogs.any { c -> c.id == catalog.id }) {
+                        catalogs.add(catalog)
+                    }
+                    if (!catalog.users.any { u -> u.id == this.id }) {
+                        catalog.users.add(this)
+                    }
                 }
             }
         }

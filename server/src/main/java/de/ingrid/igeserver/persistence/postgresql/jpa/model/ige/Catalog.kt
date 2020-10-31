@@ -34,7 +34,7 @@ class Catalog : EntityBase() {
     @JsonIgnore
     var version: String? = null
 
-    @ManyToMany(cascade=[CascadeType.ALL], fetch=FetchType.LAZY)
+    @ManyToMany(cascade=[CascadeType.MERGE], fetch=FetchType.LAZY)
     @JoinTable(
             name="catalog_user_info",
             joinColumns=[JoinColumn(name="catalog_id")],
