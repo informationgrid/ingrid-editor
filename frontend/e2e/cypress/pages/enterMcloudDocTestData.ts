@@ -76,7 +76,7 @@ export class enterMcloudDocTestData {
   static setOpenedSpatialBbox(title: string, locationText: string) {
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
     this.selectSpatialType('Freier Raumbezug');
-    cy.get('[data-cy=spatial-dialog-free]').type(locationText).then(() => {
+    cy.get('[data-cy=spatial-dialog-free]').clear().type(locationText).then(() => {
       cy.wait(1000);
       cy.get('.result-wrapper mat-list').contains(locationText).click();
     });
@@ -105,9 +105,13 @@ export class enterMcloudDocTestData {
 
   static setSpatialWKT(title: string = 'Spaaaaatiaaal', locationText: string = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))') {
     cy.get('[data-cy=spatialButton]').click();
+    this.setOpenedSpatialWKT(title, locationText);
+  }
+
+  static setOpenedSpatialWKT(title: string, locationText: string) {
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
     this.selectSpatialType('WKT');
-    cy.get('[data-cy=spatial-dialog-wkt]').type(locationText).then(() => {
+    cy.get('[data-cy=spatial-dialog-wkt]').clear().type(locationText).then(() => {
       cy.get('div > button').contains('Anzeigen').click();
     });
     cy.get('[data-cy=confirm-dialog-save]').click();

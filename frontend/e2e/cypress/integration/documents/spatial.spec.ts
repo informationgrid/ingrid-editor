@@ -1,6 +1,7 @@
 import {enterMcloudDocTestData} from "../../pages/enterMcloudDocTestData";
 import {DocumentPage} from "../../pages/document.page";
 import {Utils} from "../../pages/utils";
+import {Tree} from "../../pages/tree.partial";
 
 describe('Spatial References', () => {
 
@@ -35,9 +36,10 @@ describe('Spatial References', () => {
   });
 
   it('should add additional a spatial reference (bbox)', () => {
-    // TODO: this test should not depend on other test 'should create a new spatial reference (bbox)'
-    //       if another document with this this name exists, then this test breaks
-    DocumentPage.getDocument('bbox');
+    const docNameBbox = 'spatialbbox-' + Utils.randomString()
+
+    DocumentPage.CreateSpatialBboxWithAPI(docNameBbox, false);
+    Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialBbox('add spatial reference, bbox', 'Berlin');
 
@@ -54,9 +56,10 @@ describe('Spatial References', () => {
 
   it('should add additional a spatial reference (WKT)', () => {
     const poly = 'POLYGON((1 5, 5 9, 1 7, 2 1, 3 5)(5 5, 5 7, 7 7, 7 5, 5 5))'
+    const docNameBbox = 'spatialwkt-' + Utils.randomString()
 
-    // TODO: this test should not depend on other test
-    DocumentPage.getDocument('wkt');
+    DocumentPage.CreateSpatialWKTWithAPI(docNameBbox, false);
+    Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialWKT('add spatial reference, wkt-2', poly);
     DocumentPage.checkSpatialEntryExists('reference, wkt-2');
@@ -71,8 +74,10 @@ describe('Spatial References', () => {
   });
 
   it('should update a spatial reference (bbox)', () => {
-    // TODO: this test should not depend on other test
-    DocumentPage.getDocument('bbox');
+    const docName = 'spatial-' + Utils.randomString()
+
+    DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
+    Tree.openNode(['api-' + docName]);
 
     enterMcloudDocTestData.openSpatialMenuDoc('Berlin');
     enterMcloudDocTestData.selectChangeInSpatialMenuDoc();
@@ -83,18 +88,39 @@ describe('Spatial References', () => {
     DocumentPage.saveDocument();
   });
 
-  xit('should update a spatial reference (WKT)', () => {
+  it('should update a spatial reference (WKT)', () => {
+    const docName = 'spatial-' + Utils.randomString()
+    const poly = 'POLYGON((10 5, 1 6, 1 7, 2 1, 3 5)(8 5, 5 7, 2 7, 3 5, 5 8))'
 
+    DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
+    Tree.openNode(['api-' + docName]);
+
+    enterMcloudDocTestData.openSpatialMenuDoc('reference, wkt-1');
+    enterMcloudDocTestData.selectChangeInSpatialMenuDoc();
+
+    enterMcloudDocTestData.setOpenedSpatialWKT('update spatial reference, wkt', poly);
+    DocumentPage.checkSpatialEntryExists('update spatial reference, wkt');
+
+    DocumentPage.saveDocument();
   });
 
   it('should remove spatial references', () => {
-    // TODO: this test should not depend on other test
-    DocumentPage.getDocument('bbox');
+    const docName = 'spatialToDelete-' + Utils.randomString()
 
-    enterMcloudDocTestData.openSpatialMenuDoc('Hamburg');
-    enterMcloudDocTestData.deleteSpatialReference('Hamburg');
+    DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
+    Tree.openNode(['api-' + docName]);
 
-    DocumentPage.checkSpatialEntryExistsNot('Hamburg');
+    // delete a bbox entry
+    enterMcloudDocTestData.openSpatialMenuDoc('Berlin');
+    enterMcloudDocTestData.deleteSpatialReference('Berlin');
+
+    DocumentPage.checkSpatialEntryExistsNot('Berlin');
+
+    // delete a wkt entry
+    enterMcloudDocTestData.openSpatialMenuDoc('create spatial reference, wkt-1')
+    enterMcloudDocTestData.deleteSpatialReference('create spatial reference, wkt-1');
+
+    DocumentPage.checkSpatialEntryExistsNot('create spatial reference, wkt-1');
   });
 
   xit('should focus on a selected spatial reference and also reset view after pressing reset button', () => {
