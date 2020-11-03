@@ -16,12 +16,11 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.JoinInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.ModelRegistry
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataDeserializer
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EntitySerializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataTypeRegistry
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EntitySerializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithRecordId
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog as CatalogEntity
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import de.ingrid.igeserver.services.FIELD_VERSION
 import org.apache.logging.log4j.kotlin.logger
@@ -33,6 +32,7 @@ import java.math.BigInteger
 import javax.persistence.EntityManager
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog as CatalogEntity
 
 @Service
 class PostgreSQLDatabase : DBApi {
@@ -249,8 +249,7 @@ class PostgreSQLDatabase : DBApi {
         } else {
             // merge json from existing entity with incoming data
             val existingData = mapper.readTree(mapper.writeValueAsString(existingEntity))
-            // TODO prevent data duplication when merging arrays (e.g. recentlogins) @JsonMerge?
-            val mergedData = mapper.writeValueAsString(mapper.readerForUpdating(existingData).readValue(data))
+            val mergedData = mapper.writeValueAsString(mergeJson(existingData, mapper.readTree(data)))
             val entity = mapper.readValue(mergedData, typeImpl.jpaType.java)
             prepareForSave(entity)
             entityManager.merge(entity)
@@ -267,7 +266,10 @@ class PostgreSQLDatabase : DBApi {
         if (count == 0) {
             throw PersistenceException.withReason("Failed to delete non-existing document of type '${type.simpleName}' with id '$docId'.")
         }
-        entities.forEach { entityManager.remove(it) }
+        entities.forEach {
+            it.beforeRemove(entityManager)
+            entityManager.remove(it)
+        }
         log.debug("Deleted $count records of type '$type' with id '$docId'.")
         return true
     }
@@ -409,6 +411,23 @@ class PostgreSQLDatabase : DBApi {
         return mapper.readTree(serializer.writeValueAsString(entity))
     }
 
+    private fun mergeJson(mainNode: JsonNode, updateNode: JsonNode): JsonNode {
+        val fieldNames = updateNode.fieldNames()
+        fieldNames.forEachRemaining {fieldName ->
+            val jsonNode = mainNode[fieldName]
+            // if field exists and is an embedded object
+            if (jsonNode != null && jsonNode.isObject) {
+                mergeJson(jsonNode, updateNode[fieldName])
+            }
+            else if (mainNode is ObjectNode) {
+                // overwrite field
+                val value = updateNode[fieldName]
+                mainNode.replace(fieldName, value)
+            }
+        }
+        return mainNode
+    }
+
     private fun getMapper(resolveReferences: Boolean): ObjectMapper {
         val mapper = jacksonObjectMapper()
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -491,7 +510,8 @@ class PostgreSQLDatabase : DBApi {
     /**
      * Get the query field term and necessary joins for the given field starting from the given type
      */
-    private fun resolveField(typeInfo: ModelRegistry.TypeInfo, field: String, index: Int, joins: MutableSet<JoinInfo>, depth: Int = 0): String {
+    private fun resolveField(typeInfo: ModelRegistry.TypeInfo, field: String, index: Int, joins: MutableSet<JoinInfo>,
+                             lastTypeInfo: ModelRegistry.TypeInfo? = null, depth: Int = 0): String {
         // field might contain dots to define a path
         val fieldPath = field.split(delimiters = arrayOf("."), limit = 2).let {
             Pair(it[0], it.getOrNull(1) ?: "")
@@ -505,7 +525,9 @@ class PostgreSQLDatabase : DBApi {
         return when {
             // relation field
             fieldInfo != null && fieldInfo.isRelation && fieldInfo.relatedEntityType != null &&
-                    (fieldInfo.nmRelatedProperty != null || (!fieldPath.second.isBlank() && fieldInfo.fkName != null)) -> {
+                    (fieldInfo.nmRelatedProperty != null || (!fieldPath.second.isBlank() && fieldInfo.fkName != null)) &&
+                    // prevent recursion in many to many relations
+                    modelRegistry.getTypeInfo(fieldInfo.relatedEntityType) != lastTypeInfo -> {
                 val relation: Triple<ModelRegistry.TypeInfo, String, ModelRegistry.FieldInfo> = when {
                     fieldInfo.nmRelatedProperty != null -> {
                         // many-to-many relation end
@@ -536,7 +558,7 @@ class PostgreSQLDatabase : DBApi {
                     joins.add(newJoin)
                     newJoin
                 }
-                resolveField(otherTypeInfo, otherFieldName, join.otherAliasIndex, joins, depth+1)
+                resolveField(otherTypeInfo, otherFieldName, join.otherAliasIndex, joins, typeInfo, depth+1)
             }
             // simple field or relation field with no path to related entity attribute
             fieldInfo != null && fieldPath.second.isBlank() -> {

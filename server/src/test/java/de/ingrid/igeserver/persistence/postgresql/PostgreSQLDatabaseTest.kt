@@ -41,7 +41,7 @@ class PostgreSQLDatabaseTest {
     @Autowired
     private lateinit var dbService: PostgreSQLDatabase
 
-    private val ISO_OFFSET_DATE_TIME_REGEX = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6}[+-][0-9]{2}:[0-9]{2}"
+    private val ISO_OFFSET_DATE_TIME_REGEX = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]+[+-][0-9]{2}:[0-9]{2}"
 
     @Test
     fun `loading a document`() {
@@ -290,7 +290,7 @@ class PostgreSQLDatabaseTest {
     fun `updating a user`() {
         val id = 10
         val userId = "user1"
-        val catalogName = "test_catalog"
+        val catalogName = "test_catalog_2"
 
         val savedDoc = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val query = listOf(QueryField("userId", userId))
@@ -312,17 +312,20 @@ class PostgreSQLDatabaseTest {
 
         val loadedDoc = dbService.find(UserInfoType::class, id.toString())
         Assertions.assertThat(loadedDoc as JsonNode).isNotNull
-        Assertions.assertThat(loadedDoc.get("curCatalog")?.textValue()).isEqualTo("test_catalog")
+        Assertions.assertThat(loadedDoc.get("curCatalog")?.textValue()).isEqualTo("test_catalog_2")
         Assertions.assertThat(loadedDoc.get("catalogIds")?.isArray).isTrue
         Assertions.assertThat(loadedDoc.get("catalogIds").size()).isEqualTo(1)
-        Assertions.assertThat(loadedDoc.get("catalogIds").get(0).textValue()).isEqualTo("test_catalog")
+        Assertions.assertThat(loadedDoc.get("catalogIds").get(0).textValue()).isEqualTo("test_catalog_2")
+        Assertions.assertThat(loadedDoc.get("recentLogins")?.isArray).isTrue
+        Assertions.assertThat(loadedDoc.get("recentLogins").size()).isEqualTo(1)
+        Assertions.assertThat(loadedDoc.get("recentLogins").get(0).longValue()).isEqualTo(1604100256021)
     }
 
 
     @Test
     fun `updating a document wrapper`() {
         val id = 2002
-        val uuid = "8f891e4e-161e-4d2c-6869-03f02ab352dc"
+        val uuid = "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
 
         val savedDoc = dbService.acquireCatalog("test_catalog").use {
             val query = listOf(QueryField(FIELD_ID, uuid))
@@ -352,9 +355,11 @@ class PostgreSQLDatabaseTest {
         Assertions.assertThat((loadedDoc.get(FIELD_ARCHIVE) as ArrayNode).any { it.textValue() == "1001" }).isTrue
         Assertions.assertThat((loadedDoc.get(FIELD_ARCHIVE) as ArrayNode).any { it.textValue() == "1002" }).isTrue
     }
+
     @Test
     fun `deleting a document`() {
         val docId = "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
+        val wrapperId = "2002"
 
         val oldCount = dbService.findAll(DocumentType::class).size
 
@@ -364,6 +369,9 @@ class PostgreSQLDatabaseTest {
 
         // all instances with the same uuid are deleted
         Assertions.assertThat(dbService.findAll(DocumentType::class).size).isEqualTo(oldCount - 3)
+
+        // attached wrapper still exists
+        Assertions.assertThat(dbService.find(DocumentWrapperType::class, wrapperId)).isNotNull
     }
 
     @Test
@@ -380,6 +388,42 @@ class PostgreSQLDatabaseTest {
     }
 
     @Test
+    fun `deleting a document wrapper`() {
+        val docId = "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
+
+        val oldCount = dbService.findAll(DocumentWrapperType::class).size
+
+        dbService.acquireDatabase("is_not_used_by_postgresql").use {
+            dbService.remove(DocumentWrapperType::class, docId)
+        }
+
+        // all instances with the same uuid are deleted
+        Assertions.assertThat(dbService.findAll(DocumentWrapperType::class).size).isEqualTo(oldCount - 1)
+
+        // attached documents are removed
+        Assertions.assertThat(dbService.find(DocumentType::class, "1000")).isNull()
+        Assertions.assertThat(dbService.find(DocumentType::class, "1001")).isNull()
+        Assertions.assertThat(dbService.find(DocumentType::class, "1002")).isNull()
+    }
+
+    @Test
+    fun `deleting a user`() {
+        val userId = "user1"
+        val catalogId = "100"
+
+        val oldCount = dbService.findAll(UserInfoType::class).size
+
+        dbService.acquireDatabase("is_not_used_by_postgresql").use {
+            dbService.remove(UserInfoType::class, userId)
+        }
+
+        Assertions.assertThat(dbService.findAll(UserInfoType::class).size).isEqualTo(oldCount - 1)
+
+        // attached catalog still exists
+        Assertions.assertThat(dbService.find(CatalogInfoType::class, catalogId)).isNotNull
+    }
+
+    @Test
     fun `getting a record id`() {
         val catalogRecordId = dbService.getRecordId(CatalogInfoType::class, "test_catalog")!!
         Assertions.assertThat(catalogRecordId).isEqualTo("100")
@@ -390,7 +434,7 @@ class PostgreSQLDatabaseTest {
 
     @Test
     fun `counting children`() {
-        val count = dbService.countChildren("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        val count = dbService.countChildren("8f891e4e-161e-4d2c-6869-03f02ab352dc")
         Assertions.assertThat(count).isEqualTo(2)
     }
 
@@ -609,7 +653,7 @@ class PostgreSQLDatabaseTest {
     @Test
     fun `finding documents by query, resolve references`() {
         val queryMap = listOfNotNull(
-                QueryField("_id", "8f891e4e-161e-4d2c-6869-03f02ab352dc"),
+                QueryField("_id", "4e91e8f8-1e16-c4d2-6689-02adc03fb352"),
         ).toList()
 
         val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
@@ -621,7 +665,7 @@ class PostgreSQLDatabaseTest {
         }
 
         Assertions.assertThat(result.totalHits).isEqualTo(1)
-        Assertions.assertThat(result.hits[0].get("_id")?.textValue()).isEqualTo("8f891e4e-161e-4d2c-6869-03f02ab352dc")
+        Assertions.assertThat(result.hits[0].get(FIELD_ID)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
 
         val loadedDoc = result.hits[0]
         Assertions.assertThat(loadedDoc.get(FIELD_DRAFT)?.isObject).isTrue
@@ -722,6 +766,14 @@ class PostgreSQLDatabaseTest {
         dbService.removeCatalog("test_catalog")
 
         Assertions.assertThat(dbService.findAll(CatalogInfoType::class).size).isEqualTo(oldCount - 1)
+
+        // owned entities are deleted
+        Assertions.assertThat(dbService.findAll(DocumentType::class).size).isEqualTo(0)
+        Assertions.assertThat(dbService.findAll(DocumentWrapperType::class).size).isEqualTo(0)
+        Assertions.assertThat(dbService.findAll(BehaviourType::class).size).isEqualTo(0)
+
+        // user still exists
+        Assertions.assertThat(dbService.findAll(UserInfoType::class).size).isEqualTo(1)
     }
 
     @Test

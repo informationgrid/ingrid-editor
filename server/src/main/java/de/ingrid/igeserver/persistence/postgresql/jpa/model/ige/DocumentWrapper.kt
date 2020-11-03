@@ -139,17 +139,37 @@ class DocumentWrapper : EntityBase(), EntityWithCatalog {
         parent = getByUuid(entityManager, parentUuid)
         draft = Document.getById(entityManager, draftId?.toInt())
         published = Document.getById(entityManager, publishedId?.toInt())
+
+        // update many to many relation to archive documents, since document wrapper is the owner of the
+        // relation it is sufficient to maintain this relation end only
+        val detached = if (entityManager.contains(this)) {
+            entityManager.detach(this)
+            true
+        } else false
+        archive.clear()
         archiveIds?.forEach { docId ->
             Document.getById(entityManager, docId.toInt())?.let { doc ->
                 run {
                     if (!archive.any { d -> d.id == doc.id }) {
                         archive.add(doc)
                     }
-                    if (!doc.archiveWrapper.any { dw -> dw.id == this.id }) {
-                        doc.archiveWrapper.add(this)
-                    }
                 }
             }
+        }
+        if (detached) {
+            entityManager.merge(this)
+        }
+    }
+
+    /**
+     * Remove many-to-one entities
+     */
+    override fun beforeRemove(entityManager: EntityManager) {
+        if (draft != null) {
+            entityManager.remove(draft)
+        }
+        if (published != null) {
+            entityManager.remove(published)
         }
     }
 

@@ -34,12 +34,7 @@ class Catalog : EntityBase() {
     @JsonIgnore
     var version: String? = null
 
-    @ManyToMany(cascade=[CascadeType.MERGE], fetch=FetchType.LAZY)
-    @JoinTable(
-            name="catalog_user_info",
-            joinColumns=[JoinColumn(name="catalog_id")],
-            inverseJoinColumns=[JoinColumn(name="user_info_id")]
-    )
+    @ManyToMany(mappedBy="catalogs", fetch=FetchType.LAZY)
     @JsonIgnore
     var users: MutableSet<UserInfo> = LinkedHashSet<UserInfo>()
 

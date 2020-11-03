@@ -62,12 +62,12 @@ class ModelRegistry {
             val type: Class<*>,
             val columnName: String,
             val jsonName: String,
-            val relatedEntityType: KClass<out EntityBase>?,
-            val fkName: String?,
-            val nmRelatedProperty: String?,
-            val nmRelationTable: String?,
-            val nmJoinColumn: String?,
-            val nmInverseJoinColumn: String?
+            val relatedEntityType: KClass<out EntityBase>? = null,
+            val fkName: String? = null,
+            val nmRelatedProperty: String? = null,
+            val nmRelationTable: String? = null,
+            val nmJoinColumn: String? = null,
+            val nmInverseJoinColumn: String? = null
     ) {
         val isRelation: Boolean
             get() = relatedEntityType != null
@@ -152,12 +152,9 @@ class ModelRegistry {
                             val fkName = aJC?.name
 
                             val aMM = field.annotations.find { it.annotationClass == ManyToMany::class } as? ManyToMany
-                            val nmRelatedProperty = if (aMM?.mappedBy.isNullOrEmpty()) null else aMM?.mappedBy
-
-                            val aJT = field.annotations.find { it.annotationClass == JoinTable::class } as? JoinTable
-                            val nmRelationTable = aJT?.name
-                            val nmJoinColumn = if (aJT?.joinColumns?.size == 1) aJT.joinColumns[0].name else null
-                            val nmInverseJoinColumn = if (aJT?.inverseJoinColumns?.size == 1) aJT.inverseJoinColumns[0].name else null
+                            val nmFieldInfo = if (aMM != null && relatedEntityType != null) {
+                                resolveManyToManyRelation(type, relatedEntityType, field)
+                            } else null
 
                             fieldInfos.add(FieldInfo(
                                     name = field.name,
@@ -166,10 +163,10 @@ class ModelRegistry {
                                     jsonName = jsonName,
                                     relatedEntityType = relatedEntityType,
                                     fkName = fkName,
-                                    nmRelatedProperty = nmRelatedProperty,
-                                    nmRelationTable = nmRelationTable,
-                                    nmJoinColumn = nmJoinColumn,
-                                    nmInverseJoinColumn = nmInverseJoinColumn
+                                    nmRelatedProperty = nmFieldInfo?.nmRelatedProperty,
+                                    nmRelationTable = nmFieldInfo?.nmRelationTable,
+                                    nmJoinColumn = nmFieldInfo?.nmJoinColumn,
+                                    nmInverseJoinColumn = nmFieldInfo?.nmInverseJoinColumn
                             ))
                         }
                     }
@@ -182,7 +179,6 @@ class ModelRegistry {
                         tableName = hibernateModel.tableName,
                         fields = fieldInfos
                 ))
-
             }
         }
         metaModel = ImmutableSet.copyOf(typeInfos)
@@ -204,5 +200,37 @@ class ModelRegistry {
                 }
         result.addAll(filteredFields)
         return result
+    }
+
+    private fun resolveManyToManyRelation(thisType: KClass<out EntityBase>, otherType: KClass<out EntityBase>, field: Field) : FieldInfo {
+        val otherFields = getAllFields(otherType.java)
+
+        // find relation ends:
+        // - owned field is the field that has the mappedBy value in the @ManyToMany annotation
+        // - owner field is the field that is referenced by the mappedBy value in the @ManyToMany annotation
+        val aMM = field.annotations.find { it.annotationClass == ManyToMany::class } as? ManyToMany
+        val ownedField: Field = if (aMM?.mappedBy.isNullOrEmpty()) {
+            // find field in other type
+            otherFields.first { f ->
+                val aMMOther = f.annotations.find { it.annotationClass == ManyToMany::class } as? ManyToMany
+                aMMOther?.mappedBy == field.name
+            }
+        } else field
+        val isOwnedByOther = field == ownedField
+        val ownerField = if (isOwnedByOther) otherFields.first { f -> f.name == aMM?.mappedBy } else field
+
+        val aJT = ownerField.annotations.find { it.annotationClass == JoinTable::class } as? JoinTable
+        val joinColumn = if (aJT?.joinColumns?.size == 1) aJT.joinColumns[0].name else null
+        val inverseJoinColumn = if (aJT?.inverseJoinColumns?.size == 1) aJT.inverseJoinColumns[0].name else null
+        return FieldInfo(
+            name = field.name,
+            type = thisType::class.java,
+            columnName = "",
+            jsonName = "",
+            nmRelatedProperty = (if (isOwnedByOther) ownerField else ownedField).name,
+            nmRelationTable = aJT?.name,
+            nmJoinColumn = if (isOwnedByOther) inverseJoinColumn else joinColumn,
+            nmInverseJoinColumn = if (isOwnedByOther) joinColumn else inverseJoinColumn
+        )
     }
 }

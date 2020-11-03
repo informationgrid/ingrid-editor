@@ -18,19 +18,15 @@ open class EntityBase : EntityWithRecordId {
     override var id: Int? = null
 
     /**
-     * If this property is true, related entities must be replaced by an identifier when serializing the entity
-     * NOTE Sub classes are free to choose
-     * - which relations are serialized in this way
-     * - which property of the related entity is used as identifier
-     * But they must be able to resolve a related entity by this identifier if clients sent identifiers
-     * only (see beforePersist)
-     */
-
-    /**
      * Implementing this method allows sub classes to run custom code (e.g. resolve related objects from identifiers)
      * after deserialization and before persisting
      */
     open fun beforePersist(entityManager: EntityManager) {}
+
+    /**
+     * Implementing this method allows sub classes to run custom code before removal
+     */
+    open fun beforeRemove(entityManager: EntityManager) {}
 
     /**
      * Implementing this method allows sub classes to map the related entities in the serialized instance

@@ -12,7 +12,7 @@ INSERT INTO catalog VALUES (100, 'test_catalog', 'uvp', 'Test Catalog', 'Test Ca
 INSERT INTO catalog VALUES (101, 'test_catalog_2', 'mcloud', 'Test Catalog 2', NULL, NULL);
 
 -- users
-INSERT INTO user_info VALUES (10, 'user1', NULL, '{"recentLogins": [1604100256021, 1604100256021]}');
+INSERT INTO user_info VALUES (10, 'user1', NULL, '{"recentLogins": [1604100256021]}');
 INSERT INTO catalog_user_info VALUES (100, 10);
 
 -- documents and wrappers
@@ -56,11 +56,11 @@ INSERT INTO document_wrapper VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0
     NULL, NULL, 0
 );
 
-INSERT INTO document_wrapper VALUES (2001, 100, 2000, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'address',
+INSERT INTO document_wrapper VALUES (2001, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'AddressDoc', 'address',
     NULL, NULL, 0
 );
 
-INSERT INTO document_wrapper VALUES (2002, 100, 2001, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'AddressDoc', 'address',
+INSERT INTO document_wrapper VALUES (2002, 100, 2001, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'address',
     1000, 1001, 0
 );
 

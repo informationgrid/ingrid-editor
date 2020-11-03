@@ -93,8 +93,8 @@ class EntityAttributeTest {
         Assertions.assertThat(loadedDoc.get("db_id")?.intValue()).isEqualTo(id)
         Assertions.assertThat(dbService.getRecordId(loadedDoc)).isEqualTo(id.toString())
 
-        Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("8f891e4e-161e-4d2c-6869-03f02ab352dc")
-        Assertions.assertThat(loadedDoc.get(FIELD_PARENT)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(loadedDoc.get(FIELD_PARENT)?.textValue()).isEqualTo("8f891e4e-161e-4d2c-6869-03f02ab352dc")
         Assertions.assertThat(loadedDoc.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("AddressDoc")
         Assertions.assertThat(loadedDoc.get(FIELD_CATEGORY)?.textValue()).isEqualTo("address")
 

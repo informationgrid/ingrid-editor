@@ -19,7 +19,12 @@ class UserInfo : EntityWithEmbeddedMap() {
      * NOTE Since the JSON representation contains catalog identifiers ('catalogIds') only, we need
      * to map them manually to catalog instances for persistence
      */
-    @ManyToMany(mappedBy="users", fetch=FetchType.EAGER)
+    @ManyToMany(cascade=[CascadeType.ALL], fetch=FetchType.EAGER)
+    @JoinTable(
+            name="catalog_user_info",
+            joinColumns=[JoinColumn(name="user_info_id")],
+            inverseJoinColumns=[JoinColumn(name="catalog_id")]
+    )
     @JsonAlias("catalogIds") // hint for model registry
     @JsonIgnore
     var catalogs: MutableSet<Catalog> = LinkedHashSet<Catalog>()
@@ -64,17 +69,34 @@ class UserInfo : EntityWithEmbeddedMap() {
      */
     override fun beforePersist(entityManager: EntityManager) {
         curCatalog = Catalog.getByIdentifier(entityManager, curCatalogId)
+
+        // update many to many relation to catalogs, since user is the owner of the
+        // relation it is sufficient to maintain this relation end only
+        val detached = if (entityManager.contains(this)) {
+            entityManager.detach(this)
+            true
+        } else false
+        catalogs.clear()
         catalogIds?.forEach {catalogId ->
             Catalog.getByIdentifier(entityManager, catalogId)?.let { catalog ->
                 run {
                     if (!catalogs.any { c -> c.id == catalog.id }) {
                         catalogs.add(catalog)
                     }
-                    if (!catalog.users.any { u -> u.id == this.id }) {
-                        catalog.users.add(this)
-                    }
                 }
             }
+        }
+        if (detached) {
+            entityManager.merge(this)
+        }
+    }
+
+    /**
+     * Detach catalogs
+     */
+    override fun beforeRemove(entityManager: EntityManager) {
+        catalogs.forEach {
+            this.catalogs.remove(it)
         }
     }
 
