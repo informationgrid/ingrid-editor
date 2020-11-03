@@ -13,6 +13,7 @@ import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
+import de.ingrid.igeserver.persistence.postgresql.jpa.JoinInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.ModelRegistry
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EntitySerializer
@@ -41,7 +42,7 @@ class PostgreSQLDatabase : DBApi {
         private const val DB_VERSION = "db_version"
         private const val SORT_FIELD_ALIAS = "query_sort_field"
 
-        private val PARAMETER_REGEX = Regex(":([^\\s)]+)")
+        private val PARAMETER_REGEX = Regex(":([^\\s)\\]]+)")
         private val COUNT_QUERY_REGEX = Regex("SELECT .*? FROM")
 
         private val INTERNAL_FIELDS = listOf(DB_ID, DB_VERSION)
@@ -248,7 +249,7 @@ class PostgreSQLDatabase : DBApi {
         } else {
             // merge json from existing entity with incoming data
             val existingData = mapper.readTree(mapper.writeValueAsString(existingEntity))
-            // TODO prevent data duplication when merging arrays (e.g. recentlogins)
+            // TODO prevent data duplication when merging arrays (e.g. recentlogins) @JsonMerge?
             val mergedData = mapper.writeValueAsString(mapper.readerForUpdating(existingData).readValue(data))
             val entity = mapper.readValue(mergedData, typeImpl.jpaType.java)
             prepareForSave(entity)
@@ -402,10 +403,10 @@ class PostgreSQLDatabase : DBApi {
         entity.beforePersist(entityManager)
     }
 
-    private fun mapEntityToJson(obj: EntityBase, resolveReferences: Boolean): JsonNode {
+    private fun mapEntityToJson(entity: EntityBase, resolveReferences: Boolean): JsonNode {
         // NOTE this is not as optimized as mapper.valueToTree(obj), but allows to use serialization annotations
         val serializer = if (resolveReferences) resolvingMapper else mapper
-        return mapper.readTree(serializer.writeValueAsString(obj))
+        return mapper.readTree(serializer.writeValueAsString(entity))
     }
 
     private fun getMapper(resolveReferences: Boolean): ObjectMapper {
@@ -442,29 +443,6 @@ class PostgreSQLDatabase : DBApi {
         return mapper
     }
 
-    private class JoinInfo(
-            val thisType: ModelRegistry.TypeInfo,
-            val otherType: ModelRegistry.TypeInfo,
-            val relationField: ModelRegistry.FieldInfo,
-            val thisAliasIndex: Int = 1,
-            val otherAliasIndex: Int = 1
-    ) {
-        val relationColumn: String?
-            get() = relationField.fkName
-
-        val joinedTableAlias: String
-            get() = otherType.aliasName(otherAliasIndex)
-
-        val joinString: String
-            get() = "JOIN ${otherType.tableName} ${otherType.aliasName(otherAliasIndex)} ON " +
-                    "${thisType.aliasName(thisAliasIndex)}.${relationField.fkName} = " +
-                    "${otherType.aliasName(otherAliasIndex)}.${otherType.pkName}"
-
-        override fun toString(): String {
-            return "${thisType.aliasName(thisAliasIndex)}.${relationField} -> ${otherType.aliasName(otherAliasIndex)}"
-        }
-    }
-
     /**
      * Extract value and join conditions and necessary joins for the given query
      * The result is a map of condition strings for the WHERE clause and their parameters
@@ -475,12 +453,13 @@ class PostgreSQLDatabase : DBApi {
 
         val typeInfo = modelRegistry.getTypeInfo(type)
         if (typeInfo != null) {
+            val typeInstance = type.java.getConstructor().newInstance()
             query.forEachIndexed { i, criteria ->
                 // resolve field
                 val queryFieldName = resolveField(typeInfo, criteria.field, index, joins)
 
                 // make criteria
-                val value = criteria.value
+                val value = typeInstance.mapQueryValue(criteria.field, criteria.value, entityManager)
                 val invert = criteria.invert
                 val parameterName = "p${index}_$i"
                 if (value == null) {
@@ -490,19 +469,19 @@ class PostgreSQLDatabase : DBApi {
                     where["$queryFieldName${criteria.operator} :$parameterName"] = value
                 }
                 else {
-                    val operator = when (options.queryType) {
+                    val condition = when (options.queryType) {
                         QueryType.LIKE -> {
-                            if (invert) " NOT ILIKE" else " ILIKE"
+                            (if (invert) " NOT ILIKE " else " ILIKE ") + ":$parameterName"
                         }
                         QueryType.EXACT -> {
-                            if (invert) " !=" else " ="
+                            (if (invert) " != " else " = ") + ":$parameterName"
                         }
                         QueryType.CONTAINS -> {
-                            if (invert) " NOT IN" else " IN"
+                            (if (invert) " != " else " = ") + "ANY(ARRAY[:$parameterName])"
                         }
                     }
-                    where["$queryFieldName$operator :$parameterName"] =
-                            if (options.queryType == QueryType.LIKE) "%${value.toLowerCase()}%" else value
+                    where["$queryFieldName$condition"] =
+                            if (options.queryType == QueryType.LIKE) "%${value.toString().toLowerCase()}%" else value
                 }
             }
         }
@@ -524,28 +503,44 @@ class PostgreSQLDatabase : DBApi {
 
         // resolve the field to the column
         return when {
-            // simple field or relation field with no path to related entity attribute
-            fieldInfo != null && fieldPath.second.isBlank() -> {
-                "${typeInfo.aliasName(thisAliasIndex)}.${fieldInfo.columnName}"
-            }
             // relation field
-            fieldInfo != null && fieldInfo.isRelation && fieldInfo.relatedEntityType != null -> {
-                if (fieldInfo.fkName == null) {
-                    throw PersistenceException.withReason("Field '${fieldInfo.name}' in entity type '${typeInfo.type}' defines a " +
-                            "(one|many)-to-many relation that cannot be joined for querying.")
+            fieldInfo != null && fieldInfo.isRelation && fieldInfo.relatedEntityType != null &&
+                    (fieldInfo.nmRelatedProperty != null || (!fieldPath.second.isBlank() && fieldInfo.fkName != null)) -> {
+                val relation: Triple<ModelRegistry.TypeInfo, String, ModelRegistry.FieldInfo> = when {
+                    fieldInfo.nmRelatedProperty != null -> {
+                        // many-to-many relation end
+                        val otherTypeInfo = modelRegistry.getTypeInfo(fieldInfo.relatedEntityType)!!
+                        val otherFieldName = fieldInfo.nmRelatedProperty
+                        val otherFieldInfo = modelRegistry.getFieldInfo(otherTypeInfo, otherFieldName)!!
+                        Triple(otherTypeInfo, otherFieldName, otherFieldInfo)
+                    }
+                    fieldInfo.fkName != null -> {
+                        // many-to-one relation end
+                        val otherTypeInfo = modelRegistry.getTypeInfo(fieldInfo.relatedEntityType)!!
+                        val otherFieldName = fieldPath.second
+                        Triple(otherTypeInfo, otherFieldName, fieldInfo)
+                    }
+                    else -> {
+                        // one-to-many relation end
+                        throw PersistenceException.withReason("Relation field '${fieldInfo.name}' in entity type '${typeInfo.type}' defines a " +
+                                "one-to-many relation that cannot be joined for querying.")
+                    }
                 }
-                val otherFieldName = fieldPath.second
-                val otherTypeInfo = modelRegistry.getTypeInfo(fieldInfo.relatedEntityType)!!
-
-                // add join, if not existing yet
-                val existingJoins = joins.filter { j -> j.relationField == fieldInfo }
+                // add relation table and joins, if not existing yet
+                val otherTypeInfo = relation.first
+                val otherFieldName = relation.second
+                val otherFieldInfo = relation.third
+                val existingJoins = joins.filter { j -> j.relationField == otherFieldInfo }
                 val join = if (existingJoins.isNotEmpty()) existingJoins.first() else {
-                    val newJoin = JoinInfo(typeInfo, otherTypeInfo, fieldInfo, thisAliasIndex, index)
+                    val newJoin = JoinInfo(typeInfo, otherTypeInfo, otherFieldInfo, thisAliasIndex, index)
                     joins.add(newJoin)
                     newJoin
                 }
-
                 resolveField(otherTypeInfo, otherFieldName, join.otherAliasIndex, joins, depth+1)
+            }
+            // simple field or relation field with no path to related entity attribute
+            fieldInfo != null && fieldPath.second.isBlank() -> {
+                "${typeInfo.aliasName(thisAliasIndex)}.${fieldInfo.columnName}"
             }
             // if the field is not declared in the entity it could be a property of the embedded data
             EntityWithEmbeddedData::class.java.isAssignableFrom(typeInfo.type.java) -> {

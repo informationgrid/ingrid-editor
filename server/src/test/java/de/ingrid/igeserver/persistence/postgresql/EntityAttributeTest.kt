@@ -86,7 +86,7 @@ class EntityAttributeTest {
     fun `get document wrapper`() {
         val id = 2002
 
-        val loadedDoc = dbService.acquireDatabase("").use {
+        val loadedDoc = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             dbService.find(DocumentWrapperType::class, id.toString())!!
         }
 

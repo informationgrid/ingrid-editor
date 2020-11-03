@@ -1,9 +1,6 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
-import com.fasterxml.jackson.annotation.JsonGetter
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.annotations.NoArgs
@@ -46,6 +43,7 @@ class DocumentWrapper : EntityBase(), EntityWithCatalog {
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="parent_id", nullable=true)
+    @JsonAlias("_parent") // hint for model registry
     @JsonIgnore
     var parent: DocumentWrapper? = null
 
@@ -68,6 +66,7 @@ class DocumentWrapper : EntityBase(), EntityWithCatalog {
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="draft", nullable=true)
+    @JsonAlias("draft") // hint for model registry
     @JsonIgnore
     var draft: Document? = null
 
@@ -90,6 +89,7 @@ class DocumentWrapper : EntityBase(), EntityWithCatalog {
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="published", nullable=true)
+    @JsonAlias("published") // hint for model registry
     @JsonIgnore
     var published: Document? = null
 
@@ -116,6 +116,7 @@ class DocumentWrapper : EntityBase(), EntityWithCatalog {
             joinColumns=[JoinColumn(name="wrapper_id")],
             inverseJoinColumns=[JoinColumn(name="document_id")]
     )
+    @JsonAlias("archive") // hint for model registry
     @JsonIgnore
     var archive: MutableSet<Document> = LinkedHashSet<Document>()
 
@@ -155,11 +156,24 @@ class DocumentWrapper : EntityBase(), EntityWithCatalog {
     /**
      * Replace draft, published and archive references by serialized entities, if requested
      */
-    override fun updateSerializedRelations(json: ObjectNode, mapper: ObjectMapper, resolveReferences: Boolean) {
+    override fun serializeRelations(json: ObjectNode, mapper: ObjectMapper, resolveReferences: Boolean) {
         if (resolveReferences) {
             json.replace("draft", mapper.readTree(mapper.writeValueAsString(draft)))
             json.replace("published", mapper.readTree(mapper.writeValueAsString(published)))
             json.replace("archive", mapper.readTree(mapper.writeValueAsString(archive)))
+        }
+    }
+
+    /**
+     * Resolve parent document wrapper from uuid
+     */
+    override fun mapQueryValue(field: String, value: String?, entityManager: EntityManager): Any? {
+        if (value == null) return null
+        return when (field) {
+            "_parent" -> {
+                getByUuid(entityManager, value)?.id
+            }
+            else -> value
         }
     }
 

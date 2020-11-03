@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.common.collect.ImmutableSet
 import de.ingrid.igeserver.persistence.postgresql.PostgreSQLEntityType
@@ -8,11 +9,17 @@ import org.hibernate.metamodel.spi.MetamodelImplementor
 import org.hibernate.persister.entity.AbstractEntityPersister
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import javax.annotation.PostConstruct
 import javax.persistence.EntityManager
 import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
 import kotlin.reflect.KClass
+import kotlin.reflect.KVisibility
+import kotlin.reflect.jvm.kotlinProperty
 
 /**
  * ModelRegistry provides mapping related information on entity types.
@@ -57,6 +64,10 @@ class ModelRegistry {
             val jsonName: String,
             val relatedEntityType: KClass<out EntityBase>?,
             val fkName: String?,
+            val nmRelatedProperty: String?,
+            val nmRelationTable: String?,
+            val nmJoinColumn: String?,
+            val nmInverseJoinColumn: String?
     ) {
         val isRelation: Boolean
             get() = relatedEntityType != null
@@ -111,7 +122,7 @@ class ModelRegistry {
                 entityPersister(type.java.name) as AbstractEntityPersister
 
             val fieldInfos = mutableSetOf<FieldInfo>()
-            type.java.declaredFields.forEach { field ->
+            getAllFields(type.java).forEach { field ->
                 run {
                     if (!ignoredFields.matches(field.name)) {
                         val columnName = try {
@@ -122,7 +133,12 @@ class ModelRegistry {
                         // we are only interested in persistent fields
                         if (columnName != null) {
                             val aJP = field.annotations.find { it.annotationClass == JsonProperty::class } as? JsonProperty
-                            val jsonName = aJP?.value ?: field.name
+                            val aJA = field.annotations.find { it.annotationClass == JsonAlias::class } as? JsonAlias
+                            val jsonName = when {
+                                aJP?.value != null -> aJP.value
+                                aJA?.value != null && aJA.value.isNotEmpty() -> aJA.value[0]
+                                else -> field.name
+                            }
 
                             val relatedEntityType = when {
                                 EntityBase::class.java.isAssignableFrom(field.type) -> field.type
@@ -135,13 +151,25 @@ class ModelRegistry {
                             val aJC = field.annotations.find { it.annotationClass == JoinColumn::class } as? JoinColumn
                             val fkName = aJC?.name
 
+                            val aMM = field.annotations.find { it.annotationClass == ManyToMany::class } as? ManyToMany
+                            val nmRelatedProperty = if (aMM?.mappedBy.isNullOrEmpty()) null else aMM?.mappedBy
+
+                            val aJT = field.annotations.find { it.annotationClass == JoinTable::class } as? JoinTable
+                            val nmRelationTable = aJT?.name
+                            val nmJoinColumn = if (aJT?.joinColumns?.size == 1) aJT.joinColumns[0].name else null
+                            val nmInverseJoinColumn = if (aJT?.inverseJoinColumns?.size == 1) aJT.inverseJoinColumns[0].name else null
+
                             fieldInfos.add(FieldInfo(
                                     name = field.name,
                                     type = field.type,
                                     columnName = columnName,
                                     jsonName = jsonName,
                                     relatedEntityType = relatedEntityType,
-                                    fkName = fkName
+                                    fkName = fkName,
+                                    nmRelatedProperty = nmRelatedProperty,
+                                    nmRelationTable = nmRelationTable,
+                                    nmJoinColumn = nmJoinColumn,
+                                    nmInverseJoinColumn = nmInverseJoinColumn
                             ))
                         }
                     }
@@ -162,5 +190,19 @@ class ModelRegistry {
 
     private fun resolveJavaType(type: Class<*>): KClass<out EntityBase> {
         return entityTypes.first { it.jpaType.java == type }.jpaType
+    }
+
+    private fun getAllFields(clazz: Class<*>?): List<Field> {
+        if (clazz == null) {
+            return listOf()
+        }
+        val result: MutableList<Field> = getAllFields(clazz.superclass).toMutableList()
+        val filteredFields: List<Field> = clazz.declaredFields
+                .filter {
+                    f -> Modifier.isPublic(f.modifiers) || Modifier.isProtected(f.modifiers) ||
+                        f.kotlinProperty?.visibility == KVisibility.PUBLIC || f.kotlinProperty?.visibility == KVisibility.PROTECTED
+                }
+        result.addAll(filteredFields)
+        return result
     }
 }

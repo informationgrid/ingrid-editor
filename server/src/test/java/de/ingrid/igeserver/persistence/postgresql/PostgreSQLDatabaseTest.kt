@@ -288,7 +288,7 @@ class PostgreSQLDatabaseTest {
         val userId = "user1"
         val catalogName = "test_catalog"
 
-        val savedDoc = dbService.acquireDatabase("").use {
+        val savedDoc = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val query = listOf(QueryField("userId", userId))
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
@@ -354,7 +354,7 @@ class PostgreSQLDatabaseTest {
 
         val oldCount = dbService.findAll(DocumentType::class).size
 
-        dbService.acquireDatabase("test_catalog").use {
+        dbService.acquireDatabase("is_not_used_by_postgresql").use {
             dbService.remove(DocumentType::class, docId)
         }
 
@@ -366,7 +366,7 @@ class PostgreSQLDatabaseTest {
     fun `deleting a not existing document`() {
         val docId = "84e91e8f-61e1-4d2c-6869-0252adc03fb3"
 
-        val exception = dbService.acquireDatabase("test_catalog").use {
+        val exception = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             shouldThrow<PersistenceException> {
                 dbService.remove(DocumentType::class, docId)
             }
@@ -392,7 +392,7 @@ class PostgreSQLDatabaseTest {
 
     @Test
     fun `finding all documents`() {
-        val result = dbService.acquireDatabase("audit_log").use {
+        val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             dbService.findAll(AuditLogRecordType::class)
         }
 
@@ -412,7 +412,7 @@ class PostgreSQLDatabaseTest {
                 QueryField("message.data.description", "Test description")
         ).toList()
 
-        val result = dbService.acquireDatabase("audit_log").use {
+        val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
                     queryOperator = QueryOperator.AND
             )
@@ -435,7 +435,7 @@ class PostgreSQLDatabaseTest {
                 QueryField("data.data.description", "Test description")
         ).toList()
 
-        val result = dbService.acquireDatabase("audit_log").use {
+        val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
                     queryOperator = QueryOperator.AND
             )
@@ -459,7 +459,7 @@ class PostgreSQLDatabaseTest {
                 QueryField("message.data.description", "Test description")
         ).toList()
 
-        val result = dbService.acquireDatabase("audit_log").use {
+        val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
                     queryOperator = QueryOperator.AND
             )
@@ -475,14 +475,14 @@ class PostgreSQLDatabaseTest {
         val docId = "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
 
         // query by attribute name (uuid)
-        val wrapper1 = dbService.acquireDatabase("test_catalog").use {
+        val wrapper1 = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val result = dbService.findAll(DocumentWrapperType::class, listOf(QueryField("uuid", docId)), FindOptions())
             Assertions.assertThat(result.totalHits).isEqualTo(1)
             result.hits[0]
         }
 
         // query by json property name (_id)
-        val wrapper2 = dbService.acquireDatabase("test_catalog").use {
+        val wrapper2 = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val result = dbService.findAll(DocumentWrapperType::class, listOf(QueryField("_id", docId)), FindOptions())
             Assertions.assertThat(result.totalHits).isEqualTo(1)
             result.hits[0]
@@ -494,7 +494,7 @@ class PostgreSQLDatabaseTest {
     }
 
     @Test
-    fun `finding documents by query with joins`() {
+    fun `finding documents by query, query with joins`() {
         val query = "Test Doc"
         val cat = "address"
 
@@ -546,12 +546,69 @@ class PostgreSQLDatabaseTest {
     }
 
     @Test
+    fun `finding documents by query, query by unwrapped superclass attribute`() {
+        // data attribute of UserInfo is mapped by base class and unwrapped
+        val queryMap = listOfNotNull(
+                QueryField("recentLogins", "", true) // recentLogins != ''
+        ).toList()
+
+        val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    queryOperator = QueryOperator.AND
+            )
+            dbService.findAll(UserInfoType::class, queryMap, findOptions)
+        }
+
+        Assertions.assertThat(result.totalHits).isEqualTo(1)
+        Assertions.assertThat(result.hits[0].get("recentLogins")?.isArray)
+    }
+
+    @Test
+    fun `finding documents by query, query by wrapped superclass attribute`() {
+        // data attribute of Behaviour is mapped by base class and wrapped
+        val queryMap = listOfNotNull(
+                QueryField("data.duration", "1200")
+        ).toList()
+
+        val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
+            val findOptions = FindOptions(
+                    queryType = QueryType.EXACT,
+                    queryOperator = QueryOperator.AND
+            )
+            dbService.findAll(BehaviourType::class, queryMap, findOptions)
+        }
+
+        Assertions.assertThat(result.totalHits).isEqualTo(1)
+        Assertions.assertThat(result.hits[0].get("data")?.get("duration")?.intValue()).isEqualTo(1200)
+    }
+
+    @Test
+    fun `finding documents by query, query by mapped (many-to-many) relation`() {
+        val queryMap = listOfNotNull(
+                QueryField("catalogIds", "test_catalog")
+        ).toList()
+
+        val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
+            val findOptions = FindOptions(
+                    queryType = QueryType.CONTAINS,
+                    resolveReferences = false)
+            dbService.findAll(UserInfoType::class, queryMap, findOptions)
+        }
+
+        Assertions.assertThat(result.totalHits).isEqualTo(1)
+        Assertions.assertThat(result.hits[0].get("catalogIds")?.isArray).isTrue
+        Assertions.assertThat(result.hits[0].get("catalogIds")?.size()).isEqualTo(1)
+        Assertions.assertThat(result.hits[0].get("catalogIds")?.get(0)?.textValue()).isEqualTo("test_catalog")
+    }
+
+    @Test
     fun `finding documents by query, resolve references`() {
         val queryMap = listOfNotNull(
                 QueryField("_id", "8f891e4e-161e-4d2c-6869-03f02ab352dc"),
         ).toList()
 
-        val result = dbService.acquireDatabase("").use {
+        val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
                     queryOperator = QueryOperator.AND,
                     resolveReferences = true

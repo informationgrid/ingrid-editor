@@ -1,8 +1,6 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
-import com.fasterxml.jackson.annotation.JsonGetter
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.*
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityWithEmbeddedMap
 import java.util.*
@@ -22,6 +20,7 @@ class UserInfo : EntityWithEmbeddedMap() {
      * to map them manually to catalog instances for persistence
      */
     @ManyToMany(mappedBy="users", fetch=FetchType.EAGER)
+    @JsonAlias("catalogIds") // hint for model registry
     @JsonIgnore
     var catalogs: MutableSet<Catalog> = LinkedHashSet<Catalog>()
 
@@ -44,6 +43,7 @@ class UserInfo : EntityWithEmbeddedMap() {
      */
     @ManyToOne
     @JoinColumn(name="cur_catalog_id")
+    @JsonAlias("curCatalog") // hint for model registry
     @JsonIgnore
     var curCatalog: Catalog? = null
 
@@ -75,6 +75,27 @@ class UserInfo : EntityWithEmbeddedMap() {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Resolve catalog database ids from catalog identifiers
+     */
+    override fun mapQueryValue(field: String, value: String?, entityManager: EntityManager): Any? {
+        if (value == null) return null
+        return when (field) {
+            "curCatalog" -> {
+                Catalog.getByIdentifier(entityManager, value.trim())?.id
+            }
+            "catalogIds" -> {
+                val ids = value.split(',').mapNotNull { identifier ->
+                    // we expect catalog identifiers in queries
+                    val catalog = Catalog.getByIdentifier(entityManager, identifier.trim())
+                    catalog?.id
+                }
+                ids
+            }
+            else -> value
         }
     }
 }

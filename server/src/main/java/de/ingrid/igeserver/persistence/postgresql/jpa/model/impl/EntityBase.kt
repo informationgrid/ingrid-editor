@@ -33,10 +33,10 @@ open class EntityBase : EntityWithRecordId {
     open fun beforePersist(entityManager: EntityManager) {}
 
     /**
-     * Implementing this method allows sub classes to update the related entities in the serialized instance
+     * Implementing this method allows sub classes to map the related entities in the serialized instance
      * (json parameter) according to the value of the resolveReferences parameter
      *
-     * If resolveReferences is true, related entities must contained in the serialized instance, if false they
+     * If resolveReferences is true, related entities must be contained in the serialized instance, if false they
      * must be replaced by an identifier
      *
      * NOTE Sub classes are free to choose
@@ -46,5 +46,13 @@ open class EntityBase : EntityWithRecordId {
      * Nevertheless they must be able to resolve a related entity by this identifier if clients sent identifiers
      * only (see beforePersist)
      */
-    open fun updateSerializedRelations(json: ObjectNode, mapper: ObjectMapper, resolveReferences: Boolean) {}
+    open fun serializeRelations(json: ObjectNode, mapper: ObjectMapper, resolveReferences: Boolean) {}
+
+    /**
+     * Implementing this method allows sub classes to map query values before they are used in the database query, e.g.
+     * resolve resolve entity identifiers returned by serializeRelations back to database row ids
+     */
+    open fun mapQueryValue(field: String, value: String?, entityManager: EntityManager): Any? {
+        return value
+    }
 }

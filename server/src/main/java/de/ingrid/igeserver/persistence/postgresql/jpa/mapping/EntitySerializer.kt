@@ -39,7 +39,7 @@ class EntitySerializer(
         }
 
         // resolve related objects if requested
-        value.updateSerializedRelations(node, dbServiceMapper, resolveReferences)
+        value.serializeRelations(node, dbServiceMapper, resolveReferences)
 
         gen.writeTree(node)
     }
