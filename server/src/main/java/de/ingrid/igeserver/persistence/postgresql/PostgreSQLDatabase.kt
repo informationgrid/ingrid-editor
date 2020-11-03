@@ -258,7 +258,7 @@ class PostgreSQLDatabase : DBApi {
 
         // synchronize with database (e.g. update version attribute if existing)
         entityManager.flush()
-        return mapEntityToJson(persistedEntity, false)
+        return mapEntityToJson(persistedEntity, true)
     }
 
     override fun <T : EntityType> remove(type: KClass<T>, docId: String): Boolean {

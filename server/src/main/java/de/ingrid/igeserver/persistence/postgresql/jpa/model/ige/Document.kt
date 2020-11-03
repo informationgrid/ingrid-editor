@@ -1,17 +1,20 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedData
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithVersion
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.AbstractEntityWithEmbeddedData
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
 import org.hibernate.annotations.Type
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.*
 import javax.persistence.*
 
@@ -58,24 +61,26 @@ class Document : AbstractEntityWithEmbeddedData<EmbeddedData>(), EntityWithCatal
     override var version: Int? = null
 
     @Column
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", shape=JsonFormat.Shape.STRING)
+    @JsonSerialize(using=DateSerializer::class)
+    @JsonDeserialize(using=DateDeserializer::class)
     @JsonProperty("_created")
-    var created: LocalDateTime? = null
+    var created: OffsetDateTime? = null
 
     @Column
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", shape=JsonFormat.Shape.STRING)
+    @JsonSerialize(using=DateSerializer::class)
+    @JsonDeserialize(using=DateDeserializer::class)
     @JsonProperty("_modified")
-    var modified: LocalDateTime? = null
+    var modified: OffsetDateTime? = null
 
     @PrePersist
     fun setPersistDate() {
-        created = dateService?.now()?.toLocalDateTime()
+        created = dateService?.now()
         modified = created
     }
 
     @PreUpdate
     fun setUpdateDate() {
-        modified = dateService?.now()?.toLocalDateTime()
+        modified = dateService?.now()
     }
 
     companion object {

@@ -135,6 +135,7 @@ class DocumentService : MapperService() {
         // run post-create pipe(s)
         val postCreatePayload = PostCreatePayload(docType, newDocument as ObjectNode, newWrapper as ObjectNode)
         postCreatePipe.runFilters(postCreatePayload, filterContext)
+        postPersistencePipe.runFilters(postCreatePayload as PostPersistencePayload, filterContext)
 
         // also run update pipes!
         val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
