@@ -21,7 +21,7 @@ class PMCloudType : BaseMCloudType(), PostgreSQLEntityType {
 }
 
 /**
- * EmbeddedData type used by Document instances with mcloud data
+ * EmbeddedData type used by Document instances with mCloudDoc data
  */
 @Component
 class MCloudData : HashMap<String, Any?>(), EmbeddedData {
