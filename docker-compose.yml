@@ -37,6 +37,26 @@ services:
     #  - ./conf/application-default.properties:/app/application-default.properties
     #command: ["java","-Dlog4j.debug=true","-Dlog4j.configurationFile=/app/log4j2.xml","-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n","-jar","ige-ng-server-1.0.0-SNAPSHOT.jar"]
 
+  db:
+    image: "postgres"
+    restart: unless-stopped
+    env_file:
+      - ./postgres/db.env
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8081:8080
+
+volumes:
+  pgdata:
+
 networks:
   ige-ng-network:
     driver: "bridge"
