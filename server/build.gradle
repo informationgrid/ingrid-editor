@@ -167,6 +167,7 @@ jib {
     if (project.ext.branch_name == "master") {
         tag = version
     }
+    tag = tag.replaceAll("/", "-")
     from {
         image = 'openjdk:11-jre-slim-buster'
     }
