@@ -140,6 +140,64 @@ export class DocumentPage extends BasePage {
     cy.request('POST', (Cypress.config("baseUrl")) + `/api/datasets?address=false&publish=${published}`, json);
   }
 
+  static CreateSpatialBboxWithAPI(title: string, published?: boolean){
+    const json = {
+      openDataCategories: [],
+      _type: "mCloudDoc",
+      title: "api-" + title,
+      mCloudCategories: [],
+      geoReferenceVisual: [{
+          value: {lat1: 53.01147838269375, lon1: 8.481445312500002, lat2: 53.595765008920814, lon2: 8.992309570312502},
+          title: "Bremen, 28195, Germany",
+          type: "free"}]
+    };
+
+    cy.request('POST', (Cypress.config("baseUrl")) + `/api/datasets?address=false&publish=${published}`, json);
+  }
+
+  static CreateSpatialWKTWithAPI(title: string, published?: boolean){
+    const json = {
+      openDataCategories: [],
+      _type: "mCloudDoc",
+      title: "api-" + title,
+      mCloudCategories: [],
+      geoReferenceVisual: [{
+        wkt: "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))",
+        title: "create spatial reference, wkt-1",
+        type: "wkt"}]
+    };
+
+    cy.request('POST', (Cypress.config("baseUrl")) + `/api/datasets?address=false&publish=${published}`, json);
+  }
+
+  static CreateSpatialBboxAndWktEntrysWithAPI(title: string, published?: boolean){
+    const json = {
+      openDataCategories: [],
+      _type: "mCloudDoc",
+      title: "api-" + title,
+      mCloudCategories: [],
+      geoReferenceVisual: [{
+          value: {lat1: 53.01147838269375, lon1: 8.481445312500002, lat2: 53.595765008920814, lon2: 8.992309570312502},
+          title: "Bremen, 28195, Germany",
+          type: "free"},
+        {
+          value: {lat1: 52.340373590787394, lon1: 13.08746337890625, lat2: 52.674716751777105, lon2: 13.760375976562502},
+          title: "Berlin, 10117, Germany",
+          type: "free"
+        }, {
+          wkt: "POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))",
+          title: "create spatial reference, wkt-1",
+          type: "wkt"
+        }, {
+          wkt: "POLYGON((1 5, 5 9, 1 7, 2 1, 3 5)(5 5, 5 7, 7 7, 7 5, 5 5))",
+          title: "create spatial reference, wkt-2",
+          type: "wkt"
+      }]
+    };
+
+    cy.request('POST', (Cypress.config("baseUrl")) + `/api/datasets?address=false&publish=${published}`, json);
+  }
+
   static fillCreateDialog(objectName?: string){
     objectName = objectName ? objectName : 'Test-Objekt ' + Utils.randomString();
     cy.get('[data-cy=create-title]').type(objectName);
@@ -237,15 +295,6 @@ export class DocumentPage extends BasePage {
 
   static refreshDashboard(){
     return cy.get('[data-cy=reload-button]').click()
-  }
-
-  /**
-   * TODO: we should not open a document that contains some string, the depending tests can break easily!
-   * use Tree.openNode() instead!
-   * @deprecated
-   */
-  static getDocument(docNameContains: string){
-    cy.get('#sidebar').contains(docNameContains).click();
   }
 
   static checkSpatialEntrytNotEmpty(){
