@@ -18,16 +18,16 @@ class JoinInfo(
             return if (relationField.nmRelationTable != null) {
                 // many-to-many relation end
                 val relationTableAliasName = relationField.nmRelationTable.toLowerCase()+otherAliasIndex.toString()
-                "JOIN ${relationField.nmRelationTable} $relationTableAliasName ON " +
+                "LEFT JOIN ${relationField.nmRelationTable} $relationTableAliasName ON " +
                         "$relationTableAliasName.${relationField.nmInverseJoinColumn} = " +
                         "${thisType.aliasName(otherAliasIndex)}.${thisType.pkName} " +
-                "JOIN ${otherType.tableName} ${otherType.aliasName(otherAliasIndex)} ON " +
+                "LEFT JOIN ${otherType.tableName} ${otherType.aliasName(otherAliasIndex)} ON " +
                         "$relationTableAliasName.${relationField.nmJoinColumn} = " +
                         "${otherType.aliasName(otherAliasIndex)}.${otherType.pkName}"
             }
             else {
                 // many-to-one relation end
-                "JOIN ${otherType.tableName} ${otherType.aliasName(otherAliasIndex)} ON " +
+                "LEFT JOIN ${otherType.tableName} ${otherType.aliasName(otherAliasIndex)} ON " +
                         "${thisType.aliasName(thisAliasIndex)}.${relationField.fkName} = " +
                         "${otherType.aliasName(otherAliasIndex)}.${otherType.pkName}"
             }

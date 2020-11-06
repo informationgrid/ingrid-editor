@@ -578,8 +578,8 @@ class PostgreSQLDatabaseTest {
         Assertions.assertThat(dbService.getLastQuery()).isEqualTo(
                 "SELECT *, GREATEST(document1.modified, document2.modified) as query_sort_field " +
                 "FROM document_wrapper document_wrapper1 " +
-                "JOIN document document1 ON document_wrapper1.draft = document1.id " +
-                "JOIN document document2 ON document_wrapper1.published = document2.id " +
+                "LEFT JOIN document document1 ON document_wrapper1.draft = document1.id " +
+                "LEFT JOIN document document2 ON document_wrapper1.published = document2.id " +
                 "WHERE  " +
                         "(document_wrapper1.category = :p1_0 AND " +
                         "document1.title ILIKE :p1_1 AND " +
