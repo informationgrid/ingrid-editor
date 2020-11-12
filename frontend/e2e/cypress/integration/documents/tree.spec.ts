@@ -93,10 +93,10 @@ describe('Tree', () => {
     });
 
     it('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
-      //cypress dont open a hovered node by auto-expanding
-      const docName = 'drag&drop to a deep node (auto-expand)'
-      const dropFolder ='Auto-expanding1'
-      const dropFolder2 ='Auto-expanding2'
+      // cypress don't open a hovered node by auto-expanding
+      const docName = 'A_drag&drop to a deep node (auto-expand)';
+      const dropFolder = 'Z_Auto-expanding1';
+      const dropFolder2 = 'Auto-expanding2';
 
       DocumentPage.createDocument(docName);
       DocumentPage.createFolder(dropFolder);
@@ -113,24 +113,27 @@ describe('Tree', () => {
       Tree.selectNodeAndCheckPath(docName, ['Daten', dropFolder, dropFolder2]);
     });
 
-    it('should auto-expand a deeply nested folder', () =>{
-      const docName ='Tester deep auto-expand'
-      const docName2 = 'Deep deep folder'
-      const deepFolder ='Deep auto-expanding1'
-      const deepFolder2 ='Deep auto-expanding2'
+    it('should auto-expand a deeply nested folder', () => {
+      const docName = 'A_Tester deep auto-expand';
+      const deepFolder = 'Z_Deep auto-expanding1';
+      const deepFolder2 = 'Deep auto-expanding2';
+      const deepFolder3 = 'Deep deep folder';
 
       DocumentPage.createDocument(docName);
       DocumentPage.createFolder(deepFolder);
       DocumentPage.createFolder(deepFolder2);
-      DocumentPage.createDocument(docName2);
+      DocumentPage.createFolder(deepFolder3);
 
       // to close for checking auto-expanding by hovered node
       Tree.selectNodeWithTitle(deepFolder);
 
-      CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, docName2], false);
+      CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, deepFolder3], false);
 
-      //check if nodes are expanded
-      Tree.selectNodeAndCheckPath(docName2, ['Daten', deepFolder, deepFolder2]);
+      // check if nodes are expanded
+      Tree.selectNodeAndCheckPath(deepFolder3, ['Daten', deepFolder, deepFolder2]);
+
+      // check if document has NOT been moved
+      Tree.selectNodeAndCheckPath(docName, ['Daten']);
     });
   });
 
