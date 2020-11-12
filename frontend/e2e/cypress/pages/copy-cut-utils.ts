@@ -41,6 +41,10 @@ export class CopyCutUtils {
       cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
     }
     cy.get('[data-cy=create-applyLocation]').click();
+
+    // wait for tree being refreshed with new node information
+    // otherwise we might get an "detached from the DOM"-error
+    cy.wait(500);
   }
 
   static dragdrop(dragnode: string, targetNodePath: string[], confirmChange: boolean) {
