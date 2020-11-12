@@ -1,5 +1,4 @@
-import {SEPARATOR} from "./document.page";
-import {Tree} from "./tree.partial";
+import {Tree} from './tree.partial';
 
 enum CopyOption {
   COPY = '[data-cy="copyMenu_COPY"]', COPY_WITH_TREE = '[data-cy="copyMenu_COPYTREE"]', MOVE = '[data-cy="copyMenu_CUT"]'
@@ -49,15 +48,15 @@ export class CopyCutUtils {
 
   static dragdrop(dragnode: string, targetNodePath: string[], confirmChange: boolean) {
     targetNodePath.forEach((node, i) => {
-        cy.get('#sidebar div:contains(' + dragnode + ')').drag('#sidebar div:contains(' + node + ')')
-        if (i < targetNodePath.length-1 ){
+        cy.get('#sidebar div:contains(' + dragnode + ')').drag('#sidebar div:contains(' + node + ')');
+        if (i < targetNodePath.length - 1) {
           // check next item is expanded
-          cy.get('#sidebar div:contains(' + targetNodePath[i+1] + ')')
+          cy.get('#sidebar div:contains(' + targetNodePath[i + 1] + ')');
         }
       }
     );
 
-    cy.then(() => cy.get('#sidebar').contains(targetNodePath[targetNodePath.length - 1]).trigger('drop'))
+    cy.then(() => cy.get('#sidebar').contains(targetNodePath[targetNodePath.length - 1]).trigger('drop'));
 
     if (confirmChange) {
       cy.get('[data-cy=confirm-dialog-confirm]').click();
