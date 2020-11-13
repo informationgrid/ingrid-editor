@@ -4,7 +4,7 @@ const dataTransfer = new DataTransfer()
 
 const DragSimulator = {
   MAX_TRIES: 5,
-  DELAY_INTERVAL_MS: 10,
+  DELAY_INTERVAL_MS: 300,
   counter: 0,
   targetElement: null,
   rectsEqual(r1, r2) {

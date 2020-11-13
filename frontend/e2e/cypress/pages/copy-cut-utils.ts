@@ -60,7 +60,9 @@ export class CopyCutUtils {
       }
     });
 
-    cy.then(() => cy.get('#sidebar').contains(targetNodePath[targetNodePath.length - 1]).trigger('drop'));
+    cy.then(() => cy.get('#sidebar')
+      .contains(targetNodePath[targetNodePath.length - 1])
+      .trigger('drop'));
 
     if (confirmChange) {
       cy.get('[data-cy=confirm-dialog-confirm]').click();

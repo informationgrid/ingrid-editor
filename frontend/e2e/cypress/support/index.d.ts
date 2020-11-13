@@ -1,4 +1,7 @@
 declare namespace Cypress {
+
+  type Position = 'topLeft' | 'top' | 'topRight' | 'left' | 'center' | 'right' | 'bottomLeft' | 'bottom' | 'bottomRight';
+
   interface Chainable {
 
     shouldHaveTrimmedText(value: string): Chainable<Element>;
@@ -11,6 +14,6 @@ declare namespace Cypress {
 
     containsFormErrors(count: number): void;
 
-    drag(value: string, options?: any): Chainable<Element>;
+    drag(value: string, options?: { position?: Position, force?: boolean }): Chainable<Element>;
   }
 }
