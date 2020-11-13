@@ -1,16 +1,36 @@
-import {DocumentPage, SEPARATOR} from "./document.page";
+import {DocumentPage, SEPARATOR} from './document.page';
 
 export class Tree {
 
-  static clickOnNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true){
+  static clickOnNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? new RegExp('^' + nodeTitle + '$') : nodeTitle;
     cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
   }
 
   static containsNodeWithTitle(text: string, level?: number) {
+    return this.checkNodeWithTitle(text, level);
+  }
 
-    const label = cy.contains('mat-tree mat-tree-node .label', text);
+  static containsNotNodeWithTitle(text: string, level?: number) {
+    return this.checkNodeWithTitle(text, level, true);
+  }
+
+  private static checkNodeWithTitle(text: string, level?: number, invert?: boolean) {
+
+    const exactText = new RegExp('^' + text + '$');
+    if (invert) {
+      if (level) {
+        cy.contains('mat-tree mat-tree-node .label span', exactText)
+          .parent().parent()
+          .should('not.have.attr', 'aria-level', level.toString());
+      } else {
+        cy.contains('mat-tree mat-tree-node .label span', exactText).should('not.exist');
+      }
+      return true;
+    }
+
+    const label = cy.contains('mat-tree mat-tree-node .label', exactText);
 
     if (level !== undefined) {
       return label
@@ -36,7 +56,7 @@ export class Tree {
     });
   }
 
-  static openNode(targetNodePath: string[], isInsideDialog: boolean = false){
+  static openNode(targetNodePath: string[], isInsideDialog: boolean = false) {
     targetNodePath.forEach((node, index) => Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1));
   }
 
@@ -53,21 +73,22 @@ export class Tree {
     }
   }
 
-  static selectNodeAndCheckPath(nodeTitle: string, path: string[]){
-    cy.get('#sidebar').contains(nodeTitle).click();
+  static selectNodeAndCheckPath(nodeTitle: string, path: string[]) {
+    this.clickOnNodeWithTitle(nodeTitle);
+    // cy.get('#sidebar').contains(nodeTitle).click();
     this.checkPath(path);
     cy.get('ige-header-title-row').contains(nodeTitle);
   }
 
-  static checkPath(path: string[], isInsideDialog = false){
-    if (isInsideDialog){
+  static checkPath(path: string[], isInsideDialog = false) {
+    if (isInsideDialog) {
       cy.get('.mat-dialog-container ige-breadcrumb').should('have.text', path.join(SEPARATOR));
     } else {
       cy.get('ige-breadcrumb').should('have.text', path.join(SEPARATOR));
     }
   }
 
-  static checkTitleOfSelectedNode(nodeTitle: string){
+  static checkTitleOfSelectedNode(nodeTitle: string) {
     cy.get('ige-header-title-row').contains(nodeTitle);
   }
 

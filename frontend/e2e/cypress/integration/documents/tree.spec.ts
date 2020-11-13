@@ -193,15 +193,33 @@ describe('Tree', () => {
       cy.get('.mat-dialog-content').should('not.contain.value', docName);
     });
 
-    it('should copy a root document into a folder', () => {
+    it.only('should copy a root document into a folder', () => {
       const docName = 'copy me into a folder';
+
+      Tree.selectNodeWithTitle('Testdokumente');
+      Tree.containsNotNodeWithTitle(docName);
+
+      // go back to root
+      cy.get('ige-form-info ige-breadcrumb .selectable').click();
 
       DocumentPage.createDocument(docName);
       Tree.containsNodeWithTitle(docName);
+      let newDocUrl;
+      return cy.url().then( url => {
+        // remember URL from created document
+        newDocUrl = url;
 
-      CopyCutUtils.copyObject(['Testdokumente']);
+        CopyCutUtils.copyObject(['Testdokumente']);
 
-      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Testdokumente']);
+        // selected document should not have changed!
+        Tree.checkPath( ['Daten']);
+        cy.url().should('equal', newDocUrl);
+
+        // check if document was copied
+        Tree.selectNodeWithTitle(docName, false, true, 2);
+        Tree.checkPath( ['Daten', 'Testdokumente']);
+      });
+
     });
 
     it('should copy a root document into a deeply nested folder', () => {
