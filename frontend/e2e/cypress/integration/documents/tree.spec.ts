@@ -255,7 +255,11 @@ describe('Tree', () => {
       CopyCutUtils.copyObject(['Testdokumente']);
       // DocumentPage.deleteLoadedNode();
 
-      Tree.selectNodeAndCheckPath(testFolder, ['Daten', 'Testdokumente']);
+      Tree.selectNodeAndCheckPath(testFolder, ['Daten']);
+
+      // TODO: check if document was copied
+
+      // TODO: check if sub-tree was not copied
     });
 
     it('should copy a root folder (with sub-tree) into a folder', () => {
@@ -274,11 +278,15 @@ describe('Tree', () => {
       DocumentPage.getSearchResult().click();
 
       Tree.checkPath(['Daten']);
+
+      // TODO: check if document was copied
+
+      // TODO: check if sub-tree was also copied
     });
 
     it('should copy a root tree to a sub folder', () => {
       const testFolder = 'copy me to a subfolder';
-      const docName = 'iam under a folder';
+      const docName = 'i am under a folder';
 
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
@@ -286,9 +294,11 @@ describe('Tree', () => {
       Tree.selectNodeWithTitle(testFolder);
       CopyCutUtils.copyObjectWithTree(['Testdokumente', 'Ordner 2. Ebene']);
 
+      // TODO: how do you know which testFolder is opened? The original or the copied one?
       Tree.openNode([testFolder]);
       Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
 
+      // TODO: why are created documents/folder deleted?
       // Bug/Feature #2115: empty folders cannot be deleted
       Tree.selectNodeWithTitle(docName);
       DocumentPage.deleteLoadedNode();
