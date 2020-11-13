@@ -11,6 +11,6 @@ declare namespace Cypress {
 
     containsFormErrors(count: number): void;
 
-    drag(value: string): Chainable<Element>;
+    drag(value: string, options?: any): Chainable<Element>;
   }
 }

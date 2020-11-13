@@ -13,6 +13,8 @@ beforeEach(() => {
 
 describe('Tree', () => {
 
+  const dragAndDropFolder = 'Drag\'n\'Drop';
+
   xit('should navigate to a section when clicking on form header navigation', () => {
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument']);
 
@@ -94,10 +96,11 @@ describe('Tree', () => {
 
     it('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
       // cypress don't open a hovered node by auto-expanding
-      const docName = 'A_drag&drop to a deep node (auto-expand)';
-      const dropFolder = 'Z_Auto-expanding1';
-      const dropFolder2 = 'Auto-expanding2';
+      const docName = 'drag&drop to a deep node (auto-expand)';
+      const dropFolder = 'Auto-other-expanding1';
+      const dropFolder2 = 'Auto-other-expanding2';
 
+      Tree.selectNodeWithTitle(dragAndDropFolder);
       DocumentPage.createDocument(docName);
       DocumentPage.createFolder(dropFolder);
       DocumentPage.createFolder(dropFolder2);
@@ -105,20 +108,21 @@ describe('Tree', () => {
       // to close for checking auto-expanding by hovered node
       Tree.selectNodeWithTitle(dropFolder);
 
-      Tree.selectNodeAndCheckPath(docName, ['Daten']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', dragAndDropFolder]);
 
       CopyCutUtils.dragdrop(docName, [dropFolder, dropFolder2], true);
 
       // check if document is moved
-      Tree.selectNodeAndCheckPath(docName, ['Daten', dropFolder, dropFolder2]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', dragAndDropFolder, dropFolder, dropFolder2]);
     });
 
     it('should auto-expand a deeply nested folder', () => {
-      const docName = 'A_Tester deep auto-expand';
-      const deepFolder = 'Z_Deep auto-expanding1';
+      const docName = 'Tester deep auto-expand';
+      const deepFolder = 'Deep auto-expanding1';
       const deepFolder2 = 'Deep auto-expanding2';
       const deepFolder3 = 'Deep deep folder';
 
+      Tree.selectNodeWithTitle(dragAndDropFolder);
       DocumentPage.createDocument(docName);
       DocumentPage.createFolder(deepFolder);
       DocumentPage.createFolder(deepFolder2);
@@ -130,10 +134,10 @@ describe('Tree', () => {
       CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, deepFolder3], false);
 
       // check if nodes are expanded
-      Tree.selectNodeAndCheckPath(deepFolder3, ['Daten', deepFolder, deepFolder2]);
+      Tree.selectNodeAndCheckPath(deepFolder3, ['Daten', dragAndDropFolder, deepFolder, deepFolder2]);
 
       // check if document has NOT been moved
-      Tree.selectNodeAndCheckPath(docName, ['Daten']);
+      Tree.selectNodeAndCheckPath(docName, ['Daten', dragAndDropFolder]);
     });
   });
 

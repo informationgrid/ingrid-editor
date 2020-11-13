@@ -48,13 +48,17 @@ export class CopyCutUtils {
 
   static dragdrop(dragnode: string, targetNodePath: string[], confirmChange: boolean) {
     targetNodePath.forEach((node, i) => {
-        cy.get('#sidebar div:contains(' + dragnode + ')').drag('#sidebar div:contains(' + node + ')');
-        if (i < targetNodePath.length - 1) {
-          // check next item is expanded
-          cy.get('#sidebar div:contains(' + targetNodePath[i + 1] + ')');
-        }
+      // with option force: true we will not do any checks and no scrolling is performed, which is important
+      // for drag'n'drop tests
+      cy.get('#sidebar div:contains(' + dragnode + ')')
+        .click({force: true})
+        .drag('#sidebar div:contains(' + node + ')', {force: true});
+
+      if (i < targetNodePath.length - 1) {
+        // check next item is expanded
+        cy.get('#sidebar div:contains(' + targetNodePath[i + 1] + ')');
       }
-    );
+    });
 
     cy.then(() => cy.get('#sidebar').contains(targetNodePath[targetNodePath.length - 1]).trigger('drop'));
 
