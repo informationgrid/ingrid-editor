@@ -86,11 +86,11 @@ describe('Tree', () => {
 
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
 
+      // when dragging a node onto a folder, the folder expands automatically after a few milliseconds
       CopyCutUtils.dragdropWithoutAutoExpand(docName, 'Testdokumente', true);
 
-      // when dragging a node onto a folder, the folder expands automatically after a few milliseconds
       Tree.selectNodeAndCheckPath(docName, ['Daten', 'Testdokumente']);
-      // chek if other expected children are available under destination folder
+      // check if other expected children are available under destination folder
       Tree.selectNodeAndCheckPath('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
     });
 
@@ -193,7 +193,7 @@ describe('Tree', () => {
       cy.get('.mat-dialog-content').should('not.contain.value', docName);
     });
 
-    it.only('should copy a root document into a folder', () => {
+    it('should copy a root document into a folder', () => {
       const docName = 'copy me into a folder';
 
       Tree.selectNodeWithTitle('Testdokumente');
@@ -249,39 +249,42 @@ describe('Tree', () => {
 
     it('should copy a root folder (without sub-tree) into a folder', () => {
       const testFolder = 'copy me into a folder2';
+      const docName = 'childDoc';
 
       DocumentPage.createFolder(testFolder);
+      DocumentPage.createDocument(docName);
+      Tree.selectNodeWithTitle(testFolder);
 
       CopyCutUtils.copyObject(['Testdokumente']);
-      // DocumentPage.deleteLoadedNode();
 
       Tree.selectNodeAndCheckPath(testFolder, ['Daten']);
 
-      // TODO: check if document was copied
+      // check if document was copied
+      Tree.openNode( ['Testdokumente', testFolder]);
 
-      // TODO: check if sub-tree was not copied
+      // check if sub-tree was not copied
+      Tree.checkSelectedNodeHasNoChildren();
     });
 
     it('should copy a root folder (with sub-tree) into a folder', () => {
       const docName = 'copy me from a folder ';
-      const testFolder = 'iam root';
+      const testFolder = 'i am root';
 
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
+      Tree.selectNodeWithTitle(testFolder);
 
-      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
-      CopyCutUtils.copyObject();
-      Tree.checkPath(['Daten', testFolder]);
-      DocumentPage.deleteLoadedNode();
+      CopyCutUtils.copyObjectWithTree(['Testdokumente']);
 
-      DocumentPage.search(docName);
-      DocumentPage.getSearchResult().click();
-
+      // after copy the same original node should be active
       Tree.checkPath(['Daten']);
 
-      // TODO: check if document was copied
+      // check if document was copied
+      Tree.openNode( ['Testdokumente', testFolder]);
 
-      // TODO: check if sub-tree was also copied
+      // check if sub-tree was also copied
+      Tree.checkSelectedNodeHasChildren();
+      Tree.openNode( ['Testdokumente', testFolder, docName]);
     });
 
     it('should copy a root tree to a sub folder', () => {

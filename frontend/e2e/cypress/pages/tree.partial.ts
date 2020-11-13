@@ -58,6 +58,8 @@ export class Tree {
 
   static openNode(targetNodePath: string[], isInsideDialog: boolean = false) {
     targetNodePath.forEach((node, index) => Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1));
+    // check if opened node has correct breadcrumb so we loaded correct document
+    this.checkPath(['Daten', ...targetNodePath.filter((item, index) => index !== targetNodePath.length - 1)]);
   }
 
   static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true, hierarchyLevel?: number) {
@@ -66,10 +68,16 @@ export class Tree {
     if (hierarchyLevel === undefined) {
       cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
     } else {
-      cy.contains(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"] .label span`, query).click();
+      // only click on node if it isn't expanded
+      cy.get(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"]`).then(node => {
+        const foundNode = cy.contains(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"] .label span`, query);
+        if (!node.hasClass('expanded')) {
+          foundNode.click();
+        }
+      });
     }
     if (!isInsideDialog) {
-      cy.get(DocumentPage.title).should('have.text', nodeTitle);
+      // cy.get(DocumentPage.title).should('have.text', nodeTitle);
     }
   }
 
@@ -92,4 +100,11 @@ export class Tree {
     cy.get('ige-header-title-row').contains(nodeTitle);
   }
 
+  static checkSelectedNodeHasChildren() {
+    cy.get('mat-tree-node.active button.toggle').should('exist');
+  }
+
+  static checkSelectedNodeHasNoChildren() {
+    cy.get('mat-tree-node.active button.toggle .mat-icon.expander').should('not.be.visible');
+  }
 }
