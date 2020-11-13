@@ -288,7 +288,7 @@ export class TreeComponent implements OnInit, OnDestroy {
       }
 
       // TODO: use function jumpToNode
-      this.updateChildrenFromServer(updateInfo.parent, <string>updateInfo.data[0].id);
+      this.updateChildrenFromServer(updateInfo.parent, <string>updateInfo.data[0].id, updateInfo.doNotSelect);
 
     } else {
       const newRootTreeNode = this.database.mapDocumentsToTreeNodes(updateInfo.data, 0);
@@ -306,7 +306,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   }
 
-  private updateChildrenFromServer(parentNodeId: string, id: string) {
+  private updateChildrenFromServer(parentNodeId: string, id: string, doNotSelect: boolean) {
     if (parentNodeId === null) {
       this.reloadTree(true).subscribe();
       return;
@@ -326,8 +326,10 @@ export class TreeComponent implements OnInit, OnDestroy {
           this.treeControl.collapse(parentNode);
         }
         this.treeControl.expand(parentNode);
-        this.updateNodePath(id);
-        this.scrollToActiveElement();
+        if (!doNotSelect) {
+          this.updateNodePath(id);
+          this.scrollToActiveElement();
+        }
       });
   }
 

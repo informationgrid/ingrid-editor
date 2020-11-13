@@ -161,10 +161,9 @@ describe('General create documents/folders', () => {
 
   describe('Dirty checks', () => {
     it('should show a dialog when a document was modified and another document was clicked', () => {
-      const doc1Name = 'Leeres mCLOUD Test Objekt';
-      const doc2Name = 'mCLOUD Dokument Test';
+      const docName = 'mCLOUD Dokument Test';
 
-      DocumentPage.createDocument(doc2Name);
+      DocumentPage.createDocument(docName);
 
       enterMcloudDocTestData.setDescription('modified test description');
 
@@ -174,15 +173,15 @@ describe('General create documents/folders', () => {
       Tree.clickOnNodeWithTitle('Testdokumente');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
-      cy.get(DocumentPage.title).should('have.text', doc2Name);
+      Tree.checkTitleOfSelectedNode(docName);
 
       // accept dialog
       // check selected tree node === newly selected node
       cy.wait(500);
-      Tree.clickOnNodeWithTitle(doc1Name);
+      Tree.clickOnNodeWithTitle('Testdokumente');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-save]').click();
-      cy.get(DocumentPage.title).should('have.text', doc1Name);
+      Tree.checkTitleOfSelectedNode('Testdokumente');
 
     });
 

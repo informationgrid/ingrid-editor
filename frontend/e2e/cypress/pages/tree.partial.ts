@@ -67,4 +67,8 @@ export class Tree {
     }
   }
 
+  static checkTitleOfSelectedNode(nodeTitle: string){
+    cy.get('ige-header-title-row').contains(nodeTitle);
+  }
+
 }
