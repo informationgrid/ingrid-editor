@@ -57,12 +57,12 @@ export class Tree {
   }
 
   static openNode(targetNodePath: string[], isInsideDialog: boolean = false) {
-    targetNodePath.forEach((node, index) => Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1));
+    targetNodePath.forEach((node, index) => Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === (targetNodePath.length - 1)));
     // check if opened node has correct breadcrumb so we loaded correct document
     this.checkPath(['Daten', ...targetNodePath.filter((item, index) => index !== targetNodePath.length - 1)]);
   }
 
-  static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true, hierarchyLevel?: number) {
+  static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true, hierarchyLevel?: number, forceClick?: boolean) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? new RegExp('^' + nodeTitle + '$') : nodeTitle;
     if (hierarchyLevel === undefined) {
@@ -71,7 +71,7 @@ export class Tree {
       // only click on node if it isn't expanded
       cy.get(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"]`).then(node => {
         const foundNode = cy.contains(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"] .label span`, query);
-        if (!node.hasClass('expanded')) {
+        if (forceClick || !node.hasClass('expanded')) {
           foundNode.click();
         }
       });
