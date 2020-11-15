@@ -9,7 +9,7 @@ import {ConfigService, UserInfo} from '../../services/config/config.service';
 import {CatalogQuery} from '../../store/catalog/catalog.query';
 import {BehaviorSubject, of} from 'rxjs';
 import {RouterTestingModule} from '@angular/router/testing';
-import {async} from '@angular/core/testing';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('CatalogManagerComponent', () => {
   let spectator: Spectator<CatalogManagerComponent>;

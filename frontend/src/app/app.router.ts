@@ -90,6 +90,7 @@ export const routes: Routes = [
 
 export const routing = RouterModule.forRoot(
   routes, {
-    preloadingStrategy: PreloadAllModules
-  }
+    preloadingStrategy: PreloadAllModules,
+    relativeLinkResolution: 'legacy'
+}
 );

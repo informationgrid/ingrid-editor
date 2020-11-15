@@ -1,4 +1,4 @@
-import {async} from '@angular/core/testing';
+import { waitForAsync } from '@angular/core/testing';
 
 import {CatalogDetailComponent} from './catalog-detail.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
@@ -22,7 +22,7 @@ describe('CatalogDetailComponent', () => {
     detectChanges: false
   });
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     spectator = createHost();
   }));
 

@@ -15,7 +15,7 @@ import {FormlyFieldConfig} from '@ngx-formly/core';
 
 export abstract class Plugin {
   id: string;
-  name: string;
+  abstract name: string;
   description: string;
   isActive: boolean;
   defaultActive: boolean;

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CodelistsComponent } from './codelists.component';
 import {createComponentFactory, mockProvider, Spectator} from '@ngneat/spectator';

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HeaderNavigationComponent } from './header-navigation.component';
 
@@ -6,7 +6,7 @@ describe('HeaderNavigationComponent', () => {
   let component: HeaderNavigationComponent;
   let fixture: ComponentFixture<HeaderNavigationComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HeaderNavigationComponent ]
     })

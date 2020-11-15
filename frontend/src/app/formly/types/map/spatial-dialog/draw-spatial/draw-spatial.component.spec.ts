@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DrawSpatialComponent } from './draw-spatial.component';
 
@@ -6,7 +6,7 @@ describe('DrawSpatialComponent', () => {
   let component: DrawSpatialComponent;
   let fixture: ComponentFixture<DrawSpatialComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DrawSpatialComponent ]
     })

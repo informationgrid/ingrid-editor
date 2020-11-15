@@ -1,4 +1,4 @@
-import {async} from '@angular/core/testing';
+import { waitForAsync } from '@angular/core/testing';
 
 import {MainHeaderComponent} from './main-header.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
@@ -18,7 +18,7 @@ describe('MainHeaderComponent', () => {
     detectChanges: false
   });
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     spectator = createHost();
   }))
 

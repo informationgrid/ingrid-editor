@@ -1,4 +1,4 @@
-import {async} from '@angular/core/testing';
+import { waitForAsync } from '@angular/core/testing';
 
 import {ListFormWizardsComponent} from './list-form-wizards.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';

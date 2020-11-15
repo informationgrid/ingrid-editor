@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SpatialListComponent } from './spatial-list.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DateboxComponent } from './datebox.component';
 
@@ -6,7 +6,7 @@ describe('DateboxComponent', () => {
   let component: DateboxComponent;
   let fixture: ComponentFixture<DateboxComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DateboxComponent ]
     })

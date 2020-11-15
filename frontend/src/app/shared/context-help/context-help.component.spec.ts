@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {ContextHelpComponent} from './context-help.component';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
@@ -7,7 +7,7 @@ describe('ContextHelpComponent', () => {
   let component: ContextHelpComponent;
   let fixture: ComponentFixture<ContextHelpComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ContextHelpComponent],
       providers: [
