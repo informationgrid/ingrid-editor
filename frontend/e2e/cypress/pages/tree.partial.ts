@@ -57,7 +57,9 @@ export class Tree {
   }
 
   static openNode(targetNodePath: string[], isInsideDialog: boolean = false) {
-    targetNodePath.forEach((node, index) => Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === (targetNodePath.length - 1)));
+    targetNodePath.forEach((node, index) => {
+      Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === (targetNodePath.length - 1));
+    });
     // check if opened node has correct breadcrumb so we loaded correct document
     this.checkPath(['Daten', ...targetNodePath.filter((item, index) => index !== targetNodePath.length - 1)]);
   }
@@ -69,10 +71,11 @@ export class Tree {
       cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
     } else {
       // only click on node if it isn't expanded
-      cy.get(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"]`).then(node => {
-        const foundNode = cy.contains(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"] .label span`, query);
-        if (forceClick || !node.hasClass('expanded')) {
-          foundNode.click();
+      cy.get(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"]`)
+        .contains('.label span', query).then(node => {
+        const treeNodeParent = node.parent().parent().parent();
+        if (forceClick || !treeNodeParent.hasClass('expanded')) {
+          node.trigger('click');
         }
       });
     }

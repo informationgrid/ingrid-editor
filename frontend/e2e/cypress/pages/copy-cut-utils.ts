@@ -62,6 +62,7 @@ export class CopyCutUtils {
 
     cy.then(() => cy.get('#sidebar')
       .contains(targetNodePath[targetNodePath.length - 1])
+      // .trigger('dragend') // leads to an error of missing ID
       .trigger('drop'));
 
     if (confirmChange) {

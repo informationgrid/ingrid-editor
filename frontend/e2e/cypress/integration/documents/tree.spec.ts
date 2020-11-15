@@ -96,7 +96,7 @@ describe('Tree', () => {
 
     it('should move a document into a deeply nested folder by auto-expanding of hovered node', () => {
       // cypress don't open a hovered node by auto-expanding
-      const docName = 'drag&drop to a deep node (auto-expand)';
+      const docName = 'drag node';
       const dropFolder = 'Auto-other-expanding1';
       const dropFolder2 = 'Auto-other-expanding2';
 
@@ -108,12 +108,12 @@ describe('Tree', () => {
       // to close for checking auto-expanding by hovered node
       Tree.selectNodeWithTitle(dropFolder);
 
-      Tree.selectNodeAndCheckPath(docName, ['Daten', dragAndDropFolder]);
+      Tree.openNode([dragAndDropFolder, docName]);
 
       CopyCutUtils.dragdrop(docName, [dropFolder, dropFolder2], true);
 
       // check if document is moved
-      Tree.selectNodeAndCheckPath(docName, ['Daten', dragAndDropFolder, dropFolder, dropFolder2]);
+      Tree.openNode([dragAndDropFolder, dropFolder, dropFolder2, docName]);
     });
 
     it('should auto-expand a deeply nested folder', () => {
