@@ -57,6 +57,7 @@ export class Tree {
   }
 
   static openNode(targetNodePath: string[], isInsideDialog: boolean = false) {
+    cy.log('Open node: ' + targetNodePath.join(' -> '));
     targetNodePath.forEach((node, index) => {
       Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === (targetNodePath.length - 1));
     });
@@ -92,6 +93,7 @@ export class Tree {
   }
 
   static checkPath(path: string[], isInsideDialog = false) {
+    cy.log('Check breadcrumb for correct path');
     if (isInsideDialog) {
       cy.get('.mat-dialog-container ige-breadcrumb').should('have.text', path.join(SEPARATOR));
     } else {
