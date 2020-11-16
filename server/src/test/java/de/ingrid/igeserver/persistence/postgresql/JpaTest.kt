@@ -5,25 +5,23 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.embeddedMapOf
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.model.document.AddressData
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.spring.SpringListener
 import org.assertj.core.api.Assertions.assertThat
 import org.hibernate.query.NativeQuery
-import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
 //import org.springframework.test.context.transaction.TestTransaction
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IgeServer::class])
-@ActiveProfiles("postgresql")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
-class JpaTest {
+class JpaTest : AnnotationSpec() {
+
+    override fun listeners(): List<SpringListener> { return listOf(SpringListener) }
 
     @Autowired
     private lateinit var em: EntityManager

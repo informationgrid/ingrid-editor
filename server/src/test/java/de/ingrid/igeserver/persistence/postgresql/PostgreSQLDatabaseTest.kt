@@ -16,27 +16,25 @@ import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.services.*
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.spring.SpringListener
 import org.assertj.core.api.Assertions
-import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IgeServer::class])
-@ActiveProfiles("postgresql")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts=["/test_data.sql"], config=SqlConfig(encoding="UTF-8"))
-class PostgreSQLDatabaseTest {
+class PostgreSQLDatabaseTest : AnnotationSpec() {
+
+    override fun listeners(): List<SpringListener> { return listOf(SpringListener) }
 
     @Autowired
     private lateinit var dbService: PostgreSQLDatabase

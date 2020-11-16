@@ -18,6 +18,7 @@ import org.apache.logging.log4j.core.impl.Log4jContextFactory
 import org.apache.logging.log4j.core.selector.ContextSelector
 import org.apache.logging.log4j.kotlin.logger
 import org.apache.logging.log4j.spi.LoggerContextFactory
+import org.postgresql.util.PGobject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
@@ -95,7 +96,7 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
             INSERT INTO $TABLE_NAME_VAR 
                 ($TYPE, $MESSAGE, $FILE, $CLASS, $METHOD, $LINE, $LOGGER, $THREAD, $LEVEL, $TIMESTAMP)
             VALUES 
-                (:$TYPE, to_json(:$MESSAGE), :$FILE, :$CLASS, :$METHOD, :$LINE, :$LOGGER, :$THREAD, :$LEVEL, :$TIMESTAMP);
+                (:$TYPE, :$MESSAGE, :$FILE, :$CLASS, :$METHOD, :$LINE, :$LOGGER, :$THREAD, :$LEVEL, :$TIMESTAMP);
         """
 
         /**
@@ -197,6 +198,10 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
         // see https://jdbc.postgresql.org/documentation/head/8-date-time.html
         val localDate = Instant.ofEpochMilli(event.timeMillis).atZone(ZoneId.systemDefault())
         val utcDate = localDate.withZoneSameInstant(ZoneOffset.UTC).toOffsetDateTime()
+        val json = PGobject().apply {
+            type = "jsonb"
+            value = mapper.writeValueAsString(msg)
+        }
         return MapSqlParameterSource()
             .addValue(TYPE, dataType.typeColumnValue, Types.VARCHAR)
             .addValue(LOGGER, event.loggerName, Types.VARCHAR)
@@ -207,7 +212,7 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
             .addValue(CLASS, event.source?.className, Types.VARCHAR)
             .addValue(METHOD, event.source?.methodName, Types.VARCHAR)
             .addValue(LINE, event.source?.lineNumber, Types.VARCHAR)
-            .addValue(MESSAGE, mapper.writeValueAsString(msg), Types.VARCHAR)
+            .addValue(MESSAGE, json, Types.OTHER)
     }
 
     /**

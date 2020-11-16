@@ -8,23 +8,21 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ModelRegistry
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.*
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.spring.SpringListener
 import org.assertj.core.api.Assertions
-import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
-import org.springframework.test.context.junit4.SpringRunner
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [IgeServer::class])
-@ActiveProfiles("postgresql")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts=["/test_data.sql"], config=SqlConfig(encoding="UTF-8"))
-class EntityAttributeTest {
+class EntityAttributeTest : AnnotationSpec() {
+
+    override fun listeners(): List<SpringListener> { return listOf(SpringListener) }
 
     @Autowired
     private lateinit var modelRegistry: ModelRegistry
