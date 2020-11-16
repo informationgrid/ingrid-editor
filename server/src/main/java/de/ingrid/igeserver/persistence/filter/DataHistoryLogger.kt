@@ -6,7 +6,6 @@ import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.FIELD_ID
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 /**
@@ -14,20 +13,13 @@ import org.springframework.stereotype.Component
  * NOTE This class uses AuditLogger to create and log messages
  */
 @Component
-class DataHistoryLogger(
-        /**
-         * Log4j logger name to be used for data history logging
-         */
-        @Value("\${audit.log.data-history-logger:audit.data-history}") val loggerName: String,
-
-        /**
-         * Audit log category used for data history logging
-         */
-        @Value("\${audit.log.data-history-category:data-history}") val logCategory: String
-    ) : Filter<PostPersistencePayload> {
+class DataHistoryLogger : Filter<PostPersistencePayload> {
 
     companion object {
         private val PROFILES = arrayOf<String>()
+
+        const val LOGGER_NAME = "audit.data-history"
+        const val LOG_CATEGORY = "data-history"
     }
 
     @Autowired
@@ -41,11 +33,11 @@ class DataHistoryLogger(
 
         context.addMessage(Message(this, "Log document data '$docId' after persistence"))
         auditLogger.log(
-                category = logCategory,
+                category = LOG_CATEGORY,
                 action = payload.action.name.toLowerCase(),
                 target = docId,
                 data = payload.document,
-                logger = loggerName
+                logger = LOGGER_NAME
         )
         return payload
     }

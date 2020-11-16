@@ -2,14 +2,12 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
 import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
@@ -44,9 +42,6 @@ class AuditLogger {
     @Autowired
     private lateinit var userService: UserManagementService
 
-    @Value("\${audit.log.database:null}")
-    private var auditLogDB: String? = null
-
     /**
      * Log an audit message with the given data
      */
@@ -56,13 +51,10 @@ class AuditLogger {
 
     /**
      * Get audit messages filtered by the given criteria
+     * NOTE This method only retrieves log messages that are persisted in the database
      */
     fun find(logger: String?, id: String?, user: String?, action: String?, from: LocalDate?, to: LocalDate?,
              sort: String?, sortOrder: String?) : FindAllResults {
-        if (auditLogDB.isNullOrEmpty()) {
-            throw ConfigurationException.withMissingValue("audit.log.database")
-        }
-
         val queryMap = listOfNotNull(
                 if (!logger.isNullOrEmpty()) QueryField("logger", logger) else null,
                 if (!id.isNullOrEmpty()) QueryField("message.target", id) else null,
@@ -72,7 +64,7 @@ class AuditLogger {
                 if (to != null) QueryField("message.time", " <=", to.plusDays(1).format(ISO_LOCAL_DATE)) else null
         ).toList()
 
-        dbService.acquireDatabase(auditLogDB!!).use {
+        dbService.acquireDatabase(DBApi.DATABASE.AUDIT_LOG.dbName).use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false,

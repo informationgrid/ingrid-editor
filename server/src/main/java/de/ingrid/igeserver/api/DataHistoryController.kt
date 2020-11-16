@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.DataHistoryRecord
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.filter.DataHistoryLogger
 import de.ingrid.igeserver.services.AuditLogger
-import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -18,11 +17,6 @@ import java.time.OffsetDateTime
 @RestController
 @RequestMapping(path = ["/api"])
 class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryApi {
-
-    private val log = logger()
-
-    @Value("\${audit.log.data-history-logger:audit.data-history}")
-    private var historyLogger: String? = null
 
     @Autowired
     private lateinit var dbService: DBApi
@@ -41,7 +35,7 @@ class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryA
             sortOrder: String?
         ): ResponseEntity<SearchResult<DataHistoryRecord>> {
 
-        val records = auditLogger.find(historyLogger, id, user, action, from, to, sort, sortOrder)
+        val records = auditLogger.find(DataHistoryLogger.LOGGER_NAME, id, user, action, from, to, sort, sortOrder)
         val searchResult = SearchResult<DataHistoryRecord>()
         searchResult.totalHits = records.totalHits
         searchResult.hits = records.hits.map { record: JsonNode ->

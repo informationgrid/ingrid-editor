@@ -10,7 +10,8 @@ import kotlin.reflect.KClass
 interface DBApi {
 
     enum class DATABASE(val dbName: String) {
-        USERS("IgeUsers")
+        USERS("IgeUsers"),
+        AUDIT_LOG("AuditLog")
     }
 
     /**
@@ -107,6 +108,7 @@ interface DBApi {
     /**
      * Open a session to the database with the given name. With that it's possible to
      * begin, commit and rollback transactions.
+     * NOTE If the name parameter is significant or ignored depends on the implementation
      */
     fun acquireDatabase(name: String): Closeable
 
