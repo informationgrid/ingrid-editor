@@ -193,14 +193,13 @@ If we need to **access the audit log** in the application, the audit log must be
 - Definition of the database and database table in `application.properties`:
 
   ```properties
-  audit.log.database=AuditLog
-  audit.log.table=Record
+  audit.log.table=audit_log
   ```
 
-- Configuration of a Log4j appender that writes to that database and database table (in this case an instance of `OrientDBAppender`):
+- Configuration of a Log4j appender that writes to that database and database table (in this case an instance of `PostgreSQLAppender`):
 
   ```xml
-  <OrientDBAppender name="AuditLogDB" database="${spring:audit.log.database}" table="${spring:audit.log.table}" />
+  <PostgreSQLAppender name="AuditLogDB" table="${spring:audit.log.table}" />
   ```
 
 - Configuration of the default Log4j logger used by `AuditLogger` to use this appender:

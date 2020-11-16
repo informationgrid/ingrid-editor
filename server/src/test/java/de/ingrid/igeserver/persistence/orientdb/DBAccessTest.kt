@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.persistence
+package de.ingrid.igeserver.persistence.orientdb
 
 import com.orientechnologies.orient.core.db.*
 import io.kotest.core.spec.style.FunSpec

@@ -2,14 +2,18 @@ buildscript {
     ext.kotlin_version = '1.4.0' // Required for Kotlin integration
     ext.spring_boot_version = '2.3.3.RELEASE'
     ext.log4j2_version = '2.13.3'
+    ext.hibernate_version = '5.4.22.Final'
+    ext.jackson_version = '2.11.3'
     repositories {
         jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Required for Kotlin integration
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
         // See https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+        classpath "org.hibernate:hibernate-gradle-plugin:$hibernate_version"
     }
 }
 
@@ -27,6 +31,8 @@ apply plugin: 'kotlin' // Required for Kotlin integration
 apply plugin: "kotlin-spring" // https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.hibernate.orm'
+apply plugin: 'kotlin-noarg'
 
 repositories {
     maven {
@@ -49,7 +55,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     compile "org.apache.logging.log4j:log4j-api-kotlin:1.0.0"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.2"
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -57,6 +62,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+    // Jackson
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jackson_version"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
 
     // Keycloak
     implementation 'org.keycloak:keycloak-spring-boot-starter:10.0.2'
@@ -69,13 +81,20 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'com.auth0:java-jwt:3.10.0'
     implementation 'org.springdoc:springdoc-openapi-ui:1.4.6' // Attention: also update SwaggerDocumentationConfig.kt
+
+    // OrientDB
     implementation 'com.orientechnologies:orientdb-core:3.0.31'
     implementation 'com.orientechnologies:orientdb-server:3.0.31'
+
+    // PostgreSQL
+    implementation 'org.postgresql:postgresql:42.2.16'
+    implementation "org.hibernate:hibernate-core:$hibernate_version"
+    implementation 'com.vladmihalcea:hibernate-types-52:2.9.13'
+
     implementation 'com.github.fge:json-schema-validator:2.2.6'
     implementation('de.ingrid:ingrid-codelist-service:5.4.0') {
         exclude group: 'log4j', module: 'log4j'
     }
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.2'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation "org.apache.logging.log4j:log4j-spring-cloud-config-client:$log4j2_version"
     implementation "org.apache.logging.log4j:log4j-api:$log4j2_version"
@@ -148,6 +167,7 @@ jib {
     if (project.ext.branch_name == "master") {
         tag = version
     }
+    tag = tag.replaceAll("/", "-")
     from {
         image = 'openjdk:11-jre-slim-buster'
     }
@@ -158,6 +178,19 @@ jib {
     container {
         creationTime = 'USE_CURRENT_TIMESTAMP'
         jvmFlags = ['-Xmx512m', '-Dstorage.diskCache.bufferSize=256']
+    }
+}
+
+noArg {
+    annotation('de.ingrid.igeserver.annotations.NoArgs')
+}
+
+hibernate {
+    enhance {
+        enableLazyInitialization= true
+        enableDirtyTracking = true
+        enableAssociationManagement = true
+        enableExtendedEnhancement = false
     }
 }
 

@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
 import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
@@ -25,6 +22,11 @@ class AuditLogger {
     companion object {
         private const val DEFAULT_LOGGER = "audit"
 
+        // used to give appender implementations a hint about the record content
+        private const val RECORD_TYPE = "record_type"
+        private const val RECORD_TYPE_VALUE = "AuditLog"
+
+        // actual message fields
         private const val CATEGORY = "cat"
         private const val ACTION = "action"
         private const val ACTOR = "actor"
@@ -70,11 +72,11 @@ class AuditLogger {
                 if (to != null) QueryField("message.time", " <=", to.plusDays(1).format(ISO_LOCAL_DATE)) else null
         ).toList()
 
-        dbService.acquire(auditLogDB!!).use {
+        dbService.acquireDatabase(auditLogDB!!).use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false,
-                    queryOperator = "AND",
+                    queryOperator = QueryOperator.AND,
                     sortField = sort,
                     sortOrder = sortOrder
             )
@@ -94,6 +96,7 @@ class AuditLogger {
      */
     private fun createLogMessage(category: String, action: String, target: String?, data: JsonNode?): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
+            put(RECORD_TYPE, RECORD_TYPE_VALUE)
             put(CATEGORY, category)
             put(ACTION, action)
             put(ACTOR, userService.getCurrentPrincipal()?.name)

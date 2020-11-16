@@ -51,7 +51,7 @@ class IndexingTask @Autowired constructor(
     fun startIndexing(database: String, format: String) {
         log.debug("Starting Indexing - Task for $database")
 
-        dbService.acquire(database).use {
+        dbService.acquireCatalog(database).use {
 
             // needed information:
             //   database/catalog
@@ -161,7 +161,7 @@ class IndexingTask @Autowired constructor(
 
     private fun getIndexConfigurations(): List<IndexConfig> {
 
-        return dbService.databases
+        return dbService.catalogs
                 .map { getConfigFromDatabase(it) }
                 .filterNotNull()
 
@@ -169,7 +169,7 @@ class IndexingTask @Autowired constructor(
 
     private fun getConfigFromDatabase(database: String): IndexConfig? {
 
-        return dbService.acquire(database).use {
+        return dbService.acquireCatalog(database).use {
             val cron = indexService.getConfig()
             if (cron == null) {
                 null

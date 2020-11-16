@@ -2,10 +2,8 @@ package de.ingrid.igeserver.extension
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.extension.pipe.*
-import de.ingrid.igeserver.services.DateService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.stereotype.Component
 
 /**
  * Test payloads
@@ -40,8 +38,7 @@ open class TestPayloadPostPublish(data: JsonNode) : TestPayloadPublish(data)
  */
 
 // Common validation on persist (used as base class)
-@Component
-class TestValidatePersistFilter<T : TestPayloadPersist>(override val profiles: Array<String>?) : Filter<T> {
+open class TestValidatePersistFilter<T : TestPayloadPersist>(override val profiles: Array<String>?) : Filter<T> {
 
     override fun invoke(payload: T, context: Context): T {
         if (payload.action == TestPayloadPersist.Action.CREATE || payload.action == TestPayloadPersist.Action.UPDATE) {
@@ -55,8 +52,7 @@ class TestValidatePersistFilter<T : TestPayloadPersist>(override val profiles: A
 }
 
 // Specific validation on create
-@Component
-class TestValidateCreateFilter(profiles: Array<String>) : Filter<TestPayloadCreate>, TestValidatePersistFilter<TestPayloadCreate>(profiles) {
+open class TestValidateCreateFilter(profiles: Array<String>) : Filter<TestPayloadCreate>, TestValidatePersistFilter<TestPayloadCreate>(profiles) {
 
     override fun invoke(payload: TestPayloadCreate, context: Context): TestPayloadCreate {
         super.invoke(payload, context)
@@ -71,8 +67,7 @@ class TestValidateCreateFilter(profiles: Array<String>) : Filter<TestPayloadCrea
 }
 
 // Specific validation on update
-@Component
-class TestValidateUpdateFilter(profiles: Array<String>) : Filter<TestPayloadUpdate>, TestValidatePersistFilter<TestPayloadUpdate>(profiles) {
+open class TestValidateUpdateFilter(profiles: Array<String>) : Filter<TestPayloadUpdate>, TestValidatePersistFilter<TestPayloadUpdate>(profiles) {
 
     override fun invoke(payload: TestPayloadUpdate, context: Context): TestPayloadUpdate {
         super.invoke(payload, context)
@@ -87,8 +82,7 @@ class TestValidateUpdateFilter(profiles: Array<String>) : Filter<TestPayloadUpda
 }
 
 // Specific validation on publish (can be used with update payload or publish payload)
-@Component
-class TestValidatePublishFilter<T : TestPayloadUpdate>(override val profiles: Array<String>?) : Filter<T> {
+open class TestValidatePublishFilter<T : TestPayloadUpdate>(override val profiles: Array<String>?) : Filter<T> {
 
     override fun invoke(payload: T, context: Context): T {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
@@ -102,8 +96,7 @@ class TestValidatePublishFilter<T : TestPayloadUpdate>(override val profiles: Ar
 }
 
 // Authorization on publish
-@Component
-class TestAuthorizePublishFilter(override val profiles: Array<String>?) : Filter<TestPayloadPublish> {
+open class TestAuthorizePublishFilter(override val profiles: Array<String>?) : Filter<TestPayloadPublish> {
 
     override fun invoke(payload: TestPayloadPublish, context: Context): TestPayloadPublish {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
@@ -117,8 +110,7 @@ class TestAuthorizePublishFilter(override val profiles: Array<String>?) : Filter
 }
 
 // Authorization on publish only for profileA
-@Component
-class TestAuthorizePublishProfileAFilter(override val profiles: Array<String>?) : Filter<TestPayloadPublish> {
+open class TestAuthorizePublishProfileAFilter(override val profiles: Array<String>?) : Filter<TestPayloadPublish> {
 
     override fun invoke(payload: TestPayloadPublish, context: Context): TestPayloadPublish {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
@@ -132,8 +124,7 @@ class TestAuthorizePublishProfileAFilter(override val profiles: Array<String>?) 
 }
 
 // Authorization on publish for no profile (deactivated)
-@Component
-class TestAuthorizePublishNullFilter(override val profiles: Array<String>?) : Filter<TestPayloadPublish> {
+open class TestAuthorizePublishNullFilter(override val profiles: Array<String>?) : Filter<TestPayloadPublish> {
 
     override fun invoke(payload: TestPayloadPublish, context: Context): TestPayloadPublish {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
@@ -163,38 +154,38 @@ class TestPublishPipe : Pipe<TestPayloadPublish>("PublishPipe")
 @Configuration
 class PipeTestConfig {
     @Bean
-    fun validatePersistFilter(): Filter<TestPayloadPersist> = TestValidatePersistFilter(arrayOf())
+    fun testValidatePersistFilter(): Filter<TestPayloadPersist> = TestValidatePersistFilter(arrayOf())
 
     @Bean
-    fun validateCreateFilter(): Filter<TestPayloadCreate> = TestValidateCreateFilter(arrayOf())
+    fun testValidateCreateFilter(): Filter<TestPayloadCreate> = TestValidateCreateFilter(arrayOf())
 
     @Bean
-    fun validateUpdateFilter(): Filter<TestPayloadUpdate> = TestValidateUpdateFilter(arrayOf())
+    fun testValidateUpdateFilter(): Filter<TestPayloadUpdate> = TestValidateUpdateFilter(arrayOf())
 
     @Bean
-    fun validateUpdatePublishFilter(): Filter<TestPayloadUpdate> = TestValidatePublishFilter(arrayOf())
+    fun testValidateUpdatePublishFilter(): Filter<TestPayloadUpdate> = TestValidatePublishFilter(arrayOf())
 
     @Bean
-    fun validatePublishFilter(): Filter<TestPayloadPublish> = TestValidatePublishFilter(arrayOf())
+    fun testValidatePublishFilter(): Filter<TestPayloadPublish> = TestValidatePublishFilter(arrayOf())
 
     @Bean
-    fun authorizePublishFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishFilter(arrayOf())
+    fun testAuthorizePublishFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishFilter(arrayOf())
 
     @Bean
-    fun authorizePublishProfileAFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishProfileAFilter(arrayOf("profileA"))
+    fun testAuthorizePublishProfileAFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishProfileAFilter(arrayOf("profileA"))
 
     @Bean
-    fun authorizePublishNullFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishNullFilter(null)
+    fun testAuthorizePublishNullFilter(): Filter<TestPayloadPublish> = TestAuthorizePublishNullFilter(null)
 
     @Bean
-    fun createPipe(): Pipe<TestPayloadCreate> = TestCreatePipe()
+    fun testCreatePipe(): Pipe<TestPayloadCreate> = TestCreatePipe()
 
     @Bean
-    fun updatePipe(): Pipe<TestPayloadUpdate> = TestUpdatePipe()
+    fun testUpdatePipe(): Pipe<TestPayloadUpdate> = TestUpdatePipe()
 
     @Bean
-    fun publishPipe(): Pipe<TestPayloadPublish> = TestPublishPipe()
+    fun testPublishPipe(): Pipe<TestPayloadPublish> = TestPublishPipe()
 
     @Bean
-    fun postPublishPipe(): Pipe<TestPayloadPostPublish> = Pipe("PostPublishPipe")
+    fun testPostPublishPipe(): Pipe<TestPayloadPostPublish> = Pipe("PostPublishPipe")
 }

@@ -1,10 +1,10 @@
-package de.ingrid.igeserver.persistence
+package de.ingrid.igeserver.persistence.orientdb
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.orientechnologies.orient.core.db.*
+import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
-import de.ingrid.igeserver.persistence.orientdb.OrientDBDatabase
 import de.ingrid.igeserver.persistence.orientdb.model.meta.OUserInfoType
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.TestCase
@@ -39,7 +39,7 @@ class ConcurrencyTest : FunSpec() {
             var threads = mutableListOf<Thread>()
             for (x in 1..numThreads) {
                 val t = Thread(Runnable {
-                    dbService.acquire("test").use {
+                    dbService.acquireCatalog("test").use {
                         Thread.sleep(((Math.random() * 5000).toLong()));
                         val person = "{\"name\": \"${x.toString().padStart(4, '0')}\"}"
                         dbService.save(UserInfoType::class, null, person)
@@ -51,7 +51,7 @@ class ConcurrencyTest : FunSpec() {
             threads.forEach { t -> t.join() }
 
             var users = mutableListOf<JsonNode>()
-            dbService.acquire("test").use {
+            dbService.acquireCatalog("test").use {
                 users.addAll(dbService.findAll(UserInfoType::class)!!)
             }
             users.size shouldBe numThreads
@@ -66,7 +66,7 @@ class ConcurrencyTest : FunSpec() {
             Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { ctx1 ->
                 Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { ctx2 ->
                     runBlocking(ctx1) {
-                        dbService.acquire("test").use {
+                        dbService.acquireCatalog("test").use {
                             // create the document and commit
                             dbService.beginTransaction()
                             dbService.save(UserInfoType::class, null, "{\"name\": \"UserA\"}")
@@ -80,7 +80,7 @@ class ConcurrencyTest : FunSpec() {
 
                             // wait until the second thread updated the document
                             withContext(ctx2) {
-                                dbService.acquire("test").use {
+                                dbService.acquireCatalog("test").use {
                                     // update the document while it is loaded in the first thread's session
                                     dbService.beginTransaction()
                                     var personCtx2 = dbService.findAll(UserInfoType::class)!![0]
@@ -118,7 +118,7 @@ class ConcurrencyTest : FunSpec() {
             ex should beInstanceOf<ConcurrentModificationException>()
             (ex as ConcurrentModificationException).data?.get("recordVersion") shouldBe 1
             ex.data?.get("databaseVersion") shouldBe 2
-            dbService.acquire("test").use {
+            dbService.acquireCatalog("test").use {
                 var person = dbService.findAll(UserInfoType::class)!![0]
                 person["name"].asText() shouldBe "UserB"
                 person["@version"].asInt() shouldBe 2

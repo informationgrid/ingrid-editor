@@ -10,6 +10,7 @@ The server uses several spring profiles to be configured for different environme
 
 * dev => used for development, which disables keycloak authentication
 * default => also used for development and is set up in `src/develop/resources`
+* orientdb, postgresql => used to define the database server
 * mcloud, ... => profile for customer implementation (import, export, fields, ...)
 
 The profiles can be set in the startup configuration or in the application.properties under `src/main/resources`.
@@ -21,9 +22,13 @@ For IntelliJ configuration see the section below.
 #### Server
 You can also run the server from command line:
 
-> ./gradlew bootRun --args='--spring.profiles.active=default,dev,mcloud'
+> ./gradlew bootRun --args='--spring.profiles.active=default,dev,mcloud,postgresql'
 
-The database will be created inside the directory where the command was executed.
+The application will use one of the following database servers
+
+- orientdb => The database server will be created inside the directory where the command was executed.
+- postgresql => The application will connect to the data source defined in application.properties 
+  (see server/src/main/resources/application-postgresql.properties).
 
 With the following command a jar is generated, which contains the whole server including
 optimized frontend application: 
@@ -45,7 +50,7 @@ For the client just run `npm start` in the frontend directory. When developing f
   * **NOTE** Java 11 SDK is required
   * Right click file *server/src/main/java/de/ingrid/igeserver/IgeServer.kt* > Run
   * Run > Edit Configurations > Kotlin > IgeServerKt
-    * VM options: `-Dspring.profiles.active=default,dev,mcloud` 
+    * VM options: `-Dspring.profiles.active=default,dev,mcloud,postgresql` 
     * Shorten Commandline: JAR manifest
     * JRE: *path/to/java-11-jdk*
 * Install **frontend packages** 

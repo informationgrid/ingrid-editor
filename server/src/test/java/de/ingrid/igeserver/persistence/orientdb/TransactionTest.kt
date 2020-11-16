@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.persistence
+package de.ingrid.igeserver.persistence.orientdb
 
 import com.orientechnologies.orient.core.db.ODatabasePool
 import com.orientechnologies.orient.core.db.ODatabaseType

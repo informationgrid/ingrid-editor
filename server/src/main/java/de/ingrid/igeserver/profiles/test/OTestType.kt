@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles
+package de.ingrid.igeserver.profiles.test
 
 import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.metadata.schema.OType
@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
 @Component
-class TestType : OrientDBDocumentEntityType {
+class OTestType : OrientDBDocumentEntityType {
 
     companion object {
-        private val log = LogManager.getLogger(TestType::class.java)
+        private val log = LogManager.getLogger(OTestType::class.java)
         private const val TYPE = "TestDoc"
         private val profiles = arrayOf("mcloud")
     }
 
     override val entityType: KClass<out EntityType>
-        get() = TestType::class
+        get() = OTestType::class
 
     override val className: String
         get() = TYPE

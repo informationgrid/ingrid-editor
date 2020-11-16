@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.services.CatalogService
@@ -20,25 +21,28 @@ class CatalogApiController : CatalogApi {
 
     override val catalogs: ResponseEntity<List<Catalog>>
         get() {
-            val catalogs = dbService.databases
+            val catalogs = dbService.catalogs
                     .map { catalogService.getCatalogById(it) }
                     .filterNotNull()
 
             return ResponseEntity.ok().body(catalogs)
         }
 
+    @AuditLog(action="create_catalog")
     override fun createCatalog(settings: Catalog): ResponseEntity<String> {
-        val catalogId = dbService.createDatabase(settings)
+        val catalogId = dbService.createCatalog(settings)
         return ResponseEntity.ok().body("{ \"catalogId\": \"$catalogId\"}")
     }
 
+    @AuditLog(action="update_catalog")
     override fun updateCatalog(name: String, settings: Catalog): ResponseEntity<Void> {
-        dbService.updateDatabase(settings)
+        dbService.updateCatalog(settings)
         return ResponseEntity.ok().build()
     }
 
+    @AuditLog(action="delete_catalog")
     override fun deleteCatalog(name: String): ResponseEntity<Void> {
-        dbService.removeDatabase(name)
+        dbService.removeCatalog(name)
         return ResponseEntity.ok().build()
     }
 }

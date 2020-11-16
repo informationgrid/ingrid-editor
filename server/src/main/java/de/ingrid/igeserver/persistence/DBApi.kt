@@ -14,9 +14,12 @@ interface DBApi {
     }
 
     /**
-     * Get the database record ID of a document of the given type and UUID.
+     * Get the database record ID of a document of the given type and an document ID.
+     * NOTE The id is a domain specific identifier that is used to distinguish instances of the same type,
+     * e.g. UUID for document wrappers or name for behaviours. If a type does not define a identifier an exception
+     * will be thrown.
      */
-    fun <T : EntityType> getRecordId(type: KClass<T>, docUuid: String): String?
+    fun <T : EntityType> getRecordId(type: KClass<T>, docId: String): String?
 
     /**
      * Get the database record ID of a document.
@@ -24,9 +27,9 @@ interface DBApi {
     fun getRecordId(doc: JsonNode): String?
 
     /**
-     * Get the database version of a document.
+     * Get the number of children belonging to the parent with the given document ID.
      */
-    fun getVersion(doc: JsonNode): Int?
+    fun countChildren(docId: String): Long
 
     /**
      * Remove the internal fields added by the database from a document.
@@ -49,9 +52,9 @@ interface DBApi {
     fun <T : EntityType> findAll(type: KClass<T>, query: List<QueryField>?, options: FindOptions): FindAllResults
 
     /**
-     * Get the number of children of the specified type belonging to the parent with the given record ID.
+     * Get all documents of the given type matching the combination of the given queries.
      */
-    fun <T : EntityType> countChildrenOfType(id: String, type: KClass<T>): Map<String, Long>
+    fun <T : EntityType> findAllExt(type: KClass<T>, queries: List<Pair<List<QueryField>?, QueryOptions>>, options: FindOptions): FindAllResults
 
     /**
      * Save the given data using the given type, record ID and version (like file uploads).
@@ -60,51 +63,52 @@ interface DBApi {
     fun <T : EntityType> save(type: KClass<T>, id: String?, data: String, version: String? = null): JsonNode
 
     /**
-     * Delete a document of the given type with the given record ID. If multiple documents with same ID exist
+     * Delete a document of the given type with the given document ID. If multiple documents with same ID exist
      * then all will be removed. If none exists then a PersistenceException is thrown.
      */
-    fun <T : EntityType> remove(type: KClass<T>, id: String): Boolean
+    fun <T : EntityType> remove(type: KClass<T>, docId: String): Boolean
 
     /**
-     * Delete all documents of the given type matching the given query.
+     * Get all catalog names
      */
-    fun <T : EntityType> remove(type: KClass<T>, query: Map<String, String>): Boolean
+    val catalogs: Array<String>
 
     /**
-     * Get all database names
+     * Get currently opened catalog if any (see acquireCatalog())
      */
-    val databases: Array<String>
+    val currentCatalog: String?
 
     /**
-     * Get currently opened database if any (see acquire())
+     * Create a catalog using the given name and return the name of the created catalog.
      */
-    val currentDatabase: String?
+    fun createCatalog(settings: Catalog): String?
 
     /**
-     * Create a database using the given name and return the name of the created database.
+     * Update an existing catalog with the given settings (like name property).
      */
-    fun createDatabase(settings: Catalog): String?
+    fun updateCatalog(settings: Catalog)
 
     /**
-     * Update an existing database with the given settings (like name property).
+     * Delete the catalog with the given name.
      */
-    fun updateDatabase(settings: Catalog)
+    fun removeCatalog(name: String): Boolean
 
     /**
-     * Delete the database with the given name.
+     * Check if the catalog with the given name exists
      */
-    fun removeDatabase(name: String): Boolean
+    fun catalogExists(name: String): Boolean
 
     /**
-     * Check if the database with the given name exists
+     * Open a session to the catalog with the given name. With that it's possible to
+     * begin, commit and rollback transactions.
      */
-    fun databaseExists(name: String): Boolean
+    fun acquireCatalog(name: String): Closeable
 
     /**
      * Open a session to the database with the given name. With that it's possible to
      * begin, commit and rollback transactions.
      */
-    fun acquire(name: String): Closeable
+    fun acquireDatabase(name: String): Closeable
 
     /**
      * Start a transaction in the acquired session

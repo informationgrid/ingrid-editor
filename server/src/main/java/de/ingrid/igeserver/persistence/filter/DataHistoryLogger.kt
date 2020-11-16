@@ -37,7 +37,7 @@ class DataHistoryLogger(
         get() = PROFILES
 
     override fun invoke(payload: PostPersistencePayload, context: Context): PostPersistencePayload {
-        val docId = payload.document[FIELD_ID].asText();
+        val docId = payload.document[FIELD_ID].asText()
 
         context.addMessage(Message(this, "Log document data '$docId' after persistence"))
         auditLogger.log(

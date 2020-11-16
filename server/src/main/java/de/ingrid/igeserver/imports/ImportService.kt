@@ -35,7 +35,7 @@ class ImportService {
 
         log.debug("Transformed document: $importedDoc")
 
-        dbService.acquire(dbId).use {
+        dbService.acquireCatalog(dbId).use {
             extractAndSaveReferences(importedDoc)
         }
 
