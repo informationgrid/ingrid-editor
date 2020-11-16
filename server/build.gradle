@@ -92,7 +92,6 @@ dependencies {
         exclude group: 'log4j', module: 'log4j'
     }
     implementation 'javax.validation:validation-api:2.0.1.Final'
-    implementation "org.apache.logging.log4j:log4j-spring-cloud-config-client:$log4j2_version"
     implementation "org.apache.logging.log4j:log4j-api:$log4j2_version"
     implementation "org.apache.logging.log4j:log4j-core:$log4j2_version"
     implementation 'org.apache.commons:commons-lang3:3.9'

@@ -126,8 +126,8 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
 
     /**
      * This method is called during Spring initialization
-     * NOTE When this method is called, the Spring environment is initialized, which means that SpringLookup
-     * is able to resolve variables when calling the ctx.configuration.strSubstitutor.replace() method
+     * NOTE When this method is called, the Spring environment is initialized, which means that jdbcTemplate
+     * can be used to initialize the database tables
      */
     @Autowired
     fun setJdbcTemplate(jdbcTemplate: NamedParameterJdbcTemplate) {
@@ -136,16 +136,14 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
         PostgreSQLLog4JAppender.jdbcTemplate = jdbcTemplate
 
         try {
-            // create databases for all appender instances
+            // create tables for all appender instances
             val factory: LoggerContextFactory = LogManager.getFactory()
             val selector: ContextSelector = (factory as Log4jContextFactory).selector
             selector.loggerContexts.onEach { ctx ->
                 ctx.configuration.appenders.values.onEach { a ->
                     if (a is PostgreSQLLog4JAppender) {
-                        // replace any spring configuration variables
-                        a.table = ctx.configuration.strSubstitutor.replace(a.table)
                         log.debug("Initializing schema: table=${a.table}")
-                        table?.let {
+                        a.table?.let {
                             jdbcTemplate.jdbcOperations.execute(CREATE_TABLE_STMT.replace(TABLE_NAME_VAR, it))
                         }
                     }
