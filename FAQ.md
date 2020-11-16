@@ -28,7 +28,7 @@ currently implemented doctypes.
 
 In the backend create a new package under `de/ingrid/igeserver/profiles/<profile-name>`. Inside the 
 types-package create a new interface of your type which extends `EntityType`. The implementation needs
-to extend from `OrientDBDocumentEntityType`. Have a look at `MCloudType.kt`.
+to extend from `PostgreSQLEntityType`. Have a look at `PMCloudType.kt`.
 
 ### Export
 

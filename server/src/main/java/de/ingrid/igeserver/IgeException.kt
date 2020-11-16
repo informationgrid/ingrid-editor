@@ -1,7 +1,7 @@
 package de.ingrid.igeserver
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.apache.commons.lang.text.StrSubstitutor
+import org.apache.commons.text.StringSubstitutor
 import org.springframework.http.HttpStatus
 import java.util.*
 
@@ -52,7 +52,7 @@ open class IgeException(
                         val serializedData = data?.mapValues { entry ->
                                 jacksonObjectMapper().writeValueAsString(entry.value).replace("\"", "")
                         }
-                        return if (data != null && data.isNotEmpty()) StrSubstitutor(serializedData).replace(errorText) else errorText
+                        return if (data != null && data.isNotEmpty()) StringSubstitutor(serializedData).replace(errorText) else errorText
                 }
         }
 }

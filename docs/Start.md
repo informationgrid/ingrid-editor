@@ -33,8 +33,8 @@ Services are annotated with `@Service` or `@Component` which makes them availabl
 
 The persistence layer of IGE Server consists of the following main **interfaces** (located in the `de.ingrid.igeserver.persistence` package and it's sub-packages):
 
-- `DBApi` defines the **main entry point** to persistency. It provides access to the specific persistency implementation used in the application (e.g. `de.ingrid.igeserver.persistence.orientdb.OrientDBDatabase` for [OrientDB](https://www.orientdb.org/) databases). The methods defined in this interface use generic `JsonNode` instances to **transfer data** between database and application.
-- `EntityType` is the base interface for all **persistent types**. This could be general domain specific types like `AddressType`, profile specific types like `MCloudType`  or meta types like `UserInfoType` that are used internally only. Services will use these interfaces to specify the type of data send or expected in the `JsonNode` instances transferred at the `DBApi` interface. The interface also defines methods for **entity type initialization** (like creating the database schema) and callbacks for **entity lifecycle events** (like creation or deletion). Each persistency implementation will provide it's own implementations for these methods if required (e.g. the entity type classes for OrientDB reside in the `de.ingrid.igeserver.persistence.orientdb.model` package).
+- `DBApi` defines the **main entry point** to persistency. It provides access to the specific persistency implementation used in the application (e.g. `de.ingrid.igeserver.persistence.postgresql.PostgreSQLDatabase` for PostgreSQL databases). The methods defined in this interface use generic `JsonNode` instances to **transfer data** between database and application.
+- `EntityType` is the base interface for all **persistent types**. This could be general domain specific types like `AddressType`, profile specific types like `MCloudType`  or meta types like `UserInfoType` that are used internally only. Services will use these interfaces to specify the type of data send or expected in the `JsonNode` instances transferred at the `DBApi` interface. The interface also callbacks for **entity lifecycle events** (like creation or deletion). Each persistency implementation will provide it's own implementations for these methods if required (e.g. the entity type classes for PostgreSQL reside in the `de.ingrid.igeserver.persistence.postgresql.model` package).
 
 ### Extensions
 
@@ -321,7 +321,7 @@ implements one of the provided interfaces, e.g. `DCAT` then the same template ca
 
 ## Database
 
-The database-system is [OrientDB](https://www.orientdb.org/), which is a NoSQL database which supports transaction.
+The database-system is [PostgreSQL](https://www.postgresql.org/), which is a NoSQL database which supports transaction.
 It's used as an embedded database, so that there's no need to install or configure another database. Since OrientDB 
 supports transactions, it's possible to execute big tasks on the database, with the possibility to rollback to the state
 before the task.

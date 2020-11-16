@@ -5,12 +5,13 @@ import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.ApplicationArguments
+import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Service
 import java.util.function.Consumer
-import javax.annotation.PostConstruct
 
 @Service
-class Migration {
+class Migration : ApplicationRunner {
 
     private var log = logger()
 
@@ -20,9 +21,10 @@ class Migration {
     @Autowired
     lateinit var migrationStrategies: List<MigrationStrategy>
 
-
-    @PostConstruct
-    fun init() {
+    /**
+     * Install migrations after spring application context is initialized
+     */
+    override fun run(args: ApplicationArguments?) {
         update()
     }
 
@@ -45,7 +47,7 @@ class Migration {
         strategies.forEach(Consumer { strategy: MigrationStrategy -> strategy.exec(database) })
 
         val latestVersion = strategies[strategies.size - 1].version
-        setVersion(database, latestVersion.version);
+        setVersion(database, latestVersion.version)
     }
 
     private fun getStrategiesAfter(version: String): List<MigrationStrategy> {
@@ -75,5 +77,4 @@ class Migration {
             // TODO should we throw an exception if version can not be set because of missing catalog info?
         }
     }
-
 }

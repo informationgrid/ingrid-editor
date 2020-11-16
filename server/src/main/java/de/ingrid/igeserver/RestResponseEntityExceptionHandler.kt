@@ -3,7 +3,7 @@ package de.ingrid.igeserver
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.api.InvalidParameterException
-import org.apache.commons.lang.exception.ExceptionUtils
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -35,7 +35,7 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
      */
     @ExceptionHandler(value = [IgeException::class])
     protected fun handleIgeException(ex: IgeException, request: WebRequest): ResponseEntity<Any> {
-        val stacktraceOutput = if (ex is UnhandledException) ExceptionUtils.getFullStackTrace(ex.cause) else null
+        val stacktraceOutput = if (ex is UnhandledException) ExceptionUtils.getRootCauseStackTrace(ex.cause) else null
         val data = mapper.writeValueAsString(mapOf(
                 "errorId" to ex.errorId,
                 "errorCode" to ex.errorCode,
