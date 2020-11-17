@@ -1,32 +1,30 @@
-package de.ingrid.igeserver.imports.iso;
+package de.ingrid.igeserver.imports.iso
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import io.kotest.core.spec.style.AnnotationSpec
+import java.io.IOException
+import java.net.URISyntaxException
+import java.nio.file.Files
+import java.nio.file.Paths
 
-import org.junit.Test;
+class IsoImporterTest: AnnotationSpec() {
+    
+    @Test
+    fun testRun() {
+        val isoImporter = IsoImporter()
+        val data = xmlDoc
+        isoImporter.run(data!!)
+    }
 
-public class IsoImporterTest {
-
-	@Test
-	public void testRun() {
-		
-		IsoImporter isoImporter = new IsoImporter();
-		
-		String data = getXmlDoc();
-		isoImporter.run(data);
-		
-	}
-
-	private String getXmlDoc() {
-		try {
-			return new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("csw_test_import_example.xml").toURI())));
-		} catch (IOException | URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-	}
-
+    // TODO Auto-generated catch block
+    private val xmlDoc: String?
+        private get() = try {
+            String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("csw_test_import_example.xml").toURI())))
+        } catch (e: IOException) {
+            // TODO Auto-generated catch block
+            e.printStackTrace()
+            null
+        } catch (e: URISyntaxException) {
+            e.printStackTrace()
+            null
+        }
 }

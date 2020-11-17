@@ -102,17 +102,14 @@ dependencies {
     testImplementation 'io.kotest:kotest-assertions-core-jvm:4.2.3' // for kotest core jvm assertions
     testImplementation 'io.kotest:kotest-runner-console-jvm:4.1.3.2' // to run from IntelliJ
     testImplementation("io.kotest:kotest-extensions-spring:4.2.3") // to wire dependencies using Spring
-    testImplementation 'junit:junit' // TODO: remove when converted to Kotest
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // iBus communication
-     implementation('de.ingrid:ingrid-elasticsearch-tools:5.6.0')
-//    compile 'org.elasticsearch:elasticsearch:6.8.4'
+    implementation('de.ingrid:ingrid-elasticsearch-tools:5.6.0')
 
-    implementation('de.ingrid:ingrid-ibus-client:5.5.0-SNAPSHOT') {
+    implementation('de.ingrid:ingrid-ibus-client:5.7.0-SNAPSHOT') {
         exclude group: 'org.apache.logging.log4j'
-        exclude group: 'junit'
     }
 }
 
