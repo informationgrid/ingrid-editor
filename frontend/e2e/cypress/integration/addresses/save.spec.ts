@@ -74,7 +74,7 @@ describe('General create addresses/folders', () => {
 
       // click on folder before open dialog
       dialog.cancel();
-      Tree.selectNodeWithTitle('Neue Testadressen');
+      Tree.openNode(['Neue Testadressen']);
       dialog.open();
       dialog.checkPath(['Adressen', 'Neue Testadressen']);
     });

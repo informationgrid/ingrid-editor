@@ -42,11 +42,6 @@ export class Tree {
 
   }
 
-  /**
-   * This function is not working correctly
-   * @param nodePath
-   * @deprecated
-   */
   static deleteNode(nodePath: string[]) {
     const reverseNodePath = nodePath.reverse();
 
@@ -65,7 +60,7 @@ export class Tree {
     this.checkPath(['Daten', ...targetNodePath.filter((item, index) => index !== targetNodePath.length - 1)]);
   }
 
-  static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true, hierarchyLevel?: number, forceClick?: boolean) {
+  private static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true, hierarchyLevel?: number, forceClick?: boolean) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? new RegExp('^' + nodeTitle + '$') : nodeTitle;
     if (hierarchyLevel === undefined) {

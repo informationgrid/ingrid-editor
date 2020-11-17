@@ -59,7 +59,7 @@ describe('General create documents/folders', () => {
     });
 
     it('should not be possible to publish folders', function () {
-      Tree.selectNodeWithTitle('Testdokumente');
+      Tree.openNode(['Testdokumente']);
       cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
       cy.visit('/form;id=bdde3ecb-3629-489c-86df-12ffac978ef5');
@@ -92,7 +92,7 @@ describe('General create documents/folders', () => {
       const parentFolder = 'Neue Testdokumente';
       const folderName = 'Unterordner ' + Utils.randomString();
 
-      Tree.selectNodeWithTitle(parentFolder);
+      Tree.openNode([parentFolder]);
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
@@ -109,7 +109,7 @@ describe('General create documents/folders', () => {
       const parentFolder = 'Neue Testdokumente';
       const folderName = 'Root Ordner ' + Utils.randomString();
 
-      Tree.selectNodeWithTitle(parentFolder);
+      Tree.openNode([parentFolder]);
 
       DocumentPage.createFolderAndChangeLocationToRoot(folderName, [ROOT]);
 
@@ -139,7 +139,7 @@ describe('General create documents/folders', () => {
       DocumentPage.createDocument(childName);
       cy.get(DocumentPage.title).should('have.text', childName);
 
-      Tree.selectNodeWithTitle(folderName);
+      Tree.openNode([folderName]);
       cy.get(DocumentPage.title).should('have.text', folderName);
       cy.get(DocumentPage.Toolbar.Delete).click();
 
@@ -149,7 +149,7 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.title).should('have.text', childName);
       DocumentPage.deleteLoadedNode();
       cy.wait(500);
-      Tree.selectNodeWithTitle(folderName);
+      Tree.openNode([folderName]);
       DocumentPage.deleteLoadedNode();
 
       cy.get('#sidebar').findByText(folderName).should('not.exist');
@@ -236,12 +236,12 @@ describe('General create documents/folders', () => {
 
     it('should not possible to delete a non-empty folder  (#2115)', () => {
 
-      Tree.selectNodeWithTitle('Testdokumente');
+      Tree.openNode(['Testdokumente']);
 
       // check that selected node is not empty
       Tree.selectNodeAndCheckPath('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
 
-      Tree.selectNodeWithTitle('Testdokumente');
+      Tree.openNode(['Testdokumente']);
 
       cy.get(DocumentPage.Toolbar['Delete']).click();
 

@@ -100,13 +100,13 @@ describe('Tree', () => {
       const dropFolder = 'Auto-other-expanding1';
       const dropFolder2 = 'Auto-other-expanding2';
 
-      Tree.selectNodeWithTitle(dragAndDropFolder);
+      Tree.openNode([dragAndDropFolder]);
       DocumentPage.createDocument(docName);
       DocumentPage.createFolder(dropFolder);
       DocumentPage.createFolder(dropFolder2);
 
       // to close for checking auto-expanding by hovered node
-      Tree.selectNodeWithTitle(dropFolder);
+      Tree.openNode([dropFolder]);
 
       Tree.openNode([dragAndDropFolder, docName]);
 
@@ -122,14 +122,14 @@ describe('Tree', () => {
       const deepFolder2 = 'Deep auto-expanding2';
       const deepFolder3 = 'Deep deep folder';
 
-      Tree.selectNodeWithTitle(dragAndDropFolder);
+      Tree.openNode([dragAndDropFolder]);
       DocumentPage.createDocument(docName);
       DocumentPage.createFolder(deepFolder);
       DocumentPage.createFolder(deepFolder2);
       DocumentPage.createFolder(deepFolder3);
 
       // to close for checking auto-expanding by hovered node
-      Tree.selectNodeWithTitle(deepFolder);
+      Tree.openNode([deepFolder]);
 
       CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, deepFolder3], false);
 
@@ -186,7 +186,7 @@ describe('Tree', () => {
 
       cy.get('.mat-dialog-content').type('{esc}');
 
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
 
       cy.get('[data-cy=toolbar_COPY]').click();
       cy.get('[data-cy=copyMenu_COPY]').click();
@@ -196,7 +196,7 @@ describe('Tree', () => {
     it('should copy a root document into a folder', () => {
       const docName = 'copy me into a folder';
 
-      Tree.selectNodeWithTitle('Testdokumente');
+      Tree.openNode(['Testdokumente']);
       Tree.containsNotNodeWithTitle(docName);
 
       // go back to root
@@ -216,7 +216,7 @@ describe('Tree', () => {
         cy.url().should('equal', newDocUrl);
 
         // check if document was copied
-        Tree.selectNodeWithTitle(docName, false, true, 2);
+        Tree.openNode([docName]);
         Tree.checkPath( ['Daten', 'Testdokumente']);
       });
 
@@ -240,10 +240,10 @@ describe('Tree', () => {
       DocumentPage.CreateFullMcloudDocumentWithAPI(docName, false);
 
       Tree.openNode(['Neue Testdokumente', docName]);
-      Tree.selectNodeWithTitle(docName);
+      Tree.openNode([docName]);
       CopyCutUtils.copyObject();
 
-      Tree.selectNodeWithTitle('Neue Testdokumente');
+      Tree.openNode(['Neue Testdokumente']);
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
     });
 
@@ -253,7 +253,7 @@ describe('Tree', () => {
 
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
 
       CopyCutUtils.copyObject(['Testdokumente']);
 
@@ -272,7 +272,7 @@ describe('Tree', () => {
 
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
 
       CopyCutUtils.copyObjectWithTree(['Testdokumente']);
 
@@ -294,39 +294,25 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
 
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
       CopyCutUtils.copyObjectWithTree(['Testdokumente', 'Ordner 2. Ebene']);
 
       Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', testFolder]);
-/*
-
-      // TODO: why are created documents/folder deleted?
-      // Bug/Feature #2115: empty folders cannot be deleted
-      Tree.selectNodeWithTitle(docName);
-      DocumentPage.deleteLoadedNode();
-      cy.wait(300);
-      Tree.selectNodeWithTitle(testFolder);
-      DocumentPage.deleteLoadedNode();
-
-      Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', testFolder]);
-
-      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Testdokumente', 'Ordner 2. Ebene', testFolder]);
-*/
     });
 
     it('should copy a tree inside a folder to root', () => {
       const testFolder = 'copy me from a subfolder';
       const docName = 'iam under a folder';
 
-      Tree.selectNodeWithTitle('Testdokumente');
+      Tree.openNode(['Testdokumente']);
 
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
 
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
       CopyCutUtils.copyObjectWithTree();
 
-      Tree.selectNodeWithTitle('Testdokumente');
+      Tree.openNode(['Testdokumente']);
       Tree.openNode([testFolder]);
 
       Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
@@ -346,7 +332,7 @@ describe('Tree', () => {
       // Check path
       Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
 
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
       CopyCutUtils.move();
 
       // wait a bit after move so that we use the right dom state
@@ -362,7 +348,7 @@ describe('Tree', () => {
       // at the moment it's allowed since there's no harm
       const testFolder = 'move me into the same folder';
 
-      Tree.selectNodeWithTitle('Testdokumente');
+      Tree.openNode(['Testdokumente']);
       DocumentPage.createFolder(testFolder);
 
       CopyCutUtils.move(['Testdokumente']);
@@ -395,7 +381,7 @@ describe('Tree', () => {
 
       DocumentPage.createFolder(testFolder);
 
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
       CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
 
       Tree.selectNodeAndCheckPath(testFolder, ['Daten', 'Testdokumente', 'Ordner 2. Ebene']);
@@ -418,7 +404,7 @@ describe('Tree', () => {
 
       DocumentPage.createFolder(testFolder);
 
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
       CopyCutUtils.move(['Testdokumente']);
 
       Tree.selectNodeAndCheckPath(testFolder, ['Daten', 'Testdokumente']);
@@ -428,12 +414,12 @@ describe('Tree', () => {
       const testFolder = 'move me from a folder';
       const docName = 'iam under a folder';
 
-      Tree.selectNodeWithTitle('Testdokumente');
+      Tree.openNode(['Testdokumente']);
 
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
 
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
       CopyCutUtils.move();
 
       Tree.openNode([testFolder]);
@@ -448,7 +434,7 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName);
 
       // move from root to root
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
       CopyCutUtils.move();
 
       // wait a bit after move so that we use the right dom state
@@ -458,7 +444,7 @@ describe('Tree', () => {
       Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
 
       // move from root to a folder
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
       CopyCutUtils.move(['Neue Testdokumente']);
 
       // wait a bit after move so that we use the right dom state
@@ -468,7 +454,7 @@ describe('Tree', () => {
       Tree.selectNodeAndCheckPath(docName, ['Daten', 'Neue Testdokumente', testFolder]);
 
       // move from a folder to root
-      Tree.selectNodeWithTitle(testFolder);
+      Tree.openNode([testFolder]);
       CopyCutUtils.move();
 
       // wait a bit after move so that we use the right dom state
