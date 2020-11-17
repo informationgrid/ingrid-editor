@@ -60,3 +60,4 @@ frontend/cypress/mochawesome-reports/
 server/src/main/resources/static/
 server/server/build/tmp/
 /codelists/
+/server/codelists

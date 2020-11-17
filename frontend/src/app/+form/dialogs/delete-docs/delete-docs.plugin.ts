@@ -13,11 +13,17 @@ import {Router} from '@angular/router';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {EventService, IgeEvent} from '../../../services/event/event.service';
 import {filter, take} from 'rxjs/operators';
+import {DocumentAbstract} from '../../../store/document/document.model';
+import {TreeStore} from '../../../store/tree/tree.store';
+import {AddressTreeStore} from '../../../store/address-tree/address-tree.store';
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
   id = 'plugin.deleteDocs';
   _name = 'Delete Docs Plugin';
+
+  private tree: TreeQuery | AddressTreeQuery;
+  private treeStore: TreeStore | AddressTreeStore;
 
   get name() {
     return this._name;
@@ -37,6 +43,8 @@ export class DeleteDocsPlugin extends Plugin {
   register() {
     super.register();
 
+    this.setupFields();
+
     this.formToolbarService.addButton(
       {id: 'toolBtnRemove', tooltip: 'Löschen', matSvgVariable: 'outline-delete-24px', eventId: 'DELETE', pos: 100, active: false}
     );
@@ -45,7 +53,7 @@ export class DeleteDocsPlugin extends Plugin {
       this.formToolbarService.toolbarEvent$.subscribe(eventId => {
         if (eventId === 'DELETE') {
           this.eventService.sendEventAndContinueOnSuccess(IgeEvent.DELETE)
-            .subscribe( () => this.showDeleteDialog());
+            .subscribe(() => this.showDeleteDialog());
         }
       }),
 
@@ -63,12 +71,19 @@ export class DeleteDocsPlugin extends Plugin {
     );
   }
 
+  private setupFields() {
+    if (this.forAddress) {
+      this.tree = this.addressTreeQuery;
+    } else {
+      this.tree = this.treeQuery;
+    }
+  }
+
   showDeleteDialog() {
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
     // TODO: this strategy is used in several toolbar plugins to prevent too early execution
     //       when opening page and hitting a toolbar button
-    query.selectActive()
+    this.tree.selectActive()
       .pipe(
         filter(entity => entity !== undefined),
         take(1)
@@ -84,15 +99,33 @@ export class DeleteDocsPlugin extends Plugin {
               {text: 'Löschen', alignRight: true, id: 'confirm', emphasize: true}
             ]
           }
-        }).afterClosed().subscribe(response => {
-          if (response === 'confirm') {
-            this.deleteDocs(docs.map(doc => <string>doc.id));
-          }
-        });
+        }).afterClosed()
+          .pipe(filter(response => response === 'confirm'))
+          .subscribe(() => this.handleDeleteDocs(docs));
       });
   }
 
-  deleteDocs(docIdsToDelete: string[]) {
+  private handleDeleteDocs(docs: DocumentAbstract[]) {
+    const currentDoc = this.tree.getOpenedDocument();
+    this.deleteDocs(docs.map(doc => <string>doc.id));
+    this.selectParent(docs, currentDoc);
+  }
+
+  private selectParent(docs: DocumentAbstract[], currentDoc: DocumentAbstract) {
+    const route = this.forAddress ? '/address' : '/form';
+    const parent = currentDoc._parent;
+
+    if (parent) {
+      const currentDocToBeDeleted = docs.find(doc => doc.id === currentDoc.id) !== undefined;
+      if (currentDocToBeDeleted) {
+        this.router.navigate([route, {id: currentDoc._parent}]);
+      }
+    } else {
+      this.router.navigate([route]);
+    }
+  }
+
+  private deleteDocs(docIdsToDelete: string[]) {
     try {
 
       // const parents = this.treeQuery.getAll()
@@ -108,8 +141,6 @@ export class DeleteDocsPlugin extends Plugin {
       //   .filter(id => this.treeQuery.getCount(item => item._parent === id) === 0)
       //   .forEach( id => this.documentService.updateChildrenInfo(id, false));
 
-      const route = this.forAddress ? '/address' : '/form';
-      this.router.navigate([route]);
     } catch (ex) {
       console.error('Could not delete', ex);
     }
