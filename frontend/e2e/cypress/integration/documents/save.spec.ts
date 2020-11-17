@@ -236,7 +236,7 @@ describe('General create documents/folders', () => {
 
     it('should not possible to delete a non-empty folder  (#2115)', () => {
 
-      Tree.openNode(['Testdokumente']);
+      Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
 
       // check that selected node is not empty
       Tree.selectNodeAndCheckPath('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
@@ -245,7 +245,7 @@ describe('General create documents/folders', () => {
 
       cy.get(DocumentPage.Toolbar['Delete']).click();
 
-      cy.hasErrorDialog('Um Ordner zu löschen, müssen diese leer sein Testdokumente');
+      cy.hasErrorDialog('Um Ordner zu löschen, müssen diese leer sein');
 
     });
   });

@@ -106,7 +106,7 @@ describe('Tree', () => {
       DocumentPage.createFolder(dropFolder2);
 
       // to close for checking auto-expanding by hovered node
-      Tree.openNode([dropFolder]);
+      Tree.clickOnNodeWithTitle(dropFolder);
 
       Tree.openNode([dragAndDropFolder, docName]);
 
@@ -129,7 +129,7 @@ describe('Tree', () => {
       DocumentPage.createFolder(deepFolder3);
 
       // to close for checking auto-expanding by hovered node
-      Tree.openNode([deepFolder]);
+      Tree.clickOnNodeWithTitle(deepFolder);
 
       CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, deepFolder3], false);
 

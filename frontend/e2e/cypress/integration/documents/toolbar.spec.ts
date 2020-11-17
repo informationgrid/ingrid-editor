@@ -23,7 +23,7 @@ describe('Toolbar behavior', () => {
     DocumentPage.createFolder(testFolder);
 
     // Empty folder
-    Tree.selectNodeWithTitle(testFolder);
+    Tree.openNode([testFolder]);
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save']);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get("[aria-disabled='false']").contains("Kopieren")
@@ -32,7 +32,7 @@ describe('Toolbar behavior', () => {
 
     // Non Empty folder
     cy.get('body').type('{esc}')
-    Tree.selectNodeWithTitle('Testdokumente');
+    Tree.openNode(['Testdokumente']);
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Previous']);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get("[data-cy=copyMenu_COPY]").contains("Kopieren");
@@ -41,7 +41,7 @@ describe('Toolbar behavior', () => {
   });
 
   it('should activate specific buttons when a document is loaded', () => {
-    Tree.selectNodeWithTitle('Testdokumente');
+    Tree.openNode(['Testdokumente']);
     cy.get('#sidebar').findByText('Test mCLOUD Dokument').click();
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish', 'Previous']);
     cy.get(DocumentPage.Toolbar.Copy).click();
@@ -52,12 +52,12 @@ describe('Toolbar behavior', () => {
   });
 
   xit('should activate specific buttons when a published document is loaded', () => {
-    Tree.selectNodeWithTitle('ddd');
+    Tree.openNode(['ddd']);
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish']);
   });
 
   xit('should activate specific buttons when a published document with draft is loaded', () => {
-    Tree.selectNodeWithTitle('published with working');
+    Tree.openNode(['published with working']);
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Revert', 'Delete', 'Save', 'Publish']);
   });
 
