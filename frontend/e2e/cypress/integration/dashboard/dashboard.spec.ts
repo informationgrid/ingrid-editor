@@ -5,13 +5,13 @@ import {Address, AddressPage} from '../../pages/address.page';
 
 describe('Dashboard', () => {
 
-  before(() => {
-    cy.kcLogout();
+  beforeEach(() => {
     cy.kcLogin('user');
+    cy.visit('');
   });
 
-  beforeEach(() => {
-    cy.visit('');
+  afterEach(() => {
+    cy.kcLogout();
   });
 
   it('should be shown as initial page when visiting app', () => {

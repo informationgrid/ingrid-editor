@@ -71,7 +71,7 @@ export class Tree {
 
   private static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true, hierarchyLevel?: number, forceClick?: boolean) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
-    const query = exact ? new RegExp('^' + nodeTitle + '$') : nodeTitle;
+    const query = exact ? this.getRegExp(nodeTitle) : nodeTitle;
     if (hierarchyLevel === undefined) {
       cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
     } else {
@@ -115,5 +115,9 @@ export class Tree {
 
   static checkSelectedNodeHasNoChildren() {
     cy.get('mat-tree-node.active button.toggle .mat-icon.expander').should('not.be.visible');
+  }
+
+  private static getRegExp(nodeTitle: string): RegExp {
+    return new RegExp('^' + nodeTitle + '$')
   }
 }

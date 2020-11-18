@@ -5,13 +5,13 @@ import {enterMcloudDocTestData} from '../../../pages/enterMcloudDocTestData';
 
 describe('mCLOUD documents', function () {
 
-  before(() => {
-    cy.kcLogout();
+  beforeEach(() => {
     cy.kcLogin('user');
+    DocumentPage.visit();
   });
 
-  beforeEach(() => {
-    DocumentPage.visit();
+  afterEach(() => {
+    cy.kcLogout();
   });
 
   describe('Publish documents', () => {
@@ -20,7 +20,7 @@ describe('mCLOUD documents', function () {
     it('should show a validation error when a required field is not filled', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
 
-      DocumentPage.createDocument();
+      DocumentPage.createDocument('New mCLOUD Document');
 
       cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
       cy.get('[data-cy=toolbar_publish_now]').click();

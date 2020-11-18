@@ -1,17 +1,17 @@
-import {enterMcloudDocTestData} from "../../pages/enterMcloudDocTestData";
-import {DocumentPage} from "../../pages/document.page";
-import {Utils} from "../../pages/utils";
-import {Tree} from "../../pages/tree.partial";
+import {enterMcloudDocTestData} from '../../pages/enterMcloudDocTestData';
+import {DocumentPage} from '../../pages/document.page';
+import {Utils} from '../../pages/utils';
+import {Tree} from '../../pages/tree.partial';
 
 describe('Spatial References', () => {
 
-  before(() => {
-    cy.kcLogout();
+  beforeEach(() => {
     cy.kcLogin('user');
+    DocumentPage.visit();
   });
 
-  beforeEach(() => {
-    DocumentPage.visit();
+  afterEach(() => {
+    cy.kcLogout();
   });
 
   it('should create a new spatial reference (bbox)', () => {

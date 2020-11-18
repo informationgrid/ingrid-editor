@@ -4,13 +4,13 @@ import {AddressPage} from '../../pages/address.page';
 
 describe('Search', function () {
 
-  before(() => {
-    cy.kcLogout();
+  beforeEach(() => {
     cy.kcLogin('user');
+    cy.visit('');
   });
 
-  beforeEach(() => {
-    cy.visit('');
+  afterEach(() => {
+    cy.kcLogout();
   });
 
   it('should show quicksearch results while entering a searchterm', () => {

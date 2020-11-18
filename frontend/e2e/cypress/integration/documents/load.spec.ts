@@ -1,9 +1,14 @@
 import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
+import {beforeEach} from 'mocha';
 
 describe('Load documents', () => {
-  before(() => {
-    cy.kcLogout();
+
+  beforeEach(() => {
     cy.kcLogin('user');
+  });
+
+  afterEach(() => {
+    cy.kcLogout();
   });
 
   // tested in dashboard

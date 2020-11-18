@@ -5,16 +5,16 @@ import {Tree} from '../../pages/tree.partial';
 
 describe('General create addresses/folders', () => {
 
-  const createDialog = AddressPage.CreateDialog;
-
-  before(() => {
-    cy.kcLogout();
-    cy.kcLogin('user');
-  });
-
   beforeEach(() => {
+    cy.kcLogin('user');
     AddressPage.visit();
   });
+
+  afterEach(() => {
+    cy.kcLogout();
+  });
+
+  const createDialog = AddressPage.CreateDialog;
 
   describe('Create Folder', () => {
 
@@ -79,14 +79,12 @@ describe('General create addresses/folders', () => {
     });
 
     it('should create a root address', () => {
-      const docName = 'Root Test-Adresse ' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
       cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(`Adressen`);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
-      // cy.get('[data-cy=create-title]').type(docName);
       cy.get('[data-cy=create-address-firstName]').type('Herbert');
       cy.get('[data-cy=create-address-lastName]').type('Meier');
       cy.get('[data-cy=create-address-organization]').type('Ich AG');
@@ -99,13 +97,13 @@ describe('General create addresses/folders', () => {
     });
 
     it('should create an address folder', () => {
-      const folderName = 'Test-Adressen-Ordner ' + Utils.randomString();
+      const folderName = 'Adressen Ordner' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
-      Tree.selectNodeAndCheckPath(folderName, ['Adressen']);
+      Tree.openNode([folderName]);
       cy.get(DocumentPage.title).should('have.text', folderName)
     });
 
@@ -144,12 +142,9 @@ describe('General create addresses/folders', () => {
       AddressPage.createAddress(new Address('publishErrorTest'));
 
       cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
-      AddressPage.publishNow();
+      AddressPage.publishIsUnsuccessful();
 
-      cy.hasErrorDialog('Es müssen alle Felder korrekt');
-      cy.get('[data-cy="error-dialog-close"]').click();
-
-      cy.get('[data-cy="Kommunikation"]').contains('Bitte erstellen Sie mindestens einen Eintrag');
+      cy.get('[data-cy="Kontakt"]').contains('Bitte erstellen Sie mindestens einen Eintrag');
       AddressPage.deleteLoadedNode();
     });
   });

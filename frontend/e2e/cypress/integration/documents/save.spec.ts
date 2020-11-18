@@ -1,21 +1,18 @@
 import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
-import {CopyCutUtils} from "../../pages/copy-cut-utils";
-import {enterMcloudDocTestData} from "../../pages/enterMcloudDocTestData";
-import {DivOverlay} from "leaflet";
+import {enterMcloudDocTestData} from '../../pages/enterMcloudDocTestData';
 
 describe('General create documents/folders', () => {
 
-  before(() => {
-    cy.kcLogout();
-    cy.kcLogin('user');
-  });
-
   beforeEach(() => {
+    cy.kcLogin('user');
     DocumentPage.visit();
   });
 
+  afterEach(() => {
+    cy.kcLogout();
+  });
 
   describe('Create documents', () => {
     it('should create a root document', () => {

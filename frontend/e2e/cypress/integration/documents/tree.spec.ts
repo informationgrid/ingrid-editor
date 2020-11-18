@@ -3,15 +3,16 @@ import {CopyCutUtils} from '../../pages/copy-cut-utils';
 import {Tree} from '../../pages/tree.partial';
 import {Utils} from '../../pages/utils';
 
-before(() => {
-  cy.kcLogin('user');
-});
-
-beforeEach(() => {
-  cy.visit('form');
-});
-
 describe('Tree', () => {
+
+  beforeEach(() => {
+    cy.kcLogin('user');
+    cy.visit('form');
+  });
+
+  afterEach(() => {
+    cy.kcLogout();
+  });
 
   const dragAndDropFolder = 'Drag\'n\'Drop';
 

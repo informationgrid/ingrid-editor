@@ -1,15 +1,18 @@
 import {DocumentPage, SEPARATOR} from '../../pages/document.page';
 import {AddressPage, ROOT} from '../../pages/address.page';
 
-describe('Load addresses', function () {
-  before(() => {
-    cy.kcLogin('user');
-  });
+describe('Load addresses', () => {
+
   beforeEach(() => {
+    cy.kcLogin('user');
     AddressPage.visit();
   });
 
-  it('should show a dashboard view when no address is selected or in root element', function () {
+  afterEach(() => {
+    cy.kcLogout();
+  });
+
+  it('should show a dashboard view when no address is selected or in root element', () => {
     cy.get('ige-address-dashboard').should('contain', 'Adressen').should('contain', 'Neue Adresse');
     // expect(cy.get('ige-address-dashboard')).to.contain('text');
     cy.visit('/address;id=4ff589e1-d83c-4856-8bae-2ae783f69da6');
@@ -40,7 +43,7 @@ describe('Load addresses', function () {
     cy.get(DocumentPage.title).should('have.text', 'Testorganisation');
   });
 
-  it('should open the previously selected address when going to another page and returning', function () {
+  it('should open the previously selected address when going to another page and returning', () => {
     const addressTitle = 'Testorganisation'
     cy.get('#sidebar').findByText('Testadressen').click();
     cy.get('#sidebar').findByText(addressTitle).click();
@@ -52,5 +55,4 @@ describe('Load addresses', function () {
 
   });
 
-})
-
+});
