@@ -299,13 +299,10 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
 
-      Tree.openNode([testFolder]);
+      Tree.openNode(['Testdokumente', testFolder]);
       CopyCutUtils.copyObjectWithTree();
 
-      Tree.openNode(['Testdokumente']);
-      Tree.openNode([testFolder]);
-
-      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
+      Tree.openNode([testFolder, docName]);
     });
   });
 
@@ -313,8 +310,8 @@ describe('Tree', () => {
 
     it('should be possible to move a root node under the root node', () => {
       // at the moment it's allowed since there's no harm
-      const testFolder = 'move me under root node ' + Utils.randomString();
-      const docName = 'document level 2 ' + Utils.randomString();
+      const testFolder = 'move me under root node' + Utils.randomString();
+      const docName = 'document level 2' + Utils.randomString();
 
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
@@ -417,8 +414,8 @@ describe('Tree', () => {
     });
 
     it('should move a folder with sub-tree without splitting them (#2091)', () => {
-      const testFolder = 'move me ' + Utils.randomString();
-      const docName = 'level two ' + Utils.randomString();
+      const testFolder = 'move me' + Utils.randomString();
+      const docName = 'level two' + Utils.randomString();
 
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);

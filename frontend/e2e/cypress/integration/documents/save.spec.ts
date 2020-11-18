@@ -17,7 +17,7 @@ describe('General create documents/folders', () => {
   describe('Create documents', () => {
     it('should create a root document', () => {
 
-      const docName = 'Root Test-Dokument ' + Utils.randomString();
+      const docName = 'Root Test Dokument ' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
@@ -45,14 +45,14 @@ describe('General create documents/folders', () => {
       const folderName = 'x: a folder at place x';
 
       Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
-      Tree.selectNodeAndCheckPath('Test mCLOUD Dokument',[ROOT, 'Testdokumente']);
+      Tree.selectNodeAndCheckPath('Test mCLOUD Dokument', [ROOT, 'Testdokumente']);
 
       DocumentPage.createFolderAndChangeLocationToRoot(folderName, [ROOT]);
-      //check if created folder is in root
+      // check if created folder is in root
       Tree.selectNodeAndCheckPath(folderName, [ROOT]);
 
-      //check if at beginning selected document is at the same place as before
-      Tree.selectNodeAndCheckPath('Test mCLOUD Dokument',[ROOT, 'Testdokumente']);
+      // check if at beginning selected document is at the same place as before
+      Tree.selectNodeAndCheckPath('Test mCLOUD Dokument', [ROOT, 'Testdokumente']);
     });
 
     it('should not be possible to publish folders', function () {
@@ -64,9 +64,9 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
     });
 
-    it('should create a root folder', () => {
+    it.only('should create a root folder', () => {
 
-      const folderName = 'Root Ordner ' + Utils.randomString();
+      const folderName = 'Root Ordner' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
 
@@ -87,7 +87,7 @@ describe('General create documents/folders', () => {
     it('should create a folder below a root folder which was selected before', () => {
 
       const parentFolder = 'Neue Testdokumente';
-      const folderName = 'Unterordner ' + Utils.randomString();
+      const folderName = 'Unterordner' + Utils.randomString();
 
       Tree.openNode([parentFolder]);
 
@@ -104,7 +104,7 @@ describe('General create documents/folders', () => {
 
     it('should create a folder by switching location in dialog to \'Daten\' when a root folder was selected initially', () => {
       const parentFolder = 'Neue Testdokumente';
-      const folderName = 'Root Ordner ' + Utils.randomString();
+      const folderName = 'Root Ordner' + Utils.randomString();
 
       Tree.openNode([parentFolder]);
 

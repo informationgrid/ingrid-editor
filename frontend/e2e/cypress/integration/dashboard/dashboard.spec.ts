@@ -52,7 +52,7 @@ describe('Dashboard', () => {
     it('should create a new folder', () => {
       cy.get('.shortcut').contains('Neuer Ordner').click();
 
-      const folderName = 'Test-Ordner aus dashboard button ' + Utils.randomString();
+      const folderName = 'Test Ordner aus dashboard button' + Utils.randomString();
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
@@ -62,7 +62,7 @@ describe('Dashboard', () => {
     it('should create a new document', () => {
       cy.get('.shortcut').contains('Neuer Datensatz').click();
 
-      const dataName = 'Test-Datensatz aus dashboard button ' + Utils.randomString();
+      const dataName = 'Test Datensatz aus dashboard button' + Utils.randomString();
       cy.get('[data-cy=create-title]').type(dataName);
       cy.get('[data-cy=create-action]').click();
 
@@ -73,7 +73,7 @@ describe('Dashboard', () => {
     it('should create a new address', () => {
       cy.get('.shortcut').contains('Neue Adresse').click();
 
-      const instuteName = 'Test-Adresse aus dashboard button ' + Utils.randomString();
+      const instuteName = 'Test Adresse aus dashboard button ' + Utils.randomString();
       AddressPage.CreateDialog.fill(new Address('', '', instuteName));
       cy.get('[data-cy=create-action]').click();
 

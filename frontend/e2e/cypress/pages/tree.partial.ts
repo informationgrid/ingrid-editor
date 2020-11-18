@@ -81,6 +81,8 @@ export class Tree {
         const treeNodeParent = node.parent().parent().parent();
         if (forceClick || !treeNodeParent.hasClass('expanded')) {
           node.trigger('click');
+          // give some time to add open state
+          cy.wait(100);
         }
       });
     }
