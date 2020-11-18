@@ -64,7 +64,7 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
     });
 
-    it.only('should create a root folder', () => {
+    it('should create a root folder', () => {
 
       const folderName = 'Root Ordner' + Utils.randomString();
 
