@@ -82,12 +82,14 @@ export class DocumentPage extends BasePage {
     cy.visit('form;id=7e9687e8-43f4-4b95-bdcb-27647197a8cb');
   }
 
-  static createDocument(docName?: string): string {
+  static createDocument(docName: string): string {
+    cy.log('Create Document: ' + docName);
     cy.get(DocumentPage.Toolbar.NewDoc).click();
     return this.fillCreateDialog(docName);
   }
 
-  static createFolder(folderName?: string): string {
+  static createFolder(folderName: string): string {
+    cy.log('Create folder: ' + folderName);
     cy.get(DocumentPage.Toolbar.NewFolder).click();
     return this.fillCreateDialog(folderName);
   }

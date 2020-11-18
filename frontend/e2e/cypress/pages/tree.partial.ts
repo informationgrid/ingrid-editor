@@ -56,10 +56,17 @@ export class Tree {
     targetNodePath.forEach((node, index) => {
       Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === (targetNodePath.length - 1));
     });
-    if (!isInsideDialog){
-      // check if opened node has correct breadcrumb so we loaded correct document
-      this.checkPath(['Daten', ...targetNodePath.filter((item, index) => index !== targetNodePath.length - 1)]);
+    if (!isInsideDialog) {
+      this.determineRootAndCheckPath(targetNodePath);
     }
+  }
+
+  // check if opened node has correct breadcrumb so we loaded correct document
+  private static determineRootAndCheckPath(nodePath: string[]) {
+    cy.url().then(url => {
+      const docRoot = url.indexOf('/form') !== -1 ? 'Daten' : 'Adressen';
+      this.checkPath([docRoot, ...nodePath.filter((item, index) => index !== nodePath.length - 1)]);
+    })
   }
 
   private static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true, hierarchyLevel?: number, forceClick?: boolean) {

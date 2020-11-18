@@ -2,11 +2,10 @@ import {DocumentPage} from '../../pages/document.page';
 import {Utils} from '../../pages/utils';
 import {Address, AddressPage} from '../../pages/address.page';
 import {Tree} from '../../pages/tree.partial';
-import {CopyCutUtils} from "../../pages/copy-cut-utils";
 
 describe('General create addresses/folders', () => {
 
-  const dialog = AddressPage.CreateDialog;
+  const createDialog = AddressPage.CreateDialog;
 
   before(() => {
     cy.kcLogout();
@@ -40,43 +39,43 @@ describe('General create addresses/folders', () => {
   describe('Create Addresses', () => {
 
     it('should allow creation if one of firstname, lastname or organization was filled', () => {
-      dialog.open();
+      createDialog.open();
       cy.get('[data-cy=create-action]').should('be.disabled');
 
-      dialog.fill(new Address('Thomas'));
+      createDialog.fill(new Address('Thomas'));
       cy.get('[data-cy=create-action]').should('be.enabled');
 
-      dialog.fill(new Address('', 'Herbst'));
+      createDialog.fill(new Address('', 'Herbst'));
       cy.get('[data-cy=create-action]').should('be.enabled');
 
-      dialog.fill(new Address('', '', 'Ich AG'));
+      createDialog.fill(new Address('', '', 'Ich AG'));
       cy.get('[data-cy=create-action]').should('be.enabled');
 
-      dialog.fill(new Address('', '', ''));
+      createDialog.fill(new Address('', '', ''));
       cy.get('[data-cy=create-action]').should('be.disabled');
     });
 
     it('should show correct breadcrumb depending on initial state and changing it', () => {
-      dialog.open();
+      createDialog.open();
 
       // initial root
-      dialog.checkPath(['Adressen']);
+      createDialog.checkPath(['Adressen']);
 
       // change location in dialog
-      dialog.changeLocation('Testadressen');
+      createDialog.changeLocation('Testadressen');
 
-      dialog.checkPath(['Adressen', 'Testadressen']);
+      createDialog.checkPath(['Adressen', 'Testadressen']);
 
       // reopen dialog should show root again
-      dialog.cancel();
-      dialog.open();
-      dialog.checkPath(['Adressen']);
+      createDialog.cancel();
+      createDialog.open();
+      createDialog.checkPath(['Adressen']);
 
       // click on folder before open dialog
-      dialog.cancel();
+      createDialog.cancel();
       Tree.openNode(['Neue Testadressen']);
-      dialog.open();
-      dialog.checkPath(['Adressen', 'Neue Testadressen']);
+      createDialog.open();
+      createDialog.checkPath(['Adressen', 'Neue Testadressen']);
     });
 
     it('should create a root address', () => {
