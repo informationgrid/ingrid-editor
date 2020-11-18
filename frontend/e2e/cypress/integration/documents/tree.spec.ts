@@ -194,16 +194,10 @@ describe('Tree', () => {
     });
 
     it('should copy a root document into a folder', () => {
-      const docName = 'copy me into a folder';
-
-      // expand node and check child does not exist yet
-      Tree.openNode(['Testdokumente']);
-      Tree.containsNotNodeWithTitle(docName, 2);
-
-      // go back to root
-      cy.get('ige-form-info ige-breadcrumb .selectable').click();
+      const docName = 'copy me into a folder' + Utils.randomString();
 
       DocumentPage.createDocument(docName);
+
       let newDocUrl;
       return cy.url().then( url => {
         // remember URL from created document
