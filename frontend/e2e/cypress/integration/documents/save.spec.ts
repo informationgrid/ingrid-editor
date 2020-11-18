@@ -17,7 +17,7 @@ describe('General create documents/folders', () => {
   describe('Create documents', () => {
     it('should create a root document', () => {
 
-      const docName = 'Root Test Dokument ' + Utils.randomString();
+      const docName = 'Root Test Dokument' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
@@ -117,7 +117,7 @@ describe('General create documents/folders', () => {
 
     it('should create a folder by switching location in dialog to a sub folder when no node was selected initially', () => {
       const parentFolder = 'Neue Testdokumente';
-      const folderName = 'Unterordner ' + Utils.randomString();
+      const folderName = 'Unterordner' + Utils.randomString();
 
       DocumentPage.createFolderAndChangeLocation(folderName, [parentFolder]);
 
@@ -132,7 +132,6 @@ describe('General create documents/folders', () => {
 
       DocumentPage.createFolder(folderName);
       cy.get(DocumentPage.title).should('have.text', folderName);
-      cy.wait(500);
       DocumentPage.createDocument(childName);
       cy.get(DocumentPage.title).should('have.text', childName);
 
@@ -142,15 +141,18 @@ describe('General create documents/folders', () => {
 
       cy.get('[data-cy=error-dialog-close]').click();
 
+      // first delete child
       Tree.openNode([folderName, childName]);
       cy.get(DocumentPage.title).should('have.text', childName);
       DocumentPage.deleteLoadedNode();
       cy.wait(500);
+
+      // the delete parent
       Tree.openNode([folderName]);
       DocumentPage.deleteLoadedNode();
 
       cy.get('#sidebar').findByText(folderName).should('not.exist');
-      cy.url().should('be', 'form');
+      cy.url().should('match', /form$/);
 
     });
   });
