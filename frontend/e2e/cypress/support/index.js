@@ -20,8 +20,14 @@ Cypress.on('test:after:run', (test, runnable) => {
       .filter(Boolean)
       .join(' -- ')           // this is how cypress joins the test title fragments
 
+    const firstTestStart = runnable.parent.tests[0].wallClockStartedAt;
+    const startTimeOffset = Math.round(
+      (test.wallClockStartedAt - firstTestStart) / 1000
+    );
+    debugger;
+
     addContext({test}, `assets/${Cypress.spec.name}/${fullTestName} (failed).png`);
-    addContext({test}, `assets/${Cypress.spec.name}.mp4`);
+    addContext({test}, `assets/${Cypress.spec.name}.mp4#t=${startTimeOffset}`);
   }
 });
 
