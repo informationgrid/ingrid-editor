@@ -15,18 +15,14 @@
                 <ng-container *ngIf="isFolder || !forAddress; else addressForm">
                     <div class="dlg-field-label required">Titel*</div>
                     <mat-form-field appearance="outline" [igeFocus]="true">
-                        <textarea matInput
+                        <input matInput
                                formControlName="title"
                                data-cy="create-title"
                                placeholder="Eingeben..."
                                igeFocus
-                               cdkTextareaAutosize
-                               cdkAutosizeMinRows="1"
-                               cdkAutosizeMaxRows="5"
                                autocomplete="off"
                                (keyup.enter)="handleCreate()"
                                required>
-                        </textarea>
                         <mat-error>Bitte geben Sie einen Titel ein</mat-error>
                     </mat-form-field>
 
