@@ -1,10 +1,9 @@
-import {DashboardPage} from '../../pages/dashboard.page';
-import {DocumentPage} from '../../pages/document.page';
-import {Utils} from '../../pages/utils';
-import {Address, AddressPage} from '../../pages/address.page';
+import { DashboardPage } from '../../pages/dashboard.page';
+import { DocumentPage } from '../../pages/document.page';
+import { Utils } from '../../pages/utils';
+import { Address, AddressPage } from '../../pages/address.page';
 
 describe('Dashboard', () => {
-
   beforeEach(() => {
     cy.kcLogin('user');
     cy.visit('');
@@ -19,9 +18,7 @@ describe('Dashboard', () => {
     cy.url().should('include', '/dashboard');
   });
 
-  xit('should show correct number of published and draft documents in chart', function () {
-
-  });
+  xit('should show correct number of published and draft documents in chart', function () {});
 
   it('should load a document from dashboard from latest docs box', () => {
     DashboardPage.getLatestDocTitle(1).then(text => {
@@ -32,7 +29,6 @@ describe('Dashboard', () => {
   });
 
   describe('Search', () => {
-
     it('should open a document from a quick search result', () => {
       DashboardPage.search('Feature-Übersicht');
       DashboardPage.getSearchResult(1).click();
@@ -56,7 +52,7 @@ describe('Dashboard', () => {
       cy.get('[data-cy=create-title]').type(folderName);
       cy.get('[data-cy=create-action]').click();
 
-      cy.get(DocumentPage.title, {timeout: 10000}).should('have.text', folderName);
+      cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', folderName);
     });
 
     it('should create a new document', () => {
@@ -66,8 +62,7 @@ describe('Dashboard', () => {
       cy.get('[data-cy=create-title]').type(dataName);
       cy.get('[data-cy=create-action]').click();
 
-      cy.get(DocumentPage.title, {timeout: 10000}).should('have.text', dataName);
-
+      cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', dataName);
     });
 
     it('should create a new address', () => {
@@ -77,7 +72,7 @@ describe('Dashboard', () => {
       AddressPage.CreateDialog.fill(new Address('', '', instuteName));
       cy.get('[data-cy=create-action]').click();
 
-      cy.get(AddressPage.title, {timeout: 10000}).should('have.text', instuteName);
+      cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', instuteName);
     });
   });
 });

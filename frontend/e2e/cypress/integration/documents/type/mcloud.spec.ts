@@ -1,10 +1,9 @@
-import {DocumentPage} from '../../../pages/document.page';
-import {AddressPage} from '../../../pages/address.page';
-import {Tree} from '../../../pages/tree.partial';
-import {enterMcloudDocTestData} from '../../../pages/enterMcloudDocTestData';
+import { DocumentPage } from '../../../pages/document.page';
+import { AddressPage } from '../../../pages/address.page';
+import { Tree } from '../../../pages/tree.partial';
+import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 
 describe('mCLOUD documents', function () {
-
   beforeEach(() => {
     cy.kcLogin('user');
     DocumentPage.visit();
@@ -81,7 +80,7 @@ describe('mCLOUD documents', function () {
         organization: 'org',
         title: 'APICallPublishedAdr',
         _type: 'AddressDoc',
-        contact: [{type: 1, connection: '0123456789'}]
+        contact: [{ type: 1, connection: '0123456789' }]
       };
 
       DocumentPage.checkURL('/form');
@@ -91,6 +90,5 @@ describe('mCLOUD documents', function () {
       DocumentPage.checkURL('/address');
       Tree.containsNodeWithTitle('APICallPublishedAdr');
     });
-
   });
 });

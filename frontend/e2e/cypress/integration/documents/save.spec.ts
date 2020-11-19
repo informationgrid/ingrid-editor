@@ -1,10 +1,9 @@
-import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
-import {Tree} from '../../pages/tree.partial';
-import {Utils} from '../../pages/utils';
-import {enterMcloudDocTestData} from '../../pages/enterMcloudDocTestData';
+import { DocumentPage, ROOT, SEPARATOR } from '../../pages/document.page';
+import { Tree } from '../../pages/tree.partial';
+import { Utils } from '../../pages/utils';
+import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 
 describe('General create documents/folders', () => {
-
   beforeEach(() => {
     cy.kcLogin('user');
     DocumentPage.visit();
@@ -16,7 +15,6 @@ describe('General create documents/folders', () => {
 
   describe('Create documents', () => {
     it('should create a root document', () => {
-
       const docName = 'Root Test Dokument' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
@@ -26,21 +24,14 @@ describe('General create documents/folders', () => {
 
       cy.get('[data-cy=create-title]').type(docName);
 
-      cy.get('[data-cy=create-action]')
-        .should('be.enabled')
-        .click();
+      cy.get('[data-cy=create-action]').should('be.enabled').click();
 
       Tree.containsNodeWithTitle(docName);
       cy.get(DocumentPage.title).should('have.text', docName);
-
     });
-
-
   });
 
-
   describe('Create folders', () => {
-
     it('should insert new folder at correct place in tree (#1990)', function () {
       const folderName = 'x: a folder at place x';
 
@@ -65,7 +56,6 @@ describe('General create documents/folders', () => {
     });
 
     it('should create a root folder', () => {
-
       const folderName = 'Root Ordner' + Utils.randomString();
 
       cy.get(DocumentPage.Toolbar.NewFolder).click();
@@ -75,17 +65,13 @@ describe('General create documents/folders', () => {
 
       cy.get('[data-cy=create-title]').type(folderName);
 
-      cy.get('[data-cy=create-action]')
-        .should('be.enabled')
-        .click();
+      cy.get('[data-cy=create-action]').should('be.enabled').click();
 
       Tree.containsNodeWithTitle(folderName);
       cy.get(DocumentPage.title).should('have.text', folderName);
-
     });
 
     it('should create a folder below a root folder which was selected before', () => {
-
       const parentFolder = 'Neue Testdokumente';
       const folderName = 'Unterordner' + Utils.randomString();
 
@@ -98,11 +84,10 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=create-action]').click();
 
       Tree.containsNodeWithTitle(folderName, 2);
-      Tree.selectNodeAndCheckPath(folderName, ['Daten', parentFolder])
-
+      Tree.selectNodeAndCheckPath(folderName, ['Daten', parentFolder]);
     });
 
-    it('should create a folder by switching location in dialog to \'Daten\' when a root folder was selected initially', () => {
+    it("should create a folder by switching location in dialog to 'Daten' when a root folder was selected initially", () => {
       const parentFolder = 'Neue Testdokumente';
       const folderName = 'Root Ordner' + Utils.randomString();
 
@@ -112,7 +97,6 @@ describe('General create documents/folders', () => {
 
       Tree.containsNodeWithTitle(folderName, 1);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT);
-
     });
 
     it('should create a folder by switching location in dialog to a sub folder when no node was selected initially', () => {
@@ -123,7 +107,6 @@ describe('General create documents/folders', () => {
 
       Tree.containsNodeWithTitle(folderName, 2);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
-
     });
 
     it('should delete a folder with no children', () => {
@@ -153,10 +136,8 @@ describe('General create documents/folders', () => {
 
       cy.get('#sidebar').findByText(folderName).should('not.exist');
       cy.url().should('match', /form$/);
-
     });
   });
-
 
   describe('Dirty checks', () => {
     it('should show a dialog when a document was modified and another document was clicked', () => {
@@ -181,7 +162,6 @@ describe('General create documents/folders', () => {
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-save]').click();
       Tree.checkTitleOfSelectedNode('Testdokumente');
-
     });
 
     it('should show a dialog when a document was modified and the page was changed', () => {
@@ -207,12 +187,10 @@ describe('General create documents/folders', () => {
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
       cy.get(DocumentPage.title).should('not.exist');
-
     });
 
     it('should not remember last dirty state when page has been left (#2121)', () => {
-
-      Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument'])
+      Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument']);
       enterMcloudDocTestData.setDescription('modified test description');
 
       cy.wait(500);
@@ -230,11 +208,9 @@ describe('General create documents/folders', () => {
       Tree.openNode(['Testdokumente']);
 
       cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
-
     });
 
     it('should not possible to delete a non-empty folder  (#2115)', () => {
-
       Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
 
       // check that selected node is not empty
@@ -245,7 +221,6 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.Toolbar['Delete']).click();
 
       cy.hasErrorDialog('Um Ordner zu löschen, müssen diese leer sein');
-
     });
   });
 });

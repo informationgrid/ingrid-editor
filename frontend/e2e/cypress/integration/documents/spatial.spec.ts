@@ -1,10 +1,9 @@
-import {enterMcloudDocTestData} from '../../pages/enterMcloudDocTestData';
-import {DocumentPage} from '../../pages/document.page';
-import {Utils} from '../../pages/utils';
-import {Tree} from '../../pages/tree.partial';
+import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { DocumentPage } from '../../pages/document.page';
+import { Utils } from '../../pages/utils';
+import { Tree } from '../../pages/tree.partial';
 
 describe('Spatial References', () => {
-
   beforeEach(() => {
     cy.kcLogin('user');
     DocumentPage.visit();
@@ -15,7 +14,7 @@ describe('Spatial References', () => {
   });
 
   it('should create a new spatial reference (bbox)', () => {
-    const docName = 'spatialbbox-' + Utils.randomString()
+    const docName = 'spatialbbox-' + Utils.randomString();
 
     DocumentPage.createDocument(docName);
     enterMcloudDocTestData.setSpatialBbox('create spatial reference, bbox', 'Bremen');
@@ -25,8 +24,8 @@ describe('Spatial References', () => {
   });
 
   it('should create a new spatial reference (WKT)', () => {
-    const docName = 'spatialwkt-' + Utils.randomString()
-    const poly = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))'
+    const docName = 'spatialwkt-' + Utils.randomString();
+    const poly = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))';
 
     DocumentPage.createDocument(docName);
     enterMcloudDocTestData.setSpatialWKT('create spatial reference, wkt-1', poly);
@@ -36,7 +35,7 @@ describe('Spatial References', () => {
   });
 
   it('should add additional a spatial reference (bbox)', () => {
-    const docNameBbox = 'spatialbbox-' + Utils.randomString()
+    const docNameBbox = 'spatialbbox-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxWithAPI(docNameBbox, false);
     Tree.openNode(['api-' + docNameBbox]);
@@ -55,8 +54,8 @@ describe('Spatial References', () => {
   });
 
   it('should add additional a spatial reference (WKT)', () => {
-    const poly = 'POLYGON((1 5, 5 9, 1 7, 2 1, 3 5)(5 5, 5 7, 7 7, 7 5, 5 5))'
-    const docNameBbox = 'spatialwkt-' + Utils.randomString()
+    const poly = 'POLYGON((1 5, 5 9, 1 7, 2 1, 3 5)(5 5, 5 7, 7 7, 7 5, 5 5))';
+    const docNameBbox = 'spatialwkt-' + Utils.randomString();
 
     DocumentPage.CreateSpatialWKTWithAPI(docNameBbox, false);
     Tree.openNode(['api-' + docNameBbox]);
@@ -74,7 +73,7 @@ describe('Spatial References', () => {
   });
 
   it('should update a spatial reference (bbox)', () => {
-    const docName = 'spatial-' + Utils.randomString()
+    const docName = 'spatial-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
     Tree.openNode(['api-' + docName]);
@@ -89,8 +88,8 @@ describe('Spatial References', () => {
   });
 
   it('should update a spatial reference (WKT)', () => {
-    const docName = 'spatial-' + Utils.randomString()
-    const poly = 'POLYGON((10 5, 1 6, 1 7, 2 1, 3 5)(8 5, 5 7, 2 7, 3 5, 5 8))'
+    const docName = 'spatial-' + Utils.randomString();
+    const poly = 'POLYGON((10 5, 1 6, 1 7, 2 1, 3 5)(8 5, 5 7, 2 7, 3 5, 5 8))';
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
     Tree.openNode(['api-' + docName]);
@@ -105,7 +104,7 @@ describe('Spatial References', () => {
   });
 
   it('should remove spatial references', () => {
-    const docName = 'spatialToDelete-' + Utils.randomString()
+    const docName = 'spatialToDelete-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
     Tree.openNode(['api-' + docName]);
@@ -117,14 +116,11 @@ describe('Spatial References', () => {
     DocumentPage.checkSpatialEntryExistsNot('Berlin');
 
     // delete a wkt entry
-    enterMcloudDocTestData.openSpatialMenuDoc('create spatial reference, wkt-1')
+    enterMcloudDocTestData.openSpatialMenuDoc('create spatial reference, wkt-1');
     enterMcloudDocTestData.deleteSpatialReference('create spatial reference, wkt-1');
 
     DocumentPage.checkSpatialEntryExistsNot('create spatial reference, wkt-1');
   });
 
-  xit('should focus on a selected spatial reference and also reset view after pressing reset button', () => {
-
-  });
-
+  xit('should focus on a selected spatial reference and also reset view after pressing reset button', () => {});
 });

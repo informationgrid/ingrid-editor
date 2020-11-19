@@ -1,7 +1,6 @@
-import {DocumentPage, SEPARATOR} from './document.page';
+import { DocumentPage, SEPARATOR } from './document.page';
 
 export class Tree {
-
   static clickOnNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? new RegExp('^' + nodeTitle + '$') : nodeTitle;
@@ -17,12 +16,12 @@ export class Tree {
   }
 
   private static checkNodeWithTitle(text: string, level?: number, invert?: boolean) {
-
     const exactText = new RegExp('^' + text + '$');
     if (invert) {
       if (level) {
         cy.contains('mat-tree mat-tree-node .label span', exactText)
-          .parent().parent()
+          .parent()
+          .parent()
           .should('not.have.attr', 'aria-level', level.toString());
       } else {
         cy.contains('mat-tree mat-tree-node .label span', exactText).should('not.exist');
@@ -33,13 +32,10 @@ export class Tree {
     const label = cy.contains('mat-tree mat-tree-node .label', exactText);
 
     if (level !== undefined) {
-      return label
-        .parent().parent()
-        .should('have.attr', 'aria-level', level.toString());
+      return label.parent().parent().should('have.attr', 'aria-level', level.toString());
     } else {
       return label;
     }
-
   }
 
   static deleteNode(nodePath: string[]) {
@@ -54,7 +50,7 @@ export class Tree {
   static openNode(targetNodePath: string[], isInsideDialog: boolean = false) {
     cy.log('Open node: ' + targetNodePath.join(' -> '));
     targetNodePath.forEach((node, index) => {
-      Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === (targetNodePath.length - 1));
+      Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === targetNodePath.length - 1);
     });
     if (!isInsideDialog) {
       this.determineRootAndCheckPath(targetNodePath);
@@ -66,10 +62,16 @@ export class Tree {
     cy.url().then(url => {
       const docRoot = url.indexOf('/form') !== -1 ? 'Daten' : 'Adressen';
       this.checkPath([docRoot, ...nodePath.filter((item, index) => index !== nodePath.length - 1)]);
-    })
+    });
   }
 
-  private static selectNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true, hierarchyLevel?: number, forceClick?: boolean) {
+  private static selectNodeWithTitle(
+    nodeTitle: string,
+    isInsideDialog = false,
+    exact = true,
+    hierarchyLevel?: number,
+    forceClick?: boolean
+  ) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? this.getRegExp(nodeTitle) : nodeTitle;
     if (hierarchyLevel === undefined) {
@@ -77,14 +79,15 @@ export class Tree {
     } else {
       // only click on node if it isn't expanded
       cy.get(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"]`)
-        .contains('.label span', query).then(node => {
-        const treeNodeParent = node.parent().parent().parent();
-        if (forceClick || !treeNodeParent.hasClass('expanded')) {
-          node.trigger('click');
-          // give some time to add open state
-          cy.wait(100);
-        }
-      });
+        .contains('.label span', query)
+        .then(node => {
+          const treeNodeParent = node.parent().parent().parent();
+          if (forceClick || !treeNodeParent.hasClass('expanded')) {
+            node.trigger('click');
+            // give some time to add open state
+            cy.wait(100);
+          }
+        });
     }
     if (!isInsideDialog) {
       // cy.get(DocumentPage.title).should('have.text', nodeTitle);
@@ -92,8 +95,7 @@ export class Tree {
   }
 
   static getNumberOfNodes(): Cypress.Chainable<number> {
-    return cy.get('mat-tree mat-tree-node')
-      .its('length');
+    return cy.get('mat-tree mat-tree-node').its('length');
   }
 
   static selectNodeAndCheckPath(nodeTitle: string, path: string[]) {
@@ -124,6 +126,6 @@ export class Tree {
   }
 
   private static getRegExp(nodeTitle: string): RegExp {
-    return new RegExp('^' + nodeTitle + '$')
+    return new RegExp('^' + nodeTitle + '$');
   }
 }

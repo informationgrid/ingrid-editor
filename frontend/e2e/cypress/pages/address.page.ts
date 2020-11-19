@@ -1,17 +1,14 @@
-import {DocumentPage, SEPARATOR} from './document.page';
-import {Tree} from './tree.partial';
-import {Utils} from "./utils";
+import { DocumentPage, SEPARATOR } from './document.page';
+import { Tree } from './tree.partial';
+import { Utils } from './utils';
 
 export class Address {
-  constructor(public firstName?: string, public lastName?: string, public organization?: string) {
-  }
+  constructor(public firstName?: string, public lastName?: string, public organization?: string) {}
 }
 export const ROOT = `Adressen`;
 
 export class AddressPage extends DocumentPage {
-
   static CreateDialog = class extends DocumentPage.CreateDialog {
-
     static fill(address: Address, targetTreePath: string[] = ['Adressen']) {
       AddressPage.type('create-address-firstName', address.firstName);
       AddressPage.type('create-address-lastName', address.lastName);
@@ -21,19 +18,19 @@ export class AddressPage extends DocumentPage {
         cy.get('[data-cy=create-changeLocation]').click();
         cy.get('ige-destination-selection mat-list-option').click();
         //check if 'Adressen' is chosen
-        cy.get("[aria-selected=true]").contains("Adressen");
+        cy.get('[aria-selected=true]').contains('Adressen');
         cy.get('[data-cy=create-applyLocation]').click();
       } else {
         DocumentPage.changeLocation(targetTreePath);
       }
     }
-  }
+  };
 
   static visit() {
     cy.visit('address');
   }
 
-  static addContact(chooseContact: string, connectionField: string = 'Verbindung'){
+  static addContact(chooseContact: string, connectionField: string = 'Verbindung') {
     cy.get('[data-cy=create-action]').should('not.be.visible');
     cy.get('[data-cy=Kontakt]').find('ige-add-button').contains('Hinzufügen').click();
     cy.get('[data-cy=Kontakt]').find('mat-select').click();
@@ -48,25 +45,23 @@ export class AddressPage extends DocumentPage {
   }
 
   static apiCreateAddress(json: any, published?: boolean) {
-    cy
-      .request('POST', (Cypress.config("baseUrl")) + `/api/datasets?address=true&publish=${published}`, json);
+    cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=true&publish=${published}`, json);
   }
 
-  static saveChanges () {
+  static saveChanges() {
     cy.get('.mat-dialog-title').contains('Änderungen speichern?');
     cy.get('[data-cy=confirm-dialog-save]').click();
   }
 
-  static discardSaveChanges () {
+  static discardSaveChanges() {
     cy.get('.mat-dialog-title').contains('Änderungen speichern?');
     cy.get('[data-cy=confirm-dialog-discard]').click();
   }
 
-  static cancelSaveChanges () {
+  static cancelSaveChanges() {
     cy.get('.mat-dialog-title').contains('Änderungen speichern?');
     cy.get('[data-cy=confirm-dialog-cancel]').click();
   }
-
 
   static publishNow() {
     // sometimes we're too fast, so that the form is not synched with the store

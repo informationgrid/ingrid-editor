@@ -1,8 +1,7 @@
-import {DocumentPage, SEPARATOR} from '../../pages/document.page';
-import {AddressPage, ROOT} from '../../pages/address.page';
+import { DocumentPage, SEPARATOR } from '../../pages/document.page';
+import { AddressPage, ROOT } from '../../pages/address.page';
 
 describe('Load addresses', () => {
-
   beforeEach(() => {
     cy.kcLogin('user');
     AddressPage.visit();
@@ -22,16 +21,18 @@ describe('Load addresses', () => {
 
   it('should jump directly to a root address folder specified by URL', () => {
     cy.visit('/address;id=4ff589e1-d83c-4856-8bae-2ae783f69da6');
-    cy.get(DocumentPage.title, {timeout: 10000}).should('have.text', 'Neue Testadressen');
+    cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', 'Neue Testadressen');
     cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT);
   });
 
   it('should jump directly to a nested address folder specified by URL', () => {
     cy.visit('/address;id=93ac91fc-4112-4975-86cb-48295a4d3915');
-    cy.get(AddressPage.title, {timeout: 10000}).should('have.text', 'Tiefe Adresse');
+    cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', 'Tiefe Adresse');
     // this function waits for text to appear, but shouldHaveTrimmedText not!
-    cy.get('ige-form-info ige-breadcrumb')
-      .should('have.text', `${ROOT}${SEPARATOR}Neue Testadressen${SEPARATOR}Ordner 2. Ebene`);
+    cy.get('ige-form-info ige-breadcrumb').should(
+      'have.text',
+      `${ROOT}${SEPARATOR}Neue Testadressen${SEPARATOR}Ordner 2. Ebene`
+    );
   });
 
   // tested in dashboard
@@ -44,7 +45,7 @@ describe('Load addresses', () => {
   });
 
   it('should open the previously selected address when going to another page and returning', () => {
-    const addressTitle = 'Testorganisation'
+    const addressTitle = 'Testorganisation';
     cy.get('#sidebar').findByText('Testadressen').click();
     cy.get('#sidebar').findByText(addressTitle).click();
     cy.get(AddressPage.title).should('have.text', addressTitle);
@@ -52,7 +53,5 @@ describe('Load addresses', () => {
     cy.get(AddressPage.Sidemenu.Daten).click();
     cy.get(AddressPage.Sidemenu.Adressen).click();
     cy.get(AddressPage.title).should('have.text', addressTitle);
-
   });
-
 });

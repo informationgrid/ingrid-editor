@@ -8,13 +8,13 @@ export class DashboardPage {
   }
 
   static getLatestDocTitle(position: number) {
-    return cy.get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position}) .card-title`)
+    return cy
+      .get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position}) .card-title`)
       .invoke('text');
   }
 
   static clickOnLatestDoc(position: number) {
-    cy.get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position})`)
-      .click();
+    cy.get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position})`).click();
   }
 
   static search(query: string) {

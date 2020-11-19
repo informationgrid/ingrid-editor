@@ -39,7 +39,7 @@ export class SessionTimeoutBehaviour extends Plugin {
   update() {
 
     this.session.update({
-      sessionTimeoutDuration: this.data.duration
+      sessionTimeoutDuration: this.data ? this.data.duration : 1800
     });
 
   }

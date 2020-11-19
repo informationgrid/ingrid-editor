@@ -1,10 +1,9 @@
-import {DocumentPage} from '../../pages/document.page';
-import {CopyCutUtils} from '../../pages/copy-cut-utils';
-import {Tree} from '../../pages/tree.partial';
-import {Utils} from '../../pages/utils';
+import { DocumentPage } from '../../pages/document.page';
+import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import { Tree } from '../../pages/tree.partial';
+import { Utils } from '../../pages/utils';
 
 describe('Tree', () => {
-
   beforeEach(() => {
     cy.kcLogin('user');
     cy.visit('form');
@@ -14,7 +13,7 @@ describe('Tree', () => {
     cy.kcLogout();
   });
 
-  const dragAndDropFolder = 'Drag\'n\'Drop';
+  const dragAndDropFolder = "Drag'n'Drop";
 
   xit('should navigate to a section when clicking on form header navigation', () => {
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument']);
@@ -46,7 +45,6 @@ describe('Tree', () => {
   });
 
   describe('DragnDrop', () => {
-
     it('should move a document into an opened folder', () => {
       const docName = 'drag&drop to a folder';
 
@@ -143,7 +141,6 @@ describe('Tree', () => {
   });
 
   describe('Copy', () => {
-
     it('should not be possible to copy a node under itself', () => {
       const docName = 'copy into myself0';
 
@@ -181,8 +178,7 @@ describe('Tree', () => {
       Tree.selectNodeAndCheckPath(docName2, ['Daten']);
 
       // because of 'not.contain.value' we can not use CopyCutUtils.copyObject()
-      cy.get('[data-cy=toolbar_COPY]').click()
-        .get('[data-cy=copyMenu_COPY]').click();
+      cy.get('[data-cy=toolbar_COPY]').click().get('[data-cy=copyMenu_COPY]').click();
       cy.get('.mat-dialog-content').should('not.contain.value', docName);
 
       cy.get('.mat-dialog-content').type('{esc}');
@@ -200,20 +196,19 @@ describe('Tree', () => {
       DocumentPage.createDocument(docName);
 
       let newDocUrl;
-      return cy.url().then( url => {
+      return cy.url().then(url => {
         // remember URL from created document
         newDocUrl = url;
 
         CopyCutUtils.copyObject(['Testdokumente']);
 
         // selected document should not have changed!
-        Tree.checkPath( ['Daten']);
+        Tree.checkPath(['Daten']);
         cy.url().should('equal', newDocUrl);
 
         // check if document was copied
         Tree.openNode(['Testdokumente', docName]);
       });
-
     });
 
     it('should copy a root document into a deeply nested folder', () => {
@@ -250,7 +245,7 @@ describe('Tree', () => {
       Tree.selectNodeAndCheckPath(testFolder, ['Daten']);
 
       // check if document was copied
-      Tree.openNode( ['Testdokumente', testFolder]);
+      Tree.openNode(['Testdokumente', testFolder]);
 
       // check if sub-tree was not copied
       Tree.checkSelectedNodeHasNoChildren();
@@ -270,11 +265,11 @@ describe('Tree', () => {
       Tree.checkPath(['Daten']);
 
       // check if document was copied
-      Tree.openNode( ['Testdokumente', testFolder]);
+      Tree.openNode(['Testdokumente', testFolder]);
 
       // check if sub-tree was also copied
       Tree.checkSelectedNodeHasChildren();
-      Tree.openNode( ['Testdokumente', testFolder, docName]);
+      Tree.openNode(['Testdokumente', testFolder, docName]);
     });
 
     it('should copy a root tree to a sub folder', () => {
@@ -307,7 +302,6 @@ describe('Tree', () => {
   });
 
   describe('Cut', () => {
-
     it('should be possible to move a root node under the root node', () => {
       // at the moment it's allowed since there's no harm
       const testFolder = 'move me under root node' + Utils.randomString();

@@ -1,23 +1,18 @@
-import {Tree} from './tree.partial';
+import { Tree } from './tree.partial';
 
 enum CopyOption {
-  COPY = '[data-cy="copyMenu_COPY"]', COPY_WITH_TREE = '[data-cy="copyMenu_COPYTREE"]', MOVE = '[data-cy="copyMenu_CUT"]'
+  COPY = '[data-cy="copyMenu_COPY"]',
+  COPY_WITH_TREE = '[data-cy="copyMenu_COPYTREE"]',
+  MOVE = '[data-cy="copyMenu_CUT"]'
 }
 
-
 export class CopyCutUtils {
-
-
   static copyObjectWithTree(targetNodePath?: string[]) {
-
     this.handleCopyMove(CopyOption.COPY_WITH_TREE, targetNodePath);
-
   }
 
   static copyObject(targetNodePath?: string[]) {
-
     this.handleCopyMove(CopyOption.COPY, targetNodePath);
-
   }
 
   /**
@@ -26,9 +21,7 @@ export class CopyCutUtils {
    * @param targetNodePath
    */
   static move(targetNodePath?: string[]) {
-
     this.handleCopyMove(CopyOption.MOVE, targetNodePath);
-
   }
 
   private static handleCopyMove(option: CopyOption, targetNodePath?: string[]) {
@@ -51,8 +44,8 @@ export class CopyCutUtils {
       // with option force: true we will not do any checks and no scrolling is performed, which is important
       // for drag'n'drop tests
       cy.get('#sidebar div:contains(' + dragnode + ')')
-        .click({force: true})
-        .drag('#sidebar div:contains(' + node + ')', {force: true});
+        .click({ force: true })
+        .drag('#sidebar div:contains(' + node + ')', { force: true });
 
       if (i < targetNodePath.length - 1) {
         // check next item is expanded
@@ -60,10 +53,13 @@ export class CopyCutUtils {
       }
     });
 
-    cy.then(() => cy.get('#sidebar')
-      .contains(targetNodePath[targetNodePath.length - 1])
-      // .trigger('dragend') // leads to an error of missing ID
-      .trigger('drop'));
+    cy.then(() =>
+      cy
+        .get('#sidebar')
+        .contains(targetNodePath[targetNodePath.length - 1])
+        // .trigger('dragend') // leads to an error of missing ID
+        .trigger('drop')
+    );
 
     if (confirmChange) {
       cy.get('[data-cy=confirm-dialog-confirm]').click();
@@ -73,7 +69,7 @@ export class CopyCutUtils {
   }
 
   static dragdropWithoutAutoExpand(dragnode: string, targetNode: string, confirmChange: boolean) {
-    cy.get('#sidebar').contains(dragnode).trigger('dragstart', {dataTransfer: new DataTransfer});
+    cy.get('#sidebar').contains(dragnode).trigger('dragstart', { dataTransfer: new DataTransfer() });
     cy.get('#sidebar').findByText(targetNode).eq(0).trigger('drop');
 
     if (confirmChange) {

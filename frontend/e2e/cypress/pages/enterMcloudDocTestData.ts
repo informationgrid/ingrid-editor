@@ -1,8 +1,7 @@
-import {Utils} from "./utils";
-import {DocumentPage} from "./document.page";
+import { Utils } from './utils';
+import { DocumentPage } from './document.page';
 
 export class enterMcloudDocTestData {
-
   static setDescription(text: string = 'Testbeschreibung') {
     cy.get('[data-cy=Beschreibung]').find('mat-form-field').type(text);
   }
@@ -15,7 +14,7 @@ export class enterMcloudDocTestData {
 
   static getAddress() {
     cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
-    DocumentPage.AddAddressDialog.search('Published Testorganization')
+    DocumentPage.AddAddressDialog.search('Published Testorganization');
   }
 
   static setUsageInstructions(text: string = 'Nutzungshinweise') {
@@ -34,7 +33,12 @@ export class enterMcloudDocTestData {
     cy.get('[data-cy="chip-dialog-confirm"]').click();
   }
 
-  static setAddDownload(titleText: string = 'linkTitel', linkText: string = 'link.link', typeText: string = 'linktyp', formatText: string = '.py') {
+  static setAddDownload(
+    titleText: string = 'linkTitel',
+    linkText: string = 'link.link',
+    typeText: string = 'linktyp',
+    formatText: string = '.py'
+  ) {
     cy.get('[data-cy="Downloads-add"]').contains('Hinzufügen').click();
     cy.get('[data-cy="form-dialog-content"]').contains('Titel').parent().parent().type(titleText);
     cy.get('[data-cy="form-dialog-content"]').contains('Link').parent().parent().type(linkText);
@@ -76,17 +80,22 @@ export class enterMcloudDocTestData {
   static setOpenedSpatialBbox(title: string, locationText: string) {
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
     this.selectSpatialType('Freier Raumbezug');
-    cy.get('[data-cy=spatial-dialog-free]').clear().type(locationText).then(() => {
-      cy.wait(1000);
-      cy.get('.result-wrapper mat-list').contains(locationText).click();
-    });
+    cy.get('[data-cy=spatial-dialog-free]')
+      .clear()
+      .type(locationText)
+      .then(() => {
+        cy.wait(1000);
+        cy.get('.result-wrapper mat-list').contains(locationText).click();
+      });
     cy.get('[data-cy=confirm-dialog-save]').click();
-    DocumentPage.checkSpatialEntrytNotEmpty()
+    DocumentPage.checkSpatialEntrytNotEmpty();
   }
 
   static openSpatialMenuDoc(spatialName: string) {
     DocumentPage.clickSpatialEntry(spatialName);
-    cy.get('ige-formly--type mat-list').find('.mat-list-item-content:contains(' + (spatialName) + ') [data-mat-icon-name="Mehr"]').click();
+    cy.get('ige-formly--type mat-list')
+      .find('.mat-list-item-content:contains(' + spatialName + ') [data-mat-icon-name="Mehr"]')
+      .click();
   }
 
   static selectChangeInSpatialMenuDoc() {
@@ -94,7 +103,7 @@ export class enterMcloudDocTestData {
   }
 
   static deleteSpatialReference(text: string) {
-    this.selectDeleteInSpatialMenuDoc()
+    this.selectDeleteInSpatialMenuDoc();
     cy.get('mat-dialog-content').contains(text);
     cy.get('[data-cy="confirm-dialog-ok"]').click();
   }
@@ -103,7 +112,10 @@ export class enterMcloudDocTestData {
     cy.get('[role="menu"]').contains('Löschen').click();
   }
 
-  static setSpatialWKT(title: string = 'Spaaaaatiaaal', locationText: string = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))') {
+  static setSpatialWKT(
+    title: string = 'Spaaaaatiaaal',
+    locationText: string = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))'
+  ) {
     cy.get('[data-cy=spatialButton]').click();
     this.setOpenedSpatialWKT(title, locationText);
   }
@@ -111,11 +123,14 @@ export class enterMcloudDocTestData {
   static setOpenedSpatialWKT(title: string, locationText: string) {
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
     this.selectSpatialType('WKT');
-    cy.get('[data-cy=spatial-dialog-wkt]').clear().type(locationText).then(() => {
-      cy.get('div > button').contains('Anzeigen').click();
-    });
+    cy.get('[data-cy=spatial-dialog-wkt]')
+      .clear()
+      .type(locationText)
+      .then(() => {
+        cy.get('div > button').contains('Anzeigen').click();
+      });
     cy.get('[data-cy=confirm-dialog-save]').click();
-    DocumentPage.checkSpatialEntrytNotEmpty()
+    DocumentPage.checkSpatialEntrytNotEmpty();
   }
 
   static setSpatialGeoName(title: string = 'Spaaaaatiaaal') {
@@ -123,7 +138,7 @@ export class enterMcloudDocTestData {
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
     this.selectSpatialType('Geografischer Name');
     cy.get('[data-cy=confirm-dialog-save]').click();
-    DocumentPage.checkSpatialEntrytNotEmpty()
+    DocumentPage.checkSpatialEntrytNotEmpty();
   }
 
   static setTimeReference(date: Date = new Date(2020, 1, 11), choose: string = 'Erstellung') {
@@ -177,7 +192,7 @@ export class enterMcloudDocTestData {
 
   static enterFullData() {
     const dateNow = new Date();
-    const previousDate = new Date(2020, 1, 11)
+    const previousDate = new Date(2020, 1, 11);
 
     enterMcloudDocTestData.setDescription();
     enterMcloudDocTestData.setAddress('Published Testorganization');

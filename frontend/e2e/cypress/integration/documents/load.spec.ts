@@ -1,8 +1,7 @@
-import {DocumentPage, ROOT, SEPARATOR} from '../../pages/document.page';
-import {beforeEach} from 'mocha';
+import { DocumentPage, ROOT, SEPARATOR } from '../../pages/document.page';
+import { beforeEach } from 'mocha';
 
 describe('Load documents', () => {
-
   beforeEach(() => {
     cy.kcLogin('user');
   });
@@ -25,16 +24,18 @@ describe('Load documents', () => {
 
   it('should jump directly to a root folder specified by URL', () => {
     cy.visit('/form;id=a0df9837-512a-4594-b2ef-2814f7c55c81');
-    cy.get(DocumentPage.title, {timeout: 10000}).should('have.text', 'Neue Testdokumente');
+    cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', 'Neue Testdokumente');
     cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT);
   });
 
   it('should jump directly to a nested folder specified by URL', () => {
     cy.visit('/form;id=9b264daf-3044-441d-864c-699b44c46dc1');
-    cy.get(DocumentPage.title, {timeout: 10000}).should('have.text', 'Tiefes Dokument');
+    cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', 'Tiefes Dokument');
     // this function waits for text to appear, but shouldHaveTrimmedText not!
-    cy.get('ige-form-info ige-breadcrumb')
-      .should('have.text', `${ROOT}${SEPARATOR}Testdokumente${SEPARATOR}Ordner 2. Ebene`);
+    cy.get('ige-form-info ige-breadcrumb').should(
+      'have.text',
+      `${ROOT}${SEPARATOR}Testdokumente${SEPARATOR}Ordner 2. Ebene`
+    );
   });
 
   // tested in dashboard
@@ -55,4 +56,4 @@ describe('Load documents', () => {
     cy.get(DocumentPage.Sidemenu.Daten).click();
     cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
   });
-})
+});

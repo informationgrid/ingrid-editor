@@ -1,6 +1,6 @@
 //https://github.com/4teamwork/cypress-drag-drop
 
-const dataTransfer = new DataTransfer()
+const dataTransfer = new DataTransfer();
 
 const DragSimulator = {
   MAX_TRIES: 5,
@@ -8,68 +8,68 @@ const DragSimulator = {
   counter: 0,
   targetElement: null,
   rectsEqual(r1, r2) {
-    return r1.top === r2.top && r1.right === r2.right && r1.bottom === r2.bottom && r1.left === r2.left
+    return r1.top === r2.top && r1.right === r2.right && r1.bottom === r2.bottom && r1.left === r2.left;
   },
   get dropped() {
-    const currentSourcePosition = this.source.getBoundingClientRect()
-    return !this.rectsEqual(this.initialSourcePosition, currentSourcePosition)
+    const currentSourcePosition = this.source.getBoundingClientRect();
+    return !this.rectsEqual(this.initialSourcePosition, currentSourcePosition);
   },
   get hasTriesLeft() {
-    return this.counter < this.MAX_TRIES
+    return this.counter < this.MAX_TRIES;
   },
   set target(target) {
-    this.targetElement = target
+    this.targetElement = target;
   },
   get target() {
-    return cy.wrap(this.targetElement)
+    return cy.wrap(this.targetElement);
   },
   dragstart({ clientX, clientY } = {}) {
     return cy
       .wrap(this.source)
       .trigger('pointerdown', { which: 1, button: 0, force: this.force, clientX, clientY, position: this.position })
       .trigger('mousedown', { which: 1, button: 0, force: this.force, clientX, clientY, position: this.position })
-      .trigger('dragstart', { dataTransfer, force: this.force, position: this.position })
+      .trigger('dragstart', { dataTransfer, force: this.force, position: this.position });
   },
   drop({ clientX, clientY } = {}) {
-    return this.target.trigger('drop', { dataTransfer, force: this.force, position: this.position, clientX, clientY })
+    return this.target.trigger('drop', { dataTransfer, force: this.force, position: this.position, clientX, clientY });
   },
   dragover({ clientX, clientY } = {}) {
     if (!this.dropped && this.hasTriesLeft) {
-      this.counter += 1
+      this.counter += 1;
       return this.target
         .trigger('dragover', {
           dataTransfer,
           position: this.position,
-          force: this.force,
+          force: this.force
         })
         .trigger('mousemove', {
           force: this.force,
           position: this.position,
           clientX,
-          clientY,
+          clientY
         })
         .trigger('pointermove', {
           force: this.force,
           position: this.position,
           clientX,
-          clientY,
+          clientY
         })
         .wait(this.DELAY_INTERVAL_MS)
-        .then(() => this.dragover({ clientX, clientY }))
+        .then(() => this.dragover({ clientX, clientY }));
     }
     if (!this.dropped) {
-      console.error(`Exceeded maximum tries of: ${this.MAX_TRIES}, aborting`)
+      console.error(`Exceeded maximum tries of: ${this.MAX_TRIES}, aborting`);
     }
   },
   init(source, target, { position = 'top', force = false } = {}) {
-    this.position = position
-    this.force = force
-    this.counter = 0
-    this.source = source.get(0)
-    this.initialSourcePosition = this.source.getBoundingClientRect()
-    return cy.get(target).then((targetWrapper) => {
-      this.target = targetWrapper.get(0)
-    })
+    this.position = position;
+    this.force = force;
+    this.counter = 0;
+    this.source = source.get(0);
+    this.initialSourcePosition = this.source.getBoundingClientRect();
+    return cy.get(target).then(targetWrapper => {
+      this.target = targetWrapper.get(0);
+    });
   },
   drag(sourceWrapper, targetSelector, options) {
     this.init(sourceWrapper, targetSelector, options)
@@ -77,9 +77,9 @@ const DragSimulator = {
       .then(() => this.dragover())
       // removed to drop deeper
       // .then(() => this.drop())
-      .then(() => true)
-  },
-// removed move()
+      .then(() => true);
+  }
+  // removed move()
   // move(sourceWrapper, options) {
   //   const { x: deltaX, y: deltaY } = options
   //   const { top, left } = sourceWrapper.offset()
@@ -88,12 +88,12 @@ const DragSimulator = {
   //     .then(() => this.dragover({ clientX: top + deltaX, clientY: left + deltaY }))
   //     .then(() => this.drop())
   // },
-}
+};
 
 function addChildCommand(name, command) {
-  Cypress.Commands.add(name, { prevSubject: 'element' }, (...args) => command(...args))
+  Cypress.Commands.add(name, { prevSubject: 'element' }, (...args) => command(...args));
 }
 
-addChildCommand('drag', DragSimulator.drag.bind(DragSimulator))
+addChildCommand('drag', DragSimulator.drag.bind(DragSimulator));
 // removed functioncall because move() is removed
 // addChildCommand('move', DragSimulator.move.bind(DragSimulator))

@@ -1,10 +1,9 @@
-import {DocumentPage} from '../../pages/document.page';
-import {Utils} from '../../pages/utils';
-import {Address, AddressPage} from '../../pages/address.page';
-import {Tree} from '../../pages/tree.partial';
+import { DocumentPage } from '../../pages/document.page';
+import { Utils } from '../../pages/utils';
+import { Address, AddressPage } from '../../pages/address.page';
+import { Tree } from '../../pages/tree.partial';
 
 describe('General create addresses/folders', () => {
-
   beforeEach(() => {
     cy.kcLogin('user');
     AddressPage.visit();
@@ -17,27 +16,17 @@ describe('General create addresses/folders', () => {
   const createDialog = AddressPage.CreateDialog;
 
   describe('Create Folder', () => {
-
     xit('should show all nested folders after creation when root parent is collapsed and expanded', () => {
-
       // create root folder "Nested"
-
       // create another folder under "Nested" with name "More nested"
-
       // create another folder under "More nested" with name "Even more nested"
-
       // collapse "Nested"
-
       // expand "Nested" and "More nested"
-
       // assert that directory "Even more nested" exists
-
     });
-
   });
 
   describe('Create Addresses', () => {
-
     it('should allow creation if one of firstname, lastname or organization was filled', () => {
       createDialog.open();
       cy.get('[data-cy=create-action]').should('be.disabled');
@@ -79,7 +68,6 @@ describe('General create addresses/folders', () => {
     });
 
     it('should create a root address', () => {
-
       cy.get(DocumentPage.Toolbar.NewDoc).click();
 
       cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(`Adressen`);
@@ -89,8 +77,7 @@ describe('General create addresses/folders', () => {
       cy.get('[data-cy=create-address-lastName]').type('Meier');
       cy.get('[data-cy=create-address-organization]').type('Ich AG');
 
-      cy.get('[data-cy=create-action]')
-        .click();
+      cy.get('[data-cy=create-action]').click();
 
       cy.get('.firstName input').should('have.value', 'Herbert');
       cy.get('.lastName input').should('have.value', 'Meier');
@@ -102,7 +89,7 @@ describe('General create addresses/folders', () => {
       AddressPage.createFolder(folderName);
 
       Tree.openNode([folderName]);
-      cy.get(DocumentPage.title).should('have.text', folderName)
+      cy.get(DocumentPage.title).should('have.text', folderName);
     });
 
     it('should generate a title from create parameters', () => {
@@ -127,10 +114,7 @@ describe('General create addresses/folders', () => {
       // -> error
     });
 
-    xit('should create an organization', () => {
-
-    });
-
+    xit('should create an organization', () => {});
   });
 
   describe('Publish addresses', () => {
@@ -150,7 +134,7 @@ describe('General create addresses/folders', () => {
   describe('Dirty checks', () => {
     it('should show a dialog when an address was modified and another address was clicked', () => {
       const adr1Name = 'Neue Testadressen';
-      const adr2Name = 'Orga-Test'
+      const adr2Name = 'Orga-Test';
 
       cy.get(DocumentPage.Toolbar.NewDoc).click();
       cy.get('[data-cy=create-address-organization]').type(adr2Name);
@@ -191,7 +175,6 @@ describe('General create addresses/folders', () => {
       cy.get('[data-cy=confirm-dialog-stay]').click();
 
       cy.get(DocumentPage.title).should('have.text', addressName);
-
 
       // accept (don't safe) -> should load new page
       cy.wait(500);

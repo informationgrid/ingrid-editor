@@ -15,5 +15,5 @@ export class BasePage {
     Adressen: 'ige-side-menu a:nth-child(3)',
     ImportExport: 'ige-side-menu a:nth-child(4)',
     Katalogverwaltung: 'ige-side-menu a:nth-child(5)'
-  }
+  };
 }
