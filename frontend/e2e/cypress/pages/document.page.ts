@@ -82,16 +82,26 @@ export class DocumentPage extends BasePage {
     cy.visit('form;id=7e9687e8-43f4-4b95-bdcb-27647197a8cb');
   }
 
-  static createDocument(docName: string): string {
+  static createDocument(docName: string) {
     cy.log('Create Document: ' + docName);
     cy.get(DocumentPage.Toolbar.NewDoc).click();
-    return this.fillCreateDialog(docName);
+    this.fillDialog(docName);
   }
 
-  static createFolder(folderName: string): string {
+  static createFolder(folderName: string) {
     cy.log('Create folder: ' + folderName);
     cy.get(DocumentPage.Toolbar.NewFolder).click();
-    return this.fillCreateDialog(folderName);
+    this.fillDialog(folderName);
+  }
+
+  private static fillDialog(title: string) {
+    let beforeLength = 0;
+    Tree.getNumberOfNodes().then(length => {
+      beforeLength = length;
+      this.fillCreateDialog(title);
+      cy.get('mat-tree mat-tree-node')
+        .should('have.length.at.least', beforeLength + 1);
+    });
   }
 
   static CreateFullMcloudDocumentWithAPI(title: string, published?: boolean){
@@ -251,14 +261,17 @@ export class DocumentPage extends BasePage {
     cy.request('POST', (Cypress.config("baseUrl")) + `/api/datasets?address=false&publish=${published}`, json);
   }
 
-  static fillCreateDialog(objectName?: string){
-    objectName = objectName ? objectName : 'Test-Objekt ' + Utils.randomString();
+  static fillCreateDialog(objectName: string) {
     cy.get('[data-cy=create-title]').type(objectName);
     cy.get('[data-cy=create-action]').click();
     cy.get('[data-cy=create-action]').should('not.be.visible');
-    return objectName;
   }
 
+  /**
+   * @deprecated combine with createFolder function
+   * @param folderName
+   * @param targetNodePath
+   */
   static createFolderAndChangeLocation(folderName: string, targetNodePath: string[]){
     cy.get(DocumentPage.Toolbar.NewFolder).click();
     cy.get('[data-cy=create-title]').type(folderName);
@@ -276,6 +289,11 @@ export class DocumentPage extends BasePage {
     cy.get('[data-cy=create-action]').click();
   }
 
+  /**
+   * @deprecated combine with createFolder function
+   * @param folderName
+   * @param targetNodePath
+   */
   static createFolderAndChangeLocationToRoot(folderName: string, targetNodePath: string[]){
     cy.get(DocumentPage.Toolbar.NewFolder).click();
     cy.get('[data-cy=create-title]').type(folderName);

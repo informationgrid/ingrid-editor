@@ -24,7 +24,6 @@ Cypress.on('test:after:run', (test, runnable) => {
     const startTimeOffset = Math.round(
       (test.wallClockStartedAt - firstTestStart) / 1000
     );
-    debugger;
 
     addContext({test}, `assets/${Cypress.spec.name}/${fullTestName} (failed).png`);
     addContext({test}, `assets/${Cypress.spec.name}.mp4#t=${startTimeOffset}`);

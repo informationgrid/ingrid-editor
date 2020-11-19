@@ -99,9 +99,7 @@ describe('General create addresses/folders', () => {
     it('should create an address folder', () => {
       const folderName = 'Adressen Ordner' + Utils.randomString();
 
-      cy.get(DocumentPage.Toolbar.NewFolder).click();
-      cy.get('[data-cy=create-title]').type(folderName);
-      cy.get('[data-cy=create-action]').click();
+      AddressPage.createFolder(folderName);
 
       Tree.openNode([folderName]);
       cy.get(DocumentPage.title).should('have.text', folderName)
