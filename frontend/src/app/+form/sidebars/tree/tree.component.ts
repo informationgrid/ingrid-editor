@@ -33,7 +33,8 @@ export enum TreeActionType {
   selector: 'ige-tree',
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.scss'],
-  providers: [DynamicDatabase]
+  providers: [DynamicDatabase],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TreeComponent implements OnInit, OnDestroy {
 
@@ -79,7 +80,9 @@ export class TreeComponent implements OnInit, OnDestroy {
   };
 
 
-  constructor(private database: DynamicDatabase, private treeService: TreeService) {
+  constructor(private database: DynamicDatabase,
+              private treeService: TreeService,
+              private cdr: ChangeDetectorRef) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database, treeService);
     this.dragManager = new DragNDropUtils(this.treeControl);
@@ -247,6 +250,8 @@ export class TreeComponent implements OnInit, OnDestroy {
           if (this.activeNodeId) {
             this.jumpToNode(this.activeNodeId);
           }
+          // after new data has arrived call change detection
+          this.cdr.detectChanges();
         })
       );
   }
