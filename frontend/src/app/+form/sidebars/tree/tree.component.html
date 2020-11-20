@@ -19,6 +19,13 @@
                     {{forAddresses ? "Adressen": "Daten"}}</span>
             </div>
         </div>
+
+        <div *ngIf="showMultiSelectionMode" class="multi-select-area" fxLayoutAlign="space-between center">
+            <mat-checkbox indeterminate="indeterminate" (click)="treeService.selectionModel.clear()">Auswahl</mat-checkbox>
+            <button mat-icon-button matSuffix class="close" (click)="showMultiSelectionMode = false"  data-cy="exit-multi-select-mode">
+                <mat-icon svgIcon="Entfernen"></mat-icon>
+            </button>
+        </div>
     </div>
 
 
@@ -41,7 +48,7 @@
                 <mat-checkbox *ngIf="showMultiSelectionMode" class="checklist-leaf-node"
                               [checked]="isSelected(node)"
                               (click)="$event.stopImmediatePropagation()"
-                              (change)="nodeSelectionToggle(node)">{{node.item}}</mat-checkbox>
+                              (change)="nodeSelectionToggle(node)"></mat-checkbox>
                 <mat-icon [svgIcon]="node.iconClass" [ngClass]="['document-icon',getStateClass(node)]"></mat-icon>
                 <span>{{node.title}}</span>
             </div>
@@ -76,7 +83,7 @@
                                   [checked]="descendantsAllSelected(node)"
                                   [indeterminate]="descendantsPartiallySelected(node)"
                                   (click)="$event.stopImmediatePropagation()"
-                                  (change)="folderSelectionToggle(node)">{{node.item}}</mat-checkbox>
+                                  (change)="folderSelectionToggle(node)"></mat-checkbox>
 
                     <span>{{node.title}}</span>
                     <ng-container *ngIf="node.isLoading">

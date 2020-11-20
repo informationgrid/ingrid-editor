@@ -56,6 +56,15 @@
       }
     }
   }
+
+  .multi-select-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: $ige-mark-color;
+    width: 100%;
+    padding: 8px 12px;
+  }
 }
 
 mat-tree-node {

@@ -9,12 +9,16 @@
   padding: 10px 12px 0 12px;
 
   .options {
-    padding-bottom: 5px;
+    padding-bottom: 20px;
 
     .show-all {
       font-size: 14px;
       height: 40px;
       flex: 2;
+    }
+
+    .reload-button {
+      margin-right: -10px;
     }
   }
 }
