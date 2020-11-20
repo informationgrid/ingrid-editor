@@ -7,6 +7,12 @@
                 (click)="reloadTree()">
             <mat-icon>refresh</mat-icon>
         </button>
+
+        <button *ngIf="showMultiSelectButton" mat-icon-button data-cy="edit-button"
+                matTooltip="Mehrfachauswahl"
+                (click)="edit.next()">
+            <mat-icon svgIcon="edit_mode"></mat-icon>
+        </button>
     </div>
 
     <mat-form-field class="search" appearance="outline" data-cy="tree-search-field">

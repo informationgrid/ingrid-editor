@@ -3,6 +3,7 @@ import {TreeNode} from '../../../store/tree/tree-node.model';
 import {TreeStore} from '../../../store/tree/tree.store';
 import {AddressTreeStore} from '../../../store/address-tree/address-tree.store';
 import {ShortTreeNode} from './tree.types';
+import {SelectionModel} from '@angular/cdk/collections';
 
 export type TreeSortFn = (a: TreeNode, b: TreeNode) => number;
 
@@ -10,6 +11,8 @@ export type TreeSortFn = (a: TreeNode, b: TreeNode) => number;
   providedIn: 'root'
 })
 export class TreeService {
+
+  selectionModel = new SelectionModel<TreeNode>(true);
 
   private alternativeSortFunction: TreeSortFn = null;
 

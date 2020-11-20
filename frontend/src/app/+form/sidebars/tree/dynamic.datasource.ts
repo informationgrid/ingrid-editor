@@ -3,7 +3,7 @@ import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {TreeNode} from '../../../store/tree/tree-node.model';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {DynamicDatabase} from './dynamic.database';
 import {TreeService} from './tree.service';
@@ -83,7 +83,12 @@ export class DynamicDataSource {
     this._database.getChildren(node._id, false, this.forAddress)
       .pipe(
         map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
-        map(docs => docs.sort(this.treeService.getSortTreeNodesFunction()))
+        map(docs => docs.sort(this.treeService.getSortTreeNodesFunction())),
+        tap(docs => {
+          if (this.treeService.selectionModel.isSelected(node)) {
+            this.treeService.selectionModel.select(...docs);
+          }
+        })
       )
       .subscribe(children => {
 

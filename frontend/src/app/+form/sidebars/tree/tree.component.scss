@@ -62,9 +62,9 @@ mat-tree-node {
   cursor: pointer;
   min-height: 20px;
 
-  ::ng-deep svg path {
+  /*::ng-deep svg path {
     fill: #000000;
-  }
+  }*/
 
   &.folder {
     border-color: transparent;
@@ -140,6 +140,10 @@ mat-tree-node {
     padding: 5px 0 5px 24px;
     line-height: 20px;
     user-select: none;
+
+    mat-checkbox {
+      padding-right: 10px;
+    }
 
     .mat-icon {
       flex-shrink: 0;

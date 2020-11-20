@@ -21,6 +21,7 @@ import {AddButtonComponent} from './add-button/add-button.component';
 import {OptionListComponent} from './option-list/option-list.component';
 import {MatRadioModule} from '@angular/material/radio';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
     imports: [
@@ -28,7 +29,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
         MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule,
         MatSlideToggleModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
         MatCardModule,
-        SharedDocumentItemModule, MatRadioModule, FormsModule, DragDropModule],
+        SharedDocumentItemModule, MatRadioModule, FormsModule, DragDropModule, MatCheckboxModule],
   declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent, AddButtonComponent,
     OptionListComponent],
   exports: [TreeComponent, MatIconModule, MatInputModule, MatButtonModule, CardBoxComponent, AddButtonComponent,
