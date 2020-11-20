@@ -2,6 +2,7 @@ import { DocumentPage } from '../../pages/document.page';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
+import { xit } from 'mocha';
 
 describe('Tree', () => {
   beforeEach(() => {
@@ -442,5 +443,27 @@ describe('Tree', () => {
 
       Tree.openNode([testFolder, docName]);
     });
+  });
+
+  describe('Multi-Selection', () => {
+    xit('should show a checkbox for each node when edit mode is enabled and hide them if disabled', () => {});
+
+    xit('should preselect the opened document', () => {
+      // checkbox must be ticked
+    });
+
+    xit('should only allow options to cut, copy and delete nodes in multi select mode', () => {
+      // checkbox must be ticked
+    });
+
+    xit('should automatically select all child nodes if an expanded folder was selected', () => {});
+
+    xit('should automatically select all child nodes if an collapsed folder was selected', () => {});
+
+    xit('should copy multiple selected nodes from different hierarchies into a folder', () => {});
+
+    xit('should move multiple selected nodes', () => {});
+
+    xit('should delete multiple selected nodes', () => {});
   });
 });
