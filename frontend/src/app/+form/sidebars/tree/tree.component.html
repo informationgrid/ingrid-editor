@@ -79,7 +79,7 @@
 
                 <div class="label">
 
-                    <mat-checkbox *ngIf="showMultiSelectionMode"
+                    <mat-checkbox *ngIf="showFolderCheckbox(node)"
                                   [checked]="descendantsAllSelected(node)"
                                   [indeterminate]="descendantsPartiallySelected(node)"
                                   (click)="$event.stopImmediatePropagation()"

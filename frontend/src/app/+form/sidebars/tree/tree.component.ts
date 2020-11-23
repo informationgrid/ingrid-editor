@@ -3,7 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter,
+  EventEmitter, Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -23,6 +23,8 @@ import {TreeService} from './tree.service';
 import {DocumentUtils} from '../../../services/document.utils';
 import {DragNDropUtils} from './dragndrop.utils';
 import {ShortTreeNode} from './tree.types';
+import {FormPluginToken} from '../../../tokens/plugin.token';
+import {Plugin} from '../../../+catalog/+behaviours/plugin';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -59,7 +61,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   @ViewChild('treeComponent', {read: ElementRef}) treeContainerElement: ElementRef;
 
   // signal to show that a tree node is loading
-  private isLoading: TreeNode;
+  isLoading: TreeNode;
   activeNode: TreeNode = null;
   activeNodeId: string = null;
 
@@ -71,6 +73,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   isDragging = false;
 
   showMultiSelectionMode = false;
+  private deleteEmptyFoldersBehavioursIsActive = false;
 
   /**
    * A function to determine if a tree node should be disabled.
@@ -81,8 +84,10 @@ export class TreeComponent implements OnInit, OnDestroy {
 
 
   constructor(private database: DynamicDatabase,
-              private treeService: TreeService,
+              public treeService: TreeService,
+              @Inject(FormPluginToken) plugins: Plugin[],
               private cdr: ChangeDetectorRef) {
+    this.deleteEmptyFoldersBehavioursIsActive = plugins.find(plugin => plugin.id === 'plugin.delete.empty.folders').isActive;
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database, treeService);
     this.dragManager = new DragNDropUtils(this.treeControl);
@@ -116,8 +121,7 @@ export class TreeComponent implements OnInit, OnDestroy {
         if (this.activeNodeId === id) {
           return;
         }
-        this.jumpToNode(id)
-          .then(() => this.activeNodeId = id);
+        this.jumpToNode(id);
       });
   }
 
@@ -446,6 +450,7 @@ export class TreeComponent implements OnInit, OnDestroy {
         }
       });
     } else {
+      this.activeNodeId = null;
       return Promise.resolve();
     }
   }
@@ -575,7 +580,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     if (dropInfo.allow) {
       this.dropped.next({
-        srcIds: [dropInfo.srcNode._id],
+        srcIds: this.treeService.selectionModel.selected.map(node => node._id),
         destination: droppedNode === null ? null : droppedNode._id
       });
 
@@ -609,7 +614,9 @@ export class TreeComponent implements OnInit, OnDestroy {
   /** Toggle a leaf to-do item selection. Check all the parents to see if they changed */
   nodeSelectionToggle(node: TreeNode): void {
     this.treeService.selectionModel.toggle(node);
-    this.checkAllParentsSelection(node);
+    if (!this.deleteEmptyFoldersBehavioursIsActive) {
+      this.checkAllParentsSelection(node);
+    }
   }
 
   /* Checks all the parents when a leaf node is selected/unselected */
@@ -637,6 +644,10 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   /** Whether all the descendants of the node are selected. */
   descendantsAllSelected(node: TreeNode): boolean {
+    if (this.deleteEmptyFoldersBehavioursIsActive && node.hasChildren) {
+      return false;
+    }
+
     const descendants = this.treeControl.getDescendants(node);
     const selectedButHasNoChildren = !node.hasChildren && this.treeService.selectionModel.isSelected(node);
     const selectedButHasNotLoadedChildren = node.hasChildren
@@ -664,6 +675,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
   folderSelectionToggle(node: TreeNode): void {
     this.treeService.selectionModel.toggle(node);
+
     const descendants = this.treeControl.getDescendants(node);
     this.treeService.selectionModel.isSelected(node)
       ? this.treeService.selectionModel.select(...descendants)
@@ -682,5 +694,10 @@ export class TreeComponent implements OnInit, OnDestroy {
         this.treeService.selectionModel.select(this.activeNode);
       }
     }
+  }
+
+  showFolderCheckbox(node: TreeNode): boolean {
+    return this.showMultiSelectionMode
+      && (!this.deleteEmptyFoldersBehavioursIsActive || !node.hasChildren);
   }
 }
