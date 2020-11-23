@@ -101,8 +101,7 @@ export class TreeComponent implements OnInit, OnDestroy {
         if (this.activeNodeId === id) {
           return;
         }
-        this.jumpToNode(id)
-          .then(() => this.activeNodeId = id);
+        this.jumpToNode(id);
       });
   }
 
@@ -413,6 +412,7 @@ export class TreeComponent implements OnInit, OnDestroy {
         }
       });
     } else {
+      this.activeNodeId = null;
       return Promise.resolve();
     }
   }
