@@ -21,8 +21,12 @@
         </div>
 
         <div *ngIf="showMultiSelectionMode" class="multi-select-area" fxLayoutAlign="space-between center">
-            <mat-checkbox indeterminate="indeterminate" (click)="treeService.selectionModel.clear()">Auswahl</mat-checkbox>
-            <button mat-icon-button matSuffix class="close" (click)="showMultiSelectionMode = false"  data-cy="exit-multi-select-mode">
+            <mat-checkbox #allSelect
+                          matTooltip="Alle Aus-/Abwählen"
+                          [checked]="allNodesSelected()"
+                          [indeterminate]="atLeastOneButNotAllNodesSelected()"
+                          (change)="toggleAllSelection(allSelect)">Auswahl</mat-checkbox>
+            <button mat-icon-button matSuffix class="close" (click)="toggleSelectionMode()"  data-cy="exit-multi-select-mode">
                 <mat-icon svgIcon="Entfernen"></mat-icon>
             </button>
         </div>
@@ -45,7 +49,7 @@
                        [class.afterExpanded]="node.afterExpanded"
                        [class.disabled]="disabledCondition(node)">
             <div class="label">
-                <mat-checkbox *ngIf="showMultiSelectionMode" class="checklist-leaf-node"
+                <mat-checkbox *ngIf="showMultiSelectionMode"
                               [checked]="isSelected(node)"
                               (click)="$event.stopImmediatePropagation()"
                               (change)="nodeSelectionToggle(node)"></mat-checkbox>
@@ -68,22 +72,36 @@
                        [class.afterExpanded]="node.afterExpanded"
                        [class.folder]="node.type === 'FOLDER'">
             <div style="width: 100%;">
-                <button mat-icon-button matTreeNodeToggle
-                        class="toggle"
-                        [disabled]="!node.hasChildren"
-                        [attr.aria-label]="'toggle ' + node.title">
-                    <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror expander animated">
-                        {{isLoading === node ? 'autorenew' : 'chevron_right'}}
-                    </mat-icon>
-                </button>
+                <div fxLayout="row">
+
+                    <div *ngIf="showMultiSelectionMode && node.hasChildren" class="quick-child-selection">
+                        <button mat-icon-button
+                                matTooltip="Alle Unterelemente abwählen"
+                                (click)="toggleAllChildNodes(node,false, $event)">
+                            <mat-icon>check_box_outline_blank</mat-icon>
+                        </button>
+                        <button mat-icon-button
+                                matTooltip="Alle Unterelemente auswählen"
+                                (click)="toggleAllChildNodes(node, true, $event)">
+                            <mat-icon>check_box</mat-icon>
+                        </button>
+                    </div>
+                    <button mat-icon-button matTreeNodeToggle
+                            class="toggle"
+                            [disabled]="!node.hasChildren"
+                            [attr.aria-label]="'toggle ' + node.title">
+                        <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror expander animated">
+                            {{isLoading === node ? 'autorenew' : 'chevron_right'}}
+                        </mat-icon>
+                    </button>
+                </div>
 
                 <div class="label">
 
-                    <mat-checkbox *ngIf="showFolderCheckbox(node)"
-                                  [checked]="descendantsAllSelected(node)"
-                                  [indeterminate]="descendantsPartiallySelected(node)"
+                    <mat-checkbox *ngIf="showFolderCheckbox()"
+                                  (change)="nodeSelectionToggle(node)"
                                   (click)="$event.stopImmediatePropagation()"
-                                  (change)="folderSelectionToggle(node)"></mat-checkbox>
+                                  [checked]="isSelected(node)"></mat-checkbox>
 
                     <span>{{node.title}}</span>
                     <ng-container *ngIf="node.isLoading">

@@ -3,7 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter, Inject,
+  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
@@ -23,8 +23,7 @@ import {TreeService} from './tree.service';
 import {DocumentUtils} from '../../../services/document.utils';
 import {DragNDropUtils} from './dragndrop.utils';
 import {ShortTreeNode} from './tree.types';
-import {FormPluginToken} from '../../../tokens/plugin.token';
-import {Plugin} from '../../../+catalog/+behaviours/plugin';
+import {MatCheckbox} from '@angular/material/checkbox';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -72,8 +71,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   dragManager: DragNDropUtils;
   isDragging = false;
 
-  showMultiSelectionMode = false;
-  private deleteEmptyFoldersBehavioursIsActive = false;
+  showMultiSelectionMode = true;
 
   /**
    * A function to determine if a tree node should be disabled.
@@ -85,9 +83,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   constructor(private database: DynamicDatabase,
               public treeService: TreeService,
-              @Inject(FormPluginToken) plugins: Plugin[],
               private cdr: ChangeDetectorRef) {
-    this.deleteEmptyFoldersBehavioursIsActive = plugins.find(plugin => plugin.id === 'plugin.delete.empty.folders').isActive;
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database, treeService);
     this.dragManager = new DragNDropUtils(this.treeControl);
@@ -185,6 +181,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     } else {
       if ($event.ctrlKey) {
         this.treeService.selectionModel.toggle(node);
+        this.showMultiSelectionMode = true;
       }
       this.handleSingleSelection(node);
     }
@@ -210,11 +207,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private handleMultiSelection(node: TreeNode) {
-    if (this.isFolder(null, node)) {
-      this.folderSelectionToggle(node);
-    } else {
-      this.nodeSelectionToggle(node);
-    }
+    this.nodeSelectionToggle(node);
   }
 
   private getTitlesFromNodePath(node: TreeNode): ShortTreeNode[] {
@@ -611,79 +604,46 @@ export class TreeComponent implements OnInit, OnDestroy {
    * Tree Selection
    */
 
-  /** Toggle a leaf to-do item selection. Check all the parents to see if they changed */
+  /** Toggle a leaf node selection */
   nodeSelectionToggle(node: TreeNode): void {
     this.treeService.selectionModel.toggle(node);
-    if (!this.deleteEmptyFoldersBehavioursIsActive) {
-      this.checkAllParentsSelection(node);
-    }
-  }
-
-  /* Checks all the parents when a leaf node is selected/unselected */
-  checkAllParentsSelection(node: TreeNode): void {
-    let parent: TreeNode | null = this.getParentNode(node).parent;
-    while (parent) {
-      this.checkRootNodeSelection(parent);
-      parent = this.getParentNode(parent).parent;
-    }
-  }
-
-  /** Check root node checked state and change it accordingly */
-  checkRootNodeSelection(node: TreeNode): void {
-    const nodeSelected = this.treeService.selectionModel.isSelected(node);
-    const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected = descendants.length > 0 && descendants.every(child => {
-      return this.treeService.selectionModel.isSelected(child);
-    });
-    if (nodeSelected && !descAllSelected) {
-      this.treeService.selectionModel.deselect(node);
-    } else if (!nodeSelected && descAllSelected) {
-      this.treeService.selectionModel.select(node);
-    }
-  }
-
-  /** Whether all the descendants of the node are selected. */
-  descendantsAllSelected(node: TreeNode): boolean {
-    if (this.deleteEmptyFoldersBehavioursIsActive && node.hasChildren) {
-      return false;
-    }
-
-    const descendants = this.treeControl.getDescendants(node);
-    const selectedButHasNoChildren = !node.hasChildren && this.treeService.selectionModel.isSelected(node);
-    const selectedButHasNotLoadedChildren = node.hasChildren
-      && this.treeService.selectionModel.isSelected(node)
-      && descendants.length === 0;
-
-    return selectedButHasNoChildren
-      || selectedButHasNotLoadedChildren
-      || (descendants.length > 0 && descendants.every(child => {
-        return this.treeService.selectionModel.isSelected(child);
-      }));
   }
 
   isSelected(node: TreeNode): boolean {
     return this.treeService.selectionModel.isSelected(node);
   }
 
-  /** Whether part of the descendants are selected */
-  descendantsPartiallySelected(node: TreeNode): boolean {
-    const descendants = this.treeControl.getDescendants(node);
-    const result = descendants.some(child => this.treeService.selectionModel.isSelected(child));
-    return result && !this.descendantsAllSelected(node);
+  /**
+   * Set the state of the child nodes of a parent. If node is not expanded, then expand it
+   * before de-/selecting the children.
+   */
+  toggleAllChildNodes(node: TreeNode, active: boolean, $event: Event): void {
+    if ($event) {
+      $event.stopImmediatePropagation();
+    }
+
+    if (node.isExpanded) {
+      this.markChildNodes(node, active);
+    } else {
+      const beforeLength = this.treeControl.dataNodes.length;
+      this.treeControl.expand(node);
+      const changeObserver = this.dataSource.dataChange.subscribe(data => {
+        if (beforeLength !== data.length) {
+          setTimeout(() => {
+            this.markChildNodes(node, active);
+            changeObserver.unsubscribe();
+          }, 0);
+        }
+      });
+    }
   }
 
-  /** Toggle the to-do item selection. Select/deselect all the descendants node */
-  folderSelectionToggle(node: TreeNode): void {
-    this.treeService.selectionModel.toggle(node);
+  private markChildNodes(node: TreeNode, active: boolean) {
 
     const descendants = this.treeControl.getDescendants(node);
-    this.treeService.selectionModel.isSelected(node)
+    active
       ? this.treeService.selectionModel.select(...descendants)
       : this.treeService.selectionModel.deselect(...descendants);
-
-    // Force update for the parent
-    descendants.forEach(child => this.treeService.selectionModel.isSelected(child));
-    this.checkAllParentsSelection(node);
   }
 
   toggleSelectionMode() {
@@ -696,8 +656,23 @@ export class TreeComponent implements OnInit, OnDestroy {
     }
   }
 
-  showFolderCheckbox(node: TreeNode): boolean {
-    return this.showMultiSelectionMode
-      && (!this.deleteEmptyFoldersBehavioursIsActive || !node.hasChildren);
+  showFolderCheckbox(): boolean {
+    return this.showMultiSelectionMode;
+  }
+
+  allNodesSelected() {
+    return this.treeControl.dataNodes.every(node => this.treeService.selectionModel.isSelected(node));
+  }
+
+  atLeastOneButNotAllNodesSelected() {
+    return this.treeControl.dataNodes.some(node => this.treeService.selectionModel.isSelected(node))
+      && !this.allNodesSelected();
+  }
+
+  toggleAllSelection(el: MatCheckbox) {
+    console.log(el.checked);
+    el.checked
+      ? this.treeService.selectionModel.select(...this.treeControl.dataNodes)
+      : this.treeService.selectionModel.clear();
   }
 }

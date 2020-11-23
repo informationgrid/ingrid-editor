@@ -99,6 +99,13 @@ mat-tree-node {
       justify-content: space-between;
       align-items: center;
     }
+
+    .quick-child-selection button {
+      height: 18px;
+      width: 18px;
+      line-height: 0;
+      vertical-align: middle;
+    }
   }
 
   &.rootNode {
@@ -171,8 +178,19 @@ mat-tree-node {
     background-color: darken($ige-background, 5%);
   }
 
+  .quick-child-selection {
+    display: none;
+    button {
+      margin-right: 10px;
+    }
+  }
+
   &:hover {
     background-color: darken(#FFFFFF, 2.5%) !important;
+
+    .quick-child-selection {
+      display: block;
+    }
   }
 
   &.active, &.rootNode.active, &:not(.rootNode).expanded + &.active:not(.rootNode) {
