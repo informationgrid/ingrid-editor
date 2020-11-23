@@ -12,11 +12,13 @@ import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.TestPropertySource
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
 //import org.springframework.test.context.transaction.TestTransaction
 
 @SpringBootTest(classes = [IgeServer::class])
+@TestPropertySource(locations = ["classpath:application-test.properties"])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
 class JpaTest : AnnotationSpec() {

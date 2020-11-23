@@ -23,6 +23,8 @@ A Docker container to be used in development can be created by running the follo
 
 > docker-compose up -d
 
+See also `postgres/.env` for further configuration.
+
 ### Start the client and server
 For IntelliJ configuration see the section below.
 
