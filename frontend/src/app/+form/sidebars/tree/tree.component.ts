@@ -24,6 +24,7 @@ import {DocumentUtils} from '../../../services/document.utils';
 import {DragNDropUtils} from './dragndrop.utils';
 import {ShortTreeNode} from './tree.types';
 import {MatCheckbox} from '@angular/material/checkbox';
+import {SelectionModel} from '@angular/cdk/collections';
 
 export enum TreeActionType {
   ADD, UPDATE, DELETE
@@ -49,8 +50,9 @@ export class TreeComponent implements OnInit, OnDestroy {
   @Input() showOnlyFolders = false;
   @Input() enableDrag = false;
 
-  /** The selection for checklist */
-  @Output() selected = this.treeService.selectionModel.changed.pipe(
+  /** The node selection must be kept local */
+  selectionModel = new SelectionModel<TreeNode>(true);
+  @Output() selected = this.selectionModel.changed.pipe(
     map(data => data.source.selected.map(item => item._id))
   );
   @Output() activate = new EventEmitter<string[]>();
@@ -85,7 +87,7 @@ export class TreeComponent implements OnInit, OnDestroy {
               public treeService: TreeService,
               private cdr: ChangeDetectorRef) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
-    this.dataSource = new DynamicDataSource(this.treeControl, database, treeService);
+    this.dataSource = new DynamicDataSource(this.treeControl, database, treeService, this.selectionModel);
     this.dragManager = new DragNDropUtils(this.treeControl);
   }
 
@@ -180,7 +182,7 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.handleMultiSelection(node);
     } else {
       if ($event.ctrlKey) {
-        this.treeService.selectionModel.toggle(node);
+        this.selectionModel.toggle(node);
         this.showMultiSelectionMode = true;
       }
       this.handleSingleSelection(node);
@@ -190,10 +192,10 @@ export class TreeComponent implements OnInit, OnDestroy {
   private handleSingleSelection(node: TreeNode) {
 
     // deselect all nodes first
-    this.treeService.selectionModel.clear();
-    this.treeService.selectionModel.select(node);
-    this.activeNode = this.treeService.selectionModel.selected[0];
-    this.activeNodeId = this.treeService.selectionModel.selected[0]._id;
+    this.selectionModel.clear();
+    this.selectionModel.select(node);
+    this.activeNode = this.selectionModel.selected[0];
+    this.activeNodeId = this.selectionModel.selected[0]._id;
     this.activate.next([this.activeNodeId]);
 
     // set path in tree for bread crumb (extract to method)
@@ -243,7 +245,7 @@ export class TreeComponent implements OnInit, OnDestroy {
         map(docs => docs.sort(this.treeService.getSortTreeNodesFunction())),
         tap(rootElements => {
           this.dataSource.data = rootElements;
-          this.treeService.selectionModel.clear();
+          this.selectionModel.clear();
           if (this.activeNodeId) {
             this.jumpToNode(this.activeNodeId);
           }
@@ -331,7 +333,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     // remove selection from previously selected nodes
     if (!updateInfo.doNotSelect) {
-      this.treeService.selectionModel.clear();
+      this.selectionModel.clear();
     }
 
   }
@@ -404,7 +406,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   jumpToNode(id: string, resetSelection = true): Promise<void> {
 
     if (resetSelection) {
-      this.treeService.selectionModel.clear();
+      this.selectionModel.clear();
     }
 
     if (id !== null) {
@@ -420,7 +422,7 @@ export class TreeComponent implements OnInit, OnDestroy {
                 this.currentPath.next(nodePath);
                 if (resetSelection) {
                   this.activate.next([id]);
-                  this.treeService.selectionModel.select(node);
+                  this.selectionModel.select(node);
                 }
                 this.scrollToActiveElement();
               }
@@ -435,7 +437,7 @@ export class TreeComponent implements OnInit, OnDestroy {
               const nodePath = this.getTitlesFromNodePath(node);
               this.currentPath.next(nodePath);
               if (resetSelection) {
-                this.treeService.selectionModel.select(node);
+                this.selectionModel.select(node);
               }
               this.scrollToActiveElement();
             }
@@ -515,7 +517,7 @@ export class TreeComponent implements OnInit, OnDestroy {
                 const node = this.dataSource.getNode(this.activeNodeId);
                 const nodePath = this.getTitlesFromNodePath(node);
                 this.currentPath.next(nodePath);
-                this.treeService.selectionModel.select(node);
+                this.selectionModel.select(node);
               });
           });
         });
@@ -573,7 +575,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     if (dropInfo.allow) {
       this.dropped.next({
-        srcIds: this.treeService.selectionModel.selected.map(node => node._id),
+        srcIds: this.selectionModel.selected.map(node => node._id),
         destination: droppedNode === null ? null : droppedNode._id
       });
 
@@ -606,11 +608,11 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   /** Toggle a leaf node selection */
   nodeSelectionToggle(node: TreeNode): void {
-    this.treeService.selectionModel.toggle(node);
+    this.selectionModel.toggle(node);
   }
 
   isSelected(node: TreeNode): boolean {
-    return this.treeService.selectionModel.isSelected(node);
+    return this.selectionModel.isSelected(node);
   }
 
   /**
@@ -642,16 +644,16 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     const descendants = this.treeControl.getDescendants(node);
     active
-      ? this.treeService.selectionModel.select(...descendants)
-      : this.treeService.selectionModel.deselect(...descendants);
+      ? this.selectionModel.select(...descendants)
+      : this.selectionModel.deselect(...descendants);
   }
 
   toggleSelectionMode() {
     this.showMultiSelectionMode = !this.showMultiSelectionMode;
     if (!this.showMultiSelectionMode) {
-      this.treeService.selectionModel.clear();
+      this.selectionModel.clear();
       if (this.activeNode) {
-        this.treeService.selectionModel.select(this.activeNode);
+        this.selectionModel.select(this.activeNode);
       }
     }
   }
@@ -661,18 +663,18 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   allNodesSelected() {
-    return this.treeControl.dataNodes.every(node => this.treeService.selectionModel.isSelected(node));
+    return this.treeControl.dataNodes.every(node => this.selectionModel.isSelected(node));
   }
 
   atLeastOneButNotAllNodesSelected() {
-    return this.treeControl.dataNodes.some(node => this.treeService.selectionModel.isSelected(node))
+    return this.treeControl.dataNodes.some(node => this.selectionModel.isSelected(node))
       && !this.allNodesSelected();
   }
 
   toggleAllSelection(el: MatCheckbox) {
     console.log(el.checked);
     el.checked
-      ? this.treeService.selectionModel.select(...this.treeControl.dataNodes)
-      : this.treeService.selectionModel.clear();
+      ? this.selectionModel.select(...this.treeControl.dataNodes)
+      : this.selectionModel.clear();
   }
 }
