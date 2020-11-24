@@ -113,16 +113,17 @@ mat-tree-node {
     background-color: $ige-background;
 
     &:hover {
-      background-color: darken($ige-background, 5%) !important;
+      background-color: darken($ige-background, 5%);
     }
 
     &.selected {
       background-color: darken($ige-background, 5%);
+
+      &:hover {
+        background-color: darken($ige-background, 10%);
+      }
     }
 
-    &.selected:hover {
-      background-color: darken($ige-background, 10%);
-    }
 
     &.folder {
       font-size: 16px;
@@ -149,6 +150,19 @@ mat-tree-node {
     z-index: 1;
     margin-top: -1px;
     background-color: lighten($ige-background, 10%); /* Other states' background colors have to be set important */
+
+    &:hover {
+      background-color: darken(#FFFFFF, 2.5%);
+    }
+
+    &.selected {
+      background-color: darken(#FFFFFF, 5%);
+
+      &:hover {
+        background-color: darken(#FFFFFF, 10%);
+      }
+    }
+
   }
 
   .label {
@@ -175,7 +189,11 @@ mat-tree-node {
   }
 
   &.selected {
-    background-color: darken($ige-background, 5%);
+    background-color: darken(#FFFFFF, 5%);
+
+    &:hover {
+      background-color: darken(#FFFFFF, 10%);
+    }
   }
 
   .quick-child-selection {
@@ -186,7 +204,7 @@ mat-tree-node {
   }
 
   &:hover {
-    background-color: darken(#FFFFFF, 2.5%) !important;
+    background-color: darken(#FFFFFF, 2.5%);
 
     .quick-child-selection {
       display: block;
@@ -198,6 +216,14 @@ mat-tree-node {
 
     &:hover {
       background-color: darken($ige-mark-color, 5%) !important;
+    }
+
+    &.selected {
+      background-color: darken($ige-mark-color, 5%) !important;
+
+      &:hover {
+        background-color: darken($ige-mark-color, 10%) !important;
+      }
     }
   }
 
