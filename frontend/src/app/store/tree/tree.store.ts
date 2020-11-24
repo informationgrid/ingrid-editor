@@ -11,7 +11,8 @@ export interface TreeState extends EntityState<DocumentAbstract>, MultiActiveSta
   activePathTitles: ShortTreeNode[],
   explicitActiveNode: ShortTreeNode,
   scrollPosition: number,
-  isDocLoading: boolean
+  isDocLoading: boolean,
+  multiSelectMode: boolean
 }
 
 const initialState = {
@@ -21,7 +22,8 @@ const initialState = {
   activePathTitles: [],
   explicitActiveNode: undefined,
   scrollPosition: 0,
-  isDocLoading: false
+  isDocLoading: false,
+  multiSelectMode: false
 };
 
 @Injectable({providedIn: 'root'})

@@ -108,6 +108,14 @@ export class SidebarComponent implements OnInit {
 
   }
 
+  updateTreeMode(multiSelect: boolean) {
+
+    this.treeStore.update({
+      multiSelectMode: multiSelect
+    });
+
+  }
+
   // make sure to reload tree instead of using cached nodes
   // otherwise adding new node from dashboard would lead to an error
   private clearTreeStore() {

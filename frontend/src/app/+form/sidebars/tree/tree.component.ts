@@ -43,6 +43,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   @Input() forAddresses: boolean;
   @Input() expandNodeIds: Subject<string[]>;
   @Input() showHeader = true;
+  @Input() showMultiSelectButton = false;
   @Input() showReloadButton = true;
   @Input() setActiveNode: Subject<string>;
   @Input() update: Observable<any>;
@@ -58,6 +59,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   @Output() activate = new EventEmitter<string[]>();
   @Output() currentPath = new EventEmitter<ShortTreeNode[]>();
   @Output() dropped = new EventEmitter<any>();
+  @Output() multiEditMode = new EventEmitter<any>();
 
   @ViewChild('treeComponent', {read: ElementRef}) treeContainerElement: ElementRef;
 
@@ -73,7 +75,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   dragManager: DragNDropUtils;
   isDragging = false;
 
-  showMultiSelectionMode = true;
+  showMultiSelectionMode = false;
 
   /**
    * A function to determine if a tree node should be disabled.
@@ -656,6 +658,9 @@ export class TreeComponent implements OnInit, OnDestroy {
         this.selectionModel.select(this.activeNode);
       }
     }
+
+    // notify external components
+    this.multiEditMode.next(this.showMultiSelectionMode);
   }
 
   showFolderCheckbox(): boolean {
