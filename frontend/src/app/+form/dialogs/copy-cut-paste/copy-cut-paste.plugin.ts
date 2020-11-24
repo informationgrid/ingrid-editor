@@ -5,7 +5,7 @@ import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/tool
 import {UpdateType} from '../../../models/update-type.enum';
 import {ModalService} from '../../../services/modal/modal.service';
 import {PasteDialogComponent, PasteDialogOptions} from './paste-dialog.component';
-import {merge, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {MessageService} from '../../../services/message.service';
@@ -24,6 +24,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   copiedDatasets: string[] = [];
   cutDatasets: string[] = [];
+  private query: TreeQuery | AddressTreeQuery;
 
   get name() {
     return this._name;
@@ -41,6 +42,8 @@ export class CopyCutPastePlugin extends Plugin {
 
   register() {
     super.register();
+
+    this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
     const buttons: Array<ToolbarItem | Separator> = [
       {id: 'toolBtnCopyCutSeparator', pos: 30, isSeparator: true},
@@ -73,10 +76,7 @@ export class CopyCutPastePlugin extends Plugin {
     });
 
     // set button state according to selected documents
-    const treeQuerySubscription = merge(
-      this.treeQuery.selectActiveId(),
-      this.addressTreeQuery.selectActiveId()
-    ).subscribe(data => {
+    const treeQuerySubscription = this.query.selectActiveId().subscribe(data => {
       if (data.length === 0) {
         this.toolbarService.setButtonState('toolBtnCopy', false);
       } else {
@@ -85,7 +85,7 @@ export class CopyCutPastePlugin extends Plugin {
         // set state of menu items
         this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPY', true);
         this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'CUT', true);
-        this.getQuery().selectEntity(data[0]).pipe(
+        this.query.selectEntity(data[0]).pipe(
           filter(item => item !== undefined),
           take(1)
         ).subscribe(entity => {
@@ -133,15 +133,11 @@ export class CopyCutPastePlugin extends Plugin {
       } as PasteDialogOptions
     }).afterClosed().pipe(
       filter(result => result) // only confirmed dialog
-    )
+    );
   }
 
   private getSelectedDatasets() {
-    return this.getQuery().getActiveId().map(id => id.toString());
-  }
-
-  private getQuery() {
-    return this.forAddress ? this.addressTreeQuery : this.treeQuery;
+    return this.query.getActiveId().map(id => id.toString());
   }
 
   unregister() {

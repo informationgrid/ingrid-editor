@@ -12,6 +12,7 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
   openedDocument$: Observable<DocumentAbstract> = this.select(state => state.openedDocument);
   pathTitles$: Observable<ShortTreeNode[]> = this.select(state => state.activePathTitles);
   explicitActiveNode$: Observable<ShortTreeNode> = this.select(state => state.explicitActiveNode);
+  multiSelectMode$: Observable<boolean> = this.select(state => state.multiSelectMode);
 
   constructor(protected store: AddressTreeStore) {
     super(store);
