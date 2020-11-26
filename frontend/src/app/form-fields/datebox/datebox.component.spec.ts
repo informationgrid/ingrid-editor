@@ -1,25 +1,19 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
-import { DateboxComponent } from './datebox.component';
+import {DateboxComponent} from './datebox.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
 
 describe('DateboxComponent', () => {
-  let component: DateboxComponent;
-  let fixture: ComponentFixture<DateboxComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DateboxComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DateboxComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<DateboxComponent>;
+  const createComponent = createComponentFactory({
+    component: DateboxComponent,
+    imports: [],
+    detectChanges: false
   });
+
+  beforeEach(() => spectator = createComponent());
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
+
 });

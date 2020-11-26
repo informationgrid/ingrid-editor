@@ -1,25 +1,23 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
 import { FolderDashboardComponent } from './folder-dashboard.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {RouterTestingModule} from '@angular/router/testing';
+import {DocumentService} from '../../../services/document/document.service';
+import {FormToolbarService} from '../toolbar/form-toolbar.service';
+import {MatDialogModule} from '@angular/material/dialog';
 
-describe('FormDashboardComponent', () => {
-  let component: FolderDashboardComponent;
-  let fixture: ComponentFixture<FolderDashboardComponent>;
-
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FolderDashboardComponent ]
-    })
-    .compileComponents();
-  }));
+describe('FolderDashboardComponent', () => {
+  let spectator: Spectator<FolderDashboardComponent>;
+  const createComponent = createComponentFactory({
+    component: FolderDashboardComponent,
+    imports: [RouterTestingModule, MatDialogModule],
+    mocks: [DocumentService, FormToolbarService]
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FolderDashboardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 });

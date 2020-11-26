@@ -6,6 +6,11 @@ import {FormPluginsService} from '../form-plugins.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {ModalService} from '../../../services/modal/modal.service';
 import {RouterTestingModule} from '@angular/router/testing';
+import {TreeService} from '../../sidebars/tree/tree.service';
+import {AuthService} from '../../../services/security/auth.service';
+import {PluginToken} from '../../../tokens/plugin.token';
+import {AddressTitleBehaviour} from '../../../+catalog/+behaviours/system/AddressTitle/address-title.behaviour';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 describe('Dynamic Form', () => {
@@ -13,8 +18,11 @@ describe('Dynamic Form', () => {
   let spectator: Spectator<DynamicFormComponent>;
   const createHost = createComponentFactory({
     component: DynamicFormComponent,
-    imports: [RouterTestingModule],
-    mocks: [FormularService, FormToolbarService, FormPluginsService, DocumentService, ModalService],
+    imports: [RouterTestingModule, MatProgressSpinnerModule],
+    providers: [
+      {provide: PluginToken, useClass: AddressTitleBehaviour}
+    ],
+    mocks: [FormularService, FormToolbarService, FormPluginsService, DocumentService, ModalService, TreeService, AuthService],
     detectChanges: false
   });
 

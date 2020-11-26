@@ -1,25 +1,22 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
-import { IndexingComponent } from './indexing.component';
+import {IndexingComponent} from './indexing.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {IndexService} from './index.service';
 
 describe('IndexingComponent', () => {
-  let component: IndexingComponent;
-  let fixture: ComponentFixture<IndexingComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ IndexingComponent ]
-    })
-    .compileComponents();
-  }));
+  let spectator: Spectator<IndexingComponent>;
+  const createHost = createComponentFactory({
+    component: IndexingComponent,
+    imports: [],
+    componentMocks: [IndexService],
+    detectChanges: false
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IndexingComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createHost();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });

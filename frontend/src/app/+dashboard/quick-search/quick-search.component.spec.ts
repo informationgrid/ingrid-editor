@@ -4,16 +4,16 @@ import {QuickSearchComponent} from './quick-search.component';
 import {DocumentService} from '../../services/document/document.service';
 import {Router} from '@angular/router';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatCardModule} from '@angular/material/card';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 describe('QuickSearchComponent', () => {
   let spectator: Spectator<QuickSearchComponent>;
   const createComponent = createComponentFactory({
     component: QuickSearchComponent,
-    imports: [MatAutocompleteModule],
-    providers: [
-      mockProvider(DocumentService),
-      mockProvider(Router)
-    ]
+    imports: [MatAutocompleteModule, MatCardModule, FormsModule, ReactiveFormsModule, MatFormFieldModule],
+    mocks: [DocumentService, Router]
   });
 
   it('should create', () => {

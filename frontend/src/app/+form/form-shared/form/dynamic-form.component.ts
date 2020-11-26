@@ -85,7 +85,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService, // this needs to be here for instantiation!!!
-              private dialog: MatDialog,
               private documentService: DocumentService, private modalService: ModalService,
               private formsManager: NgFormsManager,
               private treeService: TreeService,
