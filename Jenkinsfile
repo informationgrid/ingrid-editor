@@ -36,7 +36,7 @@ pipeline {
                         docker.image('ubuntu:16.04').inside("--link ${c.id}:db -v /root/.docker/config.json:/root/.docker/config.json") {
                             withEnv(["JAVA_HOME=${ tool 'jdk11' }/jdk-11"]) {
                                 nodejs(nodeJSInstallationName: 'nodejs') {
-                                    sh './gradlew -PbuildProfile=prod -Djib.console=plain clean build'
+                                    sh 'BUILD_ID=dontKillMe ./gradlew -PbuildProfile=prod -Djib.console=plain clean build'
                                 }
                             }
                         }
