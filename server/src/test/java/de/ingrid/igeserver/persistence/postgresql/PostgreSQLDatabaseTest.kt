@@ -41,7 +41,7 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
     @Autowired
     private lateinit var dbService: PostgreSQLDatabase
 
-    private val ISO_OFFSET_DATE_TIME_REGEX = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]+[+-][0-9]{2}:[0-9]{2}"
+    private val DATE_TIME_REGEX = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.*"
 
     @Test
     fun `loading a document`() {
@@ -55,8 +55,8 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
 
         Assertions.assertThat(loadedDoc[FIELD_ID].textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
         Assertions.assertThat(loadedDoc[FIELD_DOCUMENT_TYPE].textValue()).isEqualTo("AddressDoc")
-        Assertions.assertThat(loadedDoc[FIELD_CREATED].textValue()).isEqualTo("2020-10-10T00:48:28.644575+02:00")
-        Assertions.assertThat(loadedDoc[FIELD_MODIFIED].textValue()).isEqualTo("2020-10-10T00:48:28.644575+02:00")
+        Assertions.assertThat(loadedDoc[FIELD_CREATED].textValue()).matches(DATE_TIME_REGEX)
+        Assertions.assertThat(loadedDoc[FIELD_MODIFIED].textValue()).matches(DATE_TIME_REGEX)
         Assertions.assertThat(loadedDoc["title"].textValue()).isEqualTo("Test Document")
         Assertions.assertThat(loadedDoc["firstName"].textValue()).isEqualTo("Petra")
         Assertions.assertThat(loadedDoc["lastName"].textValue()).isEqualTo("Mustermann")
@@ -102,8 +102,8 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
         Assertions.assertThat(loadedDoc as JsonNode).isNotNull
         Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
         Assertions.assertThat(loadedDoc.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("AddressDoc")
-        Assertions.assertThat(loadedDoc.get(FIELD_CREATED)?.textValue()).matches(ISO_OFFSET_DATE_TIME_REGEX)
-        Assertions.assertThat(loadedDoc.get(FIELD_MODIFIED)?.textValue()).matches(ISO_OFFSET_DATE_TIME_REGEX)
+        Assertions.assertThat(loadedDoc.get(FIELD_CREATED)?.textValue()).matches(DATE_TIME_REGEX)
+        Assertions.assertThat(loadedDoc.get(FIELD_MODIFIED)?.textValue()).matches(DATE_TIME_REGEX)
         Assertions.assertThat(loadedDoc.get("title")?.textValue()).isEqualTo("Test Document")
         Assertions.assertThat(loadedDoc.get("firstName")?.textValue()).isEqualTo("Petra")
         Assertions.assertThat(loadedDoc.get("lastName")?.textValue()).isEqualTo("Mustermann")
@@ -250,8 +250,8 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
         Assertions.assertThat(loadedDoc as JsonNode).isNotNull
         Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("e68c9447-9c4e-45cc-9db7-557b3bcc1db9")
         Assertions.assertThat(loadedDoc.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("AddressDoc")
-        Assertions.assertThat(loadedDoc.get(FIELD_CREATED)?.textValue()).matches(ISO_OFFSET_DATE_TIME_REGEX)
-        Assertions.assertThat(loadedDoc.get(FIELD_MODIFIED)?.textValue()).matches(ISO_OFFSET_DATE_TIME_REGEX)
+        Assertions.assertThat(loadedDoc.get(FIELD_CREATED)?.textValue()).matches(DATE_TIME_REGEX)
+        Assertions.assertThat(loadedDoc.get(FIELD_MODIFIED)?.textValue()).matches(DATE_TIME_REGEX)
         Assertions.assertThat(loadedDoc.get("title")?.textValue()).isEqualTo("Test Document Geändert")
         Assertions.assertThat(loadedDoc.get("firstName")?.textValue()).isEqualTo("Peter")
         Assertions.assertThat(loadedDoc.get("lastName")?.textValue()).isEqualTo("Mustermann")
