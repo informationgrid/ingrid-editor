@@ -32,16 +32,11 @@
 
     <!-- Form behaviours -->
     <mat-tab label="Formular">
-        <div style="padding: 20px; background-color: #ffe4b0">
-            Die Formular-Plugins können derzeit noch nicht geändert werden!
-        </div>
-
         <mat-card *ngFor="let plugin of formPlugins">
             <form [formGroup]="formBehaviourFields[plugin.id].form">
                 <mat-card-title>
                     <mat-checkbox [formControl]="formBehaviourFields[plugin.id].active"
-                                  disabled
-                                  (change)="updateFieldState(plugin, $event.checked)"></mat-checkbox>
+                                  (change)="updateFormFieldState(plugin, $event.checked)"></mat-checkbox>
                     <span class="title">
                         {{plugin.name}}
                         <span *ngIf="formBehaviourFields[plugin.id].modified">(modified)</span>
@@ -59,7 +54,9 @@
                 </mat-card-content>
             </form>
         </mat-card>
-
+        <button mat-stroked-button color="primary" (click)="save()"
+                [disabled]="hasInvalidForm()">Speichern
+        </button>
     </mat-tab>
 
     <!-- Behaviours for each profile -->

@@ -19,7 +19,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable()
 export class SavePlugin extends Plugin {
-  id = 'plugin.publish';
+  id = 'plugin.save';
   _name = 'Save Plugin';
   defaultActive = true;
 

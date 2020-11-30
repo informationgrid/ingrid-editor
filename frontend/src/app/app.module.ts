@@ -55,7 +55,7 @@ import {AnimationWrapper, AnimationWrapperComponent} from './animation-wrapper.c
 
 registerLocaleData(de);
 
-export function ConfigLoader(configService: ConfigService, modal: ModalService) {
+export function ConfigLoader(configService: ConfigService) {
   return () => {
 
     return configService.load(environment.configFile)

@@ -1,5 +1,4 @@
 import {Inject, Injectable} from '@angular/core';
-import {FormGroup} from '@angular/forms';
 import {EventManager} from '@angular/platform-browser';
 import {Plugin} from '../../+catalog/+behaviours/plugin';
 import {ProfileService} from '../profile.service';
@@ -26,6 +25,7 @@ export class BehaviourService {
   behaviours: Behaviour[] = [];
 
   theSystemBehaviours$ = new BehaviorSubject<Plugin[]>([]);
+  backendBehaviourStates: BehaviourFormatBackend[];
 
   constructor(private eventManager: EventManager,
               private configService: ConfigService,
@@ -37,6 +37,7 @@ export class BehaviourService {
 
     this.loadStoredBehaviours()
       .pipe(
+        tap(backendBehaviours => console.log('backendBehaviours: ', backendBehaviours)),
         tap(() => this.theSystemBehaviours$.next(this.systemBehaviours))
       )
       .subscribe(() => this.registerActiveBehaviours());
@@ -47,8 +48,9 @@ export class BehaviourService {
 
     return this.dataService.loadStoredBehaviours()
       .pipe(
-        tap(b => console.log(`fetched behaviours`, b)),
-        tap(storedBehaviours => this.applyActiveStates(this.systemBehaviours, storedBehaviours)),
+        tap(storedBehaviours => console.log(`fetched behaviours`, storedBehaviours)),
+        tap(storedBehaviours => this.backendBehaviourStates = storedBehaviours),
+        tap(() => this.applyActiveStates(this.systemBehaviours)),
         catchError(e => {
           const userInfo = this.configService.$userInfo.value;
           console.error('Could not get behaviours');
@@ -63,53 +65,13 @@ export class BehaviourService {
 
   }
 
-  private applyActiveStates(behaviours: Plugin[], storedBehaviours: any[]) {
+  applyActiveStates(behaviours: Plugin[]) {
     behaviours.forEach((behaviour) => {
-      const stored = storedBehaviours.filter((sb: any) => sb._id === behaviour.id);
+      const stored = this.backendBehaviourStates.filter((sb: any) => sb._id === behaviour.id);
       behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
       behaviour.data = stored.length > 0 ? stored[0].data : null;
     });
   }
-
-  apply(form: FormGroup, profile: string) {
-    // possible updates see comment from kara: https://github.com/angular/angular/issues/9716
-    this.behaviours
-      .filter(beh => beh.isActive && beh.forProfile === profile)
-      .forEach(behaviour => {
-        if (!behaviour.title) {
-          return;
-        }
-
-        if (behaviour.isActive) {
-          // we need to run code in this context
-          // TODO: add parameters for behaviour
-          behaviour.register(form, this.eventManager);
-        }
-      });
-
-    this.profileService.getProfiles().some(profileClass => {
-      if (profileClass.id === profile) {
-        if (profileClass.applyValidations) {
-          profileClass.applyValidations(form);
-        }
-        if (profileClass.behaviours) {
-          profileClass.behaviours
-            .filter(_ => _.isActive)
-            .forEach(behaviour => {
-              behaviour.register(form, this.eventManager);
-            });
-        }
-        return true;
-      }
-    });
-  }
-
-  /*unregisterAll() {
-    this.behaviours
-      // unregister all active behaviours that do have an unregister function
-      .filter(beh => beh.isActive && beh.unregister)
-      .forEach(behaviour => behaviour.unregister());
-  }*/
 
   registerActiveBehaviours() {
     this.systemBehaviours
@@ -132,6 +94,12 @@ export class BehaviourService {
 
     behaviours.forEach(behaviour => {
       const found = this.systemBehaviours.find(sysBehaviour => sysBehaviour.id === behaviour._id);
+      // skip form plugins
+      if (!found) {
+        this.handleFormBehaviour(behaviour);
+        return;
+      }
+
       if (behaviour.active !== found.isActive) {
         behaviour.active ? activate.push(found) : deactivate.push(found);
       } else if (behaviour.active) {
@@ -148,4 +116,13 @@ export class BehaviourService {
     this.theSystemBehaviours$.next(this.systemBehaviours);
   }
 
+  private handleFormBehaviour(behaviour: BehaviourFormatBackend) {
+    const found = this.backendBehaviourStates.find(backendBehaviour => backendBehaviour._id === behaviour._id);
+    if (!found) {
+      this.backendBehaviourStates.push(behaviour);
+      return;
+    }
+    found.active = behaviour.active;
+    found.data = behaviour.data;
+  }
 }

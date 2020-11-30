@@ -41,6 +41,7 @@ import {ValidationError} from '../../../store/session.store';
   selector: 'ige-form-wrapper',
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss'],
+  // data and addresses need their own configured service
   providers: [FormPluginsService]
   // changeDetection: ChangeDetectionStrategy.OnPush
 })

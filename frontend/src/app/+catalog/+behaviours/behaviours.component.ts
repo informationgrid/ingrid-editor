@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {BehaviourService} from '../../services/behavior/behaviour.service';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Plugin} from './plugin';
 import {FormlyFormBuilder} from '@ngx-formly/core';
-import {FormPluginsService} from '../../+form/form-shared/form-plugins.service';
+import {FormPluginToken} from '../../tokens/plugin.token';
 
 @UntilDestroy()
 @Component({
@@ -24,7 +24,6 @@ import {FormPluginsService} from '../../+form/form-shared/form-plugins.service';
 export class BehavioursComponent implements OnInit {
 
   plugins: Plugin[];
-  formPlugins: Plugin[];
 
   behaviourTab: string;
   expanded: any = {};
@@ -35,8 +34,8 @@ export class BehavioursComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private builder: FormlyFormBuilder,
-              private behaviourService: BehaviourService,
-              private formPluginsService: FormPluginsService) {
+              @Inject(FormPluginToken) public formPlugins: Plugin[],
+              private behaviourService: BehaviourService) {
   }
 
   ngOnInit() {
@@ -45,13 +44,16 @@ export class BehavioursComponent implements OnInit {
     this.behaviourService.theSystemBehaviours$
       .pipe(
         untilDestroyed(this),
-        tap((items: Plugin[]) => this.behaviourFields = this.createModelFromPlugins(items))
+        tap(systemPlugins => this.updateFields(systemPlugins))
       )
-      .subscribe(plugins => this.plugins = plugins);
+      .subscribe();
+  }
 
-    this.formBehaviourFields = this.createModelFromPlugins(this.formPluginsService.plugins);
-    this.formPlugins = this.formPluginsService.plugins;
-
+  private updateFields(system: Plugin[]) {
+    this.behaviourFields = this.createModelFromPlugins(system);
+    this.behaviourService.applyActiveStates(this.formPlugins);
+    this.formBehaviourFields = this.createModelFromPlugins(this.formPlugins);
+    this.plugins = system;
   }
 
   save() {
@@ -63,10 +65,18 @@ export class BehavioursComponent implements OnInit {
           _id: item.id,
           active: this.behaviourFields[item.id]?.active.value,
           data: this.behaviourFields[item.id]?.form.value
-        }
+        };
+      });
+    const formBehaviours = this.formPlugins
+      .map(item => {
+        return {
+          _id: item.id,
+          active: this.formBehaviourFields[item.id]?.active.value,
+          data: this.formBehaviourFields[item.id]?.form.value
+        };
       });
 
-    this.behaviourService.saveBehaviours(behaviours);
+    this.behaviourService.saveBehaviours([...behaviours, ...formBehaviours]);
 
   }
 
@@ -78,6 +88,11 @@ export class BehavioursComponent implements OnInit {
   hasDirtyForm() {
     return Object.keys(this.behaviourFields)
       .some(key => this.behaviourFields[key].active.dirty || this.behaviourFields[key].form.dirty);
+  }
+
+  updateFormFieldState(plugin: Plugin, checked: boolean) {
+    const form = this.formBehaviourFields[plugin.id].form;
+    checked ? form.enable() : form.disable();
   }
 
   updateFieldState(plugin: Plugin, checked: boolean) {
@@ -104,6 +119,6 @@ export class BehavioursComponent implements OnInit {
         data: val.data ? val.data : {}
       };
       return acc;
-    }, {})
+    }, {});
   }
 }

@@ -3,9 +3,7 @@ import {Plugin} from '../../plugin';
 import {FormToolbarService} from '../../../../+form/form-shared/toolbar/form-toolbar.service';
 import {SessionStore} from '../../../../store/session.store';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ShowJsonBehaviour extends Plugin {
 
   id = 'plugin.show.json';
