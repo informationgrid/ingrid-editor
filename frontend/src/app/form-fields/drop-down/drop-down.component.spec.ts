@@ -1,25 +1,22 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
-import { DropDownComponent } from './drop-down.component';
+import {DropDownComponent} from './drop-down.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {DocumentService} from '../../services/document/document.service';
+import {Router} from '@angular/router';
+import {MatSelectModule} from '@angular/material/select';
 
 describe('DropDownComponent', () => {
-  let component: DropDownComponent;
-  let fixture: ComponentFixture<DropDownComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DropDownComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DropDownComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<DropDownComponent>;
+  const createComponent = createComponentFactory({
+    component: DropDownComponent,
+    imports: [MatFormFieldModule, MatSelectModule],
+    mocks: [DocumentService, Router]
   });
 
-  it('should be created', () => {
-    expect(component).toBeTruthy();
+  it('should create', () => {
+    spectator = createComponent();
+
+    expect(spectator.component).toBeTruthy();
   });
 });
