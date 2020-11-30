@@ -40,7 +40,6 @@ import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component
 import {MainHeaderComponent} from './main-header/main-header.component';
 import {CreateNodeComponent} from './+form/dialogs/create/create-node.component';
 import {MatTabsModule} from '@angular/material/tabs';
-import {FormSharedModule} from './+form/form-shared/form-shared.module';
 import {MatMenuModule} from '@angular/material/menu';
 import {AuthInterceptor} from './security/keycloak/auth.interceptor';
 import {SharedDocumentItemModule} from './shared/shared-document-item.module';
@@ -122,7 +121,7 @@ export function ConfigLoader(configService: ConfigService) {
         MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatRadioModule, MatCheckboxModule,
         MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
         // IGE-Modules
-        routing, FormsModule, MatTabsModule, FormSharedModule, MatMenuModule, SharedDocumentItemModule, FormFieldsModule
+        routing, FormsModule, MatTabsModule, MatMenuModule, SharedDocumentItemModule, FormFieldsModule
     ],
   providers: [
     // appRoutingProviders,

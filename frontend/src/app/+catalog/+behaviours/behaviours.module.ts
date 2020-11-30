@@ -11,12 +11,15 @@ import {FormFieldsModule} from '../../form-fields/form-fields.module';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {MatCardModule} from '@angular/material/card';
+import {FormSharedModule} from '../../+form/form-shared/form-shared.module';
 
 @NgModule({
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule, SharedModule, MatTabsModule,
     FormlyMaterialModule, FormlyModule.forChild(),
-    MatButtonModule, MatInputModule, MatCheckboxModule, FormFieldsModule, FormlyModule, MatCardModule],
+    MatButtonModule, MatInputModule, MatCheckboxModule, FormFieldsModule, FormlyModule, MatCardModule,
+    FormSharedModule/*to get form behaviours*/
+  ],
   declarations: [
     BehavioursComponent
   ],
