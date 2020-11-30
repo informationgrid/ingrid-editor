@@ -42,7 +42,6 @@ import {FormDialogComponent} from './types/table/form-dialog/form-dialog.compone
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {RepeatComponent} from './types/repeat/repeat.component';
 import {SelectOptionPipe} from '../directives/selectOption.pipe';
-import {FormLabelComponent} from './wrapper/form-label/form-label.component';
 import {RepeatChipComponent} from './types/repeat-chip/repeat-chip.component';
 import {MatChipsModule} from '@angular/material/chips';
 import {ChipDialogComponent} from './types/repeat-chip/chip-dialog/chip-dialog.component';
@@ -118,7 +117,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
       provide: MAT_DATE_LOCALE,
       useValue: 'de-DE'
     },
-    { provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY, useFactory: scrollFactory, deps: [Overlay] }
+    {provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY, useFactory: scrollFactory, deps: [Overlay]}
   ],
   declarations: [
     CodelistPipe, SelectOptionPipe,
@@ -128,7 +127,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent, RepeatComponent, RepeatDetailListComponent,
     FormErrorComponent,
     FormDialogComponent,
-    FormLabelComponent,
     RepeatChipComponent,
     ChipDialogComponent,
     DateRangeTypeComponent,
@@ -138,7 +136,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   exports: [
     ReactiveFormsModule, FormsModule,
     FormlyModule,
-    ContextHelpComponent, FormLabelComponent
+    ContextHelpComponent
   ]
 })
 export class IgeFormlyModule {

@@ -20,7 +20,6 @@ import {PrintViewPlugin} from '../dialogs/print-view/print-view.plugin';
 import {FormularService} from '../formular.service';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {BreadcrumbComponent} from '../form-info/breadcrumb/breadcrumb.component';
 import {MatInputModule} from '@angular/material/input';
 import {IgeFormlyModule} from '../../formly/ige-formly.module';
 import {FormInfoComponent} from '../form-info/form-info.component';
@@ -30,7 +29,6 @@ import {HeaderMoreComponent} from '../form-info/header-more/header-more.componen
 import {FormMessageComponent} from '../form-info/form-message/form-message.component';
 import {MatTabsModule} from '@angular/material/tabs';
 import {SharedModule} from '../../shared/shared.module';
-import {DestinationSelectionComponent} from '../dialogs/create/destination-selection/destination-selection.component';
 import {HistoryPlugin} from '../dialogs/history/history.plugin';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {DynamicFormComponent} from './form/dynamic-form.component';
@@ -43,11 +41,14 @@ import {FormToolbarService} from './toolbar/form-toolbar.service';
 import {formPluginProvider} from '../../form-plugin.provider';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {BreadcrumbComponent} from '../form-info/breadcrumb/breadcrumb.component';
+import {DestinationSelectionComponent} from '../dialogs/create/destination-selection/destination-selection.component';
+import {CreateNodeComponent} from '../dialogs/create/create-node.component';
 
 
 @NgModule({
   declarations: [
-    FormToolbarComponent, BreadcrumbComponent, FormComponent,
+    FormToolbarComponent, BreadcrumbComponent, FormComponent, CreateNodeComponent,
     FormInfoComponent, HeaderNavigationComponent, HeaderTitleRowComponent, HeaderMoreComponent,
     FormMessageComponent, DestinationSelectionComponent,
     DynamicFormComponent, SidebarComponent, FormDashboardComponent, FolderDashboardComponent
@@ -79,7 +80,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
   ],
   exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, IgeFormlyModule,
     FormInfoComponent, DestinationSelectionComponent, DynamicFormComponent],
-  entryComponents: []
+  entryComponents: [CreateNodeComponent]
 })
 export class FormSharedModule {
 }
