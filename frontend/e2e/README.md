@@ -1,7 +1,7 @@
 # Running Cypress tests
 
-In order to run the cypress tests you first need to edit the file `cypress.json`
-to set the correct `baseUrl`. By default the IP address of the test system is configured.
+In order to run the cypress tests you first need to edit the file `cypress.json` to set the correct `baseUrl`. 
+The `baseUrl` is set by default to the IP address of the test system.
 
 ## Local tests
 
@@ -41,7 +41,7 @@ If we are all set, then we can run the test by executing the following command i
 npm run cypress:run
 ```
 
-And to run a single test:
+and to run a single test:
 
 ```bash
 npm run cypress:run -- --record --spec "cypress/integration/documents/type/mcloud.spec.ts"
@@ -49,7 +49,7 @@ npm run cypress:run -- --record --spec "cypress/integration/documents/type/mclou
 
 # Tests Convention
 
-For each topic a spec file should be written It's also possible to define multiple
-describe blocks within a spec-file for better organization.
+- For each topic write a spec-file.
+- Multiple describe blocks can be defined within a spec-file for better organization.
 
 #
