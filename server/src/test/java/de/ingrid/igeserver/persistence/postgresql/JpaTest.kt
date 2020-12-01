@@ -23,7 +23,7 @@ import javax.transaction.Transactional
 @Transactional
 class JpaTest : AnnotationSpec() {
 
-    override fun listeners(): List<SpringListener> { return listOf(SpringListener) }
+    override fun listeners() = listOf(SpringListener)
 
     @Autowired
     private lateinit var em: EntityManager

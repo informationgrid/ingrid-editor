@@ -22,7 +22,7 @@ import org.springframework.test.context.jdbc.SqlConfig
 @Sql(scripts=["/test_data.sql"], config=SqlConfig(encoding="UTF-8"))
 class AuditLogTest : AnnotationSpec() {
 
-    override fun listeners(): List<SpringListener> { return listOf(SpringListener) }
+    override fun listeners() = listOf(SpringListener)
 
     @Autowired
     private lateinit var auditLog: AuditLogger

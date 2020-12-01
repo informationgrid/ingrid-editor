@@ -36,7 +36,7 @@ import java.util.*
 @Sql(scripts=["/test_data.sql"], config=SqlConfig(encoding="UTF-8"))
 class PostgreSQLDatabaseTest : AnnotationSpec() {
 
-    override fun listeners(): List<SpringListener> { return listOf(SpringListener) }
+    override fun listeners() = listOf(SpringListener)
 
     @Autowired
     private lateinit var dbService: PostgreSQLDatabase
