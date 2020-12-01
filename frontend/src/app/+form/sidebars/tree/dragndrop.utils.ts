@@ -46,6 +46,8 @@ export class DragNDropUtils {
   }
 
   handleDragOver(event, node) {
+    // for now only moving objects is allowed
+    event.dataTransfer.effectAllowed = 'move';
     event.preventDefault();
 
     // Handle node expand
