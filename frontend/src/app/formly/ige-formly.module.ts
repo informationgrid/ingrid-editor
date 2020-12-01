@@ -21,8 +21,6 @@ import {TableTypeComponent} from './types/table/table-type.component';
 import {CommonModule} from '@angular/common';
 import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
-import {DocReferenceTypeComponent} from './types/doc-reference-type.component';
-import {TreeSelectDialog} from '../+form/dialogs/tree-select/tree-select.dialog';
 import {SharedModule} from '../shared/shared.module';
 import {AddressTypeComponent} from './types/address-type/address-type.component';
 import {AddressCardComponent} from './types/address-type/address-card/address-card.component';
@@ -82,9 +80,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         name: 'address-card',
         component: AddressTypeComponent
       }, {
-        name: 'doc-reference',
-        component: DocReferenceTypeComponent
-      }, {
         name: 'repeat',
         component: RepeatComponent
       }, {
@@ -122,7 +117,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   declarations: [
     CodelistPipe, SelectOptionPipe,
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent,
-    TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
+    TableTypeComponent, AddressTypeComponent,
     AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent, FreeSpatialComponent,
     WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent, RepeatComponent, RepeatDetailListComponent,
     FormErrorComponent,
@@ -132,7 +127,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     DateRangeTypeComponent,
     RepeatDetailListComponent
   ],
-  entryComponents: [ContextHelpComponent, TreeSelectDialog],
+  entryComponents: [ContextHelpComponent],
   exports: [
     ReactiveFormsModule, FormsModule,
     FormlyModule,

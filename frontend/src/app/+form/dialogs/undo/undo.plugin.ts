@@ -4,13 +4,13 @@ import {ModalService} from '../../../services/modal/modal.service';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {FormGroup} from '@angular/forms';
-import {Subscription} from 'rxjs';
 import {FormularService} from '../../formular.service';
 
 @Injectable()
 export class UndoPlugin extends Plugin {
   id = 'plugin.undo';
   _name = 'Undo Plugin';
+  defaultActive = true;
 
   eventUndoId = 'UNDO';
   eventRedoId = 'REDO';
@@ -29,13 +29,12 @@ export class UndoPlugin extends Plugin {
               private modalService: ModalService,
               private storageService: DocumentService) {
     super();
-    this.isActive = true;
   }
 
   register() {
     super.register();
 
-    this.formToolbarService.addButton( {id: 'toolBtnUndoSeparator',  isSeparator: true, pos: 140 } );
+    this.formToolbarService.addButton({id: 'toolBtnUndoSeparator', isSeparator: true, pos: 140});
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
@@ -91,7 +90,7 @@ export class UndoPlugin extends Plugin {
     this.actionTriggered = true;
 
     // ignore the last value, which is the current value
-    this.redoHistory.push( this.history.pop() );
+    this.redoHistory.push(this.history.pop());
 
     // get the value before the current
     const recentValue = this.history.pop();

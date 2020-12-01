@@ -16,7 +16,7 @@ import {filter, switchMap, take} from 'rxjs/operators';
 export class CopyCutPastePlugin extends Plugin {
   id = 'plugin.copy.cut.paste';
   _name = 'Copy Cut Paste';
-  defaultActive = false;
+  defaultActive = true;
 
   description = `
     Diese Regeln beschreiben das Kopieren, Ausschneiden und Einfügen von Datensätzen.
