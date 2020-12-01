@@ -433,6 +433,7 @@ export class TreeComponent implements OnInit, OnDestroy {
           if (resetSelection) {
             this.activate.next(id ? [id] : []);
           }
+          // TODO: id can never be null here!
           if (id) {
             const node = this.dataSource.getNode(id);
             if (node) {
@@ -443,6 +444,8 @@ export class TreeComponent implements OnInit, OnDestroy {
               }
               this.scrollToActiveElement();
             }
+          } else {
+            console.error('ID cannot be null!?', id);
           }
         }
       });

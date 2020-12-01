@@ -112,14 +112,16 @@ export class DeleteDocsPlugin extends Plugin {
   }
 
   private selectParent(docs: DocumentAbstract[], currentDoc: DocumentAbstract) {
+    const currentDocToBeDeleted = currentDoc ? docs.find(doc => doc.id === currentDoc.id) !== undefined : false;
+    if (!currentDocToBeDeleted) {
+      return;
+    }
+
     const route = this.forAddress ? '/address' : '/form';
     const parent = currentDoc._parent;
 
     if (parent) {
-      const currentDocToBeDeleted = docs.find(doc => doc.id === currentDoc.id) !== undefined;
-      if (currentDocToBeDeleted) {
-        this.router.navigate([route, {id: currentDoc._parent}]);
-      }
+      this.router.navigate([route, {id: currentDoc._parent}]);
     } else {
       this.router.navigate([route]);
     }
