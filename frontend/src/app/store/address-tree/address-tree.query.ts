@@ -28,6 +28,16 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
+  getParents(id: string): string[] {
+    const parents = [];
+    let parent = this.getEntity(id)._parent;
+    while (parent) {
+      parents.push(parent);
+      parent = this.getEntity(parent)._parent;
+    }
+    return parents;
+  }
+
   getFirstParentFolder(childId: string): DocumentAbstract {
     let child = this.getEntity(childId);
     if (child._type === 'FOLDER') {

@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {DocumentService} from '../../../services/document/document.service';
 import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
-import {UpdateType} from '../../../models/update-type.enum';
 import {ModalService} from '../../../services/modal/modal.service';
 import {PasteDialogComponent, PasteDialogOptions} from './paste-dialog.component';
 import {Observable} from 'rxjs';
@@ -10,7 +9,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {MessageService} from '../../../services/message.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {filter, switchMap, take} from 'rxjs/operators';
+import {filter, switchMap} from 'rxjs/operators';
+import {ID} from '@datorama/akita';
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -22,8 +22,6 @@ export class CopyCutPastePlugin extends Plugin {
     Diese Regeln beschreiben das Kopieren, Ausschneiden und Einfügen von Datensätzen.
   `;
 
-  copiedDatasets: string[] = [];
-  cutDatasets: string[] = [];
   private query: TreeQuery | AddressTreeQuery;
 
   get name() {
@@ -76,39 +74,56 @@ export class CopyCutPastePlugin extends Plugin {
     });
 
     // set button state according to selected documents
-    const treeQuerySubscription = this.query.selectActiveId().subscribe(data => {
-      if (data.length === 0) {
-        this.toolbarService.setButtonState('toolBtnCopy', false);
-      } else {
-        this.toolbarService.setButtonState('toolBtnCopy', true);
+    const treeQuerySubscription = this.query.selectActiveId()
+      .subscribe(async data => {
+        if (data.length === 0) {
+          this.toolbarService.setButtonState('toolBtnCopy', false);
+        } else {
+          this.toolbarService.setButtonState('toolBtnCopy', true);
 
-        // set state of menu items
-        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPY', true);
-        this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'CUT', true);
-        this.query.selectEntity(data[0]).pipe(
-          filter(item => item !== undefined),
-          take(1)
-        ).subscribe(entity => {
-          this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPYTREE', entity._hasChildren);
-        });
-      }
-    });
+          // set state of menu items
+          this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPY', true);
+          this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'CUT', true);
+
+          const parentWithChildrenSelected = await this.checkForParentsWithSelectedChildren(data);
+          this.toolbarService.setMenuItemStateOfButton('toolBtnCopy', 'COPYTREE', parentWithChildrenSelected);
+        }
+      });
 
     this.subscriptions.push(toolbarEventSubscription, treeQuerySubscription);
   }
 
-  private handleEvent(type: UpdateType) {
-    this.documentService.datasetsChanged$.next({
-      type: type,
-      data: null
+  private async checkForParentsWithSelectedChildren(data: ID[]): Promise<boolean> {
+    return new Promise(resolve => {
+      return this.checkForParentsWithSelectedChildrenLoop(data, resolve);
     });
+  }
+
+  private checkForParentsWithSelectedChildrenLoop(data: ID[], resolve, tries = 10) {
+    const allNodesLoaded = data.every(id => this.query.getEntity(id));
+    if (allNodesLoaded) {
+      resolve(data.some(id => this.query.getEntity(id)._hasChildren));
+    } else {
+      if (tries === 0) {
+        console.warn('Node information could not be received from store');
+        resolve(false);
+      } else {
+        console.log('Tree does not have node information yet. Waiting 200ms ...');
+        setTimeout(() => this.checkForParentsWithSelectedChildren(data), 200, --tries);
+      }
+    }
   }
 
   copy(includeTree = false) {
 
     // remove last remembered copied documents
     this.showDialog('Kopieren').pipe(
-      switchMap(result => this.documentService.copy(this.getSelectedDatasets(), result.selection.parent, includeTree, this.forAddress))
+      switchMap(result => this.documentService.copy(
+        // when copying a tree we don't need the children to be copied
+        includeTree ? this.getSelectedDatasetsWithoutChildren() : this.getSelectedDatasets(),
+        result.selection.parent,
+        includeTree,
+        this.forAddress))
     ).subscribe();
 
   }
@@ -117,7 +132,7 @@ export class CopyCutPastePlugin extends Plugin {
 
     // remove last remembered copied documents
     this.showDialog('Verschieben').pipe(
-      switchMap(result => this.documentService.move(this.getSelectedDatasets(), result.selection.parent, this.forAddress))
+      switchMap(result => this.documentService.move(this.getSelectedDatasetsWithoutChildren(), result.selection.parent, this.forAddress))
     ).subscribe();
 
   }
@@ -140,11 +155,26 @@ export class CopyCutPastePlugin extends Plugin {
     return this.query.getActiveId().map(id => id.toString());
   }
 
+  private getSelectedDatasetsWithoutChildren() {
+    const selection = this.query.getActiveId()
+      .map(id => id.toString());
+
+    const filtered = selection
+      .filter(id => !this.isChildOfSelectedParent(id, selection));
+    console.log('Filtered datasets without children', filtered);
+    return filtered;
+  }
+
   unregister() {
     super.unregister();
 
     // remove from same index since buttons take the neighbor place after deletion
     this.toolbarService.removeButton('toolBtnCopy');
     this.toolbarService.removeButton('toolBtnCopyCutSeparator');
+  }
+
+  private isChildOfSelectedParent(id: string, selection: string[]): boolean {
+    const parents = this.query.getParents(id);
+    return parents.some(parent => selection.indexOf(parent) !== -1);
   }
 }

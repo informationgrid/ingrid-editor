@@ -85,11 +85,11 @@ export class DynamicDataSource {
       .pipe(
         map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
         map(docs => docs.sort(this.treeService.getSortTreeNodesFunction())),
-        tap(docs => {
+        /*tap(docs => {
           if (this.selectionModel.isSelected(node)) {
             this.selectionModel.select(...docs);
           }
-        })
+        })*/
       )
       .subscribe(children => {
 
