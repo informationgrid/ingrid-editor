@@ -75,7 +75,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   dragManager: DragNDropUtils;
   isDragging = false;
 
-  showMultiSelectionMode = false;
+  multiSelectionModeEnabled = false;
 
   /**
    * A function to determine if a tree node should be disabled.
@@ -180,12 +180,12 @@ export class TreeComponent implements OnInit, OnDestroy {
    */
   selectNode(node: TreeNode, $event: MouseEvent) {
 
-    if (this.showMultiSelectionMode) {
+    if (this.multiSelectionModeEnabled) {
       this.handleMultiSelection(node);
     } else {
       if ($event.ctrlKey) {
         this.selectionModel.toggle(node);
-        this.showMultiSelectionMode = true;
+        this.multiSelectionModeEnabled = true;
         this.selectionModel.select(node);
         return;
       }
@@ -416,9 +416,9 @@ export class TreeComponent implements OnInit, OnDestroy {
     if (id !== null) {
       // TODO: do not always request path, when not needed
       return this.database.getPath(id).then((path) => {
-        this.activeNodeId = path.pop();
+        const nextActiveNode = path.pop();
         if (path.length > 0) {
-          this.handleExpandNodes(path)
+          return this.handleExpandNodes(path)
             .then(() => {
               const node = this.dataSource.getNode(id);
               if (node) {
@@ -427,6 +427,7 @@ export class TreeComponent implements OnInit, OnDestroy {
                 if (resetSelection) {
                   this.activate.next([id]);
                   this.selectionModel.select(node);
+                  this.activeNodeId = nextActiveNode;
                 }
                 this.scrollToActiveElement();
               }
@@ -443,6 +444,7 @@ export class TreeComponent implements OnInit, OnDestroy {
               this.currentPath.next(nodePath);
               if (resetSelection) {
                 this.selectionModel.select(node);
+                this.activeNodeId = nextActiveNode;
               }
               this.scrollToActiveElement();
             }
@@ -656,8 +658,8 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   toggleSelectionMode() {
-    this.showMultiSelectionMode = !this.showMultiSelectionMode;
-    if (!this.showMultiSelectionMode) {
+    this.multiSelectionModeEnabled = !this.multiSelectionModeEnabled;
+    if (!this.multiSelectionModeEnabled) {
       this.selectionModel.clear();
       if (this.activeNode) {
         this.selectionModel.select(this.activeNode);
@@ -665,11 +667,11 @@ export class TreeComponent implements OnInit, OnDestroy {
     }
 
     // notify external components
-    this.multiEditMode.next(this.showMultiSelectionMode);
+    this.multiEditMode.next(this.multiSelectionModeEnabled);
   }
 
   showFolderCheckbox(): boolean {
-    return this.showMultiSelectionMode;
+    return this.multiSelectionModeEnabled;
   }
 
   allNodesSelected() {
@@ -685,5 +687,15 @@ export class TreeComponent implements OnInit, OnDestroy {
     checked
       ? this.selectionModel.select(...this.treeControl.dataNodes)
       : this.selectionModel.clear();
+  }
+
+  async handleSelection(id: string) {
+    if (this.multiSelectionModeEnabled) {
+      await this.jumpToNode(id, false)
+      const node = this.dataSource.getNode(id);
+      this.selectionModel.select(node);
+    } else {
+      await this.jumpToNode(id);
+    }
   }
 }

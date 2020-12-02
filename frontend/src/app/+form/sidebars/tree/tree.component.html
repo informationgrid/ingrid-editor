@@ -9,7 +9,7 @@
                          [showOnlyFolders]="showOnlyFolders"
                          [showMultiSelectButton]="showMultiSelectButton"
                          (edit)="toggleSelectionMode()"
-                         (open)="jumpToNode($event)"></ige-tree-header>
+                         (open)="handleSelection($event)"></ige-tree-header>
 
         <div *ngIf="isDragging" class="drop-root"
              [class.hover]="dragManager.dragNodeExpandOverNode === null"
@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div *ngIf="showMultiSelectionMode" class="multi-select-area" fxLayoutAlign="space-between center">
+        <div *ngIf="multiSelectionModeEnabled" class="multi-select-area" fxLayoutAlign="space-between center">
             <mat-checkbox data-cy="toggle-all-selection"
                           matTooltip="Alle Aus-/Abwählen"
                           [checked]="allNodesSelected()"
@@ -50,7 +50,7 @@
                        [class.afterExpanded]="node.afterExpanded"
                        [class.disabled]="disabledCondition(node)">
             <div class="label">
-                <mat-checkbox *ngIf="showMultiSelectionMode"
+                <mat-checkbox *ngIf="multiSelectionModeEnabled"
                               [checked]="isSelected(node)"
                               (click)="$event.stopImmediatePropagation()"
                               (change)="nodeSelectionToggle(node)"></mat-checkbox>
@@ -75,7 +75,7 @@
             <div style="width: 100%;">
                 <div fxLayout="row">
 
-                    <div *ngIf="showMultiSelectionMode && node.hasChildren" class="quick-child-selection">
+                    <div *ngIf="multiSelectionModeEnabled && node.hasChildren" class="quick-child-selection">
                         <button mat-icon-button
                                 matTooltip="Alle Unterelemente abwählen"
                                 (click)="toggleAllChildNodes(node,false, $event)">
