@@ -405,7 +405,7 @@ describe('TreeComponent', () => {
     // all folders must not be expanded initially
   }));
 
-  fdescribe('Multi-Selection', () => {
+  describe('Multi-Selection', () => {
     beforeEach(() => {
       spectator.setInput('showMultiSelectButton', true);
       spectator.detectChanges();
@@ -424,7 +424,7 @@ describe('TreeComponent', () => {
       expect(spectator.queryAll('mat-tree mat-checkbox').length).toBe(0);
     });
 
-    fit('should have the currently opened node initially selected', () => {
+    it('should have the currently opened node initially selected', () => {
       spectator.click('[data-cy="exit-multi-select-mode"]');
 
       selectNode(0);
@@ -456,6 +456,15 @@ describe('TreeComponent', () => {
       spectator.component.selectionModel.clear();
       spectator.triggerEventHandler('[data-cy="toggle-all-selection"]', 'change', {});
       checkSelectionCount(0);
+    });
+
+    xit('should only select the parent but not its children, when clicking on parent', () => {
+    });
+
+    xit('should select/deselect all children, when clicking on corresponding buttons of parent', () => {
+    });
+
+    xit('should mark a node as selected, after click on a search result of tree', () => {
     });
   });
 
@@ -540,6 +549,7 @@ describe('TreeComponent', () => {
   function checkSelectionCount(count: number) {
     expect(spectator.queryAll('mat-tree mat-checkbox.mat-checkbox-checked').length).toBe(count);
   }
+
   function checkNodeIsCheckboxSelected(index: number) {
     expect(spectator.queryAll('mat-tree mat-checkbox')[index]).toHaveClass('mat-checkbox-checked');
   }
