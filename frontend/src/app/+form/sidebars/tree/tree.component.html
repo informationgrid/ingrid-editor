@@ -22,11 +22,11 @@
         </div>
 
         <div *ngIf="showMultiSelectionMode" class="multi-select-area" fxLayoutAlign="space-between center">
-            <mat-checkbox #allSelect
+            <mat-checkbox data-cy="toggle-all-selection"
                           matTooltip="Alle Aus-/Abwählen"
                           [checked]="allNodesSelected()"
                           [indeterminate]="atLeastOneButNotAllNodesSelected()"
-                          (change)="toggleAllSelection(allSelect)">Auswahl</mat-checkbox>
+                          (change)="toggleAllSelection($event.checked)">Auswahl</mat-checkbox>
             <button mat-icon-button matSuffix class="close" (click)="toggleSelectionMode()"  data-cy="exit-multi-select-mode">
                 <mat-icon svgIcon="Entfernen"></mat-icon>
             </button>

@@ -186,6 +186,8 @@ export class TreeComponent implements OnInit, OnDestroy {
       if ($event.ctrlKey) {
         this.selectionModel.toggle(node);
         this.showMultiSelectionMode = true;
+        this.selectionModel.select(node);
+        return;
       }
       this.handleSingleSelection(node);
     }
@@ -679,9 +681,8 @@ export class TreeComponent implements OnInit, OnDestroy {
       && !this.allNodesSelected();
   }
 
-  toggleAllSelection(el: MatCheckbox) {
-    console.log(el.checked);
-    el.checked
+  toggleAllSelection(checked: boolean) {
+    checked
       ? this.selectionModel.select(...this.treeControl.dataNodes)
       : this.selectionModel.clear();
   }
