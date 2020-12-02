@@ -21,6 +21,7 @@ import {AddressTreeStore} from '../../../store/address-tree/address-tree.store';
 export class DeleteDocsPlugin extends Plugin {
   id = 'plugin.deleteDocs';
   _name = 'Delete Docs Plugin';
+  defaultActive = true;
 
   private tree: TreeQuery | AddressTreeQuery;
   private treeStore: TreeStore | AddressTreeStore;

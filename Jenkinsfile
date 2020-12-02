@@ -1,5 +1,10 @@
 pipeline {
     agent any
+    
+    environment {
+        POSTGRES_USER = 'admin'
+        POSTGRES_PASSWORD = 'admin'
+    }
 
     tools {
         jdk 'jdk11'
@@ -23,9 +28,19 @@ pipeline {
                 }
             }*/
             steps {
-                withEnv(["JAVA_HOME=${ tool 'jdk11' }/jdk-11"]) {
-                    nodejs(nodeJSInstallationName: 'nodejs') {
-                        sh './gradlew -PbuildProfile=prod -Djib.console=plain clean build'
+                script {
+                    // since container is run on host and not within Jenkins, we cannot map init sql file
+                    // so we use here a modified postgres image for the tests
+                    docker.image('docker-registry.wemove.com/postgres-ige-ng-test').withRun() { c ->
+                        // use another container, where we can link the database to so that we can access it
+                        // for volume mapping remember that we cannot use filesystem from Jenkins container, but only from HOST!
+                        docker.image('ubuntu:16.04').inside("--link ${c.id}:db -v /root/.docker/config.json:/root/.docker/config.json --mount type=bind,src=/opt/docker-setup/jenkins-nexus-sonar/jenkins-home/shared-ro-gradle-cache,dst=/.gradle-ro-cache") {
+                            withEnv(["GRADLE_RO_DEP_CACHE=/.gradle-ro-cache", "JAVA_HOME=${ tool 'jdk11' }/jdk-11"]) {
+                                nodejs(nodeJSInstallationName: 'nodejs') {
+                                    sh './gradlew --no-daemon --info -PbuildProfile=prod -Djib.console=plain clean build'
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -16,7 +16,7 @@ import {ID} from '@datorama/akita';
 export class CopyCutPastePlugin extends Plugin {
   id = 'plugin.copy.cut.paste';
   _name = 'Copy Cut Paste';
-  defaultActive = false;
+  defaultActive = true;
 
   description = `
     Diese Regeln beschreiben das Kopieren, Ausschneiden und Einfügen von Datensätzen.

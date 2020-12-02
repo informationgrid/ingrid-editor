@@ -38,9 +38,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {SectionWrapper} from './formly/wrapper/section-wrapper.component';
 import {ConfirmDialogComponent} from './dialogs/confirm/confirm-dialog.component';
 import {MainHeaderComponent} from './main-header/main-header.component';
-import {CreateNodeComponent} from './+form/dialogs/create/create-node.component';
 import {MatTabsModule} from '@angular/material/tabs';
-import {FormSharedModule} from './+form/form-shared/form-shared.module';
 import {MatMenuModule} from '@angular/material/menu';
 import {AuthInterceptor} from './security/keycloak/auth.interceptor';
 import {SharedDocumentItemModule} from './shared/shared-document-item.module';
@@ -55,7 +53,7 @@ import {AnimationWrapper, AnimationWrapperComponent} from './animation-wrapper.c
 
 registerLocaleData(de);
 
-export function ConfigLoader(configService: ConfigService, modal: ModalService) {
+export function ConfigLoader(configService: ConfigService) {
   return () => {
 
     return configService.load(environment.configFile)
@@ -84,46 +82,48 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
         document.getElementsByClassName('app-loading').item(0).innerHTML = 'An error occurred';
         throw new IgeError(err);
       });
-  }
+  };
 }
 
 @NgModule({
   // directives, components, and pipes owned by this NgModule
   declarations: [AppComponent, HelpComponent, LoginComponent, ErrorDialogComponent,
-    ConfirmDialogComponent, CreateNodeComponent,
+    ConfirmDialogComponent,
     OneColumnWrapperComponent, FullWidthWrapperComponent, SectionWrapper, InlineHelpWrapperComponent,
     SideMenuComponent,
     TimePipe,
     MainHeaderComponent,
     SessionTimeoutInfoComponent,
     AnimationWrapperComponent],
-    imports: [
-        environment.production ? [] : AkitaNgDevtools.forRoot(),
-        AngularSplitModule.forRoot(),
-        MatTooltipModule,
-        // angular
-        BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
-        // Flex layout
-        FlexLayoutModule,
-        FormlyModule.forRoot({
-            wrappers: [
-                {name: 'inline-help', component: InlineHelpWrapperComponent},
-                {name: 'panel', component: OneColumnWrapperComponent},
-                {name: 'full-panel', component: FullWidthWrapperComponent},
-                {name: 'section', component: SectionWrapper},
-                {name: 'animation', component: AnimationWrapperComponent},
-            ],
-            manipulators: [
-                {class: AnimationWrapper, method: 'run'}
-            ]
-        }),
-        FormlyMaterialModule,
-        // Material
-        MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatRadioModule, MatCheckboxModule,
-        MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
-        // IGE-Modules
-        routing, FormsModule, MatTabsModule, FormSharedModule, MatMenuModule, SharedDocumentItemModule, FormFieldsModule
-    ],
+  imports: [
+    environment.production ? [] : AkitaNgDevtools.forRoot(),
+    AngularSplitModule.forRoot(),
+    MatTooltipModule,
+    MatDialogModule,
+    // ReactiveFormsModule,
+    // angular
+    BrowserModule, BrowserAnimationsModule, HttpClientModule, HttpClientXsrfModule,
+    // Flex layout
+    FlexLayoutModule,
+    FormlyModule.forRoot({
+      wrappers: [
+        {name: 'inline-help', component: InlineHelpWrapperComponent},
+        {name: 'panel', component: OneColumnWrapperComponent},
+        {name: 'full-panel', component: FullWidthWrapperComponent},
+        {name: 'section', component: SectionWrapper},
+        {name: 'animation', component: AnimationWrapperComponent}
+      ],
+      manipulators: [
+        {class: AnimationWrapper, method: 'run'}
+      ]
+    }),
+    FormlyMaterialModule,
+    // Material
+    MatToolbarModule, MatIconModule, MatButtonModule, MatDialogModule, MatSidenavModule, MatRadioModule, MatCheckboxModule,
+    MatListModule, MatFormFieldModule, MatInputModule, MatCardModule, MatAutocompleteModule,
+    // IGE-Modules
+    routing, FormsModule, MatTabsModule, MatMenuModule, SharedDocumentItemModule, FormFieldsModule
+  ],
   providers: [
     // appRoutingProviders,
     // make sure we are authenticated by keycloak before bootstrap
@@ -168,7 +168,7 @@ export function ConfigLoader(configService: ConfigService, modal: ModalService) 
   ], // additional providers
 
   bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent, CreateNodeComponent]
+  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent]
 })
 
 export class AppModule {

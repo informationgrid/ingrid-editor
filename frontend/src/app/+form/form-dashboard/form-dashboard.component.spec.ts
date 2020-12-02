@@ -1,25 +1,22 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
-import { FormDashboardComponent } from './form-dashboard.component';
+import {FormDashboardComponent} from './form-dashboard.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {DocumentService} from '../../services/document/document.service';
+import {FormToolbarService} from '../form-shared/toolbar/form-toolbar.service';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('FormDashboardComponent', () => {
-  let component: FormDashboardComponent;
-  let fixture: ComponentFixture<FormDashboardComponent>;
-
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FormDashboardComponent ]
-    })
-    .compileComponents();
-  }));
+  let spectator: Spectator<FormDashboardComponent>;
+  const createComponent = createComponentFactory({
+    component: FormDashboardComponent,
+    imports: [RouterTestingModule.withRoutes([])],
+    mocks: [DocumentService, FormToolbarService]
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FormDashboardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 });

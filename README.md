@@ -23,6 +23,14 @@ A Docker container to be used in development can be created by running the follo
 
 > docker-compose up -d
 
+See also `postgres/.env` for further configuration.
+
+For Jenkins we build a special image which contains database layout, since it's more difficult to configure
+a docker image, which itself is in a docker container. To build the image execute the script in postgres folder:
+`build-test-postgres-docker-image.sh` and push it to the repository:
+
+> docker push docker-registry.wemove.com/postgres-ige-ng-test
+
 ### Start the client and server
 For IntelliJ configuration see the section below.
 

@@ -12,15 +12,17 @@ import org.assertj.core.api.Assertions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 
 @SpringBootTest(classes = [IgeServer::class])
+@TestPropertySource(locations = ["classpath:application-test.properties"])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts=["/test_data.sql"], config=SqlConfig(encoding="UTF-8"))
 class AuditLogTest : AnnotationSpec() {
 
-    override fun listeners(): List<SpringListener> { return listOf(SpringListener) }
+    override fun listeners() = listOf(SpringListener)
 
     @Autowired
     private lateinit var auditLog: AuditLogger

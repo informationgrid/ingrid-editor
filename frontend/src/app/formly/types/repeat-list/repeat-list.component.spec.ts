@@ -1,93 +1,64 @@
 import {RepeatListComponent} from './repeat-list.component';
 import {createHostFactory, SpectatorHost} from '@ngneat/spectator';
 import {AddButtonComponent} from '../../../shared/add-button/add-button.component';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatSelectModule} from '@angular/material/select';
+import {FormlyFieldConfig, FormlyForm, FormlyModule} from '@ngx-formly/core';
+import {fakeAsync} from '@angular/core/testing';
+import {RepeatDetailListComponent} from '../repeat-detail-list/repeat-detail-list.component';
+import {MatDialogModule} from '@angular/material/dialog';
 import {MatListModule} from '@angular/material/list';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {MatInputModule} from '@angular/material/input';
-import {SelectOptionPipe} from '../../../directives/selectOption.pipe';
-import {FormlyFieldConfig, FormlyForm, FormlyFormBuilder, FormlyModule} from '@ngx-formly/core';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {FormlyMaterialModule} from '@ngx-formly/material';
-import {CommonModule} from '@angular/common';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormFieldsModule} from '../../../form-fields/form-fields.module';
-import {FormlyMatInputModule} from '@ngx-formly/material/input';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {BrowserModule} from '@angular/platform-browser';
-import {MatIconTestingModule} from '@angular/material/icon/testing';
-import {fakeAsync, tick} from '@angular/core/testing';
-
-const formlyTemplate = `
-        <form [formGroup]="form">
-            <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
-        </form>`;
-
-const simpleRepeatListProps = {
-  form: new FormGroup({}),
-  fields: <FormlyFieldConfig[]>[{
-    key: 'repeatListSimple',
-    type: 'repeatList',
-    templateOptions: {
-      externalLabel: 'Mehrfacheingabe (Simple)',
-      placeholder: 'Bitte etwas eingeben'
-    }
-  }],
-  model: {repeatListSimple: []}
-};
-
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {By} from '@angular/platform-browser';
 
 describe('RepeatListComponent', () => {
   let spectator: SpectatorHost<FormlyForm>;
-
   const createHost = createHostFactory({
     component: FormlyForm,
-    imports: [
-      CommonModule, BrowserModule, FormlyMaterialModule, FormFieldsModule, FormlyMatInputModule, NoopAnimationsModule,
-      MatAutocompleteModule, MatSelectModule, MatListModule, MatFormFieldModule,
-      ReactiveFormsModule, MatInputModule, MatIconTestingModule,
+    declarations: [RepeatDetailListComponent, AddButtonComponent],
+    imports: [MatDialogModule, MatListModule, MatAutocompleteModule, MatSelectModule, MatFormFieldModule, FormFieldsModule,
+      ReactiveFormsModule, FormlyMaterialModule, FormsModule,
       FormlyModule.forRoot({
         types: [
           {
-            name: 'repeatList',
+            name: 'repeatListSimple',
             component: RepeatListComponent
           }
         ]
-      })],
-    declarations: [AddButtonComponent, SelectOptionPipe, RepeatListComponent],
-    providers: [
-      FormlyFormBuilder
-    ],
-    detectChanges: true
+      })]
+  });
+
+  beforeEach(() => {
+    spectator = createHost(`<formly-form [fields]="config"></formly-form>`, {
+      hostProps: {
+        config: [{
+          key: 'repeatList',
+          type: 'repeatListSimple',
+          templateOptions: {}
+        }] as FormlyFieldConfig[]
+      }
+    });
   });
 
   it('should create', () => {
-    spectator = createHost(formlyTemplate);
     expect(spectator).toBeTruthy();
   });
 
   it('should add a simple value', fakeAsync(() => {
 
-    spectator = createHost(formlyTemplate, {
-      hostProps: simpleRepeatListProps
-    });
-
-    // spectator.detectChanges();
+    spectator.detectChanges();
 
     let elements = spectator.queryAll('mat-list-item');
     expect(elements.length).toBe(0);
 
-    spectator.hostFixture.whenStable().then(() => {
-      spectator.typeInElement('test-simple', '.mat-autocomplete-trigger');
-      spectator.hostFixture.whenStable().then(() => {
-        spectator.keyboard.pressEnter();
-
-        spectator.detectChanges();
-
-        elements = spectator.queryAll('mat-list-item');
-        expect(elements.length).toBe(1);
-      });
-    })
+    spectator.typeInElement('test-simple', '.mat-autocomplete-trigger');
+    // spectator.keyboard.pressEnter('.mat-input-element');
+    spectator.debugElement.query(By.css('.mat-autocomplete-trigger')).triggerEventHandler('keydown.enter', {});
+    elements = spectator.queryAll('mat-list-item');
+    expect(elements.length).toBe(1);
 
   }));
 

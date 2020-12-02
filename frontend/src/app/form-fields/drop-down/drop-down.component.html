@@ -2,17 +2,6 @@
 
 <!-- TODO: check out Combo replacement: https://stackblitz.com/edit/angular-material2-issue-v5gpri -->
 
-<!--
-<nz-select nzMode="default" style="width: 100%;" nzPlaceHolder="Tag Mode" [(ngModel)]="selected">
-    <nz-option *ngFor="let option of options" [nzLabel]="option.value" [nzValue]="option.id">
-    </nz-option>
-</nz-select>
--->
-
-<!--<input placeholder="Auswählen" nz-input [(ngModel)]="selected" (input)="onInput($event.target?.value)" [nzAutocomplete]="auto">
-<nz-autocomplete [nzDataSource]="filteredOptions" #auto>
-    &lt;!&ndash;<nz-auto-option *ngFor="let option of simpleOptions" [nzValue]="option.value">{{option.value}}</nz-auto-option>&ndash;&gt;
-</nz-autocomplete>-->
 <!-- TODO: check out: https://stackblitz.com/angular/gjjmadpndjoa?file=app%2Fchips-autocomplete-example.html
                  and: https://material.angular.io/components/select/examples
 -->
@@ -23,30 +12,3 @@
         </mat-option>
     </mat-select>
 </mat-form-field>
-
-<!--<mat-form-field class="example-chip-list">
-    <mat-chip-list #chipList>
-        <mat-chip
-            *ngFor="let fruit of fruits"
-            [selectable]="selectable"
-            [removable]="removable"
-            (removed)="remove(fruit)">
-            {{fruit}}
-            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-        </mat-chip>
-        <input
-            placeholder="New fruit..."
-            #fruitInput
-            [formControl]="fruitCtrl"
-            [matAutocomplete]="auto"
-            [matChipInputFor]="chipList"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            [matChipInputAddOnBlur]="addOnBlur"
-            (matChipInputTokenEnd)="add($event)">
-    </mat-chip-list>
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-        <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
-            {{fruit}}
-        </mat-option>
-    </mat-autocomplete>
-</mat-form-field>-->

@@ -15,6 +15,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
 import {FocusDirective} from '../directives/focus.directive';
+import {FormLabelComponent} from '../formly/wrapper/form-label/form-label.component';
 
 @NgModule({
   imports: [
@@ -25,11 +26,11 @@ import {FocusDirective} from '../directives/focus.directive';
   ],
   declarations: [
     DropDownComponent, DateboxComponent, CheckboxComponent, RadioboxComponent,
-    FocusDirective
+    FocusDirective, FormLabelComponent
   ],
   exports: [
     DropDownComponent, DateboxComponent, CheckboxComponent, RadioboxComponent,
-    FocusDirective, MatInputModule
+    FocusDirective, MatInputModule, FormLabelComponent
   ]
 })
 export class FormFieldsModule {

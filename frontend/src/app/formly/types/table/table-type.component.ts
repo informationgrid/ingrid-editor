@@ -6,8 +6,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {FormDialogComponent, FormDialogData} from './form-dialog/form-dialog.component';
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material/table';
-import {ContextHelpService} from "../../../services/context-help/context-help.service";
-import {ConfigService} from "../../../services/config/config.service";
+import {ContextHelpService} from '../../../services/context-help/context-help.service';
+import {ConfigService} from '../../../services/config/config.service';
 
 @UntilDestroy()
 @Component({
@@ -65,7 +65,7 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
 
   addRow() {
 
-    this.editRow(null)
+    this.editRow(null);
 
   }
 
@@ -124,9 +124,9 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
     this.batchMode = !this.batchMode;
 
     if (this.batchMode) {
-      this.displayedColumns.unshift('_select_')
+      this.displayedColumns.unshift('_select_');
     } else {
-      this.displayedColumns = this.displayedColumns.filter(item => item !== '_select_')
+      this.displayedColumns = this.displayedColumns.filter(item => item !== '_select_');
     }
   }
 

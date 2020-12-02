@@ -3,20 +3,22 @@ version: '3.1'
 services:
   db:
     image: "postgres"
-    restart: always
-    env_file:
-      - db.env
-    ports:
-      - 5432:5432
+    restart: unless-stopped
+    tmpfs:
+      - /run
+      - /var/cache
+      - /pgdata
     volumes:
-      - pgdata:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /pgdata
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8081:8080
-
-volumes:
-  pgdata:

@@ -40,22 +40,24 @@ services:
   db:
     image: "postgres"
     restart: unless-stopped
-    env_file:
-      - ./postgres/db.env
+    tmpfs:
+      - /run
+      - /var/cache
+      - /pgdata
     ports:
-      - 5432:5432
+      - "${POSTGRES_PORT}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
       - ./postgres/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /pgdata
 
   adminer:
     image: adminer
     restart: unless-stopped
     ports:
       - 8081:8080
-
-volumes:
-  pgdata:
 
 networks:
   ige-ng-network:

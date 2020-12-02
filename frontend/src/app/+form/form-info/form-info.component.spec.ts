@@ -1,6 +1,9 @@
 import {FormInfoComponent} from './form-info.component';
-import {createComponentFactory, mockProvider, Spectator} from '@ngneat/spectator';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {ProfileService} from '../../services/profile.service';
+import {DocumentService} from '../../services/document/document.service';
+import {TreeService} from '../sidebars/tree/tree.service';
+import {MatDialogModule} from '@angular/material/dialog';
 
 describe('FormInfoComponent', () => {
   let spectator: Spectator<FormInfoComponent>;
@@ -8,9 +11,8 @@ describe('FormInfoComponent', () => {
 
   const createHost = createComponentFactory({
     component: FormInfoComponent,
-    providers: [
-      mockProvider(ProfileService)
-    ],
+    imports: [MatDialogModule],
+    mocks: [DocumentService, TreeService, ProfileService],
     detectChanges: false
   });
 

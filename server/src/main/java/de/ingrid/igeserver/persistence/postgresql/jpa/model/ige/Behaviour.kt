@@ -28,4 +28,5 @@ class Behaviour : EntityWithEmbeddedMap(), EntityWithCatalog {
     @Transient
     @JsonIgnore
     override var unwrapData: Boolean = false
+        get() = false // make sure to return false (default value did not work after fresh rebuild)
 }

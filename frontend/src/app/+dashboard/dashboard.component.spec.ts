@@ -14,29 +14,41 @@ import {ChartComponent} from './chart/chart.component';
 import {DocumentListItemComponent} from '../shared/document-list-item/document-list-item.component';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {CardBoxComponent} from '../shared/card-box/card-box.component';
+import {MatCardModule} from '@angular/material/card';
+import {MatListModule} from '@angular/material/list';
+import {SessionStore} from '../store/session.store';
+import {DateAgoPipe} from '../directives/date-ago.pipe';
 
 
 describe('DashboardComponent', () => {
   let spectator: Spectator<DashboardComponent>;
   const createComponent = createComponentFactory({
     component: DashboardComponent,
-    imports: [RouterTestingModule, MatDialogModule, MatFormFieldModule],
-    declarations: [ChartComponent, DocumentListItemComponent, CardBoxComponent],
+    imports: [RouterTestingModule, MatDialogModule, MatFormFieldModule, MatCardModule, MatListModule],
+    declarations: [ChartComponent, DocumentListItemComponent, CardBoxComponent, DateAgoPipe],
     componentMocks: [QuickSearchComponent],
+    providers: [],
     mocks: [ConfigService, DocumentService, FormularService, ModalService],
     detectChanges: false
   });
 
-  beforeEach(() => spectator = createComponent());
+  beforeEach(() => {
+    spectator = createComponent();
+    const dataService = spectator.inject<DocumentService>(DocumentService);
+    dataService.getStatistic.and.returnValue(of({totalNum: 5, numDrafts: 3, numPublished: 2}));
+  });
 
   it('should create', () => {
     expect(spectator.component).toBeTruthy();
   });
 
   it('should show last recent documents', () => {
-    const dataService = spectator.get<DocumentService>(DocumentService);
-    dataService.find.and.returnValue(of({ totalHits: 3, hits: recentDocuments}));
-    const formService = spectator.get<FormularService>(FormularService);
+    const sessionStore = spectator.inject(SessionStore);
+    const dataService = spectator.inject<DocumentService>(DocumentService);
+    dataService.findRecent.and.callFake(() => {
+      sessionStore.update({latestDocuments: recentDocuments});
+    });
+    // const formService = spectator.inject<FormularService>(FormularService);
 
     spectator.detectChanges();
 

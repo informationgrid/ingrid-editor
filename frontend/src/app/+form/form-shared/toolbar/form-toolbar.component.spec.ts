@@ -69,7 +69,7 @@ describe('Form-Toolbar', () => {
     // find the title element in the DOM using a CSS selector
     const buttons = spectator.queryAll('button');
 
-    // confirm the element's content
-    expect(buttons.length).toBe(1);
+    // confirm the element's content (publish button consists of two buttons!)
+    expect(buttons.length).toBe(2);
   });
 });

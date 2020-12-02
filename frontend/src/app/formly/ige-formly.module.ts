@@ -21,8 +21,6 @@ import {TableTypeComponent} from './types/table/table-type.component';
 import {CommonModule} from '@angular/common';
 import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
-import {DocReferenceTypeComponent} from './types/doc-reference-type.component';
-import {TreeSelectDialog} from '../+form/dialogs/tree-select/tree-select.dialog';
 import {SharedModule} from '../shared/shared.module';
 import {AddressTypeComponent} from './types/address-type/address-type.component';
 import {AddressCardComponent} from './types/address-type/address-card/address-card.component';
@@ -42,7 +40,6 @@ import {FormDialogComponent} from './types/table/form-dialog/form-dialog.compone
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {RepeatComponent} from './types/repeat/repeat.component';
 import {SelectOptionPipe} from '../directives/selectOption.pipe';
-import {FormLabelComponent} from './wrapper/form-label/form-label.component';
 import {RepeatChipComponent} from './types/repeat-chip/repeat-chip.component';
 import {MatChipsModule} from '@angular/material/chips';
 import {ChipDialogComponent} from './types/repeat-chip/chip-dialog/chip-dialog.component';
@@ -83,9 +80,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         name: 'address-card',
         component: AddressTypeComponent
       }, {
-        name: 'doc-reference',
-        component: DocReferenceTypeComponent
-      }, {
         name: 'repeat',
         component: RepeatComponent
       }, {
@@ -118,27 +112,26 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
       provide: MAT_DATE_LOCALE,
       useValue: 'de-DE'
     },
-    { provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY, useFactory: scrollFactory, deps: [Overlay] }
+    {provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY, useFactory: scrollFactory, deps: [Overlay]}
   ],
   declarations: [
     CodelistPipe, SelectOptionPipe,
     ContextHelpComponent, AutocompleteTypeComponent, LeafletTypeComponent,
-    TableTypeComponent, DocReferenceTypeComponent, TreeSelectDialog, AddressTypeComponent,
+    TableTypeComponent, AddressTypeComponent,
     AddressCardComponent, ChooseAddressDialogComponent, SpatialDialogComponent, SpatialListComponent, FreeSpatialComponent,
     WktSpatialComponent, DrawSpatialComponent, NameSpatialComponent, RepeatListComponent, RepeatComponent, RepeatDetailListComponent,
     FormErrorComponent,
     FormDialogComponent,
-    FormLabelComponent,
     RepeatChipComponent,
     ChipDialogComponent,
     DateRangeTypeComponent,
     RepeatDetailListComponent
   ],
-  entryComponents: [ContextHelpComponent, TreeSelectDialog],
+  entryComponents: [ContextHelpComponent],
   exports: [
     ReactiveFormsModule, FormsModule,
     FormlyModule,
-    ContextHelpComponent, FormLabelComponent
+    ContextHelpComponent
   ]
 })
 export class IgeFormlyModule {

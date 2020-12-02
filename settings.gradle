@@ -1,3 +1,10 @@
 include 'frontend', 'api', 'server'
 
 rootProject.name='IGE-NG'
+
+buildCache {
+    local {
+        // Set local build cache directory.
+        directory = "${settingsDir}/build-cache"
+    }
+}

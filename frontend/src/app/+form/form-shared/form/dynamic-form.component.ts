@@ -41,6 +41,7 @@ import {ValidationError} from '../../../store/session.store';
   selector: 'ige-form-wrapper',
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss'],
+  // data and addresses need their own configured service
   providers: [FormPluginsService]
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -85,7 +86,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService, // this needs to be here for instantiation!!!
-              private dialog: MatDialog,
               private documentService: DocumentService, private modalService: ModalService,
               private formsManager: NgFormsManager,
               private treeService: TreeService,

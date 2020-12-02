@@ -3,14 +3,16 @@ import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {MatCardModule} from '@angular/material/card';
 import {CodelistPipe} from '../../../../directives/codelist.pipe';
 import {CodelistService} from '../../../../services/codelist/codelist.service';
+import {MatDialogModule} from '@angular/material/dialog';
+import {ProfileService} from '../../../../services/profile.service';
 
 describe('AddressCardComponent', () => {
   let spectator: Spectator<AddressCardComponent>;
   const createHost = createComponentFactory({
     component: AddressCardComponent,
-    imports: [MatCardModule],
+    imports: [MatCardModule, MatDialogModule],
     declarations: [CodelistPipe],
-    componentMocks: [CodelistService],
+    componentMocks: [CodelistService, ProfileService],
     detectChanges: false
   });
 

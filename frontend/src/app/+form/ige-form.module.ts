@@ -16,7 +16,6 @@ import {MatListModule} from '@angular/material/list';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
-import {FormDialogsModule} from './dialogs/tree-select/form-dialogs.module';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {RouterModule} from '@angular/router';
 import {FormlyModule} from '@ngx-formly/core';
@@ -33,7 +32,7 @@ import {VersionConflictDialogComponent} from './dialogs/version-conflict-dialog/
   imports: [
     RouterModule.forChild(routing),
     CommonModule,
-    IgeWizardModule, FormDialogsModule, SharedModule,
+    IgeWizardModule, SharedModule,
     MatFormFieldModule, MatInputModule, MatTableModule, MatMenuModule, MatButtonToggleModule, MatSlideToggleModule,
     MatTabsModule, MatListModule, MatDialogModule, MatRadioModule, MatCheckboxModule, MatExpansionModule, MatCardModule,
     FormlyModule,

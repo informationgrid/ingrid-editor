@@ -209,19 +209,21 @@ describe('TreeComponent', () => {
   }));
 
   it('should expand a node and load remote children', fakeAsync(() => {
-    const modRececentDocs = [...recentDocuments];
-    modRececentDocs[0]._hasChildren = true;
-    db.initialData.and.returnValue(of(modRececentDocs));
+    const firstModRececentDoc = Object.assign({}, recentDocuments[0]);
+    firstModRececentDoc._hasChildren = true;
+    db.initialData.and.returnValue(of([firstModRececentDoc]));
     db.getChildren.and.returnValue(of(childDocuments1).pipe(delay(2000)));
     spectator.detectChanges();
 
     selectNode(0);
 
-    hasNumberOfTreeNodes(3);
+    spectator.detectChanges();
+
+    hasNumberOfTreeNodes(1);
 
     tick(3000);
 
-    hasNumberOfTreeNodes(5);
+    hasNumberOfTreeNodes(3);
   }));
 
   it('should represent all states of a node (published, working, both)', fakeAsync(() => {
@@ -229,26 +231,18 @@ describe('TreeComponent', () => {
     spectator.detectChanges();
 
     hasNumberOfTreeNodes(3);
-    nodeHasClass(0, 'published');
-    nodeHasNotClass(0, 'working');
-    nodeHasClass(1, 'working');
-    nodeHasNotClass(1, 'published');
-    nodeHasClass(2, 'workingWithPublished');
-    nodeHasNotClass(2, 'working');
-    nodeHasNotClass(2, 'published');
-
-    expect(nodeAtIndex(0)).toHaveClass('published');
-    expect(nodeAtIndex(0)).not.toHaveClass('working');
-    expect(nodeAtIndex(1)).toHaveClass('working');
-    expect(nodeAtIndex(1)).not.toHaveClass('published');
-    expect(nodeAtIndex(2)).toHaveClass('workingWithPublished');
-    expect(nodeAtIndex(2)).not.toHaveClass('working');
-    expect(nodeAtIndex(2)).not.toHaveClass('published');
+    nodeImageHasClass(0, 'published');
+    nodeImageHasNotClass(0, 'working');
+    nodeImageHasClass(1, 'working');
+    nodeImageHasNotClass(1, 'published');
+    nodeImageHasClass(2, 'workingWithPublished');
+    nodeImageHasNotClass(2, 'working');
+    nodeImageHasNotClass(2, 'published');
   }));
 
   it('should initially expand to a deeply nested node', fakeAsync(() => {
 
-    db.getPath.and.returnValue(Promise.resolve(['1', '2', '3']));
+    db.getPath.and.returnValue(Promise.resolve(['1', '2', '3', '4']));
     db.initialData.and.returnValue(of(deeplyNestedDocumentsRoot));
     db.getChildren.and.callFake(id => {
       switch (id) {
@@ -276,6 +270,7 @@ describe('TreeComponent', () => {
     nodeIsExpanded(1);
     nodeIsExpanded(2);
     nodeContainsTitle(3, 'Nested Document');
+    tick(10000);
     nodeIsSelected(3);
 
   }));
@@ -367,7 +362,7 @@ describe('TreeComponent', () => {
     nodeContainsTitle(1, 'Test Document 1');
     nodeContainsTitle(2, 'Test Document 3');
 
-    nodeIsExpanded(0);
+    // nodeIsExpanded(0);
     nodeHasLevel(1, 1);
   }));
 
@@ -500,7 +495,7 @@ describe('TreeComponent', () => {
   const nodeAtIndex = (index) => spectator.queryAll('.mat-tree-node .mat-icon')[index];
 
 
-  const nodeExpectation = (index) => expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]);
+  const nodeExpectation = (index) => expect(spectator.queryAll('.mat-tree-node')[index]);
 
   function nodeHasClass(index: number, stateClass: string) {
     nodeExpectation(index).toHaveClass(stateClass);
@@ -510,8 +505,16 @@ describe('TreeComponent', () => {
     nodeExpectation(index).not.toHaveClass(stateClass);
   }
 
+  function nodeImageHasClass(index: number, stateClass: string) {
+    expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]).toHaveClass(stateClass);
+  }
+
+  function nodeImageHasNotClass(index: number, stateClass: string) {
+    expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]).not.toHaveClass(stateClass);
+  }
+
   function nodeIsExpanded(index: number) {
-    expect(spectator.queryAll('.mat-tree-node .mat-icon')[index]).toHaveClass('expanded');
+    expect(spectator.queryAll('.mat-tree-node')[index]).toHaveClass('expanded');
   }
 
   function nodeIsSelected(index: number) {

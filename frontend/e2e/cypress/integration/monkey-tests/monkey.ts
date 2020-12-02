@@ -1,4 +1,3 @@
-// https://github.com/marmelab/gremlins.js
 import { createHorde, species, strategies } from 'gremlins.js';
 
 xdescribe('Gremlin Tests', () => {

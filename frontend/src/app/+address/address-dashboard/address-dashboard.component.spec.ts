@@ -1,25 +1,23 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
-import { AddressDashboardComponent } from './address-dashboard.component';
+import {AddressDashboardComponent} from './address-dashboard.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {RouterTestingModule} from '@angular/router/testing';
+import {FormToolbarService} from '../../+form/form-shared/toolbar/form-toolbar.service';
+import {DocumentService} from '../../services/document/document.service';
 
 describe('AddressDashboardComponent', () => {
-  let component: AddressDashboardComponent;
-  let fixture: ComponentFixture<AddressDashboardComponent>;
-
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AddressDashboardComponent ]
-    })
-    .compileComponents();
-  }));
+  let spectator: Spectator<AddressDashboardComponent>;
+  const createHost = createComponentFactory({
+    component: AddressDashboardComponent,
+    imports: [RouterTestingModule],
+    mocks: [FormToolbarService, DocumentService],
+    detectChanges: false
+  });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddressDashboardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createHost();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });
