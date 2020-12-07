@@ -38,3 +38,12 @@ mat-row, mat-header-row {
   background-color: $ige-background;
   border-bottom-color: #ffffff;
 }
+
+.select-controls {
+  padding-right: 4px;
+
+  mat-icon{
+    color: $ige-placeholder-color;
+
+  }
+}

@@ -8,6 +8,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material/table';
 import {ContextHelpService} from '../../../services/context-help/context-help.service';
 import {ConfigService} from '../../../services/config/config.service';
+import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 
 @UntilDestroy()
 @Component({
@@ -23,6 +24,7 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
   displayedColumns: string[];
   selection = new SelectionModel<any>(true, []);
   batchMode = false;
+  dragDisabled = true;
 
   private profile: string;
   private docType: string;
@@ -146,5 +148,10 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
 
   formatCell(column: any, text: string) {
     return column.templateOptions.formatter ? column.templateOptions.formatter(text) : text;
+  }
+
+  drop(event: CdkDragDrop<any, any>) {
+    moveItemInArray(this.dataSource.data, event.previousIndex, event.currentIndex);
+    this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
   }
 }
