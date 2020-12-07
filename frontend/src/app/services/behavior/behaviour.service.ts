@@ -67,7 +67,7 @@ export class BehaviourService {
 
   applyActiveStates(behaviours: Plugin[]) {
     behaviours.forEach((behaviour) => {
-      const stored = this.backendBehaviourStates.filter((sb: any) => sb._id === behaviour.id);
+      const stored = this.backendBehaviourStates ? this.backendBehaviourStates.filter((sb: any) => sb._id === behaviour.id) : [];
       behaviour.isActive = stored.length > 0 ? stored[0].active : behaviour.defaultActive;
       behaviour.data = stored.length > 0 ? stored[0].data : null;
     });
