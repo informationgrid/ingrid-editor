@@ -59,7 +59,7 @@ export class DynamicDatabase {
     return this.docService.getPath(id).toPromise();
   }
 
-  mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
+  mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number): TreeNode[] {
     return docs.map(doc =>
       new TreeNode(
         doc.id.toString(), doc.title, doc._type, doc._state, level, doc._hasChildren, doc._parent,

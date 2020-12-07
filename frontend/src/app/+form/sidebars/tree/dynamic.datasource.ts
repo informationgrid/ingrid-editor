@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {TreeNode} from '../../../store/tree/tree-node.model';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
-import {map} from 'rxjs/operators';
+import {CollectionViewer, SelectionChange, SelectionModel} from '@angular/cdk/collections';
+import {map, tap} from 'rxjs/operators';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {DynamicDatabase} from './dynamic.database';
 import {TreeService} from './tree.service';
@@ -33,7 +33,8 @@ export class DynamicDataSource {
 
   constructor(private _treeControl: FlatTreeControl<TreeNode>,
               private _database: DynamicDatabase,
-              private treeService: TreeService) {
+              private treeService: TreeService,
+              private selectionModel: SelectionModel<TreeNode>) {
   }
 
   connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
@@ -83,7 +84,12 @@ export class DynamicDataSource {
     this._database.getChildren(node._id, false, this.forAddress)
       .pipe(
         map(docs => this._database.mapDocumentsToTreeNodes(docs, node.level + 1)),
-        map(docs => docs.sort(this.treeService.getSortTreeNodesFunction()))
+        map(docs => docs.sort(this.treeService.getSortTreeNodesFunction())),
+        /*tap(docs => {
+          if (this.selectionModel.isSelected(node)) {
+            this.selectionModel.select(...docs);
+          }
+        })*/
       )
       .subscribe(children => {
 
@@ -107,7 +113,9 @@ export class DynamicDataSource {
   }
 
   private collapseNode(node: TreeNode, index: number) {
-    if (!node) return;
+    if (!node) {
+      return;
+    }
 
     let count = 0;
     const nextIndex = index + 1;

@@ -32,6 +32,7 @@ import {FakeMatIconRegistry} from '@angular/material/icon/testing';
 import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
 import {TreeStore} from '../../../store/tree/tree.store';
 import {TreeQuery} from '../../../store/tree/tree.query';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(doc =>
@@ -47,7 +48,7 @@ describe('TreeComponent', () => {
   let db: SpyObject<DynamicDatabase>;
   const createHost = createComponentFactory({
     component: TreeComponent,
-    imports: [MatTreeModule, MatIconModule, MatDialogModule, MatButtonModule, MatSlideToggleModule, ReactiveFormsModule,
+    imports: [MatTreeModule, MatIconModule, MatDialogModule, MatButtonModule, MatCheckboxModule, MatSlideToggleModule, ReactiveFormsModule,
       MatFormFieldModule, MatAutocompleteModule, FormFieldsModule],
     declarations: [TreeHeaderComponent, EmptyNavigationComponent],
     providers: [
@@ -404,6 +405,69 @@ describe('TreeComponent', () => {
     // all folders must not be expanded initially
   }));
 
+  describe('Multi-Selection', () => {
+    beforeEach(() => {
+      spectator.setInput('showMultiSelectButton', true);
+      spectator.detectChanges();
+      spectator.click('[data-cy="edit-button"]');
+    });
+
+    it('should enable and disable multi selection mode', () => {
+      // all three documents have a checkbox
+      expect(spectator.queryAll('mat-tree mat-checkbox').length).toBe(3);
+
+      // no document should be selected initially
+      checkSelectionCount(0);
+
+      // no checkboxes after leaving edit mode
+      spectator.click('[data-cy="exit-multi-select-mode"]');
+      expect(spectator.queryAll('mat-tree mat-checkbox').length).toBe(0);
+    });
+
+    it('should have the currently opened node initially selected', () => {
+      spectator.click('[data-cy="exit-multi-select-mode"]');
+
+      selectNode(0);
+      spectator.click('[data-cy="edit-button"]');
+
+      checkNodeIsCheckboxSelected(0);
+      checkSelectionCount(1);
+
+      // check that node is still selected and active after leaving multi select mode
+      spectator.click('[data-cy="exit-multi-select-mode"]');
+      nodeIsSelected(0);
+    });
+
+    it('should check/uncheck all nodes at once', () => {
+      const toggleAllSelectionSpy = spyOn(spectator.component, 'toggleAllSelection');
+      expect(toggleAllSelectionSpy).toHaveBeenCalledTimes(0);
+
+      // ATTENTION: checkbox needs first click event before change events are triggered correctly
+      spectator.click('[data-cy="toggle-all-selection"] label');
+      spectator.detectChanges();
+      expect(toggleAllSelectionSpy).toHaveBeenCalledWith(true);
+
+      // WORKAROUND: onchange event is not correctly triggered with checkbox, so we set the action ourselves
+      spectator.component.selectionModel.select(...spectator.component.treeControl.dataNodes);
+      spectator.triggerEventHandler('[data-cy="toggle-all-selection"]', 'change', {});
+      checkSelectionCount(3);
+
+      // WORKAROUND: onchange event is not correctly triggered with checkbox, so we set the action ourselves
+      spectator.component.selectionModel.clear();
+      spectator.triggerEventHandler('[data-cy="toggle-all-selection"]', 'change', {});
+      checkSelectionCount(0);
+    });
+
+    xit('should only select the parent but not its children, when clicking on parent', () => {
+    });
+
+    xit('should select/deselect all children, when clicking on corresponding buttons of parent', () => {
+    });
+
+    xit('should mark a node as selected, after click on a search result of tree', () => {
+    });
+  });
+
   /*
    * Utility Functions
    */
@@ -480,6 +544,14 @@ describe('TreeComponent', () => {
       parent: options.parent || null,
       doNotSelect: true
     };
+  }
+
+  function checkSelectionCount(count: number) {
+    expect(spectator.queryAll('mat-tree mat-checkbox.mat-checkbox-checked').length).toBe(count);
+  }
+
+  function checkNodeIsCheckboxSelected(index: number) {
+    expect(spectator.queryAll('mat-tree mat-checkbox')[index]).toHaveClass('mat-checkbox-checked');
   }
 
 });

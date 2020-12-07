@@ -2,10 +2,16 @@
     <div *ngIf="showOptions" class="options" fxLayout="row" fxLayoutAlign="space-between">
         <mat-slide-toggle class="show-all" checked disabled>Alle anzeigen</mat-slide-toggle>
 
-        <button *ngIf="showReloadButton" mat-icon-button data-cy="reload-button"
+        <button *ngIf="showReloadButton" mat-icon-button data-cy="reload-button" class="reload-button"
                 matTooltip="Aktualisieren"
                 (click)="reloadTree()">
             <mat-icon>refresh</mat-icon>
+        </button>
+
+        <button *ngIf="showMultiSelectButton" mat-icon-button data-cy="edit-button"
+                matTooltip="Mehrfachauswahl"
+                (click)="edit.next()">
+            <mat-icon svgIcon="edit_mode"></mat-icon>
         </button>
     </div>
 

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Subject} from 'rxjs';
 import {DynamicDatabase} from '../dynamic.database';
 import {debounceTime, map} from 'rxjs/operators';
@@ -17,9 +17,11 @@ export class TreeHeaderComponent implements OnInit {
   @Input() isAddress = false;
   @Input() showOptions = true;
   @Input() showOnlyFolders = false;
+  @Input() showMultiSelectButton = true;
 
   @Output() reload = new EventEmitter();
   @Output() open = new EventEmitter();
+  @Output() edit = new EventEmitter();
 
   searchResult = new Subject<TreeNode[]>();
   query = new FormControl('');

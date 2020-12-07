@@ -56,15 +56,24 @@
       }
     }
   }
+
+  .multi-select-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: $ige-mark-color;
+    width: 100%;
+    padding: 8px 12px;
+  }
 }
 
 mat-tree-node {
   cursor: pointer;
   min-height: 20px;
 
-  ::ng-deep svg path {
+  /*::ng-deep svg path {
     fill: #000000;
-  }
+  }*/
 
   &.folder {
     border-color: transparent;
@@ -90,6 +99,13 @@ mat-tree-node {
       justify-content: space-between;
       align-items: center;
     }
+
+    .quick-child-selection button {
+      height: 18px;
+      width: 18px;
+      line-height: 0;
+      vertical-align: middle;
+    }
   }
 
   &.rootNode {
@@ -97,16 +113,17 @@ mat-tree-node {
     background-color: $ige-background;
 
     &:hover {
-      background-color: darken($ige-background, 5%) !important;
+      background-color: darken($ige-background, 5%);
     }
 
     &.selected {
       background-color: darken($ige-background, 5%);
+
+      &:hover {
+        background-color: darken($ige-background, 10%);
+      }
     }
 
-    &.selected:hover {
-      background-color: darken($ige-background, 10%);
-    }
 
     &.folder {
       font-size: 16px;
@@ -133,6 +150,19 @@ mat-tree-node {
     z-index: 1;
     margin-top: -1px;
     background-color: lighten($ige-background, 10%); /* Other states' background colors have to be set important */
+
+    &:hover {
+      background-color: darken(#FFFFFF, 2.5%);
+    }
+
+    &.selected {
+      background-color: darken(#FFFFFF, 5%);
+
+      &:hover {
+        background-color: darken(#FFFFFF, 10%);
+      }
+    }
+
   }
 
   .label {
@@ -140,6 +170,10 @@ mat-tree-node {
     padding: 5px 0 5px 24px;
     line-height: 20px;
     user-select: none;
+
+    mat-checkbox {
+      padding-right: 10px;
+    }
 
     .mat-icon {
       flex-shrink: 0;
@@ -155,11 +189,26 @@ mat-tree-node {
   }
 
   &.selected {
-    background-color: darken($ige-background, 5%);
+    background-color: darken(#FFFFFF, 5%);
+
+    &:hover {
+      background-color: darken(#FFFFFF, 10%);
+    }
+  }
+
+  .quick-child-selection {
+    display: none;
+    button {
+      margin-right: 10px;
+    }
   }
 
   &:hover {
-    background-color: darken(#FFFFFF, 2.5%) !important;
+    background-color: darken(#FFFFFF, 2.5%);
+
+    .quick-child-selection {
+      display: block;
+    }
   }
 
   &.active, &.rootNode.active, &:not(.rootNode).expanded + &.active:not(.rootNode) {
@@ -167,6 +216,14 @@ mat-tree-node {
 
     &:hover {
       background-color: darken($ige-mark-color, 5%) !important;
+    }
+
+    &.selected {
+      background-color: darken($ige-mark-color, 5%) !important;
+
+      &:hover {
+        background-color: darken($ige-mark-color, 10%) !important;
+      }
     }
   }
 

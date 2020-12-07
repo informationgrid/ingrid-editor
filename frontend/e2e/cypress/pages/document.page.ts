@@ -413,13 +413,15 @@ export class DocumentPage extends BasePage {
     cy.get('ige-spatial-list mat-list-item').should('not.empty');
   }
 
+  static checkSpatialEntryNumber(count: number) {
+    cy.get('div.mat-line.spatial-title').should('have.length', count);
+  }
+
   static checkSpatialEntryExists(spatialName: string) {
-    cy.wait(50);
     cy.get('div.mat-line.spatial-title').contains(spatialName).should('exist');
   }
 
   static checkSpatialEntryExistsNot(spatialName: string) {
-    cy.wait(50);
     cy.get('div.mat-line.spatial-title').contains(spatialName).should('not.exist');
   }
 

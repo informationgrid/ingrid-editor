@@ -7,7 +7,9 @@
                          [isAddress]="forAddresses"
                          [showOptions]="showHeaderOptions"
                          [showOnlyFolders]="showOnlyFolders"
-                         (open)="jumpToNode($event)"></ige-tree-header>
+                         [showMultiSelectButton]="showMultiSelectButton"
+                         (edit)="toggleSelectionMode()"
+                         (open)="handleSelection($event)"></ige-tree-header>
 
         <div *ngIf="isDragging" class="drop-root"
              [class.hover]="dragManager.dragNodeExpandOverNode === null"
@@ -17,6 +19,17 @@
                 <span>Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon>
                     {{forAddresses ? "Adressen": "Daten"}}</span>
             </div>
+        </div>
+
+        <div *ngIf="multiSelectionModeEnabled" class="multi-select-area" fxLayoutAlign="space-between center">
+            <mat-checkbox data-cy="toggle-all-selection"
+                          matTooltip="Alle Aus-/Abwählen"
+                          [checked]="allNodesSelected()"
+                          [indeterminate]="atLeastOneButNotAllNodesSelected()"
+                          (change)="toggleAllSelection($event.checked)">Auswahl</mat-checkbox>
+            <button mat-icon-button matSuffix class="close" (click)="toggleSelectionMode()"  data-cy="exit-multi-select-mode">
+                <mat-icon svgIcon="Entfernen"></mat-icon>
+            </button>
         </div>
     </div>
 
@@ -30,42 +43,67 @@
                        (dragend)="handleDragEnd();"
                        matTreeNodePadding matTreeNodePaddingIndent="24"
                        (click)="!disabledCondition(node) && selectNode(node, $event)"
-                       [class.selected]="selectionModel.isSelected(node)"
+                       [class.selected]="isSelected(node)"
                        [class.active]="node._id === activeNodeId"
                        [class.hide]="showOnlyFolders"
                        [class.rootNode]="node.level === 0"
                        [class.afterExpanded]="node.afterExpanded"
                        [class.disabled]="disabledCondition(node)">
             <div class="label">
+                <mat-checkbox *ngIf="multiSelectionModeEnabled"
+                              [checked]="isSelected(node)"
+                              (click)="$event.stopImmediatePropagation()"
+                              (change)="nodeSelectionToggle(node)"></mat-checkbox>
                 <mat-icon [svgIcon]="node.iconClass" [ngClass]="['document-icon',getStateClass(node)]"></mat-icon>
                 <span>{{node.title}}</span>
             </div>
         </mat-tree-node>
 
         <!-- This is the tree node template for expandable nodes -->
-        <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
+        <mat-tree-node *matTreeNodeDef="let node;when: isFolder"
                        [draggable]="enableDrag" (drop)="drop($event, node)" (dragstart)="handleDragStart($event, node)"
                        (dragover)="dragManager.handleDragOver($event, node);" (dragend)="handleDragEnd();"
                        matTreeNodePadding matTreeNodePaddingIndent="24"
                        (click)="handleFolderClick(node, $event)"
                        [class.drop]="dragManager.dragNodeExpandOverNode === node"
-                       [class.selected]="selectionModel.isSelected(node)"
+                       [class.selected]="isSelected(node)"
                        [class.active]="node._id === activeNodeId"
                        [class.expanded]="treeControl.isExpanded(node)"
                        [class.rootNode]="node.level === 0"
                        [class.afterExpanded]="node.afterExpanded"
                        [class.folder]="node.type === 'FOLDER'">
             <div style="width: 100%;">
-                <button mat-icon-button matTreeNodeToggle
-                        class="toggle"
-                        [disabled]="!node.hasChildren"
-                        [attr.aria-label]="'toggle ' + node.title">
-                    <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror expander animated">
-                        {{isLoading === node ? 'autorenew' : 'chevron_right'}}
-                    </mat-icon>
-                </button>
+                <div fxLayout="row">
+
+                    <div *ngIf="multiSelectionModeEnabled && node.hasChildren" class="quick-child-selection">
+                        <button mat-icon-button
+                                matTooltip="Alle Unterelemente abwählen"
+                                (click)="toggleAllChildNodes(node,false, $event)">
+                            <mat-icon>check_box_outline_blank</mat-icon>
+                        </button>
+                        <button mat-icon-button
+                                matTooltip="Alle Unterelemente auswählen"
+                                (click)="toggleAllChildNodes(node, true, $event)">
+                            <mat-icon>check_box</mat-icon>
+                        </button>
+                    </div>
+                    <button mat-icon-button matTreeNodeToggle
+                            class="toggle"
+                            [disabled]="!node.hasChildren"
+                            [attr.aria-label]="'toggle ' + node.title">
+                        <mat-icon *ngIf="node.hasChildren" class="mat-icon-rtl-mirror expander animated">
+                            {{isLoading === node ? 'autorenew' : 'chevron_right'}}
+                        </mat-icon>
+                    </button>
+                </div>
 
                 <div class="label">
+
+                    <mat-checkbox *ngIf="showFolderCheckbox()"
+                                  (change)="nodeSelectionToggle(node)"
+                                  (click)="$event.stopImmediatePropagation()"
+                                  [checked]="isSelected(node)"></mat-checkbox>
+
                     <span>{{node.title}}</span>
                     <ng-container *ngIf="node.isLoading">
                         <mat-spinner diameter="18"></mat-spinner>

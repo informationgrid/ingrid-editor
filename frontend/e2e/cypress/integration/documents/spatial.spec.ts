@@ -18,8 +18,10 @@ describe('Spatial References', () => {
 
     DocumentPage.createDocument(docName);
     enterMcloudDocTestData.setSpatialBbox('create spatial reference, bbox', 'Bremen');
+    DocumentPage.checkSpatialEntryNumber(1);
     DocumentPage.checkSpatialEntryExists('Bremen');
 
+    // TODO: why save at the end?
     DocumentPage.saveDocument();
   });
 
@@ -29,8 +31,10 @@ describe('Spatial References', () => {
 
     DocumentPage.createDocument(docName);
     enterMcloudDocTestData.setSpatialWKT('create spatial reference, wkt-1', poly);
+    DocumentPage.checkSpatialEntryNumber(1);
     DocumentPage.checkSpatialEntryExists('reference, wkt-1');
 
+    // TODO: why save at the end?
     DocumentPage.saveDocument();
   });
 
@@ -41,12 +45,14 @@ describe('Spatial References', () => {
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialBbox('add spatial reference, bbox', 'Berlin');
-
+    DocumentPage.checkSpatialEntryNumber(2);
     DocumentPage.checkSpatialEntryExists('Berlin');
 
     DocumentPage.saveDocument();
 
     DocumentPage.clickSpatialEntry('Berlin');
+    // TODO: why clicking reset button when there is no check involved?
+    //       * do some checks or remove it (write minimal tests!)
     DocumentPage.clickLeafletMapResetBtn();
 
     DocumentPage.clickSpatialEntry('Bremen');
@@ -61,6 +67,7 @@ describe('Spatial References', () => {
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialWKT('add spatial reference, wkt-2', poly);
+    DocumentPage.checkSpatialEntryNumber(2);
     DocumentPage.checkSpatialEntryExists('reference, wkt-2');
 
     DocumentPage.saveDocument();
@@ -78,12 +85,16 @@ describe('Spatial References', () => {
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
     Tree.openNode(['api-' + docName]);
 
+    DocumentPage.checkSpatialEntryNumber(4);
     enterMcloudDocTestData.openSpatialMenuDoc('Berlin');
     enterMcloudDocTestData.selectChangeInSpatialMenuDoc();
 
     enterMcloudDocTestData.setOpenedSpatialBbox('update spatial reference, bbox', 'Hamburg');
+    // number should stay the same
+    DocumentPage.checkSpatialEntryNumber(4);
     DocumentPage.checkSpatialEntryExists('Hamburg');
 
+    // TODO: why save?
     DocumentPage.saveDocument();
   });
 
@@ -98,8 +109,10 @@ describe('Spatial References', () => {
     enterMcloudDocTestData.selectChangeInSpatialMenuDoc();
 
     enterMcloudDocTestData.setOpenedSpatialWKT('update spatial reference, wkt', poly);
+    DocumentPage.checkSpatialEntryNumber(4);
     DocumentPage.checkSpatialEntryExists('update spatial reference, wkt');
 
+    // TODO: why save?
     DocumentPage.saveDocument();
   });
 
