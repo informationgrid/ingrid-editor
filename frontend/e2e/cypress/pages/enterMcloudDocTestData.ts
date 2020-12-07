@@ -72,6 +72,10 @@ export class enterMcloudDocTestData {
     cy.get('mat-option').contains(selectType).click();
   }
 
+  /*
+     TODO: this should be put in a separate dialog class (see for example DocumentPage.CreateDialog)
+           this class can be handled better and be used more intuitively
+   */
   static setSpatialBbox(title: string = 'Spaaaaatiaaal', locationText: string = 'Bremen') {
     cy.get('[data-cy=spatialButton]').click();
     this.setOpenedSpatialBbox(title, locationText);
@@ -84,11 +88,11 @@ export class enterMcloudDocTestData {
       .clear()
       .type(locationText)
       .then(() => {
-        cy.wait(1000);
         cy.get('.result-wrapper mat-list').contains(locationText).click();
       });
     cy.get('[data-cy=confirm-dialog-save]').click();
-    DocumentPage.checkSpatialEntrytNotEmpty();
+    // give some time to close dialog and update list
+    cy.wait(300);
   }
 
   static openSpatialMenuDoc(spatialName: string) {
@@ -131,6 +135,8 @@ export class enterMcloudDocTestData {
       });
     cy.get('[data-cy=confirm-dialog-save]').click();
     DocumentPage.checkSpatialEntrytNotEmpty();
+    // give some time to close dialog and update list
+    cy.wait(300);
   }
 
   static setSpatialGeoName(title: string = 'Spaaaaatiaaal') {
@@ -140,6 +146,7 @@ export class enterMcloudDocTestData {
     cy.get('[data-cy=confirm-dialog-save]').click();
     DocumentPage.checkSpatialEntrytNotEmpty();
   }
+  // *****************************************************
 
   static setTimeReference(date: Date = new Date(2020, 1, 11), choose: string = 'Erstellung') {
     cy.get('[data-cy="Zeitbezug der Ressource"]').contains('Hinzufügen').click();
@@ -156,6 +163,8 @@ export class enterMcloudDocTestData {
     const months = ['JAN', 'FEB', 'MÄR', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEZ'];
     const month = months[monthNumber - 1];
 
+    // TODO: always use strict equality operator '===' and '!==' (check whole code!)
+    //       (see: https://developer.mozilla.org/de/docs/Web/JavaScript/Vergleiche_auf_Gleichheit_und_deren_Verwendung)
     if (choose == 'von - bis' && until != null) {
       const year2 = until.getFullYear();
       const monthNumber2 = until.getMonth() + 1;
