@@ -26,4 +26,9 @@ class HomeController {
     fun swagger(): RedirectView {
         return RedirectView("swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config")
     }
+
+    @GetMapping(value = ["/accessDenied"])
+    fun accessDenied(): ResponseEntity<String> {
+        return ResponseEntity.ok("Sie haben kein Zugriff auf diese Seite")
+    }
 }
