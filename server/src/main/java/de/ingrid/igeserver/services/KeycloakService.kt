@@ -83,7 +83,7 @@ class KeycloakService : UserManagementService {
                 val entity = response.entity
                 entity.content.use { `is` ->
                     // FIXME Make sure first match is always the right one
-                    return JsonSerialization.readValue(`is`, UserList::class.java)[0]
+                    return JsonSerialization.readValue(`is`, UserList::class.java).getOrElse(0) { UserRepresentation() }
                 }
             }
         } catch (e: Exception) {

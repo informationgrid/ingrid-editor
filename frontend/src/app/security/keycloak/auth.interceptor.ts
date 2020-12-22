@@ -24,7 +24,7 @@ export class AuthInterceptor implements HttpInterceptor {
           // so that the keycloak login screen is shown
           if (error.status === 403) {
             // TODO: redirect?
-            const message = 'You do not have permission to this resource or are logged out';
+            const message = 'Sie haben keine Rechte für diese Funktion/Seite';
             this.showError(message);
           } else if (error.status === 401) {
             const message = 'Sie wurden abgemeldet und werden in 5 Sekunden zur Login-Seite geschickt.';

@@ -137,4 +137,4 @@ In your docker-compose file you would then use for your app the environment vari
 ## Add a new keycloak user
 
 When adding a new keycloak user, make sure to assign the correct roles: admin, superadmin
-Do not forget to assign the client-roles as well: realm-management -> manage-users
+Do not forget to assign the client-roles as well: realm-management -> view-users (or manage-users)
