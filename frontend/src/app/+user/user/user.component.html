@@ -1,11 +1,11 @@
 <as-split>
     <as-split-area [visible]="show" [size]="25" id="sidebarUser" class="split-pane-content-primary container">
-        <mat-list>
-            <mat-list-item *ngFor="let user of users" [class.disabled]="user === selectedUser"
+        <mat-selection-list #usersList multiple="false">
+            <mat-list-option *ngFor="let user of users" [class.disabled]="user === selectedUser"
                            (click)="loadUser(user)">
                 <h4 mat-line>{{user.login}}</h4>
-            </mat-list-item>
-        </mat-list>
+            </mat-list-option>
+        </mat-selection-list>
         <div class="text-center">
             <button mat-icon-button (click)="addUser()">
                 <mat-icon>add</mat-icon>
@@ -34,18 +34,14 @@
                        [(ngModel)]="selectedUser.password">
             </mat-form-field>
             <div>
-                <label>Rollen</label>
-                <!--<select multiple [(ngModel)]="selectedUser.roles" name="roles">
-                    <option *ngFor="let role of roles" value="{{role.id}}">{{role.name}}</option>
-                </select>-->
-                <div class="clearfix"></div>
-                <!-- TODO: <ss-multiselect-dropdown [options]="roles" name="roles" [(ngModel)]="selectedUser.roles"></ss-multiselect-dropdown>-->
+                <label>Rechte</label>
+                <button mat-button (click)="choosePermissions()">Auswählen</button>
             </div>
 
             <button mat-button [disabled]="!userForm.form.valid"
                     (click)="saveUser(selectedUser)">Speichern
             </button>
-            <button mat-button [disabled]="isNewUser"
+            <button mat-button [disabled]="isNewUser || usersList.selectedOptions.isEmpty()"
                     (click)="deleteUser(selectedUser.login)">Löschen
             </button>
         </form>

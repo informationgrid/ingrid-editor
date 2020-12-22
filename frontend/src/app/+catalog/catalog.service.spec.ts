@@ -2,7 +2,6 @@ import {CatalogService} from './services/catalog.service';
 import {createServiceFactory, mockProvider, SpectatorService} from '@ngneat/spectator';
 import {Router} from '@angular/router';
 import {CatalogDataService} from './services/catalog-data.service';
-import {HttpClient} from '@angular/common/http';
 import {ConfigService, Configuration} from '../services/config/config.service';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 

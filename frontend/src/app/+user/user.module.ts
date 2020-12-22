@@ -8,7 +8,10 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
 import {RoleComponent} from './role/role.component';
-import { UserManagementComponent } from './user-management/user-management.component';
+import {UserManagementComponent} from './user-management/user-management.component';
+import {PermissionsComponent} from './permissions/permissions.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   imports: [
@@ -18,9 +21,11 @@ import { UserManagementComponent } from './user-management/user-management.compo
     SharedModule,
     MatTabsModule,
     MatFormFieldModule,
-    FormsModule
+    MatDialogModule,
+    FormsModule,
+    MatSlideToggleModule
   ],
-  declarations: [UserComponent, RoleComponent, UserManagementComponent]
+  declarations: [UserComponent, RoleComponent, UserManagementComponent, PermissionsComponent]
 })
 export class UserModule {
 

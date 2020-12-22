@@ -1,0 +1,61 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Berechtigungen</span>
+    </h2>
+</div>
+<mat-dialog-content>
+
+    <div fxLayout="row" fxLayoutGap="20px">
+        <mat-selection-list #option [multiple]="false">
+            <mat-list-option value="pages" selected>
+                Seitenzugriff
+            </mat-list-option>
+            <mat-list-option value="actions">
+                Aktionen
+            </mat-list-option>
+            <mat-list-option value="documents">
+                Dokumente
+            </mat-list-option>
+        </mat-selection-list>
+
+        <div *ngIf="option.selectedOptions.selected[0].value === 'pages'" fxLayout="column" fxLayoutGap="12px">
+            <mat-slide-toggle *ngFor="let page of pagePermissions">
+                {{page.label}}
+            </mat-slide-toggle>
+        </div>
+
+        <div *ngIf="option.selectedOptions.selected[0].value === 'actions'">
+            Hier können Rechte zu einzelnen Aktionen vergeben werden.
+        </div>
+
+        <div *ngIf="option.selectedOptions.selected[0].value === 'documents'" fxLayout="row" fxLayoutGap="20px">
+            <mat-selection-list [multiple]="false" dense>
+                <mat-list-option value="0" selected>
+                    Example 1 (write)
+                </mat-list-option>
+                <mat-list-option value="1">
+                    Example 2 (write-tree)
+                </mat-list-option>
+                <mat-list-option value="2">
+                    Example 3 (write-sub-tree)
+                </mat-list-option>
+            </mat-selection-list>
+
+            <div>
+                <ige-tree [showHeader]="false"></ige-tree>
+                <button mat-button>Hinzufügen</button>
+            </div>
+        </div>
+    </div>
+
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Abbrechen</button>
+    <div fxFlex></div>
+    <button mat-button color="primary"
+            [mat-dialog-close]="">Übernehmen
+    </button>
+</mat-dialog-actions>

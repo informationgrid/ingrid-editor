@@ -1,12 +1,12 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ModalService } from '../../services/modal/modal.service';
-import { UserService } from '../../services/user/user.service';
-import { ErrorService } from '../../services/error.service';
-import { User } from '../user';
-import { Role } from '../../models/user-role';
-import { Observable } from 'rxjs';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ModalService} from '../../services/modal/modal.service';
+import {UserService} from '../../services/user/user.service';
+import {User} from '../user';
+import {Observable} from 'rxjs';
+import {MatDialog} from '@angular/material/dialog';
+import {PermissionsComponent} from '../permissions/permissions.component';
 
-@Component( {
+@Component({
   selector: 'ige-user-manager',
   templateUrl: './user.component.html',
   styles: [`
@@ -14,10 +14,10 @@ import { Observable } from 'rxjs';
       flex: 1;
     }
   `]
-} )
+})
 export class UserComponent implements OnInit, AfterViewInit {
 
-  @ViewChild( 'loginRef', {static: true} ) loginRef: ElementRef;
+  @ViewChild('loginRef', {static: true}) loginRef: ElementRef;
 
   users: User[];
   currentTab: string;
@@ -29,7 +29,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   show = false;
 
   constructor(private modalService: ModalService, private userService: UserService,
-              private errorService: ErrorService) {
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -46,34 +46,34 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout( () => {
+    setTimeout(() => {
       this.show = true;
-    }, 0 );
+    }, 0);
   }
 
   loadUser(userToLoad: User) {
-    console.log( 'user', userToLoad );
+    console.log('user', userToLoad);
     this.isNewUser = false;
-    this.userService.getUser( userToLoad.login )
-      .subscribe( user => {
+    this.userService.getUser(userToLoad.login)
+      .subscribe(user => {
         this.selectedUser = user;
-        console.log( 'selectedUser:', this.selectedUser );
-      } );
+        console.log('selectedUser:', this.selectedUser);
+      });
   }
 
   addUser() {
     this.isNewUser = true;
     this.selectedUser = new User();
-    setTimeout( () => this.loginRef.nativeElement.focus(), 200 );
+    setTimeout(() => this.loginRef.nativeElement.focus(), 200);
   }
 
   deleteUser(login: string) {
-    this.userService.deleteUser( login )
-      .subscribe( () => {
+    this.userService.deleteUser(login)
+      .subscribe(() => {
           this.selectedUser = new User();
           this.fetchUsers();
         },
-        (err: any) => this.modalService.showJavascriptError( err, err.text() )
+        (err: any) => this.modalService.showJavascriptError(err, err.text())
       );
   }
 
@@ -81,13 +81,13 @@ export class UserComponent implements OnInit, AfterViewInit {
     let observer: Observable<User> = null;
 
     // convert roles to numbers
-    user.roles = user.roles.map( role => +role );
+    user.roles = user.roles.map(role => +role);
 
     if (this.isNewUser) {
-      observer = this.userService.createUser( user );
+      observer = this.userService.createUser(user);
 
     } else {
-      observer = this.userService.saveUser( user );
+      observer = this.userService.saveUser(user);
 
     }
 
@@ -99,18 +99,26 @@ export class UserComponent implements OnInit, AfterViewInit {
       }, (err: any) => {
         if (err.status === 406) {
           if (this.isNewUser) {
-            this.modalService.showJavascriptError( 'Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedUser.login );
+            this.modalService.showJavascriptError('Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedUser.login);
           } else {
-            this.modalService.showJavascriptError( 'Es existiert kein Benutzer mit dem Login: ' + this.selectedUser.login );
+            this.modalService.showJavascriptError('Es existiert kein Benutzer mit dem Login: ' + this.selectedUser.login);
           }
         } else {
-          this.modalService.showJavascriptError( err, err.text() );
+          this.modalService.showJavascriptError(err, err.text());
         }
-      } );
+      });
   }
 
   onSubmit() {
 
   }
 
+  choosePermissions() {
+    this.dialog.open(PermissionsComponent, {
+      minWidth: 1000,
+      minHeight: 700
+    }).afterClosed().subscribe(result => {
+      console.log(result);
+    });
+  }
 }
