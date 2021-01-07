@@ -26,7 +26,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 @NgModule({
     imports: [
         CommonModule,
-        MatTreeModule, AngularSplitModule.forRoot(), MatButtonModule, MatFormFieldModule, MatProgressBarModule,
+        MatTreeModule, AngularSplitModule, MatButtonModule, MatFormFieldModule, MatProgressBarModule,
         MatSlideToggleModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
         MatCardModule,
         SharedDocumentItemModule, MatRadioModule, FormsModule, DragDropModule, MatCheckboxModule],
