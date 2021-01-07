@@ -84,9 +84,12 @@ class DocumentService : MapperService() {
     }
 
     fun findChildren(parentId: String?, docCat: DocumentCategory? = null): FindAllResults {
-        val queryMap = mutableListOf(QueryField(FIELD_PARENT, parentId))
+        val queryMap = mutableListOf(
+            QueryField(FIELD_PARENT, parentId),
+            QueryField("catalog.identifier", this.dbService.currentCatalog)
+        )
 
-        //find all children regardless of category
+        // find all children regardless of category
         if (docCat != null) queryMap.add(QueryField(FIELD_CATEGORY, docCat.value))
 
         val findOptions = FindOptions(
