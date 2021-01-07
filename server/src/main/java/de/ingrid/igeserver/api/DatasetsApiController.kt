@@ -233,10 +233,12 @@ class DatasetsApiController @Autowired constructor(private val authUtils: AuthUt
             )
             val queryMap = listOf(
                     Pair(listOf(
+                            QueryField("catalog.identifier", dbId),
                             QueryField(FIELD_CATEGORY, " =", cat),
                             QueryField("draft.title", query  ?: "")
                     ), queryOptions),
                     Pair(listOf(
+                            QueryField("catalog.identifier", dbId),
                             QueryField(FIELD_CATEGORY, " =", cat),
                             QueryField("draft", null),
                             QueryField("published.title", query  ?: "")
