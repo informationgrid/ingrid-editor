@@ -115,7 +115,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         dbService.acquireCatalog(id).use {
             val catalogInfo = dbService.findAll(CatalogInfoType::class)
             if (catalogInfo.isNotEmpty()) {
-                val jsonNode = catalogInfo[0]
+                val jsonNode = catalogInfo.filter { it.get("id").textValue() == id }.first()
                 return Catalog(
                         id,
                         jsonNode.get("name")?.asText() ?: "Unknown",
