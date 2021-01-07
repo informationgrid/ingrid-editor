@@ -1,12 +1,4 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close>
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">Berechtigungen</span>
-    </h2>
-</div>
-<mat-dialog-content>
+<div [formGroup]="formGroup" style="max-height: unset">
 
     <div fxLayout="row" fxLayoutGap="20px">
         <mat-selection-list #option [multiple]="false">
@@ -19,43 +11,38 @@
             <mat-list-option value="documents">
                 Dokumente
             </mat-list-option>
+            <mat-list-option value="addresses">
+                Adressen
+            </mat-list-option>
         </mat-selection-list>
 
-        <div *ngIf="option.selectedOptions.selected[0].value === 'pages'" fxLayout="column" fxLayoutGap="12px">
-            <mat-slide-toggle *ngFor="let page of pagePermissions">
+        <div *ngIf="option.selectedOptions.selected[0].value === 'pages'" fxLayout="column" fxLayoutGap="12px" formGroupName="pages">
+            <mat-slide-toggle *ngFor="let page of pagePermissions" [formControlName]="page.id">
                 {{page.label}}
             </mat-slide-toggle>
         </div>
 
-        <div *ngIf="option.selectedOptions.selected[0].value === 'actions'">
+        <div *ngIf="option.selectedOptions.selected[0].value === 'actions'" fxLayout="column" fxLayoutGap="12px" formGroupName="actions">
             Hier können Rechte zu einzelnen Aktionen vergeben werden.
+            <mat-slide-toggle formControlName="demo">
+                Demo
+            </mat-slide-toggle>
+            <mat-slide-toggle formControlName="test">
+                Test
+            </mat-slide-toggle>
         </div>
 
-        <div *ngIf="option.selectedOptions.selected[0].value === 'documents'" fxLayout="row" fxLayoutGap="20px">
-            <mat-selection-list [multiple]="false" dense>
-                <mat-list-option value="0" selected>
-                    Example 1 (write)
-                </mat-list-option>
-                <mat-list-option value="1">
-                    Example 2 (write-tree)
-                </mat-list-option>
-                <mat-list-option value="2">
-                    Example 3 (write-sub-tree)
-                </mat-list-option>
-            </mat-selection-list>
+        <div *ngIf="option.selectedOptions.selected[0].value === 'documents'">
+            <ige-tree-permission formControlName="documents" fxLayout="row" fxLayoutGap="20px"></ige-tree-permission>
+        </div>
 
-            <div>
-                <ige-tree [showHeader]="false"></ige-tree>
-                <button mat-button>Hinzufügen</button>
-            </div>
+        <div *ngIf="option.selectedOptions.selected[0].value === 'addresses'">
+            <ige-tree-permission [address]="true" formControlName="addresses" fxLayout="row" fxLayoutGap="20px"></ige-tree-permission>
         </div>
     </div>
 
-</mat-dialog-content>
-<mat-dialog-actions>
-    <button mat-button mat-dialog-close>Abbrechen</button>
-    <div fxFlex></div>
-    <button mat-button color="primary"
-            [mat-dialog-close]="">Übernehmen
-    </button>
-</mat-dialog-actions>
+    <pre>
+        {{formGroup.value | json}}
+    </pre>
+
+</div>

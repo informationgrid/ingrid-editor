@@ -1,83 +1,89 @@
-import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit } from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {ModalService} from '../../services/modal/modal.service';
-import {ErrorService} from '../../services/error.service';
 import {RoleService} from '../../services/role/role.service';
 import {MenuService} from '../../menu/menu.service';
-import {Role, RoleAttribute} from '../../models/user-role';
+import {Role} from '../../models/user-role';
 import {TreeComponent} from '../../+form/sidebars/tree/tree.component';
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
 
-@Component( {
-  selector: 'role-gui',
+@Component({
+  selector: 'ige-group-manager',
   templateUrl: './role.component.html'
-} )
+})
 export class RoleComponent implements OnInit {
 
-  @ViewChild( 'loginRef', {static: true} ) loginRef: ElementRef;
-  @ViewChild( 'datasetTree', {static: true} ) datasetTree: TreeComponent;
+  @Input() doSave: EventEmitter<void>;
+  @Input() doDelete: EventEmitter<void>;
 
-  @Output() onRoleChange = new EventEmitter<Role[]>();
+  @Output() canSave = new EventEmitter<boolean>();
 
-  roles: Role[];
+  roles: Role[] = [];
   private pages: any[];
-  selectedRole = new Role();
+  selectedRole: Role; // = new Role();
   dialogTab = 'dataset';
 
   private isNewRole = false;
-  private markForSelection: any[] = [];
+  permissions: any;
 
   constructor(private modalService: ModalService,
               private roleService: RoleService,
-              private menuService: MenuService,
-              private errorService: ErrorService) {
+              private menuService: MenuService) {
   }
 
   ngOnInit() {
     this.fetchRoles();
 
-    this.pages = this.menuService.mainRoutes.map( item => {
+    this.pages = this.menuService.mainRoutes.map(item => {
       return {
         id: item.path,
         name: item.data.title
       };
-    } );
-    console.log( 'pages: ', this.pages );
+    });
+
+    if (this.doSave) {
+      this.doSave.subscribe(() => this.saveRole(this.selectedRole));
+    }
+
+    if (this.doDelete) {
+      this.doDelete.subscribe(() => this.deleteRole(this.selectedRole));
+    }
   }
 
   fetchRoles() {
-    this.roleService.getRoles().subscribe(
+    /*this.roleService.getRoles().subscribe(
       roles => {
         this.roles = roles;
         this.onRoleChange.next( roles );
       }
       // error => this.errorService.handleOwn('Problem fetching all roles', error)
-    );
+    );*/
   }
 
   addRole() {
-    this.modalService.showNotImplemented();
+    this.isNewRole = true;
+    this.selectedRole = new Role();
+    this.canSave.next(true);
   }
 
   loadRole(roleToLoad: Role) {
     this.isNewRole = false;
-    this.roleService.getRoleMapping( roleToLoad.name )
+    this.roleService.getRoleMapping(roleToLoad.name)
       .subscribe(
         role => {
           this.selectedRole = role;
-          console.log( 'selectedRole: ', this.selectedRole );
+          console.log('selectedRole: ', this.selectedRole);
         }
-        // error => this.errorService.handle( error )
       );
   }
 
   saveRole(role: Role) {
-    let observer: Observable<Role> = null;
+    let observer: Observable<Role>;
 
     if (this.isNewRole) {
-      observer = this.roleService.createRole( role );
+      observer = this.roleService.createRole(role);
 
     } else {
-      observer = this.roleService.saveRole( role );
+      observer = this.roleService.saveRole(role);
 
     }
 
@@ -85,53 +91,29 @@ export class RoleComponent implements OnInit {
     observer.subscribe(
       () => {
         this.isNewRole = false;
-        this.fetchRoles();
+        this.roles.push(this.selectedRole)
+        // this.fetchRoles();
       }, (err: any) => {
         if (err.status === 406) {
           if (this.isNewRole) {
-            this.modalService.showJavascriptError( 'Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedRole.name );
+            this.modalService.showJavascriptError('Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedRole.name);
           } else {
-            this.modalService.showJavascriptError( 'Es existiert kein Benutzer mit dem Login: ' + this.selectedRole.name );
+            this.modalService.showJavascriptError('Es existiert kein Benutzer mit dem Login: ' + this.selectedRole.name);
           }
         } else {
-          this.modalService.showJavascriptError( err, err.text() );
+          this.modalService.showJavascriptError(err, err.text());
         }
-      } );
-  }
-
-  rememberSelection(selection) {
-    this.markForSelection = selection;
-  }
-
-  addDataset(id: string) {
-    this.selectedRole.datasets.push( ...this.markForSelection );
-  }
-
-  addAttribute(key: string, value: string) {
-    this.selectedRole.attributes.push( {
-      id: key,
-      value: value
-    } );
-  }
-
-  removeDataset(id: string): void {
-    const pos = this.selectedRole.datasets.indexOf( id );
-    this.selectedRole.datasets.splice( pos, 1 );
-  }
-
-  removeAttribute(attribute: RoleAttribute): void {
-    const pos = this.selectedRole.attributes.indexOf( attribute );
-    this.selectedRole.attributes.splice( pos, 1 );
+      });
   }
 
   deleteRole(role: Role) {
-    this.roleService.deleteRole( role.id )
+    this.roleService.deleteRole(role.id)
       .subscribe(
         () => {
           this.selectedRole = null;
           this.fetchRoles();
         },
-        (err: any) => this.modalService.showJavascriptError( err, err.text() )
+        (err: any) => this.modalService.showJavascriptError(err, err.text())
       );
   }
 

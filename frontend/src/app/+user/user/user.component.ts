@@ -1,15 +1,16 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {ModalService} from '../../services/modal/modal.service';
 import {UserService} from '../../services/user/user.service';
-import {User} from '../user';
+import {FrontendUser, Permissions, User} from '../user';
 import {Observable} from 'rxjs';
-import {MatDialog} from '@angular/material/dialog';
-import {PermissionsComponent} from '../permissions/permissions.component';
 
 @Component({
   selector: 'ige-user-manager',
   templateUrl: './user.component.html',
   styles: [`
+    #formUser form {
+      padding: 20px;
+    }
     ::ng-deep .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
       flex: 1;
     }
@@ -17,25 +18,36 @@ import {PermissionsComponent} from '../permissions/permissions.component';
 })
 export class UserComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('loginRef', {static: true}) loginRef: ElementRef;
+  @Input() doSave: EventEmitter<void>;
+  @Input() doDelete: EventEmitter<void>;
+  @Output() canSave = new EventEmitter<boolean>();
+
+  @ViewChild('loginRef') loginRef: ElementRef;
 
   users: User[];
   currentTab: string;
 
-  selectedUser: User = new User();
+  selectedUser: FrontendUser;
 
   isNewUser = false;
 
   show = false;
 
-  constructor(private modalService: ModalService, private userService: UserService,
-              private dialog: MatDialog) {
+  constructor(private modalService: ModalService, private userService: UserService) {
   }
 
   ngOnInit() {
     this.currentTab = 'users';
 
     this.fetchUsers();
+
+    if (this.doSave) {
+      this.doSave.subscribe(() => this.saveUser(this.selectedUser));
+    }
+
+    if (this.doDelete) {
+      this.doDelete.subscribe(() => this.deleteUser(this.selectedUser.login));
+    }
   }
 
   fetchUsers() {
@@ -57,20 +69,21 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.userService.getUser(userToLoad.login)
       .subscribe(user => {
         this.selectedUser = user;
+        this.canSave.emit(true);
         console.log('selectedUser:', this.selectedUser);
       });
   }
 
   addUser() {
     this.isNewUser = true;
-    this.selectedUser = new User();
+    this.selectedUser = new FrontendUser();
     setTimeout(() => this.loginRef.nativeElement.focus(), 200);
   }
 
   deleteUser(login: string) {
     this.userService.deleteUser(login)
       .subscribe(() => {
-          this.selectedUser = new User();
+          this.selectedUser = new FrontendUser();
           this.fetchUsers();
         },
         (err: any) => this.modalService.showJavascriptError(err, err.text())
@@ -78,7 +91,9 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   saveUser(user: User) {
-    let observer: Observable<User> = null;
+    console.log('Save user');
+    return;
+    let observer: Observable<User>;
 
     // convert roles to numbers
     user.roles = user.roles.map(role => +role);
@@ -113,12 +128,8 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   }
 
-  choosePermissions() {
-    this.dialog.open(PermissionsComponent, {
-      minWidth: 1000,
-      minHeight: 700
-    }).afterClosed().subscribe(result => {
-      console.log(result);
-    });
+  updatePermissions(permissions: Permissions) {
+    this.selectedUser.permissions = permissions;
+    this.selectedUser = {...this.selectedUser};
   }
 }

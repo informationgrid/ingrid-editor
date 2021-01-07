@@ -2,7 +2,6 @@ import {Observable} from 'rxjs';
 import {ConfigService, Configuration} from '../config/config.service';
 import {HttpClient} from '@angular/common/http';
 import {Role} from '../../models/user-role';
-import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 
 @Injectable({
@@ -17,19 +16,19 @@ export class RoleDataService {
   }
 
   getRoleMapping(id: string): Observable<any> {
-    return this.http.get(this.configuration.backendUrl + 'roles/' + id);
+    return this.http.get(this.configuration.backendUrl + 'groups/' + id);
   }
 
   saveRole(role: Role): Observable<any> {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
-    return this.http.put(this.configuration.backendUrl + 'roles/' + role.name, role)
+    return this.http.put(this.configuration.backendUrl + 'groups/' + role.name, role)
       .pipe(
         // catchError(err => this.errorService.handle(err))
       );
   }
 
   createRole(role: Role): Observable<any> {
-    return this.http.post(this.configuration.backendUrl + 'roles/' + role.name, role)
+    return this.http.post(this.configuration.backendUrl + 'groups/' + role.name, role)
       .pipe(
         // catchError(err => this.errorService.handle(err))
       );
@@ -37,7 +36,7 @@ export class RoleDataService {
 
   // delete group metadata from backend
   deleteRole(id: string): Observable<any> {
-    return this.http.delete(this.configuration.backendUrl + 'roles/' + name)
+    return this.http.delete(this.configuration.backendUrl + 'groups/' + name)
       .pipe(
         // catchError(err => this.errorService.handle(err))
       );
@@ -49,41 +48,15 @@ export class RoleDataService {
   getGroups(): Observable<Role[]> {
 
     try {
-      return this.http.get( this.configuration.backendUrl + 'groups' )
-        .pipe(
-          map( (json: any[]) => {
-            const result: Role[] = [];
-            json.forEach( item => {
-              result.push( {
-                id: item.id,
-                name: item.name,
-                attributes: [],
-                datasets: [],
-                pages: null
-              } );
-            } );
-            return result;
-          } )
-        );
+      return this.http.get<Role[]>(this.configuration.backendUrl + 'groups');
     } catch (e) {
-      console.error( 'Could not get groups' );
-      return Observable.create( [] );
+      console.error('Could not get groups');
+      return Observable.create([]);
     }
   }
 
   getGroup(id: string): Observable<Role> {
-    return this.http.get( this.configuration.backendUrl + 'groups/' + id )
-      .pipe(
-        map( (json: any) => {
-          return {
-            id: json.id,
-            name: '?',
-            attributes: [],
-            datasets: [],
-            pages: null
-          };
-        } )
-      );
+    return this.http.get<Role>(this.configuration.backendUrl + 'groups/' + id);
   }
 
 }

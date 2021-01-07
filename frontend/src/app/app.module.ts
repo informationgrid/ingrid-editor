@@ -161,6 +161,9 @@ export function ConfigLoader(configService: ConfigService) {
         hasBackdrop: true
       }
     },
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {panelClass: 'mat-dialog-override'}
+    },
 
     // PLUGINS
     pluginProvider

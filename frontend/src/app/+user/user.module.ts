@@ -6,26 +6,34 @@ import {SharedModule} from '../shared/shared.module';
 import {AngularSplitModule} from 'angular-split';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RoleComponent} from './role/role.component';
 import {UserManagementComponent} from './user-management/user-management.component';
 import {PermissionsComponent} from './permissions/permissions.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {PermissionsShowComponent} from './user/permissions-show/permissions-show.component';
+import { TreePermissionComponent } from './permissions/tree-permission/tree-permission.component';
+import {MatMenuModule} from '@angular/material/menu';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {PermissionsDialogComponent} from './permissions/permissions-dialog.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    routing,
-    AngularSplitModule.forChild(),
-    SharedModule,
-    MatTabsModule,
-    MatFormFieldModule,
-    MatDialogModule,
-    FormsModule,
-    MatSlideToggleModule
-  ],
-  declarations: [UserComponent, RoleComponent, UserManagementComponent, PermissionsComponent]
+    imports: [
+        CommonModule,
+        routing,
+        AngularSplitModule,
+        SharedModule,
+        MatTabsModule,
+        MatFormFieldModule,
+        MatDialogModule,
+        FormsModule,
+        MatSlideToggleModule,
+        ReactiveFormsModule,
+        MatMenuModule,
+        NgSelectModule
+    ],
+  declarations: [UserComponent, RoleComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent, PermissionsShowComponent, TreePermissionComponent]
 })
 export class UserModule {
 

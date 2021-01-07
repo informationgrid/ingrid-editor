@@ -21,24 +21,19 @@ export class RoleService {
   }
 
   getRoleMapping(id: string): Observable<Role> {
-    // return this.apiService.getGroup( id );
     return this.dataService.getRoleMapping(id)
       .pipe(
         map(json => this.prepareRoles([json])[0])
-        // catchError(err => this.errorService.handle(err))
       );
   }
 
   prepareRoles(roles: any[]) {
     const result: Role[] = [];
     roles.forEach(role => {
-      result.push({
+      result.push(new Role({
         id: role._id,
-        name: role.name,
-        pages: role.pages ? role.pages : [],
-        attributes: role.attributes ? role.attributes : [],
-        datasets: role.datasets ? role.datasets : []
-      });
+        name: role.name
+      }));
     });
     return result;
   }

@@ -13,7 +13,7 @@
         </div>
     </as-split-area>
     <as-split-area [visible]="show" [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
-        <form (ngSubmit)="onSubmit()" #userForm="ngForm" fxLayout="column">
+        <form *ngIf="selectedUser" (ngSubmit)="onSubmit()" #userForm="ngForm" fxLayout="column">
             <mat-form-field>
                 <input matInput placeholder="Login" #loginRef type="text" [disabled]="!isNewUser" required autocomplete="off"
                        name="login"
@@ -33,17 +33,8 @@
                        name="password"
                        [(ngModel)]="selectedUser.password">
             </mat-form-field>
-            <div>
-                <label>Rechte</label>
-                <button mat-button (click)="choosePermissions()">Auswählen</button>
-            </div>
 
-            <button mat-button [disabled]="!userForm.form.valid"
-                    (click)="saveUser(selectedUser)">Speichern
-            </button>
-            <button mat-button [disabled]="isNewUser || usersList.selectedOptions.isEmpty()"
-                    (click)="deleteUser(selectedUser.login)">Löschen
-            </button>
+            <ige-permissions-show [data]="selectedUser.permissions" (update)="updatePermissions($event)"></ige-permissions-show>
         </form>
     </as-split-area>
 </as-split>

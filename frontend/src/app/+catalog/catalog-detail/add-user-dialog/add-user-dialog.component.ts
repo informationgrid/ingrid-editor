@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {User} from '../../../+user/user';
-import {map, share} from 'rxjs/operators';
+import {FrontendUser} from '../../../+user/user';
+import {map} from 'rxjs/operators';
 import {UserService} from '../../../services/user/user.service';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
@@ -12,9 +12,9 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 })
 export class AddUserDialogComponent implements OnInit {
 
-  users: Observable<User[]>;
+  users: Observable<FrontendUser[]>;
 
-  constructor(private userService: UserService, @Inject( MAT_DIALOG_DATA ) public data: any) {
+  constructor(private userService: UserService, @Inject(MAT_DIALOG_DATA) public data: any) {
 
   }
 

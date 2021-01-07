@@ -21,4 +21,10 @@ describe('PermissionsComponent', () => {
   it('should create', () => {
     expect(spectator).toBeTruthy();
   });
+
+  xit('should display activated permissions', () => {
+  });
+
+  xit('should output permissions as JSON', () => {
+  });
 });
