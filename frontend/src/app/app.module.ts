@@ -97,7 +97,7 @@ export function ConfigLoader(configService: ConfigService) {
     AnimationWrapperComponent],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
-    AngularSplitModule.forRoot(),
+    AngularSplitModule,
     MatTooltipModule,
     MatDialogModule,
     // ReactiveFormsModule,
