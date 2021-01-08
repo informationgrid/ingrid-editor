@@ -1,13 +1,9 @@
 import {Permissions} from '../+user/user';
 
-export class RoleAttribute {
-  id: string;
-  value: string;
-}
-
-export class Role {
+export class Group {
   id: string;
   name: string;
+  description: string;
   permissions: Permissions;
 
   constructor(values: Object = {}) {

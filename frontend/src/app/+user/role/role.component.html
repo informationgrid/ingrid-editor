@@ -4,14 +4,13 @@
 
     <!-- GROUP LIST -->
     <as-split-area [size]="25" id="sidebarRoles" class="container">
-        <mat-selection-list multiple="false">
-            <mat-list-option *ngFor="let role of roles" [class.disabled]="role === selectedRole"
-                             (click)="loadRole(role)">
-                <h4 mat-line>{{role.name}}</h4>
+        <mat-selection-list #groupList multiple="false" (selectionChange)="loadGroup($event.options[0].value)">
+            <mat-list-option *ngFor="let group of groups" [value]="group" [selected]="group.id === form.get('id').value">
+                <h4 mat-line>{{group.name}}</h4>
             </mat-list-option>
         </mat-selection-list>
         <div class="text-center">
-            <button mat-icon-button (click)="addRole()">
+            <button mat-icon-button (click)="addGroup()">
                 <mat-icon>add</mat-icon>
             </button>
         </div>
@@ -19,21 +18,34 @@
 
     <!-- GROUP DETAIL -->
     <as-split-area [size]="75" id="formRoles" class="container-fluid">
-        <div *ngIf="selectedRole; else noGroup" style="padding: 20px">
-            <!-- TITLE -->
-            <mat-form-field appearance="outline">
-                <mat-label>Name</mat-label>
-                <input matInput [(ngModel)]="selectedRole.name" name="name">
-            </mat-form-field>
+        <div style="padding: 20px">
 
-            <ige-permissions [data]="selectedRole.permissions" (permissions)="permissions = $event"></ige-permissions>
+            <div *ngIf="!groupList.selectedOptions.isEmpty(); else noGroup" fxLayout="column" [formGroup]="form">
+                <!-- TITLE -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name">
+                </mat-form-field>
 
-            <!-- NO GROUP SELECTED -->
+                <!-- DESCRIPTION -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Beschreibung</mat-label>
+                    <input matInput formControlName="description">
+                </mat-form-field>
+
+                <mat-divider style="margin: 5px 0 20px;"></mat-divider>
+
+                <ige-permissions [data]="permissions"
+                                 (permissions)="form.patchValue({permissions: $event})"></ige-permissions>
+
+                <!-- NO GROUP SELECTED -->
+            </div>
+
+            <ng-template #noGroup>
+                Keine Gruppe ausgewählt. Bitte eine auswählen oder neue erstellen.
+            </ng-template>
+
         </div>
-
-        <ng-template #noGroup>
-            Keine Gruppe ausgewählt. Bitte eine auswählen oder neue erstellen.
-        </ng-template>
     </as-split-area>
 </as-split>
 

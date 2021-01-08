@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs';
 import {ConfigService, Configuration} from '../config/config.service';
 import {HttpClient} from '@angular/common/http';
-import {Role} from '../../models/user-role';
+import {Group} from '../../models/user-role';
 import {Injectable} from '@angular/core';
 
 @Injectable({
@@ -15,19 +15,15 @@ export class RoleDataService {
     this.configuration = configService.getConfiguration();
   }
 
-  getRoleMapping(id: string): Observable<any> {
-    return this.http.get(this.configuration.backendUrl + 'groups/' + id);
-  }
-
-  saveRole(role: Role): Observable<any> {
+  saveRole(role: Group): Observable<any> {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
-    return this.http.put(this.configuration.backendUrl + 'groups/' + role.name, role)
+    return this.http.put(this.configuration.backendUrl + 'groups/' + role.id, role)
       .pipe(
         // catchError(err => this.errorService.handle(err))
       );
   }
 
-  createRole(role: Role): Observable<any> {
+  createRole(role: Group): Observable<any> {
     return this.http.post(this.configuration.backendUrl + 'groups/' + role.name, role)
       .pipe(
         // catchError(err => this.errorService.handle(err))
@@ -45,18 +41,18 @@ export class RoleDataService {
     // this.apiService.removeGroup(id);
   }
 
-  getGroups(): Observable<Role[]> {
+  getGroups(): Observable<Group[]> {
 
     try {
-      return this.http.get<Role[]>(this.configuration.backendUrl + 'groups');
+      return this.http.get<Group[]>(this.configuration.backendUrl + 'groups');
     } catch (e) {
       console.error('Could not get groups');
       return Observable.create([]);
     }
   }
 
-  getGroup(id: string): Observable<Role> {
-    return this.http.get<Role>(this.configuration.backendUrl + 'groups/' + id);
+  getGroup(id: string): Observable<Group> {
+    return this.http.get<Group>(this.configuration.backendUrl + 'groups/' + id);
   }
 
 }

@@ -1,5 +1,5 @@
 import {Observable, of} from 'rxjs';
-import {Role} from '../../models/user-role';
+import {Group} from '../../models/user-role';
 
 export class RoleMockService {
 
@@ -9,11 +9,11 @@ export class RoleMockService {
     });
   }
 
-  saveRole(role: Role): Observable<any> {
+  saveRole(role: Group): Observable<any> {
     return null;
   }
 
-  createRole(role: Role): Observable<any> {
+  createRole(role: Group): Observable<any> {
     return null;
   }
 

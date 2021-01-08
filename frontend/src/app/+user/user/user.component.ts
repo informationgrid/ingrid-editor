@@ -77,6 +77,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   addUser() {
     this.isNewUser = true;
     this.selectedUser = new FrontendUser();
+    this.canSave.emit(true);
     setTimeout(() => this.loginRef.nativeElement.focus(), 200);
   }
 
@@ -91,12 +92,11 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   saveUser(user: User) {
-    console.log('Save user');
-    return;
+    console.log('Save user', user);
     let observer: Observable<User>;
 
     // convert roles to numbers
-    user.roles = user.roles.map(role => +role);
+    // user.roles = user.roles.map(role => +role);
 
     if (this.isNewUser) {
       observer = this.userService.createUser(user);
@@ -119,7 +119,7 @@ export class UserComponent implements OnInit, AfterViewInit {
             this.modalService.showJavascriptError('Es existiert kein Benutzer mit dem Login: ' + this.selectedUser.login);
           }
         } else {
-          this.modalService.showJavascriptError(err, err.text());
+          throw err;
         }
       });
   }

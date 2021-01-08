@@ -14,7 +14,7 @@ import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
 import {ModalService} from '../../../services/modal/modal.service';
-import {Role} from '../../../models/user-role';
+import {Group} from '../../../models/user-role';
 import {IgeDocument} from '../../../models/ige-document';
 import {FormUtils} from '../../form.utils';
 import {TreeQuery} from '../../../store/tree/tree.query';
@@ -71,7 +71,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   error = false;
   model: IgeDocument | any = {};
 
-  userRoles: Role[];
+  userRoles: Group[];
 
   paddingWithHeader: string;
 

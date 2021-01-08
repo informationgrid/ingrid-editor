@@ -1,5 +1,5 @@
 import {Component, EventEmitter, OnInit} from '@angular/core';
-import {Role} from '../../models/user-role';
+import {Group} from '../../models/user-role';
 
 @Component({
   selector: 'ige-user-management',
@@ -8,10 +8,10 @@ import {Role} from '../../models/user-role';
 })
 export class UserManagementComponent implements OnInit {
 
-  roles: Role[];
+  roles: Group[];
   canSaveUser = false;
   canSaveGroup = false;
-  currentTab = 0;
+  currentTab = 1;
   doUserSave = new EventEmitter<void>();
   doGroupSave = new EventEmitter<void>();
 

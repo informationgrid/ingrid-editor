@@ -1,4 +1,4 @@
-<mat-tab-group [animationDuration]="'0ms'" (selectedIndexChange)="currentTab = $event">
+<mat-tab-group [animationDuration]="'0ms'" (selectedIndexChange)="currentTab = $event" [selectedIndex]="currentTab">
 
     <mat-tab label="Benutzer">
         <ige-user-manager [doSave]="doUserSave" (canSave)="canSaveUser = $event"></ige-user-manager>

@@ -1,10 +1,9 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ModalService} from '../../services/modal/modal.service';
 import {RoleService} from '../../services/role/role.service';
-import {MenuService} from '../../menu/menu.service';
-import {Role} from '../../models/user-role';
-import {TreeComponent} from '../../+form/sidebars/tree/tree.component';
+import {Group} from '../../models/user-role';
 import {Observable} from 'rxjs';
+import {FormBuilder, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'ige-group-manager',
@@ -17,107 +16,102 @@ export class RoleComponent implements OnInit {
 
   @Output() canSave = new EventEmitter<boolean>();
 
-  roles: Role[] = [];
-  private pages: any[];
-  selectedRole: Role; // = new Role();
-  dialogTab = 'dataset';
+  groups: Group[] = [];
+  // selectedGroup: Group;
 
-  private isNewRole = false;
+  private isNewGroup = false;
   permissions: any;
+  form: FormGroup;
 
   constructor(private modalService: ModalService,
-              private roleService: RoleService,
-              private menuService: MenuService) {
+              private fb: FormBuilder,
+              private groupService: RoleService) {
   }
 
   ngOnInit() {
-    this.fetchRoles();
-
-    this.pages = this.menuService.mainRoutes.map(item => {
-      return {
-        id: item.path,
-        name: item.data.title
-      };
-    });
+    this.fetchGroups();
 
     if (this.doSave) {
-      this.doSave.subscribe(() => this.saveRole(this.selectedRole));
+      this.doSave.subscribe(() => this.saveGroup(this.form.value));
     }
 
     if (this.doDelete) {
-      this.doDelete.subscribe(() => this.deleteRole(this.selectedRole));
+      this.doDelete.subscribe(() => this.deleteGroup(this.form.value));
     }
+
+    this.form = this.fb.group({
+      id: [],
+      _type: [],
+      name: [],
+      description: [],
+      permissions: []
+    });
+
+    this.form.valueChanges.subscribe(() => this.canSave.emit(this.form.dirty));
   }
 
-  fetchRoles() {
-    /*this.roleService.getRoles().subscribe(
-      roles => {
-        this.roles = roles;
-        this.onRoleChange.next( roles );
-      }
-      // error => this.errorService.handleOwn('Problem fetching all roles', error)
-    );*/
+  fetchGroups() {
+    this.groupService.getGroups().subscribe(groups => this.groups = groups);
   }
 
-  addRole() {
-    this.isNewRole = true;
-    this.selectedRole = new Role();
+  addGroup() {
+    this.isNewGroup = true;
+    // this.selectedGroup = new Group();
+    this.form.setValue({});
     this.canSave.next(true);
   }
 
-  loadRole(roleToLoad: Role) {
-    this.isNewRole = false;
-    this.roleService.getRoleMapping(roleToLoad.name)
-      .subscribe(
-        role => {
-          this.selectedRole = role;
-          console.log('selectedRole: ', this.selectedRole);
-        }
-      );
+  loadGroup(group: Group) {
+    this.isNewGroup = false;
+    this.groupService.getGroup(group.name)
+      .subscribe(fetchedGroup => {
+        this.form.reset();
+        this.form.setValue(fetchedGroup, {emitEvent: false});
+        this.permissions = fetchedGroup.permissions;
+      });
   }
 
-  saveRole(role: Role) {
-    let observer: Observable<Role>;
+  saveGroup(group: Group) {
+    let observer: Observable<Group>;
+    group.permissions = this.permissions;
 
-    if (this.isNewRole) {
-      observer = this.roleService.createRole(role);
+    if (this.isNewGroup) {
+      observer = this.groupService.createGroup(group);
 
     } else {
-      observer = this.roleService.saveRole(role);
+      observer = this.groupService.updateGroup(group);
 
     }
 
     // send request and handle error
     observer.subscribe(
       () => {
-        this.isNewRole = false;
-        this.roles.push(this.selectedRole)
-        // this.fetchRoles();
+        this.isNewGroup = false;
+        // this.form.reset();
+        this.form.markAsPristine();
+        this.fetchGroups();
       }, (err: any) => {
         if (err.status === 406) {
-          if (this.isNewRole) {
-            this.modalService.showJavascriptError('Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedRole.name);
+          if (this.isNewGroup) {
+            this.modalService.showJavascriptError('Es existiert bereits ein Benutzer mit dem Login: ' + this.form.get('name'));
           } else {
-            this.modalService.showJavascriptError('Es existiert kein Benutzer mit dem Login: ' + this.selectedRole.name);
+            this.modalService.showJavascriptError('Es existiert kein Benutzer mit dem Login: ' + this.form.get('name'));
           }
         } else {
-          this.modalService.showJavascriptError(err, err.text());
+          throw err;
         }
       });
   }
 
-  deleteRole(role: Role) {
-    this.roleService.deleteRole(role.id)
+  deleteGroup(group: Group) {
+    this.groupService.deleteGroup(group.id)
       .subscribe(
         () => {
-          this.selectedRole = null;
-          this.fetchRoles();
+          this.form.reset();
+          this.fetchGroups();
         },
         (err: any) => this.modalService.showJavascriptError(err, err.text())
       );
   }
 
-  createPermission(modal) {
-    modal.hide();
-  }
 }

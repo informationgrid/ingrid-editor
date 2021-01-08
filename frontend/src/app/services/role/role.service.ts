@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ErrorService} from '../error.service';
-import {Role} from '../../models/user-role';
+import {Group} from '../../models/user-role';
 import {Observable} from 'rxjs';
 import {RoleDataService} from './role-data.service';
 import {map} from 'rxjs/operators';
@@ -10,55 +10,36 @@ import {map} from 'rxjs/operators';
 })
 export class RoleService {
 
-  public activeUserRoles: Role[];
-
-  constructor(private dataService: RoleDataService,
-              private errorService: ErrorService) {
+  constructor(private dataService: RoleDataService) {
   }
 
-  getRoles(): Observable<Role[]> {
+  getGroups(): Observable<Group[]> {
     return this.dataService.getGroups();
   }
 
-  getRoleMapping(id: string): Observable<Role> {
-    return this.dataService.getRoleMapping(id)
+  getGroup(id: string): Observable<Group> {
+    return this.dataService.getGroup(id)
       .pipe(
-        map(json => this.prepareRoles([json])[0])
+        map(json => this.prepareGroup([json])[0])
       );
   }
 
-  prepareRoles(roles: any[]) {
-    const result: Role[] = [];
-    roles.forEach(role => {
-      result.push(new Role({
-        id: role._id,
-        name: role.name
-      }));
-    });
-    return result;
+  prepareGroup(groups: any[]) {
+    return groups.map(group => new Group(group));
   }
 
-  saveRole(role: Role): Observable<any> {
+  updateGroup(role: Group): Observable<any> {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
-    return this.dataService.saveRole(role)
-      .pipe(
-        // catchError(err => this.errorService.handle(err))
-      );
+    return this.dataService.saveRole(role);
   }
 
-  createRole(role: Role): Observable<any> {
-    return this.dataService.createRole(role)
-      .pipe(
-        // catchError(err => this.errorService.handle(err))
-      );
+  createGroup(role: Group): Observable<any> {
+    return this.dataService.createRole(role);
   }
 
   // delete group metadata from backend
-  deleteRole(id: string): Observable<any> {
-    return this.dataService.deleteRole(id)
-      .pipe(
-        // catchError(err => this.errorService.handle(err))
-      );
+  deleteGroup(id: string): Observable<any> {
+    return this.dataService.deleteRole(id);
 
     // TODO: also delete from keycloak
     // this.apiService.removeGroup(id);

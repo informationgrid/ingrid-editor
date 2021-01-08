@@ -51,8 +51,7 @@ export class PermissionsShowComponent implements OnInit {
 
   choosePermissions() {
     this.dialog.open(PermissionsDialogComponent, {
-      minWidth: 1000,
-      minHeight: 700,
+      minWidth: '80%',
       data: this._data
     }).afterClosed().subscribe(result => {
       if (result) {
