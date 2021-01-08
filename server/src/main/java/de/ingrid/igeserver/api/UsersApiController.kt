@@ -53,7 +53,7 @@ class UsersApiController : UsersApi {
     @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
     private val developmentMode = false
 
-    override fun createUser(id: String, user: User1): ResponseEntity<Void> {
+    override fun createUser(id: String, user: User): ResponseEntity<Void> {
 
         // do some magic!
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)

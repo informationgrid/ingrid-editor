@@ -118,12 +118,7 @@ class KeycloakService : UserManagementService {
     }
 
     private fun mapUser(user: UserRepresentation): User {
-        val mappedUser = User()
-        mappedUser.login = user.username
-        mappedUser.firstName = user.firstName
-        mappedUser.lastName = user.lastName
-        mappedUser.id = user.id
-        return mappedUser
+        return User(user.id, user.username, user.firstName, user.lastName)
     }
 
     private fun mapUsers(users: UserList): List<User> {

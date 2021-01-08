@@ -31,10 +31,7 @@ class KeycloakMockService : UserManagementService {
 
     override fun getUsers(principal: Principal?): List<User> {
         val mockUsers: MutableList<User> = ArrayList()
-        val user = User()
-        user.login = mockedLogin
-        user.firstName = mockedFirstName
-        user.lastName = mockedLastName
+        val user = User("1", mockedLogin, mockedFirstName, mockedLastName)
         mockUsers.add(user)
         return mockUsers
     }
@@ -52,11 +49,7 @@ class KeycloakMockService : UserManagementService {
     }
 
     override fun getUser(principal: Principal?, login: String): User {
-        val user = User()
-        user.login = mockedLogin
-        user.firstName = mockedFirstName
-        user.lastName = mockedLastName
-        return user
+        return User("1", mockedLogin, mockedFirstName, mockedLastName)
     }
 
     override fun getCurrentPrincipal(): Principal? {
