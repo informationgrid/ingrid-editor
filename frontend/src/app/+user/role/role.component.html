@@ -19,8 +19,7 @@
     <!-- GROUP DETAIL -->
     <as-split-area [size]="75" id="formRoles" class="container-fluid">
         <div style="padding: 20px">
-
-            <div *ngIf="!groupList.selectedOptions.isEmpty(); else noGroup" fxLayout="column" [formGroup]="form">
+            <div *ngIf="!groupList.selectedOptions.isEmpty() || isNewGroup; else noGroup" fxLayout="column" [formGroup]="form">
                 <!-- TITLE -->
                 <mat-form-field appearance="outline">
                     <mat-label>Name</mat-label>
@@ -36,7 +35,7 @@
                 <mat-divider style="margin: 5px 0 20px;"></mat-divider>
 
                 <ige-permissions [data]="permissions"
-                                 (permissions)="form.patchValue({permissions: $event})"></ige-permissions>
+                                 (permissions)="updatePermissions($event)"></ige-permissions>
 
                 <!-- NO GROUP SELECTED -->
             </div>

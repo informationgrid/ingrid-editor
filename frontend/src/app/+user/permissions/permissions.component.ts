@@ -67,7 +67,9 @@ export class PermissionsComponent implements OnInit {
   }
 
   updateForm() {
-    this.formGroup.setValue(this._data);
+    this.formGroup.reset();
+    // const newValue = Object.assign(this.formGroup.value, this._data);
+    this.formGroup.patchValue(this._data);
   }
 
 }

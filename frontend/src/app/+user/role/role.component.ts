@@ -2,8 +2,10 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ModalService} from '../../services/modal/modal.service';
 import {RoleService} from '../../services/role/role.service';
 import {Group} from '../../models/user-role';
-import {Observable} from 'rxjs';
+import {merge, Observable, Subject} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import {Permissions} from '../user';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'ige-group-manager',
@@ -17,11 +19,19 @@ export class RoleComponent implements OnInit {
   @Output() canSave = new EventEmitter<boolean>();
 
   groups: Group[] = [];
-  // selectedGroup: Group;
 
-  private isNewGroup = false;
-  permissions: any;
+  isNewGroup = false;
+  permissions: Permissions;
   form: FormGroup;
+
+  initialValue = {
+    id: '',
+    _type: '',
+    name: '',
+    description: '',
+    permissions: []
+  }
+  manualDirtySet = new Subject<boolean>();
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
@@ -47,7 +57,11 @@ export class RoleComponent implements OnInit {
       permissions: []
     });
 
-    this.form.valueChanges.subscribe(() => this.canSave.emit(this.form.dirty));
+    merge(this.form.valueChanges, this.manualDirtySet)
+      .pipe(
+        map(() => this.form.dirty)
+      )
+      .subscribe(dirty => this.canSave.emit(dirty));
   }
 
   fetchGroups() {
@@ -56,9 +70,9 @@ export class RoleComponent implements OnInit {
 
   addGroup() {
     this.isNewGroup = true;
-    // this.selectedGroup = new Group();
-    this.form.setValue({});
-    this.canSave.next(true);
+    this.permissions = new Permissions();
+    this.form.setValue(this.initialValue);
+    this.manualDirtySet.next(true);
   }
 
   loadGroup(group: Group) {
@@ -66,14 +80,14 @@ export class RoleComponent implements OnInit {
     this.groupService.getGroup(group.name)
       .subscribe(fetchedGroup => {
         this.form.reset();
-        this.form.setValue(fetchedGroup, {emitEvent: false});
+        this.form.setValue(fetchedGroup);
+        this.manualDirtySet.next(false);
         this.permissions = fetchedGroup.permissions;
       });
   }
 
   saveGroup(group: Group) {
     let observer: Observable<Group>;
-    group.permissions = this.permissions;
 
     if (this.isNewGroup) {
       observer = this.groupService.createGroup(group);
@@ -87,8 +101,7 @@ export class RoleComponent implements OnInit {
     observer.subscribe(
       () => {
         this.isNewGroup = false;
-        // this.form.reset();
-        this.form.markAsPristine();
+        // setTimeout(() => this.form.markAsPristine(), 1000);
         this.fetchGroups();
       }, (err: any) => {
         if (err.status === 406) {
@@ -114,4 +127,8 @@ export class RoleComponent implements OnInit {
       );
   }
 
+  updatePermissions(newPermissions: Permissions) {
+    this.form.patchValue({permissions: newPermissions});
+    this.manualDirtySet.next(true);
+  }
 }
