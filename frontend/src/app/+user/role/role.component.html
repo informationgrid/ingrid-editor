@@ -34,8 +34,7 @@
 
                 <mat-divider style="margin: 5px 0 20px;"></mat-divider>
 
-                <ige-permissions [data]="permissions"
-                                 (permissions)="updatePermissions($event)"></ige-permissions>
+                <ige-permissions formControlName="permissions"></ige-permissions>
 
                 <!-- NO GROUP SELECTED -->
             </div>
@@ -44,6 +43,7 @@
                 Keine Gruppe ausgewählt. Bitte eine auswählen oder neue erstellen.
             </ng-template>
 
+            <pre>{{form.value | json}}</pre>
         </div>
     </as-split-area>
 </as-split>

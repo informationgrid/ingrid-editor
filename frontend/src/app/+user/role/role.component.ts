@@ -29,7 +29,7 @@ export class RoleComponent implements OnInit {
     _type: '',
     name: '',
     description: '',
-    permissions: []
+    permissions: new Permissions()
   }
   manualDirtySet = new Subject<boolean>();
 

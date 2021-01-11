@@ -6,15 +6,15 @@
         <span class="text">Berechtigungen</span>
     </h2>
 </div>
-<mat-dialog-content>
+<mat-dialog-content [formGroup]="form">
 
-    <ige-permissions [data]="permissions" (permissions)="newPermissions = $event"></ige-permissions>
+    <ige-permissions formControlName="permissions"></ige-permissions>
 
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Abbrechen</button>
     <div fxFlex></div>
     <button mat-button color="primary"
-            [mat-dialog-close]="newPermissions">Übernehmen
+            [mat-dialog-close]="form.value.permissions">Übernehmen
     </button>
 </mat-dialog-actions>

@@ -37,7 +37,7 @@ export class TreePermissionComponent implements ControlValueAccessor {
   set value(val) {
 
     // TODO: fetch titles from tree nodes
-    this.val = val;
+    this.val = val ?? [];
     if (this.onChange) {
       this.onChange(val);
     }

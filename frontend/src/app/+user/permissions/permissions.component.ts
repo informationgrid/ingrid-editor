@@ -1,42 +1,29 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, forwardRef, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {PagePermission} from './page-permission';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {Permissions} from '../user';
+import {ControlValueAccessor, FormBuilder, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
   selector: 'ige-permissions',
   templateUrl: './permissions.component.html',
-  styleUrls: ['./permissions.component.scss']
+  styleUrls: ['./permissions.component.scss'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => PermissionsComponent),
+      multi: true
+    }
+  ]
 })
-export class PermissionsComponent implements OnInit {
+export class PermissionsComponent implements OnInit, ControlValueAccessor {
 
-  // @Input() data: Permissions;
-
-  @Output() permissions = new EventEmitter<any>();
+  private onChange: (x: any) => {};
+  private onTouch: (x: any) => {};
 
   pagePermissions: PagePermission[];
   formGroup: FormGroup;
-
-  private _data: Permissions;
-  @Input() set data(perms: Permissions) {
-    this._data = perms;
-    if (this.formGroup) {
-      this.updateForm()
-    }
-/*    this.formGroup = this.fb.group({
-      pages: this.fb.group(this.router.config.filter(route => route.data).reduce((prev, curr) => {
-        prev[curr.path] = this.fb.control(this.data.pages[curr.path] === true);
-        return prev;
-      }, {})),
-      actions: this.fb.group({demo: [this.data.actions.demo], test: [this.data.actions.test]}),
-      documents: this.fb.control(this.data.documents),
-      addresses: this.fb.control(this.data.addresses)
-    })*/;
-  }
-
 
   constructor(private router: Router,
               private fb: FormBuilder) {
@@ -53,23 +40,28 @@ export class PermissionsComponent implements OnInit {
       addresses: this.fb.control([])
     });
 
-    if (this._data) {
-      this.updateForm();
-    }
-
     this.formGroup.valueChanges
       .pipe(untilDestroyed(this))
-      .subscribe(value => this.permissions.next(value));
+      .subscribe(value => this.onChange && this.onChange(value));
 
     this.pagePermissions = this.router.config
       .filter(route => route.data)
       .map(route => new PagePermission(route.path, route.data.title));
   }
 
-  updateForm() {
-    this.formGroup.reset();
-    // const newValue = Object.assign(this.formGroup.value, this._data);
-    this.formGroup.patchValue(this._data);
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouch = fn;
+  }
+
+  writeValue(obj: any): void {
+    if (obj) {
+      this.formGroup.reset();
+      this.formGroup.patchValue(obj);
+    }
   }
 
 }
