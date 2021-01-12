@@ -1,8 +1,7 @@
 <as-split>
-    <as-split-area [visible]="show" [size]="25" id="sidebarUser" class="split-pane-content-primary container">
-        <mat-selection-list #usersList multiple="false">
-            <mat-list-option *ngFor="let user of users" [class.disabled]="user === selectedUser"
-                           (click)="loadUser(user)">
+    <as-split-area [size]="25" id="sidebarUser" class="split-pane-content-primary container">
+        <mat-selection-list #userSelect multiple="false" (selectionChange)="loadUser($event.options[0].value)">
+            <mat-list-option *ngFor="let user of users" [value]="user">
                 <h4 mat-line>{{user.login}}</h4>
             </mat-list-option>
         </mat-selection-list>
@@ -12,29 +11,42 @@
             </button>
         </div>
     </as-split-area>
-    <as-split-area [visible]="show" [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
-        <form *ngIf="selectedUser" (ngSubmit)="onSubmit()" #userForm="ngForm" fxLayout="column">
-            <mat-form-field>
-                <input matInput placeholder="Login" #loginRef type="text" [disabled]="!isNewUser" required autocomplete="off"
-                       name="login"
-                       [(ngModel)]="selectedUser.login">
+    <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
+        <form *ngIf="!userSelect.selectedOptions.isEmpty()" fxLayout="column" [formGroup]="form">
+            <mat-form-field appearance="outline">
+                <mat-label>Login</mat-label>
+                <input matInput #loginRef formControlName="login" required autocomplete="off">
             </mat-form-field>
-            <mat-form-field>
-                <input matInput placeholder="Vorname" autocomplete="off" [(ngModel)]="selectedUser.firstName"
-                       name="firstName">
+            <mat-form-field appearance="outline">
+                <mat-label>Rolle</mat-label>
+                <input matInput formControlName="role" required>
             </mat-form-field>
-            <mat-form-field>
-                <input matInput placeholder="Nachname" autocomplete="off" [(ngModel)]="selectedUser.lastName"
-                       name="lastName">
+            <mat-form-field appearance="outline">
+                <mat-label>Vorname</mat-label>
+                <input matInput autocomplete="off" formControlName="firstName">
             </mat-form-field>
-            <mat-form-field>
-                <input matInput placeholder="Passwort" type="password" autocomplete="new-password"
+            <mat-form-field appearance="outline">
+                <mat-label>Nachname</mat-label>
+                <input matInput autocomplete="off" formControlName="lastName">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Passwort</mat-label>
+                <input matInput type="password" autocomplete="new-password"
                        [required]="isNewUser"
-                       name="password"
-                       [(ngModel)]="selectedUser.password">
+                       formControlName="password">
             </mat-form-field>
 
-            <ige-permissions-show [data]="selectedUser.permissions" (update)="updatePermissions($event)"></ige-permissions-show>
+            <mat-form-field appearance="outline">
+                <mat-label>Gruppen</mat-label>
+                <mat-select multiple formControlName="groups">
+                    <mat-option *ngFor="let group of groups | async" [value]="group.id">
+                        {{group.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+<!--            <pre>{{form.value | json}}</pre>-->
+<!--            <ige-permissions-show [data]="selectedUser.permissions" (update)="updatePermissions($event)"></ige-permissions-show>-->
         </form>
     </as-split-area>
 </as-split>

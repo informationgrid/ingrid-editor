@@ -3,7 +3,11 @@ import {ModalService} from '../../services/modal/modal.service';
 import {UserService} from '../../services/user/user.service';
 import {FrontendUser, Permissions, User} from '../user';
 import {Observable} from 'rxjs';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {RoleService} from '../../services/role/role.service';
+import {FormBuilder, FormGroup} from '@angular/forms';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-user-manager',
   templateUrl: './user.component.html',
@@ -11,12 +15,13 @@ import {Observable} from 'rxjs';
     #formUser form {
       padding: 20px;
     }
+
     ::ng-deep .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
       flex: 1;
     }
   `]
 })
-export class UserComponent implements OnInit, AfterViewInit {
+export class UserComponent implements OnInit {
 
   @Input() doSave: EventEmitter<void>;
   @Input() doDelete: EventEmitter<void>;
@@ -26,14 +31,17 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   users: User[];
   currentTab: string;
+  form: FormGroup;
 
   selectedUser: FrontendUser;
 
   isNewUser = false;
 
-  show = false;
+  groups = this.groupService.getGroups();
 
-  constructor(private modalService: ModalService, private userService: UserService) {
+  constructor(private modalService: ModalService,
+              private fb: FormBuilder,
+              private userService: UserService, private groupService: RoleService) {
   }
 
   ngOnInit() {
@@ -41,26 +49,32 @@ export class UserComponent implements OnInit, AfterViewInit {
 
     this.fetchUsers();
 
+    this.form = this.fb.group({
+      login: this.fb.control({value: '', disabled: true}),
+      role: this.fb.control({value: '', disabled: true}),
+      firstName: [],
+      lastName: [],
+      password: [],
+      groups: this.fb.control([])
+    });
+
     if (this.doSave) {
-      this.doSave.subscribe(() => this.saveUser(this.selectedUser));
+      this.doSave
+        .pipe(untilDestroyed(this))
+        .subscribe(() => this.saveUser());
     }
 
     if (this.doDelete) {
-      this.doDelete.subscribe(() => this.deleteUser(this.selectedUser.login));
+      this.doDelete
+        .pipe(untilDestroyed(this))
+        .subscribe(() => this.deleteUser(this.selectedUser.login));
     }
   }
 
   fetchUsers() {
     this.userService.getUsers().subscribe(
       users => this.users = users ? users : []
-      // error => this.errorService.handleOwn('Problem fetching all user', error)
     );
-  }
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.show = true;
-    }, 0);
   }
 
   loadUser(userToLoad: User) {
@@ -68,7 +82,12 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.isNewUser = false;
     this.userService.getUser(userToLoad.login)
       .subscribe(user => {
-        this.selectedUser = user;
+        const mergedUser = Object.assign({
+          password: '',
+          groups: [],
+          role: 'Keiner Rolle zugeordnet'
+        }, user);
+        this.form.setValue(mergedUser);
         this.canSave.emit(true);
         console.log('selectedUser:', this.selectedUser);
       });
@@ -91,13 +110,13 @@ export class UserComponent implements OnInit, AfterViewInit {
       );
   }
 
-  saveUser(user: User) {
-    console.log('Save user', user);
+  saveUser() {
     let observer: Observable<User>;
 
     // convert roles to numbers
     // user.roles = user.roles.map(role => +role);
 
+    const user = this.form.getRawValue();
     if (this.isNewUser) {
       observer = this.userService.createUser(user);
 
@@ -124,12 +143,4 @@ export class UserComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onSubmit() {
-
-  }
-
-  updatePermissions(permissions: Permissions) {
-    this.selectedUser.permissions = permissions;
-    this.selectedUser = {...this.selectedUser};
-  }
 }

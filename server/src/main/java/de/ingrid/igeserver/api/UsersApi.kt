@@ -41,6 +41,7 @@ interface UsersApi {
         )]
     )
     fun createUser(
+        principal: Principal?,
         @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
         @Parameter(
             description = "Save the user data into the database.",
@@ -64,6 +65,7 @@ interface UsersApi {
         )]
     )
     fun deleteUser(
+        principal: Principal?,
         @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String
     ): ResponseEntity<Void>
 
@@ -97,6 +99,7 @@ interface UsersApi {
         ), ApiResponse(responseCode = "400", description = "A user already exists with the given login")]
     )
     fun updateUser(
+        principal: Principal?,
         @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
         @Parameter(
             description = "Save the user data into the database.",

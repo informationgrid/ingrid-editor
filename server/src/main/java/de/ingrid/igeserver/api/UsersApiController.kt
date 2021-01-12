@@ -10,6 +10,7 @@ import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -34,6 +35,9 @@ class UsersApiController : UsersApi {
 
     @Autowired
     private lateinit var catalogService: CatalogService
+    
+    @Autowired
+    private lateinit var groupService: GroupService
 
     @Autowired
     private lateinit var dbService: DBApi
@@ -53,28 +57,32 @@ class UsersApiController : UsersApi {
     @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
     private val developmentMode = false
 
-    override fun createUser(id: String, user: User): ResponseEntity<Void> {
+    override fun createUser(principal: Principal?, id: String, user: User): ResponseEntity<Void> {
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        dbService.acquireCatalog(dbId).use {
+            return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+//            return ResponseEntity(HttpStatus.OK)
+        }
+    }
+
+    override fun deleteUser(principal: Principal?, id: String): ResponseEntity<Void> {
 
         // do some magic!
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
     }
 
-    override fun deleteUser(id: String): ResponseEntity<Void> {
+    override fun getUser(principal: Principal?, userId: String): ResponseEntity<User> {
 
-        // do some magic!
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
-    }
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        
+        dbService.acquireCatalog(dbId).use {
+            val user = keycloakService.getUser(principal, userId)
+            user.groups = catalogService.getGroupsForUser(userId)
 
-    fun get(): ResponseEntity<Void> {
-
-        // do some magic!
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
-    }
-
-    override fun getUser(principal: Principal?, id: String): ResponseEntity<User> {
-
-        val user = keycloakService.getUser(principal, id)
-        return ResponseEntity.ok(user)
+            return ResponseEntity.ok(user)
+        }
+        
     }
 
     override fun list(principal: Principal?, res: AccessTokenResponse): ResponseEntity<List<User>> {
@@ -86,10 +94,16 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(users)
     }
 
-    override fun updateUser(id: String, user: User): ResponseEntity<Void> {
+    override fun updateUser(principal: Principal?, id: String, user: User): ResponseEntity<Void> {
 
-        // do some magic!
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        dbService.acquireCatalog(dbId).use {
+            catalogService.setGroupsForUser(id, user.groups.toList())
+//            groupService.setGroupsForUser(id, user.groups)
+            return ResponseEntity.ok().build()
+        }
+        
     }
 
     override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
@@ -103,10 +117,8 @@ class UsersApiController : UsersApi {
         val assignedCatalogs: MutableList<Catalog> = ArrayList()
         for (dbId in dbIds) {
             val catalogById = catalogService.getCatalogById(dbId)
-            if (catalogById != null) {
-                assignedCatalogs.add(catalogById)
-                dbIdsValid.add(dbId)
-            }
+            assignedCatalogs.add(catalogById)
+            dbIdsValid.add(dbId)
         }
 
         // clean up catalog association if one was deleted?

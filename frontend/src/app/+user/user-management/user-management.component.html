@@ -1,13 +1,13 @@
 <mat-tab-group [animationDuration]="'0ms'" (selectedIndexChange)="currentTab = $event" [selectedIndex]="currentTab">
 
     <mat-tab label="Benutzer">
-        <ige-user-manager [doSave]="doUserSave" (canSave)="canSaveUser = $event"></ige-user-manager>
+        <ige-user-manager [doSave]="doUserSave" [doDelete]="doUserDelete" (canSave)="canSaveUser = $event"></ige-user-manager>
     </mat-tab>
 
     <mat-tab label="Gruppen">
         <!-- Lazy load tab content to correctly initialize split component -->
         <ng-template matTabContent>
-            <ige-group-manager [doSave]="doGroupSave" (canSave)="canSaveGroup = $event"></ige-group-manager>
+            <ige-group-manager [doSave]="doGroupSave" [doDelete]="doGroupDelete" (canSave)="canSaveGroup = $event"></ige-group-manager>
         </ng-template>
     </mat-tab>
 

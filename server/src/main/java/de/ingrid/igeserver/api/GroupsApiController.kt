@@ -29,8 +29,12 @@ class GroupsApiController @Autowired constructor(
     }
 
     override fun deleteGroup(principal: Principal?, id: String): ResponseEntity<Void> {
-        // do some magic!
-        return ResponseEntity(HttpStatus.OK)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        dbService.acquireCatalog(dbId).use {
+            groupService.remove(id)
+            return ResponseEntity(HttpStatus.OK)
+        }
     }
 
     override fun getGroup(principal: Principal?, id: String): ResponseEntity<Group> {

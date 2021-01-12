@@ -17,28 +17,16 @@ export class RoleDataService {
 
   saveRole(role: Group): Observable<any> {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
-    return this.http.put(this.configuration.backendUrl + 'groups/' + role.id, role)
-      .pipe(
-        // catchError(err => this.errorService.handle(err))
-      );
+    return this.http.put(this.configuration.backendUrl + 'groups/' + role.id, role);
   }
 
   createRole(role: Group): Observable<any> {
-    return this.http.post(this.configuration.backendUrl + 'groups/' + role.name, role)
-      .pipe(
-        // catchError(err => this.errorService.handle(err))
-      );
+    return this.http.post(this.configuration.backendUrl + 'groups/' + role.name, role);
   }
 
   // delete group metadata from backend
   deleteRole(id: string): Observable<any> {
-    return this.http.delete(this.configuration.backendUrl + 'groups/' + name)
-      .pipe(
-        // catchError(err => this.errorService.handle(err))
-      );
-
-    // TODO: also delete from keycloak
-    // this.apiService.removeGroup(id);
+    return this.http.delete(this.configuration.backendUrl + 'groups/' + id);
   }
 
   getGroups(): Observable<Group[]> {

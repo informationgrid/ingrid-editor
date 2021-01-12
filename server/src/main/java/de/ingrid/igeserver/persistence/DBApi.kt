@@ -110,7 +110,7 @@ interface DBApi {
      * begin, commit and rollback transactions.
      * NOTE If the name parameter is significant or ignored depends on the implementation
      */
-    fun acquireDatabase(name: String): Closeable
+    fun acquireDatabase(name: String = ""): Closeable
 
     /**
      * Start a transaction in the acquired session

@@ -11,9 +11,11 @@ export class UserManagementComponent implements OnInit {
   roles: Group[];
   canSaveUser = false;
   canSaveGroup = false;
-  currentTab = 1;
+  currentTab = 0;
   doUserSave = new EventEmitter<void>();
+  doUserDelete = new EventEmitter<void>();
   doGroupSave = new EventEmitter<void>();
+  doGroupDelete = new EventEmitter<void>();
 
   constructor() {
   }
@@ -30,7 +32,11 @@ export class UserManagementComponent implements OnInit {
   }
 
   remove() {
-
+    if (this.currentTab === 0) {
+      this.doUserDelete.emit();
+    } else {
+      this.doGroupDelete.emit();
+    }
   }
 
   save() {

@@ -15,8 +15,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {PermissionsShowComponent} from './user/permissions-show/permissions-show.component';
 import { TreePermissionComponent } from './permissions/tree-permission/tree-permission.component';
 import {MatMenuModule} from '@angular/material/menu';
-import {NgSelectModule} from '@ng-select/ng-select';
 import {PermissionsDialogComponent} from './permissions/permissions-dialog.component';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
     imports: [
@@ -31,9 +31,11 @@ import {PermissionsDialogComponent} from './permissions/permissions-dialog.compo
         MatSlideToggleModule,
         ReactiveFormsModule,
         MatMenuModule,
-        NgSelectModule
+        MatSelectModule
     ],
-  declarations: [UserComponent, RoleComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent, PermissionsShowComponent, TreePermissionComponent]
+  declarations: [
+    UserComponent, RoleComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent,
+    PermissionsShowComponent, TreePermissionComponent]
 })
 export class UserModule {
 

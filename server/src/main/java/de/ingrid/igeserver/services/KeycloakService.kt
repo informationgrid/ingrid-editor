@@ -118,7 +118,7 @@ class KeycloakService : UserManagementService {
     }
 
     private fun mapUser(user: UserRepresentation): User {
-        return User(user.id, user.username, user.firstName, user.lastName)
+        return User(user.username, user.firstName, user.lastName, "", emptyList())
     }
 
     private fun mapUsers(users: UserList): List<User> {

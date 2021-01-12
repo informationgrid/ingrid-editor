@@ -18,13 +18,13 @@ export class FrontendUser extends User {
   constructor(user?: BackendUser) {
     super(user);
 
-    const perms = user?.permissions;
+    /*const perms = user?.permissions;
     this.permissions = {
       pages: perms?.pages ?? {},
       actions: perms?.actions ?? {},
       documents: perms?.documents ?? [],
       addresses: perms?.addresses ?? []
-    };
+    };*/
   }
 }
 

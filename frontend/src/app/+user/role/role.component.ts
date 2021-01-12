@@ -5,8 +5,10 @@ import {Group} from '../../models/user-role';
 import {merge, Observable, Subject} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Permissions} from '../user';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-group-manager',
   templateUrl: './role.component.html'
@@ -39,14 +41,18 @@ export class RoleComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fetchGroups();
+    this.fetchGroups().subscribe();
 
     if (this.doSave) {
-      this.doSave.subscribe(() => this.saveGroup(this.form.value));
+      this.doSave
+        .pipe(untilDestroyed(this))
+        .subscribe(() => this.saveGroup(this.form.value));
     }
 
     if (this.doDelete) {
-      this.doDelete.subscribe(() => this.deleteGroup(this.form.value));
+      this.doDelete
+        .pipe(untilDestroyed(this))
+        .subscribe(() => this.deleteGroup(this.form.value));
     }
 
     this.form = this.fb.group({
@@ -64,8 +70,9 @@ export class RoleComponent implements OnInit {
       .subscribe(dirty => this.canSave.emit(dirty));
   }
 
-  fetchGroups() {
-    this.groupService.getGroups().subscribe(groups => this.groups = groups);
+  fetchGroups(): Observable<Group[]> {
+    return this.groupService.getGroups()
+      .pipe(tap(groups => this.groups = groups));
   }
 
   addGroup() {
@@ -101,8 +108,9 @@ export class RoleComponent implements OnInit {
     observer.subscribe(
       () => {
         this.isNewGroup = false;
-        // setTimeout(() => this.form.markAsPristine(), 1000);
-        this.fetchGroups();
+        this.fetchGroups()
+          .pipe(tap(() => this.form.markAsPristine()))
+          .subscribe();
       }, (err: any) => {
         if (err.status === 406) {
           if (this.isNewGroup) {
@@ -120,10 +128,10 @@ export class RoleComponent implements OnInit {
     this.groupService.deleteGroup(group.id)
       .subscribe(
         () => {
-          this.form.reset();
-          this.fetchGroups();
-        },
-        (err: any) => this.modalService.showJavascriptError(err, err.text())
+          this.fetchGroups()
+            .pipe(tap(() => this.form.reset()))
+            .subscribe();
+        }
       );
   }
 

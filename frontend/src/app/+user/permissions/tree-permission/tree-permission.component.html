@@ -14,14 +14,6 @@
 </div>
 
 <div>
-
-    <ng-select [items]="groups"
-               bindLabel="name"
-               bindValue="id"
-               appearance="outline"
-               [(ngModel)]="selectedGroup">
-    </ng-select>
-
     <ige-tree (selected)="selection = $event"
               [forAddresses]="address"
               [disabledCondition]="disableTreeNodes"
