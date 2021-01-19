@@ -1,11 +1,14 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {ModalService} from '../../services/modal/modal.service';
 import {UserService} from '../../services/user/user.service';
-import {FrontendUser, Permissions, User} from '../user';
+import {User} from '../user';
 import {Observable} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {RoleService} from '../../services/role/role.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {NewUserDialogComponent} from './new-user-dialog/new-user-dialog.component';
+import {ConfirmDialogComponent} from '../../dialogs/confirm/confirm-dialog.component';
 
 @UntilDestroy()
 @Component({
@@ -25,7 +28,7 @@ export class UserComponent implements OnInit {
 
   @Input() doSave: EventEmitter<void>;
   @Input() doDelete: EventEmitter<void>;
-  @Output() canSave = new EventEmitter<boolean>();
+  @Output() canSave = new EventEmitter<FormGroup>();
 
   @ViewChild('loginRef') loginRef: ElementRef;
 
@@ -33,14 +36,14 @@ export class UserComponent implements OnInit {
   currentTab: string;
   form: FormGroup;
 
-  selectedUser: FrontendUser;
-
   isNewUser = false;
 
+  roles = this.userService.availableRoles;
   groups = this.groupService.getGroups();
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
+              private dialog: MatDialog,
               private userService: UserService, private groupService: RoleService) {
   }
 
@@ -50,13 +53,14 @@ export class UserComponent implements OnInit {
     this.fetchUsers();
 
     this.form = this.fb.group({
-      login: this.fb.control({value: '', disabled: true}),
-      role: this.fb.control({value: '', disabled: true}),
-      firstName: [],
-      lastName: [],
-      password: [],
+      login: this.fb.control({value: '', disabled: true}, Validators.required),
+      role: this.fb.control({value: '', disabled: true}, Validators.required),
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', Validators.required],
       groups: this.fb.control([])
     });
+    this.canSave.emit(this.form);
 
     if (this.doSave) {
       this.doSave
@@ -67,7 +71,7 @@ export class UserComponent implements OnInit {
     if (this.doDelete) {
       this.doDelete
         .pipe(untilDestroyed(this))
-        .subscribe(() => this.deleteUser(this.selectedUser.login));
+        .subscribe(() => this.deleteUser(this.form.getRawValue().login));
     }
   }
 
@@ -83,31 +87,49 @@ export class UserComponent implements OnInit {
     this.userService.getUser(userToLoad.login)
       .subscribe(user => {
         const mergedUser = Object.assign({
-          password: '',
+          email: '',
           groups: [],
           role: 'Keiner Rolle zugeordnet'
         }, user);
         this.form.setValue(mergedUser);
-        this.canSave.emit(true);
-        console.log('selectedUser:', this.selectedUser);
+        // this.canSave.emit(true);
       });
   }
 
-  addUser() {
+  showNewUserDialog() {
+    this.dialog.open(NewUserDialogComponent)
+      .afterClosed().subscribe(result => {
+      if (result) {
+        this.form.get('login').disable();
+        this.form.get('role').disable();
+
+        this.addUser(result);
+      }
+    });
+  }
+
+  initNewKeycloakUser() {
+    this.form.get('login').enable();
+    this.form.get('role').enable();
+
+    this.addUser({});
+  }
+
+  private addUser(initial: any) {
+    const newUser = initial.user ?? {groups: []};
+    newUser.role = initial.role ?? '';
     this.isNewUser = true;
-    this.selectedUser = new FrontendUser();
-    this.canSave.emit(true);
-    setTimeout(() => this.loginRef.nativeElement.focus(), 200);
+    this.form.reset();
+    this.form.patchValue(newUser);
+    // this.canSave.emit(true);
+    setTimeout(() => this.loginRef.nativeElement.focus(), 300);
   }
 
   deleteUser(login: string) {
     this.userService.deleteUser(login)
       .subscribe(() => {
-          this.selectedUser = new FrontendUser();
-          this.fetchUsers();
-        },
-        (err: any) => this.modalService.showJavascriptError(err, err.text())
-      );
+        this.fetchUsers();
+      });
   }
 
   saveUser() {
@@ -133,9 +155,9 @@ export class UserComponent implements OnInit {
       }, (err: any) => {
         if (err.status === 406) {
           if (this.isNewUser) {
-            this.modalService.showJavascriptError('Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedUser.login);
+            this.modalService.showJavascriptError('Es existiert bereits ein Benutzer mit dem Login: ' + this.form.value.login);
           } else {
-            this.modalService.showJavascriptError('Es existiert kein Benutzer mit dem Login: ' + this.selectedUser.login);
+            this.modalService.showJavascriptError('Es existiert kein Benutzer mit dem Login: ' + this.form.value.login);
           }
         } else {
           throw err;
@@ -143,4 +165,18 @@ export class UserComponent implements OnInit {
       });
   }
 
+  changePassword() {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Passwortänderung anfordern',
+        message: 'Möchten Sie dem Benutzer eine Email mit der Aufforderung das Passwort zu ändern, zukommen lassen?'
+      }
+    })
+      .afterClosed().subscribe(response => {
+      if (response) {
+        this.userService.sendPasswordChangeRequest(this.form.getRawValue().login)
+          .subscribe();
+      }
+    });
+  }
 }

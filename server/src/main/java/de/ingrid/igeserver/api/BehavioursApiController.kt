@@ -28,11 +28,11 @@ class BehavioursApiController : BehavioursApi, Logging {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquireCatalog(dbId).use {
-            val behaviours = dbService.findAll(BehaviourType::class)!!
+            val behaviours = dbService.findAll(BehaviourType::class)
             val result = behaviours
                     .map {
                         Behaviour(
-                                _id = it!!.get("_id").asText(),
+                                _id = it.get("_id").asText(),
                                 active = it.get("active").asBoolean(),
                                 data = it.get("data"))
                     }

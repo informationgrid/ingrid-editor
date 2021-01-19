@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
+import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
@@ -23,7 +24,11 @@ import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
 @Service
-class CatalogService @Autowired constructor(private val dbService: DBApi, private val authUtils: AuthUtils) {
+class CatalogService @Autowired constructor(
+    private val dbService: DBApi,
+    private val authUtils: AuthUtils,
+    private val externalUserService: UserManagementService
+) {
 
     private val log = logger()
 
@@ -37,8 +42,9 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
 
         dbService.acquireDatabase().use {
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false)
+                queryType = QueryType.EXACT,
+                resolveReferences = false
+            )
             val list = dbService.findAll(UserInfoType::class, query, findOptions)
             if (list.totalHits == 0L) {
                 throw NotFoundException.withMissingUserCatalog(userId)
@@ -49,8 +55,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
             return if (currentCatalogId != null && currentCatalogId.trim { it <= ' ' } != "") {
                 // return assigned current catalog ...
                 currentCatalogId
-            }
-            else {
+            } else {
                 // ... or first catalog, if existing
                 val catalogIds = catInfo["catalogIds"] as ArrayNode
                 if (catalogIds.size() == 0) {
@@ -98,7 +103,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
             }
         }
     }
-    
+
     fun getGroupsForUser(userId: String): List<String> {
         dbService.acquireDatabase().use {
             val user = getUser(userId)
@@ -106,13 +111,13 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
                 log.error("The user '$userId' does not seem to be assigned to any database.")
                 throw NotFoundException.withMissingUserCatalog(userId)
             }
-            
+
             val groupsByCatalog = user["groups"]
             val groups = groupsByCatalog?.get(dbService.currentCatalog) as ArrayNode?
             return groups?.mapNotNull { it.asText() } ?: emptyList()
         }
     }
-    
+
     fun getAllGroupsForUser(userId: String): HashMap<String, List<String>> {
         dbService.acquireDatabase().use {
             val user = getUser(userId)
@@ -137,12 +142,12 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
             if (catalogInfo.isNotEmpty()) {
                 val jsonNode = catalogInfo.filter { it.get("id").textValue() == id }.first()
                 return Catalog(
-                        id,
-                        jsonNode.get("name")?.asText() ?: "Unknown",
-                        if (jsonNode.has("description")) jsonNode["description"].asText() else "",
-                        jsonNode["type"].asText())
-            }
-            else {
+                    id,
+                    jsonNode.get("name")?.asText() ?: "Unknown",
+                    if (jsonNode.has("description")) jsonNode["description"].asText() else "",
+                    jsonNode["type"].asText()
+                )
+            } else {
                 throw NotFoundException.withMissingResource(id, "Database")
             }
         }
@@ -166,7 +171,7 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
 
         dbService.acquireDatabase().use {
             val user = getUser(userId)
-            
+
             val catUserRef: ObjectNode
             val id: String?
             if (user == null) {
@@ -183,11 +188,12 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         }
     }
 
-    private fun getUser(userId: String): JsonNode? {
+    fun getUser(userId: String): JsonNode? {
         val query = listOf(QueryField("userId", userId))
         val findOptions = FindOptions(
             queryType = QueryType.EXACT,
-            resolveReferences = false)
+            resolveReferences = false
+        )
         val list = dbService.findAll(UserInfoType::class, query, findOptions)
         return if (list.totalHits == 0L) {
             log.error("The user '$userId' does not seem to be assigned to any catalog.")
@@ -195,6 +201,26 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
         } else {
             list.hits[0]
         }
+    }
+
+    fun createUser(user: User) {
+
+        dbService.acquireDatabase().use {
+            val data = """
+               { "userId": "${user.login}", "groups": [] }
+            """
+            dbService.save(UserInfoType::class, null, data)
+            setGroupsForUser(user.login, user.groups.toList())
+        }
+
+    }
+
+    fun deleteUser(userId: String) {
+
+        dbService.acquireDatabase().use {
+            dbService.remove(UserInfoType::class, userId)
+        }
+
     }
 
     companion object {

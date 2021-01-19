@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.keycloak.representations.AccessTokenResponse
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -26,7 +25,7 @@ import javax.validation.Valid
 @Tag(name = "Users", description = "the users API")
 interface UsersApi {
     @RequestMapping(
-        value = ["/users/{id}"],
+        value = ["/users"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
         method = [RequestMethod.POST]
     )
@@ -41,8 +40,7 @@ interface UsersApi {
         )]
     )
     fun createUser(
-        principal: Principal?,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
+        principal: Principal,
         @Parameter(
             description = "Save the user data into the database.",
             required = true
@@ -66,7 +64,7 @@ interface UsersApi {
     )
     fun deleteUser(
         principal: Principal?,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String
+        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
     ): ResponseEntity<Void>
 
     @RequestMapping(
@@ -78,13 +76,13 @@ interface UsersApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
     fun getUser(
         principal: Principal?,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String
+        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
     ): ResponseEntity<User>
 
     @RequestMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of users")])
-    fun list(principal: Principal?, res: AccessTokenResponse): ResponseEntity<List<User>>
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of users registered in IGE")])
+    fun list(principal: Principal?): ResponseEntity<List<User>>
 
     @RequestMapping(
         value = ["/users/{id}"],
@@ -171,4 +169,19 @@ interface UsersApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun refreshSession(): ResponseEntity<Void>
+
+    @RequestMapping(value = ["/externalUsers"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of external users (keycloak)")])
+    fun listExternal(principal: Principal?): ResponseEntity<List<User>>
+
+    @RequestMapping(value = ["/externalUsers/requestPasswordChange/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Sends an email to a user for changing its password")])
+    fun requestPasswordChange(principal: Principal?,
+                              @Parameter(
+                                  description = "The user login the password change request shall be initiated.",
+                                  required = true
+                              ) @PathVariable("id") id: String): ResponseEntity<Void>
+
 }

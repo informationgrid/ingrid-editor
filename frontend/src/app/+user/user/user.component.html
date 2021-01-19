@@ -6,34 +6,43 @@
             </mat-list-option>
         </mat-selection-list>
         <div class="text-center">
-            <button mat-icon-button (click)="addUser()">
+            <button mat-icon-button [mat-menu-trigger-for]="userAddMenu">
                 <mat-icon>add</mat-icon>
             </button>
+            <mat-menu #userAddMenu="matMenu">
+                <button type="button" mat-menu-item (click)="showNewUserDialog()">Keycloak Benutzer importieren</button>
+                <button type="button" mat-menu-item (click)="initNewKeycloakUser()">Neuen Keycloak Benutzer anlegen</button>
+            </mat-menu>
         </div>
     </as-split-area>
     <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
-        <form *ngIf="!userSelect.selectedOptions.isEmpty()" fxLayout="column" [formGroup]="form">
+        <form *ngIf="!userSelect.selectedOptions.isEmpty() || isNewUser" fxLayout="column" [formGroup]="form"
+              style="padding: 20px">
             <mat-form-field appearance="outline">
                 <mat-label>Login</mat-label>
-                <input matInput #loginRef formControlName="login" required autocomplete="off">
+                <input matInput #loginRef formControlName="login" autocomplete="off" required>
             </mat-form-field>
             <mat-form-field appearance="outline">
                 <mat-label>Rolle</mat-label>
-                <input matInput formControlName="role" required>
+                <mat-select formControlName="role" required>
+                    <mat-option *ngFor="let role of roles" [value]="role.value">
+                        {{role.label}}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
+            <div fxLayout="row" fxLayoutGap="20px">
+                <mat-form-field appearance="outline" style="width: 100%">
+                    <mat-label>Vorname</mat-label>
+                    <input matInput autocomplete="off" formControlName="firstName" required>
+                </mat-form-field>
+                <mat-form-field appearance="outline" style="width: 100%">
+                    <mat-label>Nachname</mat-label>
+                    <input matInput autocomplete="off" formControlName="lastName" required>
+                </mat-form-field>
+            </div>
             <mat-form-field appearance="outline">
-                <mat-label>Vorname</mat-label>
-                <input matInput autocomplete="off" formControlName="firstName">
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-                <mat-label>Nachname</mat-label>
-                <input matInput autocomplete="off" formControlName="lastName">
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-                <mat-label>Passwort</mat-label>
-                <input matInput type="password" autocomplete="new-password"
-                       [required]="isNewUser"
-                       formControlName="password">
+                <mat-label>Email</mat-label>
+                <input matInput autocomplete="off" formControlName="email" type="email" required>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -45,8 +54,12 @@
                 </mat-select>
             </mat-form-field>
 
-<!--            <pre>{{form.value | json}}</pre>-->
-<!--            <ige-permissions-show [data]="selectedUser.permissions" (update)="updatePermissions($event)"></ige-permissions-show>-->
+            <div>
+                <button mat-button color="warn" (click)="changePassword()">Passwort ändern</button>
+            </div>
+
+            <!--            <pre>{{form.value | json}}</pre>-->
+            <!--            <ige-permissions-show [data]="selectedUser.permissions" (update)="updatePermissions($event)"></ige-permissions-show>-->
         </form>
     </as-split-area>
 </as-split>

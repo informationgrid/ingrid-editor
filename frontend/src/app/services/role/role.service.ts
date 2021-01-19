@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {ErrorService} from '../error.service';
 import {Group} from '../../models/user-role';
 import {Observable} from 'rxjs';
 import {RoleDataService} from './role-data.service';

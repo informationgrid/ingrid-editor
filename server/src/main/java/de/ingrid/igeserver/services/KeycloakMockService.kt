@@ -2,12 +2,9 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.User
 import org.apache.logging.log4j.LogManager
-import org.keycloak.KeycloakPrincipal
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
-import org.springframework.security.core.context.SecurityContext
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
@@ -29,11 +26,15 @@ class KeycloakMockService : UserManagementService {
     @Value("\${dev.user.lastName:}")
     lateinit var mockedLastName: String
 
-    override fun getUsers(principal: Principal?): List<User> {
+    override fun getUsersWithIgeRoles(principal: Principal?): Set<User> {
         val mockUsers: MutableList<User> = ArrayList()
-        val user = User(mockedLogin, mockedFirstName, mockedLastName, "", emptyList())
+        val user = User(mockedLogin, mockedFirstName, mockedLastName, "", "", emptyList())
         mockUsers.add(user)
-        return mockUsers
+        return mockUsers.toSet()
+    }
+
+    override fun getUsers(principal: Principal?): Set<User> {
+        TODO("Not yet implemented")
     }
 
     override fun getLatestLoginDate(principal: Principal?, login: String): Date {
@@ -49,10 +50,30 @@ class KeycloakMockService : UserManagementService {
     }
 
     override fun getUser(principal: Principal?, login: String): User {
-        return User(mockedLogin, mockedFirstName, mockedLastName, "", emptyList())
+        return User(mockedLogin, mockedFirstName, mockedLastName, "", "", emptyList())
     }
 
     override fun getCurrentPrincipal(): Principal? {
         return Principal { mockedLogin }
+    }
+
+    override fun userExists(principal: Principal, userId: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun createUser(principal: Principal, user: User) {
+        TODO("Not yet implemented")
+    }
+
+    override fun requestPasswordChange(principal: Principal?, id: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeRoles(principal: Principal?, userId: String, roles: List<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun addRoles(principal: Principal?, userLogin: String, roles: List<String>) {
+        TODO("Not yet implemented")
     }
 }

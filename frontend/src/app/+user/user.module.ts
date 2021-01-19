@@ -17,6 +17,7 @@ import { TreePermissionComponent } from './permissions/tree-permission/tree-perm
 import {MatMenuModule} from '@angular/material/menu';
 import {PermissionsDialogComponent} from './permissions/permissions-dialog.component';
 import {MatSelectModule} from '@angular/material/select';
+import { NewUserDialogComponent } from './user/new-user-dialog/new-user-dialog.component';
 
 @NgModule({
     imports: [
@@ -35,7 +36,7 @@ import {MatSelectModule} from '@angular/material/select';
     ],
   declarations: [
     UserComponent, RoleComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent,
-    PermissionsShowComponent, TreePermissionComponent]
+    PermissionsShowComponent, TreePermissionComponent, NewUserDialogComponent]
 })
 export class UserModule {
 

@@ -1,5 +1,6 @@
 import {Component, EventEmitter, OnInit} from '@angular/core';
 import {Group} from '../../models/user-role';
+import {FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'ige-user-management',
@@ -9,7 +10,7 @@ import {Group} from '../../models/user-role';
 export class UserManagementComponent implements OnInit {
 
   roles: Group[];
-  canSaveUser = false;
+  canSaveUser: FormGroup;
   canSaveGroup = false;
   currentTab = 0;
   doUserSave = new EventEmitter<void>();
@@ -24,7 +25,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   canNotSave() {
-    return (this.currentTab === 0 && !this.canSaveUser) || (this.currentTab === 1 && !this.canSaveGroup);
+    return (this.currentTab === 0 && this.canSaveUser?.invalid) || (this.currentTab === 1 && !this.canSaveGroup);
   }
 
   canDelete() {

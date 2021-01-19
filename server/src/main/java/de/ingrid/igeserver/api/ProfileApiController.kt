@@ -33,9 +33,9 @@ class ProfileApiController : ProfileApi {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         dbService.acquireCatalog(dbId).use {
             val allFrom = dbService.findAll(CatalogInfoType::class)
-            profile = if (allFrom!!.isNotEmpty()) {
+            profile = if (allFrom.isNotEmpty()) {
                 val map = allFrom[0]
-                map!!["profile"].asText()
+                map["profile"].asText()
             } else {
                 throw NotFoundException.withMissingResource(dbId, "Profile")
             }

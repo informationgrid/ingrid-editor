@@ -3,11 +3,18 @@ import {FrontendUser, User} from '../../+user/user';
 import {Observable} from 'rxjs';
 import {UserDataService} from './user-data.service';
 import {map} from 'rxjs/operators';
+import {SelectOption} from '../codelist/codelist.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+
+  availableRoles: SelectOption[] = [
+    {label: 'Katalog-Administrator', value: 'cat-admin'},
+    {label: 'Metadaten-Administrator', value: 'md-admin'},
+    {label: 'Autor', value: 'author'}
+  ];
 
   constructor(private dataService: UserDataService) {
   }
@@ -46,5 +53,13 @@ export class UserService {
 
   getAssignedUsers(dbId: string) {
     return this.dataService.getAssignedUsers(dbId);
+  }
+
+  getExternalUsers(): Observable<FrontendUser[]> {
+    return this.dataService.getExternalUsers();
+  }
+
+  sendPasswordChangeRequest(login: string) {
+    return this.dataService.sendPasswordChangeRequest(login);
   }
 }

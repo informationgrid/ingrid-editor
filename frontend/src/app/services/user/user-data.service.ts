@@ -24,7 +24,7 @@ export class UserDataService {
   }
 
   createUser(user: User): Observable<BackendUser> {
-    return this.http.post<BackendUser>(this.configuration.backendUrl + 'users/' + user.login, user);
+    return this.http.post<BackendUser>(this.configuration.backendUrl + 'users', user);
   }
 
   deleteUser(login: string): Observable<any> {
@@ -37,5 +37,13 @@ export class UserDataService {
 
   getAssignedUsers(dbId: string): Observable<string[]> {
     return this.http.get<string[]>(this.configuration.backendUrl + 'info/assignedUsers/' + dbId);
+  }
+
+  getExternalUsers() {
+    return this.http.get<BackendUser[]>(this.configuration.backendUrl + 'externalUsers');
+  }
+
+  sendPasswordChangeRequest(login: string) {
+    return this.http.post<void>(this.configuration.backendUrl + 'externalUsers/requestPasswordChange/' + login, null);
   }
 }

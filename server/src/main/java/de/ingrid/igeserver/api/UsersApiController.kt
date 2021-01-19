@@ -10,17 +10,14 @@ import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
-import org.keycloak.representations.AccessTokenResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -35,9 +32,6 @@ class UsersApiController : UsersApi {
 
     @Autowired
     private lateinit var catalogService: CatalogService
-    
-    @Autowired
-    private lateinit var groupService: GroupService
 
     @Autowired
     private lateinit var dbService: DBApi
@@ -57,41 +51,61 @@ class UsersApiController : UsersApi {
     @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
     private val developmentMode = false
 
-    override fun createUser(principal: Principal?, id: String, user: User): ResponseEntity<Void> {
+    override fun createUser(principal: Principal, user: User): ResponseEntity<Void> {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquireCatalog(dbId).use {
-            return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
-//            return ResponseEntity(HttpStatus.OK)
+            when (keycloakService.userExists(principal, user.login)) {
+                true -> {
+                    catalogService.createUser(user)
+                    keycloakService.addRoles(principal, user.login, listOf(user.role))
+                }
+                false -> {
+                    keycloakService.createUser(principal, user)
+                    catalogService.setGroupsForUser(user.login, user.groups.toList())
+                }
+            }
+            return ResponseEntity.ok().build()
         }
     }
 
-    override fun deleteUser(principal: Principal?, id: String): ResponseEntity<Void> {
+    override fun deleteUser(principal: Principal?, userId: String): ResponseEntity<Void> {
 
-        // do some magic!
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        dbService.acquireCatalog(dbId).use {
+            catalogService.deleteUser(userId)
+            keycloakService.removeRoles(principal, userId, listOf("cat-admin", "md-admin", "author"))
+            return ResponseEntity.ok().build()
+        }
+        
     }
 
     override fun getUser(principal: Principal?, userId: String): ResponseEntity<User> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        
+
         dbService.acquireCatalog(dbId).use {
             val user = keycloakService.getUser(principal, userId)
             user.groups = catalogService.getGroupsForUser(userId)
 
             return ResponseEntity.ok(user)
         }
-        
+
     }
 
-    override fun list(principal: Principal?, res: AccessTokenResponse): ResponseEntity<List<User>> {
+    override fun list(principal: Principal?): ResponseEntity<List<User>> {
 
         if (principal == null && !developmentMode) {
             throw UnauthenticatedException.withUser("")
         }
-        val users = keycloakService.getUsers(principal)
-        return ResponseEntity.ok(users)
+
+        val users = keycloakService.getUsersWithIgeRoles(principal)
+
+        // remove users that are not added this instance
+        val filteredUsers = users.filter { catalogService.getUser(it.login) != null }
+
+        return ResponseEntity.ok(filteredUsers)
     }
 
     override fun updateUser(principal: Principal?, id: String, user: User): ResponseEntity<Void> {
@@ -100,10 +114,9 @@ class UsersApiController : UsersApi {
 
         dbService.acquireCatalog(dbId).use {
             catalogService.setGroupsForUser(id, user.groups.toList())
-//            groupService.setGroupsForUser(id, user.groups)
             return ResponseEntity.ok().build()
         }
-        
+
     }
 
     override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
@@ -129,18 +142,20 @@ class UsersApiController : UsersApi {
         val catalog: Catalog? = try {
             val currentCatalogForUser = catalogService.getCurrentCatalogForUser(user.login)
             catalogService.getCatalogById(currentCatalogForUser)
-        } catch (ex: NotFoundException) { null }
+        } catch (ex: NotFoundException) {
+            null
+        }
 
         val userInfo = UserInfo(
-                userId = user.login,
-                name =  user.firstName + ' ' + user.lastName,
-                lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
-                firstName = user.firstName,
-                assignedCatalogs = assignedCatalogs,
-                roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?),
-                currentCatalog = catalog,
-                version = getVersion(),
-                lastLogin = lastLogin
+            userId = user.login,
+            name = user.firstName + ' ' + user.lastName,
+            lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
+            firstName = user.firstName,
+            assignedCatalogs = assignedCatalogs,
+            roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?),
+            currentCatalog = catalog,
+            version = getVersion(),
+            lastLogin = lastLogin
         )
         return ResponseEntity.ok(userInfo)
     }
@@ -172,28 +187,30 @@ class UsersApiController : UsersApi {
     }
 
     override fun setCatalogAdmin(
-            principal: Principal?,
-            info: CatalogAdmin): ResponseEntity<UserInfo?> {
+        principal: Principal?,
+        info: CatalogAdmin
+    ): ResponseEntity<UserInfo?> {
 
         val userIds = info.userIds
         if (userIds.isEmpty()) {
             throw InvalidParameterException.withInvalidParameters("info.userIds")
         }
 
-        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase().use {
             logger.info("Parameter: $info")
             val catalogName = info.catalogName
             userIds.forEach { addOrUpdateCatalogAdmin(catalogName, it) }
         }
-        return ResponseEntity.ok(null)
+        return ResponseEntity.ok().build()
     }
 
     private fun addOrUpdateCatalogAdmin(catalogName: String, userId: String) {
 
         val query = listOf(QueryField("userId", userId))
         val findOptions = FindOptions(
-                queryType = QueryType.EXACT,
-                resolveReferences = false)
+            queryType = QueryType.EXACT,
+            resolveReferences = false
+        )
         val list = dbService.findAll(UserInfoType::class, query, findOptions)
 
         val isNewEntry = list.totalHits == 0L
@@ -231,11 +248,12 @@ class UsersApiController : UsersApi {
     override fun assignedUsers(principal: Principal?, id: String): ResponseEntity<List<String>> {
 
         val result: MutableList<String> = ArrayList()
-        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase().use {
             val query = listOf(QueryField("catalogIds", id))
             val findOptions = FindOptions(
-                    queryType = QueryType.CONTAINS,
-                    resolveReferences = false)
+                queryType = QueryType.CONTAINS,
+                resolveReferences = false
+            )
             val info = dbService.findAll(UserInfoType::class, query, findOptions)
             info.hits.forEach { result.add(it["userId"].asText()) }
         }
@@ -245,17 +263,22 @@ class UsersApiController : UsersApi {
     override fun switchCatalog(principal: Principal?, catalogId: String): ResponseEntity<Void> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase().use {
             val query = listOf(QueryField("userId", userId))
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false)
+                queryType = QueryType.EXACT,
+                resolveReferences = false
+            )
             val info = dbService.findAll(UserInfoType::class, query, findOptions)
             val objectNode = when (info.totalHits) {
                 0L -> ObjectMapper().createObjectNode()
                 1L -> (info.hits[0] as ObjectNode)
                 else -> {
-                    throw PersistenceException.withMultipleEntities(userId, UserInfoType::class.simpleName, dbService.currentCatalog)
+                    throw PersistenceException.withMultipleEntities(
+                        userId,
+                        UserInfoType::class.simpleName,
+                        dbService.currentCatalog
+                    )
                 }
             }.put("currentCatalogId", catalogId)
 
@@ -268,5 +291,27 @@ class UsersApiController : UsersApi {
         // nothing to do here since session already is refreshed by http request
 
         return ResponseEntity.ok().build()
+    }
+
+    override fun listExternal(principal: Principal?): ResponseEntity<List<User>> {
+
+        if (principal == null && !developmentMode) {
+            throw UnauthenticatedException.withUser("")
+        }
+
+        val users = keycloakService.getUsers(principal)
+
+        // remove users that are already present in this instance
+        val filteredUsers = users.filter { catalogService.getUser(it.login) == null }
+
+        return ResponseEntity.ok(filteredUsers)
+
+    }
+
+    override fun requestPasswordChange(principal: Principal?, id: String): ResponseEntity<Void> {
+
+        keycloakService.requestPasswordChange(principal, id)
+        return ResponseEntity.ok().build()
+        
     }
 }
