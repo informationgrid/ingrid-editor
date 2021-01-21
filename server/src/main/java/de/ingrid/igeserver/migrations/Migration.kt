@@ -44,7 +44,10 @@ class Migration : ApplicationRunner {
             return
         }
 
-        strategies.forEach(Consumer { strategy: MigrationStrategy -> strategy.exec(database) })
+        strategies.forEach { strategy -> 
+            log.info("Executing strategy: ${strategy.version}")
+            strategy.exec(database) 
+        }
 
         val latestVersion = strategies[strategies.size - 1].version
         setVersion(database, latestVersion.version)

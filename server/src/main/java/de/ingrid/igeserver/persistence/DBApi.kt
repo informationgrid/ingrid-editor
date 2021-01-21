@@ -100,6 +100,11 @@ interface DBApi {
     fun catalogExists(name: String): Boolean
 
     /**
+     * Execute any sql (used for migration tasks)
+     */
+    fun execSQL(sql: String)
+    
+    /**
      * Open a session to the catalog with the given name. With that it's possible to
      * begin, commit and rollback transactions.
      */

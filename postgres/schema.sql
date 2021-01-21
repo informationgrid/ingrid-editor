@@ -13,6 +13,20 @@ CREATE TABLE catalog (
   version         varchar(255) -- version for migrations, could be different for different catalogs
 );
 
+CREATE SEQUENCE permission_group_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1;
+
+CREATE TABLE "public"."permission_group" (
+  id              integer DEFAULT nextval('permission_group_id_seq') NOT NULL,
+  catalog_id      integer NOT NULL,
+  identifier      varchar(255) NOT NULL, -- derived from name, used in API
+  name            varchar(255) NOT NULL,
+  type            varchar(255) NOT NULL, -- needs refactoring since info is not really needed here
+  description     text,
+  permissions     jsonb,
+  CONSTRAINT "permission_group_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "permission_group_catalog_id_fkey" FOREIGN KEY (catalog_id) REFERENCES catalog (id) ON DELETE CASCADE NOT DEFERRABLE
+) WITH (oids = false);
+
 CREATE TABLE user_info (
   id              serial PRIMARY KEY,
   user_id         varchar(255) NOT NULL,

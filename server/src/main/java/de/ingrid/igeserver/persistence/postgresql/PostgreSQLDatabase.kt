@@ -329,6 +329,10 @@ class PostgreSQLDatabase : DBApi {
     override fun catalogExists(name: String): Boolean {
         return getCatalog(name) != null
     }
+    
+    override fun execSQL(sql: String) {
+        entityManager.createNativeQuery(sql).executeUpdate()
+    }
 
     override fun acquireCatalog(name: String): Closeable {
         val catalog = getCatalog(name)
