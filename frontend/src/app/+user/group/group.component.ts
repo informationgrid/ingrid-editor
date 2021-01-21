@@ -3,7 +3,7 @@ import {ModalService} from '../../services/modal/modal.service';
 import {GroupService} from '../../services/role/group.service';
 import {Group} from '../../models/user-group';
 import {Observable, Subject} from 'rxjs';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn} from '@angular/forms';
 import {Permissions} from '../user';
 import {debounceTime, tap} from 'rxjs/operators';
 import {UntilDestroy} from '@ngneat/until-destroy';
@@ -44,7 +44,7 @@ export class GroupComponent implements OnInit {
     this.form = this.fb.group({
       id: [],
       _type: [],
-      name: [],
+      name: ['', this.forbiddenNameValidator()],
       description: [],
       permissions: []
     });
@@ -126,6 +126,13 @@ export class GroupComponent implements OnInit {
             .subscribe();
         }
       );
+  }
+
+  forbiddenNameValidator(): ValidatorFn {
+    return (control: AbstractControl) => {
+      const forbidden = this.groups.filter(group => group.name === control.value).length > 0;
+      return forbidden ? {forbiddenName: {value: control.value}} : null;
+    };
   }
 
 }
