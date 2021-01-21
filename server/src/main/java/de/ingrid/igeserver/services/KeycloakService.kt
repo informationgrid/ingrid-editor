@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.ConflictException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.UnauthenticatedException
 import de.ingrid.igeserver.model.User
@@ -24,11 +25,17 @@ import org.springframework.stereotype.Service
 import java.io.Closeable
 import java.security.Principal
 import java.util.*
+import javax.ws.rs.core.Response
 
 
 @Service
 @Profile("!dev")
 class KeycloakService : UserManagementService {
+
+    companion object {
+        // 48h * 60min * 60s => 2 days in seconds
+        const val EMAIL_VALID_IN_SECONDS = 172800
+    }
 
     private class KeycloakCloseableClient(val client: Keycloak, private val realm: String) : Closeable {
 
@@ -61,8 +68,8 @@ class KeycloakService : UserManagementService {
             initClient(principal).use {
                 val roles = it.realm().roles()
                 val catAdmins = getUsersWithRole(roles, "cat-admin")
-                val mdAdmins = getUsersWithRole(roles, "md-admin")
-                val authors = getUsersWithRole(roles, "author")
+                val mdAdmins = getUsersWithRole(roles, "md-admin", catAdmins.toSet())
+                val authors = getUsersWithRole(roles, "author", (catAdmins union mdAdmins))
 
                 return (catAdmins union mdAdmins union authors)
             }
@@ -85,8 +92,9 @@ class KeycloakService : UserManagementService {
 
     }
 
-    private fun getUsersWithRole(roles: RolesResource, roleName: String): List<User> {
+    private fun getUsersWithRole(roles: RolesResource, roleName: String, ignoreUsers: Set<User> = emptySet()): List<User> {
         val users = roles[roleName].roleUserMembers
+            .filter {user -> ignoreUsers.none {ignore -> user.username == ignore.login } }
             .map { user -> mapUser(user) }
 
         users.forEach { user -> user.role = roleName }
@@ -192,17 +200,26 @@ class KeycloakService : UserManagementService {
             val keycloakUser = mapToKeycloakUser(user)
             val usersResource = it.realm().users()
             val createResponse = usersResource.create(keycloakUser)
-
-
+            
+            handleReponseErrors(createResponse) // will throw on error
+            
             val userId = CreatedResponseUtil.getCreatedId(createResponse)
 
             usersResource.get(userId).apply {
                 // send an email to the user to set a password
-                executeActionsEmail(listOf("UPDATE_PASSWORD"), 48)
+                executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
                 roles().realmLevel().add(getRoleRepresentation(it.realm(), user))
             }
         }
 
+    }
+
+    private fun handleReponseErrors(createResponse: Response) {
+
+        when (createResponse.status) {
+            409 -> throw ConflictException.withReason("New user cannot be created, because another user might have the same email address")
+        }
+        
     }
 
     override fun requestPasswordChange(principal: Principal?, id: String) {
@@ -212,7 +229,7 @@ class KeycloakService : UserManagementService {
             val users = it.realm().users()
             val user = users.search(id, true).getOrNull(0)
             if (user != null) {
-                users[user.id].executeActionsEmail(listOf("UPDATE_PASSWORD"), 48)
+                users[user.id].executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
             } else {
                 throw NotFoundException.withMissingUserCatalog(id)
             }

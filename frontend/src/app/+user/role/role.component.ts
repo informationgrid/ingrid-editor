@@ -1,12 +1,13 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ModalService} from '../../services/modal/modal.service';
 import {RoleService} from '../../services/role/role.service';
 import {Group} from '../../models/user-role';
-import {merge, Observable, Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Permissions} from '../user';
-import {map, tap} from 'rxjs/operators';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {debounceTime, tap} from 'rxjs/operators';
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {dirtyCheck} from '@ngneat/dirty-check-forms';
 
 @UntilDestroy()
 @Component({
@@ -15,25 +16,21 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 })
 export class RoleComponent implements OnInit {
 
-  @Input() doSave: EventEmitter<void>;
-  @Input() doDelete: EventEmitter<void>;
-
-  @Output() canSave = new EventEmitter<boolean>();
+  isDirty$: Observable<boolean>;
+  state$ = new Subject<any>();
 
   groups: Group[] = [];
 
   isNewGroup = false;
-  permissions: Permissions;
   form: FormGroup;
 
   initialValue = {
-    id: '',
+    id: null,
     _type: '',
     name: '',
     description: '',
     permissions: new Permissions()
-  }
-  manualDirtySet = new Subject<boolean>();
+  };
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
@@ -43,18 +40,6 @@ export class RoleComponent implements OnInit {
   ngOnInit() {
     this.fetchGroups().subscribe();
 
-    if (this.doSave) {
-      this.doSave
-        .pipe(untilDestroyed(this))
-        .subscribe(() => this.saveGroup(this.form.value));
-    }
-
-    if (this.doDelete) {
-      this.doDelete
-        .pipe(untilDestroyed(this))
-        .subscribe(() => this.deleteGroup(this.form.value));
-    }
-
     this.form = this.fb.group({
       id: [],
       _type: [],
@@ -63,11 +48,9 @@ export class RoleComponent implements OnInit {
       permissions: []
     });
 
-    merge(this.form.valueChanges, this.manualDirtySet)
-      .pipe(
-        map(() => this.form.dirty)
-      )
-      .subscribe(dirty => this.canSave.emit(dirty));
+    this.isDirty$ = dirtyCheck(this.form, this.state$, {debounce: 100})
+      // add debounceTime with same as in dirtyCheck to prevent save button flicker
+      .pipe(debounceTime(100));
   }
 
   fetchGroups(): Observable<Group[]> {
@@ -77,24 +60,25 @@ export class RoleComponent implements OnInit {
 
   addGroup() {
     this.isNewGroup = true;
-    this.permissions = new Permissions();
     this.form.setValue(this.initialValue);
-    this.manualDirtySet.next(true);
   }
 
-  loadGroup(group: Group) {
+  loadGroup(id: string) {
     this.isNewGroup = false;
-    this.groupService.getGroup(group.name)
+    this.form.disable();
+    this.groupService.getGroup(id)
       .subscribe(fetchedGroup => {
-        this.form.reset();
-        this.form.setValue(fetchedGroup);
-        this.manualDirtySet.next(false);
-        this.permissions = fetchedGroup.permissions;
+        this.form.reset(fetchedGroup);
+        this.form.enable();
+        // we need to make a general object of the group in order to compare
+        // its state with the form value correctly
+        this.state$.next(JSON.parse(JSON.stringify(fetchedGroup)));
       });
   }
 
-  saveGroup(group: Group) {
+  saveGroup() {
     let observer: Observable<Group>;
+    const group = this.form.value;
 
     if (this.isNewGroup) {
       observer = this.groupService.createGroup(group);
@@ -129,14 +113,12 @@ export class RoleComponent implements OnInit {
       .subscribe(
         () => {
           this.fetchGroups()
-            .pipe(tap(() => this.form.reset()))
+            .pipe(
+              tap(() => this.form.reset())
+            )
             .subscribe();
         }
       );
   }
 
-  updatePermissions(newPermissions: Permissions) {
-    this.form.patchValue({permissions: newPermissions});
-    this.manualDirtySet.next(true);
-  }
 }

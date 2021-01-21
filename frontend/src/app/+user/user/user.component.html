@@ -1,7 +1,7 @@
 <as-split>
     <as-split-area [size]="25" id="sidebarUser" class="split-pane-content-primary container">
-        <mat-selection-list #userSelect multiple="false" (selectionChange)="loadUser($event.options[0].value)">
-            <mat-list-option *ngFor="let user of users" [value]="user">
+        <mat-selection-list #userSelect [formControl]="selectedUser" multiple="false" (selectionChange)="loadUser($event.options[0].value)">
+            <mat-list-option *ngFor="let user of users" [value]="user.login">
                 <h4 mat-line>{{user.login}}</h4>
             </mat-list-option>
         </mat-selection-list>
@@ -10,7 +10,7 @@
                 <mat-icon>add</mat-icon>
             </button>
             <mat-menu #userAddMenu="matMenu">
-                <button type="button" mat-menu-item (click)="showNewUserDialog()">Keycloak Benutzer importieren</button>
+                <button type="button" mat-menu-item (click)="showExternalUsersDialog()">Keycloak Benutzer importieren</button>
                 <button type="button" mat-menu-item (click)="initNewKeycloakUser()">Neuen Keycloak Benutzer anlegen</button>
             </mat-menu>
         </div>
@@ -18,6 +18,16 @@
     <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
         <form *ngIf="!userSelect.selectedOptions.isEmpty() || isNewUser" fxLayout="column" [formGroup]="form"
               style="padding: 20px">
+            <div>
+                <button mat-button
+                        (click)="deleteUser(userSelect.selectedOptions.selected[0].value)">Löschen</button>
+                <button mat-button color="warn" (click)="changePassword()">Passwort ändern</button>
+                <div fxFlex></div>
+                <button mat-stroked-button color="primary"
+                        (click)="saveUser()"
+                        [disabled]="form.invalid || !(isDirty$ | async)">Speichern</button>
+            </div>
+
             <mat-form-field appearance="outline">
                 <mat-label>Login</mat-label>
                 <input matInput #loginRef formControlName="login" autocomplete="off" required>
@@ -43,6 +53,7 @@
             <mat-form-field appearance="outline">
                 <mat-label>Email</mat-label>
                 <input matInput autocomplete="off" formControlName="email" type="email" required>
+                <mat-error *ngIf="form.get('email').invalid">{{getEmailErrorMessage()}}</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -54,12 +65,6 @@
                 </mat-select>
             </mat-form-field>
 
-            <div>
-                <button mat-button color="warn" (click)="changePassword()">Passwort ändern</button>
-            </div>
-
-            <!--            <pre>{{form.value | json}}</pre>-->
-            <!--            <ige-permissions-show [data]="selectedUser.permissions" (update)="updatePermissions($event)"></ige-permissions-show>-->
         </form>
     </as-split-area>
 </as-split>

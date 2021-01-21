@@ -51,20 +51,22 @@ class UsersApiController : UsersApi {
     @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
     private val developmentMode = false
 
-    override fun createUser(principal: Principal, user: User): ResponseEntity<Void> {
+    override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<Void> {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquireCatalog(dbId).use {
-            when (keycloakService.userExists(principal, user.login)) {
-                true -> {
-                    catalogService.createUser(user)
-                    keycloakService.addRoles(principal, user.login, listOf(user.role))
-                }
-                false -> {
-                    keycloakService.createUser(principal, user)
-                    catalogService.setGroupsForUser(user.login, user.groups.toList())
-                }
+            val userExists = keycloakService.userExists(principal, user.login)
+            if (userExists && newExternalUser) {
+                throw ConflictException.withReason("User already Exists with login ${user.login}")
             }
+
+            when (userExists) {
+                true -> keycloakService.addRoles(principal, user.login, listOf(user.role))
+                false -> keycloakService.createUser(principal, user)
+            }
+            
+            catalogService.createUser(user)
+            
             return ResponseEntity.ok().build()
         }
     }

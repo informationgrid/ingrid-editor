@@ -19,7 +19,7 @@ class GroupsApiController @Autowired constructor(
     private val groupService: GroupService
 ) : GroupsApi {
 
-    override fun createGroup(principal: Principal?, id: String, group: Group): ResponseEntity<Void> {
+    override fun createGroup(principal: Principal?, group: Group): ResponseEntity<Void> {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquireCatalog(dbId).use {

@@ -33,13 +33,12 @@ interface GroupsApi {
         )]
     )
     @RequestMapping(
-        value = ["/groups/{id}"],
+        value = ["/groups"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
         method = [RequestMethod.POST]
     )
     fun createGroup(
         principal: Principal?,
-        @Parameter(description = "The unique id of the user.", required = true) @PathVariable("id") id: String,
         @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
     ): ResponseEntity<Void>
 

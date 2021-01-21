@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, OnInit} from '@angular/core';
 import {Group} from '../../models/user-role';
 import {FormGroup} from '@angular/forms';
 
@@ -6,30 +6,35 @@ import {FormGroup} from '@angular/forms';
   selector: 'ige-user-management',
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss']
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserManagementComponent implements OnInit {
 
   roles: Group[];
-  canSaveUser: FormGroup;
-  canSaveGroup = false;
+  canSaveUser: boolean;
+  canSaveGroup: FormGroup;
+  canDeleteUser = false;
+  canDeleteGroup = false;
   currentTab = 0;
   doUserSave = new EventEmitter<void>();
   doUserDelete = new EventEmitter<void>();
   doGroupSave = new EventEmitter<void>();
   doGroupDelete = new EventEmitter<void>();
+  canSave = false;
 
   constructor() {
   }
 
   ngOnInit(): void {
+
   }
 
   canNotSave() {
-    return (this.currentTab === 0 && this.canSaveUser?.invalid) || (this.currentTab === 1 && !this.canSaveGroup);
+    return (this.currentTab === 0 && !this.canSaveUser) || (this.currentTab === 1 && this.canSaveGroup?.invalid);
   }
 
   canDelete() {
-    return this.canNotSave();
+    return (this.currentTab === 0 && this.canDeleteUser) || (this.currentTab === 1 && !this.canDeleteGroup);
   }
 
   remove() {

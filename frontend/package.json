@@ -35,6 +35,7 @@
     "@angular/platform-browser-dynamic": "^11.0.5",
     "@angular/router": "^11.0.5",
     "@datorama/akita": "^5.3.0",
+    "@ngneat/dirty-check-forms": "^1.0.1",
     "@ngneat/forms-manager": "^2.2.0",
     "@ngneat/until-destroy": "^8.0.2",
     "@ngx-formly/core": "5.10.3",

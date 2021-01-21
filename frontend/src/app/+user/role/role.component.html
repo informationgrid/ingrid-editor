@@ -5,7 +5,8 @@
     <!-- GROUP LIST -->
     <as-split-area [size]="25" id="sidebarRoles" class="container">
         <mat-selection-list #groupList multiple="false" (selectionChange)="loadGroup($event.options[0].value)">
-            <mat-list-option *ngFor="let group of groups" [value]="group" [selected]="group.id === form.get('id').value">
+            <mat-list-option *ngFor="let group of groups" [value]="group.id"
+                             [selected]="group.id === form.get('id').value">
                 <h4 mat-line>{{group.name}}</h4>
             </mat-list-option>
         </mat-selection-list>
@@ -19,7 +20,18 @@
     <!-- GROUP DETAIL -->
     <as-split-area [size]="75" id="formRoles" class="container-fluid">
         <div style="padding: 20px">
-            <div *ngIf="!groupList.selectedOptions.isEmpty() || isNewGroup; else noGroup" fxLayout="column" [formGroup]="form">
+            <div *ngIf="!groupList.selectedOptions.isEmpty() || isNewGroup; else noGroup" fxLayout="column"
+                 [formGroup]="form">
+                <div>
+                    <button mat-button
+                            (click)="deleteGroup(groupList.selectedOptions.selected[0].value)">Löschen
+                    </button>
+                    <div fxFlex></div>
+                    <button mat-stroked-button color="primary"
+                            (click)="saveGroup()"
+                            [disabled]="form.invalid || !(isDirty$ | async)">Speichern
+                    </button>
+                </div>
                 <!-- TITLE -->
                 <mat-form-field appearance="outline">
                     <mat-label>Name</mat-label>
@@ -43,7 +55,7 @@
                 Keine Gruppe ausgewählt. Bitte eine auswählen oder neue erstellen.
             </ng-template>
 
-<!--            <pre>{{form.value | json}}</pre>-->
+            <!--            <pre>{{form.value | json}}</pre>-->
         </div>
     </as-split-area>
 </as-split>

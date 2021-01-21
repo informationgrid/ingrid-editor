@@ -23,8 +23,8 @@ export class UserDataService {
     return this.http.put<BackendUser>(this.configuration.backendUrl + 'users/' + user.login, user);
   }
 
-  createUser(user: User): Observable<BackendUser> {
-    return this.http.post<BackendUser>(this.configuration.backendUrl + 'users', user);
+  createUser(user: User, isNewExternalUser: boolean): Observable<BackendUser> {
+    return this.http.post<BackendUser>(`${this.configuration.backendUrl}users?newExternalUser=${isNewExternalUser}`, user);
   }
 
   deleteUser(login: string): Observable<any> {

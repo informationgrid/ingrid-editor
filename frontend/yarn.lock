@@ -2055,6 +2055,11 @@
     "@material/feature-targeting" "9.0.0-canary.fdf9a2634.0"
     "@material/theme" "9.0.0-canary.fdf9a2634.0"
 
+"@ngneat/dirty-check-forms@^1.0.1":
+  version "1.0.1"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/@ngneat/dirty-check-forms/-/dirty-check-forms-1.0.1.tgz#0172a52c32a48097d07cd583b6abf716db30e9dc"
+  integrity sha512-3rgThvjpZIxLS3sANYvma4J4VLITeAsnHrWOe9dtEYauCI4Vl5wDLB2aPNJkKu6EQD/X0QLs96rZvFqe3A3paw==
+
 "@ngneat/forms-manager@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@ngneat/forms-manager/-/forms-manager-2.2.0.tgz#6c94a37e1d218e636e7e2a01e3ededcb11a6d8f4"

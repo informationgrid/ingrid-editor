@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
@@ -206,10 +207,15 @@ class CatalogService @Autowired constructor(
     fun createUser(user: User) {
 
         dbService.acquireDatabase().use {
-            val data = """
-               { "userId": "${user.login}", "groups": [] }
-            """
-            dbService.save(UserInfoType::class, null, data)
+            val userFromDB = getUser(user.login)
+            if (userFromDB == null) {
+                val node = jacksonObjectMapper().createObjectNode().apply {
+                    put("userId", user.login)
+                    set<ArrayNode>("groups", jacksonObjectMapper().createArrayNode())
+                }
+                
+                dbService.save(UserInfoType::class, null, node.toString())
+            }
             setGroupsForUser(user.login, user.groups.toList())
         }
 

@@ -1,14 +1,16 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ModalService} from '../../services/modal/modal.service';
 import {UserService} from '../../services/user/user.service';
-import {User} from '../user';
-import {Observable} from 'rxjs';
+import {FrontendUser, User} from '../user';
+import {Observable, Subject} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {RoleService} from '../../services/role/role.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {NewUserDialogComponent} from './new-user-dialog/new-user-dialog.component';
 import {ConfirmDialogComponent} from '../../dialogs/confirm/confirm-dialog.component';
+import {debounceTime, map, tap} from 'rxjs/operators';
+import {dirtyCheck} from '@ngneat/dirty-check-forms';
 
 @UntilDestroy()
 @Component({
@@ -26,9 +28,8 @@ import {ConfirmDialogComponent} from '../../dialogs/confirm/confirm-dialog.compo
 })
 export class UserComponent implements OnInit {
 
-  @Input() doSave: EventEmitter<void>;
-  @Input() doDelete: EventEmitter<void>;
-  @Output() canSave = new EventEmitter<FormGroup>();
+  isDirty$: Observable<boolean>;
+  state$ = new Subject<any>();
 
   @ViewChild('loginRef') loginRef: ElementRef;
 
@@ -37,9 +38,11 @@ export class UserComponent implements OnInit {
   form: FormGroup;
 
   isNewUser = false;
+  private isNewExternalUser = false;
 
   roles = this.userService.availableRoles;
   groups = this.groupService.getGroups();
+  selectedUser = new FormControl();
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
@@ -57,51 +60,55 @@ export class UserComponent implements OnInit {
       role: this.fb.control({value: '', disabled: true}, Validators.required),
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      email: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       groups: this.fb.control([])
     });
-    this.canSave.emit(this.form);
 
-    if (this.doSave) {
-      this.doSave
-        .pipe(untilDestroyed(this))
-        .subscribe(() => this.saveUser());
-    }
-
-    if (this.doDelete) {
-      this.doDelete
-        .pipe(untilDestroyed(this))
-        .subscribe(() => this.deleteUser(this.form.getRawValue().login));
-    }
+    this.isDirty$ = dirtyCheck(this.form, this.state$, {debounce: 100})
+      // add debounceTime with same as in dirtyCheck to prevent save button flicker
+      .pipe(debounceTime(100));
   }
 
   fetchUsers() {
-    this.userService.getUsers().subscribe(
-      users => this.users = users ? users : []
-    );
+    const currentValue = this.selectedUser.value;
+
+    this.userService.getUsers()
+      // .pipe(tap(users => users.filter(u => u.login === this.selectedUser.value.login)))
+      .pipe(
+        map((users: FrontendUser[]) => users.sort((a, b) => a.login.localeCompare(b.login))),
+        tap(users => this.users = users ? users : []),
+        tap(() => setTimeout(() => this.selectedUser.setValue(currentValue)))
+      )
+      .subscribe();
   }
 
-  loadUser(userToLoad: User) {
-    console.log('user', userToLoad);
+  loadUser(login: string) {
     this.isNewUser = false;
-    this.userService.getUser(userToLoad.login)
-      .subscribe(user => {
-        const mergedUser = Object.assign({
-          email: '',
-          groups: [],
-          role: 'Keiner Rolle zugeordnet'
-        }, user);
-        this.form.setValue(mergedUser);
-        // this.canSave.emit(true);
-      });
+    this.form.disable();
+    this.userService.getUser(login)
+      .subscribe(user => this.updateUserForm(user));
   }
 
-  showNewUserDialog() {
+  private updateUserForm(user: FrontendUser) {
+    const mergedUser = Object.assign({
+      email: '',
+      groups: [],
+      role: 'Keiner Rolle zugeordnet'
+    }, user);
+    this.form.enable();
+    this.form.get('login').disable();
+    this.form.get('role').disable();
+    this.form.reset(mergedUser);
+    this.state$.next(mergedUser);
+  }
+
+  showExternalUsersDialog() {
     this.dialog.open(NewUserDialogComponent)
       .afterClosed().subscribe(result => {
       if (result) {
         this.form.get('login').disable();
         this.form.get('role').disable();
+        this.isNewExternalUser = false;
 
         this.addUser(result);
       }
@@ -111,6 +118,7 @@ export class UserComponent implements OnInit {
   initNewKeycloakUser() {
     this.form.get('login').enable();
     this.form.get('role').enable();
+    this.isNewExternalUser = true;
 
     this.addUser({});
   }
@@ -121,7 +129,6 @@ export class UserComponent implements OnInit {
     this.isNewUser = true;
     this.form.reset();
     this.form.patchValue(newUser);
-    // this.canSave.emit(true);
     setTimeout(() => this.loginRef.nativeElement.focus(), 300);
   }
 
@@ -137,13 +144,14 @@ export class UserComponent implements OnInit {
 
     // convert roles to numbers
     // user.roles = user.roles.map(role => +role);
+    this.form.disable();
 
     const user = this.form.getRawValue();
     if (this.isNewUser) {
-      observer = this.userService.createUser(user);
+      observer = this.userService.createUser(user, this.isNewExternalUser);
 
     } else {
-      observer = this.userService.saveUser(user);
+      observer = this.userService.updateUser(user);
 
     }
 
@@ -152,6 +160,7 @@ export class UserComponent implements OnInit {
       () => {
         this.isNewUser = false;
         this.fetchUsers();
+        this.form.enable();
       }, (err: any) => {
         if (err.status === 406) {
           if (this.isNewUser) {
@@ -178,5 +187,14 @@ export class UserComponent implements OnInit {
           .subscribe();
       }
     });
+  }
+
+  getEmailErrorMessage() {
+    const email = this.form.get('email');
+    if (email.hasError('required')) {
+      return 'Es wird eine Email-Adresse benötigt';
+    }
+
+    return email.hasError('email') ? 'Keine gültige Email-Adresse' : '';
   }
 }

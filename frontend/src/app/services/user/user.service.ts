@@ -33,15 +33,15 @@ export class UserService {
       );
   }
 
-  saveUser(user: User): Observable<FrontendUser> {
+  updateUser(user: User): Observable<FrontendUser> {
     return this.dataService.saveUser(user)
       .pipe(
         map(u => new FrontendUser(u))
       );
   }
 
-  createUser(user: User): Observable<FrontendUser> {
-    return this.dataService.createUser(user)
+  createUser(user: User, isNewExternalUser: boolean): Observable<FrontendUser> {
+    return this.dataService.createUser(user, isNewExternalUser)
       .pipe(
         map(u => new FrontendUser(u))
       );

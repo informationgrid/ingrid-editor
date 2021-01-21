@@ -33,6 +33,7 @@ export class RoleService {
   }
 
   createGroup(role: Group): Observable<any> {
+    // delete role.id;
     return this.dataService.createRole(role);
   }
 

@@ -21,7 +21,7 @@ export class RoleDataService {
   }
 
   createRole(role: Group): Observable<any> {
-    return this.http.post(this.configuration.backendUrl + 'groups/' + role.name, role);
+    return this.http.post(this.configuration.backendUrl + 'groups', role);
   }
 
   // delete group metadata from backend
