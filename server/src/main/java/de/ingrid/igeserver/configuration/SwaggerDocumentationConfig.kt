@@ -44,9 +44,9 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
         val basePath = ""
         // Attention: update resource locations when changing springdoc-openapi-ui
         registry.addResourceHandler("$basePath/swagger-ui/index.html**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.37.2/index.html")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.38.0/index.html")
         registry.addResourceHandler("$basePath/swagger-ui/*")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.37.2/")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.38.0/")
         registry.addResourceHandler("/**/*")
                 .addResourceLocations("classpath:/static/")
                 .resourceChain(true)
