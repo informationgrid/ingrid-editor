@@ -62,7 +62,7 @@ class Migration : ApplicationRunner {
             val info = dbService.findAll(CatalogInfoType::class)
             val infoDoc = info.get(0)
             val version = infoDoc.get("version")
-            return if (version == null) "0" else version.asText()
+            return if (infoDoc.hasNonNull("version")) version.asText() else "0"
         }
     }
 
