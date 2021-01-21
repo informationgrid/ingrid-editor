@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {RoleService} from './services/role/role.service';
+import {GroupService} from './services/role/group.service';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {BehaviourService} from './services/behavior/behaviour.service';
@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
 
   constructor(private behaviourService: BehaviourService/*for initialization!*/,
               registry: MatIconRegistry, domSanitizer: DomSanitizer,
-              private roleService: RoleService) {
+              private roleService: GroupService) {
 
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly
     /*this.roleService.getGroup('admin')

@@ -14,7 +14,7 @@ import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
 import {ModalService} from '../../../services/modal/modal.service';
-import {Group} from '../../../models/user-role';
+import {Group} from '../../../models/user-group';
 import {IgeDocument} from '../../../models/ige-document';
 import {FormUtils} from '../../form.utils';
 import {TreeQuery} from '../../../store/tree/tree.query';

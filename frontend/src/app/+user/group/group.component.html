@@ -4,9 +4,8 @@
 
     <!-- GROUP LIST -->
     <as-split-area [size]="25" id="sidebarRoles" class="container">
-        <mat-selection-list #groupList multiple="false" (selectionChange)="loadGroup($event.options[0].value)">
-            <mat-list-option *ngFor="let group of groups" [value]="group.id"
-                             [selected]="group.id === form.get('id').value">
+        <mat-selection-list #groupList [formControl]="selectedGroup" multiple="false" (selectionChange)="loadGroup($event.options[0].value)">
+            <mat-list-option *ngFor="let group of groups" [value]="group.id">
                 <h4 mat-line>{{group.name}}</h4>
             </mat-list-option>
         </mat-selection-list>
@@ -24,7 +23,7 @@
                  [formGroup]="form">
                 <div>
                     <button mat-button
-                            (click)="deleteGroup(groupList.selectedOptions.selected[0].value)">Löschen
+                            (click)="deleteGroup(selectedGroup.value)">Löschen
                     </button>
                     <div fxFlex></div>
                     <button mat-stroked-button color="primary"

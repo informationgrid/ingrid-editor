@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, OnInit} from '@angular/core';
-import {Group} from '../../models/user-role';
+import {Group} from '../../models/user-group';
 import {FormGroup} from '@angular/forms';
 
 @Component({

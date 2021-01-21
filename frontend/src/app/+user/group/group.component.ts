@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ModalService} from '../../services/modal/modal.service';
-import {RoleService} from '../../services/role/role.service';
-import {Group} from '../../models/user-role';
+import {GroupService} from '../../services/role/group.service';
+import {Group} from '../../models/user-group';
 import {Observable, Subject} from 'rxjs';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {Permissions} from '../user';
 import {debounceTime, tap} from 'rxjs/operators';
 import {UntilDestroy} from '@ngneat/until-destroy';
@@ -12,9 +12,9 @@ import {dirtyCheck} from '@ngneat/dirty-check-forms';
 @UntilDestroy()
 @Component({
   selector: 'ige-group-manager',
-  templateUrl: './role.component.html'
+  templateUrl: './group.component.html'
 })
-export class RoleComponent implements OnInit {
+export class GroupComponent implements OnInit {
 
   isDirty$: Observable<boolean>;
   state$ = new Subject<any>();
@@ -31,10 +31,11 @@ export class RoleComponent implements OnInit {
     description: '',
     permissions: new Permissions()
   };
+  selectedGroup = new FormControl();
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
-              private groupService: RoleService) {
+              private groupService: GroupService) {
   }
 
   ngOnInit() {
@@ -54,8 +55,13 @@ export class RoleComponent implements OnInit {
   }
 
   fetchGroups(): Observable<Group[]> {
+    const currentValue = this.selectedGroup.value;
+
     return this.groupService.getGroups()
-      .pipe(tap(groups => this.groups = groups));
+      .pipe(
+        tap(groups => this.groups = groups),
+        tap(() => setTimeout(() => this.selectedGroup.setValue(currentValue)))
+      );
   }
 
   addGroup() {
@@ -109,8 +115,8 @@ export class RoleComponent implements OnInit {
       });
   }
 
-  deleteGroup(group: Group) {
-    this.groupService.deleteGroup(group.id)
+  deleteGroup(id: string) {
+    this.groupService.deleteGroup(id)
       .subscribe(
         () => {
           this.fetchGroups()

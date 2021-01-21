@@ -3,8 +3,8 @@ import {ModalService} from '../../services/modal/modal.service';
 import {UserService} from '../../services/user/user.service';
 import {FrontendUser, User} from '../user';
 import {Observable, Subject} from 'rxjs';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {RoleService} from '../../services/role/role.service';
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {GroupService} from '../../services/role/group.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {NewUserDialogComponent} from './new-user-dialog/new-user-dialog.component';
@@ -47,7 +47,7 @@ export class UserComponent implements OnInit {
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
               private dialog: MatDialog,
-              private userService: UserService, private groupService: RoleService) {
+              private userService: UserService, private groupService: GroupService) {
   }
 
   ngOnInit() {

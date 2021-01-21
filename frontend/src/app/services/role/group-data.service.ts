@@ -1,13 +1,13 @@
 import {Observable} from 'rxjs';
 import {ConfigService, Configuration} from '../config/config.service';
 import {HttpClient} from '@angular/common/http';
-import {Group} from '../../models/user-role';
+import {Group} from '../../models/user-group';
 import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RoleDataService {
+export class GroupDataService {
 
   private configuration: Configuration;
 
@@ -15,17 +15,17 @@ export class RoleDataService {
     this.configuration = configService.getConfiguration();
   }
 
-  saveRole(role: Group): Observable<any> {
+  saveGroup(role: Group): Observable<any> {
     // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
     return this.http.put(this.configuration.backendUrl + 'groups/' + role.id, role);
   }
 
-  createRole(role: Group): Observable<any> {
+  createGroup(role: Group): Observable<any> {
     return this.http.post(this.configuration.backendUrl + 'groups', role);
   }
 
   // delete group metadata from backend
-  deleteRole(id: string): Observable<any> {
+  deleteGroup(id: string): Observable<any> {
     return this.http.delete(this.configuration.backendUrl + 'groups/' + id);
   }
 
