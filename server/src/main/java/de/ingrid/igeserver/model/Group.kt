@@ -9,19 +9,11 @@ import com.fasterxml.jackson.databind.JsonNode
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Group(
+    var id: String?,
     val name: String,
     val description: String?,
-    val permissions: JsonNode,
-    @JsonAlias("id") private val _id: String?
+    val permissions: JsonNode
 ) {
-
-    // generate id from name, which is done only for a new group
-    val id: String
-        get() {
-            return _id ?: return name
-                .toLowerCase()
-                .filter { !it.isWhitespace() }
-        }
 
     //    @get:JsonIgnore
     val _type: String
