@@ -61,6 +61,7 @@ export class RoleComponent implements OnInit {
   addGroup() {
     this.isNewGroup = true;
     this.form.setValue(this.initialValue);
+    this.state$.next(this.initialValue);
   }
 
   loadGroup(id: string) {
