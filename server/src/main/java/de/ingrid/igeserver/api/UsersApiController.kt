@@ -115,6 +115,7 @@ class UsersApiController : UsersApi {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquireCatalog(dbId).use {
+            keycloakService.updateUser(principal!!, user)
             catalogService.setGroupsForUser(id, user.groups.toList())
             return ResponseEntity.ok().build()
         }

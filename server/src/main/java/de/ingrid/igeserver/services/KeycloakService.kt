@@ -214,6 +214,17 @@ class KeycloakService : UserManagementService {
 
     }
 
+    override fun updateUser(principal: Principal, user: User) {
+
+        initClient(principal).use { client ->
+            val kcUser = getKeycloakUser(principal, user.login)
+            mapToKeycloakUser(user, kcUser)
+
+            client.realm().users().get(kcUser.id).update(kcUser)
+        }
+
+    }
+
     private fun handleReponseErrors(createResponse: Response) {
 
         when (createResponse.status) {
@@ -286,15 +297,17 @@ class KeycloakService : UserManagementService {
 
     }
 
-    private fun mapToKeycloakUser(user: User): UserRepresentation {
+    private fun mapToKeycloakUser(user: User, existingUserRep: UserRepresentation? = null): UserRepresentation {
 
-        return UserRepresentation().apply {
+        val userRep = existingUserRep ?: UserRepresentation()
+        
+        return userRep.apply {
             isEnabled = true
             username = user.login
             firstName = user.firstName
             lastName = user.lastName
             email = user.email
         }
-
+        
     }
 }
