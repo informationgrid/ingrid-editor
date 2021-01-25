@@ -186,7 +186,11 @@ class UsersApiController : UsersApi {
     }
 
     private fun getVersion(): Version {
-        return Version(buildInfo?.version, Date.from(buildInfo?.time), gitInfo?.commitId)
+        return Version(
+            buildInfo?.version,
+            if (buildInfo != null) Date.from(buildInfo?.time) else null,
+            gitInfo?.commitId
+        )
     }
 
     override fun setCatalogAdmin(
