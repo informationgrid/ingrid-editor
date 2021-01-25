@@ -1,10 +1,8 @@
-package de.ingrid.igeserver.exports.iso;
+package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElement
 
-public class RoleCode {
-
-	@XmlElement(name = "CI_RoleCode")
-	public CodelistAttributes codelist;
-	
+class RoleCode {
+    @XmlElement(name = "CI_RoleCode")
+    var codelist: CodelistAttributes? = null
 }

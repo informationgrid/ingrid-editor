@@ -1,29 +1,22 @@
-package de.ingrid.igeserver.exports.iso;
+package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute
+import javax.xml.bind.annotation.XmlElement
 
-@SuppressWarnings("unused")
-public class ResponsibleParty {
-	
-	@XmlAttribute
-	public String uuid;
+class ResponsibleParty {
+    @XmlAttribute
+    var uuid: String? = null
+    private val individualName: String? = null
+    private val organisationName: String? = null
+    private val positionName: String? = null
 
-	private String individualName;
-	
-	private String organisationName;
-	
-	private String positionName;
-	
-	@XmlElement(name = "contactInfo")
-	public ContactInfo contactInfo;
-	
-	@XmlElement(name = "role")
-	private RoleCode role;
+    @XmlElement(name = "contactInfo")
+    var contactInfo: ContactInfo? = null
 
-	public void setRole(CodelistAttributes codelistAttr) {
-		this.role = new RoleCode();
-		this.role.codelist = codelistAttr;
-	}
-
+    @XmlElement(name = "role")
+    private var role: RoleCode? = null
+    fun setRole(codelistAttr: CodelistAttributes?) {
+        role = RoleCode()
+        role!!.codelist = codelistAttr
+    }
 }

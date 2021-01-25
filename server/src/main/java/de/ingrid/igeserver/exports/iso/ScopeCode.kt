@@ -1,10 +1,8 @@
-package de.ingrid.igeserver.exports.iso;
+package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElement
 
-public class ScopeCode {
-
-	@XmlElement(name = "MD_ScopeCode")
-	public CodelistAttributes codelist;
-	
+class ScopeCode {
+    @XmlElement(name = "MD_ScopeCode")
+    var codelist: CodelistAttributes? = null
 }

@@ -1,10 +1,8 @@
-package de.ingrid.igeserver.exports.iso;
+package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElement
 
-public class Contact {
-	
-	@XmlElement(name = "CI_ResponsibleParty")
-	public ResponsibleParty responsibleParty; 
-	
+class Contact {
+    @XmlElement(name = "CI_ResponsibleParty")
+    var responsibleParty: ResponsibleParty? = null
 }

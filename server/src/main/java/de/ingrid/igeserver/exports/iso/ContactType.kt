@@ -1,5 +1,5 @@
-package de.ingrid.igeserver.exports.iso;
+package de.ingrid.igeserver.exports.iso
 
-public enum ContactType {
+enum class ContactType {
     PHONE, ADDRESS, ONLINE_RESOURCE
 }

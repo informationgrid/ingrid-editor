@@ -20,141 +20,84 @@
  * limitations under the Licence.
  * **************************************************#
  */
-package de.ingrid.igeserver.services.ibus;
+package de.ingrid.igeserver.services.ibus
 
-import de.ingrid.ibus.client.BusClient;
-import de.ingrid.ibus.client.BusClientFactory;
-import de.ingrid.utils.*;
-import de.ingrid.utils.metadata.IMetadataInjector;
-import de.ingrid.utils.metadata.Metadata;
-import de.ingrid.utils.processor.IPostProcessor;
-import de.ingrid.utils.processor.IPreProcessor;
-import de.ingrid.utils.query.IngridQuery;
-import de.ingrid.utils.tool.MD5Util;
-import de.ingrid.utils.xml.PlugdescriptionSerializer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import de.ingrid.ibus.client.BusClientFactory
+import de.ingrid.utils.*
+import de.ingrid.utils.metadata.IMetadataInjector
+import de.ingrid.utils.metadata.Metadata
+import de.ingrid.utils.processor.IPostProcessor
+import de.ingrid.utils.processor.IPreProcessor
+import de.ingrid.utils.query.IngridQuery
+import de.ingrid.utils.xml.PlugdescriptionSerializer
+import org.apache.commons.logging.LogFactory
+import java.io.File
+import java.io.IOException
+import java.util.*
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-
-public abstract class HeartBeatPlug implements IPlug, IConfigurable {
-
-    static class HeartBeat extends TimerTask {
-
-        static class ShutdownHook extends Thread {
-            private final HeartBeat _heartBeat;
-
-            public ShutdownHook(final HeartBeat heartBeat) {
-
-                _heartBeat = heartBeat;
+abstract class HeartBeatPlug : IPlug, IConfigurable {
+    internal class HeartBeat(
+        private val _name: String,
+        val _busUrl: String,
+        var _bus: IBus,
+        private var _plugDescription: PlugDescription?,
+        period: Long,
+        var metadataInjectors: Array<IMetadataInjector>?
+    ) : TimerTask() {
+        internal class ShutdownHook(private val _heartBeat: HeartBeat) : Thread() {
+            override fun run() {
+                _heartBeat.disable()
             }
-
-            @Override
-            public void run() {
-
-                _heartBeat.disable();
-            }
-
         }
 
-        private boolean _enable = false;
+        var isEnable = false
+            private set
+        var isAccurate = false
+            private set
+        private var _heartBeatCount: Long = 0
+        private val _metadataInjectors: Array<IMetadataInjector>?
+        private val _shutdownHook: ShutdownHook
+        private val _timer: Timer
+        private var _heartBeatFailed: Boolean
 
-        private boolean _accurate = false;
-
-        private static final Log LOG = LogFactory.getLog(HeartBeat.class);
-
-        private PlugDescription _plugDescription;
-
-        private IBus _bus;
-
-        private long _heartBeatCount;
-
-        private final IMetadataInjector[] _metadataInjectors;
-
-        private final String _busUrl;
-
-        private final String _name;
-
-        private final ShutdownHook _shutdownHook;
-
-        private final Timer _timer;
-
-        private boolean _heartBeatFailed;
-
-//        private final PlugDescriptionFieldFilters _filters;
-
-        private File plugdescriptionAsFile = null;
-
-        public HeartBeat(final String name, final String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final IMetadataInjector... metadataInjectors) {
-
-            _name = name;
-            _busUrl = busUrl;
-            _bus = bus;
-            _plugDescription = plugDescription;
-            _metadataInjectors = metadataInjectors;
-            _timer = new Timer(true);
-            _timer.schedule(this, new Date(), period);
-            _shutdownHook = new ShutdownHook(this);
-            _heartBeatFailed = false;
-//            _filters = filters;
-            Runtime.getRuntime().addShutdownHook(_shutdownHook);
-        }
-
-        public void setIBus(IBus ibus) {
-
-            _bus = ibus;
+        //        private final PlugDescriptionFieldFilters _filters;
+        private var plugdescriptionAsFile: File? = null
+        fun setIBus(ibus: IBus) {
+            _bus = ibus
             // reset heartbeat failure since a new bus is connected
-            _heartBeatFailed = false;
+            _heartBeatFailed = false
         }
 
-        public void enable() throws IOException {
-
-            _enable = true;
-            _accurate = false;
+        @Throws(IOException::class)
+        fun enable() {
+            isEnable = true
+            isAccurate = false
         }
 
-        public void disable() {
-
-            _enable = false;
-            _accurate = false;
+        fun disable() {
+            isEnable = false
+            isAccurate = false
             try {
-                if (_bus.containsPlugDescription(_plugDescription.getPlugId(), _plugDescription.getMd5Hash())) {
-                    _bus.removePlugDescription(_plugDescription);
+                if (_bus.containsPlugDescription(_plugDescription!!.plugId, _plugDescription!!.md5Hash)) {
+                    _bus.removePlugDescription(_plugDescription)
                 }
-            } catch (final Exception e) {
-                LOG.warn("error while disabling heartbeat '" + _name + "'. maybe it's already disconnected?");
+            } catch (e: Exception) {
+                LOG.warn("error while disabling heartbeat '$_name'. maybe it's already disconnected?")
             }
-            this.cancel();
+            cancel()
         }
 
-        public boolean isEnable() {
-
-            return _enable;
-        }
-
-        public boolean isAccurate() {
-
-            return _accurate;
-        }
-
-        @Override
-        public void run() {
-
-            if (_enable) { // && !_heartBeatFailed) {
-                _heartBeatCount++;
+        override fun run() {
+            if (isEnable) { // && !_heartBeatFailed) {
+                _heartBeatCount++
                 try {
-
-                    final int oldMetadataHashCode = _plugDescription.getMetadata().hashCode();
-                    injectMetadatas(_plugDescription);
-                    final int newMetadataHashCode = _plugDescription.getMetadata().hashCode();
-                    final boolean changedMetadata = oldMetadataHashCode != newMetadataHashCode;
-
-                    plugdescriptionAsFile = _plugDescription.getDesrializedFromFolder();
-//                    final String md5 = MD5Util.getMD5(plugdescriptionAsFile);
-                    final String plugId = _plugDescription.getPlugId();
+                    val oldMetadataHashCode = _plugDescription!!.metadata.hashCode()
+                    injectMetadatas(_plugDescription)
+                    val newMetadataHashCode = _plugDescription!!.metadata.hashCode()
+                    val changedMetadata = oldMetadataHashCode != newMetadataHashCode
+                    plugdescriptionAsFile = _plugDescription!!.desrializedFromFolder
+                    //                    final String md5 = MD5Util.getMD5(plugdescriptionAsFile);
+                    val plugId = _plugDescription!!.plugId
 
                     /*if (changedMetadata) {
                         LOG.info("Detect changed metadata: " + changedMetadata);
@@ -163,11 +106,8 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                             LOG.info("remove plugdescription.");
                             _bus.removePlugDescription(_plugDescription);
                         }
-                    }*/
-
-                    LOG.info("heartbeat#" + _name + " send heartbeat [" + (_heartBeatCount) + "] to bus [" + _busUrl + "]");
-                    final boolean containsPlugDescription = false; // _bus.containsPlugDescription(plugId, md5);
-
+                    }*/LOG.info("heartbeat#$_name send heartbeat [$_heartBeatCount] to bus [$_busUrl]")
+                    val containsPlugDescription = false // _bus.containsPlugDescription(plugId, md5);
                     if (!containsPlugDescription) {
                         /*if (LOG.isInfoEnabled()) {
                             LOG.info("adding or updating plug description to bus [" + _busUrl + "] with md5 [" + md5 + "]");
@@ -176,21 +116,21 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                         // could not be updated in all IConfigurable instances
 //                        _plugDescription = new PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile);
 //                        _plugDescription.setMd5Hash(md5);
-                        injectMetadatas(_plugDescription);
-//                        _plugDescription = _filters.filter(_plugDescription);
-                        _bus.addPlugDescription(_plugDescription);
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("added or updated plug description to bus [" + _busUrl + "]: " + _plugDescription);
+                        injectMetadatas(_plugDescription)
+                        //                        _plugDescription = _filters.filter(_plugDescription);
+                        _bus.addPlugDescription(_plugDescription)
+                        if (LOG.isDebugEnabled) {
+                            LOG.debug("added or updated plug description to bus [$_busUrl]: $_plugDescription")
                         }
                     } else {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("I am currently connected to bus [" + _busUrl + "].");
+                        if (LOG.isDebugEnabled) {
+                            LOG.debug("I am currently connected to bus [$_busUrl].")
                         }
                     }
-                    _accurate = true;
-                } catch (final Throwable e) {
-                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "]. With plugdescription: " + _plugDescription + " Error message: " + e.getMessage());
-                    _accurate = false;
+                    isAccurate = true
+                } catch (e: Throwable) {
+                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "]. With plugdescription: " + _plugDescription + " Error message: " + e.message)
+                    isAccurate = false
                     //this._heartBeatFailed = true;
 
                     // try to reload plugdescription in case it was reseted
@@ -202,53 +142,62 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                                 at java.util.TimerThread.mainLoop(Timer.java:512)
                                 at java.util.TimerThread.run(Timer.java:462)
                      * 
-                     */
-                    if (_plugDescription == null || _plugDescription.getMetadata() == null) {
-                        LOG.info("PlugDescription or metadata is null. Reload PlugDescription from file...");
+                     */if (_plugDescription == null || _plugDescription!!.metadata == null) {
+                        LOG.info("PlugDescription or metadata is null. Reload PlugDescription from file...")
                         try {
-                            _plugDescription = new PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile);
-                            injectMetadatas(_plugDescription);
-                        } catch (IOException e1) {
-                            LOG.error("Cannot deserialize plugdescription from: " + plugdescriptionAsFile, e1);
-                        } catch (Exception e1) {
-                            LOG.error("Cannot inject Metadate into plugdescription.", e1);
+                            _plugDescription = PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile)
+                            injectMetadatas(_plugDescription)
+                        } catch (e1: IOException) {
+                            LOG.error("Cannot deserialize plugdescription from: $plugdescriptionAsFile", e1)
+                        } catch (e1: Exception) {
+                            LOG.error("Cannot inject Metadate into plugdescription.", e1)
                         }
                     }
                 }
             } else {
-                LOG.debug("Heartbeat not sent since it was disabled or a failure! (" + this + ")");
+                LOG.debug("Heartbeat not sent since it was disabled or a failure! ($this)")
             }
-
         }
 
-        private void injectMetadatas(final PlugDescription plugDescription) throws Exception {
-
-            Metadata metadata = plugDescription.getMetadata();
-            metadata = metadata != null ? metadata : new Metadata();
+        @Throws(Exception::class)
+        private fun injectMetadatas(plugDescription: PlugDescription?) {
+            var metadata = plugDescription!!.metadata
+            metadata = metadata ?: Metadata()
             if (_metadataInjectors != null) {
-                for (final IMetadataInjector metadataInjector : _metadataInjectors) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Inject metadatas using " + metadataInjector.getClass().getName());
+                for (metadataInjector in _metadataInjectors) {
+                    if (LOG.isDebugEnabled) {
+                        LOG.debug("Inject metadatas using " + metadataInjector.javaClass.name)
                     }
-                    metadataInjector.injectMetaDatas(metadata);
+                    metadataInjector.injectMetaDatas(metadata)
                 }
             }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Injected metadata:" + metadata);
+            if (LOG.isDebugEnabled) {
+                LOG.debug("Injected metadata:$metadata")
             }
-            plugDescription.setMetadata(metadata);
+            plugDescription.metadata = metadata
         }
 
-        public void setPlugDescription(final PlugDescription plugDescription) {
-
-            _plugDescription = plugDescription;
+        fun setPlugDescription(plugDescription: PlugDescription?) {
+            _plugDescription = plugDescription
         }
 
-        public boolean hasFailed() {
-
-            return _heartBeatFailed;
+        fun hasFailed(): Boolean {
+            return _heartBeatFailed
         }
 
+        companion object {
+            private val LOG = LogFactory.getLog(HeartBeat::class.java)
+        }
+
+        init {
+            _metadataInjectors = metadataInjectors
+            _timer = Timer(true)
+            _timer.schedule(this, Date(), period)
+            _shutdownHook = ShutdownHook(this)
+            _heartBeatFailed = false
+            //            _filters = filters;
+            Runtime.getRuntime().addShutdownHook(_shutdownHook)
+        }
     }
 
     /**
@@ -257,94 +206,86 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
      *
      * @author Andre
      */
-    static class HeartBeatMonitor extends TimerTask {
-        private static final Log LOG = LogFactory.getLog(HeartBeatMonitor.class);
-
-        private Timer _timer;
-
-        private final Map<String, HeartBeat> _heartBeats;
-
-        public HeartBeatMonitor(final long period, final Map<String, HeartBeat> heartBeats) {
-
-            this._timer = new Timer(true);
-            this._timer.schedule(this, new Date(), period);
-            this._heartBeats = heartBeats;
-            LOG.debug("HeartBeatMonitor started!");
-        }
-
-        @Override
-        public void run() {
-
-            final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
+    internal class HeartBeatMonitor(period: Long, heartBeats: Map<String, HeartBeat>) : TimerTask() {
+        private val _timer: Timer
+        private val _heartBeats: Map<String, HeartBeat>
+        override fun run() {
+            val iterator = _heartBeats.values.iterator()
             while (iterator.hasNext()) {
-                final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
+                val heartBeat = iterator.next()
                 if (heartBeat.hasFailed()) {
                     // restart complete communication (since it's not possible 
                     // yet just to restart a single one)
                     try {
-                        LOG.info("Restart iBusClient with all connections");
-                        BusClientFactory.getBusClient().restart();
-                        updateBusInHeartBeats();
-                        break;
-                    } catch (Exception e) {
+                        LOG.info("Restart iBusClient with all connections")
+                        BusClientFactory.getBusClient().restart()
+                        updateBusInHeartBeats()
+                        break
+                    } catch (e: Exception) {
                         // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        e.printStackTrace()
                     }
                 }
             }
         }
 
-        private void updateBusInHeartBeats() {
-
-            BusClient busClient = BusClientFactory.getBusClient();
-            List<IBus> busses = busClient.getNonCacheableIBusses();
-            for (int i = 0; i < busses.size(); i++) {
-                final IBus iBus = busses.get(i);
-                final String busUrl = busClient.getBusUrl(i);
-                _heartBeats.get(busUrl).setIBus(iBus);
-                LOG.debug("update iBus in heartbeat");
+        private fun updateBusInHeartBeats() {
+            val busClient = BusClientFactory.getBusClient()
+            val busses = busClient.nonCacheableIBusses
+            for (i in busses.indices) {
+                val iBus = busses[i]
+                val busUrl = busClient.getBusUrl(i)
+                _heartBeats[busUrl]!!.setIBus(iBus)
+                LOG.debug("update iBus in heartbeat")
             }
         }
 
+        companion object {
+            private val LOG = LogFactory.getLog(
+                HeartBeatMonitor::class.java
+            )
+        }
+
+        init {
+            _timer = Timer(true)
+            _timer.schedule(this, Date(), period)
+            _heartBeats = heartBeats
+            LOG.debug("HeartBeatMonitor started!")
+        }
     }
 
-    private static final Log LOG = LogFactory.getLog(HeartBeatPlug.class);
+    private val _heartBeats: MutableMap<String, HeartBeat> = LinkedHashMap()
+    private val _period: Int
+    private var _plugDescription: PlugDescription? = null
 
-    private final Map<String, HeartBeat> _heartBeats = new LinkedHashMap<String, HeartBeat>();
+    //    private final PlugDescriptionFieldFilters _filters;
+    private val _injectors: Array<IMetadataInjector>?
+    private val _postProcessors: Array<IPostProcessor>?
+    private val _preProcessors: Array<IPreProcessor>?
 
-    private final int _period;
-
-    private PlugDescription _plugDescription;
-
-//    private final PlugDescriptionFieldFilters _filters;
-
-    private final IMetadataInjector[] _injectors;
-
-    private final IPostProcessor[] _postProcessors;
-
-    private final IPreProcessor[] _preProcessors;
-
-    public HeartBeatPlug(final int period, final IMetadataInjector[] injectors, final IPreProcessor[] preProcessors, final IPostProcessor[] postProcessors) {
-
-        _period = period;
-//        _filters = plugDescriptionFieldFilters;
-        _injectors = injectors;
-        _preProcessors = preProcessors;
-        _postProcessors = postProcessors;
+    constructor(
+        period: Int,
+        injectors: Array<IMetadataInjector>?,
+        preProcessors: Array<IPreProcessor>?,
+        postProcessors: Array<IPostProcessor>?
+    ) {
+        _period = period
+        //        _filters = plugDescriptionFieldFilters;
+        _injectors = injectors
+        _preProcessors = preProcessors
+        _postProcessors = postProcessors
     }
 
-    @Deprecated
-    public HeartBeatPlug(final int period) {
-
-        _period = period;
-//        _filters = new PlugDescriptionFieldFilters();
-        _injectors = null;
-        _preProcessors = null;
-        _postProcessors = null;
+    @Deprecated("")
+    constructor(period: Int) {
+        _period = period
+        //        _filters = new PlugDescriptionFieldFilters();
+        _injectors = null
+        _preProcessors = null
+        _postProcessors = null
     }
 
-    @Override
-    public void configure(final PlugDescription plugDescription) {
+    override fun configure(plugDescription: PlugDescription) {
         // configurate injectors
         /*for (final IMetadataInjector injector : _injectors) {
             injector.configure(plugDescription);
@@ -352,139 +293,145 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         // stop and remove existing heartbeats
 //        _plugDescription = _filters.filter(plugDescription);
-        _plugDescription = plugDescription;
-        _plugDescription.setMetadata(new Metadata());
-        final BusClient busClient = BusClientFactory.getBusClient();
+        _plugDescription = plugDescription
+        _plugDescription!!.metadata = Metadata()
+        val busClient = BusClientFactory.getBusClient()
         if (busClient != null) {
-            _plugDescription.setProxyServiceURL(busClient.getPeerName());
+            _plugDescription!!.proxyServiceURL = busClient.peerName
             // remove old hearbeats
-            stopHeartBeats();
-            _heartBeats.clear();
+            stopHeartBeats()
+            _heartBeats.clear()
             // configure heartbeat's
-            final List<IBus> busses = busClient.getNonCacheableIBusses();
-            for (int i = 0; i < busses.size(); i++) {
-                final IBus iBus = busses.get(i);
-                final String busUrl = busClient.getBusUrl(i);
+            val busses = busClient.nonCacheableIBusses
+            for (i in busses.indices) {
+                val iBus = busses[i]
+                val busUrl = busClient.getBusUrl(i)
                 if (!_heartBeats.containsKey(busUrl)) {
-                    final HeartBeat heartBeat = new HeartBeat("no." + _heartBeats.size(), busUrl, iBus, _plugDescription, _period, _injectors);
-                    _heartBeats.put(busUrl, heartBeat);
+                    val heartBeat = HeartBeat(
+                        "no." + _heartBeats.size,
+                        busUrl,
+                        iBus,
+                        _plugDescription,
+                        _period.toLong(),
+                        _injectors!!
+                    )
+                    _heartBeats[busUrl] = heartBeat
                 }
-                final HeartBeat heartBeat = _heartBeats.get(busUrl);
-                heartBeat.setPlugDescription(_plugDescription);
+                val heartBeat = _heartBeats[busUrl]
+                heartBeat!!.setPlugDescription(_plugDescription)
             }
             //_heartBeatMonitor = new HeartBeatMonitor(20000, _heartBeats);
         }
 
         // start sending HeartBeats to connected iBuses
         try {
-            startHeartBeats();
-        } catch (final IOException e) {
-            LOG.error("Couldn't start HeartBeats!", e);
+            startHeartBeats()
+        } catch (e: IOException) {
+            LOG.error("Couldn't start HeartBeats!", e)
         }
     }
 
-    public void reconfigure() {
+    fun reconfigure() {
         // remove old hearbeats
-        stopHeartBeats();
-        _heartBeats.clear();
+        stopHeartBeats()
+        _heartBeats.clear()
         if (_plugDescription != null) {
-            configure(_plugDescription);
+            configure(_plugDescription!!)
         }
     }
 
-    @Override
-    public void close() throws Exception {
-
-        stopHeartBeats();
-        for (final HeartBeat heartBeat : _heartBeats.values()) {
-            final IBus bus = heartBeat._bus;
-            bus.removePlugDescription(_plugDescription);
+    @Throws(Exception::class)
+    override fun close() {
+        stopHeartBeats()
+        for (heartBeat in _heartBeats.values) {
+            val bus = heartBeat._bus
+            bus.removePlugDescription(_plugDescription)
         }
-        BusClientFactory.getBusClient().shutdown();
+        BusClientFactory.getBusClient().shutdown()
     }
 
-    public void startHeartBeats() throws IOException {
-
-        LOG.info("start heart beats");
-        final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
-        int index = 0;
+    @Throws(IOException::class)
+    fun startHeartBeats() {
+        LOG.info("start heart beats")
+        val iterator: Iterator<HeartBeat> = _heartBeats.values.iterator()
+        var index = 0
         while (iterator.hasNext()) {
-            final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
-            heartBeat.enable();
+            val heartBeat = iterator.next()
+            heartBeat.enable()
             if (BusClientFactory.getBusClient().isConnected(index)) {
-                heartBeat.run();
+                heartBeat.run()
             }
-            index++;
+            index++
         }
     }
 
-    public void stopHeartBeats() {
-
-        LOG.info("stop heart beats");
-        final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
-        int index = 0;
+    fun stopHeartBeats() {
+        LOG.info("stop heart beats")
+        val iterator: Iterator<HeartBeat> = _heartBeats.values.iterator()
+        var index = 0
         while (iterator.hasNext()) {
             // only disable heartbeat for those who are connected
-            final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
+            val heartBeat = iterator.next()
             try {
                 if (BusClientFactory.getBusClient().isConnected(index)) {
-                    if (heartBeat._enable) {
-                        heartBeat.disable();
+                    if (heartBeat.isEnable) {
+                        heartBeat.disable()
                     }
                 } else {
-                    LOG.warn("HeartBeat already stopped, because there's no connection to ibus: " + heartBeat._busUrl);
+                    LOG.warn("HeartBeat already stopped, because there's no connection to ibus: " + heartBeat._busUrl)
                 }
-                index++;
-            } catch (IndexOutOfBoundsException e) {
-                LOG.warn("Could not check for connection at iBus: " + index);
-                heartBeat.disable();
-                break;
+                index++
+            } catch (e: IndexOutOfBoundsException) {
+                LOG.warn("Could not check for connection at iBus: $index")
+                heartBeat.disable()
+                break
             }
         }
     }
 
-    public boolean sendingHeartBeats() {
-
-        boolean bit = false;
-        for (final HeartBeat heartBeat : _heartBeats.values()) {
-            if (heartBeat.isEnable()) {
-                bit = true;
-                break;
+    fun sendingHeartBeats(): Boolean {
+        var bit = false
+        for (heartBeat in _heartBeats.values) {
+            if (heartBeat.isEnable) {
+                bit = true
+                break
             }
         }
-        return bit;
+        return bit
     }
 
-    public boolean sendingAccurate() {
-
-        boolean bit = sendingHeartBeats();
+    fun sendingAccurate(): Boolean {
+        var bit = sendingHeartBeats()
         if (bit) {
-            for (final HeartBeat heartBeat : _heartBeats.values()) {
-                if (!heartBeat.isAccurate()) {
-                    bit = false;
-                    break;
+            for (heartBeat in _heartBeats.values) {
+                if (!heartBeat.isAccurate) {
+                    bit = false
+                    break
                 }
             }
         }
-        return bit;
+        return bit
     }
 
-    protected void preProcess(final IngridQuery ingridQuery) throws Exception {
-
+    @Throws(Exception::class)
+    protected fun preProcess(ingridQuery: IngridQuery?) {
         if (_preProcessors != null) {
-            for (final IPreProcessor processor : _preProcessors) {
-                processor.process(ingridQuery);
+            for (processor in _preProcessors) {
+                processor.process(ingridQuery)
             }
         }
     }
 
-    protected void postProcess(final IngridQuery ingridQuery, final IngridDocument[] documents) throws Exception {
-
+    @Throws(Exception::class)
+    protected fun postProcess(ingridQuery: IngridQuery?, documents: Array<IngridDocument?>?) {
         if (_postProcessors != null) {
-            for (final IPostProcessor processor : _postProcessors) {
-                processor.process(ingridQuery, documents);
+            for (processor in _postProcessors) {
+                processor.process(ingridQuery, documents)
             }
         }
     }
 
+    companion object {
+        private val LOG = LogFactory.getLog(HeartBeatPlug::class.java)
+    }
 }

@@ -1,16 +1,13 @@
-package de.ingrid.igeserver.exports.iso;
+package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElement
 
-public class CharacterString {
-	
-	@XmlElement(name="CharacterString", namespace="http://www.isotc211.org/2005/gco")
-	public String text;
+class CharacterString {
+    @XmlElement(name = "CharacterString", namespace = "http://www.isotc211.org/2005/gco")
+    var text: String? = null
 
-	public CharacterString() {}
-	
-	public CharacterString(String text) {
-		this.text = text;
-	}
-
+    constructor() {}
+    constructor(text: String?) {
+        this.text = text
+    }
 }

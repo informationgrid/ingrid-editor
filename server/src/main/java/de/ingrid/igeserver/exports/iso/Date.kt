@@ -1,16 +1,13 @@
-package de.ingrid.igeserver.exports.iso;
+package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElement
 
-public class Date {
-    
+class Date {
     @XmlElement(name = "Date", namespace = "http://www.isotc211.org/2005/gco")
-    public String date;
+    var date: String? = null
 
-    public Date() {}
-    
-    public Date(String date) {
-        this.date = date;
+    constructor() {}
+    constructor(date: String?) {
+        this.date = date
     }
-    
 }

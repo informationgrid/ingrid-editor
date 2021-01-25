@@ -1,10 +1,8 @@
-package de.ingrid.igeserver.exports.iso;
+package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElement
 
-public class LanguageCode {
-
-	@XmlElement(name="LanguageCode")
-	public CodelistAttributes codelist;
-
+class LanguageCode {
+    @XmlElement(name = "LanguageCode")
+    var codelist: CodelistAttributes? = null
 }

@@ -1,51 +1,44 @@
-package de.ingrid.igeserver.exports;
+package de.ingrid.igeserver.exports
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import de.ingrid.igeserver.services.ExportPostProcessors;
+import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.services.ExportPostProcessors
+import javax.script.ScriptEngineManager
+import javax.script.SimpleScriptContext
+import de.ingrid.igeserver.exports.JSPostProcessor
+import org.apache.logging.log4j.LogManager
+import org.springframework.stereotype.Service
+import javax.script.ScriptContext
+import javax.script.ScriptException
 
 @Service
-public class JSPostProcessor implements ExportPostProcessors {
-	
-	private static Logger log = LogManager.getLogger(JSPostProcessor.class);
+class JSPostProcessor : ExportPostProcessors {
+    override fun process(exportedDoc: Any?, jsonData: JsonNode): Any? {
+        val engine = ScriptEngineManager().getEngineByName("nashorn")
 
-	@Override
-	public Object process(Object exportedDoc, JsonNode jsonData) {
-		ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-		
-		// define a different script context
-        ScriptContext newContext = new SimpleScriptContext();
-        newContext.setBindings(engine.createBindings(), ScriptContext.ENGINE_SCOPE);
-        Bindings engineScope = newContext.getBindings(ScriptContext.ENGINE_SCOPE);
+        // define a different script context
+        val newContext: ScriptContext = SimpleScriptContext()
+        newContext.setBindings(engine.createBindings(), ScriptContext.ENGINE_SCOPE)
+        val engineScope = newContext.getBindings(ScriptContext.ENGINE_SCOPE)
 
         // set the variable to a different value in another scope
-        engineScope.put("logMe", log);
-        engineScope.put("source", jsonData);
-        engineScope.put("target", exportedDoc);
-		
-		try {
-			engine.eval("logMe.Info('From Script!!!'); target.language = 'chinese';", newContext);
-		} catch (ScriptException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return exportedDoc;
-	}
+        engineScope["logMe"] = log
+        engineScope["source"] = jsonData
+        engineScope["target"] = exportedDoc
+        try {
+            engine.eval("logMe.Info('From Script!!!'); target.language = 'chinese';", newContext)
+        } catch (e: ScriptException) {
+            // TODO Auto-generated catch block
+            e.printStackTrace()
+        }
+        return exportedDoc
+    }
 
-	@Override
-	public TransformationType getType() {
-		return TransformationType.ISO;
-	}
+    override val type: ExportPostProcessors.TransformationType
+        get() = ExportPostProcessors.TransformationType.ISO
 
+    companion object {
+        private val log = LogManager.getLogger(
+            JSPostProcessor::class.java
+        )
+    }
 }

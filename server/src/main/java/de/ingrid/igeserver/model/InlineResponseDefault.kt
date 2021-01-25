@@ -1,121 +1,81 @@
-package de.ingrid.igeserver.model;
+package de.ingrid.igeserver.model
 
-import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonProperty
+import de.ingrid.igeserver.model.InlineResponseDefault
+import java.lang.StringBuilder
+import java.util.*
 
 /**
  * InlineResponseDefault
  */
-public class InlineResponseDefault   {
-  @JsonProperty("code")
-  private Integer code = null;
+class InlineResponseDefault {
+    /**
+     * Get code
+     * @return code
+     */
+    @JsonProperty("code")
+    var code: Int? = null
 
-  @JsonProperty("message")
-  private String message = null;
+    /**
+     * Get message
+     * @return message
+     */
+    @JsonProperty("message")
+    var message: String? = null
 
-  @JsonProperty("fields")
-  private String fields = null;
-
-  public InlineResponseDefault code(Integer code) {
-    this.code = code;
-    return this;
-  }
-
-   /**
-   * Get code
-   * @return code
-  **/
-
-
-  public Integer getCode() {
-    return code;
-  }
-
-  public void setCode(Integer code) {
-    this.code = code;
-  }
-
-  public InlineResponseDefault message(String message) {
-    this.message = message;
-    return this;
-  }
-
-   /**
-   * Get message
-   * @return message
-  **/
-
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public InlineResponseDefault fields(String fields) {
-    this.fields = fields;
-    return this;
-  }
-
-   /**
-   * Get fields
-   * @return fields
-  **/
-
-
-  public String getFields() {
-    return fields;
-  }
-
-  public void setFields(String fields) {
-    this.fields = fields;
-  }
-
-
-  @Override
-  public boolean equals(java.lang.Object o) {
-    if (this == o) {
-      return true;
+    /**
+     * Get fields
+     * @return fields
+     */
+    @JsonProperty("fields")
+    var fields: String? = null
+    fun code(code: Int?): InlineResponseDefault {
+        this.code = code
+        return this
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+
+    fun message(message: String?): InlineResponseDefault {
+        this.message = message
+        return this
     }
-    InlineResponseDefault inlineResponseDefault = (InlineResponseDefault) o;
-    return Objects.equals(this.code, inlineResponseDefault.code) &&
-        Objects.equals(this.message, inlineResponseDefault.message) &&
-        Objects.equals(this.fields, inlineResponseDefault.fields);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(code, message, fields);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class InlineResponseDefault {\n");
-    
-    sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    message: ").append(toIndentedString(message)).append("\n");
-    sb.append("    fields: ").append(toIndentedString(fields)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(java.lang.Object o) {
-    if (o == null) {
-      return "null";
+    fun fields(fields: String?): InlineResponseDefault {
+        this.fields = fields
+        return this
     }
-    return o.toString().replace("\n", "\n    ");
-  }
+
+    override fun equals(o: Any?): Boolean {
+        if (this === o) {
+            return true
+        }
+        if (o == null || javaClass != o.javaClass) {
+            return false
+        }
+        val inlineResponseDefault = o as InlineResponseDefault
+        return code == inlineResponseDefault.code &&
+                message == inlineResponseDefault.message &&
+                fields == inlineResponseDefault.fields
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(code, message, fields)
+    }
+
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append("class InlineResponseDefault {\n")
+        sb.append("    code: ").append(toIndentedString(code)).append("\n")
+        sb.append("    message: ").append(toIndentedString(message)).append("\n")
+        sb.append("    fields: ").append(toIndentedString(fields)).append("\n")
+        sb.append("}")
+        return sb.toString()
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private fun toIndentedString(o: Any?): String {
+        return o?.toString()?.replace("\n", "\n    ") ?: "null"
+    }
 }
-

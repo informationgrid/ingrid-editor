@@ -2,6 +2,7 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ConflictException
+import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.UnauthenticatedException
 import de.ingrid.igeserver.model.User
@@ -206,9 +207,14 @@ class KeycloakService : UserManagementService {
             val userId = CreatedResponseUtil.getCreatedId(createResponse)
 
             usersResource.get(userId).apply {
-                // send an email to the user to set a password
-                executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
                 roles().realmLevel().add(getRoleRepresentation(it.realm(), user))
+                
+                // send an email to the user to set a password
+                try {
+                    executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
+                } catch (ex: Exception) {
+                    log.error("Could not send eMail to user: ${user.login}")
+                }
             }
         }
 
@@ -240,7 +246,11 @@ class KeycloakService : UserManagementService {
             val users = it.realm().users()
             val user = users.search(id, true).getOrNull(0)
             if (user != null) {
-                users[user.id].executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
+                try {
+                    users[user.id].executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
+                } catch (ex: Exception) {
+                    throw InvalidParameterException.withInvalidParameters(user.email)
+                }
             } else {
                 throw NotFoundException.withMissingUserCatalog(id)
             }
@@ -299,10 +309,9 @@ class KeycloakService : UserManagementService {
 
     private fun mapToKeycloakUser(user: User, existingUserRep: UserRepresentation? = null): UserRepresentation {
 
-        val userRep = existingUserRep ?: UserRepresentation()
+        val userRep = existingUserRep ?: UserRepresentation().apply { isEnabled = true }
         
         return userRep.apply {
-            isEnabled = true
             username = user.login
             firstName = user.firstName
             lastName = user.lastName

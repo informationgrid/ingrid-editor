@@ -19,7 +19,7 @@ class IsoExporter : IgeExporter {
     private fun mapMetadata(tree: JsonNode): Metadata {
         val md = Metadata()
         md.setUuid(tree.path("_id").asText())
-        md.language = tree.path("metadataLanguage").path("value").asText()
+        md.setLanguage(tree.path("metadataLanguage").path("value").asText())
         md.setCharacterSet(tree.path("").asText())
         md.setParentIdentifier(tree.path("_parent").asText(null))
         md.setHierarchyLevel("dataset")

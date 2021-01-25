@@ -1,77 +1,75 @@
-package de.ingrid.igeserver.exports;
+package de.ingrid.igeserver.exports
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import de.ingrid.igeserver.exports.iso.Metadata;
-import de.ingrid.igeserver.services.ExportPostProcessors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.script.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import java.io.StringWriter;
+import de.ingrid.igeserver.services.ExportPostProcessors
+import javax.script.ScriptEngineManager
+import javax.script.SimpleScriptContext
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import de.ingrid.igeserver.exports.IsoXmlPostProcessor
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.exports.iso.Metadata
+import org.apache.logging.log4j.LogManager
+import java.io.StringWriter
+import java.lang.Boolean
+import javax.script.ScriptContext
+import javax.script.ScriptException
+import javax.xml.bind.JAXBContext
+import javax.xml.bind.JAXBException
+import javax.xml.bind.Marshaller
 
 // @Service
-public class IsoXmlPostProcessor implements ExportPostProcessors {
-
-    private static Logger log = LogManager.getLogger(IsoXmlPostProcessor.class);
-
-    @Override
-    public Object process(Object exportedDoc, JsonNode jsonData) {
+class IsoXmlPostProcessor : ExportPostProcessors {
+    override fun process(exportedDoc: Any?, jsonData: JsonNode): Any? {
 //		PebbleEngine engine = new PebbleEngine.Builder().build();
-
-
-        ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+        val engine = ScriptEngineManager().getEngineByName("nashorn")
 
         // define a different script context
-        ScriptContext newContext = new SimpleScriptContext();
-        newContext.setBindings(engine.createBindings(), ScriptContext.ENGINE_SCOPE);
-        Bindings engineScope = newContext.getBindings(ScriptContext.ENGINE_SCOPE);
-
-
-        StringWriter stringWriter = new StringWriter();
-        JAXBContext context;
-        XmlMapper xmlMapper = new XmlMapper();
-        ObjectNode xmlTree = null;
+        val newContext: ScriptContext = SimpleScriptContext()
+        newContext.setBindings(engine.createBindings(), ScriptContext.ENGINE_SCOPE)
+        val engineScope = newContext.getBindings(ScriptContext.ENGINE_SCOPE)
+        val stringWriter = StringWriter()
+        val context: JAXBContext
+        val xmlMapper = XmlMapper()
+        var xmlTree: ObjectNode? = null
         try {
-            context = JAXBContext.newInstance(Metadata.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            marshaller.marshal(exportedDoc, stringWriter);
-            xmlTree = (ObjectNode) xmlMapper.readTree(stringWriter.toString());
-        } catch (JAXBException | JsonProcessingException e) {
-            log.error(e);
+            context = JAXBContext.newInstance(Metadata::class.java)
+            val marshaller = context.createMarshaller()
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE)
+            marshaller.marshal(exportedDoc, stringWriter)
+            xmlTree = xmlMapper.readTree(stringWriter.toString()) as ObjectNode
+        } catch (e: JAXBException) {
+            log.error(e)
+        } catch (e: JsonProcessingException) {
+            log.error(e)
         }
 
         // set the variable to a different value in another scope
-        engineScope.put("logMe", log);
-        engineScope.put("source", jsonData);
-        engineScope.put("target", xmlTree);
-
+        engineScope["logMe"] = log
+        engineScope["source"] = jsonData
+        engineScope["target"] = xmlTree
         try {
             // engine.eval("", newContext);
-            engine.eval("target.put('specialField', 'cool');", newContext);
-        } catch (ScriptException e) {
+            engine.eval("target.put('specialField', 'cool');", newContext)
+        } catch (e: ScriptException) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e.printStackTrace()
         }
-
         try {
-            return xmlMapper.writeValueAsString(xmlTree);
-        } catch (JsonProcessingException e) {
+            return xmlMapper.writeValueAsString(xmlTree)
+        } catch (e: JsonProcessingException) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e.printStackTrace()
         }
-        return null;
+        return null
     }
 
-    @Override
-    public TransformationType getType() {
-        return TransformationType.ISO;
-    }
+    override val type: ExportPostProcessors.TransformationType
+        get() = ExportPostProcessors.TransformationType.ISO
 
+    companion object {
+        private val log = LogManager.getLogger(
+            IsoXmlPostProcessor::class.java
+        )
+    }
 }

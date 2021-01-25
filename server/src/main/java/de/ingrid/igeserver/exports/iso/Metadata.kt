@@ -1,130 +1,110 @@
-package de.ingrid.igeserver.exports.iso;
+package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType
+import javax.xml.bind.annotation.XmlAccessorType
+import javax.xml.bind.annotation.XmlRootElement
+import javax.xml.bind.annotation.XmlType
 
-@SuppressWarnings("unused")
 @XmlRootElement(name = "MD_Metadata")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-		namespace="http://www.isotc211.org/2005/gmd",
-		propOrder = { 
-		"fileIdentifier", "language", "characterSet", "parentIdentifier", "hierarchyLevel", "hierarchyLevelName",
-		"contact", "dateStamp", "metadataStandardName", "metadataStandardVersion", "dataSetURI", "locale",
-		"spatialRepresentationInfo", "referenceSystemInfo", "metadataExtensionInfo", "identificationInfo",
-		"contentInfo", "distributionInfo", "dataQualityInfo", "portrayalCatalogueInfo", "metadataConstraints",
-		"applicationSchemaInfo", "metadataMaintenance", "series", "describes", "propertyType", "featureType",
-		"featureAttribute" 
-		})
-public class Metadata {
+    namespace = "http://www.isotc211.org/2005/gmd",
+    propOrder = ["fileIdentifier", "language", "characterSet", "parentIdentifier", "hierarchyLevel", "hierarchyLevelName", "contact", "dateStamp", "metadataStandardName", "metadataStandardVersion", "dataSetURI", "locale", "spatialRepresentationInfo", "referenceSystemInfo", "metadataExtensionInfo", "identificationInfo", "contentInfo", "distributionInfo", "dataQualityInfo", "portrayalCatalogueInfo", "metadataConstraints", "applicationSchemaInfo", "metadataMaintenance", "series", "describes", "propertyType", "featureType", "featureAttribute"]
+)
+class Metadata {
+    private var fileIdentifier: CharacterString? = null
+    private var characterSet: CharacterSetCode? = null
+    var language: LanguageCode? = null
+    private var parentIdentifier: CharacterString? = null
+    private var hierarchyLevel: ScopeCode? = null
+    private val hierarchyLevelName: String? = null
+    private var contact: Contact? = null
+    private var dateStamp: Date? = null
+    private val metadataStandardName: CharacterString
+    private val metadataStandardVersion: CharacterString
+    private val dataSetURI: String? = null
+    private val locale: String? = null
+    private val spatialRepresentationInfo: String? = null
+    private val referenceSystemInfo: String? = null
+    private val metadataExtensionInfo: String? = null
+    private val identificationInfo: String? = null
+    private val contentInfo: String? = null
+    private val distributionInfo: String? = null
+    private val dataQualityInfo: String? = null
+    private val portrayalCatalogueInfo: String? = null
+    private val metadataConstraints: String? = null
+    private val applicationSchemaInfo: String? = null
+    private val metadataMaintenance: String? = null
+    private val series: String? = null
+    private val describes: String? = null
+    private val propertyType: String? = null
+    private val featureType: String? = null
+    private val featureAttribute: String? = null
+    fun setUuid(uuid: String?) {
+        fileIdentifier = CharacterString(uuid)
+    }
 
-	private CharacterString fileIdentifier;
+    val fieldIdentifier: String?
+        get() = fileIdentifier!!.text
 
-	private LanguageCode language;
+    fun setLanguage(language: String) {
+        this.language = LanguageCode().apply {
+            codelist = CodelistAttributes(
+                "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#LanguageCode",
+                language,
+                language
+            )
+        }
+    }
 
-	private CharacterSetCode characterSet;
+    fun getLanguage(): String? {
+        return language!!.codelist!!.content
+    }
 
-	private CharacterString parentIdentifier;
-	
-	private ScopeCode hierarchyLevel;
-	
-	private String hierarchyLevelName;
-	
-	private Contact contact;
-	
-	private Date dateStamp;
-	
-	private CharacterString metadataStandardName;
-	
-	private CharacterString metadataStandardVersion;
-	private String dataSetURI;
-	private String locale;
-	private String spatialRepresentationInfo;
-	private String referenceSystemInfo;
-	private String metadataExtensionInfo;
-	
-	private String identificationInfo;
-	private String contentInfo;
-	private String distributionInfo;
-	private String dataQualityInfo;
-	private String portrayalCatalogueInfo;
-	private String metadataConstraints;
-	private String applicationSchemaInfo;
-	private String metadataMaintenance;
-	private String series;
-	private String describes;
-	private String propertyType;
-	private String featureType;
-	private String featureAttribute;
-	
-	
-	public Metadata() {
-	    this.metadataStandardName = new CharacterString( "ISO19119" );
-	    this.metadataStandardVersion = new CharacterString( "2005/PDAM 1" );
-	}
-	
+    fun setCharacterSet(characterSet: String?) {
+        this.characterSet = CharacterSetCode()
+        this.characterSet!!.characterSetCode = CodelistAttributes(
+            "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode",
+            "utf8"
+        )
+    }
 
-	public void setUuid(String uuid) {
-		this.fileIdentifier = new CharacterString(uuid);
+    fun setParentIdentifier(parentUuid: String?) {
+        parentIdentifier = CharacterString(parentUuid)
+    }
 
-	}
-	
-	public String getFieldIdentifier() {
-		return fileIdentifier.text;
-	}
+    fun setHierarchyLevel(level: String?) {
+        val scopeCode = ScopeCode()
+        scopeCode.codelist = CodelistAttributes(
+            "http://www.tc211.org/ISO19139/resources/codeList.xml#MD_ScopeCode",
+            level,
+            level
+        )
+        hierarchyLevel = scopeCode
+    }
 
-	public void setLanguage(String language) {
-		this.language = new LanguageCode();
-		this.language.codelist = new CodelistAttributes(
-				"http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#LanguageCode", 
-				language,
-				language);
-	}
-	
-	public String getLanguage() {
-		return language.codelist.content;
-	}
+    fun setContact(uuid: String?, role: String?) {
+        contact = Contact()
+        val responsibleParty = ResponsibleParty()
+        responsibleParty.uuid = uuid
+        responsibleParty.setRole(
+            CodelistAttributes(
+                "http://www.tc211.org/ISO19139/resources/codeList.xml#CI_RoleCode",
+                role
+            )
+        )
+        val ci = ContactInfo()
+        ci.setAddress(ContactType.ADDRESS, "xxx@yyy.zz")
+        responsibleParty.contactInfo = ci
+        contact!!.responsibleParty = responsibleParty
+    }
 
-	public void setCharacterSet(String characterSet) {
-		this.characterSet = new CharacterSetCode();
-		this.characterSet.characterSetCode = new CodelistAttributes(
-				"http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode",
-				"utf8");
-	}
+    fun setDateStamp(date: String?) {
+        dateStamp = Date(date)
+    }
 
-	public void setParentIdentifier(String parentUuid) {
-		this.parentIdentifier = new CharacterString(parentUuid);
-
-	}
-	
-	public void setHierarchyLevel(String level) {
-		ScopeCode scopeCode = new ScopeCode();
-		scopeCode.codelist = new CodelistAttributes(
-				"http://www.tc211.org/ISO19139/resources/codeList.xml#MD_ScopeCode", 
-				level, 
-				level);
-		this.hierarchyLevel = scopeCode;
-	}
-	
-	public void setContact(String uuid, String role) {
-		this.contact = new Contact();
-		
-		ResponsibleParty responsibleParty = new ResponsibleParty();
-		responsibleParty.uuid = uuid;
-		responsibleParty.setRole(new CodelistAttributes(
-				"http://www.tc211.org/ISO19139/resources/codeList.xml#CI_RoleCode", 
-				role));
-		
-		ContactInfo ci = new ContactInfo();
-		ci.setAddress( ContactType.ADDRESS, "xxx@yyy.zz" );
-		responsibleParty.contactInfo = ci;
-		
-		this.contact.responsibleParty = responsibleParty;
-	}
-
-	public void setDateStamp(String date) {
-	    this.dateStamp = new Date(date);
-	}
+    init {
+        metadataStandardName = CharacterString("ISO19119")
+        metadataStandardVersion = CharacterString("2005/PDAM 1")
+    }
 }
