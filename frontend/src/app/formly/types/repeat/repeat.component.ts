@@ -8,6 +8,10 @@ import {FieldArrayType} from '@ngx-formly/core';
 })
 export class RepeatComponent extends FieldArrayType implements OnInit {
 
+  constructor() {
+    super();
+  }
+
   ngOnInit(): void {
 
     /**

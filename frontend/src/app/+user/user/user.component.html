@@ -16,7 +16,7 @@
         </div>
     </as-split-area>
     <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
-        <form *ngIf="!userSelect.selectedOptions.isEmpty() || isNewUser" fxLayout="column" [formGroup]="form"
+        <form *ngIf="!userSelect.selectedOptions.isEmpty() || isNewUser; else noUser" fxLayout="column" [formGroup]="form"
               style="padding: 20px">
             <div>
                 <button mat-button
@@ -66,5 +66,9 @@
             </mat-form-field>
 
         </form>
+
+        <ng-template #noUser>
+            Keinen Benutzer ausgewählt. Bitte einen auswählen oder neue erstellen.
+        </ng-template>
     </as-split-area>
 </as-split>

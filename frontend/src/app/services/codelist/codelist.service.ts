@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {ErrorService} from '../error.service';
 import {CodelistDataService} from './codelist-data.service';
 import {Codelist, CodelistBackend, CodelistEntry, CodelistEntryBackend} from '../../store/codelist/codelist.model';
 import {CodelistStore} from '../../store/codelist/codelist.store';
@@ -36,8 +35,7 @@ export class CodelistService {
     return locals.de || locals.name;
   }
 
-  constructor(private errorService: ErrorService,
-              private store: CodelistStore,
+  constructor(private store: CodelistStore,
               private dataService: CodelistDataService) {
 
     this.requestedCodelists

@@ -1,9 +1,7 @@
-import {ErrorService} from '../services/error.service';
 import {ConfigService, Configuration} from '../services/config/config.service';
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {catchError} from 'rxjs/operators';
 
 export interface ExportOptions {
   id: string,
@@ -41,19 +39,12 @@ export class ImportExportService {
     };
   }
 
-  constructor(private http: HttpClient, configService: ConfigService,
-              private errorService: ErrorService) {
+  constructor(private http: HttpClient, configService: ConfigService) {
     this.configuration = configService.getConfiguration();
   }
 
   import(file: File): Observable<any> {
-    return this.http.post( this.configuration.backendUrl + 'import', file )
-      .pipe(
-        catchError( err => {
-          this.errorService.handle( err );
-          return err;
-        } )
-      );
+    return this.http.post( this.configuration.backendUrl + 'import', file );
   }
 
   export(options: ExportOptions): Observable<Blob> {

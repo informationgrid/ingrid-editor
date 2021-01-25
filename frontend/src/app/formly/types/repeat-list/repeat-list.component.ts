@@ -1,5 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {FieldArrayType} from '@ngx-formly/core';
+import {FieldArrayType, FormlyFormBuilder} from '@ngx-formly/core';
 import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {filter, map, startWith, take, tap} from 'rxjs/operators';
 import {merge, Observable, Subject} from 'rxjs';
@@ -22,6 +22,11 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   parameterOptions: SelectOption[];
   inputControl = new FormControl();
   private manualUpdate = new Subject<string>();
+
+
+  constructor() {
+    super();
+  }
 
   ngOnInit(): void {
 
@@ -96,7 +101,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
         if (this.model.indexOf(option.value) !== -1) {
           console.log(option)
           option.disabled = true;
-        } else{
+        } else {
           option.disabled = false;
         }
         return option

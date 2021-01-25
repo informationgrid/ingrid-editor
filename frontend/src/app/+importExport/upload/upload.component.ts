@@ -1,9 +1,8 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Subscription} from 'rxjs/Subscription';
-import {UploadService} from "./upload.service";
-import {ErrorService} from "../../services/error.service";
-import {ModalService} from "../../services/modal/modal.service";
+import {UploadService} from './upload.service';
+import {ModalService} from '../../services/modal/modal.service';
 
 @Component({
   selector: 'ige-file-upload',
@@ -42,7 +41,7 @@ export class UploadComponent implements OnInit {
   }
 
   onClick() {
-    let fileUpload = this.htmlFileUpload.nativeElement;
+    const fileUpload = this.htmlFileUpload.nativeElement;
     fileUpload.onchange = () => {
       for (let index = 0; index < fileUpload.files.length; index++) {
         const file = fileUpload.files[index];

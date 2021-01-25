@@ -8,7 +8,7 @@ import {GroupService} from '../../services/role/group.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {NewUserDialogComponent} from './new-user-dialog/new-user-dialog.component';
-import {ConfirmDialogComponent} from '../../dialogs/confirm/confirm-dialog.component';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
 import {debounceTime, map, tap} from 'rxjs/operators';
 import {dirtyCheck} from '@ngneat/dirty-check-forms';
 
@@ -127,16 +127,23 @@ export class UserComponent implements OnInit {
     const newUser = initial.user ?? {groups: []};
     newUser.role = initial.role ?? '';
     this.isNewUser = true;
-    this.form.reset();
-    this.form.patchValue(newUser);
+    this.form.reset(newUser);
+    this.state$.next(newUser);
     setTimeout(() => this.loginRef.nativeElement.focus(), 300);
   }
 
   deleteUser(login: string) {
-    this.userService.deleteUser(login)
-      .subscribe(() => {
-        this.fetchUsers();
-      });
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Benutzer löschen',
+        message: 'Möchten Sie den Benutzer wirklich löschen?'
+      } as ConfirmDialogData
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.userService.deleteUser(login)
+          .subscribe(() => this.fetchUsers());
+      }
+    });
   }
 
   saveUser() {
@@ -162,6 +169,7 @@ export class UserComponent implements OnInit {
         this.fetchUsers();
         this.form.enable();
       }, (err: any) => {
+        this.form.enable();
         if (err.status === 406) {
           if (this.isNewUser) {
             this.modalService.showJavascriptError('Es existiert bereits ein Benutzer mit dem Login: ' + this.form.value.login);

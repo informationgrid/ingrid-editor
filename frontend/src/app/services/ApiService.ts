@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {ConfigService, Configuration} from './config/config.service';
-import {ErrorService} from './error.service';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
@@ -12,8 +11,7 @@ export class ApiService {
 
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService,
-              private errorService: ErrorService) {
+  constructor(private http: HttpClient, configService: ConfigService) {
     this.configuration = configService.getConfiguration();
   }
 

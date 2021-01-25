@@ -8,6 +8,8 @@ import {Permissions} from '../user';
 import {debounceTime, tap} from 'rxjs/operators';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {dirtyCheck} from '@ngneat/dirty-check-forms';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @UntilDestroy()
 @Component({
@@ -35,6 +37,7 @@ export class GroupComponent implements OnInit {
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
+              private dialog: MatDialog,
               private groupService: GroupService) {
   }
 
@@ -116,16 +119,25 @@ export class GroupComponent implements OnInit {
   }
 
   deleteGroup(id: string) {
-    this.groupService.deleteGroup(id)
-      .subscribe(
-        () => {
-          this.fetchGroups()
-            .pipe(
-              tap(() => this.form.reset())
-            )
-            .subscribe();
-        }
-      );
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Gruppe löschen',
+        message: 'Möchten Sie die Gruppe wirklich löschen?'
+      } as ConfirmDialogData
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.groupService.deleteGroup(id)
+          .subscribe(
+            () => {
+              this.fetchGroups()
+                .pipe(
+                  tap(() => this.form.reset())
+                )
+                .subscribe();
+            }
+          );
+      }
+    })
   }
 
   forbiddenNameValidator(): ValidatorFn {
