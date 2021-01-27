@@ -24,8 +24,6 @@ class M018_FixParents : MigrationBase("0.18") {
     lateinit var dbService: DBApi
 
     override fun exec(databaseName: String) {
-        log.info("Executing migration 0.18")
-
 
         dbService.acquireCatalog(databaseName).use {
             val allDocs = dbService.findAll(DocumentType::class)

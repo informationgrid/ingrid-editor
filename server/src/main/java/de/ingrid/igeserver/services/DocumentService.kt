@@ -220,16 +220,17 @@ class DocumentService : MapperService() {
     fun deleteRecursively(id: String) {
         val filterContext = DefaultContext.withCurrentProfile(dbService)
 
-        // run pre-delete pipe(s)
         val wrapper = getWrapperByDocumentId(id, true)
         if (wrapper != null) {
             val data = getLatestDocumentVersion(wrapper, false)
             val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
             val docType = getDocumentType(docTypeName)
 
+            // run pre-delete pipe(s)
             val preDeletePayload = PreDeletePayload(docType, data, wrapper as ObjectNode)
             preDeletePipe.runFilters(preDeletePayload, filterContext)
 
+            // delete all children recursively by calling this method again
             findChildrenDocs(id, isAddress(wrapper)).hits.forEach {
                 deleteRecursively(it.get(FIELD_ID).asText())
             }
