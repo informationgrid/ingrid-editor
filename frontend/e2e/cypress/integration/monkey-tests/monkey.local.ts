@@ -1,6 +1,6 @@
 import { createHorde, species, strategies } from 'gremlins.js';
 
-xdescribe('Gremlin Tests', () => {
+describe('Gremlin Tests', () => {
   let horde: any;
   let clickHorde: any;
   let mixedHorde: any;
@@ -34,26 +34,26 @@ xdescribe('Gremlin Tests', () => {
   });
 
   describe('skip until it works: Basic Monkey Test', () => {
-    xit('should unleash a army of specialized gremlins ready to mess up', () => {
+    it('should unleash a army of specialized gremlins ready to mess up', () => {
       // after 10 errors, Gizmo will stop the tests automatically
       cy.wrap(horde.unleash(), { timeout: 60000 }).then(() => {
         cy.get('error-dialog').should('not.exist');
       });
     });
 
-    xit('should unleash a mixed army of gremlins', () => {
+    it('should unleash a mixed army of gremlins', () => {
       cy.wrap(mixedHorde.unleash(), { timeout: 60000 }).then(() => {
         cy.get('error-dialog').should('not.exist');
       });
     });
 
-    xit('should unleash a clicking army of gremlins', () => {
+    it('should unleash a clicking army of gremlins', () => {
       cy.wrap(clickHorde.unleash(), { timeout: 60000 }).then(() => {
         cy.get('error-dialog').should('not.exist');
       });
     });
 
-    xit('should unleash a customized army of gremlins', () => {
+    it('should unleash a customized army of gremlins', () => {
       cy.wrap(testHorde.unleash(), { timeout: 60000 }).then(() => {
         cy.get('error-dialog').should('not.exist');
       });
