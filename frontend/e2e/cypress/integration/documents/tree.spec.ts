@@ -45,7 +45,7 @@ describe('Tree', () => {
     cy.get(DocumentPage.treeSearchBar).should('be.empty');
   });
 
-  describe.only('DragnDrop', () => {
+  describe('DragnDrop', () => {
     it('should move a document into an opened folder', () => {
       const docName = 'drag&drop to a folder';
 
@@ -233,7 +233,7 @@ describe('Tree', () => {
       Tree.openNode([docName]);
     });
 
-    it.only('should copy a root folder (without sub-tree) into a folder', () => {
+    it('should copy a root folder (without sub-tree) into a folder', () => {
       const testFolder = 'copy me into a folder2';
       const docName = 'childDoc';
 
