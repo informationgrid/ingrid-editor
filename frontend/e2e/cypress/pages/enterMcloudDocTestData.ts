@@ -88,7 +88,7 @@ export class enterMcloudDocTestData {
       .clear()
       .type(locationText)
       .then(() => {
-        cy.get('.result-wrapper mat-list').contains(locationText).click();
+        cy.get('.result-wrapper mat-list', { timeout: 10000 }).contains(locationText).click();
       });
     cy.get('[data-cy=confirm-dialog-save]').click();
     // give some time to close dialog and update list
