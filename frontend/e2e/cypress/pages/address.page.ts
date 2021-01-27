@@ -31,7 +31,7 @@ export class AddressPage extends DocumentPage {
   }
 
   static addContact(chooseContact: string, connectionField: string = 'Verbindung') {
-    cy.get('[data-cy=create-action]').should('not.be.visible');
+    cy.get('[data-cy=create-action]').should('not.exist');
     cy.get('[data-cy=Kontakt]').find('ige-add-button').contains('Hinzufügen').click();
     cy.get('[data-cy=Kontakt]').find('mat-select').click();
     cy.get('mat-option').contains(chooseContact).click();

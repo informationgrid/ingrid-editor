@@ -122,7 +122,7 @@ export class Tree {
   }
 
   static checkSelectedNodeHasNoChildren() {
-    cy.get('mat-tree-node.active button.toggle .mat-icon.expander').should('not.be.visible');
+    cy.get('mat-tree-node.active button.toggle .mat-icon.expander').should('not.exist');
   }
 
   private static getRegExp(nodeTitle: string): RegExp {

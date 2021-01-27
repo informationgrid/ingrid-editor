@@ -37,25 +37,25 @@ xdescribe('Gremlin Tests', () => {
     xit('should unleash a army of specialized gremlins ready to mess up', () => {
       // after 10 errors, Gizmo will stop the tests automatically
       cy.wrap(horde.unleash(), { timeout: 60000 }).then(() => {
-        cy.get('error-dialog').should('not.be.visible');
+        cy.get('error-dialog').should('not.exist');
       });
     });
 
     xit('should unleash a mixed army of gremlins', () => {
       cy.wrap(mixedHorde.unleash(), { timeout: 60000 }).then(() => {
-        cy.get('error-dialog').should('not.be.visible');
+        cy.get('error-dialog').should('not.exist');
       });
     });
 
     xit('should unleash a clicking army of gremlins', () => {
       cy.wrap(clickHorde.unleash(), { timeout: 60000 }).then(() => {
-        cy.get('error-dialog').should('not.be.visible');
+        cy.get('error-dialog').should('not.exist');
       });
     });
 
     xit('should unleash a customized army of gremlins', () => {
       cy.wrap(testHorde.unleash(), { timeout: 60000 }).then(() => {
-        cy.get('error-dialog').should('not.be.visible');
+        cy.get('error-dialog').should('not.exist');
       });
     });
 

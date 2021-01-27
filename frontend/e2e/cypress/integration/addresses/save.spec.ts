@@ -139,7 +139,7 @@ describe('General create addresses/folders', () => {
       cy.get(DocumentPage.Toolbar.NewDoc).click();
       cy.get('[data-cy=create-address-organization]').type(adr2Name);
       cy.get('[data-cy=create-action]').click();
-      cy.get('[data-cy=create-action]').should('not.be.visible');
+      cy.get('[data-cy=create-action]').should('not.exist');
 
       cy.get('.lastName ').type('testestest');
 
