@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@4tw/cypress-drag-drop@^1.4.0":
-  version "1.4.0"
-  resolved "https://nexus.informationgrid.eu/repository/npm-group/@4tw/cypress-drag-drop/-/cypress-drag-drop-1.4.0.tgz#8e824212c4e450c54c467b041019f98c0b31469e"
-  integrity sha512-iBYQC29qe8TwRwhgEmdY39HuKznhy7oCWCnheF//DdOSbpl6kuWyA6YuC9Ay2H5k9TJF1Bc0pGThN8xW8OUnng==
+"@4tw/cypress-drag-drop@^1.5.0":
+  version "1.5.0"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/@4tw/cypress-drag-drop/-/cypress-drag-drop-1.5.0.tgz#13ddc127612cc5d730ec9b1146d3b2fdb9b1170c"
+  integrity sha512-T5pBkOK92zCqfhzfN2QhoOGdWUjFh2giddYj3A/PX5ysCJYk6bgONW0fhQUjhC8K8grxWkiNDNoUAkl5TRbrag==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4":
   version "7.10.4"
@@ -711,10 +711,10 @@ cypress-keycloak-commands@^1.2.0:
   resolved "https://registry.yarnpkg.com/cypress-keycloak-commands/-/cypress-keycloak-commands-1.2.0.tgz#7f241e8e104ebd389f9a844966dcca43694d0645"
   integrity sha512-j0THu0XMVlWah7YjDoVlFg2bIwSiBSda6g5Pm8HpC/9U2Glk0Hrp4yLggoseft3ThAlrpIkoLaIKMDbmvtgicw==
 
-cypress@^6.3.0:
-  version "6.3.0"
-  resolved "https://nexus.informationgrid.eu/repository/npm-group/cypress/-/cypress-6.3.0.tgz#e27bba01d7e493265700e1e85333dca0b0127ede"
-  integrity sha512-Ec6TAFOxdSB2HPINNJ1f7z75pENXcfCaQkz+A9j0eGSvusFJ2NNErq650DexCbNJAnCQkPqXB4XPH9kXnSQnUA==
+cypress@^6.4.0:
+  version "6.4.0"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/cypress/-/cypress-6.4.0.tgz#432c516bf4f1a0f042a6aa1f2c3a4278fa35a8b2"
+  integrity sha512-SrsPsZ4IBterudkoFYBvkQmXOVxclh1/+ytbzpV8AH/D2FA+s2Qy5ISsaRzOFsbQa4KZWoi3AKwREmF1HucYkg==
   dependencies:
     "@cypress/listr-verbose-renderer" "^0.4.1"
     "@cypress/request" "^2.88.5"
@@ -730,6 +730,7 @@ cypress@^6.3.0:
     cli-table3 "~0.6.0"
     commander "^5.1.0"
     common-tags "^1.8.0"
+    dayjs "^1.9.3"
     debug "^4.1.1"
     eventemitter2 "^6.4.2"
     execa "^4.0.2"
@@ -744,7 +745,7 @@ cypress@^6.3.0:
     lodash "^4.17.19"
     log-symbols "^4.0.0"
     minimist "^1.2.5"
-    moment "^2.27.0"
+    moment "^2.29.1"
     ospath "^1.2.2"
     pretty-bytes "^5.4.1"
     ramda "~0.26.1"
@@ -771,6 +772,11 @@ dateformat@^3.0.2:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
+
+dayjs@^1.9.3:
+  version "1.10.4"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/dayjs/-/dayjs-1.10.4.tgz#8e544a9b8683f61783f570980a8a80eaf54ab1e2"
+  integrity sha512-RI/Hh4kqRc1UKLOAf/T5zdMMX5DQIlDxwUe3wSyMMnEbGunnpENCdbUgM+dW7kXidZqCttBrmw7BhN4TMddkCw==
 
 debug@3.2.6, debug@^3.1.0:
   version "3.2.6"
@@ -1933,10 +1939,10 @@ mochawesome@^6.2.1:
     strip-ansi "^6.0.0"
     uuid "^7.0.3"
 
-moment@^2.27.0:
-  version "2.27.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
-  integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
 ms@2.0.0:
   version "2.0.0"
