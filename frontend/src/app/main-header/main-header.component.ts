@@ -3,6 +3,8 @@ import {ApiService} from '../services/ApiService';
 import {ConfigService, UserInfo, Version} from '../services/config/config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {SessionQuery} from '../store/session.query';
+import {Observable} from "rxjs";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'ige-main-header',
@@ -14,6 +16,7 @@ export class MainHeaderComponent implements OnInit {
   userInfo$ = this.configService.$userInfo;
   showShadow: boolean;
   pageTitle: string;
+  currentCatalog: Observable<string>;
   version: Version;
   timeout$ = this.session.select('sessionTimeoutIn');
 
@@ -25,6 +28,7 @@ export class MainHeaderComponent implements OnInit {
   ngOnInit() {
 
     this.version = this.configService.$userInfo.getValue().version;
+    this.currentCatalog = this.configService.$userInfo.pipe(map(userInfo => userInfo.currentCatalog.label));
 
     this.router.events.subscribe(
       (event: any) => {
