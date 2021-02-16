@@ -2055,10 +2055,10 @@
     "@material/feature-targeting" "9.0.0-canary.fdf9a2634.0"
     "@material/theme" "9.0.0-canary.fdf9a2634.0"
 
-"@ngneat/forms-manager@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@ngneat/forms-manager/-/forms-manager-2.2.0.tgz#6c94a37e1d218e636e7e2a01e3ededcb11a6d8f4"
-  integrity sha512-6Xg4UJ6hsngv2GHRjQZt8BJz0R/JA6HkDJYfAo8LUklRtpeJGtUXNwNQZYhiUu5rVnk59jZ0T11FFN85AMzlPA==
+"@ngneat/forms-manager@^2.3.0":
+  version "2.3.0"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/@ngneat/forms-manager/-/forms-manager-2.3.0.tgz#154f671c1ef2a8a4df591c5aa396eae63fa17f52"
+  integrity sha512-ivei8rh3a2B+Q5ABrSm/u3nIf2PbqophMToKOU9/1RCjywJPNuuior5O4L4SHj57ceOe5ty1o2p7te0CF7975Q==
   dependencies:
     tslib "^1.10.0"
 
@@ -2071,10 +2071,10 @@
     jquery "3.5.0"
     replace-in-file "^4.1.3"
 
-"@ngneat/until-destroy@^8.0.2":
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/@ngneat/until-destroy/-/until-destroy-8.0.2.tgz#4ce26456ed523f211542dd3db5998e4e47c24381"
-  integrity sha512-r0wAvCfd5tgr46semZ6RIe5tkpTmMBKvUBLUehbHC2/FpnwSsjLIR8L3lXxsRYmZNMSdm0vQ/9K5tYu2ivsEuA==
+"@ngneat/until-destroy@^8.0.3":
+  version "8.0.3"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/@ngneat/until-destroy/-/until-destroy-8.0.3.tgz#d27523d71fb3941a1c22a22e2eb9c86629dfc7cb"
+  integrity sha512-mHU118pETO+71yeKKr8HTwCP+4X/tYSYxgMNYZSJ7oiOAujHc8Rwz7TQpAFCM1trkCZEEe6fKKzQZ0V3cZFkJw==
   dependencies:
     glob "^7.1.6"
     minimist "1.2.5"

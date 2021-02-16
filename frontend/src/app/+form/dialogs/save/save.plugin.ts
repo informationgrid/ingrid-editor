@@ -62,7 +62,12 @@ export class SavePlugin extends Plugin {
         if (form) {
           this.formToolbarService.setButtonState('toolBtnSave', false);
           this.save(form)
-            .finally(() => this.formToolbarService.setButtonState('toolBtnSave', true));
+            .then(() => this.formToolbarService.setButtonState('toolBtnSave', true))
+            .catch(e => {
+              // when using the finally block, then the error will not be catched in global error handler!
+              this.formToolbarService.setButtonState('toolBtnSave', true)
+              throw e;
+            });
         }
       });
 

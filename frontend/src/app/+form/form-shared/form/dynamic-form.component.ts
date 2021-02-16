@@ -32,7 +32,6 @@ import {Behaviour} from '../../../services/behavior/behaviour';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {AuthService} from '../../../services/security/auth.service';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
-import {MatDialog} from '@angular/material/dialog';
 import {TreeService} from '../../sidebars/tree/tree.service';
 import {ValidationError} from '../../../store/session.store';
 
@@ -308,6 +307,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
       // switch to the right profile depending on the data
       if (needsProfileSwitch) {
+        this.form = new FormGroup({});
+        this.formsManager.upsert(this.formStateName, this.form, {
+            withInitialValue: true
+          }
+        );
         this.fields = this.switchProfile(profile);
         this.sections = this.formularService.getSectionsFromProfile(this.fields);
         this.hasOptionalFields = this.profileQuery.getProfile(profile).hasOptionalFields;

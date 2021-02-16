@@ -50,6 +50,7 @@ import {SessionTimeoutInfoComponent} from './main-header/session-timeout-info/se
 import {TimePipe} from './directives/time.pipe';
 import {FormFieldsModule} from './form-fields/form-fields.module';
 import {AnimationWrapper, AnimationWrapperComponent} from './animation-wrapper.component';
+import {NG_FORMS_MANAGER_CONFIG, NgFormsManagerConfig} from '@ngneat/forms-manager';
 
 registerLocaleData(de);
 
@@ -160,6 +161,13 @@ export function ConfigLoader(configService: ConfigService) {
         panelClass: 'mat-dialog-override',
         hasBackdrop: true
       }
+    },
+
+    {
+      provide: NG_FORMS_MANAGER_CONFIG,
+      useValue: new NgFormsManagerConfig({
+        debounceTime: 0 // defaults to 300
+      }),
     },
 
     // PLUGINS
