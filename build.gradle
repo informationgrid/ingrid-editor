@@ -1,6 +1,11 @@
 plugins {
     id "fr.brouillard.oss.gradle.jgitver" version "0.9.1"
-    id "org.jetbrains.changelog" version "0.4.0"
+    id "org.jetbrains.changelog" version "1.0.0"
+}
+
+changelog {
+    version = "${-> project.version}"
+    header = { "[$version] - ${ExtensionsKt.date()}" }
 }
 
 subprojects {

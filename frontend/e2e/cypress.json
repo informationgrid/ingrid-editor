@@ -1,6 +1,7 @@
 {
   "baseUrl": "http://192.168.0.228",
   "reporter": "mochawesome",
+  "ignoreTestFiles": "**/*.local.ts",
   "reporterOptions": {
     "reportDir": "./cypress/mochawesome-reports",
     "files": ["./cypress/mochawesome-reports"],

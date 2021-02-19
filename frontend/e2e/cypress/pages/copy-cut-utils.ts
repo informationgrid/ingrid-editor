@@ -63,6 +63,9 @@ export class CopyCutUtils {
 
     if (confirmChange) {
       cy.get('[data-cy=confirm-dialog-confirm]').click();
+      // wait a second before continuing to give some time for move process
+      // otherwise operation on the moved node might be detached from DOM
+      cy.wait(1000);
     } else if (!confirmChange) {
       cy.get('[data-cy=confirm-dialog-cancel]').click();
     }

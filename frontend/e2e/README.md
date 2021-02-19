@@ -1,6 +1,6 @@
 # Running Cypress tests
 
-In order to run the cypress tests you first need to edit the file `cypress.json` to set the correct `baseUrl`. 
+In order to run the cypress tests you first need to edit the file `cypress.json` to set the correct `baseUrl`.
 The `baseUrl` is set by default to the IP address of the test system.
 
 ## Local tests
@@ -52,4 +52,62 @@ npm run cypress:run -- --record --spec "cypress/integration/documents/type/mclou
 - For each topic write a spec-file.
 - Multiple describe blocks can be defined within a spec-file for better organization.
 
-#
+# Monkey Testing - gremlins.js
+
+Monkey Testing is used to check the robustness of web applications by unleashing a horde of undisciplined gremlins.
+Gremlins.js is a monkey testing libary written in Javascript for Node.js and the browser.
+
+_At the moment we only have dumb monkeys, which try to crash our application with random inputs.
+Also their attacks are not repeatable, but in the future they will (it's possible).
+Finally we will implement smart monkeys, which have basic informations about our application and then they will attack specific._
+
+## How to start the tests and what is the message of the test results:
+
+Before starting basic monkey tests remove the "ignoreTestFiles"-entry from cypress.json.
+
+Then open cypress and start monkey.local.ts. Now a new window opened und our application is in viewport.
+
+The unleashed gremlins try to crash the application with random inputs.
+You will see traces of the gremlins actions on the screen (they leave red traces) and in the console log:
+
+```
+gremlin formFiller input 5 in <input type="number" name="age">``
+gremlin formFiller input pzdoyzshh0k9@o8cpskdb73nmi.r7r in <input type="email" name="email">
+gremlin clicker    click at 1219 301
+gremlin scroller   scroll to 100 25
+...
+```
+
+A horde also contains mogwais, which are harmless gremlins (or, you could say that gremlins are harmful mogwais). Mogwais only monitor the activity of the application and record it on the logger. For instance, the "fps" mogwai monitors the number of frame per second, every 500ms:
+
+```
+mogwai  fps  33.21
+mogwai  fps  59.45
+mogwai  fps  12.67
+...
+```
+
+Mogwais also report when gremlins break the application. For instance, if the number of frames per seconds drops below 10, the fps mogwai will log an error:
+
+```
+mogwai  fps  12.67
+mogwai  fps  23.56
+err > mogwai  fps  7.54 < err
+mogwai  fps  15.76
+...
+```
+
+After 10 errors, a special mogwai stops the test. He's called Gizmo, and he prevents gremlins from breaking applications bad. After all, once gremlins have found the first 10 errors, you already know what you have to do to make your application more robust.
+
+If not stopped by Gizmo, the default horde stops after roughly 1 minute. You can also decrease it on strategies:
+`strategies: [strategies.allTogether({ nb: 100000 })]`
+
+If no error messages appears, our application are robust enough.
+
+#### What is missing?
+
+It is not completly finished yet.
+
+- smart gremlins
+- executing code before or after attack
+- modified mogwais for better reenactment

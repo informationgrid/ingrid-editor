@@ -303,7 +303,7 @@ export class DocumentPage extends BasePage {
   static fillCreateDialog(objectName: string) {
     cy.get('[data-cy=create-title]').type(objectName);
     cy.get('[data-cy=create-action]').click();
-    cy.get('[data-cy=create-action]').should('not.be.visible');
+    cy.get('[data-cy=create-action]').should('not.exist');
   }
 
   /**

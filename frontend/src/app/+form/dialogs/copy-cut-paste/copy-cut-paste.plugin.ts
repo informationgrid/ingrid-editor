@@ -109,7 +109,7 @@ export class CopyCutPastePlugin extends Plugin {
         resolve(false);
       } else {
         console.log('Tree does not have node information yet. Waiting 200ms ...');
-        setTimeout(() => this.checkForParentsWithSelectedChildren(data), 200, --tries);
+        setTimeout(() => this.checkForParentsWithSelectedChildrenLoop(data, resolve, --tries), 200);
       }
     }
   }

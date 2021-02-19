@@ -89,7 +89,7 @@ pipeline {
             junit 'server/build/test-results/**/*.xml'
             junit 'frontend/target/surefire-reports/**/*.xml'
         }
-        /*changed {
+        changed {
             // send Email with Jenkins' default configuration
             script {
                 emailext (
@@ -97,6 +97,6 @@ pipeline {
                         subject: '${DEFAULT_SUBJECT}',
                         to: '${DEFAULT_RECIPIENTS}')
             }
-        }*/
+        }
     }
 }

@@ -32,8 +32,8 @@ describe('CatalogManagerComponent', () => {
   });
 
   it('should create', () => {
-    spectator.get(CatalogService).getCatalogs.andReturn(of([]));
-    spectator.get(ConfigService).$userInfo = new BehaviorSubject<UserInfo>(<UserInfo>{
+    spectator.inject(CatalogService).getCatalogs.andReturn(of([]));
+    spectator.inject(ConfigService).$userInfo = new BehaviorSubject<UserInfo>(<UserInfo>{
       assignedCatalogs: [],
       currentCatalog: {id: 'xxx'},
       name: '',

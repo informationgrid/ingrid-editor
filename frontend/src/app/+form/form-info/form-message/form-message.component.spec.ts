@@ -40,7 +40,7 @@ describe('FormMessageComponent', () => {
   });
 
   it('should show info message', () => {
-    const service = spectator.get(MessageService);
+    const service = spectator.inject(MessageService);
     service.message$.next(INFO_MESSAGE);
 
     spectator.detectChanges();
@@ -52,7 +52,7 @@ describe('FormMessageComponent', () => {
   });
 
   it('should hide an info message after 3s', fakeAsync(() => {
-    const service = spectator.get(MessageService);
+    const service = spectator.inject(MessageService);
     service.message$.next(INFO_MESSAGE);
 
     spectator.detectChanges();
@@ -64,7 +64,7 @@ describe('FormMessageComponent', () => {
   }));
 
   it('should show an error message', () => {
-    const service = spectator.get(MessageService);
+    const service = spectator.inject(MessageService);
     service.message$.next(ERROR_MESSAGE);
 
     spectator.detectChanges();
@@ -76,7 +76,7 @@ describe('FormMessageComponent', () => {
   });
 
   it('should not hide an error message after 3s', fakeAsync(() => {
-    const service = spectator.get(MessageService);
+    const service = spectator.inject(MessageService);
     service.message$.next(ERROR_MESSAGE);
 
     spectator.detectChanges();
