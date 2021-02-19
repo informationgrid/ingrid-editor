@@ -15,11 +15,14 @@
 
         <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
+    <ige-add-button *ngIf="to.useDialog"
+                    (add)="openDialog()"
+                    [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
 </mat-chip-list>
 
 <ige-add-button *ngIf="to.useDialog; else simpleInput"
                 (add)="openDialog()"
-                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
+                [showRequiredError]="formControl.invalid && formControl.errors?.required" [hidden]="field.fieldGroup.length"></ige-add-button>
 
 <ng-template #simpleInput>
     <mat-form-field class="width-100" appearance="outline">

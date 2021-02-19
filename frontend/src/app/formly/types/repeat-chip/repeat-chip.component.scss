@@ -4,6 +4,16 @@
   display: block;
   padding-top: 10px;
   padding-bottom: 10px;
+
+  ::ng-deep ige-add-button{
+    margin-left: 6px;
+    .wrapper {
+      padding: 0;
+    }
+    .btn-title {
+      display: none;
+    }
+  }
 }
 
 .mat-chip {
