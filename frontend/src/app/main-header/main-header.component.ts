@@ -16,7 +16,7 @@ export class MainHeaderComponent implements OnInit {
   userInfo$ = this.configService.$userInfo;
   showShadow: boolean;
   pageTitle: string;
-  currentCatalog: Observable<string>;
+  currentCatalog$: Observable<string>;
   version: Version;
   timeout$ = this.session.select('sessionTimeoutIn');
 
@@ -28,7 +28,7 @@ export class MainHeaderComponent implements OnInit {
   ngOnInit() {
 
     this.version = this.configService.$userInfo.getValue().version;
-    this.currentCatalog = this.configService.$userInfo.pipe(map(userInfo => userInfo.currentCatalog.label));
+    this.currentCatalog$ = this.configService.$userInfo.pipe(map(userInfo => userInfo.currentCatalog.label));
 
     this.router.events.subscribe(
       (event: any) => {
