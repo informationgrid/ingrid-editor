@@ -7,6 +7,9 @@
 
   ::ng-deep ige-add-button{
     margin-left: 6px;
+    button {
+      padding: 0!important;
+    }
     .wrapper {
       padding: 0;
     }
