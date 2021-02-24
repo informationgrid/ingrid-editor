@@ -79,13 +79,15 @@ export class Tree {
     } else {
       // only click on node if it isn't expanded
       cy.get(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"]`)
+        .should('contain.text', nodeTitle) // assert here to wait for tree to be updated in case node has been moved
         .contains('.label span', query)
         .then(node => {
           const treeNodeParent = node.parent().parent().parent();
           if (forceClick || !treeNodeParent.hasClass('expanded')) {
             node.trigger('click');
             // give some time to add open state. Parent might be selected otherwise again instead of child
-            cy.wait(200);
+            // with the assertion that a node should contain a title, we don't need a wait anymore
+            // cy.wait(200);
           }
         });
     }
