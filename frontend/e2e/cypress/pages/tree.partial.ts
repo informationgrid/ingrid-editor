@@ -84,15 +84,14 @@ export class Tree {
         .then(node => {
           const treeNodeParent = node.parent().parent().parent();
           if (forceClick || !treeNodeParent.hasClass('expanded')) {
+            cy.log('Clicking on node: ' + nodeTitle);
             node.trigger('click');
             // give some time to add open state. Parent might be selected otherwise again instead of child
-            // with the assertion that a node should contain a title, we don't need a wait anymore
-            // cy.wait(200);
+            if (!isInsideDialog) {
+              cy.get(DocumentPage.title).should('have.text', nodeTitle);
+            }
           }
         });
-    }
-    if (!isInsideDialog) {
-      // cy.get(DocumentPage.title).should('have.text', nodeTitle);
     }
   }
 
