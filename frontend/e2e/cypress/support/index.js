@@ -15,7 +15,10 @@ Cypress.on('test:after:run', (test, runnable) => {
       item = item.parent;
     }
 
-    const fullTestName = nameParts.filter(Boolean).join(' -- '); // this is how cypress joins the test title fragments
+    const fullTestName = nameParts
+      .filter(Boolean)
+      .join(' -- ') // this is how cypress joins the test title fragments
+      .replaceAll('#', '%23'); // fix encoding for hashtags used for ticket ids
 
     const firstTestStart = runnable.parent.tests[0].wallClockStartedAt;
     const startTimeOffset = Math.round((test.wallClockStartedAt - firstTestStart) / 1000);
