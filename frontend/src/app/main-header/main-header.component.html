@@ -5,18 +5,15 @@
         <span class="page-title">{{pageTitle}}</span>
 
         <div fxFlex="grow" class="center-header">
-            <div fxFlex></div>
             <ige-session-timeout-info *ngIf="timeout$ | async as timer"
                                       [timeout]="timer"
                                       [class.show]="timer < 300"></ige-session-timeout-info>
-            <div fxFlex></div>
         </div>
 
-        <span *ngIf="currentCatalog$ | async as currentCatalog" class="header-info" [matTooltip]="currentCatalog">
+        <div *ngIf="currentCatalog$ | async as currentCatalog" fxFlex="grow"  class="header-info" [matTooltip]="currentCatalog">
             Katalog: <span class="catalog-title">{{currentCatalog}}</span>
-        </span>
+        </div>
 
-        <!--<span class="catalog-title">{{(userInfo|async).currentCatalog.label}}</span>-->
         <span *ngIf="userInfo$ | async as userInfo">
 
         <button type="button" class="user-popup pad-right" mat-icon-button [matMenuTriggerFor]="menuInfo" data-cy="header-info-button">

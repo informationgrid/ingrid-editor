@@ -10,7 +10,7 @@ ige-session-timeout-info {
 
 .center-header {
   height: inherit;
-  align-items: center;
+  text-align: end;
 
   &:hover ige-session-timeout-info, ige-session-timeout-info.show {
     display: inline-block;
@@ -18,21 +18,14 @@ ige-session-timeout-info {
 }
 
 .header-info {
-  color: $ige-text-color;
+  color: $ige-secondary;
   height: 32px;
-  font-size: 14px;
+  font-size: 12px;
   padding-right: 12px;
-  max-width: 33%;
-
-  white-space: nowrap;
+  margin-left: 80px;
+  text-align-last: end;
   overflow: hidden;
   text-overflow: ellipsis;
-
-
-  .link-button {
-    height: 100%;
-    line-height: 100%;
-  }
 }
 
 .catalog-title {
@@ -80,7 +73,7 @@ ige-session-timeout-info {
   line-height: 32px;
   background-color: $ige-background;
   color: $ige-primary;
-  margin-left: 10px;
+  margin-left: 12px;
 
   .mat-icon {
     line-height: 22px;
