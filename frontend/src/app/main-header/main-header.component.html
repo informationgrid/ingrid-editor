@@ -10,8 +10,8 @@
                                       [class.show]="timer < 300"></ige-session-timeout-info>
         </div>
 
-        <div *ngIf="currentCatalog$ | async as currentCatalog" fxFlex="grow"  class="header-info" [matTooltip]="currentCatalog">
-            Katalog: <span class="catalog-title">{{currentCatalog}}</span>
+        <div *ngIf="currentCatalog$ | async as currentCatalog" fxFlex="grow"  class="header-info">
+            Katalog: <span class="catalog-title" [matTooltip]="currentCatalog">{{currentCatalog}}</span>
         </div>
 
         <span *ngIf="userInfo$ | async as userInfo">
