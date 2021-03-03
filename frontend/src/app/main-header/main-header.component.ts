@@ -61,4 +61,14 @@ export class MainHeaderComponent implements OnInit {
   getInitials(user: UserInfo) {
     return user.firstName[0]+user.lastName[0];
   }
+
+  userIsCatAdmin() {
+    return this.userInfo$.pipe(
+      map(userInfo => {
+        // TODO change when roles are fully implemented. Right now everybody is cat-admin
+        return true
+        // return userInfo.roles.includes("cat-admin")
+      })
+    )
+  }
 }

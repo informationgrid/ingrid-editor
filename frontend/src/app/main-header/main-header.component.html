@@ -49,7 +49,7 @@
                 <div class="user-popup-header">
                     <mat-card-title><strong>INGRID</strong> EDITOR</mat-card-title>
                 </div>
-                <span *ngIf="userInfo.roles.includes('admin')">
+                <span *ngIf="userIsCatAdmin() | async">
                     <span mat-menu-item disabled class="category-item">Einstellungen</span>
                     <mat-divider></mat-divider>
                     <span mat-menu-item>Allgemein</span>
