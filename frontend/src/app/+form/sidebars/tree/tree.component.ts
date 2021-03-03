@@ -189,6 +189,11 @@ export class TreeComponent implements OnInit, OnDestroy {
         this.multiSelectionModeEnabled = true;
         this.selectionModel.select(node);
         return;
+      } else if ($event.shiftKey) {
+        this.lastSelectedNode = this.activeNode;
+        this.multiSelectionModeEnabled = true;
+        this.nodeSelectionToggle(node, $event);
+        return;
       }
       this.handleSingleSelection(node);
     }
@@ -425,6 +430,7 @@ export class TreeComponent implements OnInit, OnDestroy {
                   this.activate.next([id]);
                   this.selectionModel.select(node);
                   this.activeNodeId = nextActiveNode;
+                  this.activeNode = node;
                 }
                 this.scrollToActiveElement();
               }
@@ -442,6 +448,7 @@ export class TreeComponent implements OnInit, OnDestroy {
               if (resetSelection) {
                 this.selectionModel.select(node);
                 this.activeNodeId = nextActiveNode;
+                this.activeNode = node;
               }
               this.scrollToActiveElement();
             }
@@ -675,6 +682,10 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.selectionModel.clear();
       if (this.activeNode) {
         this.selectionModel.select(this.activeNode);
+      }
+    } else {
+      if (this.activeNode) {
+        this.lastSelectedNode = this.activeNode;
       }
     }
 
