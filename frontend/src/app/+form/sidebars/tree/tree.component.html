@@ -26,7 +26,7 @@
                           matTooltip="Alle Aus-/Abwählen"
                           [checked]="allNodesSelected()"
                           [indeterminate]="atLeastOneButNotAllNodesSelected()"
-                          (change)="toggleAllSelection($event.checked)">Auswahl</mat-checkbox>
+                          (change)="toggleAllSelection($event.checked)">Alle</mat-checkbox>
             <button mat-icon-button matSuffix class="close" (click)="toggleSelectionMode()"  data-cy="exit-multi-select-mode">
                 <mat-icon svgIcon="Entfernen"></mat-icon>
             </button>
@@ -53,7 +53,7 @@
                 <mat-checkbox *ngIf="multiSelectionModeEnabled"
                               [checked]="isSelected(node)"
                               (click)="$event.stopImmediatePropagation()"
-                              (change)="nodeSelectionToggle(node)"></mat-checkbox>
+                              (change)="nodeSelectionToggle(node,$event)"></mat-checkbox>
                 <mat-icon [svgIcon]="node.iconClass" [ngClass]="['document-icon',getStateClass(node)]"></mat-icon>
                 <span>{{node.title}}</span>
             </div>
@@ -74,19 +74,6 @@
                        [class.folder]="node.type === 'FOLDER'">
             <div style="width: 100%;">
                 <div fxLayout="row">
-
-                    <div *ngIf="multiSelectionModeEnabled && node.hasChildren" class="quick-child-selection">
-                        <button mat-icon-button
-                                matTooltip="Alle Unterelemente abwählen"
-                                (click)="toggleAllChildNodes(node,false, $event)">
-                            <mat-icon>check_box_outline_blank</mat-icon>
-                        </button>
-                        <button mat-icon-button
-                                matTooltip="Alle Unterelemente auswählen"
-                                (click)="toggleAllChildNodes(node, true, $event)">
-                            <mat-icon>check_box</mat-icon>
-                        </button>
-                    </div>
                     <button mat-icon-button matTreeNodeToggle
                             class="toggle"
                             [disabled]="!node.hasChildren"
@@ -100,7 +87,7 @@
                 <div class="label">
 
                     <mat-checkbox *ngIf="showFolderCheckbox()"
-                                  (change)="nodeSelectionToggle(node)"
+                                  (change)="nodeSelectionToggle(node, $event)"
                                   (click)="$event.stopImmediatePropagation()"
                                   [checked]="isSelected(node)"></mat-checkbox>
 
