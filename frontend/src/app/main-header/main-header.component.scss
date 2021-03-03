@@ -85,9 +85,17 @@ ige-session-timeout-info {
     background-color: darken($ige-background, 5%);
   }
 
+  ::ng-deep .mat-icon path {
+    fill: $ige-primary;
+  }
+
   &[aria-expanded="true"] {
     background-color: $ige-primary;
     color: #ffffff;
+
+    ::ng-deep .mat-icon path {
+      fill: #ffffff;
+    }
 
     &:hover {
       background-color: lighten($ige-primary, 8%);
