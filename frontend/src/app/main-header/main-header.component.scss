@@ -21,6 +21,7 @@ ige-session-timeout-info {
   color: $ige-secondary;
   height: 32px;
   font-size: 12px;
+  font-weight: 400;
   padding-right: 12px;
   margin-left: 80px;
   text-align-last: end;
@@ -62,7 +63,7 @@ ige-session-timeout-info {
 
 .page-title {
   font-weight: normal;
-  color: $ige-primary!important;
+  color: $ige-primary !important;
   padding-left: 20px;
 }
 
@@ -76,12 +77,13 @@ ige-session-timeout-info {
   margin-left: 12px;
 
   .mat-icon {
+
     line-height: 22px;
   }
 
   &:hover {
-      background-color: darken($ige-background, 5%);
-   }
+    background-color: darken($ige-background, 5%);
+  }
 
   &[aria-expanded="true"] {
     background-color: $ige-primary;
@@ -131,5 +133,40 @@ mat-card-title {
 
 .last-login {
   margin-bottom: 0;
+}
+
+::ng-deep .info-menu {
+  &.mat-menu-panel {
+    max-width: 350px;
+
+  }
+
+  .mat-card-title {
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .mat-menu-item {
+    font-size: 16px;
+    color: $ige-text-color;
+    height: 44px;
+  }
+
+  .category-item {
+    color: $ige-hint-color;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+
+  .category-item ~ .category-item {
+    padding-top: 16px;
+  }
+
+  .versioninfo {
+    color: $ige-hint-color;
+    font-size: 14px;
+    line-height: 18px;
+    padding: 16px;
+  }
 }
 

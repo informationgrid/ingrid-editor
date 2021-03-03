@@ -16,51 +16,63 @@
 
         <span *ngIf="userInfo$ | async as userInfo">
 
-        <button type="button" class="user-popup pad-right" mat-icon-button [matMenuTriggerFor]="menuInfo" data-cy="header-info-button">
-        <mat-icon>settings</mat-icon>
-        </button>
-        <mat-menu #menuInfo="matMenu" class="info-menu">
-            <mat-list role="list">
-                <mat-list-item role="listitem">
-                    <div mat-line class="label">Version</div>
-                    <div mat-line>{{version.version}}</div>
-                </mat-list-item>
-                <mat-list-item role="listitem">
-                    <div mat-line class="label">Datum</div>
-                    <div mat-line>{{version.date | date:'dd.LL.yyyy HH:mm'}}</div>
-                </mat-list-item>
-                <mat-list-item role="listitem">
-                    <div mat-line class="label">GIT Commit ID</div>
-                    <div mat-line>{{version.commitId}}</div>
-                </mat-list-item>
-            </mat-list>
-        </mat-menu>
+            <button type="button" class="user-popup pad-right" mat-icon-button [matMenuTriggerFor]="menu" data-cy="header-profile-button">
+                {{getInitials(userInfo)}}
+            </button>
+            <mat-menu #menu="matMenu" class="user-popup-menu">
+                <div class="user-popup-header">
+                    <mat-card-title>{{userInfo.firstName}} {{userInfo.lastName}}</mat-card-title>
+                    <p class="last-login" title="{{userInfo.lastLogin | date:'short'}}">Letzte Anmeldung: {{userInfo.lastLogin | date}}</p>
+                </div>
+                <span mat-menu-item disabled [disableRipple]="true" (click)="$event.stopPropagation()">
+                    <mat-icon svgIcon="german_flag-24px"></mat-icon>
+                    Sprache: Deutsch
+                    <mat-icon>arrow_drop_down</mat-icon>
+                </span>
+                <span mat-menu-item disabled [disableRipple]="true" (click)="$event.stopPropagation()">
+                    <mat-icon svgIcon="perm_identity-24px"></mat-icon>
+                    Profil verwalten
+                </span>
+                <span mat-menu-item disabled [disableRipple]="true" (click)="$event.stopPropagation()">
+                    <mat-icon svgIcon="baseline-settings-24px"></mat-icon>
+                    Einstellungen
+                </span>
+                <div class="user-popup-footer">
+                    <button mat-button color=primary class="upper-case" (click)="logout()" data-cy="logout-button">Abmelden</button>
+                </div>
+            </mat-menu>
 
-        <button type="button" class="user-popup" mat-icon-button [matMenuTriggerFor]="menu" data-cy="header-profile-button">
-            {{getInitials((userInfo$ | async))}}
-        </button>
-        <mat-menu #menu="matMenu" class="user-popup-menu">
-            <div class="user-popup-header">
-                <mat-card-title>{{userInfo.firstName}} {{userInfo.lastName}}</mat-card-title>
-                <p class="last-login" title="{{userInfo.lastLogin | date:'short'}}">Letzte Anmeldung: {{userInfo.lastLogin | date}}</p>
-            </div>
-            <span mat-menu-item disabled [disableRipple]="true" (click)="$event.stopPropagation()">
-                <mat-icon svgIcon="german_flag-24px"></mat-icon>
-                Sprache: Deutsch
-                <mat-icon>arrow_drop_down</mat-icon>
-            </span>
-            <span mat-menu-item disabled [disableRipple]="true" (click)="$event.stopPropagation()">
-                <mat-icon svgIcon="perm_identity-24px"></mat-icon>
-                Profil verwalten
-            </span>
-            <span mat-menu-item disabled [disableRipple]="true" (click)="$event.stopPropagation()">
-                <mat-icon svgIcon="baseline-settings-24px"></mat-icon>
-                Einstellungen
-            </span>
-            <div class="user-popup-footer">
-                <button mat-button color=primary class="upper-case" (click)="logout()" data-cy="logout-button">Abmelden</button>
-            </div>
-        </mat-menu>
+            <button type="button" class="user-popup" mat-icon-button [matMenuTriggerFor]="menuInfo" data-cy="header-info-button">
+            <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menuInfo="matMenu" class="info-menu">
+                <div class="user-popup-header">
+                    <mat-card-title><strong>INGRID</strong> EDITOR</mat-card-title>
+                </div>
+                <span *ngIf="userInfo.roles.includes('admin')">
+                    <span mat-menu-item disabled class="category-item">Einstellungen</span>
+                    <mat-divider></mat-divider>
+                    <span mat-menu-item>Allgemein</span>
+                    <mat-divider></mat-divider>
+                    <span mat-menu-item>Codelist Repository</span>
+                    <mat-divider></mat-divider>
+                    <span mat-menu-item>Katalogverwaltung</span>
+                    <mat-divider></mat-divider>
+                    <span mat-menu-item disabled class="category-item">Informationen</span>
+                    <mat-divider></mat-divider>
+                </span>
+                <span mat-menu-item>Hilfe</span>
+                <mat-divider></mat-divider>
+                <span mat-menu-item>Über INGRID EDITOR</span>
+                <mat-divider></mat-divider>
+                <div class="versioninfo">
+                    <div>Version</div>
+                    <div>{{version.version}}, {{version.date | date:'dd.LL.yyyy, HH:mm'}}</div>
+                    <div>GIT Commit ID</div>
+                    <div>{{version.commitId}}</div>
+                </div>
+            </mat-menu>
+
         </span>
     </mat-toolbar-row>
 </mat-toolbar>
