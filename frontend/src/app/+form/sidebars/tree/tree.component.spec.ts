@@ -543,6 +543,21 @@ describe('TreeComponent', () => {
       tick(1000);
     }));
 
+    it('should remove a deleted node from the selection model', fakeAsync(() => {
+      spectator.detectChanges();
+      spectator.click('[data-cy="edit-button"]');
+      let selectionModel = spectator.fixture.componentInstance.selectionModel;
+
+      expect(selectionModel.selected.length).toBe(0);
+      selectNode(0);
+      tick(1000);
+      expect(selectionModel.selected.length).toBe(1);
+      // @ts-ignore
+      db.treeUpdates.next({type: UpdateType.Delete, data: [{id: '1'}]});
+
+      expect(selectionModel.selected.length).toBe(0);
+    }));
+
     xit('should mark a node as selected, after click on a search result of tree', () => {
     });
   });

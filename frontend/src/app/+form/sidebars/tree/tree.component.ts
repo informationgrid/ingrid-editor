@@ -233,7 +233,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private getParentNode(node: TreeNode): { node: TreeNode, parent: TreeNode } {
-    const nodeIndex = this.dataSource.data.findIndex(item => item._id === node._id);
+    const nodeIndex = this.dataSource.data.indexOf(node);
 
     for (let i = nodeIndex - 1; i >= 0; i--) {
       if (this.dataSource.data[i].level === node.level - 1) {
@@ -299,6 +299,9 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private handleNodeRemoval(node: TreeNode) {
+    // first deselect node from selection model
+    this.selectionModel.deselect(node);
+
     const nodeInfo = this.getParentNode(node);
     // first collapse nodes to be deleted to make sure all sub nodes are removed
     this.treeControl.collapse(nodeInfo.node);
