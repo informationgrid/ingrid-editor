@@ -12,6 +12,7 @@ import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
+import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +21,9 @@ import java.security.Principal
 import java.util.*
 
 @Service
-class CatalogService @Autowired constructor(private val dbService: DBApi, private val authUtils: AuthUtils) {
+class CatalogService @Autowired constructor(private val dbService: DBApi, 
+                                            private val authUtils: AuthUtils,
+                                            private val catalogProfiles: List<CatalogProfile>) {
 
     private val log = logger()
 
@@ -134,6 +137,10 @@ class CatalogService @Autowired constructor(private val dbService: DBApi, privat
 
     fun setRecentLoginsForUser(userId: String, recentLogins: Array<Date>) {
         this.setFieldForUser(userId, "recentLogins", recentLogins as Any)
+    }
+    
+    fun getAvailableCatalogs(): List<CatalogProfile> {
+        return catalogProfiles
     }
 
     private fun setFieldForUser(userId: String, fieldId: String, fieldValue: Any) {

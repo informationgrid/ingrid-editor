@@ -5,29 +5,26 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.profiles.CatalogProfile
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import org.springframework.web.bind.annotation.GetMapping
 import java.security.Principal
 
-@Tag(name = "Behaviours", description = "the behaviours API")
+@Tag(name = "Profiles", description = "the profiles API")
 interface ProfileApi {
     @Operation
+    @GetMapping(value = ["/profiles"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    @RequestMapping(value = ["/profiles"], produces = ["text/javascript"], method = [RequestMethod.GET])
-    fun getProfile(principal: Principal): ResponseEntity<String>
+    fun getProfiles(principal: Principal?): ResponseEntity<List<CatalogProfile>>
 
-    @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    @RequestMapping(value = ["/profiles"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
-    fun uploadProfile(principal: Principal, @RequestParam("file") file: MultipartFile,
-                      redirectAttributes: RedirectAttributes): ResponseEntity<String>
+//    @Operation
+//    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+//    @RequestMapping(value = ["/profiles"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
+//    fun uploadProfile(principal: Principal, @RequestParam("file") file: MultipartFile,
+//                      redirectAttributes: RedirectAttributes): ResponseEntity<String>
 }
