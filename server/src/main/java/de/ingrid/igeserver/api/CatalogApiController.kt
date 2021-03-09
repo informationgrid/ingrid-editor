@@ -19,14 +19,12 @@ class CatalogApiController : CatalogApi {
     @Autowired
     private lateinit var catalogService: CatalogService
 
-    override val catalogs: ResponseEntity<List<Catalog>>
-        get() {
-            val catalogs = dbService.catalogs
-                    .map { catalogService.getCatalogById(it) }
-                    .filterNotNull()
+    override fun catalogs(): ResponseEntity<List<Catalog>> {
+        val catalogs = dbService.catalogs
+                .map { catalogService.getCatalogById(it) }
 
-            return ResponseEntity.ok().body(catalogs)
-        }
+        return ResponseEntity.ok().body(catalogs)
+    }
 
     @AuditLog(action="create_catalog")
     override fun createCatalog(settings: Catalog): ResponseEntity<String> {
