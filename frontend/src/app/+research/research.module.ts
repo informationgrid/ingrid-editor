@@ -12,6 +12,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSortModule} from '@angular/material/sort';
+import {MatMenuModule} from '@angular/material/menu';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import {MatSortModule} from '@angular/material/sort';
         MatInputModule,
         MatTabsModule,
         MatButtonModule,
-        MatSortModule
+        MatSortModule,
+        MatMenuModule
     ]
 })
 export class ResearchModule {

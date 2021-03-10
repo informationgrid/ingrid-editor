@@ -7,7 +7,7 @@
                 <mat-radio-group [name]="group.label" fxLayout="column" fxLayoutGap="10px"
                                  (ngModelChange)="updateFilter()"
                                  [(ngModel)]="model[group.id]">
-                    <mat-radio-button class="example-radio-button" *ngFor="let filter of group.filter"
+                    <mat-radio-button *ngFor="let filter of group.filter; let i = index"
                                       [value]="filter.id">
                         {{filter.label}}
                     </mat-radio-button>
@@ -37,9 +37,16 @@
             <mat-tab label="SQL">
                 <div class="padding-sm">
                     <mat-form-field appearance="outline" class="width-100">
-                        <mat-label>SQL-Query</mat-label>
-                        <textarea #sql matInput rows="5" placeholder="SELECT * FROM ..."></textarea>
+<!--                        <mat-label>SQL-Query</mat-label>-->
+                        <textarea #sql matInput rows="5" placeholder="SELECT * FROM ..." [value]="sqlValue"></textarea>
                     </mat-form-field>
+
+                    <span [matMenuTriggerFor]="examples">Beispiele</span>
+                    <mat-menu #examples="matMenu">
+                        <button mat-menu-item (click)="updateSql(0)">Alle Adressen, die "test" im Titel beinhalten</button>
+                        <button mat-menu-item (click)="updateSql(1)">Alle Dokumente, mit Kategorie "Luft- und Raumfahrt"</button>
+                    </mat-menu>
+
                     <button mat-raised-button (click)="queryBySQL(sql.value)">Abschicken</button>
                 </div>
             </mat-tab>

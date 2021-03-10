@@ -13,13 +13,18 @@ export class ResearchComponent implements AfterViewInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  filterGroup = this.researchService.getQuickFilter().pipe(tap(filters => this.prepareModel(filters)));
+  filterGroup = this.researchService.getQuickFilter()
+    .pipe(
+      tap(filters => this.prepareModel(filters)),
+      tap(() => this.updateFilter())
+    );
 
   model: any;
   displayedColumns: string[] = ['title', 'uuid'];
 
   totalHits: number = 0;
   dataSource = new MatTableDataSource([]);
+  sqlValue: string = '';
 
   constructor(private researchService: ResearchService) {
   }
@@ -37,7 +42,12 @@ export class ResearchComponent implements AfterViewInit {
 
   private prepareModel(filters: FacetGroup[]) {
     this.model = {};
-    filters.forEach(group => this.model[group.id] = {});
+    filters.forEach(group => {
+      this.model[group.id] = {};
+      if (group.selection === 'OR') {
+        this.model[group.id] = group.filter[0].id;
+      }
+    });
   }
 
   queryBySQL(sql: string) {
@@ -48,5 +58,19 @@ export class ResearchComponent implements AfterViewInit {
   private updateHits(result: ResearchResponse) {
     this.totalHits = result.totalHits;
     this.dataSource.data = result.hits;
+  }
+
+  updateSql(index: number) {
+    if (index === 0) {
+      this.sqlValue = `SELECT *
+                       FROM document
+                       WHERE type = 'AddressDoc'
+                         AND LOWER(title) LIKE '%test%'`;
+    } else if (index === 1) {
+      this.sqlValue = `SELECT *
+                       FROM document
+                       WHERE type = 'mCloudDoc'
+                         AND data -> 'mCloudCategories' @> '"aviation"'`;
+    }
   }
 }

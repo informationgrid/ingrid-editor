@@ -3,8 +3,11 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.profiles.CatalogProfile
+import org.hibernate.exception.GenericJDBCException
+import org.hibernate.jpa.QueryHints
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -88,7 +91,7 @@ class ResearchService {
 
         return if (boolFilter.clauses != null && boolFilter.clauses.isNotEmpty()) {
             boolFilter.clauses
-                .mapNotNull { findSpecialFilter(it) } 
+                .mapNotNull { findSpecialFilter(it) }
                 .flatten()
         } else {
             boolFilter.value
@@ -117,6 +120,7 @@ class ResearchService {
 
     private fun sendQuery(sql: String) = entityManager
         .createNativeQuery(sql)
+        .setHint(QueryHints.HINT_READONLY, true)
         .unwrap(NativeQuery::class.java)
         .addScalar("data", JsonNodeBinaryType.INSTANCE)
         .addScalar("title")
@@ -137,13 +141,16 @@ class ResearchService {
         array.addAll(jsonNodes)
         return array
     }
-
+    
     fun querySql(sqlQuery: String): ResearchResponse {
 
-        val result = sendQuery(sqlQuery)
-
-        return ResearchResponse(result.size, mapResult(result))
-        
+        try {
+            val result = sendQuery(sqlQuery)
+            
+            return ResearchResponse(result.size, mapResult(result))
+        } catch (error: GenericJDBCException) {
+            throw NotFoundException.withMissingResource(error.localizedMessage, "SQL")
+        }
     }
 
 }
