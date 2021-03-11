@@ -96,7 +96,7 @@ export class Tree {
   }
 
   static getNumberOfNodes(): Cypress.Chainable<number> {
-    return cy.get('mat-tree mat-tree-node').its('length');
+    return cy.get('ige-sidebar mat-tree mat-tree-node').its('length');
   }
 
   static selectNodeAndCheckPath(nodeTitle: string, path: string[]) {

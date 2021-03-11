@@ -82,9 +82,12 @@ export class DocumentPage extends BasePage {
     this.fillDialog(docName);
   }
 
-  static createFolder(folderName: string) {
+  static createFolder(folderName: string, location?: string[]) {
     cy.log('Create folder: ' + folderName);
     cy.get(DocumentPage.Toolbar.NewFolder).click();
+    if (location) {
+      this.changeLocation(location);
+    }
     this.fillDialog(folderName);
   }
 
@@ -92,6 +95,7 @@ export class DocumentPage extends BasePage {
     let beforeLength = 0;
     Tree.getNumberOfNodes().then(length => {
       beforeLength = length;
+      cy.log('nodes count before: ' + length);
       this.fillCreateDialog(title);
       cy.get('mat-tree mat-tree-node').should('have.length.at.least', beforeLength + 1);
     });
@@ -306,48 +310,15 @@ export class DocumentPage extends BasePage {
     cy.get('[data-cy=create-action]').should('not.exist');
   }
 
-  /**
-   * @deprecated combine with createFolder function
-   * @param folderName
-   * @param targetNodePath
-   */
-  static createFolderAndChangeLocation(folderName: string, targetNodePath: string[]) {
-    cy.get(DocumentPage.Toolbar.NewFolder).click();
-    cy.get('[data-cy=create-title]').type(folderName);
-    this.changeLocation(targetNodePath);
-  }
-
   static changeLocation(targetNodePath: string[]) {
     cy.get('[data-cy=create-changeLocation]').click();
-    if (targetNodePath) {
+    if (targetNodePath.length > 0) {
       targetNodePath.forEach(node => Tree.openNode([node], true));
     } else {
-      cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
+      // cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
+      cy.get('ige-destination-selection mat-list-option').click();
     }
     cy.get('[data-cy=create-applyLocation]').click();
-    cy.get('[data-cy=create-action]').click();
-  }
-
-  /**
-   * @deprecated combine with createFolder function
-   * @param folderName
-   * @param targetNodePath
-   */
-  static createFolderAndChangeLocationToRoot(folderName: string, targetNodePath: string[]) {
-    cy.get(DocumentPage.Toolbar.NewFolder).click();
-    cy.get('[data-cy=create-title]').type(folderName);
-    cy.get('[data-cy=create-changeLocation]').click();
-    if (targetNodePath[0] === 'Daten') {
-      cy.get('ige-destination-selection mat-list-option').click();
-      // check if 'Daten' is chosen
-      cy.get('[aria-selected=true]').contains('Daten');
-    } else if (targetNodePath[0] === 'Adressen') {
-      cy.get('ige-destination-selection mat-list-option').click();
-      // check if 'Adressen' is chosen
-      cy.get('[aria-selected=true]').contains('Adressen');
-    }
-    cy.get('[data-cy=create-applyLocation]').click();
-    cy.get('[data-cy=create-action]').click();
   }
 
   static publishNow() {

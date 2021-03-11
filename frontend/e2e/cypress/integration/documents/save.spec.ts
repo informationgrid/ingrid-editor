@@ -38,7 +38,7 @@ describe('General create documents/folders', () => {
       Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
       Tree.selectNodeAndCheckPath('Test mCLOUD Dokument', [ROOT, 'Testdokumente']);
 
-      DocumentPage.createFolderAndChangeLocationToRoot(folderName, [ROOT]);
+      DocumentPage.createFolder(folderName, []);
       // check if created folder is in root
       Tree.selectNodeAndCheckPath(folderName, [ROOT]);
 
@@ -93,7 +93,7 @@ describe('General create documents/folders', () => {
 
       Tree.openNode([parentFolder]);
 
-      DocumentPage.createFolderAndChangeLocationToRoot(folderName, [ROOT]);
+      DocumentPage.createFolder(folderName, []);
 
       Tree.containsNodeWithTitle(folderName, 1);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(ROOT);
@@ -103,7 +103,7 @@ describe('General create documents/folders', () => {
       const parentFolder = 'Neue Testdokumente';
       const folderName = 'Unterordner' + Utils.randomString();
 
-      DocumentPage.createFolderAndChangeLocation(folderName, [parentFolder]);
+      DocumentPage.createFolder(folderName, [parentFolder]);
 
       Tree.containsNodeWithTitle(folderName, 2);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
