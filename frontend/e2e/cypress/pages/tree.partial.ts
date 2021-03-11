@@ -79,23 +79,24 @@ export class Tree {
     } else {
       // only click on node if it isn't expanded
       cy.get(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"]`)
+        .should('contain.text', nodeTitle) // assert here to wait for tree to be updated in case node has been moved
         .contains('.label span', query)
         .then(node => {
           const treeNodeParent = node.parent().parent().parent();
           if (forceClick || !treeNodeParent.hasClass('expanded')) {
+            cy.log('Clicking on node: ' + nodeTitle);
             node.trigger('click');
             // give some time to add open state. Parent might be selected otherwise again instead of child
-            cy.wait(200);
+            if (!isInsideDialog) {
+              cy.get(DocumentPage.title).should('have.text', nodeTitle);
+            }
           }
         });
-    }
-    if (!isInsideDialog) {
-      // cy.get(DocumentPage.title).should('have.text', nodeTitle);
     }
   }
 
   static getNumberOfNodes(): Cypress.Chainable<number> {
-    return cy.get('mat-tree mat-tree-node').its('length');
+    return cy.get('ige-sidebar mat-tree mat-tree-node').its('length');
   }
 
   static selectNodeAndCheckPath(nodeTitle: string, path: string[]) {

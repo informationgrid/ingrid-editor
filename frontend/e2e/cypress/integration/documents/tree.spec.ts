@@ -419,9 +419,6 @@ describe('Tree', () => {
       Tree.openNode([testFolder]);
       CopyCutUtils.move();
 
-      // wait a bit after move so that we use the right dom state
-      cy.wait(200);
-
       Tree.openNode([testFolder, docName]);
       Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
 
@@ -429,17 +426,12 @@ describe('Tree', () => {
       Tree.openNode([testFolder]);
       CopyCutUtils.move(['Neue Testdokumente']);
 
-      // wait a bit after move so that we use the right dom state
-      cy.wait(200);
-
       Tree.openNode(['Neue Testdokumente', testFolder, docName]);
 
       // move from a folder to root
       Tree.openNode(['Neue Testdokumente', testFolder]);
-      CopyCutUtils.move();
 
-      // wait a bit after move so that we use the right dom state
-      cy.wait(200);
+      CopyCutUtils.move();
 
       Tree.openNode([testFolder, docName]);
     });

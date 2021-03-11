@@ -20,9 +20,6 @@ describe('Spatial References', () => {
     enterMcloudDocTestData.setSpatialBbox('create spatial reference, bbox', 'Bremen');
     DocumentPage.checkSpatialEntryNumber(1);
     DocumentPage.checkSpatialEntryExists('Bremen');
-
-    // TODO: why save at the end?
-    DocumentPage.saveDocument();
   });
 
   it('should create a new spatial reference (WKT)', () => {
@@ -33,9 +30,6 @@ describe('Spatial References', () => {
     enterMcloudDocTestData.setSpatialWKT('create spatial reference, wkt-1', poly);
     DocumentPage.checkSpatialEntryNumber(1);
     DocumentPage.checkSpatialEntryExists('reference, wkt-1');
-
-    // TODO: why save at the end?
-    DocumentPage.saveDocument();
   });
 
   it('should add additional a spatial reference (bbox)', () => {
@@ -47,16 +41,6 @@ describe('Spatial References', () => {
     enterMcloudDocTestData.setSpatialBbox('add spatial reference, bbox', 'Berlin');
     DocumentPage.checkSpatialEntryNumber(2);
     DocumentPage.checkSpatialEntryExists('Berlin');
-
-    DocumentPage.saveDocument();
-
-    DocumentPage.clickSpatialEntry('Berlin');
-    // TODO: why clicking reset button when there is no check involved?
-    //       * do some checks or remove it (write minimal tests!)
-    DocumentPage.clickLeafletMapResetBtn();
-
-    DocumentPage.clickSpatialEntry('Bremen');
-    DocumentPage.clickLeafletMapResetBtn();
   });
 
   it('should add additional a spatial reference (WKT)', () => {
@@ -93,9 +77,6 @@ describe('Spatial References', () => {
     // number should stay the same
     DocumentPage.checkSpatialEntryNumber(4);
     DocumentPage.checkSpatialEntryExists('Hamburg');
-
-    // TODO: why save?
-    DocumentPage.saveDocument();
   });
 
   it('should update a spatial reference (WKT)', () => {
@@ -111,9 +92,6 @@ describe('Spatial References', () => {
     enterMcloudDocTestData.setOpenedSpatialWKT('update spatial reference, wkt', poly);
     DocumentPage.checkSpatialEntryNumber(4);
     DocumentPage.checkSpatialEntryExists('update spatial reference, wkt');
-
-    // TODO: why save?
-    DocumentPage.saveDocument();
   });
 
   it('should remove spatial references', () => {

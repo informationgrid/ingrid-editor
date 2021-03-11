@@ -62,4 +62,9 @@ export class CatalogService {
   getCatalog(catalogId: string) {
     return this.http.get(this.configuration.backendUrl + 'catalog/' + catalogId);
   }
+
+  getCatalogProfiles(): Observable<any> {
+    return this.http.get(this.configuration.backendUrl + 'profiles');
+
+  }
 }

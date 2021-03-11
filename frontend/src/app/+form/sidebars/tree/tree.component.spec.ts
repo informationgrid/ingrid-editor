@@ -279,10 +279,6 @@ describe('TreeComponent', () => {
 
   }));
 
-  xit('should select multiple nodes and delete them at once', fakeAsync(() => {
-
-  }));
-
   xit('should delete a node which has multiple versions (draft, published, ...)', fakeAsync(() => {
 
   }));
@@ -408,11 +404,12 @@ describe('TreeComponent', () => {
   describe('Multi-Selection', () => {
     beforeEach(() => {
       spectator.setInput('showMultiSelectButton', true);
-      spectator.detectChanges();
-      spectator.click('[data-cy="edit-button"]');
     });
 
     it('should enable and disable multi selection mode', () => {
+      spectator.detectChanges();
+      spectator.click('[data-cy="edit-button"]');
+
       // all three documents have a checkbox
       expect(spectator.queryAll('mat-tree mat-checkbox').length).toBe(3);
 
@@ -425,6 +422,9 @@ describe('TreeComponent', () => {
     });
 
     it('should have the currently opened node initially selected', () => {
+      spectator.detectChanges();
+      spectator.click('[data-cy="edit-button"]');
+
       spectator.click('[data-cy="exit-multi-select-mode"]');
 
       selectNode(0);
@@ -439,6 +439,9 @@ describe('TreeComponent', () => {
     });
 
     it('should check/uncheck all nodes at once', () => {
+      spectator.detectChanges();
+      spectator.click('[data-cy="edit-button"]');
+
       const toggleAllSelectionSpy = spyOn(spectator.component, 'toggleAllSelection');
       expect(toggleAllSelectionSpy).toHaveBeenCalledTimes(0);
 
@@ -458,11 +461,102 @@ describe('TreeComponent', () => {
       checkSelectionCount(0);
     });
 
-    xit('should only select the parent but not its children, when clicking on parent', () => {
+    it('should activate multi-edit mode by using ctrl-key', () => {
+      spectator.detectChanges();
+
+      selectNode(0, 'ctrl')
+
+      expect(spectator.query('[data-cy="toggle-all-selection"]')).toBeVisible();
+      checkSelectionCount(1);
+      nodesAreMarkedForSelection(0);
     });
 
-    xit('should select/deselect all children, when clicking on corresponding buttons of parent', () => {
+    it('should activate multi-edit mode by using shift-key and mark correct nodes', () => {
+      spectator.detectChanges();
+
+      selectNode(1);
+      selectNode(2, 'shift');
+
+      expect(spectator.query('[data-cy="toggle-all-selection"]')).toBeVisible();
+      checkSelectionCount(2);
+      nodesAreMarkedForSelection(1, 2);
+
+      selectNode(0, 'shift');
+      checkSelectionCount(2);
+      nodesAreMarkedForSelection(0, 1);
     });
+
+    it('should select from root when no node was selected using shift-key', () => {
+      spectator.detectChanges();
+      spectator.click('[data-cy="edit-button"]');
+
+      selectNode(2, 'shift');
+
+      checkSelectionCount(3);
+      nodesAreMarkedForSelection(0, 1, 2);
+    });
+
+    it('should select multiple nodes and delete them at once', fakeAsync(() => {
+      spectator.detectChanges();
+      spectator.click('[data-cy="edit-button"]');
+
+      selectNode(0);
+      selectNode(1);
+
+      // @ts-ignore
+      db.treeUpdates.next({type: UpdateType.Delete, data: [{id: '1'},{id: '2'}]});
+
+      tick(1000);
+
+      hasNumberOfTreeNodes(1);
+      nodeContainsTitle(0, 'Test Document 3');
+    }));
+
+    it('should only select the parent but not its children, when clicking on parent', fakeAsync(() => {
+      // preparation
+      const firstModRececentDoc = Object.assign({}, recentDocuments[0]);
+      firstModRececentDoc._hasChildren = true;
+      db.initialData.and.returnValue(of([firstModRececentDoc]));
+      db.getChildren.and.returnValue(of(childDocuments1).pipe(delay(2000)));
+      spectator.detectChanges();
+
+      selectNode(0);
+      spectator.detectChanges();
+      tick(3000);
+
+      hasNumberOfTreeNodes(3);
+
+      // real test starts here
+      spectator.click('[data-cy="edit-button"]');
+      // active node should be selected node initially
+      checkSelectionCount(1);
+
+      // when deselecting folder only deselect singe node
+      selectNode(0);
+      checkSelectionCount(0);
+
+      // when selecting folder only select singe node
+      selectNode(0);
+      checkSelectionCount(1);
+
+      // wait for some timers
+      tick(1000);
+    }));
+
+    it('should remove a deleted node from the selection model', fakeAsync(() => {
+      spectator.detectChanges();
+      spectator.click('[data-cy="edit-button"]');
+      let selectionModel = spectator.fixture.componentInstance.selectionModel;
+
+      expect(selectionModel.selected.length).toBe(0);
+      selectNode(0);
+      tick(1000);
+      expect(selectionModel.selected.length).toBe(1);
+      // @ts-ignore
+      db.treeUpdates.next({type: UpdateType.Delete, data: [{id: '1'}]});
+
+      expect(selectionModel.selected.length).toBe(0);
+    }));
 
     xit('should mark a node as selected, after click on a search result of tree', () => {
     });
@@ -482,9 +576,23 @@ describe('TreeComponent', () => {
     expect(nodes[nodeIndex].textContent.trim()).toContain(title);
   }
 
-  function selectNode(index: number) {
+  function selectNode(index: number, keyCode?: 'ctrl'|'shift') {
     const nodes = spectator.queryAll('.mat-tree-node');
-    spectator.click(nodes[index]);
+
+    if (!keyCode) {
+      spectator.click(nodes[index]);
+      return;
+    }
+
+    const event = new MouseEvent('click', {
+      'view': window,
+      'bubbles': true,
+      'ctrlKey': keyCode === 'ctrl',
+      'shiftKey': keyCode === 'shift',
+    });
+    (<HTMLElement>nodes[index]).dispatchEvent(event);
+
+    spectator.detectChanges();
   }
 
   function nodeHasLevel(index: number, level: number) {
@@ -504,14 +612,14 @@ describe('TreeComponent', () => {
   const nodeAtIndex = (index) => spectator.queryAll('.mat-tree-node .mat-icon')[index];
 
 
-  const nodeExpectation = (index) => expect(spectator.queryAll('.mat-tree-node')[index]);
+  const expectNode = (index) => expect(spectator.queryAll('.mat-tree-node')[index]);
 
   function nodeHasClass(index: number, stateClass: string) {
-    nodeExpectation(index).toHaveClass(stateClass);
+    expectNode(index).toHaveClass(stateClass);
   }
 
   function nodeHasNotClass(index: number, stateClass: string) {
-    nodeExpectation(index).not.toHaveClass(stateClass);
+    expectNode(index).not.toHaveClass(stateClass);
   }
 
   function nodeImageHasClass(index: number, stateClass: string) {
@@ -527,7 +635,11 @@ describe('TreeComponent', () => {
   }
 
   function nodeIsSelected(index: number) {
-    nodeExpectation(index).toHaveClass('active');
+    expectNode(index).toHaveClass('active');
+  }
+
+  function nodesAreMarkedForSelection(...index: number[]) {
+    index.forEach(i => expectNode(i).toHaveClass('selected'));
   }
 
   function newNode(options: { id?, type?, state?, title?, parent?, updateType?: UpdateType }): UpdateDatasetInfo {

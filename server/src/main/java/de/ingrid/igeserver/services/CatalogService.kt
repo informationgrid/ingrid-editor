@@ -15,6 +15,7 @@ import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
+import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,8 +29,8 @@ import kotlin.collections.HashSet
 class CatalogService @Autowired constructor(
     private val dbService: DBApi,
     private val authUtils: AuthUtils,
-    private val externalUserService: UserManagementService
-) {
+    private val externalUserService: UserManagementService,
+    private val catalogProfiles: List<CatalogProfile>) {
 
     private val log = logger()
 
@@ -162,6 +163,10 @@ class CatalogService @Autowired constructor(
         this.setFieldForUser(userId, "recentLogins", recentLogins as Any)
     }
 
+    fun getAvailableCatalogs(): List<CatalogProfile> {
+        return catalogProfiles
+    }
+
     fun setGroupsForUser(userId: String, groups: List<String>) {
         val allGroupsForUser = getAllGroupsForUser(userId)
         allGroupsForUser[dbService.currentCatalog!!] = groups
@@ -213,7 +218,7 @@ class CatalogService @Autowired constructor(
                     put("userId", user.login)
                     set<ArrayNode>("groups", jacksonObjectMapper().createArrayNode())
                 }
-                
+
                 dbService.save(UserInfoType::class, null, node.toString())
             }
             setGroupsForUser(user.login, user.groups.toList())
