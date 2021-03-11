@@ -60,20 +60,18 @@ class Migration : ApplicationRunner {
     private fun getVersion(database: String): String {
         dbService.acquireCatalog(database).use {
             val info = dbService.findAll(CatalogInfoType::class)
-            val infoDoc = info?.get(0)
-            val version = infoDoc?.get("version")
-            return if (version == null) "0" else version.asText()
+            val infoDoc = info.get(0)
+            val version = infoDoc.get("version")
+            return if (version.isNull) "0" else version.asText()
         }
     }
 
     private fun setVersion(database: String, version: String) {
         dbService.acquireCatalog(database).use {
             val info = dbService.findAll(CatalogInfoType::class)
-            val infoDoc = info?.get(0)
-            if (infoDoc != null) {
-                (infoDoc as ObjectNode).put("version", version)
-                dbService.save(CatalogInfoType::class, dbService.getRecordId(infoDoc), infoDoc.toString())
-            }
+            val infoDoc = info.get(0)
+            (infoDoc as ObjectNode).put("version", version)
+            dbService.save(CatalogInfoType::class, dbService.getRecordId(infoDoc), infoDoc.toString())
             // TODO should we throw an exception if version can not be set because of missing catalog info?
         }
     }

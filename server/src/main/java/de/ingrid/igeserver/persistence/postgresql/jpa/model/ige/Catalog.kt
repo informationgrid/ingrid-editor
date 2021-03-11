@@ -31,7 +31,6 @@ class Catalog : EntityBase() {
     var description: String? = null
 
     @Column
-    @JsonIgnore
     var version: String? = null
 
     @ManyToMany(mappedBy="catalogs", fetch=FetchType.LAZY)
