@@ -1,10 +1,13 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FacetGroup, ResearchResponse, ResearchService} from './research.service';
 import {tap} from 'rxjs/operators';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {ProfileService} from '../../services/profile.service';
 import {SelectOption} from '../../services/codelist/codelist.service';
+import {SpatialBoundingBox} from '../../formly/types/map/spatial-dialog/spatial-result.model';
+import {LeafletService} from '../../formly/types/map/leaflet.service';
+import {Map} from 'leaflet';
 
 @Component({
   selector: 'ige-research',
@@ -14,6 +17,10 @@ import {SelectOption} from '../../services/codelist/codelist.service';
 export class ResearchComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatSort) sort: MatSort;
+
+  @ViewChild('leafletDlg') leaflet: ElementRef;
+
+  leafletReference: L.Map;
 
   filterGroup = this.researchService.getQuickFilter()
     .pipe(
@@ -32,7 +39,8 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   private quickFilters: FacetGroup[];
 
   constructor(private researchService: ResearchService,
-              private profileService: ProfileService) {
+              private profileService: ProfileService,
+              private leafletService: LeafletService) {
   }
 
   ngOnInit() {
@@ -42,6 +50,17 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     setTimeout(() => this.displayedColumns = ['title'], 100);
+    setTimeout(() => {
+      // this.leaflet.nativeElement.parentElement.parentElement.parentElement.parentElement.parentElement.style.height = 'calc(100vh - 200px)';
+      this.leaflet.nativeElement.style.width = '200px';
+      this.leaflet.nativeElement.style.minWidth = '200px';
+      this.leafletReference = this.leafletService.initMap(this.leaflet.nativeElement, {});
+      this.leafletService.zoomToInitialBox(this.leafletReference);
+      this.leafletReference.on("zoomend", () => { this.updateSpatial(); })
+      this.leafletReference.on("moveend", () => { this.updateSpatial(); })
+      // @ts-ignore
+      setTimeout(() => (<Map>this.leafletReference)._onResize());
+    }, 1000);
   }
 
   updateFilter(implicitFilter?: string[]) {
@@ -105,5 +124,21 @@ export class ResearchComponent implements OnInit, AfterViewInit {
         spatialFilter[0].implicitFilter
       }
     }
+  }
+
+  updateBoundingBox($event: SpatialBoundingBox) {
+
+  }
+
+  private updateSpatial() {
+    let bounds = this.leafletReference.getBounds();
+    this.model.spatial.mcloudSelectSpatial = [
+      bounds.getSouthWest().lat,
+      bounds.getSouthWest().lng,
+      bounds.getNorthEast().lat,
+      bounds.getNorthEast().lng
+    ];
+
+    this.updateFilter();
   }
 }

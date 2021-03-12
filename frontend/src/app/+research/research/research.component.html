@@ -22,35 +22,9 @@
             </ng-container>
 
             <ng-container *ngIf="group.selection === 'SPATIAL'">
-                <mat-form-field *ngFor="let filter of group.filter">
-                    <mat-label>{{filter.label}} - Lat 1</mat-label>
-                    <input matInput
-                           [name]="filter.id"
-                           (ngModelChange)="updateFilter(filter.implicitFilter)"
-                           [(ngModel)]="model[group.id][filter.id][0]">
-                </mat-form-field>
-                <mat-form-field *ngFor="let filter of group.filter">
-                    <mat-label>{{filter.label}} - Lon 1</mat-label>
-                    <input matInput
-                           [name]="filter.id"
-                           (ngModelChange)="updateFilter(filter.implicitFilter)"
-                           [(ngModel)]="model[group.id][filter.id][1]">
-                </mat-form-field>
-                <mat-form-field *ngFor="let filter of group.filter">
-                    <mat-label>{{filter.label}} - Lat 2</mat-label>
-                    <input matInput
-                           [name]="filter.id"
-                           (ngModelChange)="updateFilter(filter.implicitFilter)"
-                           [(ngModel)]="model[group.id][filter.id][2]">
-                </mat-form-field>
-                <mat-form-field *ngFor="let filter of group.filter">
-                    <mat-label>{{filter.label}} - Lon 2</mat-label>
-                    <input matInput
-                           [name]="filter.id"
-                           (ngModelChange)="updateFilter(filter.implicitFilter)"
-                           [(ngModel)]="model[group.id][filter.id][3]">
-                </mat-form-field>
-
+                <div>
+                    <div #leafletDlg fxFlex style="height: 200px;"></div>
+                </div>
             </ng-container>
         </div>
     </div>
