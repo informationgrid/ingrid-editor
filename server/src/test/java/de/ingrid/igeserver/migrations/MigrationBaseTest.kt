@@ -7,7 +7,7 @@ import io.kotest.matchers.shouldBe
 class MigrationBaseTest : ShouldSpec({
 
     class DummyStrategy(override val version: Version) : MigrationBase("") {
-        override fun exec(databaseName: String) {
+        override fun exec() {
         }
     }
 
