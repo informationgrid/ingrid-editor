@@ -366,7 +366,7 @@ class M017_TestMigration : MigrationBase("0.17") {
 
     private var log = logger()
 
-    override fun exec(databaseName: String) {
+    override fun exec() {
         log.info("Executing migration 0.17")
     }
 

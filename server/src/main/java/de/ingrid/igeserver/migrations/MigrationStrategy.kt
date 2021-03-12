@@ -4,7 +4,7 @@ interface MigrationStrategy {
 
     val version: Version
 
-    fun exec(databaseName: String)
+    fun exec()
 
     fun compareWithVersion(version: String): VersionCompare
 

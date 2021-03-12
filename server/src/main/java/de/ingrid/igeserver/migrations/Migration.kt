@@ -3,6 +3,7 @@ package de.ingrid.igeserver.migrations
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
+import de.ingrid.igeserver.persistence.model.meta.VersionInfoType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
@@ -25,18 +26,12 @@ class Migration : ApplicationRunner {
      * Install migrations after spring application context is initialized
      */
     override fun run(args: ApplicationArguments?) {
+        setupVersioning()
         update()
     }
 
     private fun update() {
-        val databases = dbService.catalogs
-        for (database in databases) {
-            executeMigrationsForDatabase(database)
-        }
-    }
-
-    private fun executeMigrationsForDatabase(database: String) {
-        val version = getVersion(database)
+        val version = getVersion()
 
         val strategies = getStrategiesAfter(version)
 
@@ -46,36 +41,47 @@ class Migration : ApplicationRunner {
 
         strategies.forEach { strategy ->
             log.info("Executing strategy: ${strategy.version}")
-            strategy.exec(database)
+            strategy.exec()
         }
 
         val latestVersion = strategies[strategies.size - 1].version
-        setVersion(database, latestVersion.version)
+        setVersion(latestVersion.version)
     }
 
     private fun getStrategiesAfter(version: String): List<MigrationStrategy> {
         return migrationStrategies
-                .filter { it.compareWithVersion(version) == VersionCompare.HIGHER }
-                .sortedBy { it.version }
+            .filter { it.compareWithVersion(version) == VersionCompare.HIGHER }
+            .sortedBy { it.version }
     }
 
 
-    private fun getVersion(database: String): String {
-        dbService.acquireCatalog(database).use {
-            val info = dbService.findAll(CatalogInfoType::class)
-            val infoDoc = info.get(0)
-            val version = infoDoc.get("version")
-            return if (version.isNull) "0" else version.asText()
+    private fun getVersion(): String {
+        dbService.acquireDatabase().use {
+            val info = dbService.find(VersionInfoType::class, "1")
+            return info?.get("value")?.asText() ?: "0"
         }
     }
 
-    private fun setVersion(database: String, version: String) {
-        dbService.acquireCatalog(database).use {
-            val info = dbService.findAll(CatalogInfoType::class)
-            val infoDoc = info.get(0)
-            (infoDoc as ObjectNode).put("version", version)
-            dbService.save(CatalogInfoType::class, dbService.getRecordId(infoDoc), infoDoc.toString())
-            // TODO should we throw an exception if version can not be set because of missing catalog info?
+    private fun setVersion(version: String) {
+        dbService.acquireDatabase().use {
+            val info = dbService.find(VersionInfoType::class, "1") as ObjectNode
+            info.put("value", version)
+            dbService.save(VersionInfoType::class, "1", info.toString())
         }
+    }
+
+    private fun setupVersioning() {
+        val sql = """
+            CREATE TABLE IF NOT EXISTS version_info (
+              id              serial PRIMARY KEY,
+              key             varchar(255) NOT NULL,
+              value           varchar(255)
+            );
+            INSERT INTO version_info (id, key, value) VALUES (1, 'schema_version', '0') ON CONFLICT DO NOTHING; 
+        """.trimIndent()
+        dbService.acquireDatabase().use {
+            dbService.execSQL(sql)
+        }
+
     }
 }

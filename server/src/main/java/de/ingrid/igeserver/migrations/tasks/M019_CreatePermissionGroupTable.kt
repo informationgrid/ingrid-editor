@@ -29,8 +29,8 @@ class M019_CreatePermissionGroupTable : MigrationBase("0.19") {
     @Autowired
     lateinit var dbService: DBApi
 
-    override fun exec(databaseName: String) {
-        dbService.acquireCatalog(databaseName).use {
+    override fun exec() {
+        dbService.acquireDatabase().use {
             dbService.execSQL(sql)
         }
     }
