@@ -7,6 +7,7 @@ import {tap} from 'rxjs/operators';
 export interface QuickFilter {
   id: string;
   label: string;
+  implicitFilter: string[];
 }
 
 export interface FacetGroup {
@@ -14,7 +15,7 @@ export interface FacetGroup {
   label: string;
   filter: QuickFilter[];
   combine: 'AND' | 'OR';
-  selection: 'AND' | 'OR';
+  selection: 'AND' | 'OR' | 'SPATIAL';
 }
 
 export class ResearchResponse {
@@ -51,14 +52,20 @@ export class ResearchService {
 
   private prepareQuery(model: any) {
     let activeFilterIds = {op: 'AND', clauses: []};
+    const fieldsWithParameters = ['mCloudSelectSpatial'];
 
     Object.keys(model)
       .map(groupKey => {
         let groupValue = model[groupKey];
         if (groupValue instanceof Object) {
           let activeItemsFromGroup = Object.keys(groupValue).filter(groupId => groupValue[groupId]);
+          let activeValuesFromGroup = ([] as string[]).concat(...Object.keys(groupValue).map(groupId => groupValue[groupId]));
           if (activeItemsFromGroup.length > 0) {
-            activeFilterIds.clauses.push({op: 'OR', value: [...activeItemsFromGroup]});
+            if (fieldsWithParameters.indexOf(activeItemsFromGroup[0]) === -1) {
+              activeFilterIds.clauses.push({op: 'OR', value: [...activeItemsFromGroup]});
+            } else if (activeValuesFromGroup.length === 4) {
+              activeFilterIds.clauses.push({op: 'OR', value: [...activeItemsFromGroup], parameter: activeValuesFromGroup});
+            }
           }
         } else {
           activeFilterIds.clauses.push({op: 'OR', value: [groupValue]});
@@ -70,5 +77,32 @@ export class ResearchService {
 
   searchBySQL(sql: string): Observable<ResearchResponse> {
     return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/querySql`, sql);
+  }
+
+  export() {
+    let csv = '\ufeff';
+  }
+
+  private exportToFile(content: string, exportFilename: string) {
+    const blob = new Blob([content], {
+      type: 'text/csv;charset=utf-8;'
+    });
+
+    if (window.navigator.msSaveOrOpenBlob) {
+      navigator.msSaveOrOpenBlob(blob, exportFilename + '.csv');
+    } else {
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      if (link.download !== undefined) {
+        link.setAttribute('href', URL.createObjectURL(blob));
+        link.setAttribute('download', exportFilename + '.csv');
+        link.click();
+      } else {
+        content = 'data:text/csv;charset=utf-8,' + content;
+        window.open(encodeURI(content));
+      }
+      document.body.removeChild(link);
+    }
   }
 }

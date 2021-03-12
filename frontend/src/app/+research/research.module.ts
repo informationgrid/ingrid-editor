@@ -13,25 +13,29 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSortModule} from '@angular/material/sort';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatSelectModule} from '@angular/material/select';
+import {MatTableExporterModule} from 'mat-table-exporter';
 
 
 @NgModule({
   declarations: [ResearchComponent],
-    imports: [
-        CommonModule,
-        routing,
-        MatCheckboxModule,
-        MatRadioModule,
-        FormsModule,
-        MatTableModule,
-        FlexModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatTabsModule,
-        MatButtonModule,
-        MatSortModule,
-        MatMenuModule
-    ]
+  imports: [
+    CommonModule,
+    routing,
+    MatCheckboxModule,
+    MatRadioModule,
+    FormsModule,
+    MatTableModule,
+    FlexModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTabsModule,
+    MatButtonModule,
+    MatSortModule,
+    MatMenuModule,
+    MatSelectModule,
+    MatTableExporterModule
+  ]
 })
 export class ResearchModule {
 }

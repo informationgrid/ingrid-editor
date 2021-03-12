@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles.mcloud
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.research.quickfilter.*
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -20,7 +21,8 @@ class MCloudProfile : CatalogProfile {
                 "type", "Typ", arrayOf(
                     Documents(),
                     Addresses()
-                )
+                ),
+                selection = Operator.OR
             ),
             FacetGroup(
                 "state", "Zustand", arrayOf(
@@ -35,6 +37,12 @@ class MCloudProfile : CatalogProfile {
                     DocMCloud(),
                     DocTest()
                 )
+            ),
+            FacetGroup(
+                "spatial", "Raumbezug", arrayOf(
+                    Spatial()
+                ),
+                selection = Operator.SPATIAL
             )
         )
     }
