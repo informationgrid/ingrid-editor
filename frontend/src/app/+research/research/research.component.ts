@@ -5,9 +5,9 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {ProfileService} from '../../services/profile.service';
 import {SelectOption} from '../../services/codelist/codelist.service';
-import {SpatialBoundingBox} from '../../formly/types/map/spatial-dialog/spatial-result.model';
 import {LeafletService} from '../../formly/types/map/leaflet.service';
 import {Map} from 'leaflet';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ige-research',
@@ -22,11 +22,13 @@ export class ResearchComponent implements OnInit, AfterViewInit {
 
   leafletReference: L.Map;
 
-  filterGroup = this.researchService.getQuickFilter()
+  filterGroup: Observable<FacetGroup[]> = this.researchService.getQuickFilter()
     .pipe(
       tap(filters => this.quickFilters = filters),
       tap(filters => this.prepareModel(filters)),
-      tap(() => this.updateFilter())
+      tap(() => this.updateFilter()),
+      tap(() => this.displayedColumns = ['title']),
+      tap(() => setTimeout(() => this.initLeaflet(), 200))
     );
 
   model: any;
@@ -37,6 +39,10 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   sqlValue: string = '';
   columnsMap: SelectOption[];
   private quickFilters: FacetGroup[];
+
+  showSpatialFilter: boolean;
+  private spatialFilterIds: string[] = [];
+  private fieldsWithParameters: { [x: string]: any[] } = {};
 
   constructor(private researchService: ResearchService,
               private profileService: ProfileService,
@@ -49,24 +55,27 @@ export class ResearchComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
-    setTimeout(() => this.displayedColumns = ['title'], 100);
-    setTimeout(() => {
-      // this.leaflet.nativeElement.parentElement.parentElement.parentElement.parentElement.parentElement.style.height = 'calc(100vh - 200px)';
-      this.leaflet.nativeElement.style.width = '200px';
-      this.leaflet.nativeElement.style.minWidth = '200px';
-      this.leafletReference = this.leafletService.initMap(this.leaflet.nativeElement, {});
-      this.leafletService.zoomToInitialBox(this.leafletReference);
-      this.leafletReference.on("zoomend", () => { this.updateSpatial(); })
-      this.leafletReference.on("moveend", () => { this.updateSpatial(); })
-      // @ts-ignore
-      setTimeout(() => (<Map>this.leafletReference)._onResize());
-    }, 1000);
+  }
+
+  initLeaflet() {
+    this.leaflet.nativeElement.style.width = '200px';
+    this.leaflet.nativeElement.style.minWidth = '200px';
+    this.leafletReference = this.leafletService.initMap(this.leaflet.nativeElement, {});
+    this.leafletService.zoomToInitialBox(this.leafletReference);
+    const updateSpatialQuery = () => {
+      this.updateSpatial();
+      this.updateFilter();
+    }
+    this.leafletReference.on('zoomend', () => updateSpatialQuery());
+    this.leafletReference.on('moveend', () => updateSpatialQuery());
+    // @ts-ignore
+    setTimeout(() => (<Map>this.leafletReference)._onResize());
   }
 
   updateFilter(implicitFilter?: string[]) {
     setTimeout(() => {
       // this.applyImplicitFilter(this.model);
-      return this.researchService.search(this.model)
+      return this.researchService.search(this.model, this.fieldsWithParameters)
         .subscribe(result => this.updateHits(result));
     });
   }
@@ -78,8 +87,9 @@ export class ResearchComponent implements OnInit, AfterViewInit {
       if (group.selection === 'OR') {
         this.model[group.id] = group.filter[0].id;
       } else if (group.selection === 'SPATIAL') {
-        this.model[group.id] = {};
-        this.model[group.id][group.filter[0].id] = [];
+        this.spatialFilterIds.push(group.filter[0].id);
+        /*this.model[group.id] = {};
+        this.model[group.id][group.filter[0].id] = [];*/
       }
     });
   }
@@ -108,12 +118,6 @@ export class ResearchComponent implements OnInit, AfterViewInit {
     }
   }
 
-  /*toggleColumn(value: string) {
-    this.displayedColumns.includes(value)
-      ? this.displayedColumns.splice(this.displayedColumns.indexOf(value), 1)
-      : this.displayedColumns.push(value);
-  }*/
-
   private applyImplicitFilter(model: any) {
     let spatial = model.clauses.clauses.filter(c => c.value.indexOf('mCloudSelectSpatial') !== -1);
     if (spatial.length > 0 && spatial[0].parameter.length === 4) {
@@ -121,24 +125,31 @@ export class ResearchComponent implements OnInit, AfterViewInit {
         .map(groups => groups.filter)
         .map(filter => filter.find(f => f.id === 'mCloudSelectSpatial'));
       if (spatialFilter.length > 0) {
-        spatialFilter[0].implicitFilter
+        spatialFilter[0].implicitFilter;
       }
     }
   }
 
-  updateBoundingBox($event: SpatialBoundingBox) {
-
-  }
-
   private updateSpatial() {
     let bounds = this.leafletReference.getBounds();
-    this.model.spatial.mcloudSelectSpatial = [
+    this.fieldsWithParameters[this.spatialFilterIds[0]] = [
       bounds.getSouthWest().lat,
       bounds.getSouthWest().lng,
       bounds.getNorthEast().lat,
       bounds.getNorthEast().lng
     ];
+  }
 
+  toggleSpatialFilter(id: string, checked: boolean) {
+    this.showSpatialFilter = checked;
+    if (checked) {
+      this.model.spatial = {};
+      this.model.spatial[id] = [];
+      this.updateSpatial();
+    } else {
+      delete this.fieldsWithParameters[id];
+      delete this.model.spatial[id];
+    }
     this.updateFilter();
   }
 }

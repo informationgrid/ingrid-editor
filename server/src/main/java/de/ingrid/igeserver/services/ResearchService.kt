@@ -82,7 +82,6 @@ class ResearchService {
             boolFilter.value
                 ?.filter { !specialFilter.contains(it)}
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
-                ?.filter { it?.id != "mCloudSelectSpatial" || (it.id == "mCloudSelectSpatial" && boolFilter.parameter?.isNotEmpty() ?: false )}
                 ?.map { it?.filter }
         }
 

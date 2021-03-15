@@ -39,7 +39,7 @@ class MCloudProfile : CatalogProfile {
                 )
             ),
             FacetGroup(
-                "spatial", "Raumbezug", arrayOf(
+                "spatial", "Raumbezug (mCLOUD)", arrayOf(
                     Spatial()
                 ),
                 selection = Operator.SPATIAL

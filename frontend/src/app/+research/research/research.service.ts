@@ -43,28 +43,30 @@ export class ResearchService {
       );
   }
 
-  search(model: any): Observable<ResearchResponse> {
-    const body = this.prepareQuery(model);
+  search(model: any, fieldsWithParameters: { [x: string]: any[] }): Observable<ResearchResponse> {
+    const body = this.prepareQuery(model, fieldsWithParameters);
     return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/query`, {
       clauses: body
     });
   }
 
-  private prepareQuery(model: any) {
+  private prepareQuery(model: any, fieldsWithParameters: { [x: string]: any[] }) {
     let activeFilterIds = {op: 'AND', clauses: []};
-    const fieldsWithParameters = ['mCloudSelectSpatial'];
 
     Object.keys(model)
       .map(groupKey => {
         let groupValue = model[groupKey];
         if (groupValue instanceof Object) {
           let activeItemsFromGroup = Object.keys(groupValue).filter(groupId => groupValue[groupId]);
-          let activeValuesFromGroup = ([] as string[]).concat(...Object.keys(groupValue).map(groupId => groupValue[groupId]));
           if (activeItemsFromGroup.length > 0) {
-            if (fieldsWithParameters.indexOf(activeItemsFromGroup[0]) === -1) {
+            if (fieldsWithParameters.hasOwnProperty(activeItemsFromGroup[0])) {
+              activeFilterIds.clauses.push({
+                op: 'OR',
+                value: [...activeItemsFromGroup],
+                parameter: fieldsWithParameters[activeItemsFromGroup[0]]
+              });
+            } else {
               activeFilterIds.clauses.push({op: 'OR', value: [...activeItemsFromGroup]});
-            } else if (activeValuesFromGroup.length === 4) {
-              activeFilterIds.clauses.push({op: 'OR', value: [...activeItemsFromGroup], parameter: activeValuesFromGroup});
             }
           }
         } else {

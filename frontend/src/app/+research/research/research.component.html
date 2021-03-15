@@ -22,7 +22,8 @@
             </ng-container>
 
             <ng-container *ngIf="group.selection === 'SPATIAL'">
-                <div>
+                <mat-checkbox (change)="toggleSpatialFilter(group.filter[0].id, $event.checked)"> Filter anwenden</mat-checkbox>
+                <div [class.invisible]="!showSpatialFilter">
                     <div #leafletDlg fxFlex style="height: 200px;"></div>
                 </div>
             </ng-container>
