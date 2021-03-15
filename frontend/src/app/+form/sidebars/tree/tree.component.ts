@@ -370,6 +370,8 @@ export class TreeComponent implements OnInit, OnDestroy {
         if (!doNotSelect) {
           this.updateNodePath(id);
           this.scrollToActiveElement();
+          let node = this.dataSource.getNode(id);
+          this.selectionModel.select(node);
         }
       });
   }
