@@ -73,8 +73,10 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     this.inputControl.setValue('');
 
     if (!this.to.asSelect) {
+      // element successfully added when input was blurred
       this.autoCompleteEl.nativeElement.blur();
       this.autoComplete.closePanel();
+      setTimeout(() => this.autoCompleteEl.nativeElement.focus());
     } else {
       if (this._filter('').length === 0) {
         this.inputControl.disable();

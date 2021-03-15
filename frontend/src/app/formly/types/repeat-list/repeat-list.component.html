@@ -4,7 +4,7 @@
         <h3 *ngIf="to.codelistId" matLine>{{model[i] | codelist:to.codelistId | async}}</h3>
         <h3 *ngIf="!to.codelistId" matLine>{{model[i] | selectOption:to.options | async}}</h3>
 
-        <button mat-icon-button class="close gray" (click)="removeItem(i)">
+        <button type="button" mat-icon-button class="close gray" (click)="removeItem(i)">
             <mat-icon svgIcon="Entfernen"></mat-icon>
         </button>
 
