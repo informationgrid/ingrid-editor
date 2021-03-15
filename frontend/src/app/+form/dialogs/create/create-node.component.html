@@ -14,12 +14,11 @@
 
                 <ng-container *ngIf="isFolder || !forAddress; else addressForm">
                     <div class="dlg-field-label required">Titel*</div>
-                    <mat-form-field appearance="outline" [igeFocus]="true">
-                        <input matInput
+                    <mat-form-field appearance="outline">
+                        <input #title matInput
                                formControlName="title"
                                data-cy="create-title"
                                placeholder="Eingeben..."
-                               igeFocus
                                autocomplete="off"
                                (keyup.enter)="handleCreate()"
                                required>

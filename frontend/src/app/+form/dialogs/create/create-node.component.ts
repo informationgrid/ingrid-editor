@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {DocumentService} from '../../../services/document/document.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {filter, take} from 'rxjs/operators';
@@ -24,6 +24,13 @@ export interface CreateOptions {
   styleUrls: ['./create-node.component.scss']
 })
 export class CreateNodeComponent implements OnInit {
+
+  @ViewChild('title')
+  set input(element: ElementRef) {
+    if (element) {
+      setTimeout(() => element.nativeElement.focus());
+    }
+  }
 
   title = 'Neuen Ordner anlegen';
   parent: string = null;
