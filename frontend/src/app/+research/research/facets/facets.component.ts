@@ -87,6 +87,7 @@ export class FacetsComponent implements OnInit {
       this.model.spatial = {};
       this.model.spatial[id] = [];
       this.updateSpatial();
+      this.leafletReference.invalidateSize();
     } else {
       delete this.fieldsWithParameters[id];
       delete this.model.spatial[id];
