@@ -3,6 +3,8 @@ import {HttpClient} from '@angular/common/http';
 import {ConfigService, Configuration} from '../../services/config/config.service';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
+import {QueryStore} from '../../store/query/query.store';
+import {Query} from '../../store/query/query.model';
 
 export interface QuickFilter {
   id: string;
@@ -32,7 +34,8 @@ export class ResearchService {
   private filters: FacetGroup[];
 
   constructor(private http: HttpClient,
-              configService: ConfigService) {
+              configService: ConfigService,
+              private queryStore: QueryStore) {
     this.configuration = configService.getConfiguration();
   }
 
@@ -82,30 +85,11 @@ export class ResearchService {
     return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/querySql`, sql);
   }
 
-  export() {
-    let csv = '\ufeff';
+  loadQueries(): Observable<Query[]> {
+    return this.http.get<Query[]>(`${this.configuration.backendUrl}search`)
+      .pipe(
+        tap(queries => this.queryStore.set(queries))
+      )
   }
 
-  private exportToFile(content: string, exportFilename: string) {
-    const blob = new Blob([content], {
-      type: 'text/csv;charset=utf-8;'
-    });
-
-    if (window.navigator.msSaveOrOpenBlob) {
-      navigator.msSaveOrOpenBlob(blob, exportFilename + '.csv');
-    } else {
-      const link = document.createElement('a');
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      if (link.download !== undefined) {
-        link.setAttribute('href', URL.createObjectURL(blob));
-        link.setAttribute('download', exportFilename + '.csv');
-        link.click();
-      } else {
-        content = 'data:text/csv;charset=utf-8,' + content;
-        window.open(encodeURI(content));
-      }
-      document.body.removeChild(link);
-    }
-  }
 }

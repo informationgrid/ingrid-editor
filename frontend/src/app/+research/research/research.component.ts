@@ -8,6 +8,7 @@ import {SelectOption} from '../../services/codelist/codelist.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
 import {FacetUpdate} from './facets/facets.component';
+import {QueryQuery} from '../../store/query/query.query';
 
 @UntilDestroy()
 @Component({
@@ -19,6 +20,7 @@ export class ResearchComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
+  selectedIndex = 0;
 
   displayedColumns: string[] = [];
 
@@ -31,11 +33,14 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   private filter: FacetUpdate;
 
   constructor(private researchService: ResearchService,
-              private profileService: ProfileService) {
+              private profileService: ProfileService,
+              private queryQuery: QueryQuery) {
   }
 
   ngOnInit() {
     this.columnsMap = this.profileService.getProfiles()[0].fieldsMap;
+
+    this.researchService.loadQueries().subscribe();
 
     this.query.valueChanges
       .pipe(
@@ -48,7 +53,7 @@ export class ResearchComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
-    setTimeout(() => this.displayedColumns = ['title'], 300);
+    setTimeout(() => this.displayedColumns = ['title'], 1000);
   }
 
   updateFilter(info: FacetUpdate) {
@@ -105,4 +110,10 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   }
 */
 
+  loadQuery(id: string) {
+    this.selectedIndex = 1;
+    let entity = this.queryQuery.getEntity(id);
+    this.filter.model = entity.definition;
+    this.query.setValue(entity.id);
+  }
 }

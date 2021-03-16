@@ -19,8 +19,17 @@ class ResearchApiController : ResearchApi {
     @Autowired
     lateinit var catalogService: CatalogService
     
-    override fun load(principal: Principal?): ResponseEntity<Array<ResearchQuery>> {
-        TODO("Not yet implemented")
+    override fun load(principal: Principal?): ResponseEntity<Array<ResearchQueryWrapper>> {
+        val result = arrayOf(
+            ResearchQueryWrapper("1", "SYSTEM", "Dokumente aus Leipzig", "Alle Dokumente, die einen Raumbezug mit Leipzig definiert haben", 
+                ResearchQuery(null, BoolFilter("AND", null, listOf(
+                    BoolFilter("OR", listOf("selectDocuments"), null, null),
+                    BoolFilter("OR", listOf("selectLatest"), null, null),
+                    BoolFilter("OR", listOf("mCloudSelectSpatial"), null, listOf("50.51342652633956", "8.789062500000002", "53.22576843579022", "13.183593750000002"))
+                ), null)))
+        )
+        
+        return ResponseEntity.ok(result)
     }
 
     override fun save(principal: Principal?): ResponseEntity<Void> {

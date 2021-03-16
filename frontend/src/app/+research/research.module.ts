@@ -16,28 +16,33 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableExporterModule} from 'mat-table-exporter';
 import { FacetsComponent } from './research/facets/facets.component';
+import { QueryManagerComponent } from './research/query-manager/query-manager.component';
+import {MatIconModule} from '@angular/material/icon';
+import {MatListModule} from '@angular/material/list';
 
 
 @NgModule({
-  declarations: [ResearchComponent, FacetsComponent],
-    imports: [
-        CommonModule,
-        routing,
-        MatCheckboxModule,
-        MatRadioModule,
-        FormsModule,
-        MatTableModule,
-        FlexModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatTabsModule,
-        MatButtonModule,
-        MatSortModule,
-        MatMenuModule,
-        MatSelectModule,
-        MatTableExporterModule,
-        ReactiveFormsModule
-    ]
+  declarations: [ResearchComponent, FacetsComponent, QueryManagerComponent],
+  imports: [
+    CommonModule,
+    routing,
+    MatCheckboxModule,
+    MatRadioModule,
+    FormsModule,
+    MatTableModule,
+    FlexModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTabsModule,
+    MatButtonModule,
+    MatSortModule,
+    MatMenuModule,
+    MatSelectModule,
+    MatTableExporterModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatListModule
+  ]
 })
 export class ResearchModule {
 }
