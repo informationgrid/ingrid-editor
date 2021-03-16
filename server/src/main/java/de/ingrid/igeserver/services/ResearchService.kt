@@ -60,16 +60,17 @@ class ResearchService {
         val whereFilter = determineWhereQuery(query)
 
         return """
-                SELECT *
+                SELECT DISTINCT document1.*
                 FROM document_wrapper
                 $stateCondition
                 $jsonSearch
-                $whereFilter;
+                $whereFilter
+                ORDER BY document1.title;
             """
     }
 
     private fun determineWhereQuery(query: ResearchQuery): String {
-        val termSearch = if (query.term == null) "" else "t.val ILIKE '%${query.term}%'"
+        val termSearch = if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%')"
 
         val filter = convertQuery(query.clauses)
         
