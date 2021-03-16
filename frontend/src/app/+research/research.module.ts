@@ -15,10 +15,11 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableExporterModule} from 'mat-table-exporter';
+import { FacetsComponent } from './research/facets/facets.component';
 
 
 @NgModule({
-  declarations: [ResearchComponent],
+  declarations: [ResearchComponent, FacetsComponent],
     imports: [
         CommonModule,
         routing,
