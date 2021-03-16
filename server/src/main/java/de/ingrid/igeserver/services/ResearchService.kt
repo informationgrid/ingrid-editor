@@ -44,7 +44,7 @@ class ResearchService {
 
         return ResearchResponse(result.size, mapResult(result))
     }
-    
+
     private fun getParameters(query: ResearchQuery): List<Any> {
         return query.clauses?.clauses
             ?.mapNotNull { it.parameter }
@@ -54,19 +54,42 @@ class ResearchService {
     }
 
     private fun createQuery(query: ResearchQuery): String {
-        val whereFilter = when (val filter = convertQuery(query.clauses)) {
-            null -> ""
-            else -> "WHERE $filter"
-        }
 
         val stateCondition = determineStateQuery(query.clauses)
+        val jsonSearch = determineJsonSearch(query.term)
+        val whereFilter = determineWhereQuery(query)
 
         return """
                 SELECT *
                 FROM document_wrapper
                 $stateCondition
+                $jsonSearch
                 $whereFilter;
             """
+    }
+
+    private fun determineWhereQuery(query: ResearchQuery): String {
+        val termSearch = if (query.term == null) "" else "t.val ILIKE '%${query.term}%'"
+
+        val filter = convertQuery(query.clauses)
+        
+        return if (termSearch.isBlank() && filter == null) {
+            "" 
+        } else if (termSearch.isBlank()) {
+            "WHERE $filter"
+        } else if (filter == null){
+            "WHERE $termSearch"
+        } else {
+            "WHERE $filter AND $termSearch"
+        }
+    }
+
+    private fun determineJsonSearch(term: String?): String {
+
+        return if (term != null)
+            "CROSS JOIN LATERAL jsonb_each_text(document1.data) as t(k, val)"
+        else ""
+
     }
 
     private fun convertQuery(boolFilter: BoolFilter?): String? {
@@ -80,7 +103,7 @@ class ResearchService {
                 .mapNotNull { convertQuery(it) }
         } else {
             boolFilter.value
-                ?.filter { !specialFilter.contains(it)}
+                ?.filter { !specialFilter.contains(it) }
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
                 ?.map { it?.filter }
         }
@@ -127,13 +150,13 @@ class ResearchService {
 
     }
 
-    private fun sendQuery(sql: String, parameter: List<Any>) : List<Any> {
+    private fun sendQuery(sql: String, parameter: List<Any>): List<Any> {
         val nativeQuery = entityManager.createNativeQuery(sql)
 
         for ((index, it) in parameter.withIndex()) {
             nativeQuery.setParameter(index + 1, it)
         }
-        
+
         return nativeQuery
             .setHint(QueryHints.HINT_READONLY, true)
             .unwrap(NativeQuery::class.java)

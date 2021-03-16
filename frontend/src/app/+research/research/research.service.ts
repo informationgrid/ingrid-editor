@@ -43,9 +43,10 @@ export class ResearchService {
       );
   }
 
-  search(model: any, fieldsWithParameters: { [x: string]: any[] }): Observable<ResearchResponse> {
+  search(term: string, model: any, fieldsWithParameters: { [x: string]: any[] }): Observable<ResearchResponse> {
     const body = this.prepareQuery(model, fieldsWithParameters);
     return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/query`, {
+      term: term,
       clauses: body
     });
   }

@@ -37,7 +37,7 @@
                 <div class="padding-sm">
                     <mat-form-field appearance="outline" class="width-100">
                         <mat-label>Suche</mat-label>
-                        <input matInput placeholder="">
+                        <input matInput [formControl]="query">
                     </mat-form-field>
                 </div>
             </mat-tab>
@@ -60,7 +60,7 @@
         </mat-tab-group>
 
 
-        <div>
+        <div fxFlex="1">
             <mat-form-field appearance="fill" class="width-100">
                 <mat-label>Spalten</mat-label>
                 <mat-select multiple [(ngModel)]="displayedColumns">

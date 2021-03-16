@@ -4,7 +4,7 @@ import {ResearchComponent} from './research/research.component';
 import {routing} from './research.routing';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatTableModule} from '@angular/material/table';
 import {FlexModule} from '@angular/flex-layout';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -19,23 +19,24 @@ import {MatTableExporterModule} from 'mat-table-exporter';
 
 @NgModule({
   declarations: [ResearchComponent],
-  imports: [
-    CommonModule,
-    routing,
-    MatCheckboxModule,
-    MatRadioModule,
-    FormsModule,
-    MatTableModule,
-    FlexModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatTabsModule,
-    MatButtonModule,
-    MatSortModule,
-    MatMenuModule,
-    MatSelectModule,
-    MatTableExporterModule
-  ]
+    imports: [
+        CommonModule,
+        routing,
+        MatCheckboxModule,
+        MatRadioModule,
+        FormsModule,
+        MatTableModule,
+        FlexModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatTabsModule,
+        MatButtonModule,
+        MatSortModule,
+        MatMenuModule,
+        MatSelectModule,
+        MatTableExporterModule,
+        ReactiveFormsModule
+    ]
 })
 export class ResearchModule {
 }

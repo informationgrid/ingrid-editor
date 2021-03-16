@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FacetGroup, ResearchResponse, ResearchService} from './research.service';
-import {tap} from 'rxjs/operators';
+import {debounceTime, tap} from 'rxjs/operators';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {ProfileService} from '../../services/profile.service';
@@ -8,7 +8,10 @@ import {SelectOption} from '../../services/codelist/codelist.service';
 import {LeafletService} from '../../formly/types/map/leaflet.service';
 import {Map} from 'leaflet';
 import {Observable} from 'rxjs';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {FormControl} from '@angular/forms';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-research',
   templateUrl: './research.component.html',
@@ -34,6 +37,8 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   model: any;
   displayedColumns: string[] = [];
 
+  query = new FormControl('');
+
   totalHits: number = 0;
   dataSource = new MatTableDataSource([]);
   sqlValue: string = '';
@@ -51,6 +56,13 @@ export class ResearchComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.columnsMap = this.profileService.getProfiles()[0].fieldsMap;
+
+    this.query.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(300)
+      )
+      .subscribe(query => this.updateFilter());
   }
 
   ngAfterViewInit(): void {
@@ -75,7 +87,7 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   updateFilter(implicitFilter?: string[]) {
     setTimeout(() => {
       // this.applyImplicitFilter(this.model);
-      return this.researchService.search(this.model, this.fieldsWithParameters)
+      return this.researchService.search(this.query.value, this.model, this.fieldsWithParameters)
         .subscribe(result => this.updateHits(result));
     });
   }
