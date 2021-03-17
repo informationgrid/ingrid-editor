@@ -10,7 +10,8 @@
         <div fxLayout="row" fxLayoutGap="20px" class="padding">
 
             <div fxLayout="column">
-                <ige-facets (update)="updateFilter($event)"></ige-facets>
+                <ige-facets [model]="filter.model"
+                            (update)="updateFilter($event)"></ige-facets>
             </div>
 
             <div fxFlex fxLayout="column">

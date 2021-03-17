@@ -5,6 +5,8 @@ import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {QueryStore} from '../../store/query/query.store';
 import {Query} from '../../store/query/query.model';
+import {BackendQuery} from './backend-query.model';
+import {BackendStoreQuery} from './backend-store-query.model';
 
 export interface QuickFilter {
   id: string;
@@ -47,38 +49,8 @@ export class ResearchService {
   }
 
   search(term: string, model: any, fieldsWithParameters: { [x: string]: any[] }): Observable<ResearchResponse> {
-    const body = this.prepareQuery(model, fieldsWithParameters);
-    return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/query`, {
-      term: term,
-      clauses: body
-    });
-  }
-
-  private prepareQuery(model: any, fieldsWithParameters: { [x: string]: any[] }) {
-    let activeFilterIds = {op: 'AND', clauses: []};
-
-    Object.keys(model)
-      .map(groupKey => {
-        let groupValue = model[groupKey];
-        if (groupValue instanceof Object) {
-          let activeItemsFromGroup = Object.keys(groupValue).filter(groupId => groupValue[groupId]);
-          if (activeItemsFromGroup.length > 0) {
-            if (fieldsWithParameters.hasOwnProperty(activeItemsFromGroup[0])) {
-              activeFilterIds.clauses.push({
-                op: 'OR',
-                value: [...activeItemsFromGroup],
-                parameter: fieldsWithParameters[activeItemsFromGroup[0]]
-              });
-            } else {
-              activeFilterIds.clauses.push({op: 'OR', value: [...activeItemsFromGroup]});
-            }
-          }
-        } else {
-          activeFilterIds.clauses.push({op: 'OR', value: [groupValue]});
-        }
-      });
-
-    return activeFilterIds;
+    const backendQuery = new BackendQuery(term, model, fieldsWithParameters);
+    return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/query`, backendQuery.get());
   }
 
   searchBySQL(sql: string): Observable<ResearchResponse> {
@@ -90,6 +62,12 @@ export class ResearchService {
       .pipe(
         tap(queries => this.queryStore.set(queries))
       )
+  }
+
+  saveQuery(term: string, model: any, fieldsWithParameters: { [x: string]: any[] }) {
+    const query = new BackendStoreQuery(term, model, fieldsWithParameters);
+    return this.http.post(`${this.configuration.backendUrl}search`, query.get());
+
   }
 
 }

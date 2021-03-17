@@ -30,7 +30,10 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource([]);
   sqlValue: string = '';
   columnsMap: SelectOption[];
-  private filter: FacetUpdate;
+  filter: FacetUpdate = {
+    model: {},
+    fieldsWithParameters: {}
+  };
 
   constructor(private researchService: ResearchService,
               private profileService: ProfileService,
@@ -96,24 +99,25 @@ export class ResearchComponent implements OnInit, AfterViewInit {
     }
   }
 
-/*
-  private applyImplicitFilter(model: any) {
-    let spatial = model.clauses.clauses.filter(c => c.value.indexOf('mCloudSelectSpatial') !== -1);
-    if (spatial.length > 0 && spatial[0].parameter.length === 4) {
-      const spatialFilter = this.quickFilters
-        .map(groups => groups.filter)
-        .map(filter => filter.find(f => f.id === 'mCloudSelectSpatial'));
-      if (spatialFilter.length > 0) {
-        spatialFilter[0].implicitFilter;
+  /*
+    private applyImplicitFilter(model: any) {
+      let spatial = model.clauses.clauses.filter(c => c.value.indexOf('mCloudSelectSpatial') !== -1);
+      if (spatial.length > 0 && spatial[0].parameter.length === 4) {
+        const spatialFilter = this.quickFilters
+          .map(groups => groups.filter)
+          .map(filter => filter.find(f => f.id === 'mCloudSelectSpatial'));
+        if (spatialFilter.length > 0) {
+          spatialFilter[0].implicitFilter;
+        }
       }
     }
-  }
-*/
+  */
 
   loadQuery(id: string) {
     this.selectedIndex = 1;
-    let entity = this.queryQuery.getEntity(id);
-    this.filter.model = entity.definition;
-    this.query.setValue(entity.id);
+    let entity = JSON.parse(JSON.stringify(this.queryQuery.getEntity(id)));
+    this.filter.model = entity.definition.model;
+    this.filter.fieldsWithParameters = entity.definition.parameter;
+    this.query.setValue(entity.definition.term);
   }
 }

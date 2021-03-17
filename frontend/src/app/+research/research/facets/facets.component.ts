@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {FacetGroup, ResearchService} from '../research.service';
 import {Observable} from 'rxjs';
 import {Map} from 'leaflet';
@@ -17,6 +17,8 @@ export interface FacetUpdate {
 })
 export class FacetsComponent implements OnInit {
 
+  @Input() model: any;
+
   @Output() update = new EventEmitter<FacetUpdate>();
 
   @ViewChild('leafletDlg') leaflet: ElementRef;
@@ -32,7 +34,6 @@ export class FacetsComponent implements OnInit {
   private spatialFilterIds: string[] = [];
   private fieldsWithParameters: { [x: string]: any[] } = {};
 
-  model: any;
   showSpatialFilter = false;
 
   leafletReference: L.Map;

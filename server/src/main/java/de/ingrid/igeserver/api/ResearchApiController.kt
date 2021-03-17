@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.ResearchService
@@ -20,16 +21,40 @@ class ResearchApiController : ResearchApi {
     lateinit var catalogService: CatalogService
     
     override fun load(principal: Principal?): ResponseEntity<Array<ResearchQueryWrapper>> {
-        val result = arrayOf(
-            ResearchQueryWrapper("1", "SYSTEM", "Dokumente aus Leipzig", "Alle Dokumente, die einen Raumbezug mit Leipzig definiert haben", 
-                ResearchQuery(null, BoolFilter("AND", null, listOf(
-                    BoolFilter("OR", listOf("selectDocuments"), null, null),
-                    BoolFilter("OR", listOf("selectLatest"), null, null),
-                    BoolFilter("OR", listOf("mCloudSelectSpatial"), null, listOf("50.51342652633956", "8.789062500000002", "53.22576843579022", "13.183593750000002"))
-                ), null)))
+
+        val bboxNode = jacksonObjectMapper().createArrayNode().apply {
+            add("50.51342652633956")
+            add("8.789062500000002")
+            add("53.22576843579022")
+            add("13.183593750000002")
+        }
+        
+        val parameters = jacksonObjectMapper().createObjectNode().apply { 
+            put("mCloudSelectSpatial", bboxNode)
+        }
+        
+        val model = jacksonObjectMapper().createObjectNode().apply { 
+            put("type", "selectDocuments")
+            put("state", "selectLatest")
+            put("docType", jacksonObjectMapper().createObjectNode())
+            put("spatial", parameters)
+        }
+        val result = ResearchQueryWrapper("1", "SYSTEM", "Dokumente aus Leipzig", "Alle Dokumente, die einen Raumbezug mit Leipzig definiert haben", 
+                ResearchSavedQuery("tEst", model, parameters)
+        )
+
+        val model2 = jacksonObjectMapper().createObjectNode().apply {
+            put("type", "selectAddresses")
+            put("state", "selectLatest")
+            put("docType", jacksonObjectMapper().createObjectNode().apply { put("selectDocFolders", true) })
+        }
+        val allAddressFolders = ResearchQueryWrapper("2", "SYSTEM", "Alle Adressordner", "", 
+                ResearchSavedQuery("", model2, parameters)
         )
         
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok(arrayOf(
+            result, allAddressFolders
+        ))
     }
 
     override fun save(principal: Principal?): ResponseEntity<Void> {
