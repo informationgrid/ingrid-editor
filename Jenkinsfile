@@ -31,7 +31,9 @@ pipeline {
                 script {
                     // since container is run on host and not within Jenkins, we cannot map init sql file
                     // so we use here a modified postgres image for the tests
-                    docker.image('docker-registry.wemove.com/postgres-ige-ng-test').withRun() { c ->
+                    image = docker.image('docker-registry.wemove.com/postgres-ige-ng-test')
+                    image.pull()
+                    image.withRun() { c ->
                         // use another container, where we can link the database to so that we can access it
                         // for volume mapping remember that we cannot use filesystem from Jenkins container, but only from HOST!
                         docker.image('ubuntu:16.04').inside("--link ${c.id}:db -v /root/.docker/config.json:/root/.docker/config.json --mount type=bind,src=/opt/docker-setup/jenkins-nexus-sonar/jenkins-home/shared-ro-gradle-cache,dst=/.gradle-ro-cache") {
