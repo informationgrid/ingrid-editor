@@ -43,7 +43,7 @@ export const routes: Routes = [
     path: 'user',
     loadChildren: () => import('./+user/user.module').then(m => m.UserModule),
     data: {
-      title: 'Benutzerverwaltung',
+      title: 'Nutzer & Rechte',
       featureFlag: 'AP3',
       onlyAdmin: true,
       icon: 'Nutzer'
@@ -65,7 +65,7 @@ export const routes: Routes = [
     path: 'catalogs',
     loadChildren: () => import('./+catalog/catalog.module').then(m => m.CatalogModule),
     data: {
-      title: 'Katalogverwaltung',
+      title: 'Katalog',
       onlyAdmin: true,
       icon: 'Katalog'
     }
