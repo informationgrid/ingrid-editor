@@ -13,7 +13,7 @@ export class SettingsComponent implements OnInit {
   private mapTabToRoute = [];
 
   constructor(private router: Router, route: ActivatedRoute, private location: Location) {
-    this.tabIndex = route.snapshot.routeConfig.data.index;
+    this.tabIndex = route.snapshot.routeConfig?.data?.index ?? 0;
 
     this.prepareTabToRouteMap();
   }
@@ -22,9 +22,9 @@ export class SettingsComponent implements OnInit {
     this.router.config
       .find(r => r.path === 'settings')
       // @ts-ignore
-      ._loadedConfig.routes
-      .filter(r => r.data?.index !== undefined)
-      .forEach(r => {
+      ._loadedConfig?.routes
+      ?.filter(r => r.data?.index !== undefined)
+      ?.forEach(r => {
         this.mapTabToRoute[r.data.index] = r.path;
       });
   }
