@@ -1,14 +1,14 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {CodelistService} from '../../services/codelist/codelist.service';
-import {Codelist, CodelistEntry} from '../../store/codelist/codelist.model';
-import {combineLatest, Observable, throwError} from 'rxjs';
-import {catchError, filter, map, startWith, tap} from 'rxjs/operators';
+import {CodelistService, SelectOption} from '../../services/codelist/codelist.service';
+import {throwError} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import {FormControl} from '@angular/forms';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {IgeError} from '../../models/ige-error';
 import {HttpErrorResponse} from '@angular/common/http';
+import {Codelist} from '../../store/codelist/codelist.model';
+import {CodelistQuery} from '../../store/codelist/codelist.query';
 
 @UntilDestroy()
 @Component({
@@ -22,25 +22,17 @@ export class CodelistsComponent implements OnInit {
   codelistDatasource = new MatTableDataSource([]);
   displayedColumns = ['id', 'value', 'data'];
 
-  entries: CodelistEntry[];
-  disableSyncButton = false;
-  codelistControl = new FormControl();
-  filteredCodelists: Observable<Codelist[]>;
+  codelists = this.codelistQuery.selectAll()
+    .pipe(map(codelists => this.mapToOptions(codelists)));
 
-  constructor(private codelistService: CodelistService) {
+  disableSyncButton = false;
+
+  constructor(private codelistService: CodelistService,
+              private codelistQuery: CodelistQuery) {
   }
 
   ngOnInit(): void {
-
-    this.filteredCodelists = combineLatest([
-      this.codelistControl.valueChanges.pipe(startWith('')),
-      this.codelistService.getAll()
-    ]).pipe(
-      tap(value => console.log(value)),
-      // only filter input strings and selections
-      filter(value => !(value[0] instanceof Object)),
-      map(value => this._filter(value[0], value[1] as Codelist[]))
-    );
+    this.codelistService.getAll();
   }
 
   ngAfterViewInit() {
@@ -56,13 +48,6 @@ export class CodelistsComponent implements OnInit {
 
   }
 
-  private _filter(value: string, allCodelists: Codelist[]): Codelist[] {
-    const filterValue = value.toLowerCase();
-
-    return allCodelists
-      .filter(option => (option.id + option.name).toLowerCase().includes(filterValue));
-  }
-
   private handleSyncError(e: HttpErrorResponse) {
     console.error(e);
     this.disableSyncButton = false;
@@ -75,18 +60,30 @@ export class CodelistsComponent implements OnInit {
     return throwError(e);
   }
 
-  updateCodelistTable(value: any) {
-    if (!value) {
+  updateCodelistTable(option: SelectOption) {
+    if (!option) {
       this.codelistDatasource.data = [];
       return;
     }
 
-    this.codelistControl.setValue(`${value.id} - ${value.name}`);
-    this.codelistDatasource.data = value.entries;
+    let entity = this.codelistQuery.getEntity(option.value);
+    this.codelistDatasource.data = entity.entries;
   }
 
   resetInput() {
-    this.codelistControl.reset('');
     this.updateCodelistTable(null);
+  }
+
+  codelistLabelFormat(option: SelectOption) {
+    return `${option.value} - ${option.label}`
+  }
+
+  private mapToOptions(codelists: Codelist[]): SelectOption[] {
+    return codelists.map( cl => {
+      return {
+        value: cl.id,
+        label: cl.name
+      }
+    });
   }
 }

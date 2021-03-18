@@ -12,41 +12,30 @@
 
 
 <mat-card>
-    <mat-card-title>Anzeige</mat-card-title>
+    <mat-card-title>Codelisten</mat-card-title>
 
     <mat-card-content>
 
-        <mat-form-field appearance="outline" class="width-100">
-            <input type="text"
-                   placeholder="Codelist"
-                   aria-label="Number"
-                   matInput
-                   [formControl]="codelistControl"
-                   [matAutocomplete]="auto">
-            <button *ngIf="codelistControl.value?.length > 0" mat-icon-button matSuffix class="close" (click)="resetInput()">
-                <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-            </button>
-            <mat-autocomplete autoActiveFirstOption  #auto="matAutocomplete" (optionSelected)="updateCodelistTable($event.option.value)">
-                <mat-option *ngFor="let codelist of filteredCodelists | async" [value]="codelist">
-                    {{codelist.id}} - {{codelist.name}}
-                </mat-option>
-            </mat-autocomplete>
-        </mat-form-field>
+        <ige-filter-select [options]="codelists"
+                           [labelFormat]="codelistLabelFormat"
+                           placeholder="Codeliste"
+                           (reset)="resetInput()"
+                           (optionSelect)="updateCodelistTable($event)"></ige-filter-select>
 
-        <table mat-table [dataSource]="codelistDatasource" matSort class="width-100">
+        <table *ngIf="codelistDatasource?.data > 0; else emptyMessage" mat-table [dataSource]="codelistDatasource" matSort class="width-100">
 
             <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Id</th>
                 <td mat-cell *matCellDef="let element"> {{element.id}} </td>
             </ng-container>
 
             <ng-container matColumnDef="value">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Wert </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Wert</th>
                 <td mat-cell *matCellDef="let element"> {{element.value}} </td>
             </ng-container>
 
             <ng-container matColumnDef="data">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Data </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Data</th>
                 <td mat-cell *matCellDef="let element"> {{element.data}} </td>
             </ng-container>
 
@@ -54,6 +43,8 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
         </table>
+
+        <ng-template #emptyMessage>Wählen Sie eine Codeliste aus</ng-template>
 
     </mat-card-content>
 </mat-card>
