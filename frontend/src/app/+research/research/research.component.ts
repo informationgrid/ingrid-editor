@@ -120,4 +120,9 @@ export class ResearchComponent implements OnInit, AfterViewInit {
     this.filter.fieldsWithParameters = entity.definition.parameter;
     this.query.setValue(entity.definition.term);
   }
+
+  saveQuery() {
+    this.researchService.saveQuery(this.query.value, this.filter.model, this.filter.fieldsWithParameters)
+      .subscribe();
+  }
 }
