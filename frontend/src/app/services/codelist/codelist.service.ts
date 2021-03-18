@@ -50,7 +50,7 @@ export class CodelistService {
         filter(ids => ids.length > 0),
         switchMap(ids => this.requestCodelists(ids)),
         map(codelists => this.prepareCodelists(codelists)),
-        tap(codelists => this.store.add(codelists))
+        tap(codelists => this.store.set(codelists))
       )
       .subscribe();
 
@@ -70,7 +70,8 @@ export class CodelistService {
 
     return this.dataService.update()
       .pipe(
-        map(codelists => this.prepareCodelists(codelists))
+        map(codelists => this.prepareCodelists(codelists)),
+        tap(codelists => this.store.set(codelists))
       );
 
   }

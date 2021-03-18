@@ -15,13 +15,22 @@
     <mat-card-title>Anzeige</mat-card-title>
 
     <mat-card-content>
+
         <mat-form-field appearance="outline" class="width-100">
-            <mat-label>Codelist</mat-label>
-            <mat-select (selectionChange)="updateCodelistTable($event.value)">
-                <mat-option *ngFor="let codelist of codelists | async" [value]="codelist">
+            <input type="text"
+                   placeholder="Codelist"
+                   aria-label="Number"
+                   matInput
+                   [formControl]="codelistControl"
+                   [matAutocomplete]="auto">
+            <button *ngIf="codelistControl.value?.length > 0" mat-icon-button matSuffix class="close" (click)="resetInput()">
+                <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+            </button>
+            <mat-autocomplete autoActiveFirstOption  #auto="matAutocomplete" (optionSelected)="updateCodelistTable($event.option.value)">
+                <mat-option *ngFor="let codelist of filteredCodelists | async" [value]="codelist">
                     {{codelist.id}} - {{codelist.name}}
                 </mat-option>
-            </mat-select>
+            </mat-autocomplete>
         </mat-form-field>
 
         <table mat-table [dataSource]="codelistDatasource" matSort class="width-100">
