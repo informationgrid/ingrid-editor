@@ -18,7 +18,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { AddUserDialogComponent } from './catalog-detail/add-user-dialog/add-user-dialog.component';
 import { CatalogsComponent } from './catalogs/catalogs.component';
 import {MatTabsModule} from '@angular/material/tabs';
-import { CodelistsComponent } from './codelists/codelists.component';
+import { CatalogCodelistsComponent } from './codelists/catalog-codelists.component';
 import {MatSelectModule} from '@angular/material/select';
 import {BehavioursModule} from './+behaviours/behaviours.module';
 import {SharedModule} from '../shared/shared.module';
@@ -36,7 +36,7 @@ import { IndexingComponent } from './indexing/indexing.component';
   providers: [
     CatalogService
   ],
-  declarations: [CatalogManagerComponent, CatalogDetailComponent, AddUserDialogComponent, CatalogsComponent, CodelistsComponent, IndexingComponent],
+  declarations: [CatalogManagerComponent, CatalogDetailComponent, AddUserDialogComponent, CatalogsComponent, CatalogCodelistsComponent, IndexingComponent],
   exports: [RouterModule],
   entryComponents: [AddUserDialogComponent]
 } )

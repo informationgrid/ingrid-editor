@@ -1,16 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {CodelistService} from '../../services/codelist/codelist.service';
-import {CodelistQuery} from '../../store/codelist/codelist.query';
 import {Codelist, CodelistEntry} from '../../store/codelist/codelist.model';
 import {throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 
 @Component({
-  selector: 'ige-codelists',
-  templateUrl: './codelists.component.html',
-  styleUrls: ['./codelists.component.scss']
+  selector: 'ige-catalog-codelists',
+  templateUrl: './catalog-codelists.component.html',
+  styleUrls: ['./catalog-codelists.component.scss']
 })
-export class CodelistsComponent implements OnInit {
+export class CatalogCodelistsComponent implements OnInit {
 
   codelists = this.codelistService.getAll();
   entries: CodelistEntry[];

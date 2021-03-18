@@ -52,11 +52,11 @@
                 <span *ngIf="userIsCatAdmin() | async">
                     <span mat-menu-item disabled class="category-item">Einstellungen</span>
                     <mat-divider></mat-divider>
-                    <span mat-menu-item>Allgemein</span>
+                    <button mat-menu-item [routerLink]="['/settings/general']">Allgemein</button>
                     <mat-divider></mat-divider>
-                    <span mat-menu-item>Codelist Repository</span>
+                    <button mat-menu-item [routerLink]="['/settings/codelist']">Codelist Repository</button>
                     <mat-divider></mat-divider>
-                    <span mat-menu-item>Katalogverwaltung</span>
+                    <button mat-menu-item [routerLink]="['/settings/catalog']">Katalogverwaltung</button>
                     <mat-divider></mat-divider>
                     <span mat-menu-item disabled class="category-item">Informationen</span>
                     <mat-divider></mat-divider>

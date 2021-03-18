@@ -1,0 +1,50 @@
+<mat-card>
+    <mat-card-content>
+        Die Codelisten werden von einem zentralen Repository verwaltet und werden mit dem IGE-NG synchronisiert.
+    </mat-card-content>
+
+    <mat-card-actions>
+        <button mat-stroked-button color="primary" (click)="updateCodelists()" [disabled]="disableSyncButton">
+            Codelisten synchronisieren
+        </button>
+    </mat-card-actions>
+</mat-card>
+
+
+<mat-card>
+    <mat-card-title>Anzeige</mat-card-title>
+
+    <mat-card-content>
+        <mat-form-field appearance="outline" class="width-100">
+            <mat-label>Codelist</mat-label>
+            <mat-select (selectionChange)="updateCodelistTable($event.value)">
+                <mat-option *ngFor="let codelist of codelists | async" [value]="codelist">
+                    {{codelist.id}} - {{codelist.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <table mat-table [dataSource]="codelistDatasource" matSort class="width-100">
+
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
+                <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="value">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Wert </th>
+                <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="data">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Data </th>
+                <td mat-cell *matCellDef="let element"> {{element.data}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        </table>
+
+    </mat-card-content>
+</mat-card>

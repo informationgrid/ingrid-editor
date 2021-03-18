@@ -17,7 +17,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: {
       title: 'Daten',
-    icon: 'Daten'
+      icon: 'Daten'
     }
   },
   {
@@ -70,15 +70,16 @@ export const routes: Routes = [
       icon: 'Katalog'
     }
   },
-/*  {
-    path: 'plugins',
-    loadChildren: () => import('./+catalog/+behaviours/behaviours.module').then(m => m.BehavioursModule),
+  {
+    path: 'settings',
+    loadChildren: () => import('./+settings/settings.module').then(m => m.SettingsModule),
     data: {
-      title: 'Verhalten',
+      title: 'Einstellungen',
       onlyAdmin: true,
-      icon: 'outline-star_border-24px'
+      icon: '',
+      hideFromMenu: true
     }
-  },*/
+  },
   {
     path: '',
     redirectTo: '/dashboard',
@@ -92,5 +93,5 @@ export const routing = RouterModule.forRoot(
   routes, {
     preloadingStrategy: PreloadAllModules,
     relativeLinkResolution: 'legacy'
-}
+  }
 );
