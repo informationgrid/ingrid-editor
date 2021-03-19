@@ -66,8 +66,9 @@ class ResearchApiController : ResearchApi {
     }
 
     override fun search(principal: Principal?, query: ResearchQuery): ResponseEntity<ResearchResponse> {
-        
-        val result = researchService.query(query)
+
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val result = researchService.query(dbId, query)
         return ResponseEntity.ok(result)
         
     }

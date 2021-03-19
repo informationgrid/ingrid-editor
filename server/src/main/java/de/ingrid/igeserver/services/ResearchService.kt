@@ -35,9 +35,9 @@ class ResearchService {
 
     }
 
-    fun query(query: ResearchQuery): ResearchResponse {
+    fun query(dbId: String, query: ResearchQuery): ResearchResponse {
 
-        val sql = createQuery(query)
+        val sql = createQuery(dbId, query)
         val parameters = getParameters(query)
 
         val result = sendQuery(sql, parameters)
@@ -53,15 +53,15 @@ class ResearchService {
             ?.flatten() ?: emptyList()
     }
 
-    private fun createQuery(query: ResearchQuery): String {
+    private fun createQuery(dbId: String, query: ResearchQuery): String {
 
         val stateCondition = determineStateQuery(query.clauses)
         val jsonSearch = determineJsonSearch(query.term)
-        val whereFilter = determineWhereQuery(query)
+        val whereFilter = determineWhereQuery(dbId, query)
 
         return """
                 SELECT DISTINCT document1.*
-                FROM document_wrapper
+                FROM catalog, document_wrapper
                 $stateCondition
                 $jsonSearch
                 $whereFilter
@@ -69,20 +69,28 @@ class ResearchService {
             """
     }
 
-    private fun determineWhereQuery(query: ResearchQuery): String {
+    private fun determineWhereQuery(dbId: String, query: ResearchQuery): String {
+        val catalogFilter = createCatalogFilter(dbId);
+        
         val termSearch = if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%')"
 
         val filter = convertQuery(query.clauses)
         
         return if (termSearch.isBlank() && filter == null) {
-            "" 
+            "WHERE $catalogFilter" 
         } else if (termSearch.isBlank()) {
-            "WHERE $filter"
+            "WHERE $catalogFilter AND $filter"
         } else if (filter == null){
-            "WHERE $termSearch"
+            "WHERE $catalogFilter AND $termSearch"
         } else {
-            "WHERE $filter AND $termSearch"
+            "WHERE $catalogFilter AND $filter AND $termSearch"
         }
+    }
+
+    private fun createCatalogFilter(dbId: String): String {
+        
+        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$dbId'"
+        
     }
 
     private fun determineJsonSearch(term: String?): String {
