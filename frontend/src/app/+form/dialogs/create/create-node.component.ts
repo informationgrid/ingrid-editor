@@ -216,4 +216,11 @@ export class CreateNodeComponent implements OnInit {
   setDocType(docType: DocumentAbstract) {
     this.formGroup.get('choice').setValue(docType.id);
   }
+
+  quickBreadcrumbChange(id: string) {
+    this.parent = id;
+    const index = this.path.findIndex( item => item.id === id);
+    this.path = this.path.splice(0, index + 1);
+
+  }
 }
