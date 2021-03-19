@@ -3,13 +3,12 @@ import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatListModule} from '@angular/material/list';
-import {UserService} from '../../services/user/user.service';
-import {CatalogService} from '../services/catalog.service';
-import {ConfigService, UserInfo} from '../../services/config/config.service';
-import {CatalogQuery} from '../../store/catalog/catalog.query';
 import {BehaviorSubject, of} from 'rxjs';
 import {RouterTestingModule} from '@angular/router/testing';
-import { waitForAsync } from '@angular/core/testing';
+import {CatalogQuery} from '../store/catalog/catalog.query';
+import {ConfigService, UserInfo} from '../services/config/config.service';
+import {CatalogService} from './services/catalog.service';
+import {UserService} from '../services/user/user.service';
 
 describe('CatalogManagerComponent', () => {
   let spectator: Spectator<CatalogSettingsComponent>;

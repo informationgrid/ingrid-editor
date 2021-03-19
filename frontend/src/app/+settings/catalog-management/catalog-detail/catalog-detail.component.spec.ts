@@ -3,10 +3,10 @@ import { waitForAsync } from '@angular/core/testing';
 import {CatalogDetailComponent} from './catalog-detail.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {UserService} from '../../services/user/user.service';
-import {CatalogService} from '../services/catalog.service';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatListModule} from '@angular/material/list';
+import {UserService} from '../../../services/user/user.service';
+import {CatalogService} from '../../../+catalog/services/catalog.service';
 
 describe('CatalogDetailComponent', () => {
   let spectator: Spectator<CatalogDetailComponent>;

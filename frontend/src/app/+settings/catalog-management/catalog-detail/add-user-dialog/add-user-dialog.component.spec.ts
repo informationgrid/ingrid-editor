@@ -1,9 +1,9 @@
 import {AddUserDialogComponent} from './add-user-dialog.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {UserService} from '../../../services/user/user.service';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import {MatListModule} from '@angular/material/list';
+import {UserService} from '../../../../services/user/user.service';
 
 describe('AddUserDialogComponent', () => {
   let spectator: Spectator<AddUserDialogComponent>;
