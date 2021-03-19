@@ -1,8 +1,4 @@
-<div class="header">
-    Aktueller Katalog: {{currentCatalog}} <button mat-stroked-button color="primary" (click)="gotoCatalogs()">Verwalten</button>
-</div>
-
-<mat-tab-group [animationDuration]="'0ms'" fxFlex>
+<mat-tab-group [animationDuration]="'0ms'" fxFlex class="page-tabs">
 
     <mat-tab label="Codelisten">
         <ige-catalog-codelists></ige-catalog-codelists>

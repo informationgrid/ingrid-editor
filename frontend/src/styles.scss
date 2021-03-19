@@ -551,7 +551,7 @@ ige-side-menu {
 
 
 /* Material Tabs */
-.page-tabs .mat-tab-header {
+.page-tabs > .mat-tab-header {
   background-color: #161234;
   border-bottom: none;
   height: 56px;

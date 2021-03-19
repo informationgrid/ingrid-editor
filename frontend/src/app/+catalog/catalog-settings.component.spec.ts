@@ -1,4 +1,4 @@
-import {CatalogManagerComponent} from './catalog-manager.component';
+import {CatalogSettingsComponent} from './catalog-settings.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -12,9 +12,9 @@ import {RouterTestingModule} from '@angular/router/testing';
 import { waitForAsync } from '@angular/core/testing';
 
 describe('CatalogManagerComponent', () => {
-  let spectator: Spectator<CatalogManagerComponent>;
+  let spectator: Spectator<CatalogSettingsComponent>;
   const createHost = createComponentFactory({
-    component: CatalogManagerComponent,
+    component: CatalogSettingsComponent,
     imports: [RouterTestingModule, MatDialogModule, MatFormFieldModule, MatListModule],
     providers: [
       {

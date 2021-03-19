@@ -11,7 +11,7 @@ import {catchError} from 'rxjs/operators';
 })
 export class CatalogCodelistsComponent implements OnInit {
 
-  codelists = this.codelistService.getAll();
+  // codelists = this.codelistService.getAll();
   entries: CodelistEntry[];
   selectedCodelist: Codelist;
   disableSyncButton = false;

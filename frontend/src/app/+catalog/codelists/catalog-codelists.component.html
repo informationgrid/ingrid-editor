@@ -5,9 +5,9 @@
         <mat-form-field appearance="outline" style="width: 100%;">
             <mat-label>Codelist</mat-label>
             <mat-select (selectionChange)="selectedCodelist = $event.value">
-                <mat-option *ngFor="let codelist of codelists | async" [value]="codelist">
+                <!--<mat-option *ngFor="let codelist of codelists | async" [value]="codelist">
                     {{codelist.id}} - {{codelist.name}}
-                </mat-option>
+                </mat-option>-->
             </mat-select>
         </mat-form-field>
 

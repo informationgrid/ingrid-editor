@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {User} from '../../../+user/user';
 import {map, share} from 'rxjs/operators';
-import {UserService} from '../../../services/user/user.service';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {User} from '../../../../+user/user';
+import {UserService} from '../../../../services/user/user.service';
 
 @Component({
   selector: 'ige-add-user-dialog',

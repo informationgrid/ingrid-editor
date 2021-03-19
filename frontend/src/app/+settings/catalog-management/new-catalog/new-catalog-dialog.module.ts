@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {NewCatalogDialogComponent} from './new-catalog/new-catalog-dialog.component';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FlexModule} from '@angular/flex-layout';
 import {MatSelectModule} from '@angular/material/select';
@@ -11,7 +10,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatIconModule} from '@angular/material/icon';
-import {FormFieldsModule} from '../../form-fields/form-fields.module';
+import {NewCatalogDialogComponent} from './new-catalog-dialog.component';
+import {FormFieldsModule} from '../../../form-fields/form-fields.module';
 
 
 @NgModule({
@@ -20,8 +20,7 @@ import {FormFieldsModule} from '../../form-fields/form-fields.module';
         CommonModule, FormsModule,
         MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatDialogModule,
         MatInputModule, MatButtonModule, MatSelectModule, FlexModule, MatIconModule, FormFieldsModule
-    ],
-  entryComponents: [NewCatalogDialogComponent]
+    ]
 })
-export class CatalogDialogsModule {
+export class NewCatalogDialogModule {
 }

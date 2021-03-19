@@ -26,6 +26,7 @@ export class CodelistsComponent implements OnInit {
     .pipe(map(codelists => this.mapToOptions(codelists)));
 
   disableSyncButton = false;
+  showTable = false;
 
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery) {
@@ -68,6 +69,7 @@ export class CodelistsComponent implements OnInit {
 
     let entity = this.codelistQuery.getEntity(option.value);
     this.codelistDatasource.data = entity.entries;
+    this.showTable = true;
   }
 
   resetInput() {

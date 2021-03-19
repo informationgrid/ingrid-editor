@@ -16,7 +16,7 @@
         <mat-form-field appearance="outline">
             <mat-label>Typ</mat-label>
             <mat-select [(ngModel)]="model.type" name="type" required>
-                <mat-option *ngFor="let type of types | async" [value]="type.id">
+                <mat-option *ngFor="let type of types" [value]="type.id">
                     {{type.title}}
                 </mat-option>
             </mat-select>

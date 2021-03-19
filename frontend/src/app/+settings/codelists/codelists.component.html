@@ -22,7 +22,7 @@
                            (reset)="resetInput()"
                            (optionSelect)="updateCodelistTable($event)"></ige-filter-select>
 
-        <table *ngIf="codelistDatasource?.data > 0; else emptyMessage" mat-table [dataSource]="codelistDatasource" matSort class="width-100">
+        <table mat-table [dataSource]="codelistDatasource" matSort [class.invisible]="!showTable" class="width-100">
 
             <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Id</th>
@@ -44,7 +44,7 @@
 
         </table>
 
-        <ng-template #emptyMessage>Wählen Sie eine Codeliste aus</ng-template>
+        <div *ngIf="!showTable">Wählen Sie eine Codeliste aus</div>
 
     </mat-card-content>
 </mat-card>

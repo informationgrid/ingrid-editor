@@ -1,13 +1,13 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {UserService} from '../../services/user/user.service';
-import {User} from '../../+user/user';
 import {forkJoin} from 'rxjs';
-import {CatalogService} from '../services/catalog.service';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
-import {Catalog} from '../services/catalog.model';
-import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
 import {AddUserDialogComponent} from './add-user-dialog/add-user-dialog.component';
+import {Catalog} from '../../../+catalog/services/catalog.model';
+import {User} from '../../../+user/user';
+import {UserService} from '../../../services/user/user.service';
+import {CatalogService} from '../../../+catalog/services/catalog.service';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../../dialogs/confirm/confirm-dialog.component';
+import {NewCatalogDialogComponent} from '../new-catalog/new-catalog-dialog.component';
 
 export interface CatalogDetailResponse {
   deleted?: boolean;

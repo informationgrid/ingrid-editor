@@ -1,32 +1,52 @@
-import { Component, OnInit } from '@angular/core';
-import {Catalog} from '../services/catalog.model';
-import {Router} from '@angular/router';
-import {CatalogService} from '../services/catalog.service';
+import {Component, OnInit} from '@angular/core';
 import {ConfigService} from '../../services/config/config.service';
 import {CatalogQuery} from '../../store/catalog/catalog.query';
 import {MatDialog} from '@angular/material/dialog';
-import {NewCatalogDialogComponent} from '../../dialogs/catalog/new-catalog/new-catalog-dialog.component';
-import {CatalogDetailComponent, CatalogDetailResponse} from '../catalog-detail/catalog-detail.component';
+import {Catalog} from '../../+catalog/services/catalog.model';
+import {CatalogService, Profile} from '../../+catalog/services/catalog.service';
+import {CatalogDetailComponent, CatalogDetailResponse} from './catalog-detail/catalog-detail.component';
+import {NewCatalogDialogComponent} from './new-catalog/new-catalog-dialog.component';
+import {map, tap} from 'rxjs/operators';
+import {combineLatest} from 'rxjs';
 
 @Component({
-  selector: 'ige-catalogs',
-  templateUrl: './catalogs.component.html',
-  styleUrls: ['./catalogs.component.scss']
+  selector: 'ige-catalog-management',
+  templateUrl: './catalog-management.component.html',
+  styleUrls: ['./catalog-management.component.scss']
 })
-export class CatalogsComponent implements OnInit {
+export class CatalogManagementComponent implements OnInit {
 
-  catalogs = this.catalogQuery.selectAll();
+  private catalogs = combineLatest([
+    this.catalogQuery.selectAll(),
+    this.catalogService.getCatalogProfiles().pipe(
+      tap(profiles => this.profiles = profiles)
+    )
+  ]);
+
+  activeCatalog = this.catalogs.pipe(
+    map(catalog => {
+      const active = catalog[0].find(cat => cat.id === this.currentCatalog);
+      return active ? this.mapProfileTitleToCatalog(active, catalog[1]) : null;
+    })
+  );
+
+  nonActiveCatalogs = this.catalogs.pipe(
+    map(catalog => {
+      const other = catalog[0].filter(cat => cat.id !== this.currentCatalog);
+      return other.map(cat => this.mapProfileTitleToCatalog(cat, catalog[1]));
+    })
+  );
 
   noAssignedCatalogs = false;
   showSpinner = false;
   currentCatalog: string;
   private currentUserID: string;
+  private profiles: Profile[];
   trackByCatalogId = (index, item: Catalog) => {
     return item.id;
   };
 
-  constructor(private router: Router,
-              private catalogService: CatalogService,
+  constructor(private catalogService: CatalogService,
               private configService: ConfigService,
               private catalogQuery: CatalogQuery,
               private dialog: MatDialog) {
@@ -46,7 +66,8 @@ export class CatalogsComponent implements OnInit {
   showCreateCatalogDialog() {
     this.dialog.open(NewCatalogDialogComponent, {
       minWidth: 400,
-      disableClose: true
+      disableClose: true,
+      data: this.profiles
     }).afterClosed()
       .subscribe((catalog: Catalog) => {
         if (catalog) {
@@ -94,7 +115,12 @@ export class CatalogsComponent implements OnInit {
     });
   }
 
-  goBack() {
-    this.router.navigate(['/catalogs']);
+
+  private mapProfileTitleToCatalog(catalog: Catalog, profiles: Profile[]) {
+    return {
+      ...catalog,
+      type: profiles.find(profile => profile.id === catalog.type).title
+    };
   }
+
 }
