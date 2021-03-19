@@ -1,6 +1,6 @@
 <div *ngFor="let group of filterGroup | async" fxLayout="column" fxLayoutGap="10px">
     <h3>{{group.label}}</h3>
-    <ng-container *ngIf="group.selection === 'OR'">
+    <ng-container *ngIf="group.selection === 'RADIO'">
         <mat-radio-group [name]="group.label" fxLayout="column" fxLayoutGap="10px"
                          (ngModelChange)="sendUpdate()"
                          [(ngModel)]="model[group.id]">
@@ -11,7 +11,7 @@
         </mat-radio-group>
     </ng-container>
 
-    <ng-container *ngIf="group.selection === 'AND'">
+    <ng-container *ngIf="group.selection === 'CHECKBOX'">
         <mat-checkbox *ngFor="let filter of group.filter"
                       [name]="filter.id"
                       (ngModelChange)="sendUpdate()"

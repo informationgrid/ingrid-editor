@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
-import {filter, map, startWith, tap} from 'rxjs/operators';
+import {filter, map, startWith} from 'rxjs/operators';
 import {SelectOption} from '../../services/codelist/codelist.service';
 
 @Component({
@@ -30,7 +30,6 @@ export class FilterSelectComponent implements OnInit {
       this.control.valueChanges.pipe(startWith('')),
       this.options
     ]).pipe(
-      tap(value => console.log(value)),
       // only filter input strings and selections
       filter(value => !(value[0] instanceof Object)),
       map(value => this._filter(value[0], value[1]))

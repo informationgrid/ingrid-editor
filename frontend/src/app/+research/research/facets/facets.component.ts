@@ -64,7 +64,7 @@ export class FacetsComponent implements OnInit {
     this.model = {};
     filters.forEach(group => {
       this.model[group.id] = {};
-      if (group.selection === 'OR') {
+      if (group.selection === 'RADIO') {
         this.model[group.id] = group.filter[0].id;
       } else if (group.selection === 'SPATIAL') {
         this.spatialFilterIds.push(group.filter[0].id);
