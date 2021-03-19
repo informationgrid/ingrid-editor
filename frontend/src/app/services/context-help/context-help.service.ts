@@ -7,7 +7,7 @@ import {ContextHelpQuery} from '../../store/context-help/context-help.query';
 import {Observable, of} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {ContextHelpComponent} from '../../shared/context-help/context-help.component';
-import {MatDialog} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ContextHelpAbstract} from '../../store/context-help/context-help.model';
 
 @Injectable({
@@ -22,7 +22,8 @@ export class ContextHelpService {
 
   private configuration: Configuration;
 
-  // private static getLeftPosition = (infoElement: HTMLElement) => `${infoElement.getBoundingClientRect().left}px`
+  private currentDialog: MatDialogRef<ContextHelpComponent, any>;
+
   private static getLeftPosition(infoElement: HTMLElement) {
     const leftPosition = window.innerWidth - infoElement.getBoundingClientRect().left;
     const enoughSpaceBeneath = leftPosition > this.contextDialogWidth;
@@ -65,13 +66,15 @@ export class ContextHelpService {
 
     const helpText$ = this.getContextHelpText(profile, docType, fieldId);
 
-    this.dialog.open(ContextHelpComponent, {
+    this.currentDialog?.close();
+
+    this.currentDialog = this.dialog.open(ContextHelpComponent, {
       data: {
         title: label,
         description$: helpText$
       },
       backdropClass: 'cdk-overlay-transparent-backdrop',
-      hasBackdrop: true,
+      hasBackdrop: false,
       closeOnNavigation: true,
       position: {
         left: ContextHelpService.getLeftPosition(infoElement),
