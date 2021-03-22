@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
@@ -18,9 +18,12 @@ export class FilterSelectComponent implements OnInit {
   @Output() optionSelect = new EventEmitter<SelectOption>();
   @Output() reset = new EventEmitter<string>();
 
+  @ViewChild('filter') filter: ElementRef;
+
   control = new FormControl();
 
   filteredOptions: Observable<SelectOption[]>;
+  private selectedValue: SelectOption;
 
   constructor() {
   }
@@ -46,11 +49,17 @@ export class FilterSelectComponent implements OnInit {
   resetInput() {
     this.control.reset('');
     this.reset.emit();
+    setTimeout(() => this.filter.nativeElement.blur());
   }
 
   updateSelection(value: SelectOption) {
     this.control.setValue(this.labelFormat(value));
     // TODO: blur control html element for easier selection?
+    this.selectedValue = value;
     this.optionSelect.emit(value);
+  }
+
+  getSelectedValue() {
+    return this.selectedValue;
   }
 }

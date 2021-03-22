@@ -8,6 +8,8 @@ import { Codelist } from './codelist.model';
 })
 export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
 
+  catalogCodelists$ = this.select(state => state.catalogCodelists);
+
   constructor(protected store: CodelistStore) {
     super(store);
   }

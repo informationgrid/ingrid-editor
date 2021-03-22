@@ -19,6 +19,9 @@ import {BehavioursModule} from './+behaviours/behaviours.module';
 import {SharedModule} from '../shared/shared.module';
 import {IndexingComponent} from './indexing/indexing.component';
 import {CatalogSettingsComponent} from './catalog-settings.component';
+import {FilterSelectModule} from '../shared/filter-select/filter-select.module';
+import {UpdateCodelistComponent} from './codelists/update-codelist/update-codelist.component';
+import {FormFieldsModule} from '../form-fields/form-fields.module';
 
 @NgModule({
   imports: [
@@ -26,12 +29,12 @@ import {CatalogSettingsComponent} from './catalog-settings.component';
     FormsModule,
     FlexLayoutModule,
     MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule
+    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule
   ],
   providers: [
     CatalogService
   ],
-  declarations: [CatalogSettingsComponent, CatalogCodelistsComponent, IndexingComponent],
+  declarations: [CatalogSettingsComponent, CatalogCodelistsComponent, IndexingComponent, UpdateCodelistComponent],
   exports: [RouterModule]
 })
 export class CatalogModule {

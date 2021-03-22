@@ -3,9 +3,10 @@ import {ErrorService} from '../error.service';
 import {CodelistDataService} from './codelist-data.service';
 import {Codelist, CodelistBackend, CodelistEntry, CodelistEntryBackend} from '../../store/codelist/codelist.model';
 import {CodelistStore} from '../../store/codelist/codelist.store';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {buffer, distinct, filter, map, switchMap, tap} from 'rxjs/operators';
+import {arrayAdd} from '@datorama/akita';
 
 export interface SelectOption {
   label: string;
@@ -30,7 +31,7 @@ export class CodelistService {
     return codelist.entries
       .map(entry => ({label: entry.value, value: entry.id} as SelectOption))
       .sort((a, b) => a.label.localeCompare(b.label));
-  }
+  };
 
   static getLocalisedValue(locals: any) {
     return locals.de || locals.name;
@@ -103,5 +104,50 @@ export class CodelistService {
         map(codelists => this.prepareCodelists(codelists)),
         tap(codelists => this.store.set(codelists))
       ).subscribe();
+  }
+
+  mapToOptions(codelists: Codelist[]): SelectOption[] {
+    return codelists.map(cl => {
+      return {
+        value: cl.id,
+        label: cl.name
+      };
+    });
+  }
+
+  getCatalogCodelists(): void {
+    this.store.update({
+      catalogCodelists: [{
+        id: '1',
+        name: 'meine Codeliste',
+        entries: [{
+          id: '10',
+          value: 'aaa'
+        }, {
+          id: '11',
+          value: 'bbb'
+        }]
+      }, {
+        id: '2',
+        name: 'andere Codeliste',
+        entries: [{
+          id: '20',
+          value: 'xxx'
+        }, {
+          id: '21',
+          value: 'yyy'
+        }]
+      }, {
+        id: '3',
+        name: 'noch eine Codeliste',
+        entries: []
+      }]
+    });
+  }
+
+  addCatalogCodelist(codelist: Codelist) {
+    this.store.update(({catalogCodelists}) => ({
+      catalogCodelists: arrayAdd(catalogCodelists, codelist)
+    }))
   }
 }
