@@ -3,10 +3,7 @@
                      [class.selected]="currentSelection && (doc.id === currentSelection.id)"
                      [class.hide-bg-selection]="showSelection">
 
-        <mat-icon [class.marker-space]="showSelection && (!currentSelection || currentSelection.id !== doc.id)"
-                  matListIcon
-                  [ngClass]="['document-icon',getStateClass(doc)]"
-                  [svgIcon]="doc.icon"></mat-icon>
+        <ige-document-icon [doc]="doc" mat-list-icon></ige-document-icon>
         <mat-icon *ngIf="showSelection && currentSelection && currentSelection.id === doc.id" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
         <h3 matLine>
             <span class="card-title">{{doc.title}}</span>
@@ -18,10 +15,11 @@
 
 <div *ngIf="doc" (keyup.enter)="select.next(doc)" class="doc-item single multiline" fxLayout="row" (click)="makeSelection(doc)">
     <mat-icon *ngIf="showSelection && currentSelection && currentSelection.id === doc.id" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
-    <mat-icon [class.marker-space]="showSelection && (!currentSelection || currentSelection.id !== doc.id)"
+    <!--<mat-icon [class.marker-space]="showSelection && (!currentSelection || currentSelection.id !== doc.id)"
               matListIcon
               [ngClass]="['document-icon',getStateClass(doc)]"
-              [svgIcon]="doc.icon || doc.iconClass"></mat-icon>
+              [svgIcon]="doc.icon || doc.iconClass"></mat-icon>-->
+    <ige-document-icon [doc]="doc" mat-list-icon></ige-document-icon>
 
     <span matLine>
         <!-- in case we want to style title, we need to add it as innerHTML -->

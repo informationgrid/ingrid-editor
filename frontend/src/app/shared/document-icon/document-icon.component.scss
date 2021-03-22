@@ -4,11 +4,16 @@
   display: flex;
   align-self: flex-start;
   height: 24px;
-  margin-right: 12px;
   padding: 0;
 }
 
+:host-context(.single) :host {
+  align-self: unset;
+}
+
 .mat-icon {
+
+  margin-right: 12px !important;
 
   &.marker ::ng-deep .coloring {
     fill: $ige-check-color;

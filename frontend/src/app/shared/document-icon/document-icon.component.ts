@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, HostBinding, Input, OnInit} from '@angular/core';
 import {DocumentAbstract} from '../../store/document/document.model';
 import {TreeNode} from '../../store/tree/tree-node.model';
 import {DocumentUtils} from '../../services/document.utils';
@@ -10,6 +10,8 @@ import {DocumentUtils} from '../../services/document.utils';
 })
 export class DocumentIconComponent implements OnInit {
   @Input() doc: any;
+
+  @HostBinding('className') componentClass: string;
 
   ngOnInit(): void {
   }

@@ -8,9 +8,10 @@ import {MatListModule} from '@angular/material/list';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatLineModule} from '@angular/material/core';
+import {DocumentIconModule} from './document-icon/document-icon.module';
 
 @NgModule({
-  imports: [CommonModule, FlexLayoutModule, MatListModule, MatLineModule, MatIconModule, MatTooltipModule, MatDividerModule],
+    imports: [CommonModule, FlexLayoutModule, MatListModule, MatLineModule, MatIconModule, MatTooltipModule, MatDividerModule, DocumentIconModule],
   declarations: [DocumentListItemComponent, DateAgoPipe],
   exports: [DocumentListItemComponent, FlexLayoutModule, MatListModule, MatLineModule, MatIconModule, MatTooltipModule, MatDividerModule]
 })
