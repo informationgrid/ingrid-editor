@@ -55,12 +55,14 @@ export class QuickSearchComponent implements OnInit {
       });
   }
 
-  openResearchPage(event: Event) {
+  openResearchPage(event: Event, inAddresses?: boolean) {
     // TODO: activate after research page is implemented
     event.preventDefault();
-    return;
 
-    this.router.navigate(['/research']);
+    this.router.navigate(['/research', {
+      q: this.query.value,
+      type: inAddresses ? 'selectAddresses' : 'selectDocuments'
+    }]);
   }
 
   private highlightResult(hits: DocumentAbstract[], textHighlight: string): DocumentAbstract[] {

@@ -61,8 +61,13 @@ export class FacetsComponent implements OnInit {
   }
 
   private prepareModel(filters: FacetGroup[]) {
-    this.model = {};
+    // this.model = {};
     filters.forEach(group => {
+      if (this.model[group.id]) {
+        // skip initialization, since it's already done for this field
+        return;
+      }
+
       this.model[group.id] = {};
       if (group.selection === 'RADIO') {
         this.model[group.id] = group.filter[0].id;

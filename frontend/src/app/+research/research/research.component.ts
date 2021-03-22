@@ -9,6 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
 import {FacetUpdate} from './facets/facets.component';
 import {QueryQuery} from '../../store/query/query.query';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @UntilDestroy()
 @Component({
@@ -35,12 +36,18 @@ export class ResearchComponent implements OnInit, AfterViewInit {
     fieldsWithParameters: {}
   };
 
-  constructor(private researchService: ResearchService,
+  constructor(private route: ActivatedRoute,
+              private researchService: ResearchService,
               private profileService: ProfileService,
               private queryQuery: QueryQuery) {
   }
 
   ngOnInit() {
+    this.query.setValue(this.route.snapshot.params.q ?? '');
+    this.filter.model = {
+      type: this.route.snapshot.params.type ?? ''
+    };
+
     this.columnsMap = this.profileService.getProfiles()[0].fieldsMap;
 
     this.researchService.loadQueries().subscribe();

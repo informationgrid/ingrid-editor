@@ -11,7 +11,7 @@
         <div fxFlex fxLayout="row" fxLayoutAlign="space-between" class="result-header">
             <div>Suchvorschläge</div>
             <div class="extra-large-spacing link-text">
-                <a href="#" (click)="openResearchPage($event)" [matMenuTriggerFor]="commingSoon">
+                <a href="#" (click)="openResearchPage($event)">
                     <mat-icon svgIcon="Recherche" class="research-icon"></mat-icon>
                     Erweiterte Suche
                 </a>
@@ -25,7 +25,7 @@
         </mat-option>
 
         <div *ngIf="numDocs > 5" class="show-all-link link-text extra-large-spacing">
-            <a href="#" (click)="openResearchPage($event)" [matMenuTriggerFor]="commingSoon">
+            <a href="#" (click)="openResearchPage($event)">
                 <mat-icon>keyboard_arrow_right</mat-icon>
                 Alle
             </a>
@@ -38,7 +38,7 @@
         </mat-option>
 
         <div *ngIf="numAddresses > 5" class="show-all-link link-text extra-large-spacing">
-            <a href="#" (click)="openResearchPage($event)"[matMenuTriggerFor]="commingSoon">
+            <a href="#" (click)="openResearchPage($event, true)">
                 <mat-icon>keyboard_arrow_right</mat-icon>
                 Alle
             </a>
@@ -46,12 +46,9 @@
 
     </mat-autocomplete>
 
-    <button mat-flat-button color="primary" class="btn-search upper-case" [matMenuTriggerFor]="commingSoon">
+    <button mat-flat-button color="primary" class="btn-search upper-case" (click)="openResearchPage($event)">
         <mat-icon>search</mat-icon>
         Suchen
     </button>
-    <mat-menu #commingSoon="matMenu" class="mat-typography">
-        <div style="padding: 12px">Die Suchergebnisseite ist gerade in der Entwicklung. Bitte verwenden Sie das Suchfeld für eine einfache Suche.</div>
-    </mat-menu>
 
 </div>
