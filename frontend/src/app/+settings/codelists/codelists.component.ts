@@ -23,7 +23,7 @@ export class CodelistsComponent implements OnInit {
   displayedColumns = ['id', 'value', 'data'];
 
   codelists = this.codelistQuery.selectAll()
-    .pipe(map(codelists => this.mapToOptions(codelists)));
+    .pipe(map(codelists => this.codelistService.mapToOptions(codelists)));
 
   disableSyncButton = false;
   showTable = false;
@@ -80,12 +80,4 @@ export class CodelistsComponent implements OnInit {
     return `${option.value} - ${option.label}`
   }
 
-  private mapToOptions(codelists: Codelist[]): SelectOption[] {
-    return codelists.map( cl => {
-      return {
-        value: cl.id,
-        label: cl.name
-      }
-    });
-  }
 }

@@ -1,12 +1,6 @@
-<mat-tab-group animationDuration="0" [(selectedIndex)]="selectedIndex">
-    <mat-tab style="min-width: 50px">
-        <ng-template mat-tab-label>
-            <mat-icon>star</mat-icon>
-        </ng-template>
-        <ige-query-manager (selection)="loadQuery($event)"></ige-query-manager>
-    </mat-tab>
+<mat-tab-group animationDuration="0" class="page-tabs" [(selectedIndex)]="selectedIndex">
 
-    <mat-tab label="Einfache Suche">
+    <mat-tab label="Erweiterte Suche">
         <div fxLayout="row" fxLayoutGap="20px" class="padding">
 
             <div fxLayout="column">
@@ -30,6 +24,15 @@
 
         </div>
     </mat-tab>
+
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon>star</mat-icon>
+            <span> Favoriten</span>
+        </ng-template>
+        <ige-query-manager (selection)="loadQuery($event)"></ige-query-manager>
+    </mat-tab>
+
     <mat-tab label="SQL">
         <div class="padding" fxLayout="column">
             <mat-form-field appearance="outline" class="width-100">

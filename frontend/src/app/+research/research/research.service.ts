@@ -19,7 +19,7 @@ export interface FacetGroup {
   label: string;
   filter: QuickFilter[];
   combine: 'AND' | 'OR';
-  selection: 'AND' | 'OR' | 'SPATIAL';
+  selection: 'CHECKBOX' | 'RADIO' | 'SPATIAL';
 }
 
 export class ResearchResponse {

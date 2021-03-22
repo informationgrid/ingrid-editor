@@ -10,7 +10,7 @@ describe('CodelistsComponent', () => {
   let spectator: Spectator<CatalogCodelistsComponent>;
   const createHost = createComponentFactory({
     component: CatalogCodelistsComponent,
-    // imports: [MatDialogModule],
+    imports: [MatDialogModule],
     providers: [
       mockProvider(CodelistService)
     ],

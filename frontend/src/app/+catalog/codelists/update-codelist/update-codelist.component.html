@@ -1,0 +1,20 @@
+<mat-dialog-content fxLayout="column">
+    <mat-form-field class="example-full-width">
+        <mat-label>Id</mat-label>
+        <input matInput igeFocus [(ngModel)]="model.id">
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+        <mat-label>Titel</mat-label>
+        <input matInput [(ngModel)]="model.value">
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+        <mat-label>Data</mat-label>
+        <input matInput placeholder='{\"url\":\"https://xxx\"}' [(ngModel)]="model.data">
+    </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-flat-button mat-dialog-close>Abbrechen</button>
+    <div fxFlex></div>
+    <button mat-flat-button color="primary" [matDialogClose]="model">Ändern</button>
+</mat-dialog-actions>

@@ -3,12 +3,13 @@ import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {ResearchService} from './research.service';
 import {LeafletService} from '../../formly/types/map/leaflet.service';
 import {ProfileService} from '../../services/profile.service';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('ResearchComponent', () => {
   let spectator: Spectator<ResearchComponent>;
   const createComponent = createComponentFactory({
     component: ResearchComponent,
-    imports: [],
+    imports: [RouterTestingModule],
     declarations: [],
     componentMocks: [],
     /*providers: [mockProvider(ResearchService, {

@@ -22,14 +22,14 @@ class MCloudProfile : CatalogProfile {
                     Documents(),
                     Addresses()
                 ),
-                selection = Operator.OR
+                selection = Operator.RADIO
             ),
             FacetGroup(
                 "state", "Zustand", arrayOf(
                     Latest(),
                     Published(),
                 ),
-                selection = Operator.OR
+                selection = Operator.RADIO
             ),
             FacetGroup(
                 "docType", "Dokumententyp", arrayOf(
