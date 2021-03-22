@@ -48,7 +48,7 @@ class ResearchTest : ShouldSpec() {
         """
 
             val list = execQuery(sql)
-            list.size shouldBeExactly 2
+            list.size shouldBeExactly 1
         }
     }
 

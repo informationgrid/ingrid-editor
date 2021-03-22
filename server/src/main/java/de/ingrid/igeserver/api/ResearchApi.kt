@@ -15,17 +15,17 @@ import java.security.Principal
 interface ResearchApi {
 
     @Operation
-    @GetMapping(value = ["/"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun load(principal: Principal?): ResponseEntity<Array<ResearchQuery>>
+    fun load(principal: Principal?): ResponseEntity<Array<ResearchQueryWrapper>>
 
     @Operation
-    @PostMapping(value = ["/"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun save(principal: Principal?): ResponseEntity<Void>
 
     @Operation
-    @DeleteMapping(value = ["/"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun delete(principal: Principal?): ResponseEntity<Void>
 

@@ -17,23 +17,25 @@ import {CardBoxComponent} from './card-box/card-box.component';
 import {MatCardModule} from '@angular/material/card';
 import {EmptyNavigationComponent} from '../+form/sidebars/tree/empty-navigation/empty-navigation.component';
 import {SharedDocumentItemModule} from './shared-document-item.module';
-import {AddButtonComponent} from './add-button/add-button.component';
 import {OptionListComponent} from './option-list/option-list.component';
 import {MatRadioModule} from '@angular/material/radio';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {AddButtonModule} from './add-button/add-button.module';
+import {AddButtonComponent} from './add-button/add-button.component';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        MatTreeModule, AngularSplitModule, MatButtonModule, MatFormFieldModule, MatProgressBarModule,
-        MatSlideToggleModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
-        MatCardModule,
-        SharedDocumentItemModule, MatRadioModule, FormsModule, DragDropModule, MatCheckboxModule],
-  declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent, AddButtonComponent,
+  imports: [
+    CommonModule,
+    MatTreeModule, AngularSplitModule, MatButtonModule, MatFormFieldModule, MatProgressBarModule,
+    MatSlideToggleModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinnerModule,
+    MatCardModule,
+    SharedDocumentItemModule, MatRadioModule, FormsModule, DragDropModule, MatCheckboxModule,
+    AddButtonModule],
+  declarations: [TreeComponent, EmptyNavigationComponent, TreeHeaderComponent, CardBoxComponent,
     OptionListComponent],
-  exports: [TreeComponent, MatIconModule, MatInputModule, MatButtonModule, CardBoxComponent, AddButtonComponent,
-    OptionListComponent, SharedDocumentItemModule]
+  exports: [TreeComponent, MatIconModule, MatInputModule, MatButtonModule, CardBoxComponent,
+    OptionListComponent, SharedDocumentItemModule, AddButtonComponent]
 })
 export class SharedModule {
 }

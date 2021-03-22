@@ -2,7 +2,7 @@ import {RepeatListComponent} from './repeat-list.component';
 import {createHostFactory, SpectatorHost} from '@ngneat/spectator';
 import {AddButtonComponent} from '../../../shared/add-button/add-button.component';
 import {FormlyFieldConfig, FormlyForm, FormlyModule} from '@ngx-formly/core';
-import {fakeAsync} from '@angular/core/testing';
+import {fakeAsync, tick} from '@angular/core/testing';
 import {RepeatDetailListComponent} from '../repeat-detail-list/repeat-detail-list.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatListModule} from '@angular/material/list';
@@ -53,12 +53,12 @@ describe('RepeatListComponent', () => {
 
     let elements = spectator.queryAll('mat-list-item');
     expect(elements.length).toBe(0);
-
     spectator.typeInElement('test-simple', '.mat-autocomplete-trigger');
     // spectator.keyboard.pressEnter('.mat-input-element');
     spectator.debugElement.query(By.css('.mat-autocomplete-trigger')).triggerEventHandler('keydown.enter', {});
     elements = spectator.queryAll('mat-list-item');
     expect(elements.length).toBe(1);
+    tick(300);
 
   }));
 

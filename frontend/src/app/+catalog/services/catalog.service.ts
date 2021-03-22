@@ -8,6 +8,12 @@ import {HttpClient} from '@angular/common/http';
 import {Catalog} from './catalog.model';
 import {CatalogStore} from '../../store/catalog/catalog.store';
 
+export interface Profile {
+  id: string;
+  title: string;
+  description: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -63,8 +69,8 @@ export class CatalogService {
     return this.http.get(this.configuration.backendUrl + 'catalog/' + catalogId);
   }
 
-  getCatalogProfiles(): Observable<any> {
-    return this.http.get(this.configuration.backendUrl + 'profiles');
+  getCatalogProfiles(): Observable<Profile[]> {
+    return this.http.get<Profile[]>(this.configuration.backendUrl + 'profiles');
 
   }
 }

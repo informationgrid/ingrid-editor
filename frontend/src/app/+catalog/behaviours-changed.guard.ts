@@ -1,20 +1,20 @@
 import {CanDeactivate} from '@angular/router';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CatalogManagerComponent} from './catalog-manager/catalog-manager.component';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
 import {map} from 'rxjs/operators';
+import {CatalogSettingsComponent} from './catalog-settings.component';
 
 @Injectable({
   providedIn: 'root'
 })
-export class BehavioursChangedGuard implements CanDeactivate<CatalogManagerComponent> {
+export class BehavioursChangedGuard implements CanDeactivate<CatalogSettingsComponent> {
 
   constructor(private dialog: MatDialog) {
   }
 
-  canDeactivate(component: CatalogManagerComponent): Observable<boolean> | boolean {
+  canDeactivate(component: CatalogSettingsComponent): Observable<boolean> | boolean {
 
     const behavioursHaveChanged = component.behaviourComponent?.hasDirtyForm();
 

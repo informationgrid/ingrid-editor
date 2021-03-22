@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.model
 
 enum class Operator {
-    AND, OR
+    AND, OR, SPATIAL
 }
 
 data class FacetGroup(val id: String,

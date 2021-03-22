@@ -1,25 +1,29 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
-import { ResearchComponent } from './research.component';
+import {ResearchComponent} from './research.component';
+import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import {ResearchService} from './research.service';
+import {LeafletService} from '../../formly/types/map/leaflet.service';
+import {ProfileService} from '../../services/profile.service';
 
 describe('ResearchComponent', () => {
-  let component: ResearchComponent;
-  let fixture: ComponentFixture<ResearchComponent>;
-
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ResearchComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ResearchComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  let spectator: Spectator<ResearchComponent>;
+  const createComponent = createComponentFactory({
+    component: ResearchComponent,
+    imports: [],
+    declarations: [],
+    componentMocks: [],
+    /*providers: [mockProvider(ResearchService, {
+      getQuickFilter(): Observable<FacetGroup[]> {
+        return of([]);
+      }
+    })],*/
+    mocks: [ResearchService, LeafletService, ProfileService],
+    detectChanges: false
   });
 
+  beforeEach(() => {
+    spectator = createComponent();
+  });
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 });

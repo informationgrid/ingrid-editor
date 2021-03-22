@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  padding: 20px;
+}
+
+.mat-card {
+  margin-bottom: 24px;
+}
+
+.entries {
+  overflow: auto;
+  max-height: 300px;
+}

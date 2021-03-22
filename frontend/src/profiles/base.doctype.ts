@@ -36,6 +36,8 @@ export abstract class BaseDoctype implements Doctype {
 
   hasOptionalFields: boolean;
 
+  fieldsMap: SelectOption[] = [];
+
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery) {
   }
@@ -68,6 +70,7 @@ export abstract class BaseDoctype implements Doctype {
     this.fields.push(...this.documentFields());
     this.hasOptionalFields = this.hasOptionals(this.fields);
     this.addContextHelp(this.fields);
+    this.getFieldMap(this.fields);
     console.log('Profile initialized');
   }
 
@@ -94,6 +97,19 @@ export abstract class BaseDoctype implements Doctype {
         } else if (!field.templateOptions.hasInlineContextHelp) {
           field.templateOptions.hasContextHelp = true;
         }
+      }
+    });
+  }
+
+  private getFieldMap(fields: FormlyFieldConfig[]) {
+    fields.forEach(field => {
+      let fieldKey = <string>field.key;
+      if (field.fieldGroup) {
+        this.getFieldMap(field.fieldGroup);
+      }
+
+      if (fieldKey) {
+        this.fieldsMap.push({value: fieldKey, label: field.templateOptions?.externalLabel});
       }
     });
   }

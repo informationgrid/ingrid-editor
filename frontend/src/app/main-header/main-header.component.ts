@@ -47,15 +47,11 @@ export class MainHeaderComponent implements OnInit {
   }
 
   private getPageTitleFromRoute(url: string) {
-    const firstPart = url.split(';')[0];
-    switch (firstPart) {
-      case('/form'):
-        return 'Daten';
-      case('/address'):
-        return 'Adressen';
-      default:
-        return '';
-    }
+    const firstPart = url.split(';')[0].substring(1);
+
+    return this.router.config
+      .find(route => route.path === firstPart)
+      ?.data?.title ?? ''
   }
 
   getInitials(user: UserInfo) {

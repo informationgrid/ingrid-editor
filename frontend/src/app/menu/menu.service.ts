@@ -18,7 +18,7 @@ export class MenuService {
   }
 
   get mainRoutes(): Route[] {
-    return this._mainRoutes.filter(item => item.path !== '' && (!item.data.featureFlag || this.config.hasFlags(item.data.featureFlag)));
+    return this._mainRoutes.filter(item => item.path !== '' && !item.data.hideFromMenu && (!item.data.featureFlag || this.config.hasFlags(item.data.featureFlag)));
   }
 
   addMenuItem(label: string, path: string, component: any) {

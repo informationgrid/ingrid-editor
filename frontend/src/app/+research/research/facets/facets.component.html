@@ -1,0 +1,28 @@
+<div *ngFor="let group of filterGroup | async" fxLayout="column" fxLayoutGap="10px">
+    <h3>{{group.label}}</h3>
+    <ng-container *ngIf="group.selection === 'OR'">
+        <mat-radio-group [name]="group.label" fxLayout="column" fxLayoutGap="10px"
+                         (ngModelChange)="sendUpdate()"
+                         [(ngModel)]="model[group.id]">
+            <mat-radio-button *ngFor="let filter of group.filter; let i = index"
+                              [value]="filter.id">
+                {{filter.label}}
+            </mat-radio-button>
+        </mat-radio-group>
+    </ng-container>
+
+    <ng-container *ngIf="group.selection === 'AND'">
+        <mat-checkbox *ngFor="let filter of group.filter"
+                      [name]="filter.id"
+                      (ngModelChange)="sendUpdate()"
+                      [(ngModel)]="model[group.id][filter.id]">{{filter.label}}</mat-checkbox>
+    </ng-container>
+
+    <ng-container *ngIf="group.selection === 'SPATIAL'">
+        <mat-checkbox (change)="toggleSpatialFilter(group.filter[0].id, $event.checked)"
+                      [(ngModel)]="model[group.id][group.filter[0].id]"> Filter anwenden</mat-checkbox>
+        <div [class.invisible]="!showSpatialFilter">
+            <div #leafletDlg fxFlex style="height: 200px;"></div>
+        </div>
+    </ng-container>
+</div>

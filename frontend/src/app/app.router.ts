@@ -17,7 +17,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: {
       title: 'Daten',
-    icon: 'Daten'
+      icon: 'Daten'
     }
   },
   {
@@ -43,7 +43,7 @@ export const routes: Routes = [
     path: 'user',
     loadChildren: () => import('./+user/user.module').then(m => m.UserModule),
     data: {
-      title: 'Benutzerverwaltung',
+      title: 'Nutzer & Rechte',
       featureFlag: 'AP3',
       onlyAdmin: true,
       icon: 'Nutzer'
@@ -65,20 +65,21 @@ export const routes: Routes = [
     path: 'catalogs',
     loadChildren: () => import('./+catalog/catalog.module').then(m => m.CatalogModule),
     data: {
-      title: 'Katalogverwaltung',
+      title: 'Katalog',
       onlyAdmin: true,
       icon: 'Katalog'
     }
   },
-/*  {
-    path: 'plugins',
-    loadChildren: () => import('./+catalog/+behaviours/behaviours.module').then(m => m.BehavioursModule),
+  {
+    path: 'settings',
+    loadChildren: () => import('./+settings/settings.module').then(m => m.SettingsModule),
     data: {
-      title: 'Verhalten',
+      title: 'Einstellungen',
       onlyAdmin: true,
-      icon: 'outline-star_border-24px'
+      icon: '',
+      hideFromMenu: true
     }
-  },*/
+  },
   {
     path: '',
     redirectTo: '/dashboard',
@@ -89,7 +90,8 @@ export const routes: Routes = [
 // export const appRoutingProviders: any[] = [];
 
 export const routing = RouterModule.forRoot(
-  routes/*, {
+  routes, {
     preloadingStrategy: PreloadAllModules,
     relativeLinkResolution: 'legacy'
-}*/);
+  }
+);

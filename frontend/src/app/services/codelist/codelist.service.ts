@@ -68,7 +68,8 @@ export class CodelistService {
 
     return this.dataService.update()
       .pipe(
-        map(codelists => this.prepareCodelists(codelists))
+        map(codelists => this.prepareCodelists(codelists)),
+        tap(codelists => this.store.set(codelists))
       );
 
   }
@@ -95,9 +96,10 @@ export class CodelistService {
   }
 
   getAll() {
-    return this.dataService.getAll()
+    this.dataService.getAll()
       .pipe(
-        map(codelists => this.prepareCodelists(codelists))
-      );
+        map(codelists => this.prepareCodelists(codelists)),
+        tap(codelists => this.store.set(codelists))
+      ).subscribe();
   }
 }

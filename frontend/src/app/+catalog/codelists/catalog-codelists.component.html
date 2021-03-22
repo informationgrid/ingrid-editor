@@ -1,0 +1,20 @@
+<mat-card>
+    <mat-card-title>Codelisten für diesen Katalog</mat-card-title>
+
+    <mat-card-content>
+        <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>Codelist</mat-label>
+            <mat-select (selectionChange)="selectedCodelist = $event.value">
+                <!--<mat-option *ngFor="let codelist of codelists | async" [value]="codelist">
+                    {{codelist.id}} - {{codelist.name}}
+                </mat-option>-->
+            </mat-select>
+        </mat-form-field>
+
+        <div class="entries">
+            <div *ngFor="let entry of selectedCodelist?.entries">
+                {{entry.id}} - {{entry.value}} - {{entry.data}}
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

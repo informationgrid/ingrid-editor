@@ -4,6 +4,8 @@
   color: $error-color;
   font-size: 12px;
   padding-top: 4px;
+  height: 0;
+  overflow: visible;
 }
 
 .btn-title {
@@ -31,6 +33,7 @@ button {
 
 .wrapper {
   padding-top: 10px;
+  padding-bottom: 14px;
 }
 
 ::ng-deep ige-repeat > div + ige-add-button .wrapper {

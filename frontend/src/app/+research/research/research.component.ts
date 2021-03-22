@@ -1,52 +1,77 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {FacetGroup, ResearchResponse, ResearchService} from './research.service';
-import {tap} from 'rxjs/operators';
+import {ResearchResponse, ResearchService} from './research.service';
+import {debounceTime} from 'rxjs/operators';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
+import {ProfileService} from '../../services/profile.service';
+import {SelectOption} from '../../services/codelist/codelist.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {FormControl} from '@angular/forms';
+import {FacetUpdate} from './facets/facets.component';
+import {QueryQuery} from '../../store/query/query.query';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-research',
   templateUrl: './research.component.html',
   styleUrls: ['./research.component.scss']
 })
-export class ResearchComponent implements AfterViewInit {
+export class ResearchComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  filterGroup = this.researchService.getQuickFilter()
-    .pipe(
-      tap(filters => this.prepareModel(filters)),
-      tap(() => this.updateFilter())
-    );
+  selectedIndex = 0;
 
-  model: any;
-  displayedColumns: string[] = ['title', 'uuid'];
+  displayedColumns: string[] = [];
+
+  query = new FormControl('');
 
   totalHits: number = 0;
   dataSource = new MatTableDataSource([]);
   sqlValue: string = '';
+  columnsMap: SelectOption[];
+  filter: FacetUpdate = {
+    model: {},
+    fieldsWithParameters: {}
+  };
 
-  constructor(private researchService: ResearchService) {
+  constructor(private researchService: ResearchService,
+              private profileService: ProfileService,
+              private queryQuery: QueryQuery) {
+  }
+
+  ngOnInit() {
+    this.columnsMap = this.profileService.getProfiles()[0].fieldsMap;
+
+    this.researchService.loadQueries().subscribe();
+
+    this.query.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(300)
+      )
+      .subscribe(query => this.startSearch());
+
   }
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
+    setTimeout(() => this.displayedColumns = ['title'], 1000);
   }
 
-  updateFilter() {
+  updateFilter(info: FacetUpdate) {
+    this.filter = info;
+    this.startSearch();
+  }
+
+  startSearch() {
     setTimeout(() => {
-      return this.researchService.search(this.model)
+      // this.applyImplicitFilter(this.model);
+      return this.researchService.search(
+        this.query.value,
+        this.filter.model,
+        this.filter.fieldsWithParameters)
         .subscribe(result => this.updateHits(result));
-    });
-  }
-
-  private prepareModel(filters: FacetGroup[]) {
-    this.model = {};
-    filters.forEach(group => {
-      this.model[group.id] = {};
-      if (group.selection === 'OR') {
-        this.model[group.id] = group.filter[0].id;
-      }
     });
   }
 
@@ -72,5 +97,32 @@ export class ResearchComponent implements AfterViewInit {
                        WHERE type = 'mCloudDoc'
                          AND data -> 'mCloudCategories' @> '"aviation"'`;
     }
+  }
+
+  /*
+    private applyImplicitFilter(model: any) {
+      let spatial = model.clauses.clauses.filter(c => c.value.indexOf('mCloudSelectSpatial') !== -1);
+      if (spatial.length > 0 && spatial[0].parameter.length === 4) {
+        const spatialFilter = this.quickFilters
+          .map(groups => groups.filter)
+          .map(filter => filter.find(f => f.id === 'mCloudSelectSpatial'));
+        if (spatialFilter.length > 0) {
+          spatialFilter[0].implicitFilter;
+        }
+      }
+    }
+  */
+
+  loadQuery(id: string) {
+    this.selectedIndex = 1;
+    let entity = JSON.parse(JSON.stringify(this.queryQuery.getEntity(id)));
+    this.filter.model = entity.definition.model;
+    this.filter.fieldsWithParameters = entity.definition.parameter;
+    this.query.setValue(entity.definition.term);
+  }
+
+  saveQuery() {
+    this.researchService.saveQuery(this.query.value, this.filter.model, this.filter.fieldsWithParameters)
+      .subscribe();
   }
 }

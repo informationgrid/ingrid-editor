@@ -1,81 +1,88 @@
-<div fxLayout="row" fxLayoutGap="20px">
+<mat-tab-group animationDuration="0" [(selectedIndex)]="selectedIndex">
+    <mat-tab style="min-width: 50px">
+        <ng-template mat-tab-label>
+            <mat-icon>star</mat-icon>
+        </ng-template>
+        <ige-query-manager (selection)="loadQuery($event)"></ige-query-manager>
+    </mat-tab>
 
-    <div fxLayout="column">
-        <div *ngFor="let group of filterGroup | async" fxLayout="column" fxLayoutGap="10px">
-            <h3>{{group.label}}</h3>
-            <ng-container *ngIf="group.selection === 'OR'">
-                <mat-radio-group [name]="group.label" fxLayout="column" fxLayoutGap="10px"
-                                 (ngModelChange)="updateFilter()"
-                                 [(ngModel)]="model[group.id]">
-                    <mat-radio-button *ngFor="let filter of group.filter; let i = index"
-                                      [value]="filter.id">
-                        {{filter.label}}
-                    </mat-radio-button>
-                </mat-radio-group>
-            </ng-container>
+    <mat-tab label="Einfache Suche">
+        <div fxLayout="row" fxLayoutGap="20px" class="padding">
 
-            <ng-container *ngIf="group.selection === 'AND'">
-                <mat-checkbox *ngFor="let filter of group.filter"
-                              [name]="filter.id"
-                              (ngModelChange)="updateFilter()"
-                              [(ngModel)]="model[group.id][filter.id]">{{filter.label}}</mat-checkbox>
-            </ng-container>
-        </div>
-    </div>
+            <div fxLayout="column">
+                <ige-facets [model]="filter.model"
+                            (update)="updateFilter($event)"></ige-facets>
+            </div>
 
-    <div fxFlex fxLayout="column">
+            <div fxFlex fxLayout="column">
+                <button mat-button (click)="saveQuery()">Speichern</button>
 
-        <mat-tab-group animationDuration="0">
-            <mat-tab label="Einfache Suche">
-                <div class="padding-sm">
+                <div class="">
                     <mat-form-field appearance="outline" class="width-100">
                         <mat-label>Suche</mat-label>
-                        <input matInput placeholder="">
+                        <input matInput [formControl]="query">
                     </mat-form-field>
                 </div>
-            </mat-tab>
-            <mat-tab label="SQL">
-                <div class="padding-sm">
-                    <mat-form-field appearance="outline" class="width-100">
-<!--                        <mat-label>SQL-Query</mat-label>-->
-                        <textarea #sql matInput rows="5" placeholder="SELECT * FROM ..." [value]="sqlValue"></textarea>
-                    </mat-form-field>
 
-                    <span [matMenuTriggerFor]="examples">Beispiele</span>
-                    <mat-menu #examples="matMenu">
-                        <button mat-menu-item (click)="updateSql(0)">Alle Adressen, die "test" im Titel beinhalten</button>
-                        <button mat-menu-item (click)="updateSql(1)">Alle Dokumente, mit Kategorie "Luft- und Raumfahrt"</button>
-                    </mat-menu>
+                <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
 
-                    <button mat-raised-button (click)="queryBySQL(sql.value)">Abschicken</button>
-                </div>
-            </mat-tab>
-        </mat-tab-group>
+            </div>
 
-
-        <div>
-            Result: {{totalHits}}
-            <table mat-table [dataSource]="dataSource" matSort class="width-100">
-
-                <!--- Note that these columns can be defined in any order.
-                      The actual rendered columns are set as a property on the row definition" -->
-
-                <ng-container matColumnDef="title">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Titel</th>
-                    <td mat-cell *matCellDef="let element"> {{element.title}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="uuid">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> UUID</th>
-                    <td mat-cell *matCellDef="let element"> {{element.uuid}} </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-            <!--    <div *ngFor="let hit of hits.hits">{{hit.title}}</div>-->
         </div>
+    </mat-tab>
+    <mat-tab label="SQL">
+        <div class="padding" fxLayout="column">
+            <mat-form-field appearance="outline" class="width-100">
+                <!--                        <mat-label>SQL-Query</mat-label>-->
+                <textarea #sql matInput rows="5" placeholder="SELECT * FROM ..." [value]="sqlValue"></textarea>
+            </mat-form-field>
+
+            <div>
+                <span [matMenuTriggerFor]="examples">Beispiele</span>
+                <mat-menu #examples="matMenu">
+                    <button mat-menu-item (click)="updateSql(0)">Alle Adressen, die "test" im Titel beinhalten</button>
+                    <button mat-menu-item (click)="updateSql(1)">Alle Dokumente, mit Kategorie "Luft- und Raumfahrt"</button>
+                </mat-menu>
+
+                <button mat-raised-button (click)="queryBySQL(sql.value)">Abschicken</button>
+            </div>
+
+            <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
+        </div>
+    </mat-tab>
+</mat-tab-group>
+
+<ng-template #tableTemplate>
+
+    <div fxFlex="1">
+        <mat-form-field appearance="outline" class="width-100">
+            <mat-label>Spalten</mat-label>
+            <mat-select multiple [(ngModel)]="displayedColumns">
+                <mat-option *ngFor="let column of columnsMap" [value]="column.value">{{column.label || column.value}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <!--<button mat-button [matMenuTriggerFor]="columns">Spalten</button>
+        <mat-menu #columns="matMenu">
+            <button *ngFor="let column of columnsMap" mat-menu-item (click)="toggleColumn(column.value)">{{column.label || column.value}}</button>
+        </mat-menu>-->
+
+        <div fxLayout="row">
+            <div>Result: {{totalHits}}</div>
+            <div fxFlex></div>
+            <button mat-button (click)="exporter.exportTable('csv', {fileName: 'research'})">CSV</button>
+        </div>
+        <table mat-table matTableExporter #exporter="matTableExporter" [dataSource]="dataSource" matSort class="width-100">
+
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+            <ng-container *ngFor="let column of columnsMap" [matColumnDef]="column.value">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> {{column.label || column.value}}</th>
+                <td mat-cell *matCellDef="let element"> {{element[column.value] | json}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
     </div>
 
-</div>
-
+</ng-template>

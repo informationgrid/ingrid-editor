@@ -548,3 +548,28 @@ ige-side-menu {
     font-weight: 500;
   }
 }
+
+
+/* Material Tabs */
+.page-tabs > .mat-tab-header {
+  background-color: #161234;
+  border-bottom: none;
+  height: 56px;
+
+  .mat-tab-label {
+    color: #FFFFFF;
+    letter-spacing: 1.25px;
+    text-transform: uppercase;
+    opacity: 0.75;
+    height: 56px;
+
+    &.mat-tab-label-active .mat-tab-label-content {
+      color: #4BA7D0;
+    }
+  }
+
+  .mat-ink-bar {
+    background-color: $ige-background !important;
+    height: 6px;
+  }
+}

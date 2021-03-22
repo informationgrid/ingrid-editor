@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.api.NotFoundException
@@ -37,27 +38,59 @@ class ResearchService {
     fun query(query: ResearchQuery): ResearchResponse {
 
         val sql = createQuery(query)
+        val parameters = getParameters(query)
 
-        val result = sendQuery(sql)
+        val result = sendQuery(sql, parameters)
 
         return ResearchResponse(result.size, mapResult(result))
     }
 
+    private fun getParameters(query: ResearchQuery): List<Any> {
+        return query.clauses?.clauses
+            ?.mapNotNull { it.parameter }
+            ?.map { it.map { it.toFloat() } }
+            ?.filter { it.isNotEmpty() }
+            ?.flatten() ?: emptyList()
+    }
+
     private fun createQuery(query: ResearchQuery): String {
-        val filter = convertQuery(query.clauses)
-        val whereFilter = when (filter) {
-            null -> ""
-            else -> "WHERE $filter"
-        }
 
         val stateCondition = determineStateQuery(query.clauses)
+        val jsonSearch = determineJsonSearch(query.term)
+        val whereFilter = determineWhereQuery(query)
 
         return """
-                SELECT *
+                SELECT DISTINCT document1.*
                 FROM document_wrapper
                 $stateCondition
-                $whereFilter;
+                $jsonSearch
+                $whereFilter
+                ORDER BY document1.title;
             """
+    }
+
+    private fun determineWhereQuery(query: ResearchQuery): String {
+        val termSearch = if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%')"
+
+        val filter = convertQuery(query.clauses)
+        
+        return if (termSearch.isBlank() && filter == null) {
+            "" 
+        } else if (termSearch.isBlank()) {
+            "WHERE $filter"
+        } else if (filter == null){
+            "WHERE $termSearch"
+        } else {
+            "WHERE $filter AND $termSearch"
+        }
+    }
+
+    private fun determineJsonSearch(term: String?): String {
+
+        return if (term != null)
+            "CROSS JOIN LATERAL jsonb_each_text(document1.data) as t(k, val)"
+        else ""
+
     }
 
     private fun convertQuery(boolFilter: BoolFilter?): String? {
@@ -118,35 +151,45 @@ class ResearchService {
 
     }
 
-    private fun sendQuery(sql: String) = entityManager
-        .createNativeQuery(sql)
-        .setHint(QueryHints.HINT_READONLY, true)
-        .unwrap(NativeQuery::class.java)
-        .addScalar("data", JsonNodeBinaryType.INSTANCE)
-        .addScalar("title")
-        .addScalar("uuid")
-        .addScalar("type")
-        .addScalar("created")
-        .addScalar("modified")
-        .resultList
+    private fun sendQuery(sql: String, parameter: List<Any>): List<Any> {
+        val nativeQuery = entityManager.createNativeQuery(sql)
+
+        for ((index, it) in parameter.withIndex()) {
+            nativeQuery.setParameter(index + 1, it)
+        }
+
+        return nativeQuery
+            .setHint(QueryHints.HINT_READONLY, true)
+            .unwrap(NativeQuery::class.java)
+            .addScalar("data", JsonNodeBinaryType.INSTANCE)
+            .addScalar("title")
+            .addScalar("uuid")
+            .addScalar("type")
+            .addScalar("created")
+            .addScalar("modified")
+            .resultList
+    }
 
     private fun mapResult(result: List<Any>): ArrayNode {
         val array = jacksonObjectMapper().createArrayNode()
         val jsonNodes = result.map {
             val item = it as Array<out Any>
-            val node = jacksonObjectMapper().createObjectNode()
+//            val node = jacksonObjectMapper().createObjectNode()
+            val node: ObjectNode = item[0] as ObjectNode
             node.put("title", item[1] as? String)
             node.put("uuid", item[2] as? String)
+            node.put("created", item[4] as? String)
+            node.put("modified", item[5] as? String)
         }
         array.addAll(jsonNodes)
         return array
     }
-    
+
     fun querySql(sqlQuery: String): ResearchResponse {
 
         try {
-            val result = sendQuery(sqlQuery)
-            
+            val result = sendQuery(sqlQuery, emptyList())
+
             return ResearchResponse(result.size, mapResult(result))
         } catch (error: GenericJDBCException) {
             throw NotFoundException.withMissingResource(error.localizedMessage, "SQL")
