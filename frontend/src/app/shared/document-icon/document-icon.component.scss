@@ -1,0 +1,16 @@
+@import "src/variables";
+
+:host {
+  display: flex;
+  align-self: flex-start;
+  height: 24px;
+  margin-right: 12px;
+  padding: 0;
+}
+
+.mat-icon {
+
+  &.marker ::ng-deep .coloring {
+    fill: $ige-check-color;
+  }
+}

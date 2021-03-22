@@ -9,7 +9,10 @@ export abstract class BaseDoctype implements Doctype {
 
   fields = <FormlyFieldConfig[]>[
     {
-      key: 'title'
+      key: 'title',
+      templateOptions: {
+        label: 'Titel'
+      }
     },
     {
       key: '_id'
@@ -18,7 +21,10 @@ export abstract class BaseDoctype implements Doctype {
       key: '_parent'
     },
     {
-      key: '_type'
+      key: '_type',
+      templateOptions: {
+        label: 'Typ'
+      }
     },
     {
       key: '_created'
@@ -109,7 +115,7 @@ export abstract class BaseDoctype implements Doctype {
       }
 
       if (fieldKey) {
-        this.fieldsMap.push({value: fieldKey, label: field.templateOptions?.externalLabel});
+        this.fieldsMap.push({value: fieldKey, label: field.templateOptions?.externalLabel || field.templateOptions?.label});
       }
     });
   }

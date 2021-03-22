@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {ResearchResponse, ResearchService} from './research.service';
-import {debounceTime} from 'rxjs/operators';
+import {debounceTime, map} from 'rxjs/operators';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {ProfileService} from '../../services/profile.service';
@@ -9,7 +9,8 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
 import {FacetUpdate} from './facets/facets.component';
 import {QueryQuery} from '../../store/query/query.query';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
+import {MatPaginator} from '@angular/material/paginator';
 
 @UntilDestroy()
 @Component({
@@ -20,6 +21,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class ResearchComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   selectedIndex = 0;
 
@@ -30,6 +32,7 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   totalHits: number = 0;
   dataSource = new MatTableDataSource([]);
   sqlValue: string = '';
+  profileIconsMap: {};
   columnsMap: SelectOption[];
   filter: FacetUpdate = {
     model: {},
@@ -48,8 +51,12 @@ export class ResearchComponent implements OnInit, AfterViewInit {
       type: this.route.snapshot.params.type ?? ''
     };
 
-    this.columnsMap = this.profileService.getProfiles()[0].fieldsMap;
-
+    let profiles = this.profileService.getProfiles();
+    this.profileIconsMap = profiles.reduce( (acc, val) => {
+      acc[val.id] = val.iconClass;
+      return acc;
+    }, {});
+    this.columnsMap = profiles[0].fieldsMap;
     this.researchService.loadQueries().subscribe();
 
     this.query.valueChanges
@@ -63,7 +70,7 @@ export class ResearchComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
-    setTimeout(() => this.displayedColumns = ['title'], 1000);
+    this.dataSource.paginator = this.paginator;
   }
 
   updateFilter(info: FacetUpdate) {
@@ -78,6 +85,14 @@ export class ResearchComponent implements OnInit, AfterViewInit {
         this.query.value,
         this.filter.model,
         this.filter.fieldsWithParameters)
+        .pipe(
+          map(result => {
+            result.hits.forEach(hit => {
+              hit.icon = this.profileService.getDocumentIcon(hit);
+            });
+            return result
+          })
+        )
         .subscribe(result => this.updateHits(result));
     });
   }
@@ -90,6 +105,10 @@ export class ResearchComponent implements OnInit, AfterViewInit {
   private updateHits(result: ResearchResponse) {
     this.totalHits = result.totalHits;
     this.dataSource.data = result.hits;
+    // setTimeout(() => this.displayedColumns = ['_type', 'title'], 500);
+    if (this.displayedColumns.length === 0) {
+      this.displayedColumns = ['_type', 'title', 'settings'];
+    }
   }
 
   updateSql(index: number) {

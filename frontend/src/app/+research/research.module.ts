@@ -15,10 +15,13 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableExporterModule} from 'mat-table-exporter';
-import { FacetsComponent } from './research/facets/facets.component';
-import { QueryManagerComponent } from './research/query-manager/query-manager.component';
+import {FacetsComponent} from './research/facets/facets.component';
+import {QueryManagerComponent} from './research/query-manager/query-manager.component';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
+import {MatPaginatorIntl, MatPaginatorModule} from '@angular/material/paginator';
+import {IgePagingIntl} from '../shared/IgePagingIntl';
+import {DocumentIconModule} from '../shared/document-icon/document-icon.module';
 
 
 @NgModule({
@@ -41,8 +44,13 @@ import {MatListModule} from '@angular/material/list';
     MatTableExporterModule,
     ReactiveFormsModule,
     MatIconModule,
-    MatListModule
-  ]
+    MatListModule,
+    MatPaginatorModule,
+    DocumentIconModule
+  ],
+  providers: [{
+    provide: MatPaginatorIntl, useValue: new IgePagingIntl()
+  }]
 })
 export class ResearchModule {
 }

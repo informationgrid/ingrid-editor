@@ -1,3 +1,19 @@
 :host {
   //padding: 20px;
 }
+
+.result {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.settings button {
+  visibility: hidden;
+}
+.mat-row:hover .settings button {
+  visibility: visible;
+}
+
+.thin-column {
+  width: 1px;
+}

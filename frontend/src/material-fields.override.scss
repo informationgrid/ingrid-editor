@@ -152,3 +152,28 @@
     color: inherit !important;
   }
 }
+
+.mat-form-field.mat-paginator-page-size-select {
+  .mat-form-field-wrapper {
+    margin: 0;
+
+    .mat-form-field-infix {
+      border-top: 0.84375em solid transparent;
+      width: 180px;
+    }
+
+    .mat-form-field-underline {
+      position: absolute;
+    }
+
+    .mat-form-field-subscript-wrapper {
+      position: absolute;
+      margin-top: 0.5416666667em;
+      padding-top: 0;
+    }
+
+    .mat-select-arrow-wrapper {
+      padding-top: 0;
+    }
+  }
+}
