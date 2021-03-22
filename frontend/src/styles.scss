@@ -552,25 +552,29 @@ ige-side-menu {
 
 
 /* Material Tabs */
-.page-tabs > .mat-tab-header {
-  background-color: #161234;
-  border-bottom: none;
-  height: 56px;
+.page-tabs {
+  height: 100%;
 
-  .mat-tab-label {
-    color: #FFFFFF;
-    letter-spacing: 1.25px;
-    text-transform: uppercase;
-    opacity: 0.75;
+  & > .mat-tab-header {
+    background-color: #161234;
+    border-bottom: none;
     height: 56px;
 
-    &.mat-tab-label-active .mat-tab-label-content {
-      color: #4BA7D0;
-    }
-  }
+    .mat-tab-label {
+      color: #FFFFFF;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      opacity: 0.75;
+      height: 56px;
 
-  .mat-ink-bar {
-    background-color: $ige-background !important;
-    height: 6px;
+      &.mat-tab-label-active .mat-tab-label-content {
+        color: #4BA7D0;
+      }
+    }
+
+    .mat-ink-bar {
+      background-color: $ige-background !important;
+      height: 6px;
+    }
   }
 }
