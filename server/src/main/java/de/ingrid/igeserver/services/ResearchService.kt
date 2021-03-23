@@ -186,22 +186,38 @@ class ResearchService {
             val node: ObjectNode = item[0] as ObjectNode
             node.put("title", item[1] as? String)
             node.put("uuid", item[2] as? String)
-            node.put("created", item[4] as? String)
-            node.put("modified", item[5] as? String)
+            node.put("_type", item[3] as? String)
+            node.put("_created", item[4] as? String)
+            node.put("_modified", item[5] as? String)
+            node.put("_state", DocumentService.DocumentState.PUBLISHED.value)
         }
         array.addAll(jsonNodes)
         return array
     }
 
-    fun querySql(sqlQuery: String): ResearchResponse {
+    fun querySql(dbId: String, sqlQuery: String): ResearchResponse {
 
         try {
-            val result = sendQuery(sqlQuery, emptyList())
+            val catalogQuery = restrictQueryOnCatalog(dbId, sqlQuery)
+            val result = sendQuery(catalogQuery, emptyList())
 
             return ResearchResponse(result.size, mapResult(result))
         } catch (error: GenericJDBCException) {
             throw NotFoundException.withMissingResource(error.localizedMessage, "SQL")
         }
+    }
+
+    private fun restrictQueryOnCatalog(dbId: String, sqlQuery: String): String {
+
+        val catalogFilter = createCatalogFilter(dbId)
+
+        val fromIndex = sqlQuery.indexOf("FROM")
+        val whereIndex = sqlQuery.indexOf("WHERE")
+        return """
+            ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
+            $catalogFilter AND 
+            ${sqlQuery.substring(whereIndex + 6)}""".trimIndent()
+
     }
 
 }

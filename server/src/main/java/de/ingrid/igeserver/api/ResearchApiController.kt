@@ -75,7 +75,8 @@ class ResearchApiController : ResearchApi {
 
     override fun searchSql(principal: Principal?, sqlQuery: String): ResponseEntity<ResearchResponse> {
         // TODO: check for invalid SQL commands (like DELETE, ...)
-        val result = researchService.querySql(sqlQuery)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val result = researchService.querySql(dbId, sqlQuery)
         return ResponseEntity.ok(result)
     }
 
