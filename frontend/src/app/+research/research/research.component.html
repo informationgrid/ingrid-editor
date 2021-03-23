@@ -55,13 +55,13 @@
 <ng-template #tableTemplate>
 
     <div fxFlex="1">
-        <mat-form-field appearance="outline" class="width-100">
+        <!--<mat-form-field appearance="outline" class="width-100">
             <mat-label>Spalten</mat-label>
             <mat-select multiple [(ngModel)]="displayedColumns">
                 <mat-option *ngFor="let column of columnsMap"
                             [value]="column.value">{{column.label || column.value}}</mat-option>
             </mat-select>
-        </mat-form-field>
+        </mat-form-field>-->
         <!--<button mat-button [matMenuTriggerFor]="columns">Spalten</button>
         <mat-menu #columns="matMenu">
             <button *ngFor="let column of columnsMap" mat-menu-item (click)="toggleColumn(column.value)">{{column.label || column.value}}</button>
