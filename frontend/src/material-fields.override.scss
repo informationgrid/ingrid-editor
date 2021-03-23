@@ -153,6 +153,7 @@
   }
 }
 
+/* paginator fix for select */
 .mat-form-field.mat-paginator-page-size-select {
   .mat-form-field-wrapper {
     margin: 0;
@@ -174,6 +175,41 @@
 
     .mat-select-arrow-wrapper {
       padding-top: 0;
+    }
+  }
+}
+
+/* smaller list height */
+.doc-item.doc-item {
+  .mat-list-item .mat-list-item-content {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    min-height: 48px;
+  }
+
+  .mat-list-text {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  &.mat-list-base {
+    mat-list-option {
+      //min-height: 48px;
+      height: auto !important;
+      font-size: 16px;
+    }
+  }
+
+  &.dense {
+    mat-list-option {
+
+      .mat-list-item-content {
+        min-height: 40px;
+
+        ige-document-icon, .mat-icon {
+          align-self: unset;
+        }
+      }
     }
   }
 }

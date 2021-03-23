@@ -26,7 +26,7 @@
         <mat-autocomplete #searchAuto="matAutocomplete" class="quicksearch-auto dense">
             <mat-option *ngFor="let doc of searchResult | async"
                         (onSelectionChange)="loadResultDocument(doc)">
-                <ige-document-list-item [doc]="doc" [denseMode]="true"></ige-document-list-item>
+                <ige-document-list-item [doc]="doc"></ige-document-list-item>
             </mat-option>
         </mat-autocomplete>
     </mat-form-field>

@@ -1,5 +1,6 @@
 <mat-selection-list *ngIf="docs" class="doc-item" [multiple]="false" [class.dense]="denseMode" [class.hide-divider]="hideDivider">
     <mat-list-option *ngFor="let doc of docs | async" (click)="makeSelection(doc)"
+                     [class.marker-space]="showSelection && (!currentSelection || currentSelection.id !== doc.id)"
                      [class.selected]="currentSelection && (doc.id === currentSelection.id)"
                      [class.hide-bg-selection]="showSelection">
 
@@ -15,10 +16,7 @@
 
 <div *ngIf="doc" (keyup.enter)="select.next(doc)" class="doc-item single multiline" fxLayout="row" (click)="makeSelection(doc)">
     <mat-icon *ngIf="showSelection && currentSelection && currentSelection.id === doc.id" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
-    <!--<mat-icon [class.marker-space]="showSelection && (!currentSelection || currentSelection.id !== doc.id)"
-              matListIcon
-              [ngClass]="['document-icon',getStateClass(doc)]"
-              [svgIcon]="doc.icon || doc.iconClass"></mat-icon>-->
+
     <ige-document-icon [doc]="doc" mat-list-icon></ige-document-icon>
 
     <span matLine>
