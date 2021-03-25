@@ -14,7 +14,7 @@
         <div fxFlex></div>
         <button mat-icon-button
                 class="toggle"
-                (click)="expanded[group.id] = !expanded[group.id]">
+                (click)="toggleSection(group.id)">
             <mat-icon class="mat-icon-rtl-mirror expander animated" style="margin-top: 5px">
                 {{expanded[group.id] ? 'expand_less' : 'expand_more'}}
             </mat-icon>
@@ -38,7 +38,7 @@
                       [(ngModel)]="model[group.id][filter.id]">{{filter.label}}</mat-checkbox>
     </div>
 
-    <div *ngIf="group.selection === 'SPATIAL'" [class.invisible]="!expanded[group.id]" fxLayout="column">
+    <div *ngIf="group.selection === 'SPATIAL'" [class.invisible]="!expanded[group.id]" style="flex-direction: column">
         <div #leafletDlg fxFlex style="height: 200px;"></div>
         <ige-add-button [showLabel]="false" (add)="showSpatialDialog()"></ige-add-button>
     </div>

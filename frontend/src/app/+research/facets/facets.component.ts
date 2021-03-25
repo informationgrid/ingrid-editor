@@ -47,7 +47,6 @@ export class FacetsComponent implements OnInit {
   }
 
   initLeaflet() {
-    this.leaflet.nativeElement.style.width = '200px';
     this.leaflet.nativeElement.style.minWidth = '200px';
     this.leafletReference = this.leafletService.initMap(this.leaflet.nativeElement, {});
     this.leafletService.zoomToInitialBox(this.leafletReference);
@@ -113,5 +112,12 @@ export class FacetsComponent implements OnInit {
 
   showSpatialDialog() {
 
+  }
+
+  toggleSection(id: string) {
+    this.expanded[id] = !this.expanded[id];
+    if (id === 'spatial' && this.expanded.spatial) {
+      setTimeout(() => this.leafletReference.invalidateSize());
+    }
   }
 }
