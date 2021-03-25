@@ -5,21 +5,14 @@
   padding-top: 10px;
   padding-bottom: 10px;
 
-  ::ng-deep ige-add-button{
+  ige-add-button {
     margin-left: 6px;
-    button {
-      padding: 0!important;
-    }
-    .wrapper {
-      padding: 0;
-    }
-    .btn-title {
-      display: none;
-    }
-    .mat-icon {
-      margin-bottom: 2px;
-    }
   }
+}
+
+.add-button-initial {
+  display: block;
+  margin: 11px 0;
 }
 
 .mat-chip {
