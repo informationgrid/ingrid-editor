@@ -1,5 +1,5 @@
 <div class="main-section-title">Suchen nach</div>
-<mat-button-toggle-group  (change)="sendUpdate()" fxFlexAlign="start" [(ngModel)]="model.type">
+<mat-button-toggle-group (change)="sendUpdate()" fxFlexAlign="start" [(ngModel)]="model.type">
     <mat-button-toggle value="selectDocuments">Dokument</mat-button-toggle>
     <mat-button-toggle value="selectAddresses">Addresse</mat-button-toggle>
 </mat-button-toggle-group>
@@ -9,7 +9,17 @@
 <mat-divider></mat-divider>
 
 <div *ngFor="let group of filterGroup | async" fxLayout="column" fxLayoutGap="10px">
-    <h3 class="section-title">{{group.label}}</h3>
+    <div>
+        <h3 class="section-title">{{group.label}}</h3>
+        <div fxFlex></div>
+        <button mat-icon-button
+                class="toggle"
+                (click)="expanded[group.id] = !expanded[group.id]">
+            <mat-icon class="mat-icon-rtl-mirror expander animated" style="margin-top: 5px">
+                {{expanded[group.id] ? 'expand_less' : 'expand_more'}}
+            </mat-icon>
+        </button>
+    </div>
     <ng-container *ngIf="group.selection === 'RADIO'">
         <mat-radio-group [name]="group.label" fxLayout="column" fxLayoutGap="10px"
                          (ngModelChange)="sendUpdate()"
@@ -21,20 +31,17 @@
         </mat-radio-group>
     </ng-container>
 
-    <ng-container *ngIf="group.selection === 'CHECKBOX'">
+    <div *ngIf="group.selection === 'CHECKBOX'" [class.invisible]="!expanded[group.id]" fxLayout="column" fxLayoutGap="10px">
         <mat-checkbox *ngFor="let filter of group.filter"
                       [name]="filter.id"
                       (ngModelChange)="sendUpdate()"
                       [(ngModel)]="model[group.id][filter.id]">{{filter.label}}</mat-checkbox>
-    </ng-container>
+    </div>
 
-    <ng-container *ngIf="group.selection === 'SPATIAL'">
-        <mat-checkbox (change)="toggleSpatialFilter(group.filter[0].id, $event.checked)"
-                      [(ngModel)]="model[group.id][group.filter[0].id]"> Filter anwenden</mat-checkbox>
-        <div [class.invisible]="!showSpatialFilter">
-            <div #leafletDlg fxFlex style="height: 200px;"></div>
-        </div>
-    </ng-container>
+    <div *ngIf="group.selection === 'SPATIAL'" [class.invisible]="!expanded[group.id]" fxLayout="column">
+        <div #leafletDlg fxFlex style="height: 200px;"></div>
+        <ige-add-button [showLabel]="false" (add)="showSpatialDialog()"></ige-add-button>
+    </div>
 
     <mat-divider></mat-divider>
 </div>

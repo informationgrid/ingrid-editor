@@ -15,8 +15,6 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableExporterModule} from 'mat-table-exporter';
-import {FacetsComponent} from './facets/facets.component';
-import {QueryManagerComponent} from './query-manager/query-manager.component';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {MatPaginatorIntl, MatPaginatorModule} from '@angular/material/paginator';
@@ -28,6 +26,9 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { TabSqlComponent } from './tab-sql/tab-sql.component';
 import { ResultTableComponent } from './result-table/result-table.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {AddButtonModule} from '../shared/add-button/add-button.module';
+import {FacetsComponent} from './facets/facets.component';
+import {QueryManagerComponent} from './query-manager/query-manager.component';
 
 
 @NgModule({
@@ -55,7 +56,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
         DocumentIconModule,
         FormFieldsModule,
         MatDialogModule,
-        MatButtonToggleModule
+        MatButtonToggleModule,
+        AddButtonModule
     ],
   providers: [{
     provide: MatPaginatorIntl, useValue: new IgePagingIntl()

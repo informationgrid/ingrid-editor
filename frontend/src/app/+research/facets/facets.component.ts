@@ -37,6 +37,7 @@ export class FacetsComponent implements OnInit {
   showSpatialFilter = false;
 
   leafletReference: L.Map;
+  expanded: any = {};
 
   constructor(private researchService: ResearchService,
               private leafletService: LeafletService) {
@@ -108,5 +109,9 @@ export class FacetsComponent implements OnInit {
       model: this.model,
       fieldsWithParameters: this.fieldsWithParameters
     });
+  }
+
+  showSpatialDialog() {
+
   }
 }
