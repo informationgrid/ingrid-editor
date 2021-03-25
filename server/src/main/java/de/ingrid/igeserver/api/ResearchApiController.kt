@@ -1,9 +1,12 @@
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.QueryService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,50 +18,40 @@ import java.security.Principal
 class ResearchApiController : ResearchApi {
     
     @Autowired
+    lateinit var dbService: DBApi
+    
+    @Autowired
     lateinit var researchService: ResearchService
     
     @Autowired
-    lateinit var catalogService: CatalogService
+    lateinit var queryService: QueryService
     
-    override fun load(principal: Principal?): ResponseEntity<Array<ResearchQueryWrapper>> {
+    @Autowired
+    lateinit var catalogService: CatalogService
 
-        val bboxNode = jacksonObjectMapper().createArrayNode().apply {
-            add("50.51342652633956")
-            add("8.789062500000002")
-            add("53.22576843579022")
-            add("13.183593750000002")
-        }
-        
-        val parameters = jacksonObjectMapper().createObjectNode().apply { 
-            put("mCloudSelectSpatial", bboxNode)
-        }
-        
-        val model = jacksonObjectMapper().createObjectNode().apply { 
-            put("type", "selectDocuments")
-            put("state", "selectLatest")
-            put("docType", jacksonObjectMapper().createObjectNode())
-            put("spatial", parameters)
-        }
-        val result = ResearchQueryWrapper("1", "SYSTEM", "Dokumente aus Leipzig", "Alle Dokumente, die einen Raumbezug mit Leipzig definiert haben", 
-                ResearchSavedQuery("tEst", model, parameters)
-        )
+    @Autowired
+    lateinit var authUtils: AuthUtils
+    
+    override fun load(principal: Principal?): ResponseEntity<List<JsonNode>> {
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val model2 = jacksonObjectMapper().createObjectNode().apply {
-            put("type", "selectAddresses")
-            put("state", "selectLatest")
-            put("docType", jacksonObjectMapper().createObjectNode().apply { put("selectDocFolders", true) })
+        dbService.acquireCatalog(catalogId).use {
+            val queries = queryService.getQueriesForUser(userId, catalogId)
+            return ResponseEntity.ok(queries)
         }
-        val allAddressFolders = ResearchQueryWrapper("2", "SYSTEM", "Alle Adressordner", "", 
-                ResearchSavedQuery("", model2, parameters)
-        )
-        
-        return ResponseEntity.ok(arrayOf(
-            result, allAddressFolders
-        ))
     }
 
-    override fun save(principal: Principal?): ResponseEntity<Void> {
-        TODO("Not yet implemented")
+    override fun save(principal: Principal?, query: JsonNode): ResponseEntity<JsonNode> {
+
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        dbService.acquireCatalog(catalogId).use {
+            val result = queryService.saveQueryForUser(userId, query)
+            return ResponseEntity.ok(result)
+        }
+        
     }
 
     override fun delete(principal: Principal?): ResponseEntity<Void> {

@@ -3,7 +3,7 @@ import {FacetGroup, ResearchService} from '../research.service';
 import {Observable} from 'rxjs';
 import {Map} from 'leaflet';
 import {tap} from 'rxjs/operators';
-import {LeafletService} from '../../../formly/types/map/leaflet.service';
+import {LeafletService} from '../../formly/types/map/leaflet.service';
 
 export interface FacetUpdate {
   model: any;
@@ -25,7 +25,7 @@ export class FacetsComponent implements OnInit {
 
   filterGroup: Observable<FacetGroup[]> = this.researchService.getQuickFilter()
     .pipe(
-      tap(filters => this.prepareModel(filters)),
+      tap(filters => this.setDefaultModel(filters)),
       tap(() => this.sendUpdate()),
       tap(() => setTimeout(() => this.initLeaflet(), 200))
     );
@@ -60,8 +60,9 @@ export class FacetsComponent implements OnInit {
     setTimeout(() => (<Map>this.leafletReference)._onResize());
   }
 
-  private prepareModel(filters: FacetGroup[]) {
-    // this.model = {};
+  private setDefaultModel(filters: FacetGroup[]) {
+    this.model.type = 'selectDocuments';
+
     filters.forEach(group => {
       if (this.model[group.id]) {
         // skip initialization, since it's already done for this field

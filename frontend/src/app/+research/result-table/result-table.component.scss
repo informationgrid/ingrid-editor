@@ -1,5 +1,5 @@
 :host {
-  height: 100%;
+  overflow: auto;
 }
 
 .result {
@@ -16,4 +16,8 @@
 
 .thin-column {
   width: 1px;
+}
+
+.mat-row:hover {
+  background: rgba(0, 0, 0, 0.04);
 }

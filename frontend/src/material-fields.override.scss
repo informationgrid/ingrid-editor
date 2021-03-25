@@ -60,6 +60,27 @@
   .mat-form-field-appearance-outline .mat-form-field-suffix {
     top: 0.15em;
   }
+
+  /* Toggle Buttons */
+  .mat-button-toggle-appearance-standard {
+    background-color: #E1E1E1;
+  }
+  /*.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay {
+    background-color: #DADADA;
+  }*/
+
+  .mat-button-toggle-checked {
+    background-color: $ige-check-color;
+
+    .mat-button-toggle-focus-overlay {
+      border-bottom: none;
+    }
+
+    &.mat-button-toggle-appearance-standard {
+      color: #FFFFFF;
+      font-weight: 500;
+    }
+  }
 }
 
 .cdk-overlay-container {

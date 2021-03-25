@@ -30,6 +30,12 @@ export abstract class BaseDoctype implements Doctype {
       key: '_created'
     },
     {
+      key: '_modified',
+      templateOptions: {
+        label: 'Aktualität'
+      }
+    },
+    {
       key: '_version'
     }
   ];

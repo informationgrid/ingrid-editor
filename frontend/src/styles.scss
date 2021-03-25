@@ -452,6 +452,13 @@ ige-side-menu {
 // Context Buttons
 .mat-icon-button {
 
+  &.table-options {
+    background-color: #FFFFFF;
+    line-height: 32px;
+    height: 32px;
+    width: 32px;
+  }
+
   &.menu-button {
     width: 26px;
     height: 26px;

@@ -12,6 +12,7 @@ import org.hibernate.jpa.QueryHints
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
 import javax.persistence.EntityManager
 
 @Service
@@ -187,8 +188,8 @@ class ResearchService {
             node.put("title", item[1] as? String)
             node.put("uuid", item[2] as? String)
             node.put("_type", item[3] as? String)
-            node.put("_created", item[4] as? String)
-            node.put("_modified", item[5] as? String)
+            node.put("_created", (item[4] as? Date).toString())
+            node.put("_modified", (item[5] as? Date).toString())
             node.put("_state", DocumentService.DocumentState.PUBLISHED.value)
         }
         array.addAll(jsonNodes)

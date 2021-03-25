@@ -4,7 +4,7 @@ System-Anfragen:
     <mat-list-option *ngFor="let query of systemQueries | async" (click)="load(query.id)">
 
         <div matLine>
-            <span class="card-title">{{query.title}}</span>
+            <span class="card-title">{{query.name}}: </span>
             <span>{{query.description}}</span>
         </div>
         <mat-divider></mat-divider>

@@ -1,5 +1,15 @@
+<div class="main-section-title">Suchen nach</div>
+<mat-button-toggle-group  (change)="sendUpdate()" fxFlexAlign="start" [(ngModel)]="model.type">
+    <mat-button-toggle value="selectDocuments">Dokument</mat-button-toggle>
+    <mat-button-toggle value="selectAddresses">Addresse</mat-button-toggle>
+</mat-button-toggle-group>
+
+<div class="main-section-title filter-title">Filter</div>
+
+<mat-divider></mat-divider>
+
 <div *ngFor="let group of filterGroup | async" fxLayout="column" fxLayoutGap="10px">
-    <h3>{{group.label}}</h3>
+    <h3 class="section-title">{{group.label}}</h3>
     <ng-container *ngIf="group.selection === 'RADIO'">
         <mat-radio-group [name]="group.label" fxLayout="column" fxLayoutGap="10px"
                          (ngModelChange)="sendUpdate()"
@@ -25,4 +35,6 @@
             <div #leafletDlg fxFlex style="height: 200px;"></div>
         </div>
     </ng-container>
+
+    <mat-divider></mat-divider>
 </div>

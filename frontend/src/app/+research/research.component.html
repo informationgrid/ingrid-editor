@@ -1,0 +1,59 @@
+<mat-tab-group animationDuration="0" [dynamicHeight]="true" class="page-tabs" [(selectedIndex)]="selectedIndex">
+
+    <mat-tab label="Erweiterte Suche">
+        <div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
+
+            <div fxLayout="column">
+                <div class="page-title">Erweiterte Suche</div>
+
+                <ige-facets [model]="filter.model"
+                            (update)="updateFilter($event)"></ige-facets>
+            </div>
+
+            <div fxFlex fxLayout="column">
+                <mat-form-field appearance="outline" class="width-100">
+                    <mat-label>Suche</mat-label>
+                    <input matInput [formControl]="query">
+                </mat-form-field>
+
+                <ige-result-table [result]="result"></ige-result-table>
+
+            </div>
+
+        </div>
+    </mat-tab>
+
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon>star</mat-icon>
+            <span> Favoriten</span>
+        </ng-template>
+        <div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
+
+            <div fxLayout="column">
+                <div class="page-title">
+                    <mat-icon>grade</mat-icon>
+                    Favoriten
+                </div>
+            </div>
+            <ige-query-manager (selection)="loadQuery($event)"></ige-query-manager>
+        </div>
+    </mat-tab>
+
+    <mat-tab label="SQL">
+        <div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
+
+            <div fxLayout="column">
+                <div class="page-title">
+                    SQL Suche
+                </div>
+                <p>Hilfetext ...</p>
+            </div>
+            <ige-tab-sql (query)="queryBySQL($event)">
+                <ige-result-table [result]="result"></ige-result-table>
+            </ige-tab-sql>
+        </div>
+    </mat-tab>
+</mat-tab-group>
+
+
