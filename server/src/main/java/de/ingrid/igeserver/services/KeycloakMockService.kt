@@ -28,7 +28,8 @@ class KeycloakMockService : UserManagementService {
 
     override fun getUsersWithIgeRoles(principal: Principal?): Set<User> {
         val mockUsers: MutableList<User> = ArrayList()
-        val user = User(mockedLogin, mockedFirstName, mockedLastName, "", "", emptyList())
+        val user =
+            User(mockedLogin, mockedFirstName, mockedLastName, "", "", "", "", emptyList(), Date(0), Date(0), Date(0))
         mockUsers.add(user)
         return mockUsers.toSet()
     }
@@ -37,7 +38,7 @@ class KeycloakMockService : UserManagementService {
         TODO("Not yet implemented")
     }
 
-    override fun getLatestLoginDate(principal: Principal?, login: String): Date {
+    override fun getLatestLoginDate(principal: Principal?, login: String): Date? {
         return Date()
     }
 
@@ -50,7 +51,19 @@ class KeycloakMockService : UserManagementService {
     }
 
     override fun getUser(principal: Principal?, login: String): User {
-        return User(mockedLogin, mockedFirstName, mockedLastName, "", "", emptyList())
+        return User(
+            mockedLogin,
+            mockedFirstName,
+            mockedLastName,
+            "",
+            "",
+            "",
+            "",
+            emptyList(),
+            Date(0),
+            Date(0),
+            Date(0)
+        )
     }
 
     override fun getCurrentPrincipal(): Principal? {

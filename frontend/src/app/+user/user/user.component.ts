@@ -11,20 +11,13 @@ import {NewUserDialogComponent} from './new-user-dialog/new-user-dialog.componen
 import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
 import {debounceTime, map, tap} from 'rxjs/operators';
 import {dirtyCheck} from '@ngneat/dirty-check-forms';
+import {log} from "util";
 
 @UntilDestroy()
 @Component({
   selector: 'ige-user-manager',
   templateUrl: './user.component.html',
-  styles: [`
-    #formUser form {
-      padding: 20px;
-    }
-
-    ::ng-deep .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
-      flex: 1;
-    }
-  `]
+  styleUrls: ['./user.component.scss'],
 })
 export class UserComponent implements OnInit {
 
@@ -34,6 +27,8 @@ export class UserComponent implements OnInit {
   @ViewChild('loginRef') loginRef: ElementRef;
 
   users: User[];
+  admins: User[];
+  ADMIN_ROLES = ["cat-admin", "md-admin", "admin", "superadmin"];
   currentTab: string;
   form: FormGroup;
 
@@ -42,7 +37,9 @@ export class UserComponent implements OnInit {
 
   roles = this.userService.availableRoles;
   groups = this.groupService.getGroups();
-  selectedUser = new FormControl();
+  selectedUserForm = new FormControl();
+  selectedUser: User;
+  showMore = false;
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
@@ -61,7 +58,9 @@ export class UserComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      groups: this.fb.control([])
+      groups: this.fb.control([]),
+      manager: this.fb.control([]),
+      standin: this.fb.control([])
     });
 
     this.isDirty$ = dirtyCheck(this.form, this.state$, {debounce: 100})
@@ -70,14 +69,15 @@ export class UserComponent implements OnInit {
   }
 
   fetchUsers() {
-    const currentValue = this.selectedUser.value;
+    const currentValue = this.selectedUserForm.value;
 
     this.userService.getUsers()
       // .pipe(tap(users => users.filter(u => u.login === this.selectedUser.value.login)))
       .pipe(
         map((users: FrontendUser[]) => users.sort((a, b) => a.login.localeCompare(b.login))),
         tap(users => this.users = users ? users : []),
-        tap(() => setTimeout(() => this.selectedUser.setValue(currentValue)))
+        tap(() => this.admins = this.users.filter(u => u.role ? this.ADMIN_ROLES.includes(u.role) : false)),
+        tap(() => setTimeout(() => this.selectedUserForm.setValue(currentValue)))
       )
       .subscribe();
   }
@@ -86,7 +86,10 @@ export class UserComponent implements OnInit {
     this.isNewUser = false;
     this.form.disable();
     this.userService.getUser(login)
-      .subscribe(user => this.updateUserForm(user));
+      .subscribe(user => {
+        this.selectedUser = user;
+        this.updateUserForm(user);
+      });
   }
 
   private updateUserForm(user: FrontendUser) {
@@ -180,6 +183,10 @@ export class UserComponent implements OnInit {
           throw err;
         }
       });
+  }
+
+  toggleMoreInfo() {
+    this.showMore = !this.showMore;
   }
 
   changePassword() {

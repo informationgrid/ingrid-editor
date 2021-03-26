@@ -1,6 +1,36 @@
+<div class="user-management-header">
+    <h1>Nutzer {{users ? "(" + users.length + ")" : "()"}}</h1>
+    <mat-toolbar>
+        <mat-toolbar-row>
+            <ng-container>
+                <!--            Searchfield-->
+            </ng-container>
+            <div fxFlex></div>
+
+            <span class="save-buttons">
+                <button mat-stroked-button *ngIf="!userSelect.selectedOptions.isEmpty() || isNewUser;"
+                        attr.data-cy="toolbar_save_user"
+                        matTooltip="Speichern"
+                        [matTooltipShowDelay]="1000"
+                        (click)="saveUser()"
+                        [disabled]="form.invalid">
+                    Speichern
+                </button>
+                <button class="btnAddUser" mat-flat-button color="primary"
+                        [mat-menu-trigger-for]="userAddMenu"
+                        attr.data-cy="toolbar_add_user"
+                        matTooltip="Nutzer hinzufügen"
+                        [matTooltipShowDelay]="1000">
+                    <mat-icon>person_add</mat-icon> Hinzufügen
+                </button>
+        </span>
+        </mat-toolbar-row>
+    </mat-toolbar>
+</div>
 <as-split>
     <as-split-area [size]="25" id="sidebarUser" class="split-pane-content-primary container">
-        <mat-selection-list #userSelect [formControl]="selectedUser" multiple="false" (selectionChange)="loadUser($event.options[0].value)">
+        <mat-selection-list #userSelect [formControl]="selectedUserForm" multiple="false"
+                            (selectionChange)="loadUser($event.options[0].value)">
             <mat-list-option *ngFor="let user of users" [value]="user.login">
                 <h4 mat-line>{{user.login}}</h4>
             </mat-list-option>
@@ -10,23 +40,50 @@
                 <mat-icon>add</mat-icon>
             </button>
             <mat-menu #userAddMenu="matMenu">
-                <button type="button" mat-menu-item (click)="showExternalUsersDialog()">Keycloak Benutzer importieren</button>
-                <button type="button" mat-menu-item (click)="initNewKeycloakUser()">Neuen Keycloak Benutzer anlegen</button>
+                <button type="button" mat-menu-item (click)="showExternalUsersDialog()">Keycloak Benutzer importieren
+                </button>
+                <button type="button" mat-menu-item (click)="initNewKeycloakUser()">Neuen Keycloak Benutzer anlegen
+                </button>
             </mat-menu>
         </div>
     </as-split-area>
     <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
-        <form *ngIf="!userSelect.selectedOptions.isEmpty() || isNewUser; else noUser" fxLayout="column" [formGroup]="form"
+        <form *ngIf="!userSelect.selectedOptions.isEmpty() || isNewUser; else noUser" fxLayout="column"
+              [formGroup]="form"
               style="padding: 20px">
-            <div>
-                <button mat-button
-                        (click)="deleteUser(userSelect.selectedOptions.selected[0].value)">Löschen</button>
-                <button mat-button color="warn" (click)="changePassword()">Passwort ändern</button>
-                <div fxFlex></div>
-                <button mat-stroked-button color="primary"
-                        (click)="saveUser()"
-                        [disabled]="form.invalid || !(isDirty$ | async)">Speichern</button>
+            <!--            <div>-->
+<!--                            <button mat-button-->
+<!--                                    (click)="deleteUser(userSelect.selectedOptions.selected[0].value)">Löschen</button>-->
+<!--                            <button mat-button color="warn" (click)="changePassword()">Passwort ändern</button>-->
+            <!--                <div fxFlex></div>-->
+            <!--                <button mat-stroked-button color="primary"-->
+            <!--                        (click)="saveUser()"-->
+            <!--                        [disabled]="form.invalid || !(isDirty$ | async)">Speichern</button>-->
+            <!--            </div>-->
+            <div class="user-title">
+                <div class="document-type">
+                    <mat-icon [svgIcon]="'Freie-Adresse'"
+                              [title]="form.get('login')?.value"
+                              [ngClass]="'document-icon'"></mat-icon>
+                </div>
+
+                <span fxFlex class="label" [class.editable]="false">
+                    <span>{{form.get('login')?.value || 'Kein Titel'}}</span>
+                </span>
+
+                <button mat-icon-button class="dark menu-button" [class.expanded]="showMore" (click)="toggleMoreInfo()">
+                    <mat-icon class="animated">keyboard_arrow_down</mat-icon>
+                </button>
+                <button mat-icon-button class="menu dark menu-button" [matMenuTriggerFor]="userMoreMenu">
+                    <mat-icon svgIcon="Mehr"></mat-icon>
+                </button>
+                <mat-menu #userMoreMenu="matMenu">
+                    <button mat-menu-item color="warn" (click)="changePassword()">Passwort ändern</button>
+                    <button mat-menu-item
+                            (click)="deleteUser(userSelect.selectedOptions.selected[0].value)">Löschen</button>
+                </mat-menu>
             </div>
+            <user-header-more [showMore]="showMore" [user]="selectedUser" [admins]="admins" [allUsers]="users" [form]="form"></user-header-more>
 
             <mat-form-field appearance="outline">
                 <mat-label>Login</mat-label>

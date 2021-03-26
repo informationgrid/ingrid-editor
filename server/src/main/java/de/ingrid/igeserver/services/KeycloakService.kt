@@ -149,13 +149,17 @@ class KeycloakService : UserManagementService {
         }
     }
 
-    override fun getLatestLoginDate(principal: Principal?, login: String): Date {
+    override fun getLatestLoginDate(principal: Principal?, login: String): Date? {
         val userId = getKeycloakUser(principal, login).id
         try {
 
             initClient(principal).use {
                 val userSessions = it.realm().users()[userId].userSessions
-                return Date(userSessions.last().start)
+                if (userSessions.isEmpty()){
+                    return null
+                } else{
+                    return Date(userSessions.last().start)
+                }
             }
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to get latest login date for '$login'.", e)
@@ -167,7 +171,8 @@ class KeycloakService : UserManagementService {
             login = user.username,
             firstName = user.firstName ?: "",
             lastName = user.lastName ?: "",
-            email = user.email ?: ""
+            email = user.email ?: "",
+            latestLogin = null
 //            role = user.realmRoles?.get(0) ?: "" // TODO: get interesting role, like author, md-admin or cat-admin
         )
     }

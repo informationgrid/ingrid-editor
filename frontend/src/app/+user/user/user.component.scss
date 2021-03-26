@@ -1,0 +1,106 @@
+@import 'src/variables.scss';
+
+as-split-area{
+  background: white;
+}
+
+.user-management-header {
+  height: 150px;
+
+}
+
+#formUser form {
+  padding: 20px;
+}
+
+::ng-deep .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
+  flex: 1;
+}
+
+.save-buttons button {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 15px;
+
+  &.menu {
+    margin-right: -15px;
+    margin-left: -15px;
+  }
+}
+
+
+.save-buttons {
+
+  button.btnAddUser {
+    &:not([disabled]):hover {
+      background-color: lighten($ige-secondary, 5%);
+    }
+  }
+
+  button.btnAddUser {
+    margin-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+}
+
+.user-title {
+  padding-bottom: 10px;
+  padding-top: 7px;
+
+  .document-type {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    background-color: white;
+    border-radius: 50%;
+    height: 26px;
+    width: 26px;
+    margin-right: 6px;
+    margin-top: 10px;
+
+    mat-icon {
+      color: $state-working-color;
+    }
+  }
+
+  .label {
+    display: flex;
+    justify-content: space-between;
+    color: $ige-primary;
+    padding: 7px 10px;
+    margin: -5px 10px 4px 1px;
+    line-height: 43px;
+
+    &.editable {
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: inset 0 0 0 2px $ige-comment-color;
+        border-radius: 4px;
+
+        ::ng-deep mat-icon {
+          visibility: visible;
+        }
+      }
+    }
+
+    ::ng-deep mat-icon {
+      visibility: hidden;
+      padding-left: 10px;
+
+      svg {
+        width: 20px;
+
+        .coloring {
+          fill: $ige-comment-color;
+        }
+      }
+    }
+  }
+  button {
+    margin-top: 10px;
+  }
+}

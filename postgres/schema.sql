@@ -34,6 +34,20 @@ CREATE TABLE user_info (
   data            jsonb
 );
 
+CREATE TABLE manager (
+  user_id      integer REFERENCES user_info(id) ON DELETE CASCADE,
+  manager_id   integer REFERENCES user_info(id) ON DELETE CASCADE,
+  catalog_id   integer REFERENCES catalog(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, catalog_id)
+);
+
+CREATE TABLE stand_in (
+  user_id      integer REFERENCES user_info(id) ON DELETE CASCADE,
+  stand_in_id  integer REFERENCES user_info(id) ON DELETE CASCADE,
+  catalog_id   integer REFERENCES catalog(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, stand_in_id, catalog_id)
+);
+
 CREATE TABLE catalog_user_info (
   catalog_id      integer REFERENCES catalog(id) ON DELETE CASCADE,
   user_info_id    integer REFERENCES user_info(id) ON DELETE CASCADE,

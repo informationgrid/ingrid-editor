@@ -1,11 +1,15 @@
 export abstract class User {
-  id: string;
+  login: string;
   firstName: string;
   lastName: string;
-  roles: number[];
-  login: string;
+  role: string;
   attributes: any[];
   password?: string;
+  manager?: string;
+  standin?: string;
+  creationDate: Date;
+  modificationDate: Date;
+  latestLogin?: Date;
 
   constructor(values: Object = {}) {
     Object.assign(this, values);

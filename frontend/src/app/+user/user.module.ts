@@ -18,25 +18,30 @@ import {MatMenuModule} from '@angular/material/menu';
 import {PermissionsDialogComponent} from './permissions/permissions-dialog.component';
 import {MatSelectModule} from '@angular/material/select';
 import {NewUserDialogComponent} from './user/new-user-dialog/new-user-dialog.component';
+import {MatToolbarModule} from "@angular/material/toolbar";
+import {FormSharedModule} from "../+form/form-shared/form-shared.module";
+import {HeaderMoreComponent} from "./user/header-more/header-more.component";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    routing,
-    AngularSplitModule,
-    SharedModule,
-    MatTabsModule,
-    MatFormFieldModule,
-    MatDialogModule,
-    FormsModule,
-    MatSlideToggleModule,
-    ReactiveFormsModule,
-    MatMenuModule,
-    MatSelectModule
-  ],
-  declarations: [
-    UserComponent, GroupComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent,
-    PermissionsShowComponent, TreePermissionComponent, NewUserDialogComponent]
+    imports: [
+        CommonModule,
+        routing,
+        AngularSplitModule,
+        SharedModule,
+        MatTabsModule,
+        MatFormFieldModule,
+        MatDialogModule,
+        FormsModule,
+        MatSlideToggleModule,
+        ReactiveFormsModule,
+        MatMenuModule,
+        MatSelectModule,
+        MatToolbarModule,
+        FormSharedModule
+    ],
+    declarations: [
+        UserComponent, GroupComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent,
+        PermissionsShowComponent, TreePermissionComponent, NewUserDialogComponent, HeaderMoreComponent]
 })
 export class UserModule {
 

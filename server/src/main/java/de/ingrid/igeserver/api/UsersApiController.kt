@@ -64,9 +64,9 @@ class UsersApiController : UsersApi {
                 true -> keycloakService.addRoles(principal, user.login, listOf(user.role))
                 false -> keycloakService.createUser(principal, user)
             }
-            
+
             catalogService.createUser(user)
-            
+
             return ResponseEntity.ok().build()
         }
     }
@@ -80,7 +80,7 @@ class UsersApiController : UsersApi {
             keycloakService.removeRoles(principal, userId, listOf("cat-admin", "md-admin", "author"))
             return ResponseEntity.ok().build()
         }
-        
+
     }
 
     override fun getUser(principal: Principal?, userId: String): ResponseEntity<User> {
@@ -89,7 +89,13 @@ class UsersApiController : UsersApi {
 
         dbService.acquireCatalog(dbId).use {
             val user = keycloakService.getUser(principal, userId)
+            user.latestLogin = keycloakService.getLatestLoginDate(principal, userId);
             user.groups = catalogService.getGroupsForUser(userId)
+            user.creationDate = catalogService.getUserCreationDate(userId)
+            user.modificationDate = catalogService.getUserModificationDate(userId)
+            //TODO implement manager and standin
+            user.manager = "ige"
+            user.standin = "herbert"
 
             return ResponseEntity.ok(user)
         }
@@ -111,12 +117,11 @@ class UsersApiController : UsersApi {
     }
 
     override fun updateUser(principal: Principal?, id: String, user: User): ResponseEntity<Void> {
-
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         dbService.acquireCatalog(dbId).use {
             keycloakService.updateUser(principal!!, user)
-            catalogService.setGroupsForUser(id, user.groups.toList())
+            catalogService.updateUser(user)
             return ResponseEntity.ok().build()
         }
 
@@ -163,26 +168,29 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(userInfo)
     }
 
-    private fun getLastLogin(principal: Principal?, userId: String): Date {
+    private fun getLastLogin(principal: Principal?, userId: String): Date? {
         val lastLoginKeyCloak = keycloakService.getLatestLoginDate(principal, userId)
-        var recentLogins = catalogService.getRecentLoginsForUser(userId)
-        when (recentLogins.size) {
-            0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
-            1 -> recentLogins.add(lastLoginKeyCloak)
-            else -> {
-                if (recentLogins.size > 2) {
-                    logger.warn("More than two recent logins received! Using last 2 values")
-                    recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
-                }
+        if (lastLoginKeyCloak != null ){
+            var recentLogins = catalogService.getRecentLoginsForUser(userId)
+            when (recentLogins.size) {
+                0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
+                1 -> recentLogins.add(lastLoginKeyCloak)
+                else -> {
+                    if (recentLogins.size > 2) {
+                        logger.warn("More than two recent logins received! Using last 2 values")
+                        recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
+                    }
 
-                //only update if most recent dates are not equal
-                if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
-                    recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
+                    //only update if most recent dates are not equal
+                    if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
+                        recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
+                    }
                 }
             }
+            catalogService.setRecentLoginsForUser(userId, recentLogins.toTypedArray())
+            return recentLogins[0]
         }
-        catalogService.setRecentLoginsForUser(userId, recentLogins.toTypedArray())
-        return recentLogins[0]
+        return null
     }
 
     private fun getVersion(): Version {
@@ -319,6 +327,6 @@ class UsersApiController : UsersApi {
 
         keycloakService.requestPasswordChange(principal, id)
         return ResponseEntity.ok().build()
-        
+
     }
 }

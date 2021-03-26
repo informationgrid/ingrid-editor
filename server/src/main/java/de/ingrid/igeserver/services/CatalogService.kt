@@ -4,9 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.api.ConflictException
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.extension.pipe.Message.Companion.dateService
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.User
@@ -15,6 +18,8 @@ import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogManagerAssignment
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -29,8 +34,8 @@ import kotlin.collections.HashSet
 class CatalogService @Autowired constructor(
     private val dbService: DBApi,
     private val authUtils: AuthUtils,
-    private val externalUserService: UserManagementService,
-    private val catalogProfiles: List<CatalogProfile>) {
+    private val catalogProfiles: List<CatalogProfile>
+) {
 
     private val log = logger()
 
@@ -103,6 +108,30 @@ class CatalogService @Autowired constructor(
                 }
                 recentLogins
             }
+        }
+    }
+
+    fun getUserCreationDate(userId: String): Date {
+        dbService.acquireDatabase().use {
+            val user = getUser(userId)
+            if (user == null) {
+                log.error("The user '$userId' does not seem to be assigned to any database.")
+                throw NotFoundException.withMissingUserCatalog(userId)
+            }
+
+            return Date(1000 * (user["creationDate"]?.asLong() ?: 0))
+        }
+    }
+
+    fun getUserModificationDate(userId: String): Date {
+        dbService.acquireDatabase().use {
+            val user = getUser(userId)
+            if (user == null) {
+                log.error("The user '$userId' does not seem to be assigned to any database.")
+                throw NotFoundException.withMissingUserCatalog(userId)
+            }
+
+            return Date(1000 * (user["modificationDate"]?.asLong() ?: 0))
         }
     }
 
@@ -209,6 +238,10 @@ class CatalogService @Autowired constructor(
         }
     }
 
+    fun convertUserIdToDB_ID(userId: String): String? {
+        return getUser(userId)?.let { dbService.getRecordId(it) }
+    }
+
     fun createUser(user: User) {
 
         dbService.acquireDatabase().use {
@@ -221,6 +254,8 @@ class CatalogService @Autowired constructor(
 
                 dbService.save(UserInfoType::class, null, node.toString())
             }
+            setFieldForUser(user.login, "creationDate", Date(dateService?.now()?.toEpochSecond() ?: 0))
+            setFieldForUser(user.login, "modificationDate", Date(dateService?.now()?.toEpochSecond() ?: 0))
             setGroupsForUser(user.login, user.groups.toList())
         }
 
@@ -230,6 +265,22 @@ class CatalogService @Autowired constructor(
 
         dbService.acquireDatabase().use {
             dbService.remove(UserInfoType::class, userId)
+        }
+
+    }
+
+    fun updateUser(user: User) {
+
+        dbService.acquireDatabase().use {
+            val userFromDB = getUser(user.login)
+                ?: throw ConflictException.withReason("Cannot update user '${user.login}'. User not found.")
+            val node = jacksonObjectMapper().createObjectNode().apply {
+                put("userId", user.login)
+                set<ArrayNode>("groups", jacksonObjectMapper().createArrayNode())
+            }
+            dbService.save(UserInfoType::class, dbService.getRecordId(userFromDB), node.toString())
+            setGroupsForUser(user.login, user.groups.toList())
+            setFieldForUser(user.login, "modificationDate", Date(dateService?.now()?.toEpochSecond() ?: 0))
         }
 
     }

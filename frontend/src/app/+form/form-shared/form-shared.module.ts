@@ -78,8 +78,8 @@ import {CreateNodeComponent} from '../dialogs/create/create-node.component';
     // FORM-PLUGINS
     formPluginProvider
   ],
-  exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, IgeFormlyModule,
-    FormInfoComponent, DestinationSelectionComponent, DynamicFormComponent],
+    exports: [FormToolbarComponent, FlexLayoutModule, BreadcrumbComponent, IgeFormlyModule,
+        FormInfoComponent, DestinationSelectionComponent, DynamicFormComponent, HeaderTitleRowComponent],
   entryComponents: [CreateNodeComponent]
 })
 export class FormSharedModule {

@@ -9,7 +9,7 @@ interface UserManagementService {
     fun getUsersWithIgeRoles(principal: Principal?): Set<User>
     fun getUsers(principal: Principal?): Set<User>
 
-    fun getLatestLoginDate(principal: Principal?, login: String): Date
+    fun getLatestLoginDate(principal: Principal?, login: String): Date?
 
     fun getUser(principal: Principal?, login: String): User
     fun getRoles(principal: KeycloakAuthenticationToken?): Set<String>?

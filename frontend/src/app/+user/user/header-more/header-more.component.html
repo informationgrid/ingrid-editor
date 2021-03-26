@@ -1,0 +1,40 @@
+<div *ngIf="showMore" [@slideDown] class="more-info" [formGroup]="form" >
+    <div fxLayout="row">
+        <div>Zuletzt eingeloggt am</div>
+        <div *ngIf="user.latestLogin"><span [title]="user.latestLogin | date:'long'">{{user.latestLogin | date:'dd.MM.yyyy'}}</span></div>
+        <div *ngIf="!user.latestLogin">Nie</div>
+    </div>
+    <div fxLayout="row">
+        <div>Erstellt am</div>
+        <div *ngIf="user.creationDate"><span [title]="user.creationDate | date:'long'">{{user.creationDate | date:'dd.MM.yyyy'}}</span></div>
+    </div>
+    <div fxLayout="row">
+        <div>Geändert am</div>
+        <div *ngIf="user.modificationDate"><span [title]="user.modificationDate | date:'long'">{{user.modificationDate | date:'dd.MM.yyyy'}}</span></div>
+    </div>
+    <div fxLayout="row">
+        <div>Verantwortlich</div>
+        <div>{{user.manager ? user.manager : "N/A"}}</div>
+    </div>
+    <div fxLayout="row">
+        <div>Vertritt</div>
+        <div>???</div>
+    </div>
+    <div fxLayout="row">
+        <div>Wird vertreten von</div>
+        <mat-form-field appearance="outline">
+            <mat-label>Wird vertreten von</mat-label>
+            <mat-select formControlName="standin" >
+                <mat-option *ngFor="let admin of admins" [value]="admin.login">
+                    {{admin.login}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div fxLayout="row" class="padding-below">
+        <div>ID/login</div>
+        <div>{{user.login}}</div>
+    </div>
+
+</div>
