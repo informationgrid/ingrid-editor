@@ -1,125 +1,141 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import {ModalService} from '../../services/modal/modal.service';
+import {ErrorService} from '../../services/error.service';
 import {RoleService} from '../../services/role/role.service';
-import {Group} from '../../models/user-role';
-import {Observable, Subject} from 'rxjs';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {Permissions} from '../user';
-import {debounceTime, tap} from 'rxjs/operators';
-import {UntilDestroy} from '@ngneat/until-destroy';
-import {dirtyCheck} from '@ngneat/dirty-check-forms';
+import {MenuService} from '../../menu/menu.service';
+import {Role, RoleAttribute} from '../../models/user-role';
+import {TreeComponent} from '../../+form/sidebars/tree/tree.component';
+import { Observable } from 'rxjs';
 
-@UntilDestroy()
-@Component({
-  selector: 'ige-group-manager',
+@Component( {
+  selector: 'role-gui',
   templateUrl: './role.component.html'
-})
+} )
 export class RoleComponent implements OnInit {
 
-  isDirty$: Observable<boolean>;
-  state$ = new Subject<any>();
+  @ViewChild( 'loginRef', {static: true} ) loginRef: ElementRef;
+  @ViewChild( 'datasetTree', {static: true} ) datasetTree: TreeComponent;
 
-  groups: Group[] = [];
+  @Output() onRoleChange = new EventEmitter<Role[]>();
 
-  isNewGroup = false;
-  form: FormGroup;
+  roles: Role[];
+  private pages: any[];
+  selectedRole = new Role();
+  dialogTab = 'dataset';
 
-  initialValue = {
-    id: null,
-    _type: '',
-    name: '',
-    description: '',
-    permissions: new Permissions()
-  };
+  private isNewRole = false;
+  private markForSelection: any[] = [];
 
   constructor(private modalService: ModalService,
-              private fb: FormBuilder,
-              private groupService: RoleService) {
+              private roleService: RoleService,
+              private menuService: MenuService,
+              private errorService: ErrorService) {
   }
 
   ngOnInit() {
-    this.fetchGroups().subscribe();
+    this.fetchRoles();
 
-    this.form = this.fb.group({
-      id: [],
-      _type: [],
-      name: [],
-      description: [],
-      permissions: []
-    });
-
-    this.isDirty$ = dirtyCheck(this.form, this.state$, {debounce: 100})
-      // add debounceTime with same as in dirtyCheck to prevent save button flicker
-      .pipe(debounceTime(100));
+    this.pages = this.menuService.mainRoutes.map( item => {
+      return {
+        id: item.path,
+        name: item.data.title
+      };
+    } );
+    console.log( 'pages: ', this.pages );
   }
 
-  fetchGroups(): Observable<Group[]> {
-    return this.groupService.getGroups()
-      .pipe(tap(groups => this.groups = groups));
+  fetchRoles() {
+    this.roleService.getRoles().subscribe(
+      roles => {
+        this.roles = roles;
+        this.onRoleChange.next( roles );
+      }
+      // error => this.errorService.handleOwn('Problem fetching all roles', error)
+    );
   }
 
-  addGroup() {
-    this.isNewGroup = true;
-    this.form.setValue(this.initialValue);
-    this.state$.next(this.initialValue);
+  addRole() {
+    this.modalService.showNotImplemented();
   }
 
-  loadGroup(id: string) {
-    this.isNewGroup = false;
-    this.form.disable();
-    this.groupService.getGroup(id)
-      .subscribe(fetchedGroup => {
-        this.form.reset(fetchedGroup);
-        this.form.enable();
-        // we need to make a general object of the group in order to compare
-        // its state with the form value correctly
-        this.state$.next(JSON.parse(JSON.stringify(fetchedGroup)));
-      });
+  loadRole(roleToLoad: Role) {
+    this.isNewRole = false;
+    this.roleService.getRoleMapping( roleToLoad.name )
+      .subscribe(
+        role => {
+          this.selectedRole = role;
+          console.log( 'selectedRole: ', this.selectedRole );
+        }
+        // error => this.errorService.handle( error )
+      );
   }
 
-  saveGroup() {
-    let observer: Observable<Group>;
-    const group = this.form.value;
+  saveRole(role: Role) {
+    let observer: Observable<Role> = null;
 
-    if (this.isNewGroup) {
-      observer = this.groupService.createGroup(group);
+    if (this.isNewRole) {
+      observer = this.roleService.createRole( role );
 
     } else {
-      observer = this.groupService.updateGroup(group);
+      observer = this.roleService.saveRole( role );
 
     }
 
     // send request and handle error
     observer.subscribe(
       () => {
-        this.isNewGroup = false;
-        this.fetchGroups()
-          .pipe(tap(() => this.form.markAsPristine()))
-          .subscribe();
+        this.isNewRole = false;
+        this.fetchRoles();
       }, (err: any) => {
         if (err.status === 406) {
-          if (this.isNewGroup) {
-            this.modalService.showJavascriptError('Es existiert bereits ein Benutzer mit dem Login: ' + this.form.get('name'));
+          if (this.isNewRole) {
+            this.modalService.showJavascriptError( 'Es existiert bereits ein Benutzer mit dem Login: ' + this.selectedRole.name );
           } else {
-            this.modalService.showJavascriptError('Es existiert kein Benutzer mit dem Login: ' + this.form.get('name'));
+            this.modalService.showJavascriptError( 'Es existiert kein Benutzer mit dem Login: ' + this.selectedRole.name );
           }
         } else {
-          throw err;
+          this.modalService.showJavascriptError( err, err.text() );
         }
-      });
+      } );
   }
 
-  deleteGroup(group: Group) {
-    this.groupService.deleteGroup(group.id)
+  rememberSelection(selection) {
+    this.markForSelection = selection;
+  }
+
+  addDataset(id: string) {
+    this.selectedRole.datasets.push( ...this.markForSelection );
+  }
+
+  addAttribute(key: string, value: string) {
+    this.selectedRole.attributes.push( {
+      id: key,
+      value: value
+    } );
+  }
+
+  removeDataset(id: string): void {
+    const pos = this.selectedRole.datasets.indexOf( id );
+    this.selectedRole.datasets.splice( pos, 1 );
+  }
+
+  removeAttribute(attribute: RoleAttribute): void {
+    const pos = this.selectedRole.attributes.indexOf( attribute );
+    this.selectedRole.attributes.splice( pos, 1 );
+  }
+
+  deleteRole(role: Role) {
+    this.roleService.deleteRole( role.id )
       .subscribe(
         () => {
-          this.fetchGroups()
-            .pipe(
-              tap(() => this.form.reset())
-            )
-            .subscribe();
-        }
+          this.selectedRole = null;
+          this.fetchRoles();
+        },
+        (err: any) => this.modalService.showJavascriptError( err, err.text() )
       );
   }
 
+  createPermission(modal) {
+    modal.hide();
+  }
 }
