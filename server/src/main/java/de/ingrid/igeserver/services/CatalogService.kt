@@ -167,6 +167,12 @@ class CatalogService @Autowired constructor(private val dbService: DBApi,
         }
     }
 
+    fun initializeCodelists(type: String) {
+        this.catalogProfiles
+            .find { it.identifier == type }
+            ?.initCatalogCodelists()
+    }
+
     companion object {
         fun toJsonString(map: Any?): String {
             val mapper = ObjectMapper()

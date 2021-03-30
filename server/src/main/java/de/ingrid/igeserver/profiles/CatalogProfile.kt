@@ -12,4 +12,7 @@ interface CatalogProfile {
     
     @JsonIgnore
     fun getFacetDefinitions(): Array<FacetGroup> 
+    
+    @JsonIgnore
+    fun initCatalogCodelists()
 }

@@ -3,10 +3,10 @@ import {ErrorService} from '../error.service';
 import {CodelistDataService} from './codelist-data.service';
 import {Codelist, CodelistBackend, CodelistEntry, CodelistEntryBackend} from '../../store/codelist/codelist.model';
 import {CodelistStore} from '../../store/codelist/codelist.store';
-import {Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {buffer, distinct, filter, map, switchMap, tap} from 'rxjs/operators';
-import {arrayAdd} from '@datorama/akita';
+import {arrayUpdate} from '@datorama/akita';
 
 export interface SelectOption {
   label: string;
@@ -115,39 +115,48 @@ export class CodelistService {
     });
   }
 
-  getCatalogCodelists(): void {
-    this.store.update({
-      catalogCodelists: [{
-        id: '1',
-        name: 'meine Codeliste',
-        entries: [{
-          id: '10',
-          value: 'aaa'
-        }, {
-          id: '11',
-          value: 'bbb'
-        }]
-      }, {
-        id: '2',
-        name: 'andere Codeliste',
-        entries: [{
-          id: '20',
-          value: 'xxx'
-        }, {
-          id: '21',
-          value: 'yyy'
-        }]
-      }, {
-        id: '3',
-        name: 'noch eine Codeliste',
-        entries: []
-      }]
-    });
+  fetchCatalogCodelists(): void {
+    this.dataService.getCatalogCodelists()
+      .pipe(
+        map(codelists => this.prepareCodelists(codelists)),
+        tap(codelists => this.store.update({
+          catalogCodelists: codelists
+        }))
+      ).subscribe();
   }
 
-  addCatalogCodelist(codelist: Codelist) {
+  /*addCatalogCodelist(codelist: Codelist) {
     this.store.update(({catalogCodelists}) => ({
       catalogCodelists: arrayAdd(catalogCodelists, codelist)
     }))
+  }*/
+  updateCodelist(codelist: Codelist) {
+
+    const backendCodelist = this.prepareForBackend(codelist)
+    this.dataService.updateCodelist(backendCodelist)
+      .pipe(
+        tap(() => this.store.update(({catalogCodelists}) => ({
+            catalogCodelists: arrayUpdate(catalogCodelists, codelist.id, codelist)
+          }))
+        )
+      ).subscribe();
+
+  }
+
+  private prepareForBackend(codelist: Codelist): CodelistBackend {
+    return {
+      id: codelist.id,
+      name: codelist.name,
+      entries: this.prepareEntriesForBackend(codelist.entries)
+    }
+  }
+
+  private prepareEntriesForBackend(entries: CodelistEntry[]): CodelistEntryBackend[] {
+    return entries.map(entry => ({
+      id: entry.id,
+      localisations: {
+        de: entry.value
+      }
+    }));
   }
 }

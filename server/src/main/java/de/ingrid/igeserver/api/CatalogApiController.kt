@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.model.Catalog
+import de.ingrid.igeserver.persistence.postgresql.PostgreSQLAccess
 import de.ingrid.igeserver.services.CatalogService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -15,6 +16,9 @@ class CatalogApiController : CatalogApi {
 
     @Autowired
     private lateinit var dbService: DBApi
+    
+    @Autowired
+    private lateinit var db: PostgreSQLAccess
 
     @Autowired
     private lateinit var catalogService: CatalogService
@@ -29,6 +33,10 @@ class CatalogApiController : CatalogApi {
     @AuditLog(action="create_catalog")
     override fun createCatalog(settings: Catalog): ResponseEntity<String> {
         val catalogId = dbService.createCatalog(settings)
+
+        db.acquireCatalog(catalogId!!).use { 
+            catalogService.initializeCodelists(settings.type)
+        }
         return ResponseEntity.ok().body("{ \"catalogId\": \"$catalogId\"}")
     }
 

@@ -14,6 +14,7 @@ import {UpdateCodelistComponent} from './update-codelist/update-codelist.compone
 })
 export class CatalogCodelistsComponent implements OnInit {
 
+  hasCatalogCodelists = this.codelistQuery.hasCatalogCodelists$;
   catalogCodelists = this.codelistQuery.catalogCodelists$;
 
   codelists = this.codelistQuery.selectAll()
@@ -29,9 +30,6 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.codelistService.getAll();
-    // TODO: should this be called initially on App-Load?
-    this.codelistService.getCatalogCodelists();
   }
 
   updateCodelists() {
@@ -54,20 +52,25 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   codelistLabelFormat(option: SelectOption) {
-    return `${option.value} - ${option.label}`
+    return `${option.value} - ${option.label}`;
   }
 
-  addCodelist(selectedValue: SelectOption) {
+  /*addCodelist(selectedValue: SelectOption) {
     const codelist = this.codelistQuery.getEntity(selectedValue.value);
     this.codelistService.addCatalogCodelist(codelist);
-  }
+  }*/
 
   editCodelist(entry: CodelistEntry) {
+    const oldId = entry.id;
     this.dialog.open(UpdateCodelistComponent, {
       minWidth: 300,
       data: entry
     }).afterClosed().subscribe(result => {
-
-    })
+      const index = this.selectedCodelist[0].entries
+        .findIndex(e => e.id === oldId);
+      const other = JSON.parse(JSON.stringify(this.selectedCodelist[0]));
+      other.entries.splice(index, 1, result);
+      this.codelistService.updateCodelist(other);
+    });
   }
 }

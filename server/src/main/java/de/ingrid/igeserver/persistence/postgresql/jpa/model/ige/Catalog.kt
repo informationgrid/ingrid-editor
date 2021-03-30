@@ -4,14 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
+import org.hibernate.annotations.NamedQueries
+import org.hibernate.annotations.NamedQuery
 import java.util.*
 import javax.persistence.*
 
 @NoArgs
 @Entity
 @Table(name="catalog")
-@org.hibernate.annotations.NamedQueries(
-    org.hibernate.annotations.NamedQuery(
+@NamedQueries(
+    NamedQuery(
             name="Catalog_FindByIdentifier", query="from Catalog where identifier = :identifier"
     )
 )
@@ -25,7 +27,7 @@ class Catalog : EntityBase() {
     var type: String? = null
 
     @Column(nullable=false)
-    var name: String? = null
+    lateinit var name: String
 
     @Column
     var description: String? = null
@@ -33,7 +35,7 @@ class Catalog : EntityBase() {
     @Column
     var version: String? = null
 
-    @ManyToMany(mappedBy="catalogs", fetch=FetchType.LAZY)
+    @ManyToMany(mappedBy="catalogs", fetch= FetchType.LAZY)
     @JsonIgnore
     var users: MutableSet<UserInfo> = LinkedHashSet<UserInfo>()
 

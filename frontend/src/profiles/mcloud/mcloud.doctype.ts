@@ -314,38 +314,6 @@ export class McloudDoctype extends BaseDoctype {
 
     super(codelistService, codelistQuery);
 
-    codelistStore.add({
-      id: '20000',
-      name: 'mCLOUD Kategorien',
-      entries: [
-        {value: 'Bahn', id: 'railway'},
-        {value: 'Wasserstraßen und Gewässer', id: 'waters'},
-        {value: 'Infrastruktur', id: 'infrastructure'},
-        {value: 'Klima und Wetter', id: 'climate'},
-        {value: 'Luft- und Raumfahrt', id: 'aviation'},
-        {value: 'Straßen', id: 'roads'}
-      ]
-    });
-    codelistStore.add({
-      id: '20001',
-      name: 'OpenData Kategorien',
-      entries: [
-        {value: 'Bevölkerung und Gesellschaft', id: 'SOCI'},
-        {value: 'Bildung, Kultur und Sport', id: 'EDUC'},
-        {value: 'Energie', id: 'ENER'},
-        {value: 'Gesundheit', id: 'HEAL'},
-        {value: 'Internationale Themen', id: 'INTR'},
-        {value: 'Justiz, Rechtssystem und öffentliche Sicherheit', id: 'JUST'},
-        {value: 'Landwirtschaft, Fischerei, Forstwirtschaft und Nahrungsmittel', id: 'AGRI'},
-        {value: 'Regierung und öffentlicher Sektor', id: 'GOVE'},
-        {value: 'Regionen und Städte', id: 'REGI'},
-        {value: 'Umwelt', id: 'ENVI'},
-        {value: 'Verkehr', id: 'TRAN'},
-        {value: 'Wirtschaft und Finanzen', id: 'ECON'},
-        {value: 'Wissenschaft und Technologie', id: 'TECH'}
-      ]
-    })
-
   }
 
 }

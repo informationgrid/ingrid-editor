@@ -4,11 +4,16 @@
     dies im Codelist-Repository geschehen.
 </p>
 
-<mat-card>
+<p *ngIf="(hasCatalogCodelists | async) === false">
+    In diesem Katalog gibt es keine spezifischen Codelisten. Alle Codelisten können
+    über das zentrale Codelist-Repository verwaltet werden.
+</p>
+
+<mat-card *ngIf="(hasCatalogCodelists | async) === true">
     <mat-card-title>Katalogspezifische Codelisten</mat-card-title>
 
     <mat-card-content>
-        <div fxLayout="row">
+        <!--<div fxLayout="row">
             <ige-filter-select #select [options]="codelists" fxFlex
                                [labelFormat]="codelistLabelFormat"
                                placeholder="Codeliste"></ige-filter-select>
@@ -17,7 +22,7 @@
                     (click)="addCodelist(select.getSelectedValue())"
                     [disabled]="!select.control.value || select.control.value?.length === 0">Überschreiben
             </button>
-        </div>
+        </div>-->
 
         <div fxLayout="row">
             <mat-selection-list multiple="false" [(ngModel)]="selectedCodelist">
@@ -28,7 +33,7 @@
 
 
             <div *ngIf="selectedCodelist.length > 0" fxLayout="column" fxFlex>
-                <button mat-button color="warn">Originale Codeliste verwenden</button>
+<!--                <button mat-button color="warn">Originale Codeliste verwenden</button>-->
                 <mat-list dense fxFlex>
                     <mat-list-item *ngFor="let entry of selectedCodelist[0]?.entries">
                         {{entry.id}} - {{entry.value}} - {{entry.data}}

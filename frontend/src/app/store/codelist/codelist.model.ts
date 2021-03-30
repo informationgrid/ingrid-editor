@@ -13,12 +13,12 @@ export interface CodelistEntry {
 export interface CodelistBackend {
   id: string;
   name: string;
-  defaultEntry: string;
+  defaultEntry?: string;
   entries: CodelistEntryBackend[],
-  lastModified: number;
+  lastModified?: number;
 }
 
 export interface CodelistEntryBackend {
   id: string;
-  localisations: Array<Array<string>>;
+  localisations: any;
 }
