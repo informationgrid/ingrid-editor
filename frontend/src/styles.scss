@@ -67,6 +67,13 @@ h1 {
   }
 }
 
+
+.mat-list.hover-list {
+  .mat-list-item:hover {
+    background-color: darken(white, 4%);
+  }
+}
+
 .medium-spacing {
   letter-spacing: 0.4px;
 }

@@ -33,13 +33,28 @@
 
 
             <div *ngIf="selectedCodelist.length > 0" fxLayout="column" fxFlex>
-<!--                <button mat-button color="warn">Originale Codeliste verwenden</button>-->
-                <mat-list dense fxFlex>
+                <div>
+                    <div fxFlex></div>
+                    <button mat-button color="warn" disabled>Codeliste zurücksetzen</button>
+                </div>
+                <mat-list dense fxFlex class="hover-list">
                     <mat-list-item *ngFor="let entry of selectedCodelist[0]?.entries">
-                        {{entry.id}} - {{entry.value}} - {{entry.data}}
+                        <p mat-line>
+                            {{entry.id}}
+                        </p>
+                        <p mat-line class="codelist-title">
+                            {{entry.value}}
+                        </p>
+                        <p mat-line *ngIf="entry.data">
+                            {{entry.data}}
+                        </p>
                         <div fxFlex></div>
-                        <button mat-icon-button><mat-icon>delete</mat-icon></button>
-                        <button mat-icon-button (click)="editCodelist(entry)"><mat-icon>edit</mat-icon></button>
+                        <button mat-icon-button (click)="removeCodelist(entry)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="editCodelist(entry)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
                     </mat-list-item>
                 </mat-list>
             </div>
