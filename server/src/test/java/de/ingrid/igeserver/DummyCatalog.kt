@@ -16,4 +16,7 @@ class DummyCatalog : CatalogProfile {
     override fun getFacetDefinitions(): Array<FacetGroup> {
         TODO("Not yet implemented")
     }
+
+    override fun initCatalogCodelists() {
+    }
 }
