@@ -4,6 +4,9 @@ import {Observable} from 'rxjs';
 import {Map} from 'leaflet';
 import {tap} from 'rxjs/operators';
 import {LeafletService} from '../../formly/types/map/leaflet.service';
+import {MatDialog} from '@angular/material/dialog';
+import {SpatialDialogComponent} from '../../formly/types/map/spatial-dialog/spatial-dialog.component';
+import {SpatialLocation} from '../../formly/types/map/spatial-list/spatial-list.component';
 
 export interface FacetUpdate {
   model: any;
@@ -38,8 +41,10 @@ export class FacetsComponent implements OnInit {
 
   leafletReference: L.Map;
   expanded: any = {};
+  location: SpatialLocation;
 
-  constructor(private researchService: ResearchService,
+  constructor(private dialog: MatDialog,
+              private researchService: ResearchService,
               private leafletService: LeafletService) {
   }
 
@@ -50,12 +55,6 @@ export class FacetsComponent implements OnInit {
     this.leaflet.nativeElement.style.minWidth = '200px';
     this.leafletReference = this.leafletService.initMap(this.leaflet.nativeElement, {});
     this.leafletService.zoomToInitialBox(this.leafletReference);
-    const updateSpatialQuery = () => {
-      this.updateSpatial();
-      this.sendUpdate();
-    };
-    this.leafletReference.on('zoomend', () => updateSpatialQuery());
-    this.leafletReference.on('moveend', () => updateSpatialQuery());
     // @ts-ignore
     setTimeout(() => (<Map>this.leafletReference)._onResize());
   }
@@ -78,29 +77,15 @@ export class FacetsComponent implements OnInit {
     });
   }
 
-  private updateSpatial() {
-    let bounds = this.leafletReference.getBounds();
-    this.fieldsWithParameters[this.spatialFilterIds[0]] = [
-      bounds.getSouthWest().lat,
-      bounds.getSouthWest().lng,
-      bounds.getNorthEast().lat,
-      bounds.getNorthEast().lng
-    ];
-  }
-
   toggleSpatialFilter(id: string, checked: boolean) {
     this.showSpatialFilter = checked;
     if (checked) {
-      this.model.spatial = {};
-      this.model.spatial[id] = [];
-      this.updateSpatial();
       this.leafletReference.invalidateSize();
     } else {
       delete this.fieldsWithParameters[id];
       delete this.model.spatial[id];
+      this.sendUpdate();
     }
-
-    this.sendUpdate();
   }
 
   sendUpdate() {
@@ -110,8 +95,9 @@ export class FacetsComponent implements OnInit {
     });
   }
 
-  showSpatialDialog() {
-
+  showSpatialDialog(id: string) {
+    this.dialog.open(SpatialDialogComponent)
+      .afterClosed().subscribe(result => this.updateSpatial(id, result));
   }
 
   toggleSection(id: string) {
@@ -119,5 +105,21 @@ export class FacetsComponent implements OnInit {
     if (id === 'spatial' && this.expanded.spatial) {
       setTimeout(() => this.leafletReference.invalidateSize());
     }
+  }
+
+  private updateSpatial(id: string, location: SpatialLocation) {
+    if (!location) return;
+
+    this.location = location;
+
+    this.model.spatial = {};
+    this.model.spatial[id] = [];
+    this.fieldsWithParameters[this.spatialFilterIds[0]] = [
+      location.value.lat1,
+      location.value.lon1,
+      location.value.lat2,
+      location.value.lon2
+    ];
+    this.sendUpdate();
   }
 }

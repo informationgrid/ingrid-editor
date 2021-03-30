@@ -40,7 +40,12 @@
 
     <div *ngIf="group.selection === 'SPATIAL'" [class.invisible]="!expanded[group.id]" style="flex-direction: column">
         <div #leafletDlg fxFlex style="height: 200px;"></div>
-        <ige-add-button [showLabel]="false" (add)="showSpatialDialog()"></ige-add-button>
+        <div *ngIf="location">
+            <h3>{{location.title}}</h3>
+            <p>L1: {{location.value.lat1 | number:'.6'}}° B1: {{location.value.lon1 | number:'.6'}}°</p>
+            <p>L2: {{location.value.lat2 | number:'.6'}}° B2: {{location.value.lon2 | number:'.6'}}°</p>
+        </div>
+        <ige-add-button [showLabel]="false" (add)="showSpatialDialog(group.id)"></ige-add-button>
     </div>
 
     <mat-divider></mat-divider>
