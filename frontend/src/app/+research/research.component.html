@@ -12,9 +12,9 @@
 
             <div fxFlex fxLayout="column">
 
-                <div fxLayout="row">
+                <div fxLayout="row" class="white-bg">
                     <mat-form-field appearance="outline" style="width: 200px">
-                        <mat-label>Suche nach:</mat-label>
+<!--                        <mat-label>Suche nach:</mat-label>-->
                         <mat-select (selectionChange)="startSearch()" [(ngModel)]="filter.model.type">
                             <mat-option value="selectDocuments">Dokumente</mat-option>
                             <mat-option value="selectAddresses">Adressen</mat-option>
@@ -22,8 +22,9 @@
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="width-100">
-                        <mat-label>Suche</mat-label>
-                        <input matInput [formControl]="query">
+<!--                        <mat-label>Suche</mat-label>-->
+                        <input matInput placeholder="Begriff, ID oder feldbezogene Suche eingeben ..." [formControl]="query">
+                        <mat-hint>Für feldbezogene Suche den Feldtitel im Format "title: suchbegriff" eingeben</mat-hint>
                     </mat-form-field>
                 </div>
 
@@ -34,24 +35,7 @@
         </div>
     </mat-tab>
 
-    <mat-tab>
-        <ng-template mat-tab-label>
-            <mat-icon>star</mat-icon>
-            <span> Favoriten</span>
-        </ng-template>
-        <div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
-
-            <div fxLayout="column">
-                <div class="page-title">
-                    <mat-icon>grade</mat-icon>
-                    Favoriten
-                </div>
-            </div>
-            <ige-query-manager (selection)="loadQuery($event)"></ige-query-manager>
-        </div>
-    </mat-tab>
-
-    <mat-tab label="SQL">
+    <mat-tab label="SQL Suche">
         <div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
 
             <div fxLayout="column">
@@ -63,6 +47,18 @@
             <ige-tab-sql (query)="queryBySQL($event)">
                 <ige-result-table [result]="result"></ige-result-table>
             </ige-tab-sql>
+        </div>
+    </mat-tab>
+
+    <mat-tab label="Gespeicherte Suchen">
+        <div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
+
+            <div fxLayout="column">
+                <div class="page-title">
+                    Gespeicherte Suchen
+                </div>
+            </div>
+            <ige-query-manager (selection)="loadQuery($event)"></ige-query-manager>
         </div>
     </mat-tab>
 </mat-tab-group>

@@ -37,7 +37,6 @@ class MCloudProfile : CatalogProfile {
             ),
             FacetGroup(
                 "docType", "Dokumententyp", arrayOf(
-                    DocFolder(),
                     DocMCloud(),
                     DocTest()
                 )

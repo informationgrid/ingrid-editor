@@ -11,19 +11,20 @@
 -->
 
 <div *ngFor="let group of filterGroup | async" fxLayout="column" fxLayoutGap="10px">
-    <div>
-        <h3 class="section-title">{{group.label}}</h3>
+    <div class="section">
+        <div class="section-title">{{group.label}}</div>
         <div fxFlex></div>
         <button mat-icon-button
                 class="toggle"
                 (click)="toggleSection(group.id)">
-            <mat-icon class="mat-icon-rtl-mirror expander animated" style="margin-top: 5px">
-                {{expanded[group.id] ? 'expand_less' : 'expand_more'}}
+            <mat-icon class="mat-icon-rtl-mirror expander animated" [class.expanded]="expanded[group.id]">
+                expand_more
             </mat-icon>
         </button>
     </div>
     <ng-container *ngIf="group.selection === 'RADIO'">
         <mat-radio-group [name]="group.label" fxLayout="column" fxLayoutGap="10px"
+                         [class.invisible]="!expanded[group.id]"
                          (ngModelChange)="sendUpdate()"
                          [(ngModel)]="model[group.id]">
             <mat-radio-button *ngFor="let filter of group.filter; let i = index"

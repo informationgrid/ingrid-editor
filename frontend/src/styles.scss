@@ -627,3 +627,11 @@ ige-side-menu {
   height: 14px;
   cursor: move;
 }
+
+/* Form Fields */
+.white-bg {
+  margin-bottom: 12px;
+  .mat-form-field-outline-start, .mat-form-field-outline-gap, .mat-form-field-outline-end {
+    background-color: #FFFFFF;
+  }
+}
