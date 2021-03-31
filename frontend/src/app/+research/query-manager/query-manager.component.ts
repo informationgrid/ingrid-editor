@@ -1,5 +1,5 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {QueryQuery} from '../../../store/query/query.query';
+import {QueryQuery} from '../../store/query/query.query';
 
 @Component({
   selector: 'ige-query-manager',
@@ -13,7 +13,7 @@ export class QueryManagerComponent implements OnInit {
 
   systemQueries = this.queryQuery.selectAll();
 
-  userQueries = [{id: '2', title: 'xxx', description: 'yyy'}];
+  userQueries = [];
 
   constructor(private queryQuery: QueryQuery) {
   }
@@ -23,8 +23,6 @@ export class QueryManagerComponent implements OnInit {
 
   removeQuery(id: string, $event: MouseEvent) {
     $event.stopImmediatePropagation();
-
-
   }
 
   load(id: string) {

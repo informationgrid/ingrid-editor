@@ -1,0 +1,54 @@
+<!--
+<div class="main-section-title">Suchen nach</div>
+<mat-button-toggle-group (change)="sendUpdate()" fxFlexAlign="start" [(ngModel)]="model.type">
+    <mat-button-toggle value="selectDocuments">Dokument</mat-button-toggle>
+    <mat-button-toggle value="selectAddresses">Addresse</mat-button-toggle>
+</mat-button-toggle-group>
+
+<div class="main-section-title filter-title">Filter</div>
+
+<mat-divider></mat-divider>
+-->
+
+<div *ngFor="let group of filterGroup | async" fxLayout="column" fxLayoutGap="10px">
+    <div>
+        <h3 class="section-title">{{group.label}}</h3>
+        <div fxFlex></div>
+        <button mat-icon-button
+                class="toggle"
+                (click)="toggleSection(group.id)">
+            <mat-icon class="mat-icon-rtl-mirror expander animated" style="margin-top: 5px">
+                {{expanded[group.id] ? 'expand_less' : 'expand_more'}}
+            </mat-icon>
+        </button>
+    </div>
+    <ng-container *ngIf="group.selection === 'RADIO'">
+        <mat-radio-group [name]="group.label" fxLayout="column" fxLayoutGap="10px"
+                         (ngModelChange)="sendUpdate()"
+                         [(ngModel)]="model[group.id]">
+            <mat-radio-button *ngFor="let filter of group.filter; let i = index"
+                              [value]="filter.id">
+                {{filter.label}}
+            </mat-radio-button>
+        </mat-radio-group>
+    </ng-container>
+
+    <div *ngIf="group.selection === 'CHECKBOX'" [class.invisible]="!expanded[group.id]" fxLayout="column" fxLayoutGap="10px">
+        <mat-checkbox *ngFor="let filter of group.filter"
+                      [name]="filter.id"
+                      (ngModelChange)="sendUpdate()"
+                      [(ngModel)]="model[group.id][filter.id]">{{filter.label}}</mat-checkbox>
+    </div>
+
+    <div *ngIf="group.selection === 'SPATIAL'" [class.invisible]="!expanded[group.id]" style="flex-direction: column">
+        <div #leafletDlg fxFlex></div>
+        <div *ngIf="location" class="location">
+            <span>{{location.title}}</span>
+            <p>L1: {{location.value.lat1 | number:'.6'}}° B1: {{location.value.lon1 | number:'.6'}}°</p>
+            <p>L2: {{location.value.lat2 | number:'.6'}}° B2: {{location.value.lon2 | number:'.6'}}°</p>
+        </div>
+        <ige-add-button [showLabel]="false" (add)="showSpatialDialog(group.filter[0].id)"></ige-add-button>
+    </div>
+
+    <mat-divider></mat-divider>
+</div>

@@ -1,9 +1,12 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {FacetGroup, ResearchService} from '../research.service';
 import {Observable} from 'rxjs';
-import {Map} from 'leaflet';
+import {Map, Rectangle} from 'leaflet';
 import {tap} from 'rxjs/operators';
-import {LeafletService} from '../../../formly/types/map/leaflet.service';
+import {LeafletService} from '../../formly/types/map/leaflet.service';
+import {MatDialog} from '@angular/material/dialog';
+import {SpatialDialogComponent} from '../../formly/types/map/spatial-dialog/spatial-dialog.component';
+import {SpatialLocation} from '../../formly/types/map/spatial-list/spatial-list.component';
 
 export interface FacetUpdate {
   model: any;
@@ -25,7 +28,7 @@ export class FacetsComponent implements OnInit {
 
   filterGroup: Observable<FacetGroup[]> = this.researchService.getQuickFilter()
     .pipe(
-      tap(filters => this.prepareModel(filters)),
+      tap(filters => this.setDefaultModel(filters)),
       tap(() => this.sendUpdate()),
       tap(() => setTimeout(() => this.initLeaflet(), 200))
     );
@@ -37,8 +40,12 @@ export class FacetsComponent implements OnInit {
   showSpatialFilter = false;
 
   leafletReference: L.Map;
+  expanded: any = {};
+  location: SpatialLocation;
+  private boxes: Rectangle[];
 
-  constructor(private researchService: ResearchService,
+  constructor(private dialog: MatDialog,
+              private researchService: ResearchService,
               private leafletService: LeafletService) {
   }
 
@@ -46,22 +53,17 @@ export class FacetsComponent implements OnInit {
   }
 
   initLeaflet() {
-    this.leaflet.nativeElement.style.width = '200px';
     this.leaflet.nativeElement.style.minWidth = '200px';
+    this.leaflet.nativeElement.style.height = '200px';
     this.leafletReference = this.leafletService.initMap(this.leaflet.nativeElement, {});
     this.leafletService.zoomToInitialBox(this.leafletReference);
-    const updateSpatialQuery = () => {
-      this.updateSpatial();
-      this.sendUpdate();
-    };
-    this.leafletReference.on('zoomend', () => updateSpatialQuery());
-    this.leafletReference.on('moveend', () => updateSpatialQuery());
     // @ts-ignore
     setTimeout(() => (<Map>this.leafletReference)._onResize());
   }
 
-  private prepareModel(filters: FacetGroup[]) {
-    // this.model = {};
+  private setDefaultModel(filters: FacetGroup[]) {
+    this.model.type = 'selectDocuments';
+
     filters.forEach(group => {
       if (this.model[group.id]) {
         // skip initialization, since it's already done for this field
@@ -77,29 +79,15 @@ export class FacetsComponent implements OnInit {
     });
   }
 
-  private updateSpatial() {
-    let bounds = this.leafletReference.getBounds();
-    this.fieldsWithParameters[this.spatialFilterIds[0]] = [
-      bounds.getSouthWest().lat,
-      bounds.getSouthWest().lng,
-      bounds.getNorthEast().lat,
-      bounds.getNorthEast().lng
-    ];
-  }
-
   toggleSpatialFilter(id: string, checked: boolean) {
     this.showSpatialFilter = checked;
     if (checked) {
-      this.model.spatial = {};
-      this.model.spatial[id] = [];
-      this.updateSpatial();
       this.leafletReference.invalidateSize();
     } else {
       delete this.fieldsWithParameters[id];
       delete this.model.spatial[id];
+      this.sendUpdate();
     }
-
-    this.sendUpdate();
   }
 
   sendUpdate() {
@@ -107,5 +95,50 @@ export class FacetsComponent implements OnInit {
       model: this.model,
       fieldsWithParameters: this.fieldsWithParameters
     });
+  }
+
+  showSpatialDialog(id: string) {
+    this.dialog.open(SpatialDialogComponent, {
+      data: <SpatialLocation>{
+        limitTypes: ['free']
+      }
+    })
+      .afterClosed().subscribe(result => this.updateSpatial(id, result));
+  }
+
+  toggleSection(id: string) {
+    this.expanded[id] = !this.expanded[id];
+    if (id === 'spatial' && this.expanded.spatial) {
+      setTimeout(() => this.leafletReference.invalidateSize());
+    }
+  }
+
+  private updateSpatial(id: string, location: SpatialLocation) {
+    if (this.boxes) {
+      this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.boxes);
+    }
+
+    if (!location) return;
+
+    this.location = location;
+
+    this.model.spatial = {};
+    this.model.spatial[id] = [];
+    this.fieldsWithParameters[this.spatialFilterIds[0]] = [
+      location.value.lat1,
+      location.value.lon1,
+      location.value.lat2,
+      location.value.lon2
+    ];
+
+    this.boxes = this.leafletService.drawSpatialRefs(this.leafletReference, [{
+      value: location.value,
+      type: location.type,
+      title: location.title,
+      color: this.leafletService.getColor(0),
+      indexNumber: 0
+    }]);
+
+    this.sendUpdate();
   }
 }

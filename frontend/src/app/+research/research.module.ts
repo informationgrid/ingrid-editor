@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ResearchComponent} from './research/research.component';
+import {ResearchComponent} from './research.component';
 import {routing} from './research.routing';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
@@ -15,39 +15,50 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableExporterModule} from 'mat-table-exporter';
-import {FacetsComponent} from './research/facets/facets.component';
-import {QueryManagerComponent} from './research/query-manager/query-manager.component';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {MatPaginatorIntl, MatPaginatorModule} from '@angular/material/paginator';
 import {IgePagingIntl} from '../shared/IgePagingIntl';
 import {DocumentIconModule} from '../shared/document-icon/document-icon.module';
+import { SaveQueryDialogComponent } from './save-query-dialog/save-query-dialog.component';
+import {FormFieldsModule} from '../form-fields/form-fields.module';
+import {MatDialogModule} from '@angular/material/dialog';
+import { TabSqlComponent } from './tab-sql/tab-sql.component';
+import { ResultTableComponent } from './result-table/result-table.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {AddButtonModule} from '../shared/add-button/add-button.module';
+import {FacetsComponent} from './facets/facets.component';
+import {QueryManagerComponent} from './query-manager/query-manager.component';
 
 
 @NgModule({
-  declarations: [ResearchComponent, FacetsComponent, QueryManagerComponent],
-  imports: [
-    CommonModule,
-    routing,
-    MatCheckboxModule,
-    MatRadioModule,
-    FormsModule,
-    MatTableModule,
-    FlexModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatTabsModule,
-    MatButtonModule,
-    MatSortModule,
-    MatMenuModule,
-    MatSelectModule,
-    MatTableExporterModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatListModule,
-    MatPaginatorModule,
-    DocumentIconModule
-  ],
+  declarations: [ResearchComponent, FacetsComponent, QueryManagerComponent, SaveQueryDialogComponent, TabSqlComponent, ResultTableComponent],
+    imports: [
+        CommonModule,
+        routing,
+        MatCheckboxModule,
+        MatRadioModule,
+        FormsModule,
+        MatTableModule,
+        FlexModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatTabsModule,
+        MatButtonModule,
+        MatSortModule,
+        MatMenuModule,
+        MatSelectModule,
+        MatTableExporterModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatListModule,
+        MatPaginatorModule,
+        DocumentIconModule,
+        FormFieldsModule,
+        MatDialogModule,
+        MatButtonToggleModule,
+        AddButtonModule
+    ],
   providers: [{
     provide: MatPaginatorIntl, useValue: new IgePagingIntl()
   }]

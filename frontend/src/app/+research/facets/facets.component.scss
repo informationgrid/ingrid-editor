@@ -1,0 +1,42 @@
+:host {
+  overflow: auto;
+}
+
+.main-section-title {
+  font-weight: 500;
+  padding-bottom: 12px;
+}
+
+.filter-title {
+  padding-top: 48px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+}
+
+.invisible {
+  position: absolute;
+}
+
+ige-add-button {
+  display: block;
+  padding-top: 10px;
+}
+
+.location {
+  padding-top: 10px;
+
+  span {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+  }
+
+  p {
+    margin: 0;
+    color: rgb(0, 0, 0, 0.6);
+  }
+}

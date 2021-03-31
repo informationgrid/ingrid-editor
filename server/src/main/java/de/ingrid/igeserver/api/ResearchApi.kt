@@ -1,11 +1,13 @@
 package de.ingrid.igeserver.api
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.json.simple.JSONArray
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,12 +19,14 @@ interface ResearchApi {
     @Operation
     @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun load(principal: Principal?): ResponseEntity<Array<ResearchQueryWrapper>>
+    @ResponseBody
+    fun load(principal: Principal?): ResponseEntity<List<JsonNode>>
 
     @Operation
     @PostMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun save(principal: Principal?): ResponseEntity<Void>
+    fun save(principal: Principal?,
+             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: JsonNode): ResponseEntity<JsonNode>
 
     @Operation
     @DeleteMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])

@@ -70,14 +70,6 @@
   opacity: 0.4;
 }
 
-::ng-deep .leaflet-control-attribution a {
-  font-size: 11px;
-}
-
-::ng-deep .leaflet-control a {
-  text-transform: none;
-}
-
 .bottom {
   display: block;
 }
@@ -86,26 +78,4 @@ mat-selection-list {
   flex-grow: 1;
   margin: 10px 0;
   overflow: auto;
-}
-
-
-::ng-deep .leaflet-areaselect-shade {
-  position: absolute;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-::ng-deep .leaflet-areaselect-handle {
-  position: absolute;
-  background: #fff;
-  border: 1px solid #666;
-  -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-  -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-  box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-  width: 14px;
-  height: 14px;
-  cursor: move;
-}
-
-.passive ::ng-deep .leaflet-control-zoom {
-  visibility: hidden;
 }

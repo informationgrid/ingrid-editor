@@ -29,13 +29,6 @@ class MCloudProfile : CatalogProfile {
     override fun getFacetDefinitions(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "type", "Typ", arrayOf(
-                    Documents(),
-                    Addresses()
-                ),
-                selection = Operator.RADIO
-            ),
-            FacetGroup(
                 "state", "Zustand", arrayOf(
                     Latest(),
                     Published(),

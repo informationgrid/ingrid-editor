@@ -463,6 +463,13 @@ ige-side-menu {
 // Context Buttons
 .mat-icon-button {
 
+  &.table-options {
+    background-color: #FFFFFF;
+    line-height: 32px;
+    height: 32px;
+    width: 32px;
+  }
+
   &.menu-button {
     width: 26px;
     height: 26px;
@@ -588,4 +595,35 @@ ige-side-menu {
       height: 6px;
     }
   }
+}
+
+/* LEAFLET */
+
+.leaflet-control-attribution a {
+  font-size: 11px;
+}
+
+.leaflet-control a {
+  text-transform: none;
+}
+
+.passive .leaflet-control-zoom {
+  visibility: hidden;
+}
+
+.leaflet-areaselect-shade {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.leaflet-areaselect-handle {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #666;
+  -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  width: 14px;
+  height: 14px;
+  cursor: move;
 }
