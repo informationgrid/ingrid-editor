@@ -38,7 +38,7 @@ class M021_AddQueryTable : MigrationBase("0.21") {
         ) WITH (oids = false);
     """.trimIndent()
 
-    override fun exec(databaseName: String) {
+    override fun exec() {
         dbService.acquireDatabase("").use {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
