@@ -7,6 +7,10 @@ import {FormControl} from '@angular/forms';
 import {SpatialBoundingBox} from './spatial-result.model';
 import {Map} from 'leaflet';
 
+interface LocationType {
+  id: SpatialLocationType;
+  label: string;
+}
 
 @UntilDestroy()
 @Component({
@@ -29,7 +33,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   leafletReference: L.Map;
 
   _bbox: any = null;
-  types = [
+  types: LocationType[] = [
     {id: 'free', label: 'Freier Raumbezug'},
     {id: 'wkt', label: 'Raumbezug (WKT)'},
     // {id: 'draw', label: 'Auf Karte zeichnen'},
@@ -40,6 +44,9 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   constructor(private dialogRef: MatDialogRef<SpatialDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: SpatialLocation,
               private leafletService: LeafletService) {
+    if (this.data?.limitTypes) {
+      this.types = this.types.filter( type => this.data.limitTypes.indexOf(type.id) !== -1)
+    }
   }
 
   ngOnInit(): void {

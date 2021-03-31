@@ -1,7 +1,7 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {FacetGroup, ResearchService} from '../research.service';
 import {Observable} from 'rxjs';
-import {Map} from 'leaflet';
+import {Map, Rectangle} from 'leaflet';
 import {tap} from 'rxjs/operators';
 import {LeafletService} from '../../formly/types/map/leaflet.service';
 import {MatDialog} from '@angular/material/dialog';
@@ -42,6 +42,7 @@ export class FacetsComponent implements OnInit {
   leafletReference: L.Map;
   expanded: any = {};
   location: SpatialLocation;
+  private boxes: Rectangle[];
 
   constructor(private dialog: MatDialog,
               private researchService: ResearchService,
@@ -53,6 +54,7 @@ export class FacetsComponent implements OnInit {
 
   initLeaflet() {
     this.leaflet.nativeElement.style.minWidth = '200px';
+    this.leaflet.nativeElement.style.height = '200px';
     this.leafletReference = this.leafletService.initMap(this.leaflet.nativeElement, {});
     this.leafletService.zoomToInitialBox(this.leafletReference);
     // @ts-ignore
@@ -96,7 +98,11 @@ export class FacetsComponent implements OnInit {
   }
 
   showSpatialDialog(id: string) {
-    this.dialog.open(SpatialDialogComponent)
+    this.dialog.open(SpatialDialogComponent, {
+      data: <SpatialLocation>{
+        limitTypes: ['free']
+      }
+    })
       .afterClosed().subscribe(result => this.updateSpatial(id, result));
   }
 
@@ -108,6 +114,10 @@ export class FacetsComponent implements OnInit {
   }
 
   private updateSpatial(id: string, location: SpatialLocation) {
+    if (this.boxes) {
+      this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.boxes);
+    }
+
     if (!location) return;
 
     this.location = location;
@@ -120,6 +130,15 @@ export class FacetsComponent implements OnInit {
       location.value.lat2,
       location.value.lon2
     ];
+
+    this.boxes = this.leafletService.drawSpatialRefs(this.leafletReference, [{
+      value: location.value,
+      type: location.type,
+      title: location.title,
+      color: this.leafletService.getColor(0),
+      indexNumber: 0
+    }]);
+
     this.sendUpdate();
   }
 }

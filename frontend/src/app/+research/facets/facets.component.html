@@ -1,3 +1,4 @@
+<!--
 <div class="main-section-title">Suchen nach</div>
 <mat-button-toggle-group (change)="sendUpdate()" fxFlexAlign="start" [(ngModel)]="model.type">
     <mat-button-toggle value="selectDocuments">Dokument</mat-button-toggle>
@@ -7,6 +8,7 @@
 <div class="main-section-title filter-title">Filter</div>
 
 <mat-divider></mat-divider>
+-->
 
 <div *ngFor="let group of filterGroup | async" fxLayout="column" fxLayoutGap="10px">
     <div>
@@ -39,13 +41,13 @@
     </div>
 
     <div *ngIf="group.selection === 'SPATIAL'" [class.invisible]="!expanded[group.id]" style="flex-direction: column">
-        <div #leafletDlg fxFlex style="height: 200px;"></div>
-        <div *ngIf="location">
-            <h3>{{location.title}}</h3>
+        <div #leafletDlg fxFlex></div>
+        <div *ngIf="location" class="location">
+            <span>{{location.title}}</span>
             <p>L1: {{location.value.lat1 | number:'.6'}}° B1: {{location.value.lon1 | number:'.6'}}°</p>
             <p>L2: {{location.value.lat2 | number:'.6'}}° B2: {{location.value.lon2 | number:'.6'}}°</p>
         </div>
-        <ige-add-button [showLabel]="false" (add)="showSpatialDialog(group.id)"></ige-add-button>
+        <ige-add-button [showLabel]="false" (add)="showSpatialDialog(group.filter[0].id)"></ige-add-button>
     </div>
 
     <mat-divider></mat-divider>

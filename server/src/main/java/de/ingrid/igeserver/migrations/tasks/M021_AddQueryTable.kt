@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import javax.persistence.EntityManager
 
 @Service
-class M020_AddQueryTable : MigrationBase("0.20") {
+class M021_AddQueryTable : MigrationBase("0.21") {
 
     private var log = logger()
 
@@ -39,7 +39,6 @@ class M020_AddQueryTable : MigrationBase("0.20") {
     """.trimIndent()
 
     override fun exec(databaseName: String) {
-        log.info("Executing migration 0.20")
         dbService.acquireDatabase("").use {
             entityManager.createNativeQuery(sql).executeUpdate()
         }

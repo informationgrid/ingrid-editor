@@ -11,10 +11,21 @@
             </div>
 
             <div fxFlex fxLayout="column">
-                <mat-form-field appearance="outline" class="width-100">
-                    <mat-label>Suche</mat-label>
-                    <input matInput [formControl]="query">
-                </mat-form-field>
+
+                <div fxLayout="row">
+                    <mat-form-field appearance="outline" style="width: 200px">
+                        <mat-label>Suche nach:</mat-label>
+                        <mat-select (selectionChange)="startSearch()" [(ngModel)]="filter.model.type">
+                            <mat-option value="selectDocuments">Dokumente</mat-option>
+                            <mat-option value="selectAddresses">Adressen</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="width-100">
+                        <mat-label>Suche</mat-label>
+                        <input matInput [formControl]="query">
+                    </mat-form-field>
+                </div>
 
                 <ige-result-table [result]="result"></ige-result-table>
 
