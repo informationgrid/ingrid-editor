@@ -631,7 +631,13 @@ ige-side-menu {
 /* Form Fields */
 .white-bg {
   margin-bottom: 12px;
+
   .mat-form-field-outline-start, .mat-form-field-outline-gap, .mat-form-field-outline-end {
     background-color: #FFFFFF;
+  }
+
+  .prefix {
+    color: $ige-comment-color;
+    padding-right: 5px;
   }
 }

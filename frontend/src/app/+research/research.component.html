@@ -13,8 +13,9 @@
             <div fxFlex fxLayout="column">
 
                 <div fxLayout="row" class="white-bg">
-                    <mat-form-field appearance="outline" style="width: 200px">
+                    <mat-form-field appearance="outline" style="min-width: 220px">
 <!--                        <mat-label>Suche nach:</mat-label>-->
+                        <span matPrefix class="prefix">Suche nach:</span>
                         <mat-select (selectionChange)="startSearch()" [(ngModel)]="filter.model.type">
                             <mat-option value="selectDocuments">Dokumente</mat-option>
                             <mat-option value="selectAddresses">Adressen</mat-option>
