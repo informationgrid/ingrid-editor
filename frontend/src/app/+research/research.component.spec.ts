@@ -1,9 +1,9 @@
 import {ResearchComponent} from './research.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {ResearchService} from './research.service';
-import {LeafletService} from '../../formly/types/map/leaflet.service';
-import {ProfileService} from '../../services/profile.service';
 import {RouterTestingModule} from '@angular/router/testing';
+import {LeafletService} from '../formly/types/map/leaflet.service';
+import {ProfileService} from '../services/profile.service';
 
 describe('ResearchComponent', () => {
   let spectator: Spectator<ResearchComponent>;

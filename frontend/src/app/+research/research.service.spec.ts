@@ -1,7 +1,7 @@
 import {ResearchService} from './research.service';
 import {createServiceFactory, SpectatorService} from '@ngneat/spectator';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {ConfigService} from '../../services/config/config.service';
+import {ConfigService} from '../services/config/config.service';
 
 describe('ResearchService', () => {
   let spectator: SpectatorService<ResearchService>;

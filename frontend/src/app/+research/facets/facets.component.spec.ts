@@ -2,8 +2,8 @@ import {FacetsComponent} from './facets.component';
 import {createComponentFactory, mockProvider, Spectator} from '@ngneat/spectator';
 import {Observable, of} from 'rxjs';
 import {FacetGroup, ResearchService} from '../research.service';
-import {LeafletService} from '../../../formly/types/map/leaflet.service';
 import {MatDialogModule} from '@angular/material/dialog';
+import {LeafletService} from '../../formly/types/map/leaflet.service';
 
 describe('FacetsComponent', () => {
   let spectator: Spectator<FacetsComponent>;
