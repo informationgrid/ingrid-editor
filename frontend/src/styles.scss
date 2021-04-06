@@ -641,3 +641,13 @@ ige-side-menu {
     padding-right: 5px;
   }
 }
+
+/* Form Field enhancements */
+.straight-border-right.mat-form-field-appearance-outline .mat-form-field-outline-end {
+  border-radius: 0;
+  border-right: none;
+}
+
+.straight-border-left.mat-form-field-appearance-outline .mat-form-field-outline-start {
+  border-radius: 0;
+}
