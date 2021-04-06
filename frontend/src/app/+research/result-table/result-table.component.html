@@ -62,10 +62,10 @@
                     <mat-icon svgIcon="Mehr"></mat-icon>
                 </button>
                 <mat-menu #moreResult>
-                    <button mat-menu-item>Vorschau</button>
-                    <button mat-menu-item>Öffnen</button>
-                    <button mat-menu-item>Exportieren</button>
-                    <button mat-menu-item>Löschen</button>
+                    <button mat-menu-item disabled>Vorschau</button>
+                    <button mat-menu-item (click)="open.emit(element.uuid)">Öffnen</button>
+                    <button mat-menu-item disabled>Exportieren</button>
+                    <button mat-menu-item (click)="remove.emit(element.uuid)">Löschen</button>
                 </mat-menu>
             </td>
         </ng-container>

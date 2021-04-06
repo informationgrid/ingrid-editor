@@ -10,6 +10,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {SaveQueryDialogComponent} from './save-query-dialog/save-query-dialog.component';
 import {Query} from '../store/query/query.model';
 import {MatDialog} from '@angular/material/dialog';
+import {MatSelectChange} from '@angular/material/select';
 
 @UntilDestroy()
 @Component({
@@ -25,6 +26,8 @@ export class ResearchComponent implements OnInit {
 
   totalHits: number = 0;
 
+  searchClass: 'selectDocuments' | 'selectAddresses';
+
   filter: FacetUpdate = {
     model: {},
     fieldsWithParameters: {}
@@ -32,6 +35,7 @@ export class ResearchComponent implements OnInit {
   result: ResearchResponse;
 
   constructor(private route: ActivatedRoute,
+              private router: Router,
               private dialog: MatDialog,
               private researchService: ResearchService,
               private profileService: ProfileService,
@@ -40,10 +44,7 @@ export class ResearchComponent implements OnInit {
 
   ngOnInit() {
     this.query.setValue(this.route.snapshot.params.q ?? '');
-    this.filter.model = {
-      type: this.route.snapshot.params.type ?? ''
-    };
-
+    this.searchClass = this.route.snapshot.params.type ?? 'selectDocuments';
 
     this.researchService.fetchQueries();
 
@@ -62,6 +63,9 @@ export class ResearchComponent implements OnInit {
   }
 
   startSearch() {
+    // complete model with other parameters
+    this.filter.model.type = this.searchClass;
+
     setTimeout(() => {
       // this.applyImplicitFilter(this.model);
       return this.researchService.search(

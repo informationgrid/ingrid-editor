@@ -22,7 +22,10 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     }
   };
 
-  @Output() save = new EventEmitter;
+  @Output() save = new EventEmitter<void>();
+  @Output() open = new EventEmitter<string>();
+  @Output() remove = new EventEmitter<string>();
+  @Output() export = new EventEmitter<string>();
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;

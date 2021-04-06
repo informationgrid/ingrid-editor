@@ -28,7 +28,9 @@
                     </mat-form-field>
                 </div>
 
-                <ige-result-table [result]="result"></ige-result-table>
+                <ige-result-table [result]="result"
+                                  (open)="loadDataset($event)"
+                                  (save)="saveQuery()"></ige-result-table>
 
             </div>
 
