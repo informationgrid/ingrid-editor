@@ -11,7 +11,10 @@ interface CatalogProfile {
     val description: String?
     
     @JsonIgnore
-    fun getFacetDefinitions(): Array<FacetGroup> 
+    fun getFacetDefinitionsForDocuments(): Array<FacetGroup> 
+    
+    @JsonIgnore
+    fun getFacetDefinitionsForAddresses(): Array<FacetGroup> 
     
     @JsonIgnore
     fun initCatalogCodelists()

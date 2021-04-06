@@ -73,7 +73,7 @@ class ResearchApiController : ResearchApi {
         return ResponseEntity.ok(result)
     }
 
-    override fun getQuickFilter(principal: Principal?): ResponseEntity<Array<FacetGroup>> {
+    override fun getQuickFilter(principal: Principal?): ResponseEntity<Facets> {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         val dbType = catalogService.getCatalogById(dbId).type
         

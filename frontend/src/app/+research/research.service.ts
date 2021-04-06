@@ -14,6 +14,11 @@ export interface QuickFilter {
   implicitFilter: string[];
 }
 
+export interface Facets {
+  addresses: FacetGroup[];
+  documents: FacetGroup[];
+}
+
 export interface FacetGroup {
   id: string;
   label: string;
@@ -33,7 +38,7 @@ export class ResearchResponse {
 export class ResearchService {
 
   private configuration: Configuration;
-  private filters: FacetGroup[];
+  private filters: Facets;
   facetModel: any;
 
   constructor(private http: HttpClient,
@@ -42,18 +47,24 @@ export class ResearchService {
     this.configuration = configService.getConfiguration();
   }
 
-  getQuickFilter(): Observable<FacetGroup[]> {
-    return this.http.get<FacetGroup[]>(`${this.configuration.backendUrl}search/quickFilter`)
+  getQuickFilter(): Observable<Facets> {
+    return this.http.get<Facets>(`${this.configuration.backendUrl}search/quickFilter`)
       .pipe(
         tap(filters => this.filters = filters),
         tap(filters => this.createFacetModel(filters))
       );
   }
 
-  private createFacetModel(filters: FacetGroup[]) {
-    this.facetModel = {};
-    filters.forEach(group => {
-      this.facetModel[group.id] = {};
+  private createFacetModel(filters: Facets) {
+    this.facetModel = {
+      addresses: {},
+      documents: {}
+    };
+    filters.addresses.forEach(group => {
+      this.facetModel.addresses[group.id] = {};
+    });
+    filters.documents.forEach(group => {
+      this.facetModel.documents[group.id] = {};
     });
   }
 

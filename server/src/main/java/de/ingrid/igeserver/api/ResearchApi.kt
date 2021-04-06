@@ -48,7 +48,7 @@ interface ResearchApi {
     @Operation
     @GetMapping(value = ["/quickFilter"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun getQuickFilter(principal: Principal?): ResponseEntity<Array<FacetGroup>>
+    fun getQuickFilter(principal: Principal?): ResponseEntity<Facets>
 
     @Operation
     @PostMapping(value = ["/export"], produces = [MediaType.APPLICATION_JSON_VALUE])

@@ -10,6 +10,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.research.quickfilter.*
+import de.ingrid.igeserver.research.quickfilter.address.Organisations
+import de.ingrid.igeserver.research.quickfilter.address.Persons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -26,14 +28,14 @@ class MCloudProfile : CatalogProfile {
     override val title: String = "mCLOUD Katalog"
     override val description: String? = null
 
-    override fun getFacetDefinitions(): Array<FacetGroup> {
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Zustand", arrayOf(
-                    Latest(),
+                "state", "Allgemein", arrayOf(
                     Published(),
+                    ExceptFolders()
                 ),
-                selection = Operator.RADIO
+                selection = Operator.CHECKBOX
             ),
             FacetGroup(
                 "docType", "Dokumententyp", arrayOf(
@@ -42,10 +44,29 @@ class MCloudProfile : CatalogProfile {
                 )
             ),
             FacetGroup(
-                "spatial", "Raumbezug (mCLOUD)", arrayOf(
+                "spatial", "Raumbezug", arrayOf(
                     Spatial()
                 ),
                 selection = Operator.SPATIAL
+            )
+        )
+    }
+
+    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
+        return arrayOf(
+            FacetGroup(
+                "state", "Allgemein", arrayOf(
+                    Published(),
+                    ExceptFolders()
+                ),
+                selection = Operator.CHECKBOX
+            ),
+            FacetGroup(
+                "addrType", "Typ", arrayOf(
+                    Organisations(),
+                    Persons()
+                ),
+                selection = Operator.CHECKBOX
             )
         )
     }

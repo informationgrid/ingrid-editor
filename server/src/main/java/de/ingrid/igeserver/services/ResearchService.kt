@@ -29,10 +29,10 @@ class ResearchService {
 
     private val specialFilter = arrayOf("selectPublished", "selectLatest")
 
-    fun createFacetDefinitions(catalogType: String): Array<FacetGroup> {
+    fun createFacetDefinitions(catalogType: String): Facets {
         return profiles
-            .find { it.identifier == catalogType }
-            ?.getFacetDefinitions() ?: emptyArray()
+            .find { it.identifier == catalogType }!!
+            .let { Facets(it.getFacetDefinitionsForAddresses(), it.getFacetDefinitionsForDocuments()) }
 
     }
 

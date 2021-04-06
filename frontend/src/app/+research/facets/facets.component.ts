@@ -18,23 +18,35 @@ export interface FacetUpdate {
   templateUrl: './facets.component.html',
   styleUrls: ['./facets.component.scss']
 })
-export class FacetsComponent implements OnInit {
+export class FacetsComponent implements AfterViewInit {
 
-  @Input() model: any;
+  _model: any = {};
+  @Input() set model(value: any) {
+    this._model = value;
+  };
+
+  @Input()
+  set forAddresses(addresses: boolean) {
+    this._forAddresses = addresses;
+    if (this.allFacets) {
+      // this._model = {};
+      this.updateFilterGroup();
+    }
+  }
+
+  get forAddresses(): boolean {
+    return this._forAddresses;
+  }
 
   @Output() update = new EventEmitter<FacetUpdate>();
 
   @ViewChild('leafletDlg') leaflet: ElementRef;
 
-  filterGroup: Observable<FacetGroup[]> = this.researchService.getQuickFilter()
-    .pipe(
-      tap(filters => this.setDefaultModel(filters)),
-      tap(() => this.sendUpdate()),
-      tap(() => setTimeout(() => this.initLeaflet(), 200))
-    );
+  filterGroup: FacetGroup[];
 
-
-  private spatialFilterIds: string[] = [];
+  private _forAddresses = false;
+  private allFacets: Facets;
+  private spatialFilterId = '';
   private fieldsWithParameters: { [x: string]: any[] } = {};
 
   showSpatialFilter = false;
@@ -49,7 +61,13 @@ export class FacetsComponent implements OnInit {
               private leafletService: LeafletService) {
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
+    this.researchService.getQuickFilter()
+      .pipe(
+        tap(filters => this.allFacets = filters),
+        tap(() => this.updateFilterGroup()),
+        tap(() => this.sendUpdate())
+      ).subscribe();
   }
 
   initLeaflet() {

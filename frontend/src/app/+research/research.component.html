@@ -7,6 +7,7 @@
                 <div class="page-title">Erweiterte Suche</div>
 
                 <ige-facets [model]="filter.model"
+                            [forAddresses]="searchClass === 'selectAddresses'"
                             (update)="updateFilter($event)"></ige-facets>
             </div>
 
