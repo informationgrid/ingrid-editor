@@ -1,6 +1,5 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {FacetGroup, ResearchService} from '../research.service';
-import {Observable} from 'rxjs';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {FacetGroup, Facets, ResearchService} from '../research.service';
 import {Map, Rectangle} from 'leaflet';
 import {tap} from 'rxjs/operators';
 import {LeafletService} from '../../formly/types/map/leaflet.service';
@@ -52,7 +51,7 @@ export class FacetsComponent implements AfterViewInit {
   showSpatialFilter = false;
 
   leafletReference: L.Map;
-  expanded: any = {};
+  notExpanded: any = {};
   location: SpatialLocation;
   private boxes: Rectangle[];
 
@@ -80,58 +79,47 @@ export class FacetsComponent implements AfterViewInit {
   }
 
   private setDefaultModel(filters: FacetGroup[]) {
-    this.model.type = 'selectDocuments';
-
     filters.forEach(group => {
-      if (this.model[group.id]) {
+      if (this._model[group.id]) {
         // skip initialization, since it's already done for this field
         return;
       }
 
-      this.model[group.id] = {};
+      this._model[group.id] = {};
       if (group.selection === 'RADIO') {
-        this.model[group.id] = group.filter[0].id;
+        this._model[group.id] = group.filter[0].id;
       } else if (group.selection === 'SPATIAL') {
-        this.spatialFilterIds.push(group.filter[0].id);
+        this.spatialFilterId = group.filter[0].id;
       }
     });
-  }
-
-  toggleSpatialFilter(id: string, checked: boolean) {
-    this.showSpatialFilter = checked;
-    if (checked) {
-      this.leafletReference.invalidateSize();
-    } else {
-      delete this.fieldsWithParameters[id];
-      delete this.model.spatial[id];
-      this.sendUpdate();
-    }
   }
 
   sendUpdate() {
     this.update.emit({
-      model: this.model,
+      model: this._model,
       fieldsWithParameters: this.fieldsWithParameters
     });
   }
 
-  showSpatialDialog(id: string) {
+  showSpatialDialog(location: SpatialLocation = null) {
+    const data: Partial<SpatialLocation> = location ?? {
+      limitTypes: ['free'],
+      type: 'free'
+    }
+
     this.dialog.open(SpatialDialogComponent, {
-      data: <SpatialLocation>{
-        limitTypes: ['free']
-      }
-    })
-      .afterClosed().subscribe(result => this.updateSpatial(id, result));
+      data: data
+    }).afterClosed().subscribe(result => this.updateSpatial(result));
   }
 
   toggleSection(id: string) {
-    this.expanded[id] = !this.expanded[id];
-    if (id === 'spatial' && this.expanded.spatial) {
+    this.notExpanded[id] = !this.notExpanded[id];
+    if (id === 'spatial' && this.notExpanded.spatial) {
       setTimeout(() => this.leafletReference.invalidateSize());
     }
   }
 
-  private updateSpatial(id: string, location: SpatialLocation) {
+  private updateSpatial(location: SpatialLocation) {
     if (this.boxes) {
       this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.boxes);
     }
@@ -140,9 +128,9 @@ export class FacetsComponent implements AfterViewInit {
 
     this.location = location;
 
-    this.model.spatial = {};
-    this.model.spatial[id] = [];
-    this.fieldsWithParameters[this.spatialFilterIds[0]] = [
+    this._model.spatial = {};
+    this._model.spatial[this.spatialFilterId] = [];
+    this.fieldsWithParameters[this.spatialFilterId] = [
       location.value.lat1,
       location.value.lon1,
       location.value.lat2,
@@ -158,5 +146,24 @@ export class FacetsComponent implements AfterViewInit {
     }]);
 
     this.sendUpdate();
+  }
+
+  removeLocation() {
+    this.location = null;
+    delete this.fieldsWithParameters.spatial;
+    delete this._model.spatial[this.spatialFilterId];
+    this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.boxes);
+
+    this.sendUpdate();
+  }
+
+  private updateFilterGroup() {
+    const filter = this.allFacets[this._forAddresses ? 'addresses' : 'documents'];
+    this.setDefaultModel(filter);
+    this.filterGroup = filter;
+
+    if (filter.some(f => f.selection === 'SPATIAL')) {
+      setTimeout(() => this.initLeaflet(), 200);
+    }
   }
 }

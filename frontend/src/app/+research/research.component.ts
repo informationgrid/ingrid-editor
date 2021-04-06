@@ -6,7 +6,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
 import {FacetUpdate} from './facets/facets.component';
 import {QueryQuery} from '../store/query/query.query';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {SaveQueryDialogComponent} from './save-query-dialog/save-query-dialog.component';
 import {Query} from '../store/query/query.model';
 import {MatDialog} from '@angular/material/dialog';
@@ -137,5 +137,14 @@ export class ResearchComponent implements OnInit {
 
   private getQueryType(): 'facet' | 'sql' {
     return this.selectedIndex === 0 ? 'facet' : 'sql';
+  }
+
+  loadDataset(uuid: string) {
+    this.router.navigate(['/form', {id: uuid}]);
+  }
+
+  changeSearchClass(change: MatSelectChange) {
+    this.filter.model = {};
+    this.startSearch();
   }
 }

@@ -5,7 +5,6 @@
 
             <div fxLayout="column">
                 <div class="page-title">Erweiterte Suche</div>
-
                 <ige-facets [model]="filter.model"
                             [forAddresses]="searchClass === 'selectAddresses'"
                             (update)="updateFilter($event)"></ige-facets>
@@ -14,10 +13,9 @@
             <div fxFlex fxLayout="column">
 
                 <div fxLayout="row" class="white-bg">
-                    <mat-form-field appearance="outline" style="min-width: 220px" class="straight-border-right">
-<!--                        <mat-label>Suche nach:</mat-label>-->
+                    <mat-form-field appearance="outline" style="min-width: 220px" class="straight-border-right prefix-text">
                         <span matPrefix class="prefix">Suche nach:</span>
-                        <mat-select (selectionChange)="startSearch()" [(ngModel)]="filter.model.type">
+                        <mat-select (selectionChange)="changeSearchClass($event)" [(ngModel)]="searchClass">
                             <mat-option value="selectDocuments">Dokumente</mat-option>
                             <mat-option value="selectAddresses">Adressen</mat-option>
                         </mat-select>
