@@ -61,7 +61,7 @@ class ResearchService {
         val whereFilter = determineWhereQuery(dbId, query)
 
         return """
-                SELECT DISTINCT document1.*
+                SELECT DISTINCT document1.*, document_wrapper.draft
                 FROM catalog, document_wrapper
                 $stateCondition
                 $jsonSearch
@@ -176,6 +176,7 @@ class ResearchService {
             .addScalar("type")
             .addScalar("created")
             .addScalar("modified")
+            .addScalar("draft")
             .resultList
     }
 
@@ -190,7 +191,7 @@ class ResearchService {
             node.put("_type", item[3] as? String)
             node.put("_created", (item[4] as? Date).toString())
             node.put("_modified", (item[5] as? Date).toString())
-            node.put("_state", DocumentService.DocumentState.PUBLISHED.value)
+            node.put("_state", if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value)
         }
         array.addAll(jsonNodes)
         return array
