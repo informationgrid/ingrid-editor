@@ -46,8 +46,21 @@
                 </div>
                 <p>Hilfetext ...</p>
             </div>
-            <ige-tab-sql (query)="queryBySQL($event)">
-                <ige-result-table [result]="result"></ige-result-table>
+            <ige-tab-sql (query)="queryBySQL($event)" fxFlex>
+                <ige-result-table *ngIf="!error" [result]="result"></ige-result-table>
+
+                <div *ngIf="error" class="error-container">
+                    <div class="error-box">
+                        Die SQL-Anfrage enthält einen Fehler
+                    </div>
+                    <div>
+                        <div class="icon">
+                            <mat-icon>error_outline</mat-icon>
+                        </div>
+                        <p class="message">Bitte korrigieren Sie Ihre Anfrage</p>
+                        <div>{{error}}</div>
+                    </div>
+                </div>
             </ige-tab-sql>
         </div>
     </mat-tab>

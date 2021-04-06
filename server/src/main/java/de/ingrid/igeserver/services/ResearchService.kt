@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
-import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.profiles.CatalogProfile
-import org.hibernate.exception.GenericJDBCException
 import org.hibernate.jpa.QueryHints
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
@@ -72,16 +71,17 @@ class ResearchService {
 
     private fun determineWhereQuery(dbId: String, query: ResearchQuery): String {
         val catalogFilter = createCatalogFilter(dbId);
-        
-        val termSearch = if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%')"
+
+        val termSearch =
+            if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%')"
 
         val filter = convertQuery(query.clauses)
-        
+
         return if (termSearch.isBlank() && filter == null) {
-            "WHERE $catalogFilter" 
+            "WHERE $catalogFilter"
         } else if (termSearch.isBlank()) {
             "WHERE $catalogFilter AND $filter"
-        } else if (filter == null){
+        } else if (filter == null) {
             "WHERE $catalogFilter AND $termSearch"
         } else {
             "WHERE $catalogFilter AND $filter AND $termSearch"
@@ -89,9 +89,9 @@ class ResearchService {
     }
 
     private fun createCatalogFilter(dbId: String): String {
-        
+
         return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$dbId'"
-        
+
     }
 
     private fun determineJsonSearch(term: String?): String {
@@ -191,7 +191,10 @@ class ResearchService {
             node.put("_type", item[3] as? String)
             node.put("_created", (item[4] as? Date).toString())
             node.put("_modified", (item[5] as? Date).toString())
-            node.put("_state", if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value)
+            node.put(
+                "_state",
+                if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value
+            )
         }
         array.addAll(jsonNodes)
         return array
@@ -204,8 +207,10 @@ class ResearchService {
             val result = sendQuery(catalogQuery, emptyList())
 
             return ResearchResponse(result.size, mapResult(result))
-        } catch (error: GenericJDBCException) {
-            throw NotFoundException.withMissingResource(error.localizedMessage, "SQL")
+        } catch (error: Exception) {
+            throw ClientException.withReason(
+                (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage
+            )
         }
     }
 
@@ -215,10 +220,21 @@ class ResearchService {
 
         val fromIndex = sqlQuery.indexOf("FROM")
         val whereIndex = sqlQuery.indexOf("WHERE")
-        return """
-            ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
-            $catalogFilter AND 
-            ${sqlQuery.substring(whereIndex + 6)}""".trimIndent()
+
+        if (fromIndex == -1) {
+            throw ClientException.withReason("Query must contain 'FROM' statement")
+        }
+
+        return when (whereIndex) {
+            -1 -> """
+                ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
+                WHERE $catalogFilter
+                """.trimIndent()
+            else -> """
+                ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
+                $catalogFilter AND 
+                ${sqlQuery.substring(whereIndex + 6)}""".trimIndent()
+        }
 
     }
 

@@ -12,11 +12,12 @@
         </mat-menu>
 
         <div fxFlex></div>
-        <button mat-flat-button color="primary" (click)="query.emit(sql.value)">Suchen</button>
+        <button mat-flat-button color="primary"
+                [disabled]="!sql.value"
+                (click)="query.emit(sql.value)">Suchen</button>
     </div>
 
     <div class="content">
-
         <ng-content></ng-content>
     </div>
 </div>

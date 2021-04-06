@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ResearchResponse, ResearchService} from './research.service';
-import {debounceTime, map} from 'rxjs/operators';
+import {catchError, debounceTime, map} from 'rxjs/operators';
 import {ProfileService} from '../services/profile.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
@@ -11,6 +11,9 @@ import {SaveQueryDialogComponent} from './save-query-dialog/save-query-dialog.co
 import {Query} from '../store/query/query.model';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSelectChange} from '@angular/material/select';
+import {throwError} from 'rxjs';
+import {IgeException} from '../server-validation.util';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @UntilDestroy()
 @Component({
@@ -33,6 +36,8 @@ export class ResearchComponent implements OnInit {
     fieldsWithParameters: {}
   };
   result: ResearchResponse;
+
+  error: string = null;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -71,22 +76,26 @@ export class ResearchComponent implements OnInit {
       return this.researchService.search(
         this.query.value,
         this.filter.model,
-        this.filter.fieldsWithParameters)
-        .pipe(
-          map(result => {
-            result.hits.forEach(hit => {
-              hit.icon = this.profileService.getDocumentIcon(hit);
-            });
-            return result;
-          })
-        )
-        .subscribe(result => this.updateHits(result));
+        this.filter.fieldsWithParameters
+      ).pipe(
+        map(result => {
+          result.hits.forEach(hit => {
+            hit.icon = this.profileService.getDocumentIcon(hit);
+          });
+          return result;
+        })
+      ).subscribe(result => this.updateHits(result));
     });
   }
 
   queryBySQL(sql: string) {
+    this.error = null;
+
     this.researchService.searchBySQL(sql)
-      .subscribe(result => this.updateHits(result));
+      .subscribe(
+        result => this.updateHits(result),
+        (error: HttpErrorResponse) => this.error = error.error.errorText
+      );
   }
 
   private updateHits(result: ResearchResponse) {

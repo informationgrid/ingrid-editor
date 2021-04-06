@@ -26,7 +26,7 @@
     }
 
     &.error {
-      background-color: #F7E5E8;
+      background-color: $error-background;
 
       .mat-icon {
         color: $error-color;
