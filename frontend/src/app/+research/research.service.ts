@@ -100,9 +100,10 @@ export class ResearchService {
       type: query.category,
       name: query.name,
       description: query.description,
-      term: query.term,
-      model: query.model,
-      parameter: query.parameters
+      term: query.settings.term,
+      model: query.settings.model,
+      parameter: query.settings.parameters,
+      modified: query.modified
     };
   }
 
@@ -112,9 +113,11 @@ export class ResearchService {
       name: query.name,
       category: query.type,
       description: query.description,
-      term: query.term,
-      model: query.model,
-      parameters: query.parameter
+      settings: {
+        term: query.term,
+        model: query.model,
+        parameters: query.parameter
+      }
     };
   }
 }

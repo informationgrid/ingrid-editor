@@ -33,7 +33,6 @@
             </th>
             <td mat-cell *matCellDef="let element" [ngSwitch]="column.value">
                 <ng-container *ngSwitchCase="'_type'">
-                    <!--                        <mat-icon [svgIcon]="profileIconsMap[element[column.value]]"></mat-icon>-->
                     <ige-document-icon [doc]="element"></ige-document-icon>
                 </ng-container>
                 <ng-container *ngSwitchCase="'_created'">

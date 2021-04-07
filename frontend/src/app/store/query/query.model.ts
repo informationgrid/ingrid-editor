@@ -6,4 +6,5 @@ export interface Query {
   term: string;
   model: any;
   parameter: any;
+  modified?: any;
 }

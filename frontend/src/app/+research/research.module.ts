@@ -30,6 +30,7 @@ import {AddButtonModule} from '../shared/add-button/add-button.module';
 import {FacetsComponent} from './facets/facets.component';
 import {QueryManagerComponent} from './query-manager/query-manager.component';
 import {CardBoxModule} from '../shared/card-box/card-box.module';
+import {SharedPipesModule} from '../directives/shared-pipes.module';
 
 
 @NgModule({
@@ -59,7 +60,8 @@ import {CardBoxModule} from '../shared/card-box/card-box.module';
         MatDialogModule,
         MatButtonToggleModule,
         AddButtonModule,
-        CardBoxModule
+        CardBoxModule,
+        SharedPipesModule
     ],
   providers: [{
     provide: MatPaginatorIntl, useValue: new IgePagingIntl()

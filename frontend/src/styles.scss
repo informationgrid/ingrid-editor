@@ -369,7 +369,7 @@ formly-field {
     }
   }
 
-  &.contact ige-repeat{
+  &.contact ige-repeat {
     padding-bottom: 12px;
   }
 }
@@ -659,4 +659,13 @@ ige-side-menu {
 
 .straight-border-left.mat-form-field-appearance-outline .mat-form-field-outline-start {
   border-radius: 0;
+}
+
+
+mat-selection-list.with-menu .mat-list-text {
+  align-items: center;
+
+  .menu-button {
+    margin-left: 40px;
+  }
 }

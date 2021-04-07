@@ -4,8 +4,11 @@ export interface BackendStoreQuery {
   readonly name: string;
   readonly category: 'facet' | 'sql';
   readonly description: string;
-  readonly term: string;
-  readonly model: any;
-  readonly parameters: any;
+  readonly modified?: any;
+  readonly settings: {
+    readonly term: string;
+    readonly model: any;
+    readonly parameters: any;
+  }
 
 }

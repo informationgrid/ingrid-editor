@@ -1,22 +1,22 @@
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.model.meta.QueryType
+import de.ingrid.igeserver.persistence.postgresql.PostgreSQLAccess
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class QueryService @Autowired constructor(private val dbApi: DBApi) {
+class QueryService @Autowired constructor(private val dbApi: PostgreSQLAccess, private val dateService: DateService) {
 
-    fun getQueriesForUser(userId: String, catalogId: String): List<JsonNode> {
+    fun getQueriesForUser(userId: String, catalogId: String): List<Query> {
 
-        return dbApi.findAll(QueryType::class)
+        return dbApi.findAll(Query::class)
         
     }
 
-    fun saveQueryForUser(userId: String, data: JsonNode): JsonNode {
-        return dbApi.save(QueryType::class, null, data.toString())
+    fun saveQueryForUser(userId: String, data: Query): Query {
+        data.modified = dateService.now()
+        return dbApi.save(data)
     }
 
 }

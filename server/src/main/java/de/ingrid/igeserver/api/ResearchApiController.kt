@@ -1,8 +1,10 @@
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.model.Facets
+import de.ingrid.igeserver.model.ResearchQuery
+import de.ingrid.igeserver.model.ResearchResponse
+import de.ingrid.igeserver.persistence.postgresql.PostgreSQLAccess
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.QueryService
 import de.ingrid.igeserver.services.ResearchService
@@ -16,23 +18,23 @@ import java.security.Principal
 @RestController
 @RequestMapping(path = ["/api/search"])
 class ResearchApiController : ResearchApi {
-    
+
     @Autowired
-    lateinit var dbService: DBApi
-    
+    lateinit var dbService: PostgreSQLAccess
+
     @Autowired
     lateinit var researchService: ResearchService
-    
+
     @Autowired
     lateinit var queryService: QueryService
-    
+
     @Autowired
     lateinit var catalogService: CatalogService
 
     @Autowired
     lateinit var authUtils: AuthUtils
-    
-    override fun load(principal: Principal?): ResponseEntity<List<JsonNode>> {
+
+    override fun load(principal: Principal?): ResponseEntity<List<Query>> {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
@@ -42,7 +44,7 @@ class ResearchApiController : ResearchApi {
         }
     }
 
-    override fun save(principal: Principal?, query: JsonNode): ResponseEntity<JsonNode> {
+    override fun save(principal: Principal?, query: Query): ResponseEntity<Query> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -51,7 +53,7 @@ class ResearchApiController : ResearchApi {
             val result = queryService.saveQueryForUser(userId, query)
             return ResponseEntity.ok(result)
         }
-        
+
     }
 
     override fun delete(principal: Principal?): ResponseEntity<Void> {
@@ -63,7 +65,7 @@ class ResearchApiController : ResearchApi {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         val result = researchService.query(dbId, query)
         return ResponseEntity.ok(result)
-        
+
     }
 
     override fun searchSql(principal: Principal?, sqlQuery: String): ResponseEntity<ResearchResponse> {
@@ -76,7 +78,7 @@ class ResearchApiController : ResearchApi {
     override fun getQuickFilter(principal: Principal?): ResponseEntity<Facets> {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         val dbType = catalogService.getCatalogById(dbId).type
-        
+
         val facets = researchService.createFacetDefinitions(dbType)
         return ResponseEntity.ok(facets)
     }
