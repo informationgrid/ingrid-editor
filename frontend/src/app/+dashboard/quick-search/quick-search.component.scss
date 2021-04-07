@@ -61,10 +61,6 @@
 
   button {
     height: 42px;
-
-    ::ng-deep .mat-button-wrapper {
-      letter-spacing: 1.25px;
-    }
   }
 
   ::ng-deep mat-form-field {

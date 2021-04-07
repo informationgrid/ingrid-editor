@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {routing} from './catalog.routing';
 import {CatalogService} from './services/catalog.service';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatListModule} from '@angular/material/list';
@@ -24,13 +24,13 @@ import {UpdateCodelistComponent} from './codelists/update-codelist/update-codeli
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    FlexLayoutModule,
-    MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        FlexLayoutModule,
+        MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
+        routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule
+    ],
   providers: [
     CatalogService
   ],

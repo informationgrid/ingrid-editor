@@ -4511,6 +4511,11 @@ critters@0.0.7:
     parse5-htmlparser2-tree-adapter "^6.0.1"
     pretty-bytes "^5.3.0"
 
+cronstrue@^1.111.0:
+  version "1.111.0"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/cronstrue/-/cronstrue-1.111.0.tgz#689b358c9ac6ae6b6352043339c3207122b2e602"
+  integrity sha512-XuZj3jHp3p3r6OXo8yuhjO0n6UEj9qEtpSzVg9ruKhpV5pBJZCqZwpaApqRV0nW+AJLiAB+3OSPEWcFlzIM25g==
+
 cross-spawn@^6.0.0:
   version "6.0.5"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-6.0.5.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"

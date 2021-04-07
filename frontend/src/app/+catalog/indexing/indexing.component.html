@@ -1,9 +1,14 @@
-<button mat-stroked-button color="primary" (click)="index()">Jetzt indizieren</button>
+<div fxLayoutAlign="end end">
+    <button mat-flat-button color="primary" (click)="index()">Indizieren</button>
+</div>
 
-<div class="padding">
+<h3>Ausführungsintervall</h3>
+<div class="padding section">
     <mat-form-field class="width-100" appearance="outline">
-        <mat-label>Cron Pattern</mat-label>
-        <input #cronInput matInput placeholder="*/1 * * * * *" [value]="cronPattern">
+        <mat-label>Cron Ausdruck</mat-label>
+        <input [formControl]="cronField" matInput placeholder="*/1 * * * * *">
+        <mat-hint>{{hint}}</mat-hint>
     </mat-form-field>
-    <button mat-button (click)="updatePattern(cronInput.value)">Setzen</button>
+    <button mat-stroked-button (click)="updatePattern(cronField.value)" [disabled]="!valid">Übernehmen</button>
+
 </div>

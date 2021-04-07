@@ -42,6 +42,7 @@
     "angular-split": "^5.0.0",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.6.3",
+    "cronstrue": "^1.111.0",
     "leaflet": "^1.7.1",
     "mat-table-exporter": "^9.1.0",
     "material-components-web": "10.0.0",
