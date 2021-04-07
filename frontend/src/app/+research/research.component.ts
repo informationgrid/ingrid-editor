@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ResearchResponse, ResearchService} from './research.service';
-import {catchError, debounceTime, map} from 'rxjs/operators';
+import {debounceTime, map} from 'rxjs/operators';
 import {ProfileService} from '../services/profile.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
@@ -11,8 +11,6 @@ import {SaveQueryDialogComponent} from './save-query-dialog/save-query-dialog.co
 import {Query} from '../store/query/query.model';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSelectChange} from '@angular/material/select';
-import {throwError} from 'rxjs';
-import {IgeException} from '../server-validation.util';
 import {HttpErrorResponse} from '@angular/common/http';
 
 @UntilDestroy()
@@ -78,12 +76,7 @@ export class ResearchComponent implements OnInit {
         this.filter.model,
         this.filter.fieldsWithParameters
       ).pipe(
-        map(result => {
-          result.hits.forEach(hit => {
-            hit.icon = this.profileService.getDocumentIcon(hit);
-          });
-          return result;
-        })
+        map(result => this.mapDocumentIcons(result))
       ).subscribe(result => this.updateHits(result));
     });
   }
@@ -92,20 +85,23 @@ export class ResearchComponent implements OnInit {
     this.error = null;
 
     this.researchService.searchBySQL(sql)
-      .subscribe(
-        result => this.updateHits(result),
-        (error: HttpErrorResponse) => this.error = error.error.errorText
-      );
+      .pipe(
+        map(result => this.mapDocumentIcons(result))
+      ).subscribe(
+      result => this.updateHits(result),
+      (error: HttpErrorResponse) => this.error = error.error.errorText
+    );
+  }
+
+  private mapDocumentIcons(data: ResearchResponse): ResearchResponse {
+    data.hits.forEach(hit => {
+      hit.icon = this.profileService.getDocumentIcon(hit);
+    });
+    return data;
   }
 
   private updateHits(result: ResearchResponse) {
     this.result = result;
-    // this.totalHits = result.totalHits;
-    // this.dataSource.data = result.hits;
-    // setTimeout(() => this.displayedColumns = ['_type', 'title'], 500);
-    // if (this.displayedColumns.length === 0) {
-    //   this.displayedColumns = ['_type', 'title', '_modified', 'settings'];
-    // }
   }
 
 
@@ -125,10 +121,16 @@ export class ResearchComponent implements OnInit {
 
   loadQuery(id: string) {
     let entity: Query = JSON.parse(JSON.stringify(this.queryQuery.getEntity(id)));
-    this.selectedIndex = entity.type === 'facet' ? 0 : 2;
-    this.filter.model = {...this.researchService.facetModel, ...entity.model};
+    this.selectedIndex = entity.type === 'facet' ? 0 : 1;
+    this.filter.model = {...this.getFacetModel(), ...entity.model};
     this.filter.fieldsWithParameters = entity.parameter;
     this.query.setValue(entity.term);
+  }
+
+  private getFacetModel(): any {
+    return this.searchClass === 'selectDocuments'
+      ? this.researchService.facetModel.documents
+      : this.researchService.facetModel.addresses;
   }
 
   saveQuery() {

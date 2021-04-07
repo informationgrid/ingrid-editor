@@ -22,7 +22,8 @@ export class QueryManagerComponent implements OnInit {
   }
 
   removeQuery(id: string, $event: MouseEvent) {
-    $event.stopImmediatePropagation();
+    // $event.stopPropagation();
+    // $event.stopImmediatePropagation();
   }
 
   load(id: string) {

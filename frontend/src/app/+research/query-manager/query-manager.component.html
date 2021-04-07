@@ -1,30 +1,25 @@
+<ige-card-box label="Ihre Suchanfragen" data-cy="card-saved-queries">
+    <mat-selection-list [multiple]="false" class="doc-item dense">
+        <mat-list-option *ngFor="let query of systemQueries | async" (click)="load(query.id)">
 
-System-Anfragen:
-<mat-selection-list class="doc-item" [multiple]="false" [class.dense]="true">
-    <mat-list-option *ngFor="let query of systemQueries | async" (click)="load(query.id)">
-
-        <div matLine>
-            <span class="card-title">{{query.name}}: </span>
-            <span>{{query.description}}</span>
-        </div>
-        <mat-divider></mat-divider>
-    </mat-list-option>
-</mat-selection-list>
-
-Nutzer-Anfragen:
-<mat-selection-list class="doc-item" [multiple]="false" [class.dense]="true">
-    <mat-list-option *ngFor="let query of userQueries" (click)="load(query.id)">
-
-        <div matLine>
-            <span class="card-title">{{query.title}}</span>
-            <span>{{query.description}}</span>
-
+            <mat-icon mat-list-icon>star_outline</mat-icon>
+            <div>
+                <div mat-line>{{query.name}}</div>
+                <div mat-line>{{query.description}}</div>
+            </div>
             <div fxFlex></div>
 
-            <button mat-icon-button (click)="removeQuery(query.id, $event)">
-                <mat-icon>delete</mat-icon>
+            <div>Datum ...</div>
+            <button mat-icon-button class="menu-button" [matMenuTriggerFor]="spatialRef"
+                    (click)="$event.stopImmediatePropagation()">
+                <mat-icon svgIcon="Mehr"></mat-icon>
             </button>
-        </div>
-        <mat-divider></mat-divider>
-    </mat-list-option>
-</mat-selection-list>
+            <mat-menu #spatialRef="matMenu">
+                <button mat-menu-item (click)="removeQuery(query.id, $event)">
+                    Löschen
+                </button>
+            </mat-menu>
+            <mat-divider></mat-divider>
+        </mat-list-option>
+    </mat-selection-list>
+</ige-card-box>

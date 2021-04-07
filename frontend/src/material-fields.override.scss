@@ -204,17 +204,17 @@
   }
 }
 
+ige-card-box .doc-item .mat-list-text {
+  padding-right: 0 !important;
+  //padding-left: 0 !important;
+}
+
 /* smaller list height */
 .doc-item.doc-item {
   .mat-list-item .mat-list-item-content {
     padding-top: 12px;
     padding-bottom: 12px;
     min-height: 48px;
-  }
-
-  .mat-list-text {
-    padding-right: 0 !important;
-    padding-left: 0 !important;
   }
 
   &.mat-list-base {

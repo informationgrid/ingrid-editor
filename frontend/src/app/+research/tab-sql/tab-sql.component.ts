@@ -18,7 +18,7 @@ export class TabSqlComponent implements OnInit {
 
   updateSql(index: number) {
     if (index === 0) {
-      this.sqlValue = `SELECT *
+      this.sqlValue = `SELECT document1.*, document_wrapper.draft
                        FROM document_wrapper
                               JOIN document document1 ON
                          CASE
@@ -28,7 +28,7 @@ export class TabSqlComponent implements OnInit {
                        WHERE document1.type = 'AddressDoc'
                          AND LOWER(title) LIKE '%test%'`;
     } else if (index === 1) {
-      this.sqlValue = `SELECT *
+      this.sqlValue = `SELECT document1.*, document_wrapper.draft
                        FROM document_wrapper
                               JOIN document document1 ON
                          CASE

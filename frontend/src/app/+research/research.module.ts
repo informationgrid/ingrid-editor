@@ -29,6 +29,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {AddButtonModule} from '../shared/add-button/add-button.module';
 import {FacetsComponent} from './facets/facets.component';
 import {QueryManagerComponent} from './query-manager/query-manager.component';
+import {CardBoxModule} from '../shared/card-box/card-box.module';
 
 
 @NgModule({
@@ -57,7 +58,8 @@ import {QueryManagerComponent} from './query-manager/query-manager.component';
         FormFieldsModule,
         MatDialogModule,
         MatButtonToggleModule,
-        AddButtonModule
+        AddButtonModule,
+        CardBoxModule
     ],
   providers: [{
     provide: MatPaginatorIntl, useValue: new IgePagingIntl()
