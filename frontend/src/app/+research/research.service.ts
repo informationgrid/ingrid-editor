@@ -103,7 +103,8 @@ export class ResearchService {
       term: query.settings.term,
       model: query.settings.model,
       parameter: query.settings.parameters,
-      modified: query.modified
+      modified: query.modified,
+      sql: query.settings.sql
     };
   }
 
@@ -113,11 +114,17 @@ export class ResearchService {
       name: query.name,
       category: query.type,
       description: query.description,
-      settings: {
-        term: query.term,
-        model: query.model,
-        parameters: query.parameter
-      }
+      settings: this.createSettings(query)
+    };
+  }
+
+  private createSettings(query: Query) {
+    return query.type === 'facet' ? {
+      term: query.term,
+      model: query.model,
+      parameters: query.parameter
+    } : {
+      sql: query.sql
     };
   }
 }

@@ -7,4 +7,5 @@ export interface Query {
   model: any;
   parameter: any;
   modified?: any;
+  sql?: string;
 }

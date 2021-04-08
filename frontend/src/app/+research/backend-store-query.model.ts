@@ -6,9 +6,10 @@ export interface BackendStoreQuery {
   readonly description: string;
   readonly modified?: any;
   readonly settings: {
-    readonly term: string;
-    readonly model: any;
-    readonly parameters: any;
+    readonly term?: string;
+    readonly model?: any;
+    readonly parameters?: any;
+    readonly sql?: any;
   }
 
 }

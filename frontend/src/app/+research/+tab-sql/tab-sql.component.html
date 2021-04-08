@@ -1,6 +1,6 @@
 <div class="padding" fxLayout="column" fxFlex>
     <mat-form-field appearance="outline" class="width-100">
-        <textarea #sql matInput rows="5" placeholder="SELECT * FROM ..." [value]="sqlValue"></textarea>
+        <textarea matInput rows="5" placeholder="SELECT * FROM ..." [(ngModel)]="sqlValue"></textarea>
     </mat-form-field>
 
     <div>
@@ -13,8 +13,8 @@
 
         <div fxFlex></div>
         <button mat-flat-button color="primary"
-                [disabled]="!sql.value"
-                (click)="query.emit(sql.value)">Suchen</button>
+                [disabled]="!sqlValue"
+                (click)="query.emit(sqlValue)">Suchen</button>
     </div>
 
     <div class="content">

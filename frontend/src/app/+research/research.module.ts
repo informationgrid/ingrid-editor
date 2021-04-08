@@ -23,14 +23,15 @@ import {DocumentIconModule} from '../shared/document-icon/document-icon.module';
 import { SaveQueryDialogComponent } from './save-query-dialog/save-query-dialog.component';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {MatDialogModule} from '@angular/material/dialog';
-import { TabSqlComponent } from './tab-sql/tab-sql.component';
+import { TabSqlComponent } from './+tab-sql/tab-sql.component';
 import { ResultTableComponent } from './result-table/result-table.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {AddButtonModule} from '../shared/add-button/add-button.module';
 import {FacetsComponent} from './facets/facets.component';
-import {QueryManagerComponent} from './query-manager/query-manager.component';
+import {QueryManagerComponent} from './+query-manager/query-manager.component';
 import {CardBoxModule} from '../shared/card-box/card-box.module';
 import {SharedPipesModule} from '../directives/shared-pipes.module';
+import {PageTemplateModule} from '../shared/page-template/page-template.module';
 
 
 @NgModule({
@@ -61,7 +62,8 @@ import {SharedPipesModule} from '../directives/shared-pipes.module';
         MatButtonToggleModule,
         AddButtonModule,
         CardBoxModule,
-        SharedPipesModule
+        SharedPipesModule,
+        PageTemplateModule
     ],
   providers: [{
     provide: MatPaginatorIntl, useValue: new IgePagingIntl()

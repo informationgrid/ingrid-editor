@@ -1,21 +1,17 @@
 <mat-tab-group animationDuration="0" [dynamicHeight]="true" class="page-tabs" [(selectedIndex)]="selectedIndex">
 
     <mat-tab label="Erweiterte Suche">
-        <div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
+        <page-template title="Erweiterte Suche">
+            <ige-facets help [model]="filter.model"
+                        [forAddresses]="searchClass === 'selectAddresses'"
+                        (update)="updateFilter($event)"></ige-facets>
 
-            <div fxLayout="column">
-                <div class="page-title">Erweiterte Suche</div>
-                <ige-facets [model]="filter.model"
-                            [forAddresses]="searchClass === 'selectAddresses'"
-                            (update)="updateFilter($event)"></ige-facets>
-            </div>
-
-            <div fxFlex fxLayout="column">
+            <div main fxFlex fxLayout="column">
 
                 <div fxLayout="row" class="white-bg">
                     <mat-form-field appearance="outline" style="min-width: 220px" class="straight-border-right prefix-text">
                         <span matPrefix class="prefix">Suche nach:</span>
-                        <mat-select (selectionChange)="changeSearchClass($event)" [(ngModel)]="searchClass">
+                        <mat-select (selectionChange)="changeSearchClass()" [(ngModel)]="searchClass">
                             <mat-option value="selectDocuments">Dokumente</mat-option>
                             <mat-option value="selectAddresses">Adressen</mat-option>
                         </mat-select>
@@ -33,21 +29,15 @@
                                   (save)="saveQuery()"></ige-result-table>
 
             </div>
-
-        </div>
+        </page-template>
     </mat-tab>
 
     <mat-tab label="SQL Suche">
-        <div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
+        <page-template title="SQL Suche">
+            <p help>Hilfetext ...</p>
 
-            <div fxLayout="column">
-                <div class="page-title">
-                    SQL Suche
-                </div>
-                <p>Hilfetext ...</p>
-            </div>
-            <ige-tab-sql (query)="queryBySQL($event)" fxFlex>
-                <ige-result-table *ngIf="!error" [result]="result"></ige-result-table>
+            <ige-tab-sql main (query)="queryBySQL($event)" fxFlex [sqlValue]="sqlQuery">
+                <ige-result-table *ngIf="!error" [result]="result" (save)="saveQuery({sql: sqlQuery}, true)"></ige-result-table>
 
                 <div *ngIf="error" class="error-container">
                     <div class="error-box">
@@ -60,20 +50,15 @@
                     <div>{{error}}</div>
                 </div>
             </ige-tab-sql>
-        </div>
+        </page-template>
     </mat-tab>
 
     <mat-tab label="Gespeicherte Suchen">
-        <div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
+        <page-template title="Gespeicherte Suchen">
+            <p help>Hilfetext ...</p>
 
-            <div fxLayout="column">
-                <div class="page-title">
-                    Gespeicherte Suchen
-                </div>
-                <p>Hilfetext ...</p>
-            </div>
-            <ige-query-manager (selection)="loadQuery($event)"></ige-query-manager>
-        </div>
+            <ige-query-manager main (selection)="loadQuery($event)"></ige-query-manager>
+        </page-template>
     </mat-tab>
 </mat-tab-group>
 

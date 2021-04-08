@@ -1,4 +1,4 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
 
 @Component({
   selector: 'ige-tab-sql',
@@ -7,9 +7,20 @@ import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 })
 export class TabSqlComponent implements OnInit {
 
+  _sql: string;
+  @Input()
+  set sqlValue(value: string) {
+    this._sql = value;
+    if (value) {
+      this.query.emit(value);
+    }
+  }
+  get sqlValue() {
+    return this._sql;
+  }
+
   @Output() query = new EventEmitter();
 
-  sqlValue: string = '';
 
   constructor() { }
 

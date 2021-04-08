@@ -9,7 +9,7 @@
             </div>
             <div fxFlex></div>
 
-            <span>{{query.modified | dateAgo:"DE"}}</span>
+            <span [title]="query.modified | date:'long'">{{query.modified | dateAgo:"DE"}}</span>
             <button mat-icon-button class="menu-button" [matMenuTriggerFor]="spatialRef"
                     (click)="$event.stopImmediatePropagation()">
                 <mat-icon svgIcon="Mehr"></mat-icon>

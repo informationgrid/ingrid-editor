@@ -10,7 +10,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {SaveQueryDialogComponent} from './save-query-dialog/save-query-dialog.component';
 import {Query} from '../store/query/query.model';
 import {MatDialog} from '@angular/material/dialog';
-import {MatSelectChange} from '@angular/material/select';
 import {HttpErrorResponse} from '@angular/common/http';
 
 @UntilDestroy()
@@ -28,6 +27,8 @@ export class ResearchComponent implements OnInit {
   totalHits: number = 0;
 
   searchClass: 'selectDocuments' | 'selectAddresses';
+
+  sqlQuery = '';
 
   filter: FacetUpdate = {
     model: {},
@@ -121,10 +122,16 @@ export class ResearchComponent implements OnInit {
 
   loadQuery(id: string) {
     let entity: Query = JSON.parse(JSON.stringify(this.queryQuery.getEntity(id)));
-    this.selectedIndex = entity.type === 'facet' ? 0 : 1;
-    this.filter.model = {...this.getFacetModel(), ...entity.model};
-    this.filter.fieldsWithParameters = entity.parameter;
-    this.query.setValue(entity.term);
+
+    if (entity.type === 'facet') {
+      this.selectedIndex = 0;
+      this.filter.model = {...this.getFacetModel(), ...entity.model};
+      this.filter.fieldsWithParameters = entity.parameter;
+      this.query.setValue(entity.term);
+    } else {
+      this.selectedIndex = 1;
+      this.sqlQuery = entity.sql;
+    }
   }
 
   private getFacetModel(): any {
@@ -133,33 +140,44 @@ export class ResearchComponent implements OnInit {
       : this.researchService.facetModel.addresses;
   }
 
-  saveQuery() {
+  saveQuery(data?: any, asSql = false) {
     this.dialog.open(SaveQueryDialogComponent).afterClosed()
       .subscribe(response => {
         if (response) {
-          this.researchService.saveQuery({
-            id: null,
-            type: this.getQueryType(),
-            name: response.name,
-            description: response.description,
-            term: this.query.value,
-            model: this.filter.model,
-            parameter: this.filter.fieldsWithParameters
-          }).subscribe();
+          this.researchService.saveQuery(this.prepareQuery(response, data, asSql))
+            .subscribe();
         }
       });
-  }
-
-  private getQueryType(): 'facet' | 'sql' {
-    return this.selectedIndex === 0 ? 'facet' : 'sql';
   }
 
   loadDataset(uuid: string) {
     this.router.navigate(['/form', {id: uuid}]);
   }
 
-  changeSearchClass(change: MatSelectChange) {
+  changeSearchClass() {
     this.filter.model = {};
     this.startSearch();
+  }
+
+  private prepareQuery(response: any, data: any, asSql: boolean) {
+    let base = {
+      id: null,
+      name: response.name,
+      description: response.description
+    };
+    return asSql
+      ? {
+        ...base,
+        ...data,
+        type: 'sql'
+      }
+      : {
+        ...base,
+        type: 'facet',
+        term: this.query.value,
+        model: this.filter.model,
+        parameter: this.filter.fieldsWithParameters
+      };
+
   }
 }
