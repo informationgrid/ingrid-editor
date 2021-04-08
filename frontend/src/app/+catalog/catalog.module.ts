@@ -22,6 +22,8 @@ import {CatalogSettingsComponent} from './catalog-settings.component';
 import {FilterSelectModule} from '../shared/filter-select/filter-select.module';
 import {UpdateCodelistComponent} from './codelists/update-codelist/update-codelist.component';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
+import {PageTemplateModule} from '../shared/page-template/page-template.module';
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
     imports: [
@@ -29,7 +31,7 @@ import {FormFieldsModule} from '../form-fields/form-fields.module';
         FormsModule,
         FlexLayoutModule,
         MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-        routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule
+        routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule, PageTemplateModule, MatMenuModule
     ],
   providers: [
     CatalogService

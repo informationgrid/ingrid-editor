@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CodelistService, SelectOption} from '../../services/codelist/codelist.service';
 import {Codelist, CodelistEntry} from '../../store/codelist/codelist.model';
-import {throwError} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {delay, map, tap} from 'rxjs/operators';
 import {CodelistQuery} from '../../store/codelist/codelist.query';
 import {MatDialog} from '@angular/material/dialog';
 import {UpdateCodelistComponent} from './update-codelist/update-codelist.component';
@@ -16,14 +15,22 @@ import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/c
 export class CatalogCodelistsComponent implements OnInit {
 
   hasCatalogCodelists = this.codelistQuery.hasCatalogCodelists$;
-  catalogCodelists = this.codelistQuery.catalogCodelists$;
+  catalogCodelists = this.codelistQuery.catalogCodelists$
+    .pipe(
+      map(codelists => this.codelistService.mapToOptions(codelists)),
+      delay(0), // set initial value in next rendering cycle!
+      tap(options => this.setInitialValue(options))
+    );
 
-  codelists = this.codelistQuery.selectAll()
-    .pipe(map(codelists => this.codelistService.mapToOptions(codelists)));
+  private setInitialValue(options: SelectOption[]) {
+    if (options?.length > 0) {
+      this.initialValue = options[0];
+      this.selectCodelist(this.initialValue);
+    }
+  }
 
-  entries: CodelistEntry[];
-  selectedCodelist: Codelist[] = [];
-  disableSyncButton = false;
+  selectedCodelist: Codelist;
+  initialValue: SelectOption;
 
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery,
@@ -33,46 +40,25 @@ export class CatalogCodelistsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  updateCodelists() {
-
-    this.disableSyncButton = true;
-    this.codelistService.update()
-      .pipe(catchError(e => this.handleSyncError(e)))
-      .subscribe(codelists => this.disableSyncButton = false);
-
-  }
-
-  /*selectedCodelist(value: string) {
-    this.entries = this.codelistQuery.getEntity(value).entries;
-  }*/
-
-  private handleSyncError(e: any) {
-    console.error(e);
-    this.disableSyncButton = false;
-    return throwError(e);
-  }
-
   codelistLabelFormat(option: SelectOption) {
     return `${option.value} - ${option.label}`;
   }
 
-  /*addCodelist(selectedValue: SelectOption) {
-    const codelist = this.codelistQuery.getEntity(selectedValue.value);
-    this.codelistService.addCatalogCodelist(codelist);
-  }*/
-
   editCodelist(entry: CodelistEntry) {
     const oldId = entry.id;
     this.dialog.open(UpdateCodelistComponent, {
-      minWidth: 300,
+      minWidth: 400,
       data: entry
     }).afterClosed().subscribe(result => {
       if (!result) return;
-      const index = this.selectedCodelist[0].entries
+      const index = this.selectedCodelist.entries
         .findIndex(e => e.id === oldId);
-      const other = JSON.parse(JSON.stringify(this.selectedCodelist[0]));
+      const other = JSON.parse(JSON.stringify(this.selectedCodelist));
       other.entries.splice(index, 1, result);
-      this.codelistService.updateCodelist(other);
+      this.codelistService.updateCodelist(other)
+        .pipe(
+          tap(() => this.selectCodelist({value: this.selectedCodelist.id, label: ''}))
+        ).subscribe();
     });
   }
 
@@ -89,11 +75,18 @@ export class CatalogCodelistsComponent implements OnInit {
     }).afterClosed().subscribe(result => {
       if (!result) return;
       const oldId = entry.id;
-      const index = this.selectedCodelist[0].entries
+      const index = this.selectedCodelist.entries
         .findIndex(e => e.id === oldId);
-      const other = JSON.parse(JSON.stringify(this.selectedCodelist[0]));
+      const other = JSON.parse(JSON.stringify(this.selectedCodelist));
       other.entries.splice(index, 1);
-      this.codelistService.updateCodelist(other);
+      this.codelistService.updateCodelist(other)
+        .pipe(
+          tap(() => this.selectCodelist({value: this.selectedCodelist.id, label: ''}))
+        ).subscribe();
     });
+  }
+
+  selectCodelist(option: SelectOption) {
+    this.selectedCodelist = this.codelistQuery.getCatalogCodelist(option.value);
   }
 }

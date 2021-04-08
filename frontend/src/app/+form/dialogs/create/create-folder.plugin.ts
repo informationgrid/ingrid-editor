@@ -16,6 +16,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 export class CreateFolderPlugin extends Plugin {
   id = 'plugin.folder';
   _name = 'Folder Plugin';
+  group = 'Toolbar';
   defaultActive = true;
 
   eventCreateFolderId = 'CREATE_FOLDER';

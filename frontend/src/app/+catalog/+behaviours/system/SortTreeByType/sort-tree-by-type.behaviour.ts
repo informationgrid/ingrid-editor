@@ -9,6 +9,7 @@ import {TreeNode} from '../../../../store/tree/tree-node.model';
 export class SortTreeByTypeBehaviour extends Plugin {
   id = 'plugin.sort.tree.by.type';
   name = 'Sortierung des Baums nach Dokumententyp';
+  group = 'Baum';
   defaultActive = false;
 
   description = 'Anstatt die Baumknoten nach dem Titel zu sortieren, werden diese ' +

@@ -1,13 +1,22 @@
-.mat-card {
-  margin-bottom: 24px;
+@import "src/variables";
+
+.entries-container {
+  overflow: auto;
 }
 
-.entries {
-  overflow: auto;
-  max-height: 300px;
+.identifier {
+  color: $ige-comment-color;
 }
 
 .codelist-title {
   font-size: 16px !important;
   font-weight: 500 !important;
+}
+
+.mat-list-item {
+  background-color: #FFFFFF;
+}
+
+.reset-button {
+  padding: 6px 0 0 12px;
 }

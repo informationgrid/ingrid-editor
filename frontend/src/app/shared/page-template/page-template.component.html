@@ -1,0 +1,13 @@
+<div fxLayout="row" fxLayoutGap="20px" class="tab-padding">
+
+    <div fxLayout="column" class="left-side">
+        <div class="page-title">
+            {{title}}
+        </div>
+
+        <ng-content select="[help]"></ng-content>
+    </div>
+
+    <ng-content select="[main]"></ng-content>
+
+</div>

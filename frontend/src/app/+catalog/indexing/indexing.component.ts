@@ -38,7 +38,7 @@ export class IndexingComponent implements OnInit {
   }
 
   translateCronExpression(value: string): {valid: boolean, message: string} {
-    if (!value) {
+    if (!value || value.trim().split(' ').length !== 6) {
       return {
         valid: true,
         message: 'Ein gültige Cron Ausdruck sieht folgendermaßen aus: 0 */10 * * * *'

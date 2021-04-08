@@ -10,9 +10,10 @@ import {FormToolbarService, ToolbarItem} from '../../../../+form/form-shared/too
 export class TreeModeToolbarBehaviour extends Plugin {
 
   id = 'plugin.tree.mode.toolbar';
-  name = 'Toolbar State für Baum Mehrfachauswahl';
-  description = '';
+  name = 'Toolbar Zustände wenn Mehrfachauswahl im Baum';
+  description = 'Abhängig vom Auswahlmodus im Baum, werden die Toolbar-Buttons aktivier bzw. deaktiviert';
   defaultActive = true;
+
   private activeToolbarItemsInMultiSelect = ['toolBtnCopy', 'toolBtnRemove'];
   private previousState: { id: string; active: boolean }[];
   private query: TreeQuery | AddressTreeQuery;
@@ -26,7 +27,6 @@ export class TreeModeToolbarBehaviour extends Plugin {
 
   register() {
 
-    console.log('Register Delete empty folder behaviour');
     super.register();
 
     this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;

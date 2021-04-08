@@ -25,4 +25,8 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
     );
   }
 
+  getCatalogCodelist(id: string): Codelist {
+    return this.getValue().catalogCodelists.find(cl => cl.id === id);
+  }
+
 }

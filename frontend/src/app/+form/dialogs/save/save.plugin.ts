@@ -21,6 +21,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class SavePlugin extends Plugin {
   id = 'plugin.save';
   _name = 'Save Plugin';
+  group = 'Toolbar';
   defaultActive = true;
 
   get name() {

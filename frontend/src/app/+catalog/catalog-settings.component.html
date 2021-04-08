@@ -4,9 +4,15 @@
         <ige-catalog-codelists></ige-catalog-codelists>
     </mat-tab>
 
-    <mat-tab label="Verhalten">
+    <mat-tab label="Formulare">
         <ng-template matTabContent>
-            <ige-behaviours #behaviours></ige-behaviours>
+            <ige-behaviours type="form" #behaviours></ige-behaviours>
+        </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Katalogverhalten">
+        <ng-template matTabContent>
+            <ige-behaviours type="catalog" #behavioursCatalog></ige-behaviours>
         </ng-template>
     </mat-tab>
 

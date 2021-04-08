@@ -16,6 +16,7 @@ import {ID} from '@datorama/akita';
 export class CopyCutPastePlugin extends Plugin {
   id = 'plugin.copy.cut.paste';
   _name = 'Copy Cut Paste';
+  group = 'Toolbar';
   defaultActive = true;
 
   description = `

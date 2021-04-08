@@ -1,45 +1,43 @@
-<p>
-    Sie haben hier die Möglichkeit bestehende Codelisten anzupassen. Diese Änderungen sind nur in diesem Katalog
-    sichtbar. Wenn diese Änderungen auch in anderen Katalogen oder im Portal verwendet werden sollen, dann muss
-    dies im Codelist-Repository geschehen.
-</p>
+<page-template title="Katalogspezifische Codelisten">
+    <ng-container help>
+        Sie haben hier die Möglichkeit bestehende Codelisten anzupassen. Diese Änderungen sind nur in diesem Katalog
+        sichtbar. Wenn diese Änderungen auch in anderen Katalogen oder im Portal verwendet werden sollen, dann muss
+        dies im Codelist-Repository geschehen.
+    </ng-container>
 
-<p *ngIf="(hasCatalogCodelists | async) === false">
-    In diesem Katalog gibt es keine spezifischen Codelisten. Alle Codelisten können
-    über das zentrale Codelist-Repository verwaltet werden.
-</p>
-
-<mat-card *ngIf="(hasCatalogCodelists | async) === true">
-    <mat-card-title>Katalogspezifische Codelisten</mat-card-title>
-
-    <mat-card-content>
-        <!--<div fxLayout="row">
-            <ige-filter-select #select [options]="codelists" fxFlex
-                               [labelFormat]="codelistLabelFormat"
-                               placeholder="Codeliste"></ige-filter-select>
-
-            <button mat-button
-                    (click)="addCodelist(select.getSelectedValue())"
-                    [disabled]="!select.control.value || select.control.value?.length === 0">Überschreiben
-            </button>
-        </div>-->
+    <div main fxLayout="column" fxFlex>
+        <p *ngIf="(hasCatalogCodelists | async) === false">
+            In diesem Katalog gibt es keine spezifischen Codelisten. Alle Codelisten können
+            über das zentrale Codelist-Repository verwaltet werden.
+        </p>
 
         <div fxLayout="row">
-            <mat-selection-list multiple="false" [(ngModel)]="selectedCodelist">
-                <mat-list-option *ngFor="let codelist of catalogCodelists | async" [value]="codelist">
-                    {{codelist.name}}
-                </mat-list-option>
-            </mat-selection-list>
+            <!--<ige-filter-select #select [options]="catalogCodelists" fxFlex class="white-bg"
+                               [labelFormat]="codelistLabelFormat" (optionSelect)="selectCodelist($event)"
+                               placeholder="Codeliste"></ige-filter-select>-->
+            <mat-form-field appearance="outline" class="width-100 white-bg">
+                <mat-select #select (selectionChange)="selectCodelist($event.value)" [value]="initialValue">
+                    <mat-option *ngFor="let codelist of catalogCodelists | async" [value]="codelist">
+                        {{codelist.label}} ({{codelist.value}})
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
+            <div class="reset-button">
+                <button mat-button mat-stroked-button
+                        [disabled]="true || !select.value || select.value?.length === 0">Zurücksetzen
+                </button>
+            </div>
+        </div>
 
-            <div *ngIf="selectedCodelist.length > 0" fxLayout="column" fxFlex>
-                <div>
-                    <div fxFlex></div>
-                    <button mat-button color="warn" disabled>Codeliste zurücksetzen</button>
-                </div>
-                <mat-list dense fxFlex class="hover-list">
-                    <mat-list-item *ngFor="let entry of selectedCodelist[0]?.entries">
-                        <p mat-line>
+        <ng-container *ngIf="(hasCatalogCodelists | async) === true">
+
+            <div *ngIf="selectedCodelist" class="entries-container">
+
+                <mat-list class="hover-list">
+                    <mat-list-item *ngFor="let entry of selectedCodelist.entries">
+                        <mat-icon mat-list-icon>list</mat-icon>
+                        <p mat-line class="identifier">
                             {{entry.id}}
                         </p>
                         <p mat-line class="codelist-title">
@@ -49,15 +47,25 @@
                             {{entry.data}}
                         </p>
                         <div fxFlex></div>
-                        <button mat-icon-button (click)="removeCodelist(entry)">
-                            <mat-icon>delete</mat-icon>
+
+                        <button mat-icon-button class="menu-button" [matMenuTriggerFor]="codelistMenu">
+                            <mat-icon svgIcon="Mehr"></mat-icon>
                         </button>
-                        <button mat-icon-button (click)="editCodelist(entry)">
-                            <mat-icon>edit</mat-icon>
-                        </button>
+                        <mat-menu #codelistMenu="matMenu">
+                            <button mat-menu-item (click)="editCodelist(entry)">
+                                Bearbeiten
+                            </button>
+                            <button mat-menu-item (click)="removeCodelist(entry)">
+                                Löschen
+                            </button>
+                        </mat-menu>
+
+                        <mat-divider></mat-divider>
+
                     </mat-list-item>
                 </mat-list>
             </div>
-        </div>
-    </mat-card-content>
-</mat-card>
+        </ng-container>
+    </div>
+
+</page-template>

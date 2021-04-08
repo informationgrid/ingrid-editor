@@ -125,21 +125,16 @@ export class CodelistService {
       ).subscribe();
   }
 
-  /*addCatalogCodelist(codelist: Codelist) {
-    this.store.update(({catalogCodelists}) => ({
-      catalogCodelists: arrayAdd(catalogCodelists, codelist)
-    }))
-  }*/
-  updateCodelist(codelist: Codelist) {
+  updateCodelist(codelist: Codelist): Observable<any> {
 
     const backendCodelist = this.prepareForBackend(codelist)
-    this.dataService.updateCodelist(backendCodelist)
+    return this.dataService.updateCodelist(backendCodelist)
       .pipe(
         tap(() => this.store.update(({catalogCodelists}) => ({
             catalogCodelists: arrayUpdate(catalogCodelists, codelist.id, codelist)
           }))
         )
-      ).subscribe();
+      )
 
   }
 

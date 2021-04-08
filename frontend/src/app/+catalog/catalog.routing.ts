@@ -8,7 +8,7 @@ export const routing = RouterModule.forChild( [
     path: '',
     component: CatalogSettingsComponent,
     canActivate: [AuthGuard],
-    canDeactivate: [BehavioursChangedGuard],
-    data: {roles: ['admin', 'author']}
+    // canDeactivate: [BehavioursChangedGuard],
+    data: {roles: ['admin']}
   }
 ] );

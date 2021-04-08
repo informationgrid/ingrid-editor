@@ -13,6 +13,7 @@ import {AddressTreeStore} from '../../../store/address-tree/address-tree.store';
 export class HistoryPlugin extends Plugin {
   id = 'plugin.history';
   _name = 'History Plugin';
+  group = 'Toolbar';
   defaultActive = true;
 
   private stack: DocumentAbstract[] = [];
