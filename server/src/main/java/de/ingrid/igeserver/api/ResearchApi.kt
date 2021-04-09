@@ -30,9 +30,10 @@ interface ResearchApi {
              @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query): ResponseEntity<Query>
 
     @Operation
-    @DeleteMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(value = ["query/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun delete(principal: Principal?): ResponseEntity<Void>
+    fun delete(principal: Principal?,
+    @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int): ResponseEntity<Void>
 
     @Operation
     @PostMapping(value = ["/query"], produces = [MediaType.APPLICATION_JSON_VALUE])

@@ -13,6 +13,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.IgeEntity
 import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
 import javax.persistence.*
+import kotlin.jvm.Transient
 
 @NoArgs
 @Entity
@@ -53,5 +54,10 @@ class Query : IgeEntity(), EntityWithCatalog {
     @Column(columnDefinition = "jsonb")
     @JsonProperty("settings")
     var data: JsonNode? = null
+    
+    @Transient
+    @JsonProperty("isSystemQuery")
+    var systemQuery: Boolean = false
+    get() = user == null
 
 }

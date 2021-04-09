@@ -127,4 +127,11 @@ export class ResearchService {
       sql: query.sql
     };
   }
+
+  removeQuery(id: string) {
+    return this.http.delete(`${this.configuration.backendUrl}search/query/${id}`)
+      .pipe(
+        tap(() => this.queryStore.remove(id))
+      );
+  }
 }

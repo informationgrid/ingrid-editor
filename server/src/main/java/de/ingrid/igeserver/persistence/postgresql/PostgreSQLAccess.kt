@@ -7,6 +7,7 @@ import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.IgeEntity
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,7 +58,7 @@ class PostgreSQLAccess {
             .resultList
     }
 
-    fun <T : Any> find(entity: KClass<T>, id: String): T {
+    fun <T : Any> find(entity: KClass<T>, id: Any): T {
         return entityManager
             .find(entity.java, id)
     }
@@ -86,71 +87,13 @@ class PostgreSQLAccess {
         val numDocs = typedCountQuery.singleResult as Long
 
         return FindResults(numDocs, docs)
+    }
 
-        // NOTE we need to use a native query to use jsonb operators
-
-        // process query criteria
-        /*val criteria = mutableMapOf<String, Any?>()
-        val conditions = mutableSetOf<String>()
-        val joins = mutableSetOf<JoinInfo>()
-        if (!query.isNullOrEmpty()) {
-//            query.forEachIndexed { i, q ->
-//                if (!q.isNullOrEmpty()) {
-                    val queryJoins = mutableSetOf<JoinInfo>()
-                    val processedCriteria = processCriteria(query, options, 1, queryJoins)
-                    processedCriteria.forEach {
-                        criteria[it.key] = it.value
-                    }
-                    joins.addAll(queryJoins)
-                    conditions.add(" (" + processedCriteria.keys.joinToString(separator = " ${options.queryOperator} ") { it } + ") ")
-//                }
-//            }
-        }
-
-        // resolve sort value
-        val sortColumn = ""
-//            if (!options.sortField.isNullOrEmpty()) resolveSortField(typeInfo, options.sortField, joins) else ""
-
-        // create query string
-        val join = joins.joinToString(separator = " ") { it.joinString }
-        val where = conditions.joinToString(separator = " ${options.queryOperator} ") { it }
-
-        var queryStr = "SELECT * FROM ${entity.simpleName} $join " +
-                if (where.isNotBlank()) "WHERE $where" else ""
-        val countQueryStr = COUNT_QUERY_REGEX.replace(queryStr, "SELECT count(*) as count FROM")
-
-        // add sort order
-        *//*if (!options.sortField.isNullOrEmpty()) {
-            queryStr = queryStr.replace("SELECT * ", "SELECT *, $sortColumn ")
-            queryStr += " ORDER BY ${PostgreSQLDatabase.SORT_FIELD_ALIAS} ${options.sortOrder}"
-        }*//*
-
-        // add limit
-        if (options.size != null) {
-            queryStr += " LIMIT ${options.size}"
-        }
-
-        // execute a native query
-        log.debug("Query-String: $queryStr")
-//        lastQuery.set(queryStr)
-        val typedQuery = entityManager.createNativeQuery(queryStr, entity.java)
-        val typedCountQuery = entityManager.createNativeQuery(countQueryStr)
-        if (criteria.isNotEmpty()) {
-            criteria.forEach { (condition, value) ->
-                if (value != null) {
-                    val parameterName = PARAMETER_REGEX.find(condition)?.groups?.get(1)?.value
-                    if (parameterName != null) {
-                        typedQuery.setParameter(parameterName, value)
-                        typedCountQuery.setParameter(parameterName, value)
-                    }
-                }
-            }
-        }
-        @Suppress("UNCHECKED_CAST")
-        val docs = typedQuery.resultList as List<T>
-        val numDocs = typedCountQuery.singleResult as BigInteger
-
-        return Pair(numDocs.toLong(), docs)*/
+    fun <T : Any> findAll(entity: KClass<T>, hql: String): FindResults<T> {
+        val resultList = entityManager.createQuery(hql, entity.java)
+            .resultList as List<T>
+        
+        return FindResults(-1, resultList)
     }
 
     fun <T : IgeEntity> save(entity: T, identifier: String? = null): T {
@@ -167,6 +110,10 @@ class PostgreSQLAccess {
         }
 
         return e
+    }
+    
+    fun <T: IgeEntity> remove(entity: T) {
+        entityManager.remove(entity)
     }
 
     private fun <T> prepareForSave(entity: T) {

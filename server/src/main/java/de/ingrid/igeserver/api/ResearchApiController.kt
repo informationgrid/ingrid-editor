@@ -56,8 +56,14 @@ class ResearchApiController : ResearchApi {
 
     }
 
-    override fun delete(principal: Principal?): ResponseEntity<Void> {
-        TODO("Not yet implemented")
+    override fun delete(principal: Principal?, id: Int): ResponseEntity<Void> {
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        dbService.acquireCatalog(catalogId).use {
+            queryService.removeQueryForUser(userId, id)
+            return ResponseEntity.ok().build()
+        }
     }
 
     override fun search(principal: Principal?, query: ResearchQuery): ResponseEntity<ResearchResponse> {

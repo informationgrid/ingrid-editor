@@ -106,9 +106,7 @@ class UserInfo : EntityWithEmbeddedMap() {
     override fun mapQueryValue(field: String, value: String?, entityManager: EntityManager): Any? {
         if (value == null) return null
         return when (field) {
-            "curCatalog" -> {
-                Catalog.getByIdentifier(entityManager, value.trim())?.id
-            }
+            "curCatalog" -> Catalog.getByIdentifier(entityManager, value.trim())?.id
             "catalogIds" -> {
                 val ids = value.split(',').mapNotNull { identifier ->
                     // we expect catalog identifiers in queries
