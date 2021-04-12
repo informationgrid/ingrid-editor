@@ -93,7 +93,8 @@ export class CodelistService {
   private prepareEntries(entries: CodelistEntryBackend[]): CodelistEntry[] {
     return entries.map(entry => ({
         id: entry.id,
-        value: CodelistService.getLocalisedValue(entry.localisations)
+        value: CodelistService.getLocalisedValue(entry.localisations),
+        data: entry.data
       })
     );
   }
@@ -127,14 +128,14 @@ export class CodelistService {
 
   updateCodelist(codelist: Codelist): Observable<any> {
 
-    const backendCodelist = this.prepareForBackend(codelist)
+    const backendCodelist = this.prepareForBackend(codelist);
     return this.dataService.updateCodelist(backendCodelist)
       .pipe(
         tap(() => this.store.update(({catalogCodelists}) => ({
             catalogCodelists: arrayUpdate(catalogCodelists, codelist.id, codelist)
           }))
         )
-      )
+      );
 
   }
 
@@ -143,12 +144,13 @@ export class CodelistService {
       id: codelist.id,
       name: codelist.name,
       entries: this.prepareEntriesForBackend(codelist.entries)
-    }
+    };
   }
 
   private prepareEntriesForBackend(entries: CodelistEntry[]): CodelistEntryBackend[] {
     return entries.map(entry => ({
       id: entry.id,
+      data: entry.data,
       localisations: {
         de: entry.value
       }

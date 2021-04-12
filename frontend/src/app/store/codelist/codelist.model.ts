@@ -21,4 +21,5 @@ export interface CodelistBackend {
 export interface CodelistEntryBackend {
   id: string;
   localisations: any;
+  data: string;
 }
