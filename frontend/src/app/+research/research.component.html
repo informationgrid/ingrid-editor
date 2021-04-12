@@ -3,6 +3,7 @@
     <mat-tab label="Erweiterte Suche">
         <page-template title="Erweiterte Suche">
             <ige-facets help [model]="filter.model"
+                        [parameter]="filter.fieldsWithParameters"
                         [forAddresses]="searchClass === 'selectAddresses'"
                         (update)="updateFilter($event)"></ige-facets>
 

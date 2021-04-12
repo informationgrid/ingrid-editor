@@ -126,7 +126,7 @@ export class ResearchComponent implements OnInit {
     if (entity.type === 'facet') {
       this.selectedIndex = 0;
       this.filter.model = {...this.getFacetModel(), ...entity.model};
-      this.filter.fieldsWithParameters = entity.parameter;
+      this.filter.fieldsWithParameters = {...entity.parameter};
       this.query.setValue(entity.term);
     } else {
       this.selectedIndex = 1;

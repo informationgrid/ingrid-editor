@@ -24,6 +24,10 @@ export class FacetsComponent implements AfterViewInit {
     this._model = value;
   };
 
+  @Input() set parameter(value: any) {
+    this.updateSpatialFromModel(value);
+  }
+
   @Input()
   set forAddresses(addresses: boolean) {
     this._forAddresses = addresses;
@@ -124,9 +128,9 @@ export class FacetsComponent implements AfterViewInit {
       this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.boxes);
     }
 
-    if (!location) return;
-
     this.location = location;
+
+    if (!location) return;
 
     this._model.spatial = {};
     this._model.spatial[this.spatialFilterId] = [];
@@ -165,5 +169,26 @@ export class FacetsComponent implements AfterViewInit {
     if (filter.some(f => f.selection === 'SPATIAL')) {
       setTimeout(() => this.initLeaflet(), 200);
     }
+  }
+
+  private updateSpatialFromModel(parameter: any) {
+    if (!parameter || Object.keys(parameter).length === 0) {
+      this.updateSpatial(null);
+      return;
+    }
+
+    const location = Object.keys(parameter).map(key => {
+      const coords = parameter[key];
+      return <SpatialLocation>{
+        type: 'free',
+        value: {
+          lon1: coords[0],
+          lat1: coords[1],
+          lon2: coords[2],
+          lat2: coords[3]
+        }
+      };
+    })[0];
+    this.updateSpatial(location);
   }
 }
