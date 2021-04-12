@@ -1,57 +1,40 @@
 package de.ingrid.igeserver.services
 
-import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.postgresql.PostgreSQLAccess
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class QueryService @Autowired constructor(private val dbApi: PostgreSQLAccess, private val dateService: DateService) {
+class QueryService @Autowired constructor(
+    val query: QueryRepository,
+    val catalog: CatalogRepository,
+    val user: UserRepository,
+    private val dateService: DateService
+) {
 
     fun getQueriesForUser(userId: String, catalogId: String): List<Query> {
 
-        val userQueriesHql = """
-            SELECT e FROM Query e 
-            WHERE e.catalog.identifier='$catalogId' AND e.user.userId='$userId'            
-            """
-        val userQueries = dbApi.findAll(
-            Query::class,
-            userQueriesHql
-        ).hits
-        
-        val systemQueriesHql = """
-            SELECT e FROM Query e 
-            WHERE e.catalog.identifier='$catalogId' AND e.user IS NULL            
-            """
-        val systemQueries = dbApi.findAll(
-            Query::class,
-            systemQueriesHql
-        ).hits
+        val catRef = this.catalog.findByIdentifier(catalogId)
+        return query.findAllByCatalog(catRef)
+            .filter { it.systemQuery || it.user?.userId == userId }
 
-        return userQueries + systemQueries
     }
 
-    fun saveQueryForUser(userId: String, data: Query): Query {
+    fun saveQueryForUser(userId: String, catalogId: String, data: Query): Query {
 
-        val user = dbApi.findAll(
-            UserInfo::class,
-            listOf(QueryField("userId", userId)),
-            FindOptions()
-        ).hits[0]
-
-        data.user = user
+        data.user = user.findByUserId(userId)
+        data.catalog = catalog.findByIdentifier(catalogId)
         data.modified = dateService.now()
 
-        return dbApi.save(data)
+        return query.save(data)
     }
 
-    fun removeQueryForUser(userId: String, id: Int) {
+    fun removeQueryForUser(id: Int) {
 
-        val entity = dbApi.find(Query::class, id)
-        dbApi.remove(entity)
+        query.deleteById(id)
 
     }
 

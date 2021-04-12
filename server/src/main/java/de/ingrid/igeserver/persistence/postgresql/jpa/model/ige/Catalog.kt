@@ -23,6 +23,7 @@ class Catalog : EntityBase() {
     @JsonProperty("id")
     var identifier: String? = null
 
+    // TODO: make type non null
     @Column(nullable=false)
     var type: String? = null
 

@@ -103,10 +103,8 @@ class UsersApiController : UsersApi {
         val assignedCatalogs: MutableList<Catalog> = ArrayList()
         for (dbId in dbIds) {
             val catalogById = catalogService.getCatalogById(dbId)
-            if (catalogById != null) {
-                assignedCatalogs.add(catalogById)
-                dbIdsValid.add(dbId)
-            }
+            assignedCatalogs.add(catalogById)
+            dbIdsValid.add(dbId)
         }
 
         // clean up catalog association if one was deleted?

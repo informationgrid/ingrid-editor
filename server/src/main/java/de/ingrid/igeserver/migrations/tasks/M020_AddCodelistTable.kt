@@ -50,7 +50,7 @@ class M020_AddCodelistTable : MigrationBase("0.20") {
         dbService.catalogs.forEach { catalog ->
             dbService.acquireCatalog(catalog.identifier!!).use {
                 log.info("Migrate catalog codelists for catalog: ${catalog.name}")
-                catalogService.initializeCodelists(catalog.type!!)
+                catalogService.initializeCodelists(catalog.identifier!!, catalog.type!!)
             }
         }
 

@@ -21,6 +21,6 @@ class DummyCatalog : CatalogProfile {
         TODO("Not yet implemented")
     }
 
-    override fun initCatalogCodelists() {
+    override fun initCatalogCodelists(catalogId: String) {
     }
 }

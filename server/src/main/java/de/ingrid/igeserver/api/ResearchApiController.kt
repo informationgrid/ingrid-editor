@@ -3,7 +3,6 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.model.Facets
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
-import de.ingrid.igeserver.persistence.postgresql.PostgreSQLAccess
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.QueryService
@@ -17,31 +16,19 @@ import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api/search"])
-class ResearchApiController : ResearchApi {
-
-    @Autowired
-    lateinit var dbService: PostgreSQLAccess
-
-    @Autowired
-    lateinit var researchService: ResearchService
-
-    @Autowired
-    lateinit var queryService: QueryService
-
-    @Autowired
-    lateinit var catalogService: CatalogService
-
-    @Autowired
-    lateinit var authUtils: AuthUtils
+class ResearchApiController @Autowired constructor(
+    val researchService: ResearchService,
+    val queryService: QueryService,
+    val catalogService: CatalogService,
+    val authUtils: AuthUtils
+) : ResearchApi {
 
     override fun load(principal: Principal?): ResponseEntity<List<Query>> {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        dbService.acquireCatalog(catalogId).use {
-            val queries = queryService.getQueriesForUser(userId, catalogId)
-            return ResponseEntity.ok(queries)
-        }
+        val queries = queryService.getQueriesForUser(userId, catalogId)
+        return ResponseEntity.ok(queries)
     }
 
     override fun save(principal: Principal?, query: Query): ResponseEntity<Query> {
@@ -49,21 +36,14 @@ class ResearchApiController : ResearchApi {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        dbService.acquireCatalog(catalogId).use {
-            val result = queryService.saveQueryForUser(userId, query)
-            return ResponseEntity.ok(result)
-        }
+        val result = queryService.saveQueryForUser(userId, catalogId, query)
+        return ResponseEntity.ok(result)
 
     }
 
     override fun delete(principal: Principal?, id: Int): ResponseEntity<Void> {
-        val userId = authUtils.getUsernameFromPrincipal(principal)
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-
-        dbService.acquireCatalog(catalogId).use {
-            queryService.removeQueryForUser(userId, id)
-            return ResponseEntity.ok().build()
-        }
+        queryService.removeQueryForUser(id)
+        return ResponseEntity.ok().build()
     }
 
     override fun search(principal: Principal?, query: ResearchQuery): ResponseEntity<ResearchResponse> {

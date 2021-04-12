@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
-import de.ingrid.igeserver.persistence.postgresql.PostgreSQLAccess
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
-import de.ingrid.igeserver.research.quickfilter.*
+import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.CodelistRepository
+import de.ingrid.igeserver.research.quickfilter.DocMCloud
+import de.ingrid.igeserver.research.quickfilter.DocTest
+import de.ingrid.igeserver.research.quickfilter.ExceptFolders
+import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.address.Organisations
 import de.ingrid.igeserver.research.quickfilter.address.Persons
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +26,11 @@ class MCloudProfile : CatalogProfile {
 
     @Autowired
     @JsonIgnore
-    lateinit var db: PostgreSQLAccess
+    lateinit var codelistRepo: CodelistRepository
+    
+    @Autowired
+    @JsonIgnore
+    lateinit var catalogRepo: CatalogRepository
 
     override val identifier: String = "mcloud"
     override val title: String = "mCLOUD Katalog"
@@ -71,9 +79,12 @@ class MCloudProfile : CatalogProfile {
         )
     }
 
-    override fun initCatalogCodelists() {
+    override fun initCatalogCodelists(catalogId: String) {
+        val catalogRef = catalogRepo.findByIdentifier(catalogId)
+        
         val codelist20000 = Codelist().apply {
             identifier = "20000"
+            catalog = catalogRef
             name = "mCLOUD Kategorien"
             data = jacksonObjectMapper().createArrayNode().apply {
                 add(toCodelistEntry("railway", "Bahn"))
@@ -86,6 +97,7 @@ class MCloudProfile : CatalogProfile {
         }
         val codelist20001 = Codelist().apply {
             identifier = "20001"
+            catalog = catalogRef
             name = "OpenData Kategorien"
             data = jacksonObjectMapper().createArrayNode().apply {
                 add(toCodelistEntry("SOCI", "Bevölkerung und Gesellschaft"))
@@ -103,8 +115,8 @@ class MCloudProfile : CatalogProfile {
                 add(toCodelistEntry("TECH", "Wissenschaft und Technologie"))
             }
         }
-        db.save(codelist20000)
-        db.save(codelist20001)
+        codelistRepo.save(codelist20000)
+        codelistRepo.save(codelist20001)
     }
 
     private fun toCodelistEntry(id: String, german: String, english: String? = null): JsonNode {
