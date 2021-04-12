@@ -30,6 +30,41 @@ In the backend create a new package under `de/ingrid/igeserver/profiles/<profile
 types-package create a new interface of your type which extends `EntityType`. The implementation needs
 to extend from `PostgreSQLEntityType`. Have a look at `PMCloudType.kt`.
 
+### Profile definition file
+
+Every profile has definition file, which contains configurations for the specific profile.
+This profile is used for the following information:
+
+* identifier of the profile
+* name
+* description
+* facet definition for documents 
+* facet definition for addresses
+* definiton of catalog codelists
+
+A new Profile definition class must be available as a service for the specific profile. It also must
+implement the interface `CatalogProfile`
+
+<details>
+  <summary>Example</summary>
+
+```kotlin
+@Service()
+@Profile("mcloud")
+class MCloudProfile : CatalogProfile {
+
+  override val identifier: String = "mcloud"
+  override val title: String = "mCLOUD Katalog"
+  override val description: String? = "Dieser Katalog wird für die Erfassung von ..."
+
+  override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {}
+  override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {}
+
+  override fun initCatalogCodelists(catalogId: String) {}
+  
+}
+```
+
 ### Export
 
 For the export feature add a service inside the exporter-package which implements `IgeExporter`.
