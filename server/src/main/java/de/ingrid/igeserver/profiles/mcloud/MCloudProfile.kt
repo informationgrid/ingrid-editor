@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles.mcloud
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
@@ -27,7 +28,7 @@ class MCloudProfile : CatalogProfile {
     @Autowired
     @JsonIgnore
     lateinit var codelistRepo: CodelistRepository
-    
+
     @Autowired
     @JsonIgnore
     lateinit var catalogRepo: CatalogRepository
@@ -79,17 +80,17 @@ class MCloudProfile : CatalogProfile {
         )
     }
 
-    override fun initCatalogCodelists(catalogId: String) {
+    override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
-        
+
         val codelist20000 = Codelist().apply {
             identifier = "20000"
             catalog = catalogRef
             name = "mCLOUD Kategorien"
             data = jacksonObjectMapper().createArrayNode().apply {
                 add(toCodelistEntry("railway", "Bahn"))
-                add(toCodelistEntry("waters","Wasserstraßen und Gewässer"))
-                add(toCodelistEntry( "infrastructure","Infrastruktur"))
+                add(toCodelistEntry("waters", "Wasserstraßen und Gewässer"))
+                add(toCodelistEntry("infrastructure", "Infrastruktur"))
                 add(toCodelistEntry("climate", "Klima und Wetter"))
                 add(toCodelistEntry("aviation", "Luft- und Raumfahrt"))
                 add(toCodelistEntry("roads", "Straßen"))
@@ -101,8 +102,8 @@ class MCloudProfile : CatalogProfile {
             name = "OpenData Kategorien"
             data = jacksonObjectMapper().createArrayNode().apply {
                 add(toCodelistEntry("SOCI", "Bevölkerung und Gesellschaft"))
-                add(toCodelistEntry("EDUC","Bildung, Kultur und Sport"))
-                add(toCodelistEntry( "ENER","Energie"))
+                add(toCodelistEntry("EDUC", "Bildung, Kultur und Sport"))
+                add(toCodelistEntry("ENER", "Energie"))
                 add(toCodelistEntry("HEAL", "Gesundheit"))
                 add(toCodelistEntry("INTR", "Internationale Themen"))
                 add(toCodelistEntry("JUST", "Justiz, Rechtssystem und öffentliche Sicherheit"))
@@ -115,8 +116,24 @@ class MCloudProfile : CatalogProfile {
                 add(toCodelistEntry("TECH", "Wissenschaft und Technologie"))
             }
         }
-        codelistRepo.save(codelist20000)
-        codelistRepo.save(codelist20001)
+
+        when (codelistId) {
+            "20000" -> removeAndAddCodelist(catalogId, codelist20000)
+            "20001" -> removeAndAddCodelist(catalogId, codelist20001)
+            null -> {
+                codelistRepo.save(codelist20000)
+                codelistRepo.save(codelist20001)
+            }
+            else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
+        }
+    }
+
+    private fun removeAndAddCodelist(catalogId: String, codelist: Codelist) {
+
+        codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelist.identifier)
+        codelistRepo.flush()
+        codelistRepo.save(codelist)
+
     }
 
     private fun toCodelistEntry(id: String, german: String, english: String? = null): JsonNode {

@@ -7,6 +7,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -47,6 +48,21 @@ class CodelistApiController : CodelistApi {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val response = handler.updateCodelist(catalogId, id, codelist)
         return ResponseEntity.ok(response)
+    }
+
+    @Transactional
+    override fun resetCatalogCodelist(principal: Principal?, id: String): ResponseEntity<CodeList> {
+
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalog = catalogService.getCatalogById(catalogId)
+        
+        catalogService.initializeCodelists(catalogId, catalog.type, id)
+        
+        val response = handler.getCatalogCodelists(catalogId)
+            .find { it.id == id }
+        
+        return ResponseEntity.ok(response)
+        
     }
 
     override fun getAllCodelists(): ResponseEntity<List<CodeList>> {

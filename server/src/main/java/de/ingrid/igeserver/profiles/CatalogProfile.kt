@@ -17,5 +17,5 @@ interface CatalogProfile {
     fun getFacetDefinitionsForAddresses(): Array<FacetGroup> 
     
     @JsonIgnore
-    fun initCatalogCodelists(catalogId: String)
+    fun initCatalogCodelists(catalogId: String, codelistId: String? = null)
 }

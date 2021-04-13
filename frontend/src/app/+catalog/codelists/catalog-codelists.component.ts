@@ -89,4 +89,21 @@ export class CatalogCodelistsComponent implements OnInit {
   selectCodelist(option: SelectOption) {
     this.selectedCodelist = this.codelistQuery.getCatalogCodelist(option.value);
   }
+
+  resetCodelist() {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: <ConfirmDialogData>{
+        message: `Möchten Sie die Codeliste wirklich zurücksetzen?`,
+        title: 'Zurücksetzen',
+        buttons: [
+          {text: 'Abbrechen'},
+          {text: 'Zurücksetzen', alignRight: true, id: 'confirm', emphasize: true}
+        ]
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.codelistService.resetCodelist(this.selectedCodelist.id).subscribe();
+      }
+    });
+  }
 }

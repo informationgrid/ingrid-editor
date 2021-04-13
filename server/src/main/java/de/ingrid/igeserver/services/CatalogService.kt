@@ -115,10 +115,10 @@ class CatalogService @Autowired constructor(
         userRepo.save(user)
     }
 
-    fun initializeCodelists(catalogId: String, type: String) {
+    fun initializeCodelists(catalogId: String, type: String, codelistId: String? = null) {
         this.catalogProfiles
             .find { it.identifier == type }
-            ?.initCatalogCodelists(catalogId)
+            ?.initCatalogCodelists(catalogId, codelistId)
     }
 
     companion object {

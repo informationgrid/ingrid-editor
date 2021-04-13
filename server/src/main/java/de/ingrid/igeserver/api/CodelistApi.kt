@@ -22,32 +22,14 @@ interface CodelistApi {
 
     @Operation
     @RequestMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
-    @ApiResponses(
-        value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(
-            responseCode = "500",
-            description = "Unexpected error"
-        )]
-    )
     fun getAllCodelists(): ResponseEntity<List<CodeList>>
 
     @Operation
     @RequestMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
-    @ApiResponses(
-        value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(
-            responseCode = "500",
-            description = "Unexpected error"
-        )]
-    )
     fun updateCodelists(): ResponseEntity<List<CodeList>>
-
+    
     @Operation
     @RequestMapping(value = ["/{ids}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
-    @ApiResponses(
-        value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(
-            responseCode = "500",
-            description = "Unexpected error"
-        )]
-    )
     fun getCodelistsByIds(
         principal: Principal?,
         @Parameter(description = "The ID of the codelists.", required = true) @PathVariable("ids") ids: List<String>
@@ -55,26 +37,21 @@ interface CodelistApi {
 
     @Operation
     @GetMapping(value = ["/manage"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ApiResponses(
-        value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(
-            responseCode = "500",
-            description = "Unexpected error"
-        )]
-    )
     fun getCatalogCodelists(principal: Principal?): ResponseEntity<List<CodeList>>
 
     @Operation
     @PutMapping(value = ["/manage/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ApiResponses(
-        value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(
-            responseCode = "500",
-            description = "Unexpected error"
-        )]
-    )
     fun updateCatalogCodelist(
         principal: Principal?,
         @Parameter() @PathVariable id: String,
         @Parameter() @RequestBody codelist: Codelist
     ): ResponseEntity<Codelist>
+    
+    @Operation
+    @DeleteMapping(value = ["/manage/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun resetCatalogCodelist(
+        principal: Principal?,
+        @Parameter() @PathVariable id: String
+    ): ResponseEntity<CodeList>
 
 }
