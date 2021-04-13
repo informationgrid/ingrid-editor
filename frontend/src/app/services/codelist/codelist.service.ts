@@ -30,7 +30,7 @@ export class CodelistService {
 
     return codelist.entries
       .map(entry => ({label: entry.fields['de'], value: entry.id} as SelectOption))
-      .sort((a, b) => a.label.localeCompare(b.label));
+      .sort((a, b) => a.label?.localeCompare(b.label));
   };
 
   /*static getLocalisedValue(locals: any) {
