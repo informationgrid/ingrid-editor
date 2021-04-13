@@ -24,7 +24,11 @@ export class CatalogCodelistsComponent implements OnInit {
 
   private setInitialValue(options: SelectOption[]) {
     if (options?.length > 0) {
-      this.initialValue = options[0];
+      if (this.selectedCodelist) {
+        this.initialValue = options.find(option => option.value === this.selectedCodelist.id);
+      } else {
+        this.initialValue = options[0];
+      }
       this.selectCodelist(this.initialValue);
     }
   }
@@ -38,10 +42,6 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-  codelistLabelFormat(option: SelectOption) {
-    return `${option.value} - ${option.label}`;
   }
 
   editCodelist(entry: CodelistEntry) {
@@ -65,7 +65,7 @@ export class CatalogCodelistsComponent implements OnInit {
   removeCodelist(entry: CodelistEntry) {
     this.dialog.open(ConfirmDialogComponent, {
       data: <ConfirmDialogData>{
-        message: `Möchten Sie den Codelist-Eintrag "${entry.value}" wirklich löschen:`,
+        message: `Möchten Sie den Codelist-Eintrag "${entry.fields['de']}" wirklich löschen:`,
         title: 'Löschen',
         buttons: [
           {text: 'Abbrechen'},

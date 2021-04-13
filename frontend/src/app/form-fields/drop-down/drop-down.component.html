@@ -7,8 +7,8 @@
 -->
 <mat-form-field>
     <mat-select placeholder="Auswählen">
-        <mat-option *ngFor="let option of simpleOptions" [value]="option.value">
-            {{option.value}}
+        <mat-option *ngFor="let option of simpleOptions" [value]="option.fields">
+            {{option.fields}}
         </mat-option>
     </mat-select>
 </mat-form-field>

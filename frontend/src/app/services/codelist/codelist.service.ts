@@ -29,13 +29,13 @@ export class CodelistService {
     }
 
     return codelist.entries
-      .map(entry => ({label: entry.value, value: entry.id} as SelectOption))
+      .map(entry => ({label: entry.fields.get('de'), value: entry.id} as SelectOption))
       .sort((a, b) => a.label.localeCompare(b.label));
   };
 
-  static getLocalisedValue(locals: any) {
+  /*static getLocalisedValue(locals: any) {
     return locals.de || locals.name;
-  }
+  }*/
 
   constructor(private errorService: ErrorService,
               private store: CodelistStore,
@@ -93,7 +93,7 @@ export class CodelistService {
   private prepareEntries(entries: CodelistEntryBackend[]): CodelistEntry[] {
     return entries.map(entry => ({
         id: entry.id,
-        value: CodelistService.getLocalisedValue(entry.localisations),
+        fields: entry.localisations,
         data: entry.data
       })
     );
@@ -108,12 +108,12 @@ export class CodelistService {
   }
 
   mapToOptions(codelists: Codelist[]): SelectOption[] {
-    return codelists.map(cl => {
-      return {
+    return codelists
+      .map(cl => ({
         value: cl.id,
         label: cl.name
-      };
-    });
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }
 
   fetchCatalogCodelists(): void {
@@ -151,9 +151,18 @@ export class CodelistService {
     return entries.map(entry => ({
       id: entry.id,
       data: entry.data,
-      localisations: {
-        de: entry.value
-      }
+      localisations: entry.fields
     }));
+  }
+
+  resetCodelist(id: string) {
+    return this.dataService.resetCodelist(id)
+      .pipe(
+        map(codelist => this.prepareCodelists([codelist])[0]),
+        tap(codelist => this.store.update(({catalogCodelists}) => ({
+            catalogCodelists: arrayUpdate(catalogCodelists, id, codelist)
+          }))
+        )
+      );
   }
 }

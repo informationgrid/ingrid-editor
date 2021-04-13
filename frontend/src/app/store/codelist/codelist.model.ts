@@ -6,7 +6,7 @@ export interface Codelist {
 
 export interface CodelistEntry {
   id: string;
-  value: string;
+  fields: Map<string, string>; // { [x: string]: string };
   data?: string;
 }
 
