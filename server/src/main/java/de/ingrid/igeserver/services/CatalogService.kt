@@ -36,18 +36,21 @@ class CatalogService @Autowired constructor(
 
         val userData = userRepo.findByUserId(userId).data ?: throw NotFoundException.withMissingUserCatalog(userId)
 
-        val currentCatalogId =
-            if (userData.containsKey("currentCatalogId")) userData["currentCatalogId"].toString() else null
-        return if (currentCatalogId != null && currentCatalogId.trim { it <= ' ' } != "") {
-            // return assigned current catalog ...
-            currentCatalogId
-        } else {
-            // ... or first catalog, if existing
-            val catalogIds = userData["catalogIds"] as ArrayNode
-            if (catalogIds.size() == 0) {
-                throw NotFoundException.withMissingUserCatalog(userId)
+        val currentCatalogId = when (userData.containsKey("currentCatalogId")) {
+            true -> userData["currentCatalogId"].toString()
+            else -> null
+        }
+
+        return when (currentCatalogId != null && currentCatalogId.trim() != "") {
+            true -> currentCatalogId
+            else -> {
+                // ... or first catalog, if existing
+                val catalogIds = userData["catalogIds"] as List<String>?
+                if (catalogIds == null || catalogIds.size == 0) {
+                    throw NotFoundException.withMissingUserCatalog(userId)
+                }
+                catalogIds[0]
             }
-            catalogIds[0].asText()
         }
     }
 
@@ -71,9 +74,9 @@ class CatalogService @Autowired constructor(
         return if (userData == null) {
             log.error("The user '$userId' does not seem to be assigned to any database.")
             mutableListOf()
-        } else (userData["recentLogins"] as List<Long>)
-            .map { Date(it) }
-            .toMutableList()
+        } else (userData["recentLogins"] as List<Long>?)
+            ?.map { Date(it) }
+            ?.toMutableList() ?: mutableListOf()
     }
 
     fun getCatalogById(id: String): Catalog {
