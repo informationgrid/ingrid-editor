@@ -1,5 +1,7 @@
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.codelists.model.CodeListEntry
@@ -40,8 +42,9 @@ class CodelistHandler @Autowired constructor(
                     description = it.description
                     entries = it.data?.map { entry -> CodeListEntry().apply {
                         id = entry.get("id").asText()
+                        description = if (entry.get("description") == null || entry.get("description").isNull) null else entry.get("description").asText()
                         data = if (entry.get("data") == null || entry.get("data").isNull) null else entry.get("data").asText()
-                        fields = mapOf(Pair("de", entry.get("localisations").get("de").asText()))
+                        fields = ObjectMapper().convertValue(entry.get("localisations"), jacksonTypeRef<Map<String, String>>())
                     } } ?: mutableListOf()
                 }
             }

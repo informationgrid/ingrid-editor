@@ -86,6 +86,7 @@ export class CodelistService {
     return codelists.map(codelist => ({
       id: codelist.id,
       name: codelist.name,
+      description: codelist.description,
       entries: this.prepareEntries(codelist.entries)
     }));
   }
@@ -93,6 +94,7 @@ export class CodelistService {
   private prepareEntries(entries: CodelistEntryBackend[]): CodelistEntry[] {
     return entries.map(entry => ({
         id: entry.id,
+        description: entry.description,
         fields: entry.localisations,
         data: entry.data
       })
@@ -143,6 +145,7 @@ export class CodelistService {
     return {
       id: codelist.id,
       name: codelist.name,
+      description: codelist.description,
       entries: this.prepareEntriesForBackend(codelist.entries)
     };
   }
@@ -150,6 +153,7 @@ export class CodelistService {
   private prepareEntriesForBackend(entries: CodelistEntry[]): CodelistEntryBackend[] {
     return entries.map(entry => ({
       id: entry.id,
+      description: entry.description,
       data: entry.data,
       localisations: entry.fields
     }));

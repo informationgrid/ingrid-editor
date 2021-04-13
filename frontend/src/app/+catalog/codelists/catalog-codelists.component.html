@@ -3,6 +3,8 @@
         Sie haben hier die Möglichkeit bestehende Codelisten anzupassen. Diese Änderungen sind nur in diesem Katalog
         sichtbar. Wenn diese Änderungen auch in anderen Katalogen oder im Portal verwendet werden sollen, dann muss
         dies im Codelist-Repository geschehen.
+
+        <div *ngIf="showSavedState" class="save-info">Codeliste wurde eben gespeichert</div>
     </ng-container>
 
     <div main fxLayout="column" fxFlex>
@@ -34,6 +36,11 @@
 
             <div *ngIf="selectedCodelist" class="entries-container">
 
+                <mat-form-field appearance="outline" class="width-100 white-bg">
+                    <mat-label>Beschreibung</mat-label>
+                    <textarea matInput name="description" [formControl]="descriptionCtrl"></textarea>
+                </mat-form-field>
+
                 <mat-list class="hover-list">
                     <mat-list-item *ngFor="let entry of selectedCodelist.entries">
                         <mat-icon mat-list-icon>list</mat-icon>
@@ -43,9 +50,9 @@
                         <p mat-line class="codelist-title">
                             {{entry.fields['de']}}
                         </p>
-                        <p mat-line *ngIf="entry.data">
+                        <!--<p mat-line *ngIf="entry.data">
                             {{entry.data}}
-                        </p>
+                        </p>-->
                         <div fxFlex></div>
 
                         <button mat-icon-button class="menu-button" [matMenuTriggerFor]="codelistMenu">

@@ -2,6 +2,13 @@
 
 .entries-container {
   overflow: auto;
+  padding-top: 1px;
+}
+
+.save-info {
+  padding: 20px;
+  color: $ige-comment-color;
+  text-align: center;
 }
 
 .identifier {
