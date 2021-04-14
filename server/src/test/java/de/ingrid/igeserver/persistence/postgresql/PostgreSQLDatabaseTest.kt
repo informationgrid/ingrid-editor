@@ -11,9 +11,11 @@ import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
-import de.ingrid.igeserver.persistence.model.meta.BehaviourType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
+import de.ingrid.igeserver.repository.BehaviourRepository
+import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.AnnotationSpec
@@ -22,6 +24,7 @@ import org.assertj.core.api.Assertions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
@@ -33,13 +36,19 @@ import java.util.*
 @SpringBootTest(classes = [IgeServer::class])
 @TestPropertySource(locations = ["classpath:application-test.properties"])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts=["/test_data.sql"], config=SqlConfig(encoding="UTF-8"))
+@Sql(scripts = ["/test_data.sql"], config = SqlConfig(encoding = "UTF-8"))
 class PostgreSQLDatabaseTest : AnnotationSpec() {
 
     override fun listeners() = listOf(SpringListener)
 
     @Autowired
     private lateinit var dbService: PostgreSQLDatabase
+
+    @Autowired
+    private lateinit var behaviourRepo: BehaviourRepository
+
+    @Autowired
+    private lateinit var catalogRepo: CatalogRepository
 
     private val DATE_TIME_REGEX = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.*"
 
@@ -140,7 +149,8 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
         val loadedDoc = dbService.find(DocumentWrapperType::class, savedDoc.get("db_id").intValue().toString())
         Assertions.assertThat(loadedDoc as JsonNode).isNotNull
         Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("bc365545-e4b5-4359-bfb5-84367513752e")
-        Assertions.assertThat(loadedDoc.get(FIELD_PARENT)?.textValue()).isEqualTo("5d2ff598-45fd-4516-b843-0b1787bd8264")
+        Assertions.assertThat(loadedDoc.get(FIELD_PARENT)?.textValue())
+            .isEqualTo("5d2ff598-45fd-4516-b843-0b1787bd8264")
         Assertions.assertThat(loadedDoc.get(FIELD_DOCUMENT_TYPE)?.textValue()).isEqualTo("FOLDER")
         Assertions.assertThat(loadedDoc.get(FIELD_CATEGORY)?.textValue()).isEqualTo("data")
         Assertions.assertThat(loadedDoc.get(FIELD_DRAFT)?.textValue()).isEqualTo("1003")
@@ -191,34 +201,29 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
 
     @Test
     fun `creating a behaviour`() {
-        val doc = """
-            {
-                "_id": "plugin.session.timeout2",
-                "active": false,
-                "data": {
-                    "duration": 500
-                }
-            }
-        """
-
-        val oldCount = dbService.findAll(BehaviourType::class).size
-
-        val savedDoc = dbService.acquireCatalog("test_catalog").use {
-            dbService.save(BehaviourType::class, null, doc)
+        val catalogRef = catalogRepo.findByIdentifier("test_catalog")
+        
+        val doc = Behaviour().apply {
+            catalog = catalogRef
+            name = "plugin.session.timeout2"
+            active = false
+            data = mapOf("duration" to 500)
         }
 
-        Assertions.assertThat(dbService.findAll(BehaviourType::class).size).isEqualTo(oldCount + 1)
+        val oldCount = behaviourRepo.count()
 
-        Assertions.assertThat(savedDoc.get("db_id")?.intValue()).isNotNull
-        Assertions.assertThat(dbService.getRecordId(savedDoc)).isNotNull
+        
+        val savedDoc = behaviourRepo.save(doc)
 
-        val loadedDoc = dbService.find(BehaviourType::class, savedDoc.get("db_id").intValue().toString())
-        Assertions.assertThat(loadedDoc as JsonNode).isNotNull
-        Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("plugin.session.timeout2")
-        Assertions.assertThat(loadedDoc.get("active")?.booleanValue()).isEqualTo(false)
-        Assertions.assertThat(loadedDoc.get("data")?.isObject).isTrue
-        Assertions.assertThat(loadedDoc.get("data")?.get("duration")?.intValue()).isEqualTo(500)
-        Assertions.assertThat(loadedDoc.has("dataFields")).isFalse
+        Assertions.assertThat(behaviourRepo.count()).isEqualTo(oldCount + 1)
+
+        Assertions.assertThat(savedDoc.id).isNotNull
+
+        val loadedDoc = behaviourRepo.findByIdOrNull(savedDoc.id)
+        Assertions.assertThat(loadedDoc).isNotNull
+        Assertions.assertThat(loadedDoc?.name).isEqualTo("plugin.session.timeout2")
+        Assertions.assertThat(loadedDoc?.active).isEqualTo(false)
+        Assertions.assertThat(loadedDoc?.data?.get("duration")).isEqualTo(500)
     }
 
     @Test
@@ -295,8 +300,9 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
         val savedDoc = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val query = listOf(QueryField("userId", userId))
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false)
+                queryType = QueryType.EXACT,
+                resolveReferences = false
+            )
             val list = dbService.findAll(UserInfoType::class, query, findOptions)
             val user = list.hits[0] as ObjectNode
 
@@ -330,8 +336,9 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
         val savedDoc = dbService.acquireCatalog("test_catalog").use {
             val query = listOf(QueryField(FIELD_ID, uuid))
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false)
+                queryType = QueryType.EXACT,
+                resolveReferences = false
+            )
             val list = dbService.findAll(DocumentWrapperType::class, query, findOptions)
             val wrapper = list.hits[0] as ObjectNode
 
@@ -425,11 +432,11 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
 
     @Test
     fun `getting a record id`() {
-        val catalogRecordId = dbService.getRecordId(CatalogInfoType::class, "test_catalog")!!
-        Assertions.assertThat(catalogRecordId).isEqualTo("100")
+        val catalogRecordId = catalogRepo.findByIdentifier("test_catalog").id
+        Assertions.assertThat(catalogRecordId).isEqualTo(100)
 
-        val behaviourRecordId = dbService.getRecordId(BehaviourType::class, "plugin.address.title")!!
-        Assertions.assertThat(behaviourRecordId).isEqualTo("202")
+        val behaviourRecordId = behaviourRepo.findAll().find { it.name == "plugin.address.title"}?.id
+        Assertions.assertThat(behaviourRecordId).isEqualTo(202)
     }
 
     @Test
@@ -452,70 +459,73 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
     fun `finding documents by query, query embedded json by data column name`() {
         val from = LocalDateTime.of(2020, Month.OCTOBER, 1, 0, 0, 0)
         val queryMap = listOfNotNull(
-                QueryField("logger", "audit.data-history"),
-                QueryField("message.target", "36169aa1-5faf-4d8e-9dd6-18c95012312d"),
-                QueryField("message.actor", "user1"),
-                QueryField("message.time", " >=", from.format(DateTimeFormatter.ISO_LOCAL_DATE)),
-                QueryField("message.time", " <=", from.plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)),
-                QueryField("message.data.description", "Test description")
+            QueryField("logger", "audit.data-history"),
+            QueryField("message.target", "36169aa1-5faf-4d8e-9dd6-18c95012312d"),
+            QueryField("message.actor", "user1"),
+            QueryField("message.time", " >=", from.format(DateTimeFormatter.ISO_LOCAL_DATE)),
+            QueryField("message.time", " <=", from.plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)),
+            QueryField("message.data.description", "Test description")
         ).toList()
 
         val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
-                    queryOperator = QueryOperator.AND
+                queryOperator = QueryOperator.AND
             )
             dbService.findAll(AuditLogRecordType::class, queryMap, findOptions)
         }
 
         Assertions.assertThat(result.totalHits).isEqualTo(1)
-        Assertions.assertThat(result.hits[0].get("data")?.get("uuid")?.textValue()).isEqualTo("36169aa1-5faf-4d8e-9dd6-18c95012312d")
+        Assertions.assertThat(result.hits[0].get("data")?.get("uuid")?.textValue())
+            .isEqualTo("36169aa1-5faf-4d8e-9dd6-18c95012312d")
     }
 
     @Test
     fun `finding documents by query, query embedded json by data property name`() {
         val from = LocalDateTime.of(2020, Month.OCTOBER, 1, 0, 0, 0)
         val queryMap = listOfNotNull(
-                QueryField("logger", "audit.data-history"),
-                QueryField("data.target", "36169aa1-5faf-4d8e-9dd6-18c95012312d"),
-                QueryField("data.actor", "user1"),
-                QueryField("data.time", " >=", from.format(DateTimeFormatter.ISO_LOCAL_DATE)),
-                QueryField("data.time", " <=", from.plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)),
-                QueryField("data.data.description", "Test description")
+            QueryField("logger", "audit.data-history"),
+            QueryField("data.target", "36169aa1-5faf-4d8e-9dd6-18c95012312d"),
+            QueryField("data.actor", "user1"),
+            QueryField("data.time", " >=", from.format(DateTimeFormatter.ISO_LOCAL_DATE)),
+            QueryField("data.time", " <=", from.plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)),
+            QueryField("data.data.description", "Test description")
         ).toList()
 
         val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
-                    queryOperator = QueryOperator.AND
+                queryOperator = QueryOperator.AND
             )
             dbService.findAll(AuditLogRecordType::class, queryMap, findOptions)
         }
 
         Assertions.assertThat(result.totalHits).isEqualTo(1)
-        Assertions.assertThat(result.hits[0].get("data")?.get("uuid")?.textValue()).isEqualTo("36169aa1-5faf-4d8e-9dd6-18c95012312d")
+        Assertions.assertThat(result.hits[0].get("data")?.get("uuid")?.textValue())
+            .isEqualTo("36169aa1-5faf-4d8e-9dd6-18c95012312d")
     }
 
     @Test
     fun `finding documents by query, query embedded json directly (without property name)`() {
         val from = LocalDateTime.of(2020, Month.OCTOBER, 1, 0, 0, 0)
         val queryMap = listOfNotNull(
-                QueryField("logger", "audit.data-history"),
-                QueryField("target", "36169aa1-5faf-4d8e-9dd6-18c95012312d"),
-                QueryField("actor", "user1"),
-                QueryField("time", " >=", from.format(DateTimeFormatter.ISO_LOCAL_DATE)),
-                QueryField("time", " <=", from.plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)),
-                // NOTE because "data.description" is ambiguous, we need to specify the full path
-                QueryField("message.data.description", "Test description")
+            QueryField("logger", "audit.data-history"),
+            QueryField("target", "36169aa1-5faf-4d8e-9dd6-18c95012312d"),
+            QueryField("actor", "user1"),
+            QueryField("time", " >=", from.format(DateTimeFormatter.ISO_LOCAL_DATE)),
+            QueryField("time", " <=", from.plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)),
+            // NOTE because "data.description" is ambiguous, we need to specify the full path
+            QueryField("message.data.description", "Test description")
         ).toList()
 
         val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
-                    queryOperator = QueryOperator.AND
+                queryOperator = QueryOperator.AND
             )
             dbService.findAll(AuditLogRecordType::class, queryMap, findOptions)
         }
 
         Assertions.assertThat(result.totalHits).isEqualTo(1)
-        Assertions.assertThat(result.hits[0].get("data")?.get("uuid")?.textValue()).isEqualTo("36169aa1-5faf-4d8e-9dd6-18c95012312d")
+        Assertions.assertThat(result.hits[0].get("data")?.get("uuid")?.textValue())
+            .isEqualTo("36169aa1-5faf-4d8e-9dd6-18c95012312d")
     }
 
     @Test
@@ -547,49 +557,54 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
         val cat = "address"
 
         val queryOptions = QueryOptions(
-                queryType = QueryType.LIKE,
-                queryOperator = QueryOperator.AND
+            queryType = QueryType.LIKE,
+            queryOperator = QueryOperator.AND
         )
         val queryMap = listOf(
-                Pair(listOf(
-                        QueryField(FIELD_CATEGORY, " =", cat),
-                        QueryField("draft.title", query),
-                        QueryField("draft.lastName", "Mustermann")
-                ), queryOptions),
-                Pair(listOf(
-                        QueryField(FIELD_CATEGORY, " =", cat),
-                        QueryField("draft", null),
-                        QueryField("published.title", query),
-                        QueryField("published.data.lastName", "Mustermann")
-                ), queryOptions)
+            Pair(
+                listOf(
+                    QueryField(FIELD_CATEGORY, " =", cat),
+                    QueryField("draft.title", query),
+                    QueryField("draft.lastName", "Mustermann")
+                ), queryOptions
+            ),
+            Pair(
+                listOf(
+                    QueryField(FIELD_CATEGORY, " =", cat),
+                    QueryField("draft", null),
+                    QueryField("published.title", query),
+                    QueryField("published.data.lastName", "Mustermann")
+                ), queryOptions
+            )
         )
 
         val findOptions = FindOptions(
-                queryOperator = QueryOperator.OR,
-                size = 10,
-                sortField = "_modified",
-                sortOrder = "ASC",
-                resolveReferences = true)
+            queryOperator = QueryOperator.OR,
+            size = 10,
+            sortField = "_modified",
+            sortOrder = "ASC",
+            resolveReferences = true
+        )
         val result = dbService.acquireCatalog("test_catalog").use {
             dbService.findAllExt(DocumentWrapperType::class, queryMap, findOptions)
         }
         Assertions.assertThat(result.totalHits).isEqualTo(1)
 
         Assertions.assertThat(dbService.getLastQuery()).isEqualTo(
-                "SELECT *, GREATEST(document1.modified, document2.modified) as query_sort_field " +
-                "FROM document_wrapper document_wrapper1 " +
-                "LEFT JOIN document document1 ON document_wrapper1.draft = document1.id " +
-                "LEFT JOIN document document2 ON document_wrapper1.published = document2.id " +
-                "WHERE  " +
-                        "(document_wrapper1.category = :p1_0 AND " +
-                        "document1.title ILIKE :p1_1 AND " +
-                        "document1.data->>'lastName' ILIKE :p1_2)  " +
-                "OR  " +
-                        "(document_wrapper1.category = :p2_0 AND " +
-                        "document_wrapper1.draft IS NULL AND " +
-                        "document2.title ILIKE :p2_2 AND " +
-                        "document2.data->>'lastName' ILIKE :p2_3)  " +
-                "ORDER BY query_sort_field ASC LIMIT 10"
+            "SELECT *, GREATEST(document1.modified, document2.modified) as query_sort_field " +
+                    "FROM document_wrapper document_wrapper1 " +
+                    "LEFT JOIN document document1 ON document_wrapper1.draft = document1.id " +
+                    "LEFT JOIN document document2 ON document_wrapper1.published = document2.id " +
+                    "WHERE  " +
+                    "(document_wrapper1.category = :p1_0 AND " +
+                    "document1.title ILIKE :p1_1 AND " +
+                    "document1.data->>'lastName' ILIKE :p1_2)  " +
+                    "OR  " +
+                    "(document_wrapper1.category = :p2_0 AND " +
+                    "document_wrapper1.draft IS NULL AND " +
+                    "document2.title ILIKE :p2_2 AND " +
+                    "document2.data->>'lastName' ILIKE :p2_3)  " +
+                    "ORDER BY query_sort_field ASC LIMIT 10"
         )
     }
 
@@ -597,13 +612,13 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
     fun `finding documents by query, query by unwrapped superclass attribute`() {
         // data attribute of UserInfo is mapped by base class and unwrapped
         val queryMap = listOfNotNull(
-                QueryField("recentLogins", "", true) // recentLogins != ''
+            QueryField("recentLogins", "", true) // recentLogins != ''
         ).toList()
 
         val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    queryOperator = QueryOperator.AND
+                queryType = QueryType.EXACT,
+                queryOperator = QueryOperator.AND
             )
             dbService.findAll(UserInfoType::class, queryMap, findOptions)
         }
@@ -612,35 +627,37 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
         Assertions.assertThat(result.hits[0].get("recentLogins")?.isArray)
     }
 
-    @Test
+    /* TODO: @Test
     fun `finding documents by query, query by wrapped superclass attribute`() {
         // data attribute of Behaviour is mapped by base class and wrapped
         val queryMap = listOfNotNull(
-                QueryField("data.duration", "1200")
+            QueryField("data.duration", "1200")
         ).toList()
 
         val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    queryOperator = QueryOperator.AND
+                queryType = QueryType.EXACT,
+                queryOperator = QueryOperator.AND
             )
             dbService.findAll(BehaviourType::class, queryMap, findOptions)
         }
+//        behaviourRepo.findAll
 
         Assertions.assertThat(result.totalHits).isEqualTo(1)
         Assertions.assertThat(result.hits[0].get("data")?.get("duration")?.intValue()).isEqualTo(1200)
-    }
+    }*/
 
     @Test
     fun `finding documents by query, query by mapped (many-to-many) relation`() {
         val queryMap = listOfNotNull(
-                QueryField("catalogIds", "test_catalog")
+            QueryField("catalogIds", "test_catalog")
         ).toList()
 
         val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
-                    queryType = QueryType.CONTAINS,
-                    resolveReferences = false)
+                queryType = QueryType.CONTAINS,
+                resolveReferences = false
+            )
             dbService.findAll(UserInfoType::class, queryMap, findOptions)
         }
 
@@ -653,27 +670,31 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
     @Test
     fun `finding documents by query, resolve references`() {
         val queryMap = listOfNotNull(
-                QueryField("_id", "4e91e8f8-1e16-c4d2-6689-02adc03fb352"),
+            QueryField("_id", "4e91e8f8-1e16-c4d2-6689-02adc03fb352"),
         ).toList()
 
         val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
             val findOptions = FindOptions(
-                    queryOperator = QueryOperator.AND,
-                    resolveReferences = true
+                queryOperator = QueryOperator.AND,
+                resolveReferences = true
             )
             dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
         }
 
         Assertions.assertThat(result.totalHits).isEqualTo(1)
-        Assertions.assertThat(result.hits[0].get(FIELD_ID)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(result.hits[0].get(FIELD_ID)?.textValue())
+            .isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
 
         val loadedDoc = result.hits[0]
         Assertions.assertThat(loadedDoc.get(FIELD_DRAFT)?.isObject).isTrue
-        Assertions.assertThat(loadedDoc.get(FIELD_DRAFT)?.get(FIELD_ID)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
-        Assertions.assertThat(loadedDoc.get(FIELD_PUBLISHED)?.get(FIELD_ID)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(loadedDoc.get(FIELD_DRAFT)?.get(FIELD_ID)?.textValue())
+            .isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(loadedDoc.get(FIELD_PUBLISHED)?.get(FIELD_ID)?.textValue())
+            .isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
         Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE)?.isArray).isTrue
         Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE).size()).isEqualTo(1)
-        Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE).get(0).get(FIELD_ID)?.textValue()).isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
+        Assertions.assertThat(loadedDoc.get(FIELD_ARCHIVE).get(0).get(FIELD_ID)?.textValue())
+            .isEqualTo("4e91e8f8-1e16-c4d2-6689-02adc03fb352")
     }
 
     @Test
@@ -770,7 +791,7 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
         // owned entities are deleted
         Assertions.assertThat(dbService.findAll(DocumentType::class).size).isEqualTo(0)
         Assertions.assertThat(dbService.findAll(DocumentWrapperType::class).size).isEqualTo(0)
-        Assertions.assertThat(dbService.findAll(BehaviourType::class).size).isEqualTo(0)
+        Assertions.assertThat(behaviourRepo.count()).isEqualTo(0)
 
         // user still exists
         Assertions.assertThat(dbService.findAll(UserInfoType::class).size).isEqualTo(1)

@@ -2,11 +2,11 @@ package de.ingrid.igeserver.persistence.postgresql
 
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
-import de.ingrid.igeserver.persistence.model.meta.BehaviourType
 import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.postgresql.jpa.ModelRegistry
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.repository.BehaviourRepository
 import de.ingrid.igeserver.services.*
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.spring.SpringListener
@@ -31,6 +31,9 @@ class EntityAttributeTest : AnnotationSpec() {
 
     @Autowired
     private lateinit var dbService: PostgreSQLDatabase
+    
+    @Autowired
+    private lateinit var behaviourRepository: BehaviourRepository
 
     @Test
     fun `get meta data`() {
@@ -65,21 +68,17 @@ class EntityAttributeTest : AnnotationSpec() {
     fun `get behaviour`() {
         val id = 202
 
-        val loadedDoc = dbService.find(BehaviourType::class, id.toString())!!
+        val loadedDoc = behaviourRepository.findById(id).get()
 
-        Assertions.assertThat(loadedDoc.get("db_id")?.intValue()).isEqualTo(id)
-        Assertions.assertThat(dbService.getRecordId(loadedDoc)).isEqualTo(id.toString())
+        Assertions.assertThat(loadedDoc.id).isEqualTo(id)
 
-        Assertions.assertThat(loadedDoc.get(FIELD_ID)?.textValue()).isEqualTo("plugin.address.title")
-        Assertions.assertThat(loadedDoc.get("active")?.booleanValue()).isEqualTo(true)
-        Assertions.assertThat(loadedDoc.get("data")?.isObject).isTrue
-        Assertions.assertThat(loadedDoc.get("data")?.get("template")?.textValue()).isEqualTo("address template")
-        Assertions.assertThat(loadedDoc.has("type")).isFalse
-        Assertions.assertThat(loadedDoc.has("dataFields")).isFalse
+        Assertions.assertThat(loadedDoc.name).isEqualTo("plugin.address.title")
+        Assertions.assertThat(loadedDoc.active).isEqualTo(true)
+        Assertions.assertThat(loadedDoc.data?.get("template")).isEqualTo("address template")
 
-        dbService.removeInternalFields(loadedDoc)
+//        dbService.removeInternalFields(loadedDoc)
 
-        Assertions.assertThat(loadedDoc.has("db_id")).isFalse
+//        Assertions.assertThat(loadedDoc.has("db_id")).isFalse
     }
 
     @Test

@@ -2,10 +2,10 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.api.NotFoundException
-import de.ingrid.igeserver.model.Catalog
+import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedMap
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.UserRepository
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
-import kotlin.collections.HashSet
 
 @Service
 class CatalogService @Autowired constructor(
@@ -81,14 +80,8 @@ class CatalogService @Autowired constructor(
 
     fun getCatalogById(id: String): Catalog {
 
-        val catalog = catalogRepo.findByIdentifier(id)
+        return catalogRepo.findByIdentifier(id)
 
-        return Catalog(
-            id,
-            catalog.name,
-            catalog.description ?: "",
-            catalog.type ?: ""
-        )
     }
 
     fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String?>?) {
@@ -122,6 +115,47 @@ class CatalogService @Autowired constructor(
         this.catalogProfiles
             .find { it.identifier == type }
             ?.initCatalogCodelists(catalogId, codelistId)
+    }
+
+    fun getCatalogs(): List<Catalog> {
+        return catalogRepo.findAll()
+    }
+
+    fun createCatalog(catalog: Catalog): Catalog {
+        val id = catalog.name.toLowerCase().replace(" ".toRegex(), "_")
+        if (!catalogExists(id)) {
+            return catalogRepo.save(catalog)
+        }
+        return getCatalogById(id)
+    }
+
+    private fun catalogExists(name: String): Boolean {
+        return try {
+            getCatalogById(name)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun updateCatalog(updatedCatalog: Catalog) {
+        if (updatedCatalog.id == null || !catalogExists(updatedCatalog.identifier)) {
+            throw PersistenceException.withReason("Catalog '${updatedCatalog.id}' does not exist.")
+        }
+        
+        val catalog = getCatalogById(updatedCatalog.identifier)
+        catalog.name = updatedCatalog.name
+        catalog.description = updatedCatalog.description
+        catalogRepo.save(catalog)
+    }
+
+    fun removeCatalog(name: String) {
+        if (!catalogExists(name)) {
+            throw PersistenceException.withReason("Failed to delete non-existing catalog with name '$name'.")
+        }
+
+        val catalog = getCatalogById(name)
+        catalogRepo.delete(catalog)
     }
 
     companion object {

@@ -21,11 +21,11 @@ class Catalog : EntityBase() {
 
     @Column(nullable=false)
     @JsonProperty("id")
-    var identifier: String? = null
+    lateinit var identifier: String
 
     // TODO: make type non null
     @Column(nullable=false)
-    var type: String? = null
+    lateinit var type: String
 
     @Column(nullable=false)
     lateinit var name: String

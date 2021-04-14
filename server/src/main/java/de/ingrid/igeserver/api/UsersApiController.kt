@@ -9,6 +9,8 @@ import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
@@ -92,7 +94,7 @@ class UsersApiController : UsersApi {
         return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
     }
 
-    override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
+    override fun currentUserInfo(principal: Principal?): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val user = keycloakService.getUser(principal, userId)
@@ -100,7 +102,8 @@ class UsersApiController : UsersApi {
         val lastLogin = this.getLastLogin(principal, user.login)
         val dbIds = catalogService.getCatalogsForUser(user.login)
         val dbIdsValid: MutableSet<String> = HashSet()
-        val assignedCatalogs: MutableList<Catalog> = ArrayList()
+        val assignedCatalogs: MutableList<Catalog> =
+            ArrayList()
         for (dbId in dbIds) {
             val catalogById = catalogService.getCatalogById(dbId)
             assignedCatalogs.add(catalogById)
@@ -115,18 +118,20 @@ class UsersApiController : UsersApi {
         val catalog: Catalog? = try {
             val currentCatalogForUser = catalogService.getCurrentCatalogForUser(user.login)
             catalogService.getCatalogById(currentCatalogForUser)
-        } catch (ex: NotFoundException) { null }
+        } catch (ex: NotFoundException) {
+            null
+        }
 
-        val userInfo = UserInfo(
-                userId = user.login,
-                name =  user.firstName + ' ' + user.lastName,
-                lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
-                firstName = user.firstName,
-                assignedCatalogs = assignedCatalogs,
-                roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?),
-                currentCatalog = catalog,
-                version = getVersion(),
-                lastLogin = lastLogin
+        val userInfo = de.ingrid.igeserver.model.UserInfo(
+            userId = user.login,
+            name = user.firstName + ' ' + user.lastName,
+            lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
+            firstName = user.firstName,
+            assignedCatalogs = assignedCatalogs,
+            roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?),
+            currentCatalog = catalog,
+            version = getVersion(),
+            lastLogin = lastLogin
         )
         return ResponseEntity.ok(userInfo)
     }
@@ -158,8 +163,9 @@ class UsersApiController : UsersApi {
     }
 
     override fun setCatalogAdmin(
-            principal: Principal?,
-            info: CatalogAdmin): ResponseEntity<UserInfo?> {
+        principal: Principal?,
+        info: CatalogAdmin
+    ): ResponseEntity<de.ingrid.igeserver.model.UserInfo?> {
 
         val userIds = info.userIds
         if (userIds.isEmpty()) {
@@ -178,8 +184,9 @@ class UsersApiController : UsersApi {
 
         val query = listOf(QueryField("userId", userId))
         val findOptions = FindOptions(
-                queryType = QueryType.EXACT,
-                resolveReferences = false)
+            queryType = QueryType.EXACT,
+            resolveReferences = false
+        )
         val list = dbService.findAll(UserInfoType::class, query, findOptions)
 
         val isNewEntry = list.totalHits == 0L
@@ -220,8 +227,9 @@ class UsersApiController : UsersApi {
         dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
             val query = listOf(QueryField("catalogIds", id))
             val findOptions = FindOptions(
-                    queryType = QueryType.CONTAINS,
-                    resolveReferences = false)
+                queryType = QueryType.CONTAINS,
+                resolveReferences = false
+            )
             val info = dbService.findAll(UserInfoType::class, query, findOptions)
             info.hits.forEach { result.add(it["userId"].asText()) }
         }
@@ -234,14 +242,19 @@ class UsersApiController : UsersApi {
         dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
             val query = listOf(QueryField("userId", userId))
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false)
+                queryType = QueryType.EXACT,
+                resolveReferences = false
+            )
             val info = dbService.findAll(UserInfoType::class, query, findOptions)
             val objectNode = when (info.totalHits) {
                 0L -> ObjectMapper().createObjectNode()
                 1L -> (info.hits[0] as ObjectNode)
                 else -> {
-                    throw PersistenceException.withMultipleEntities(userId, UserInfoType::class.simpleName, dbService.currentCatalog)
+                    throw PersistenceException.withMultipleEntities(
+                        userId,
+                        UserInfoType::class.simpleName,
+                        dbService.currentCatalog
+                    )
                 }
             }.put("currentCatalogId", catalogId)
 
