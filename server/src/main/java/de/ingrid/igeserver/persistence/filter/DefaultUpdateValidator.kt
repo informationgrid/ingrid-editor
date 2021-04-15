@@ -1,15 +1,11 @@
 package de.ingrid.igeserver.persistence.filter
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.DocumentRepository
-import de.ingrid.igeserver.services.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -26,9 +22,6 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
     override val profiles: Array<String>?
         get() = PROFILES
 
-    @Autowired
-    private lateinit var dbService: DBApi
-    
     @Autowired
     private lateinit var documentRepo: DocumentRepository
 

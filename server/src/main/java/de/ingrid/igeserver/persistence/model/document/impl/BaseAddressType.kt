@@ -2,8 +2,10 @@ package de.ingrid.igeserver.persistence.model.document.impl
 
 import de.ingrid.igeserver.persistence.model.document.AddressType
 import de.ingrid.igeserver.services.DocumentCategory
+import org.springframework.stereotype.Component
 
-open class BaseAddressType : AddressType {
+@Component
+class BaseAddressType : AddressType {
 
     companion object {
         @JvmStatic

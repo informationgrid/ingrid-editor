@@ -3,6 +3,7 @@ package de.ingrid.igeserver.exports.iso
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import java.io.StringWriter
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.JAXBException
@@ -12,16 +13,16 @@ class IsoExporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
         get() = ExportTypeInfo("xxx", "IsoExporter", "", "text/xml", "xml", listOf())
 
-    override fun run(jsonData: JsonNode): Any {
+    override fun run(jsonData: Document): Any {
         return mapMetadata(jsonData)
     }
 
-    private fun mapMetadata(tree: JsonNode): Metadata {
+    private fun mapMetadata(tree: Document): Metadata {
         val md = Metadata()
-        md.setUuid(tree.path("_id").asText())
-        md.language = tree.path("metadataLanguage").path("value").asText()
-        md.setCharacterSet(tree.path("").asText())
-        md.setParentIdentifier(tree.path("_parent").asText(null))
+        md.setUuid(tree.data.path("_id").asText())
+        md.language = tree.data.path("metadataLanguage").path("value").asText()
+        md.setCharacterSet(tree.data.path("").asText())
+        md.setParentIdentifier(tree.data.path("_parent").asText(null))
         md.setHierarchyLevel("dataset")
         md.setContact("12345", "pointOfContact")
         md.setDateStamp("1978-10-10")

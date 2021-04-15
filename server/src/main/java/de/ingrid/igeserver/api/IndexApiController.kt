@@ -3,7 +3,6 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.model.IndexRequestOptions
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +13,7 @@ import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api"])
-class IndexApiController @Autowired constructor(private val catalogService: CatalogService, private val dbService: DBApi, private val indexService: IndexService, private val indexingTask: IndexingTask) : IndexApi {
+class IndexApiController @Autowired constructor(private val catalogService: CatalogService, private val indexService: IndexService, private val indexingTask: IndexingTask) : IndexApi {
     override fun startIndexing(principal: Principal?, options: IndexRequestOptions): ResponseEntity<Void> {
 
         indexingTask.startIndexing(options.catalogId, options.format)

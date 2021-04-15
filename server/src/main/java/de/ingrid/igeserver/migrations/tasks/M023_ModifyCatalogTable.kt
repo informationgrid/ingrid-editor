@@ -1,12 +1,12 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
-import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
@@ -21,7 +21,7 @@ class M023_ModifyCatalogTable : MigrationBase("0.23") {
     lateinit var entityManager: EntityManager
 
     @Autowired
-    lateinit var dbService: DBApi
+    private lateinit var transactionManager: PlatformTransactionManager
 
     private val sql = """
         alter table catalog add settings jsonb;
@@ -29,10 +29,9 @@ class M023_ModifyCatalogTable : MigrationBase("0.23") {
     """.trimIndent()
 
     override fun exec() {
-        dbService.acquireDatabase().use {
+        ClosableTransaction(transactionManager).use {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
-
     }
 
 }

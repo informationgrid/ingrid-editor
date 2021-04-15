@@ -2,8 +2,10 @@ package de.ingrid.igeserver.persistence.model.document.impl
 
 import de.ingrid.igeserver.persistence.model.document.FolderType
 import de.ingrid.igeserver.services.DocumentCategory
+import org.springframework.stereotype.Component
 
-open class BaseFolderType : FolderType {
+@Component
+class BaseFolderType : FolderType {
 
     companion object {
         @JvmStatic

@@ -8,20 +8,19 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
-import de.ingrid.igeserver.persistence.*
+import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.FindOptions
+import de.ingrid.igeserver.persistence.QueryOperator
+import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
-import de.ingrid.igeserver.persistence.model.document.DocumentType
-import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
-import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedData
-import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedMap
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Example
 import org.springframework.stereotype.Service
 
 @Service
@@ -29,9 +28,6 @@ class DocumentService : MapperService() {
 
     @Autowired
     private lateinit var documentTypes: List<EntityType>
-
-    @Autowired
-    private lateinit var dbService: DBApi
 
     @Autowired
     private lateinit var docRepo: DocumentRepository
@@ -96,9 +92,9 @@ class DocumentService : MapperService() {
 
     }
 
-    fun determineHasChildren(doc: JsonNode): Boolean {
-        val id = doc[FIELD_ID].asText()
-        return dbService.countChildren(id) > 0
+    fun determineHasChildren(doc: DocumentWrapper): Boolean {
+        val example = DocumentWrapper().apply { parent = DocumentWrapper().apply { uuid = doc.uuid }}
+        return docWrapperRepo.count(Example.of(example)) > 0
     }
 
     fun findChildrenDocs(catalogId: String, parentId: String?, isAddress: Boolean): FindAllResults {
@@ -121,7 +117,7 @@ class DocumentService : MapperService() {
         )
 
 //        return dbService.findAll(DocumentWrapperType::class, queryMap, findOptions)
-        val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParentUuidAndCategory(
+        val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_UuidAndCategory(
             catalogId,
             parentId,
             docCat?.value ?: "data"
@@ -146,7 +142,7 @@ class DocumentService : MapperService() {
 
         val doc = getLatestDocumentVersion(wrapper, onlyPublished)
 
-        return prepareDocument(doc as ObjectNode, wrapper.type, onlyPublished, resolveLinks)
+        return prepareDocument(doc, wrapper.type!!, onlyPublished, resolveLinks)
     }
 
     fun getDocumentType(docType: String): EntityType {
@@ -160,7 +156,7 @@ class DocumentService : MapperService() {
         address: Boolean = false,
         publish: Boolean = false
     ): JsonNode {
-        val filterContext = DefaultContext.withCurrentProfile(dbService.currentCatalog, catalogRepo)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
         
@@ -192,18 +188,28 @@ class DocumentService : MapperService() {
 
         // also run update pipes!
         val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
-        val latestDocument = getLatestDocument(postWrapper)
+//        val latestDocument = getLatestDocument(postWrapper)
+        val latestDocument = getLatestDocumentVersion(postWrapper, false)
+        
          
         return convertToJsonNode(latestDocument)
     }
 
-    private fun convertToJsonNode(document: Document): JsonNode {
+    /**
+     * Map data-field from entity to root
+     */
+    fun convertToJsonNode(document: Document): JsonNode {
         
-        return jacksonObjectMapper().convertValue(document, JsonNode::class.java)
+        val node = jacksonObjectMapper().convertValue(document, ObjectNode::class.java)
+        val data = node.remove("data")
+        data.fields().forEach { entry ->
+            node.replace(entry.key, entry.value)
+        }
+        return node
         
     }
 
-    private fun convertToDocument(docJson: JsonNode): Document {
+    fun convertToDocument(docJson: JsonNode): Document {
 
         val titleString = docJson.get("title").asText()
         
@@ -215,7 +221,7 @@ class DocumentService : MapperService() {
     }
 
     fun updateDocument(catalogId: String, id: String, data: Document, publish: Boolean = false): Document {
-        val filterContext = DefaultContext.withCurrentProfile(dbService.currentCatalog, catalogRepo)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
 //        val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
 //        val docType = getDocumentType(docTypeName)
 
@@ -295,7 +301,7 @@ class DocumentService : MapperService() {
     }
 
     fun deleteRecursively(catalogId: String, id: String) {
-        val filterContext = DefaultContext.withCurrentProfile(dbService.currentCatalog, catalogRepo)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
 
         // run pre-delete pipe(s)
         val wrapper = getWrapperByDocumentId(id, true)
@@ -352,7 +358,7 @@ class DocumentService : MapperService() {
         return publishedDoc
     }
 
-    fun getDocumentStatistic(): StatisticResponse {
+    fun getDocumentStatistic(catalogId: String): StatisticResponse {
 
         // TODO: filter by not marked deleted
 
@@ -367,24 +373,14 @@ class DocumentService : MapperService() {
             QueryField(FIELD_DRAFT, null, true)
         )
 
-        val allDocumentQuery = listOf(
-            QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value),
-            QueryField(FIELD_DOCUMENT_TYPE, DocumentCategory.FOLDER.value, true)
-        )
-
-        val options = FindOptions(
-            queryOperator = QueryOperator.AND,
-            queryType = QueryType.EXACT
-        )
-
-        val allData = dbService.findAll(DocumentWrapperType::class, allDocumentQuery, options)
-        val allDataDrafts = dbService.findAll(DocumentWrapperType::class, allDocumentDraftsQuery, options)
-        val allDataPublished = dbService.findAll(DocumentWrapperType::class, allDocumentPublishedQuery, options)
+        val allData = docWrapperRepo.findAllByCatalog_IdentifierAndCategory(catalogId, DocumentCategory.DATA.value)
+        val allDataDrafts = docWrapperRepo.findAllDrafts(catalogId)
+        val allDataPublished = docWrapperRepo.findAllPublished(catalogId)
 
         return StatisticResponse(
-            totalNum = allData.totalHits,
-            numDrafts = allDataDrafts.totalHits,
-            numPublished = allDataPublished.totalHits
+            totalNum = allData.size,
+            numDrafts = allDataDrafts.size,
+            numPublished = allDataPublished.size
         )
     }
 
@@ -436,17 +432,17 @@ class DocumentService : MapperService() {
     }
 
     private fun prepareDocument(
-        docData: ObjectNode,
+        docData: Document,
         docType: String,
         onlyPublished: Boolean = false,
         resolveLinks: Boolean = true
-    ): JsonNode {
+    ): Document {
         // set empty parent fields explicitly to null
-        val parent = docData.has(FIELD_PARENT)
-        if (!parent || docData.get(FIELD_PARENT).asText().isEmpty()) {
-            docData.put(FIELD_PARENT, null as String?)
+        val parent = docData.data.has(FIELD_PARENT)
+        if (!parent || docData.data.get(FIELD_PARENT).asText().isEmpty()) {
+            docData.data.put(FIELD_PARENT, null as String?)
         }
-        dbService.removeInternalFields(docData)
+//        dbService.removeInternalFields(docData)
 
         // get latest references from links
         if (resolveLinks) {

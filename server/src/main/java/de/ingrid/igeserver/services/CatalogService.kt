@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.persistence.PersistenceException
-import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedMap
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -35,16 +34,13 @@ class CatalogService @Autowired constructor(
 
         val userData = userRepo.findByUserId(userId).data ?: throw NotFoundException.withMissingUserCatalog(userId)
 
-        val currentCatalogId = when (userData.containsKey("currentCatalogId")) {
-            true -> userData["currentCatalogId"].toString()
-            else -> null
-        }
+        val currentCatalogId = userData.currentCatalogId
 
         return when (currentCatalogId != null && currentCatalogId.trim() != "") {
             true -> currentCatalogId
             else -> {
                 // ... or first catalog, if existing
-                val catalogIds = userData["catalogIds"] as List<String>?
+                val catalogIds = userData.catalogIds
                 if (catalogIds == null || catalogIds.size == 0) {
                     throw NotFoundException.withMissingUserCatalog(userId)
                 }
@@ -61,7 +57,7 @@ class CatalogService @Autowired constructor(
             log.error("The user '$userId' does not seem to be assigned to any database.")
             HashSet()
         } else {
-            val catalogIds = userData["catalogIds"]
+            val catalogIds = userData.catalogIds
             return if (catalogIds == null) HashSet() else (catalogIds as List<String>).toSet()
         }
     }
@@ -73,7 +69,7 @@ class CatalogService @Autowired constructor(
         return if (userData == null) {
             log.error("The user '$userId' does not seem to be assigned to any database.")
             mutableListOf()
-        } else (userData["recentLogins"] as List<Long>?)
+        } else userData.recentLogins
             ?.map { Date(it) }
             ?.toMutableList() ?: mutableListOf()
     }
@@ -84,31 +80,20 @@ class CatalogService @Autowired constructor(
 
     }
 
-    fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String?>?) {
-        this.setFieldForUser(userId, "catalogIds", assignedCatalogs as Any)
+    fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String>?) {
+        val user = userRepo.findByUserId(userId)
+        user.data?.catalogIds = assignedCatalogs?.toList()
+        userRepo.save(user)
     }
 
     fun setRecentLoginsForUser(userId: String, recentLogins: Array<Date>) {
-        this.setFieldForUser(userId, "recentLogins", recentLogins as Any)
+        val user = userRepo.findByUserId(userId)
+        user.data?.recentLogins = recentLogins.map { it.time }
+        userRepo.save(user)
     }
 
     fun getAvailableCatalogs(): List<CatalogProfile> {
         return catalogProfiles
-    }
-
-    private fun setFieldForUser(userId: String, fieldId: String, fieldValue: Any) {
-
-        val user = userRepo.findByUserId(userId)
-
-        if (user.data == null) {
-            user.data = EmbeddedMap().apply {
-                put(fieldId, fieldValue)
-            }
-        } else {
-            user.data?.put(fieldId, fieldValue)
-        }
-
-        userRepo.save(user)
     }
 
     fun initializeCodelists(catalogId: String, type: String, codelistId: String? = null) {
@@ -142,7 +127,7 @@ class CatalogService @Autowired constructor(
         if (updatedCatalog.id == null || !catalogExists(updatedCatalog.identifier)) {
             throw PersistenceException.withReason("Catalog '${updatedCatalog.id}' does not exist.")
         }
-        
+
         val catalog = getCatalogById(updatedCatalog.identifier)
         catalog.name = updatedCatalog.name
         catalog.description = updatedCatalog.description

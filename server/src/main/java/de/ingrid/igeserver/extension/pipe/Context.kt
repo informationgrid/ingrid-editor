@@ -13,6 +13,11 @@ interface Context {
     val profile: String?
 
     /**
+     * The catalog the operation is to be executed
+     */
+    val catalogId: String
+
+    /**
      * Properties holding additional information that could also be shared between filters
      *
      * NOTE Due to the dynamic configuration of pipes, filters should not make any assumptions

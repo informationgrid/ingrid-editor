@@ -9,7 +9,7 @@ import java.util.*
 /**
  * Default implementation of a filter context
  */
-open class DefaultContext(override val profile: String?) : Context {
+open class DefaultContext(override val catalogId: String, override val profile: String?) : Context {
 
     companion object {
         /**
@@ -17,7 +17,7 @@ open class DefaultContext(override val profile: String?) : Context {
          */
         fun withCurrentProfile(catalogId: String?, catalogRepo: CatalogRepository): DefaultContext {
             val catalogInfo = catalogRepo.findByIdentifier(catalogId!!)
-            return DefaultContext(catalogInfo.type)
+            return DefaultContext(catalogId, catalogInfo.type)
         }
     }
 

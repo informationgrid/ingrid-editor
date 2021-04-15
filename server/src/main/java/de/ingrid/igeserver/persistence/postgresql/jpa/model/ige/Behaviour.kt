@@ -2,7 +2,6 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import de.ingrid.igeserver.annotations.NoArgs
 import org.hibernate.annotations.Type
 import javax.persistence.*
 
@@ -27,7 +26,7 @@ class Behaviour {
     @Column(nullable = false)
     var active: Boolean? = null
 
-    @Type(type = "embeddedData")
+    @Type(type = "jsonb")
     @Column(name = "data", columnDefinition = "jsonb")
     var data: Map<String, *>? = null
 

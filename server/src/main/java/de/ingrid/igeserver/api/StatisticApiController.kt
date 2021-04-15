@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.CatalogService
@@ -15,9 +14,6 @@ import java.security.Principal
 class StatisticApiController : StatisticApi {
 
     @Autowired
-    private lateinit var dbApi: DBApi
-
-    @Autowired
     private lateinit var dbService: DocumentService
 
     @Autowired
@@ -25,11 +21,9 @@ class StatisticApiController : StatisticApi {
 
     override fun getStatistic(principal: Principal?): ResponseEntity<StatisticResponse> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        dbApi.acquireCatalog(dbId).use {
-            val statistic = this.dbService.getDocumentStatistic()
-            return ResponseEntity.ok(statistic)
-        }
+        val statistic = this.dbService.getDocumentStatistic(catalogId)
+        return ResponseEntity.ok(statistic)
     }
 }

@@ -28,7 +28,7 @@ interface DatasetsApi {
             @Parameter(description = "Define the maximum number of returned documents.", allowEmptyValue = true) @RequestParam(value = "size", required = false) size: Int?,
             @Parameter(description = "Sort by a given field.") @RequestParam(value = "sort", required = false) sort: String?,
             @Parameter(description = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") sortOrder: String?,
-            @Parameter(description = "Search in addresses.") @RequestParam(value = "address", required = false) forAddress: Boolean): ResponseEntity<SearchResult<Document>>
+            @Parameter(description = "Search in addresses.") @RequestParam(value = "address", required = false) forAddress: Boolean): ResponseEntity<SearchResult<JsonNode>>
 
     @PostMapping(value = ["/datasets"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Create a complete dataset")
@@ -47,7 +47,7 @@ interface DatasetsApi {
             @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: String,
             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid Document,
             @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean,
-            @Parameter(description = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) revert: Boolean): ResponseEntity<Document>
+            @Parameter(description = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) revert: Boolean): ResponseEntity<JsonNode>
 
     @Operation(description = "Copy a dataset or tree under another dataset")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets have been copied successfully.")])
@@ -70,7 +70,7 @@ interface DatasetsApi {
     fun getChildren(
             principal: Principal?,
             @Parameter(description = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) parentId: String?,
-            @Parameter(description = "Define if we want to have addresses or documents.") @RequestParam(value = "address", required = false) isAddress: Boolean): ResponseEntity<List<Document>>
+            @Parameter(description = "Define if we want to have addresses or documents.") @RequestParam(value = "address", required = false) isAddress: Boolean): ResponseEntity<List<JsonNode>>
 
     @Operation(description = "Retrieve a dataset by a given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The dataset with the given ID."), ApiResponse(responseCode = "500", description = "Unexpected error")])
@@ -78,7 +78,7 @@ interface DatasetsApi {
     fun getByID(
             principal: Principal?,
             @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: String,
-            @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<Document>
+            @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<JsonNode>
 
     @Operation(description = "Get the hierarchical path of a document. Retrieve an array of ID of all parents leading to the given dataset ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Array of IDs.")])

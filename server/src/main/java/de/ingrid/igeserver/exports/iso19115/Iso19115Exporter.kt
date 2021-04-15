@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.mitchellbosecke.pebble.PebbleEngine
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.stereotype.Service
 import java.io.StringWriter
 import java.io.Writer
@@ -16,7 +17,7 @@ class Iso19115Exporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
         get() = info
 
-    override fun run(jsonData: JsonNode): Any {
+    override fun run(jsonData: Document): Any {
         val engine = PebbleEngine.Builder()
                 .newLineTrimming(false)
                 .build()
@@ -30,16 +31,16 @@ class Iso19115Exporter : IgeExporter {
         return ""
     }
 
-    private fun createContext(json: JsonNode): Map<String, Any> {
+    private fun createContext(json: Document): Map<String, Any> {
         val context: MutableMap<String, Any> = HashMap()
         val iso = Iso()
-        iso.title = getStringOf(json, "title")
-        iso.description = getStringOf(json, "description")
+        iso.title = json.title
+        iso.description = getStringOf(json.data, "description")
         iso.uuid = "123456789"
         iso.hierarchyLevel = "dataset"
         iso.modified = Date()
         iso.useConstraints = useConstraints
-        iso.thesauruses = getKeywords(json)
+        iso.thesauruses = getKeywords(json.data)
         context["iso"] = iso
         return context
     }

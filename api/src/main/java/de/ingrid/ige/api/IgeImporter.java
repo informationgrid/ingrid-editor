@@ -9,7 +9,7 @@ public interface IgeImporter {
 	 * @param data contains the file content which shall be imported
 	 * @return the transformed content of the file in the destination json format
 	 */
-	JsonNode run(Object data);
+	Object run(Object data);
 
 	/**
 	 * Check if a given file can be handled by this importer. This is needed to automatically determine which importer

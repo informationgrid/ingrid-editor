@@ -1,13 +1,13 @@
 package de.ingrid.igeserver.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document;
 
 public class ImportAnalyzeInfo {
     private String importType;
 
     private int numDocuments;
 
-    private JsonNode result;
+    private Document result;
 
     public String getImportType() {
         return importType;
@@ -25,11 +25,11 @@ public class ImportAnalyzeInfo {
         this.numDocuments = numDocuments;
     }
 
-    public JsonNode getResult() {
+    public Document getResult() {
         return result;
     }
 
-    public void setResult(JsonNode result) {
+    public void setResult(Document result) {
         this.result = result;
     }
 }

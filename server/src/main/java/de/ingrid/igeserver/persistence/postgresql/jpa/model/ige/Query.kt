@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.IgeEntity
 import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
 import javax.persistence.*
@@ -18,17 +16,17 @@ import kotlin.jvm.Transient
 @NoArgs
 @Entity
 @Table(name = "query")
-class Query : IgeEntity(), EntityWithCatalog {
+class Query {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @field:JsonProperty("id")
-    override var id: Int? = null
+    @JsonProperty("id")
+    var id: Int? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "catalog_id", nullable = false)
     @JsonIgnore
-    override var catalog: Catalog? = null
+    var catalog: Catalog? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
@@ -43,10 +41,10 @@ class Query : IgeEntity(), EntityWithCatalog {
 
     @Column
     var description: String? = null
-    
+
     @Column
-    @JsonSerialize(using= DateSerializer::class)
-    @JsonDeserialize(using= DateDeserializer::class)
+    @JsonSerialize(using = DateSerializer::class)
+    @JsonDeserialize(using = DateDeserializer::class)
     @JsonProperty("modified")
     var modified: OffsetDateTime? = null
 
@@ -54,10 +52,10 @@ class Query : IgeEntity(), EntityWithCatalog {
     @Column(columnDefinition = "jsonb")
     @JsonProperty("settings")
     var data: JsonNode? = null
-    
+
     @Transient
     @JsonProperty("isSystemQuery")
     var systemQuery: Boolean = false
-    get() = user == null
+        get() = user == null
 
 }

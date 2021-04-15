@@ -2,7 +2,6 @@ package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
@@ -23,10 +22,8 @@ class ImportService {
     @Autowired
     lateinit var documentService: DocumentService
 
-    @Autowired
-    lateinit var dbService: DBApi
 
-    fun importFile(dbId: String, file: MultipartFile): Pair<JsonNode, String> {
+    fun importFile(dbId: String, file: MultipartFile): Pair<Document, String> {
         val type = file.contentType
         val fileContent = String(file.bytes, Charset.defaultCharset())
         val importer = factory.getImporter(type, fileContent)
@@ -36,9 +33,7 @@ class ImportService {
 
         log.debug("Transformed document: $importedDoc")
 
-        dbService.acquireCatalog(dbId).use {
-//            extractAndSaveReferences(importedDoc)
-        }
+        extractAndSaveReferences(importedDoc as Document)
 
         // TODO: return created document instead of transformed JSON
         return Pair(importedDoc, importer.name)

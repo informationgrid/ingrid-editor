@@ -15,7 +15,7 @@ class InternalExporter : IgeExporter {
 
     override fun run(jsonData: Document): Any {
         // TODO: profile must be added to the exported format!
-        return jsonData.toPrettyString()
+        return jsonData // TODO: migrate
     }
 
     override fun toString(exportedObject: Any): String {

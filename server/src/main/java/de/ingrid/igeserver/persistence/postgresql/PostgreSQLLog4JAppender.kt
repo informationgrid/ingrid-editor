@@ -3,7 +3,6 @@ package de.ingrid.igeserver.persistence.postgresql
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.PersistenceException
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.EmbeddedDataTypeRegistry
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Appender
 import org.apache.logging.log4j.core.Core
@@ -44,9 +43,9 @@ import javax.transaction.Transactional
  */
 @Component
 @Plugin(name = "PostgreSQLAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
-class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter?,
-                              var table: String?) :
-        AbstractAppender(name, filter, null, false, null) {
+class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?): // , filter: Filter?, var table: String?) :
+//        AbstractAppender(name, filter, null, false, null) {
+        AbstractAppender(name, null, null, false, null) {
 
     companion object {
         // type column name used ot define the EmbeddedData type in the database
@@ -74,7 +73,7 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
         private lateinit var jdbcTemplate: NamedParameterJdbcTemplate
         // shared EmbeddedDataTypeRegistry for getting the type column value
         // used to define the EmbeddedData type of a log record
-        private lateinit var embeddedDataTypes: EmbeddedDataTypeRegistry
+//        private lateinit var embeddedDataTypes: EmbeddedDataTypeRegistry
 
         private const val TABLE_NAME_VAR = "{TABLE_NAME}"
         private const val CREATE_TABLE_STMT = """
@@ -111,11 +110,12 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
             if (table.isNullOrEmpty()) {
                 error("Configuration attribute 'table' must be a valid table name")
             }
-            return PostgreSQLLog4JAppender(name, filter, table)
+//            return PostgreSQLLog4JAppender(name, filter, table)
+            return PostgreSQLLog4JAppender(name)
         }
 
         private fun checkInitialized(): Boolean {
-            return !(!::jdbcTemplate.isInitialized || !::embeddedDataTypes.isInitialized)
+            return !(!::jdbcTemplate.isInitialized)
         }
     }
 
@@ -142,12 +142,12 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
             val selector: ContextSelector = (factory as Log4jContextFactory).selector
             selector.loggerContexts.onEach { ctx ->
                 ctx.configuration.appenders.values.onEach { a ->
-                    if (a is PostgreSQLLog4JAppender) {
+                    /*if (a is PostgreSQLLog4JAppender) {
                         log.debug("Initializing schema: table=${a.table}")
                         a.table?.let {
                             jdbcTemplate.jdbcOperations.execute(CREATE_TABLE_STMT.replace(TABLE_NAME_VAR, it))
                         }
-                    }
+                    }*/
                 }
             }
         }
@@ -156,10 +156,10 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
         }
     }
 
-    @Autowired
+    /*@Autowired
     fun setEmbeddedDataTypeRegistry(embeddedDataTypes: EmbeddedDataTypeRegistry) {
         PostgreSQLLog4JAppender.embeddedDataTypes = embeddedDataTypes
-    }
+    }*/
 
     override fun stop() {
         if (checkInitialized()) {
@@ -193,7 +193,7 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
         }
 
         // check if the message contains a record type hint and fall back to EmbeddedMap, if not
-        val dataType = embeddedDataTypes.getType(msg.get(RECORD_TYPE).textValue())
+        val dataType = "" // TODO: embeddedDataTypes.getType(msg.get(RECORD_TYPE).textValue())
 
         // see https://jdbc.postgresql.org/documentation/head/8-date-time.html
         val localDate = Instant.ofEpochMilli(event.timeMillis).atZone(ZoneId.systemDefault())
@@ -203,7 +203,7 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
             value = mapper.writeValueAsString(msg)
         }
         return MapSqlParameterSource()
-            .addValue(TYPE, dataType.typeColumnValue, Types.VARCHAR)
+// TODO:           .addValue(TYPE, dataType.typeColumnValue, Types.VARCHAR)
             .addValue(LOGGER, event.loggerName, Types.VARCHAR)
             .addValue(TIMESTAMP, utcDate, Types.TIMESTAMP_WITH_TIMEZONE)
             .addValue(LEVEL, event.level?.name(), Types.VARCHAR)
@@ -219,15 +219,15 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?, filter: Filter
      * Save all queued log events and empty the queue afterwards
      */
     @Transactional
-    private fun saveQueue() {
+    fun saveQueue() {
         if (queue.size == 0) return
 
         try {
             val parameters = queue.toTypedArray()
-            val count = table?.let {
+            /*val count = table?.let {
                 jdbcTemplate.batchUpdate(INSERT_RECORD_STMT.replace(TABLE_NAME_VAR, it), parameters)
-            }
-            log.debug("Inserted ${count?.sum()} records in to log table '$table'.")
+            }*/
+//            log.debug("Inserted ${count?.sum()} records in to log table '$table'.")
         }
         catch (e: Exception) {
             error("Unexpected exception while saving log events", null, e)

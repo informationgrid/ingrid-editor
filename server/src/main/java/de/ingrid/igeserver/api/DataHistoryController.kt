@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.DataHistoryRecord
 import de.ingrid.igeserver.model.SearchResult
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.filter.DataHistoryLogger
 import de.ingrid.igeserver.services.AuditLogger
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,9 +17,6 @@ import java.time.OffsetDateTime
 @RestController
 @RequestMapping(path = ["/api"])
 class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryApi {
-
-    @Autowired
-    private lateinit var dbService: DBApi
 
     /**
      * Find dataset versions.

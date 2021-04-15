@@ -5,6 +5,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.AuditLogRecord
+import de.ingrid.igeserver.repository.AuditLogRepository
 import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,10 +36,10 @@ class AuditLogger {
     }
 
     @Autowired
-    private lateinit var dbService: DBApi
+    private lateinit var dateService: DateService
 
     @Autowired
-    private lateinit var dateService: DateService
+    private lateinit var auditLogRepo: AuditLogRepository
 
     @Autowired
     private lateinit var userService: UserManagementService
@@ -64,7 +66,6 @@ class AuditLogger {
                 if (to != null) QueryField("message.time", " <=", to.plusDays(1).format(ISO_LOCAL_DATE)) else null
         ).toList()
 
-        dbService.acquireDatabase(DBApi.DATABASE.AUDIT_LOG.dbName).use {
             val findOptions = FindOptions(
                     queryType = QueryType.EXACT,
                     resolveReferences = false,
@@ -72,8 +73,8 @@ class AuditLogger {
                     sortField = sort,
                     sortOrder = sortOrder
             )
-            return dbService.findAll(AuditLogRecordType::class, queryMap, findOptions)
-        }
+            val result = auditLogRepo.findAll()
+            return FindAllResults(result.size.toLong(), emptyList()) // TODO: migrate
     }
 
     /**

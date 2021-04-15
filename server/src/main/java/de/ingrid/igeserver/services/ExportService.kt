@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -18,7 +19,7 @@ class ExportService {
     fun getExporter(format: String): IgeExporter = exporterFactory.getExporter(format)
 
     @Deprecated("Use getExporter instead and call run method there")
-    fun doExport(jsonData: JsonNode, format: String): String? {
+    fun doExport(jsonData: Document, format: String): String? {
         val exportedDoc: Any?
         val exporter = exporterFactory.getExporter(format)
         exportedDoc = exporter.run(jsonData)

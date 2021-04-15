@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.mitchellbosecke.pebble.PebbleEngine
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -26,7 +27,7 @@ class DcatApExporter : IgeExporter {
                     listOf("mcloud"))
         }
 
-    override fun run(jsonData: JsonNode): Any {
+    override fun run(jsonData: Document): Any {
         val engine = PebbleEngine.Builder()
                 .newLineTrimming(false)
                 .build()
@@ -43,7 +44,7 @@ class DcatApExporter : IgeExporter {
         return exportedObject.toString()
     }
 
-    private fun getMapFromObject(json: JsonNode): Map<String, Any> {
+    private fun getMapFromObject(json: Document): Map<String, Any> {
 
         return mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
 

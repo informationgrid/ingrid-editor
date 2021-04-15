@@ -1,11 +1,11 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 @Service
 class IndexService @Autowired constructor(
     private val catalogRepo: CatalogRepository,
-    private val dbService: DBApi,
+    private val docWrapperRepo: DocumentWrapperRepository,
     private val exportService: ExportService,
     private val documentService: DocumentService
 ) {
@@ -39,11 +39,10 @@ class IndexService @Autowired constructor(
         IndexOptions(singlePublishedDoc, format)
     }
 
-    fun start(options: IndexOptions): List<Any> {
+    fun start(catalogId: String, options: IndexOptions): List<Any> {
 
-        val queryOptions = FindOptions(queryOperator = options.queryOperator, resolveReferences = true)
-        val docsToIndex = dbService.findAll(DocumentWrapperType::class, options.dbFilter, queryOptions)
-        if (docsToIndex.totalHits == 0L) {
+        val docsToIndex = docWrapperRepo.findAllByCatalog_Identifier(catalogId)
+        if (docsToIndex.isEmpty()) {
             log.warn("No documents found for indexing")
             return emptyList()
         }
@@ -51,7 +50,7 @@ class IndexService @Autowired constructor(
         val exporter = exportService.getExporter(options.exportFormat)
 
         val onlyPublished = options.documentState == FIELD_PUBLISHED
-        return docsToIndex.hits
+        return docsToIndex
             .map { documentService.getLatestDocument(it, onlyPublished) }
             .map { exporter.run(it) }
 

@@ -2,11 +2,9 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.services.DateService
@@ -34,10 +32,14 @@ class Document {
     @JsonProperty("_id")
     var uuid: String = UUID.randomUUID().toString()
 
+    @Column(nullable=false)
+    @JsonProperty("_type")
+    var type: String? = null
+
     @Column(nullable = false)
     var title: String? = null
 
-    @Type(type = "embeddedData")
+    @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     lateinit var data: ObjectNode
 

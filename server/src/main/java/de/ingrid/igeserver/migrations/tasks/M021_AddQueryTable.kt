@@ -1,11 +1,12 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
-import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
@@ -20,7 +21,7 @@ class M021_AddQueryTable : MigrationBase("0.21") {
     lateinit var entityManager: EntityManager
 
     @Autowired
-    lateinit var dbService: DBApi
+    private lateinit var transactionManager: PlatformTransactionManager
 
     private val sql = """
         CREATE SEQUENCE query_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1;
@@ -39,10 +40,9 @@ class M021_AddQueryTable : MigrationBase("0.21") {
     """.trimIndent()
 
     override fun exec() {
-        dbService.acquireDatabase("").use {
+        ClosableTransaction(transactionManager).use {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
-
     }
 
 }

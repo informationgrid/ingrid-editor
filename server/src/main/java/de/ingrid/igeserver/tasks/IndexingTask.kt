@@ -7,7 +7,6 @@ import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.migrations.Migration
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.utils.ElasticDocument
@@ -33,7 +32,6 @@ class IndexingTask @Autowired constructor(
     private val indexService: IndexService,
     private val esIndexManager: IndexManager,
     private val catalogRepo: CatalogRepository,
-    private val dbService: DBApi
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
@@ -56,36 +54,35 @@ class IndexingTask @Autowired constructor(
     /**
      * Indexing of all published documents into an Elasticsearch index.
      */
-    fun startIndexing(database: String, format: String) {
-        log.debug("Starting Indexing - Task for $database")
-
-        dbService.acquireCatalog(database).use {
-
-            // needed information:
-            //   database/catalog
-            //   indexingMethod: ibus or elasticsearch direct
-            //   indexName
-
-            // pre phase
-            val info = indexPrePhase(elasticsearchAlias)
-
-            // iterate over all documents
-            // TODO: dynamically get target to send exported documents
-
-            // TODO: configure index name
-            val indexInfo = IndexInfo()
-            indexInfo.realIndexName = info.second
-            indexInfo.toType = "base"
-            indexInfo.toAlias = elasticsearchAlias
-            indexInfo.docIdField = "uuid"
-            indexService.start(indexService.INDEX_PUBLISHED_DOCUMENTS(format))
-                .forEach { indexManager.update(indexInfo, convertToElasticDocument(it), false) }
+    fun startIndexing(catalogId: String, format: String) {
+        log.debug("Starting Indexing - Task for $catalogId")
 
 
-            // post phase
-            indexPostPhase(elasticsearchAlias, info.first, info.second)
+        // needed information:
+        //   database/catalog
+        //   indexingMethod: ibus or elasticsearch direct
+        //   indexName
 
-        }
+        // pre phase
+        val info = indexPrePhase(elasticsearchAlias)
+
+        // iterate over all documents
+        // TODO: dynamically get target to send exported documents
+
+        // TODO: configure index name
+        val indexInfo = IndexInfo()
+        indexInfo.realIndexName = info.second
+        indexInfo.toType = "base"
+        indexInfo.toAlias = elasticsearchAlias
+        indexInfo.docIdField = "uuid"
+        
+        indexService.start(catalogId, indexService.INDEX_PUBLISHED_DOCUMENTS(format))
+            .forEach { indexManager.update(indexInfo, convertToElasticDocument(it), false) }
+
+
+        // post phase
+        indexPostPhase(elasticsearchAlias, info.first, info.second)
+
 
         log.debug("Indexing finished")
     }
