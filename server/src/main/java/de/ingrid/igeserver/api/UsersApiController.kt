@@ -11,6 +11,7 @@ import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
@@ -39,6 +40,9 @@ class UsersApiController : UsersApi {
 
     @Autowired
     private lateinit var dbService: DBApi
+
+    @Autowired
+    private lateinit var userRepo: UserRepository
 
     @Autowired
     private lateinit var keycloakService: UserManagementService
@@ -230,8 +234,11 @@ class UsersApiController : UsersApi {
                 queryType = QueryType.CONTAINS,
                 resolveReferences = false
             )
-            val info = dbService.findAll(UserInfoType::class, query, findOptions)
-            info.hits.forEach { result.add(it["userId"].asText()) }
+//            val info = dbService.findAll(UserInfoType::class, query, findOptions)
+            // TODO: migrate
+            val info = userRepo.findAll()
+            
+            info.forEach { result.add(it.userId) }
         }
         return ResponseEntity.ok(result)
     }

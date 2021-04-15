@@ -2,8 +2,7 @@ package de.ingrid.igeserver.extension.pipe.impl
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Message
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
+import de.ingrid.igeserver.repository.CatalogRepository
 import org.apache.logging.log4j.kotlin.logger
 import java.util.*
 
@@ -16,10 +15,9 @@ open class DefaultContext(override val profile: String?) : Context {
         /**
          * Create an instance with the profile of the currently opened catalog (database)
          */
-        fun withCurrentProfile(dbService: DBApi): DefaultContext {
-            val catalogInfoList = dbService.findAll(CatalogInfoType::class)
-            val profile: String? = if (catalogInfoList.isNotEmpty()) catalogInfoList[0]["type"]?.asText() else null
-            return DefaultContext(profile)
+        fun withCurrentProfile(catalogId: String?, catalogRepo: CatalogRepository): DefaultContext {
+            val catalogInfo = catalogRepo.findByIdentifier(catalogId!!)
+            return DefaultContext(catalogInfo.type)
         }
     }
 

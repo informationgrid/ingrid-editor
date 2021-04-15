@@ -5,6 +5,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.extension.pipe.Payload
 import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.springframework.stereotype.Component
 
 /**
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component
 /**
  * Base payload for persistence related filters
  */
-open class PersistencePayload(var action: Action, var type: EntityType, var document: ObjectNode, var wrapper: ObjectNode): Payload {
+open class PersistencePayload(var action: Action, var type: EntityType, var document: Document, var wrapper: DocumentWrapper): Payload {
     /**
      * Persistence action to perform on the contained data
      */
@@ -29,63 +31,63 @@ open class PersistencePayload(var action: Action, var type: EntityType, var docu
 /**
  * Base payload for pre-persistence related filters
  */
-open class PrePersistencePayload(action: Action, type: EntityType, document: ObjectNode, wrapper: ObjectNode) :
+open class PrePersistencePayload(action: Action, type: EntityType, document: Document, wrapper: DocumentWrapper) :
         PersistencePayload(action, type, document, wrapper) {
-    constructor(action: Action, type: EntityType, document: ObjectNode) : this(action, type, document, jacksonObjectMapper().createObjectNode())
+    constructor(action: Action, type: EntityType, document: Document) : this(action, type, document, DocumentWrapper())
 }
 
 /**
  * Base payload for post-persistence related filters
  */
-open class PostPersistencePayload(action: Action, type: EntityType, document: ObjectNode, wrapper: ObjectNode) :
+open class PostPersistencePayload(action: Action, type: EntityType, document: Document, wrapper: DocumentWrapper) :
         PersistencePayload(action, type, document, wrapper)
 
 /**
  * Payload holding document data before inserting the document
  */
-open class PreCreatePayload(type: EntityType, document: ObjectNode, val category: String) :
+open class PreCreatePayload(type: EntityType, document: Document, val category: String) :
         PrePersistencePayload(Action.CREATE, type, document)
 
 /**
  * Payload holding document data after inserting the document
  */
-open class PostCreatePayload(type: EntityType, document: ObjectNode, wrapper: ObjectNode) :
+open class PostCreatePayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
         PostPersistencePayload(Action.CREATE, type, document, wrapper)
 
 /**
  * Payload holding document data before updating the document
  */
-open class PreUpdatePayload(type: EntityType, document: ObjectNode, wrapper: ObjectNode) :
+open class PreUpdatePayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
         PrePersistencePayload(Action.UPDATE, type, document, wrapper)
 
 /**
  * Payload holding document data after updating the document
  */
-open class PostUpdatePayload(type: EntityType, document: ObjectNode, wrapper: ObjectNode) :
+open class PostUpdatePayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
         PostPersistencePayload(Action.UPDATE, type, document, wrapper)
 
 /**
  * Payload holding document data before publishing the document
  */
-open class PrePublishPayload(type: EntityType, document: ObjectNode, wrapper: ObjectNode) :
+open class PrePublishPayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
         PrePersistencePayload(Action.PUBLISH, type, document, wrapper)
 
 /**
  * Payload holding document data after publishing the document
  */
-open class PostPublishPayload(type: EntityType, document: ObjectNode, wrapper: ObjectNode) :
+open class PostPublishPayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
         PostPersistencePayload(Action.PUBLISH, type, document, wrapper)
 
 /**
  * Payload holding document data before deleting the document
  */
-open class PreDeletePayload(type: EntityType, document: ObjectNode, wrapper: ObjectNode) :
+open class PreDeletePayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
         PrePersistencePayload(Action.DELETE, type, document, wrapper)
 
 /**
  * Payload holding document data after deleting the document
  */
-open class PostDeletePayload(type: EntityType, document: ObjectNode, wrapper: ObjectNode) :
+open class PostDeletePayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
         PostPersistencePayload(Action.DELETE, type, document, wrapper)
 
 /**

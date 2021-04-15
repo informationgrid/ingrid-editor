@@ -11,7 +11,6 @@ import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
-import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.JoinInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.ModelRegistry
@@ -22,6 +21,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithEmbeddedData
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithRecordId
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
+import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.FIELD_VERSION
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -62,6 +62,9 @@ class PostgreSQLDatabase : DBApi {
 
     @Autowired
     private lateinit var modelRegistry: ModelRegistry
+
+    @Autowired
+    private lateinit var catalogRepo: CatalogRepository
 
     /**
      * Id of the catalog that is acquired on the current thread
@@ -274,77 +277,21 @@ class PostgreSQLDatabase : DBApi {
         return true
     }
 
-    override val catalogs: Array<String>
-        get() {
-            return findAll(CatalogInfoType::class).map { it["id"].textValue() }.toTypedArray()
-        }
-
     override val currentCatalog: String?
         get() {
             return currentCatalog()?.identifier
         }
-
-    override fun createCatalog(settings: Catalog): String? {
-        val id = settings.name.toLowerCase().replace(" ".toRegex(), "_")
-        if (!catalogExists(id)) {
-            settings.id = acquireDatabase().use {
-                val catalog = CatalogEntity().apply {
-                    identifier = id
-                    name = settings.name
-                    description = settings.description
-                    type = settings.type
-                }
-                entityManager.persist(catalog)
-                id
-            }
-        }
-        return settings.id
-    }
-
-    override fun updateCatalog(settings: Catalog) {
-        if (settings.id == null || !catalogExists(settings.id!!)) {
-            throw PersistenceException.withReason("Catalog '${settings.id}' does not exist.")
-        }
-        acquireDatabase("").use {
-            val catalog = getCatalog(settings.id!!)!!
-            catalog.name = settings.name
-            catalog.description = settings.description
-            entityManager.merge(catalog)
-        }
-    }
-
-    override fun removeCatalog(name: String): Boolean {
-        return if (catalogExists(name)) {
-            acquireDatabase("").use {
-                val catalog = getCatalog(name)!!
-                entityManager.remove(catalog)
-            }
-            true
-        }
-        else {
-            throw PersistenceException.withReason("Failed to delete non-existing catalog with name '$name'.")
-        }
-    }
-
-    override fun catalogExists(name: String): Boolean {
-        return getCatalog(name) != null
-    }
     
     override fun execSQL(sql: String) {
         entityManager.createNativeQuery(sql).executeUpdate()
     }
 
     override fun acquireCatalog(name: String): Closeable {
-        val catalog = getCatalog(name)
-        return if (catalog != null) {
-            catalogId.set(catalog.id)
+        val catalog = catalogRepo.findByIdentifier(name)
+        catalogId.set(catalog.id)
 
-            // start a transaction that will be committed when closed
-            ClosableTransaction(transactionManager) { catalogId.set(null) }
-        }
-        else {
-            throw PersistenceException.withReason("Catalog '$name' does not exist.")
-        }
+        // start a transaction that will be committed when closed
+        return ClosableTransaction(transactionManager) { catalogId.set(null) }
     }
 
     override fun acquireDatabase(name: String): Closeable {
@@ -375,17 +322,6 @@ class PostgreSQLDatabase : DBApi {
 
     private fun <T : EntityType> getEntityTypeImpl(type: KClass<T>): PostgreSQLEntityType {
         return entityTypeMap[type] ?: throw PersistenceException.withReason("No entity type '$type' registered.")
-    }
-
-    private fun getCatalog(name: String): CatalogEntity? {
-        // find the catalog by name
-        val typeImpl = getEntityTypeImpl(CatalogInfoType::class)
-        val catalogs = getEntitiesByIdentifier(CatalogInfoType::class, name)
-        return when {
-            catalogs.size == 1 -> catalogs[0] as CatalogEntity
-            catalogs.size > 1 -> throw PersistenceException.withMultipleEntities(name, typeImpl.entityType.simpleName, null)
-            else -> null
-        }
     }
 
     private fun currentCatalog(): CatalogEntity? {

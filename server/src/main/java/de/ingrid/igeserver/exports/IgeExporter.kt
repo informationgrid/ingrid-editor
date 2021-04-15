@@ -1,10 +1,10 @@
 package de.ingrid.igeserver.exports
 
-import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 
 interface IgeExporter {
     val typeInfo: ExportTypeInfo
 
-    fun run(jsonData: JsonNode): Any
+    fun run(jsonData: Document): Any
     fun toString(exportedObject: Any): String
 }

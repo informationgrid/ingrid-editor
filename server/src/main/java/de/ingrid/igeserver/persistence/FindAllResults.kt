@@ -1,5 +1,5 @@
 package de.ingrid.igeserver.persistence
 
-import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 
-class FindAllResults(var totalHits: Long, var hits: List<JsonNode>) 
+class FindAllResults(var totalHits: Long, var hits: List<DocumentWrapper>) 

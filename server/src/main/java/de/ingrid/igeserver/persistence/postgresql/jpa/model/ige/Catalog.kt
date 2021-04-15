@@ -2,23 +2,26 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityBase
 import org.hibernate.annotations.NamedQueries
 import org.hibernate.annotations.NamedQuery
+import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.*
 
-@NoArgs
 @Entity
 @Table(name="catalog")
 @NamedQueries(
     NamedQuery(
-            name="Catalog_FindByIdentifier", query="from Catalog where identifier = :identifier"
+        name="Catalog_FindByIdentifier", query="from Catalog where identifier = :identifier"
     )
 )
-class Catalog : EntityBase() {
+class Catalog {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @JsonProperty("db_id")
+    var id: Int? = null
+    
     @Column(nullable=false)
     @JsonProperty("id")
     lateinit var identifier: String
@@ -33,12 +36,13 @@ class Catalog : EntityBase() {
     @Column
     var description: String? = null
 
-    @Column
-    var version: String? = null
-
     @ManyToMany(mappedBy="catalogs", fetch= FetchType.LAZY)
     @JsonIgnore
     var users: MutableSet<UserInfo> = LinkedHashSet<UserInfo>()
+
+    @Type(type = "jsonb")
+    @Column(name = "settings", columnDefinition = "jsonb")
+    var settings: CatalogSettings? = null
 
     companion object {
         /**
@@ -48,7 +52,8 @@ class Catalog : EntityBase() {
             if (identifier == null) return null
 
             return entityManager.createNamedQuery("Catalog_FindByIdentifier", Catalog::class.java).
-                setParameter("identifier", identifier).singleResult
+            setParameter("identifier", identifier).singleResult
         }
     }
+
 }

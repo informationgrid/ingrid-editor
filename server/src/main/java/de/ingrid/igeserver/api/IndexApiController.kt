@@ -24,19 +24,15 @@ class IndexApiController @Autowired constructor(private val catalogService: Cata
 
     override fun setConfig(principal: Principal?, config: IndexConfigOptions): ResponseEntity<Void> {
 
-        dbService.acquireCatalog(config.catalogId).use {
-            indexService.updateConfig(config.cronPattern)
-            indexingTask.updateTaskTrigger(config.catalogId, config.cronPattern)
-        }
+        indexService.updateConfig(config.catalogId, config.cronPattern)
+        indexingTask.updateTaskTrigger(config.catalogId, config.cronPattern)
 
         return ResponseEntity.ok().build()
     }
 
     override fun getConfig(principal: Principal?, id: String): ResponseEntity<IndexConfigOptions> {
 
-        dbService.acquireCatalog(id).use {
-            return ResponseEntity.ok(IndexConfigOptions(id, indexService.getConfig() ?: ""))
-        }
+        return ResponseEntity.ok(IndexConfigOptions(id, indexService.getConfig(id) ?: ""))
 
     }
 }

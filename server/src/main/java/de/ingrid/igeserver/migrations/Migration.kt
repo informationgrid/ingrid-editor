@@ -2,14 +2,12 @@ package de.ingrid.igeserver.migrations
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.VersionInfoType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Service
-import java.util.function.Consumer
 
 @Service
 class Migration : ApplicationRunner {

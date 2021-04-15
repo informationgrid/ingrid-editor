@@ -20,7 +20,7 @@ class DefaultDocumentPublisher : Filter<PrePublishPayload> {
         get() = PROFILES
 
     override fun invoke(payload: PrePublishPayload, context: Context): PrePublishPayload {
-        val docId = payload.document[FIELD_ID].asText();
+        val docId = payload.document.uuid;
 
         context.addMessage(Message(this, "Process document data '$docId' before publish"))
 

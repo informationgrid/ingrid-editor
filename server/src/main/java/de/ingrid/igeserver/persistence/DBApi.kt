@@ -72,7 +72,7 @@ interface DBApi {
     /**
      * Get all catalog names
      */
-    val catalogs: Array<String>
+//    val catalogs: Array<String>
 
     /**
      * Get currently opened catalog if any (see acquireCatalog())
@@ -82,22 +82,22 @@ interface DBApi {
     /**
      * Create a catalog using the given name and return the name of the created catalog.
      */
-    fun createCatalog(settings: Catalog): String?
+//    fun createCatalog(settings: Catalog): String?
 
     /**
      * Update an existing catalog with the given settings (like name property).
      */
-    fun updateCatalog(settings: Catalog)
+//    fun updateCatalog(settings: Catalog)
 
     /**
      * Delete the catalog with the given name.
      */
-    fun removeCatalog(name: String): Boolean
+//    fun removeCatalog(name: String): Boolean
 
     /**
      * Check if the catalog with the given name exists
      */
-    fun catalogExists(name: String): Boolean
+//    fun catalogExists(name: String): Boolean
 
     /**
      * Execute any sql (used for migration tasks)

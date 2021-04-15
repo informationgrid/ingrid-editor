@@ -3,6 +3,7 @@ package de.ingrid.igeserver.imports
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_ID
@@ -36,15 +37,15 @@ class ImportService {
         log.debug("Transformed document: $importedDoc")
 
         dbService.acquireCatalog(dbId).use {
-            extractAndSaveReferences(importedDoc)
+//            extractAndSaveReferences(importedDoc)
         }
 
         // TODO: return created document instead of transformed JSON
         return Pair(importedDoc, importer.name)
     }
 
-    private fun extractAndSaveReferences(doc: JsonNode) {
-
+    private fun extractAndSaveReferences(doc: Document) {
+/* TODO: migrate
         val docType = doc[FIELD_DOCUMENT_TYPE].asText()
         val refType = documentService.getDocumentType(docType)
 
@@ -64,7 +65,7 @@ class ImportService {
         }
         
         // TODO: use option if we want to publish it
-        documentService.createDocument(doc, publish = false)
+        documentService.createDocument(doc, publish = false)*/
 
     }
 

@@ -24,18 +24,18 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
         get() = PROFILES
 
     override fun invoke(payload: PreUpdatePayload, context: Context): PreUpdatePayload {
-        val docId = payload.document[FIELD_ID].asText();
+        val docId = payload.document.uuid
 
         context.addMessage(Message(this, "Process document data '$docId' before update"))
 
         // update parent in case of moving a document
-        val parent = payload.document.get(FIELD_PARENT)
-        if (!parent.isNull) {
-            payload.wrapper.put(FIELD_PARENT, parent.asText());
+        val parent = null // TODO: payload.document.parent
+        if (parent != null) {
+            payload.wrapper.parent = parent
         }
 
         // update modified date
-        payload.document.put(FIELD_MODIFIED, dateService.now().toString())
+        payload.document.modified = dateService.now()
 
         // handle linked docs
         payload.type.pullReferences(payload.document)

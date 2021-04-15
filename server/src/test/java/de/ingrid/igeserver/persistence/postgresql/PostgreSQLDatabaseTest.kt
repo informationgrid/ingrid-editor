@@ -11,7 +11,6 @@ import de.ingrid.igeserver.persistence.*
 import de.ingrid.igeserver.persistence.model.document.DocumentType
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
-import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.repository.BehaviourRepository
@@ -416,7 +415,7 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
     @Test
     fun `deleting a user`() {
         val userId = "user1"
-        val catalogId = "100"
+        val catalogId = 100
 
         val oldCount = dbService.findAll(UserInfoType::class).size
 
@@ -427,7 +426,7 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
         Assertions.assertThat(dbService.findAll(UserInfoType::class).size).isEqualTo(oldCount - 1)
 
         // attached catalog still exists
-        Assertions.assertThat(dbService.find(CatalogInfoType::class, catalogId)).isNotNull
+        Assertions.assertThat(catalogRepo.findById(catalogId)).isNotNull
     }
 
     @Test

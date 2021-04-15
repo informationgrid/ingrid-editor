@@ -184,8 +184,8 @@ class ModelRegistry {
         metaModel = ImmutableSet.copyOf(typeInfos)
     }
 
-    private fun resolveJavaType(type: Class<*>): KClass<out EntityBase> {
-        return entityTypes.first { it.jpaType.java == type }.jpaType
+    private fun resolveJavaType(type: Class<*>): KClass<out EntityBase>? {
+        return entityTypes.firstOrNull() { it.jpaType.java == type }?.jpaType ?: null
     }
 
     private fun getAllFields(clazz: Class<*>?): List<Field> {

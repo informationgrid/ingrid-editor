@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.DataHistoryRecord
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.DBApi
@@ -38,8 +39,8 @@ class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryA
         val records = auditLogger.find(DataHistoryLogger.LOGGER_NAME, id, user, action, from, to, sort, sortOrder)
         val searchResult = SearchResult<DataHistoryRecord>()
         searchResult.totalHits = records.totalHits
-        searchResult.hits = records.hits.map { record: JsonNode ->
-            val message = record["message"]
+        /*searchResult.hits = records.hits.map { record ->
+            val message =  // TODO: record.["message"]
             dbService.removeInternalFields(message["data"])
             DataHistoryRecord(
                     id = message["target"].asText(),
@@ -47,7 +48,7 @@ class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryA
                     action = message["action"].asText(),
                     time = OffsetDateTime.parse(message["time"].asText()),
                     data = message["data"])
-        }
+        }*/
         return ResponseEntity.ok(searchResult)
     }
 }

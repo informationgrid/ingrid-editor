@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.persistence.model
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 
 /**
@@ -40,32 +41,32 @@ interface EntityType {
     /**
      * Persistence hook called when an instance of this type is created
      */
-    fun onCreate(doc: JsonNode) {}
+    fun onCreate(doc: Document) {}
 
     /**
      * Persistence hook called when an instance of this type is updated
      */
-    fun onUpdate(doc: JsonNode) {}
+    fun onUpdate(doc: Document) {}
 
     /**
      * Persistence hook called when an instance of this type is published
      */
-    fun onPublish(doc: JsonNode) {}
+    fun onPublish(doc: Document) {}
 
     /**
      * Persistence hook called when an instance of this type is deleted
      */
-    fun onDelete(doc: JsonNode) {}
+    fun onDelete(doc: Document) {}
 
     /**
      * Extract referenced documents/addresses and replace them with their ID
      */
-    fun pullReferences(doc: JsonNode): List<JsonNode> {
+    fun pullReferences(doc: Document): List<Document> {
         return emptyList()
     }
 
     /**
      * Replace document/address references with their latest version
      */
-    fun updateReferences(doc: JsonNode, onlyPublished: Boolean) {}
+    fun updateReferences(doc: Document, onlyPublished: Boolean) {}
 }
