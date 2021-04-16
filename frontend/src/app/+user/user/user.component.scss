@@ -1,6 +1,6 @@
 @import 'src/variables.scss';
 
-as-split-area{
+as-split-area {
   background: white;
 }
 
@@ -60,10 +60,6 @@ as-split-area{
     width: 26px;
     margin-right: 6px;
     margin-top: 10px;
-
-    mat-icon {
-      color: $state-working-color;
-    }
   }
 
   .label {
@@ -100,7 +96,18 @@ as-split-area{
       }
     }
   }
+
   button {
     margin-top: 10px;
   }
+}
+
+.search {
+  width: 250px;
+  margin-top: 50px;
+}
+
+h1 {
+  padding-left: 12px;
+  font-size: 2em;
 }

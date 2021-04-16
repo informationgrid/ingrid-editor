@@ -11,7 +11,6 @@ import {NewUserDialogComponent} from './new-user-dialog/new-user-dialog.componen
 import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
 import {debounceTime, map, tap} from 'rxjs/operators';
 import {dirtyCheck} from '@ngneat/dirty-check-forms';
-import {log} from "util";
 
 @UntilDestroy()
 @Component({
@@ -40,6 +39,7 @@ export class UserComponent implements OnInit {
   selectedUserForm = new FormControl();
   selectedUser: User;
   showMore = false;
+  searchQuery: string;
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
@@ -139,7 +139,7 @@ export class UserComponent implements OnInit {
     this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Benutzer löschen',
-        message: 'Möchten Sie den Benutzer wirklich löschen?'
+        message: 'Möchten Sie den Benutzer ' + login + ' wirklich löschen?'
       } as ConfirmDialogData
     }).afterClosed().subscribe(result => {
       if (result) {
@@ -211,5 +211,21 @@ export class UserComponent implements OnInit {
     }
 
     return email.hasError('email') ? 'Keine gültige Email-Adresse' : '';
+  }
+
+  onSearchChange(searchValue: string): void {
+    this.searchQuery = searchValue;
+  }
+
+  getRoleIcon(role: string) {
+    switch (true) {
+      case role === 'cat-admin':
+        return 'engineering'
+      case role.includes('admin'):
+        return 'supervisor_account'
+      default:
+        return 'person'
+
+    }
   }
 }

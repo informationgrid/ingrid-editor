@@ -21,27 +21,34 @@ import {NewUserDialogComponent} from './user/new-user-dialog/new-user-dialog.com
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {FormSharedModule} from "../+form/form-shared/form-shared.module";
 import {HeaderMoreComponent} from "./user/header-more/header-more.component";
+import {UserTableComponent} from "./user/user-table/user-table.component";
+import {MatTableModule} from "@angular/material/table";
+import {MatPaginatorModule} from "@angular/material/paginator";
+import {MatSortModule} from "@angular/material/sort";
 
 @NgModule({
-    imports: [
-        CommonModule,
-        routing,
-        AngularSplitModule,
-        SharedModule,
-        MatTabsModule,
-        MatFormFieldModule,
-        MatDialogModule,
-        FormsModule,
-        MatSlideToggleModule,
-        ReactiveFormsModule,
-        MatMenuModule,
-        MatSelectModule,
-        MatToolbarModule,
-        FormSharedModule
-    ],
-    declarations: [
-        UserComponent, GroupComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent,
-        PermissionsShowComponent, TreePermissionComponent, NewUserDialogComponent, HeaderMoreComponent]
+  imports: [
+    CommonModule,
+    routing,
+    AngularSplitModule,
+    SharedModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatDialogModule,
+    FormsModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+    MatMenuModule,
+    MatSelectModule,
+    MatToolbarModule,
+    FormSharedModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule
+  ],
+  declarations: [
+    UserComponent, GroupComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent,
+    PermissionsShowComponent, TreePermissionComponent, NewUserDialogComponent, HeaderMoreComponent, UserTableComponent]
 })
 export class UserModule {
 

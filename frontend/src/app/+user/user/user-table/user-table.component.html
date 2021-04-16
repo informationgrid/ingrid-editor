@@ -1,0 +1,54 @@
+<!--
+
+<mat-selection-list #userSelect [formControl]="selectedUserForm" multiple="false"
+                    (selectionChange)="'TODO'">
+    <mat-list-option *ngFor="let user of users" [value]="user.login">
+        <h4 mat-line>{{user.login}}</h4>
+    </mat-list-option>
+</mat-selection-list>
+
+-->
+
+<table mat-table [dataSource]="dataSource" matSort class="width-100">
+
+    <!-- Role Column -->
+    <ng-container matColumnDef="role-icon" class="thin-column">
+        <th mat-header-cell *matHeaderCellDef> Rolle</th>
+        <td mat-cell *matCellDef="let element" (click)="selection.select(element)"
+            [class.selected]="selection.isSelected(element)">
+            <mat-icon>{{getRoleIcon(element.role)}}</mat-icon>
+        </td>
+    </ng-container>
+
+    <!-- Name/email Column -->
+    <ng-container matColumnDef="firstName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name/Email</th>
+        <td mat-cell *matCellDef="let element" (click)="selection.select(element)"
+            [class.selected]="selection.isSelected(element)">
+            <div>{{element.firstName + " " + element.lastName}}</div>
+            <div class="td-subtitle">{{element.email}}</div>
+        </td>
+    </ng-container>
+
+    <!-- Organisation -->
+    <ng-container matColumnDef="login">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Organisation</th>
+        <td mat-cell *matCellDef="let element" (click)="selection.select(element)"
+            [class.selected]="selection.isSelected(element)"> {{element.login}} </td>
+    </ng-container>
+
+    <!-- Settings -->
+    <ng-container matColumnDef="settings">
+        <th mat-header-cell *matHeaderCellDef class="thin-column">
+            <button mat-icon-button>
+                <mat-icon>settings</mat-icon>
+            </button>
+        </th>
+        <td mat-cell class="thin-column" *matCellDef="let element" (click)="selection.select(element)"
+            [class.selected]="selection.isSelected(element)"></td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<mat-paginator [hidePageSize]="true" matPaginator showFirstLastButtons></mat-paginator>

@@ -1,14 +1,21 @@
 <div class="user-management-header">
-    <h1>Nutzer {{users ? "(" + users.length + ")" : "()"}}</h1>
+    <h1>Nutzer {{users ? "(" + users.length + ")" : ""}}</h1>
     <mat-toolbar>
         <mat-toolbar-row>
             <ng-container>
                 <!--            Searchfield-->
+                <mat-form-field #userSearch class="search" appearance="outline" data-cy="tree-search-field">
+                    <mat-icon *ngIf="searchQuery?.length === 0" class="passive" matPrefix>search</mat-icon>
+                    <input #search matInput placeholder="Suchen" aria-label="Search" (input)="onSearchChange($event.target.value)">
+                    <button *ngIf="searchQuery?.length > 0" mat-icon-button matSuffix class="close" (click)="search.value = ''; searchQuery = ''"  data-cy="clear-tree-search-field">
+                        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+                    </button>
+                </mat-form-field>
             </ng-container>
             <div fxFlex></div>
 
             <span class="save-buttons">
-                <button mat-stroked-button *ngIf="!userSelect.selectedOptions.isEmpty() || isNewUser;"
+                <button mat-stroked-button *ngIf="selectedUser || isNewUser;"
                         attr.data-cy="toolbar_save_user"
                         matTooltip="Speichern"
                         [matTooltipShowDelay]="1000"
@@ -23,48 +30,27 @@
                         [matTooltipShowDelay]="1000">
                     <mat-icon>person_add</mat-icon> Hinzufügen
                 </button>
+                <mat-menu #userAddMenu="matMenu">
+                    <button type="button" mat-menu-item (click)="showExternalUsersDialog()">Keycloak Benutzer importieren
+                    </button>
+                    <button type="button" mat-menu-item (click)="initNewKeycloakUser()">Neuen Keycloak Benutzer anlegen
+                    </button>
+                </mat-menu>
         </span>
         </mat-toolbar-row>
     </mat-toolbar>
 </div>
 <as-split>
     <as-split-area [size]="25" id="sidebarUser" class="split-pane-content-primary container">
-        <mat-selection-list #userSelect [formControl]="selectedUserForm" multiple="false"
-                            (selectionChange)="loadUser($event.options[0].value)">
-            <mat-list-option *ngFor="let user of users" [value]="user.login">
-                <h4 mat-line>{{user.login}}</h4>
-            </mat-list-option>
-        </mat-selection-list>
-        <div class="text-center">
-            <button mat-icon-button [mat-menu-trigger-for]="userAddMenu">
-                <mat-icon>add</mat-icon>
-            </button>
-            <mat-menu #userAddMenu="matMenu">
-                <button type="button" mat-menu-item (click)="showExternalUsersDialog()">Keycloak Benutzer importieren
-                </button>
-                <button type="button" mat-menu-item (click)="initNewKeycloakUser()">Neuen Keycloak Benutzer anlegen
-                </button>
-            </mat-menu>
-        </div>
+        <user-table [query]="searchQuery" [users]="users" (onUserSelect)="selectedUser = $event; loadUser($event.login)"></user-table>
     </as-split-area>
     <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
-        <form *ngIf="!userSelect.selectedOptions.isEmpty() || isNewUser; else noUser" fxLayout="column"
+        <form *ngIf="selectedUser || isNewUser; else noUser" fxLayout="column"
               [formGroup]="form"
               style="padding: 20px">
-            <!--            <div>-->
-<!--                            <button mat-button-->
-<!--                                    (click)="deleteUser(userSelect.selectedOptions.selected[0].value)">Löschen</button>-->
-<!--                            <button mat-button color="warn" (click)="changePassword()">Passwort ändern</button>-->
-            <!--                <div fxFlex></div>-->
-            <!--                <button mat-stroked-button color="primary"-->
-            <!--                        (click)="saveUser()"-->
-            <!--                        [disabled]="form.invalid || !(isDirty$ | async)">Speichern</button>-->
-            <!--            </div>-->
             <div class="user-title">
                 <div class="document-type">
-                    <mat-icon [svgIcon]="'Freie-Adresse'"
-                              [title]="form.get('login')?.value"
-                              [ngClass]="'document-icon'"></mat-icon>
+                    <mat-icon>{{getRoleIcon(this.form.get('role').value)}}</mat-icon>
                 </div>
 
                 <span fxFlex class="label" [class.editable]="false">
@@ -80,10 +66,11 @@
                 <mat-menu #userMoreMenu="matMenu">
                     <button mat-menu-item color="warn" (click)="changePassword()">Passwort ändern</button>
                     <button mat-menu-item
-                            (click)="deleteUser(userSelect.selectedOptions.selected[0].value)">Löschen</button>
+                            (click)="deleteUser(selectedUser.login)">Löschen</button>
                 </mat-menu>
             </div>
-            <user-header-more [showMore]="showMore" [user]="selectedUser" [admins]="admins" [allUsers]="users" [form]="form"></user-header-more>
+            <user-header-more [showMore]="showMore" [user]="selectedUser" [admins]="admins" [allUsers]="users"
+                              [form]="form"></user-header-more>
 
             <mat-form-field appearance="outline">
                 <mat-label>Login</mat-label>
@@ -125,7 +112,7 @@
         </form>
 
         <ng-template #noUser>
-            Keinen Benutzer ausgewählt. Bitte einen auswählen oder neue erstellen.
+            Keinen Benutzer ausgewählt. Bitte einen auswählen oder einen neuen erstellen.
         </ng-template>
     </as-split-area>
 </as-split>
