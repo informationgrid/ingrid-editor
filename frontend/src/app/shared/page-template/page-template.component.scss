@@ -18,7 +18,9 @@
   padding: 40px 56px 26px;
   height: 100%;
   flex: 1;
+  overflow: auto;
 }
 .left-side {
   max-width: 350px;
+  line-height: 22px;
 }
