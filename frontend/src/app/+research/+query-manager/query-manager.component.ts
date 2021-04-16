@@ -1,6 +1,8 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {QueryQuery} from '../../store/query/query.query';
 import {ResearchService} from '../research.service';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'ige-query-manager',
@@ -17,6 +19,7 @@ export class QueryManagerComponent implements OnInit {
   userQueries = [];
 
   constructor(private queryQuery: QueryQuery,
+              private dialog: MatDialog,
               private researchService: ResearchService) {
   }
 
@@ -24,7 +27,20 @@ export class QueryManagerComponent implements OnInit {
   }
 
   removeQuery(id: string) {
-    this.researchService.removeQuery(id).subscribe();
+    this.dialog.open(ConfirmDialogComponent, {
+      data: <ConfirmDialogData>{
+        message: `Möchten Sie die Anfrage wirklich löschen`,
+        title: 'Löschen',
+        buttons: [
+          {text: 'Abbrechen'},
+          {text: 'Löschen', alignRight: true, id: 'confirm', emphasize: true}
+        ]
+      }
+    }).afterClosed().subscribe(result => {
+      if (!result) return;
+
+      this.researchService.removeQuery(id).subscribe();
+    });
   }
 
   load(id: string) {
