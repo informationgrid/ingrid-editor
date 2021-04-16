@@ -48,7 +48,7 @@ class Document {
     var archiveWrapper: MutableSet<DocumentWrapper> = LinkedHashSet<DocumentWrapper>()
 
     @Version
-    @JsonProperty("db_version")
+    @JsonProperty("_version")
     var version: Int? = null
 
     @Column

@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface DocumentRepository : JpaRepository<Document, Int> {
 
+    fun deleteAllByUuid(uuid: String)
+    
 }

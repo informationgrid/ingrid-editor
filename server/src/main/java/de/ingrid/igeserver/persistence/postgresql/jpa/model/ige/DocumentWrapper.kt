@@ -104,7 +104,7 @@ class DocumentWrapper {
      * NOTE Since the JSON representation contains document ids ('archive') only, we need
      * to map them manually to document instances for persistence
      */
-    @ManyToMany(cascade=[CascadeType.ALL], fetch=FetchType.EAGER)
+    @ManyToMany(cascade=[CascadeType.ALL], fetch=FetchType.LAZY)
     @JoinTable(
             name="document_archive",
             joinColumns=[JoinColumn(name="wrapper_id")],

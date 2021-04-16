@@ -40,6 +40,10 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int> {
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.published IS NOT NULL AND d.type != 'FOLDER'")
     fun findAllPublished(catalogId: String): List<DocumentWrapper>
     
+    fun countByParent_Uuid(parent_uuid: String): Long
+    
+    fun deleteByUuid(uuid: String)
+    
 //    fun getChildren(catalogId: String, parentId: String?)
 
 }

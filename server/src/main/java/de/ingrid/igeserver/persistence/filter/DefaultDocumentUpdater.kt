@@ -3,7 +3,10 @@ package de.ingrid.igeserver.persistence.filter
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
+import org.hibernate.Session
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -20,6 +23,12 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
     @Autowired
     private lateinit var dateService: DateService
 
+    @Autowired
+    private lateinit var docWrapperRepo: DocumentWrapperRepository
+
+    @Autowired
+    private lateinit var catalogRepo: CatalogRepository
+
     override val profiles: Array<String>?
         get() = PROFILES
 
@@ -29,10 +38,14 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
         context.addMessage(Message(this, "Process document data '$docId' before update"))
 
         // update parent in case of moving a document
-        val parent = null // TODO: payload.document.parent
-        if (parent != null) {
-            payload.wrapper.parent = parent
+        val parent = payload.document.data.get(FIELD_PARENT)
+        if (!parent.isNull) {
+            payload.wrapper.parent = docWrapperRepo.findByUuid(parent.asText())
         }
+        
+        // set catalog information
+        // TODO: a document does not really need this information since the document wrapper takes care of it
+        payload.document.catalog = catalogRepo.findByIdentifier(context.catalogId)
 
         // update modified date
         payload.document.modified = dateService.now()

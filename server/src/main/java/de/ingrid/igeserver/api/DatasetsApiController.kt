@@ -6,10 +6,7 @@ import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.FIELD_ID
-import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -52,7 +49,7 @@ class DatasetsApiController @Autowired constructor(
     override fun updateDataset(
         principal: Principal?,
         id: String,
-        data: Document,
+        data: JsonNode,
         publish: Boolean,
         revert: Boolean
     ): ResponseEntity<JsonNode> {
@@ -61,7 +58,8 @@ class DatasetsApiController @Autowired constructor(
         val resultDoc = if (revert) {
             documentService.revertDocument(dbId, id)
         } else {
-            documentService.updateDocument(dbId, id, data, publish)
+            val doc = documentService.convertToDocument(data)
+            documentService.updateDocument(dbId, id, doc, publish)
         }
         val node = documentService.convertToJsonNode(resultDoc)
         return ResponseEntity.ok(node)
@@ -228,7 +226,7 @@ class DatasetsApiController @Autowired constructor(
         val childDocs = docs.hits
             .map { doc ->
                 val latest = documentService.getLatestDocument(doc, resolveLinks = false)
-                latest.data.put("hasChildren", documentService.determineHasChildren(doc))
+                latest.data.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc))
                 documentService.convertToJsonNode(latest)
             }
         return ResponseEntity.ok(childDocs)

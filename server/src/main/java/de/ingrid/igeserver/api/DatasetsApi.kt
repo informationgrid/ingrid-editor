@@ -1,10 +1,8 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.SearchResult
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -45,7 +43,7 @@ interface DatasetsApi {
     fun updateDataset(
             principal: Principal?,
             @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: String,
-            @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid Document,
+            @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
             @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean,
             @Parameter(description = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) revert: Boolean): ResponseEntity<JsonNode>
 

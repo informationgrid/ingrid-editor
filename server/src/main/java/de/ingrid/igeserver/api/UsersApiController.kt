@@ -215,7 +215,7 @@ class UsersApiController : UsersApi {
         )
 //            val info = dbService.findAll(UserInfoType::class, query, findOptions)
         // TODO: migrate
-        val info = userRepo.findAll()
+        val info = userRepo.findAllByCatalogId(id)
 
         info.forEach { result.add(it.userId) }
         return ResponseEntity.ok(result)
