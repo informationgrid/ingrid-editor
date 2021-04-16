@@ -287,7 +287,7 @@ class PostgreSQLDatabase : DBApi {
     override fun createCatalog(settings: Catalog): String? {
         val id = settings.name.toLowerCase().replace(" ".toRegex(), "_")
         if (!catalogExists(id)) {
-            settings.id = acquireDatabase("").use {
+            settings.id = acquireDatabase().use {
                 val catalog = CatalogEntity().apply {
                     identifier = id
                     name = settings.name

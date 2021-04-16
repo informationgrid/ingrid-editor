@@ -15,7 +15,7 @@
     margin: 0;
     align-items: center;
 
-    .mat-icon {
+    .mat-list-icon {
       align-self: unset;
     }
   }
@@ -23,21 +23,7 @@
   &.dense {
     mat-list-option {
       height: 40px !important;
-
-      ::ng-deep .mat-list-item-content {
-        min-height: 40px;
-
-        .mat-icon {
-          align-self: unset;
-        }
-      }
     }
-  }
-
-  ::ng-deep .mat-list-item .mat-list-item-content {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    min-height: 48px;
   }
 
   .mat-icon {
@@ -71,26 +57,12 @@
     padding: 0 12px;
   }
 
-  ::ng-deep .mat-list-text {
-    padding-right: 0 !important;
-    padding-left: 0 !important;
-  }
-
-  ::ng-deep &.mat-list-base {
-    mat-list-option {
-      //min-height: 48px;
-      height: auto !important;
-      font-size: 16px;
-    }
-  }
-
 }
 
-.marker-space {
+.marker-space ige-document-icon {
   margin-left: 36px;
 }
 
 .hide-bg-selection.mat-list-single-selected-option {
   background: #00000000;
 }
-

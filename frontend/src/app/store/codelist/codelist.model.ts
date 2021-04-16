@@ -1,24 +1,29 @@
 export interface Codelist {
   id: string;
   name: string;
+  description?: string;
   entries: CodelistEntry[];
 }
 
 export interface CodelistEntry {
   id: string;
-  value: string;
+  description: string;
+  fields: Map<string, string>; // { [x: string]: string };
   data?: string;
 }
 
 export interface CodelistBackend {
   id: string;
   name: string;
-  defaultEntry: string;
+  description?: string;
+  defaultEntry?: string;
   entries: CodelistEntryBackend[],
-  lastModified: number;
+  lastModified?: number;
 }
 
 export interface CodelistEntryBackend {
   id: string;
-  localisations: Array<Array<string>>;
+  description: string;
+  localisations: any;
+  data: string;
 }

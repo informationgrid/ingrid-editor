@@ -8,6 +8,7 @@ export class ShowJsonBehaviour extends Plugin {
 
   id = 'plugin.show.json';
   name = 'Anzeige JSON Formular';
+  group = 'Toolbar';
   description = 'Ein neuer Button ermöglicht die Anzeige des JSON-Dokuments neben dem Formular.';
   defaultActive = false;
   private eventShowJsonId = 'SHOW_JSON';

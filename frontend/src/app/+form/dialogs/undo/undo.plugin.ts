@@ -10,6 +10,7 @@ import {FormularService} from '../../formular.service';
 export class UndoPlugin extends Plugin {
   id = 'plugin.undo';
   _name = 'Undo Plugin';
+  group = 'Toolbar';
   defaultActive = true;
 
   eventUndoId = 'UNDO';

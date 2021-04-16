@@ -1,0 +1,16 @@
+<mat-dialog-content fxLayout="column">
+    <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput igeFocus [(ngModel)]="model.name">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Beschreibung</mat-label>
+        <input matInput [(ngModel)]="model.description">
+    </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-flat-button mat-dialog-close>Abbrechen</button>
+    <div fxFlex></div>
+    <button mat-flat-button color="primary" [matDialogClose]="model">Speichern</button>
+</mat-dialog-actions>

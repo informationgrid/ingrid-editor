@@ -16,7 +16,7 @@ export class CodelistPipe implements PipeTransform {
   ) {
   }
 
-  transform(value: string, id: string): Observable<string> {
+  transform(value: string, id: string, lang = 'de'): Observable<string> {
 
     const codelist = this.codelistQuery.getEntity(id);
 
@@ -26,21 +26,21 @@ export class CodelistPipe implements PipeTransform {
         .pipe(
           filter(cl => cl !== undefined),
           take(1),
-          map((lazyCodelist: Codelist) => this.getEntryFromCodelist(lazyCodelist, value, id))
+          map((lazyCodelist: Codelist) => this.getEntryFromCodelist(lazyCodelist, value, id)[lang])
         );
     }
 
     const result = this.getEntryFromCodelist(codelist, value, id);
-    return of(result);
+    return of(result[lang]);
 
   }
 
 
-  private getEntryFromCodelist(codelist: Codelist, value: any, id: any) {
+  private getEntryFromCodelist(codelist: Codelist, value: string, id: any) {
 
     const entries = codelist.entries.filter(item => item.id === value);
     if (entries.length === 1) {
-      return entries[0].value;
+      return entries[0].fields;
     } else {
       console.log(`Codelist entry ${value} not found for codelist ${id}`);
       return `${value} (Freier Eintrag)`;

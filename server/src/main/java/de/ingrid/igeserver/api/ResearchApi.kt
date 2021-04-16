@@ -1,6 +1,9 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.model.Facets
+import de.ingrid.igeserver.model.ResearchQuery
+import de.ingrid.igeserver.model.ResearchResponse
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -17,17 +20,20 @@ interface ResearchApi {
     @Operation
     @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun load(principal: Principal?): ResponseEntity<Array<ResearchQueryWrapper>>
+    @ResponseBody
+    fun load(principal: Principal?): ResponseEntity<List<Query>>
 
     @Operation
     @PostMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun save(principal: Principal?): ResponseEntity<Void>
+    fun save(principal: Principal?,
+             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query): ResponseEntity<Query>
 
     @Operation
-    @DeleteMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(value = ["query/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun delete(principal: Principal?): ResponseEntity<Void>
+    fun delete(principal: Principal?,
+    @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int): ResponseEntity<Void>
 
     @Operation
     @PostMapping(value = ["/query"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -44,7 +50,7 @@ interface ResearchApi {
     @Operation
     @GetMapping(value = ["/quickFilter"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun getQuickFilter(principal: Principal?): ResponseEntity<Array<FacetGroup>>
+    fun getQuickFilter(principal: Principal?): ResponseEntity<Facets>
 
     @Operation
     @PostMapping(value = ["/export"], produces = [MediaType.APPLICATION_JSON_VALUE])

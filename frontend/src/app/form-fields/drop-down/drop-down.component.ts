@@ -20,6 +20,7 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
   @Input() isCombo = false;
   @Input() useFilter = true;
   @Input() appendTo: string;
+  @Input() lang = 'de';
 
   isDisabled = false;
 
@@ -62,7 +63,7 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
     if (optionValue && optionValue.id !== '-1') {
       const value = this.options.find( option => option.id === optionValue.id );
       if (value) {
-        this._value = value.value;
+        this._value = value.fields[this.lang];
       } else {
         console.error( 'Could not find option value for: ', optionValue );
       }
@@ -88,6 +89,6 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
 
   onInput(value: string): void {
     this.filteredOptions = this.simpleOptions
-      .filter(option => option.value.toLowerCase().indexOf(value.toLowerCase()) === 0);
+      .filter(option => option.fields[this.lang].toLowerCase().indexOf(value.toLowerCase()) === 0);
   }
 }

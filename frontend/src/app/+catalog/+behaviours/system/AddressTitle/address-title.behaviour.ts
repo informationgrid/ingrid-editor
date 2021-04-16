@@ -11,6 +11,7 @@ export class AddressTitleBehaviour extends Plugin {
   name = 'Template für die Generierung des Adressen-Titels';
   description = 'Definition für den Titel, der bei einer neuen Adresse generiert wird. Z.B.: organization + ", " + lastName + ", " + firstName<br>Verfügbare Felder sind: <b>firstName</b>, ' +
     '<b>lastName</b> und <b>organization</b>';
+  group = 'Adressen';
   defaultActive = false;
 
 

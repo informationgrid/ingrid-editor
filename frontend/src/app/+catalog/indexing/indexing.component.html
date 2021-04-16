@@ -1,9 +1,50 @@
-<button mat-stroked-button color="primary" (click)="index()">Jetzt indizieren</button>
+<page-template title="Indizierung">
 
-<div class="padding">
-    <mat-form-field class="width-100" appearance="outline">
-        <mat-label>Cron Pattern</mat-label>
-        <input #cronInput matInput placeholder="*/1 * * * * *" [value]="cronPattern">
-    </mat-form-field>
-    <button mat-button (click)="updatePattern(cronInput.value)">Setzen</button>
-</div>
+    <ng-container help>
+        <p>Ein Cron Ausdruck ist folgendermaßen aufgebaut:</p>
+
+        <div class="cron-explain">
+            <div>
+                <div class="explain">Sekunde</div>
+                <div class="star">*</div>
+            </div>
+            <div>
+                <div class="explain">Minute</div>
+                <div class="star">*</div>
+            </div>
+            <div>
+                <div class="explain">Stunde</div>
+                <div class="star">*</div>
+            </div>
+            <div>
+                <div class="explain">Tag des Monats</div>
+                <div class="star">*</div>
+            </div>
+            <div>
+                <div class="explain">Monat</div>
+                <div class="star">*</div>
+            </div>
+            <div>
+                <div class="explain">Tag der Woche</div>
+                <div class="star">*</div>
+            </div>
+        </div>
+    </ng-container>
+
+    <div main fxLayout="column" fxFlex>
+        <div fxLayoutAlign="end end">
+            <button mat-flat-button color="primary" (click)="index()">Indizieren</button>
+        </div>
+
+        <h3>Ausführungsintervall</h3>
+        <div class="padding section">
+            <mat-form-field class="width-100" appearance="outline">
+                <mat-label>Cron Ausdruck</mat-label>
+                <input [formControl]="cronField" matInput placeholder="*/1 * * * * *">
+                <mat-hint>{{hint}}</mat-hint>
+            </mat-form-field>
+            <button mat-stroked-button (click)="updatePattern(cronField.value)" [disabled]="!valid">Übernehmen</button>
+        </div>
+    </div>
+
+</page-template>

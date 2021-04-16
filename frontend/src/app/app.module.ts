@@ -170,7 +170,7 @@ export function ConfigLoader(configService: ConfigService) {
       provide: NG_FORMS_MANAGER_CONFIG,
       useValue: new NgFormsManagerConfig({
         debounceTime: 0 // defaults to 300
-      }),
+      })
     },
 
     // PLUGINS

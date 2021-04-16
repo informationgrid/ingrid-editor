@@ -4,35 +4,35 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.IntNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ConflictException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.extension.pipe.Message.Companion.dateService
 import de.ingrid.igeserver.model.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedMap
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
-import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
 import de.ingrid.igeserver.persistence.model.meta.UserInfoType
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogManagerAssignment
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.collections.HashSet
+import kotlin.collections.HashMap
 
 @Service
 class CatalogService @Autowired constructor(
     private val dbService: DBApi,
+    private val catalogRepo: CatalogRepository,
+    private val userRepo: UserRepository,
     private val authUtils: AuthUtils,
     private val catalogProfiles: List<CatalogProfile>
 ) {
@@ -45,70 +45,50 @@ class CatalogService @Autowired constructor(
     }
 
     fun getCurrentCatalogForUser(userId: String): String {
-        val query = listOf(QueryField("userId", userId))
 
-        dbService.acquireDatabase().use {
-            val findOptions = FindOptions(
-                queryType = QueryType.EXACT,
-                resolveReferences = false
-            )
-            val list = dbService.findAll(UserInfoType::class, query, findOptions)
-            if (list.totalHits == 0L) {
-                throw NotFoundException.withMissingUserCatalog(userId)
-            }
+        val userData = userRepo.findByUserId(userId).data ?: throw NotFoundException.withMissingUserCatalog(userId)
 
-            val catInfo = list.hits[0]
-            val currentCatalogId = if (catInfo.has("currentCatalogId")) catInfo["currentCatalogId"].asText() else null
-            return if (currentCatalogId != null && currentCatalogId.trim { it <= ' ' } != "") {
-                // return assigned current catalog ...
-                currentCatalogId
-            } else {
+        val currentCatalogId = when (userData.containsKey("currentCatalogId")) {
+            true -> userData["currentCatalogId"].toString()
+            else -> null
+        }
+
+        return when (currentCatalogId != null && currentCatalogId.trim() != "") {
+            true -> currentCatalogId
+             else -> {
                 // ... or first catalog, if existing
-                val catalogIds = catInfo["catalogIds"] as ArrayNode
-                if (catalogIds.size() == 0) {
+                val catalogIds = userData["catalogIds"] as List<String>?
+                if (catalogIds == null || catalogIds.size == 0) {
                     throw NotFoundException.withMissingUserCatalog(userId)
                 }
-                catalogIds[0].asText()
+                catalogIds[0]
             }
         }
     }
 
     fun getCatalogsForUser(userId: String): Set<String> {
-        // TODO: use cache!
-        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
-            val user = getUser(userId)
-            return if (user == null) {
-                log.error("The user '$userId' does not seem to be assigned to any database.")
-                HashSet()
-            } else {
-                val catalogIdsArray = user["catalogIds"] as ArrayNode
-                val catalogIds: MutableSet<String> = HashSet()
-                for (jsonNode in catalogIdsArray) {
-                    catalogIds.add(jsonNode.asText())
-                }
-                catalogIds
-            }
+
+        val userData = userRepo.findByUserId(userId).data
+
+        return if (userData == null) {
+            log.error("The user '$userId' does not seem to be assigned to any database.")
+            HashSet()
+        } else {
+            val catalogIds = userData["catalogIds"]
+            return if (catalogIds == null) HashSet() else (catalogIds as List<String>).toSet()
         }
     }
 
     fun getRecentLoginsForUser(userId: String): MutableList<Date> {
-        // TODO: use cache?
-        dbService.acquireDatabase().use {
-            val user = getUser(userId)
-            return if (user == null) {
-                log.error("The user '$userId' does not seem to be assigned to any database.")
-                mutableListOf()
-            } else {
-                val recentLoginsArray = user["recentLogins"] as ArrayNode?
-                val recentLogins = mutableListOf<Date>()
-                if (recentLoginsArray != null) {
-                    for (jsonNode in recentLoginsArray) {
-                        recentLogins.add(Date(jsonNode.asLong()))
-                    }
-                }
-                recentLogins
-            }
-        }
+
+        val userData = userRepo.findByUserId(userId).data
+
+        return if (userData == null) {
+            log.error("The user '$userId' does not seem to be assigned to any database.")
+            mutableListOf()
+        } else (userData["recentLogins"] as List<Long>?)
+            ?.map { Date(it) }
+            ?.toMutableList() ?: mutableListOf()
     }
 
     fun getUserCreationDate(userId: String): Date {
@@ -165,23 +145,16 @@ class CatalogService @Autowired constructor(
     }
 
     fun getCatalogById(id: String): Catalog {
-        if (!dbService.catalogExists(id)) {
-            throw NotFoundException.withMissingResource(id, "Database")
-        }
-        dbService.acquireCatalog(id).use {
-            val catalogInfo = dbService.findAll(CatalogInfoType::class)
-            if (catalogInfo.isNotEmpty()) {
-                val jsonNode = catalogInfo.filter { it.get("id").textValue() == id }.first()
+
+        val catalog = catalogRepo.findByIdentifier(id)
+
+
                 return Catalog(
                     id,
-                    jsonNode.get("name")?.asText() ?: "Unknown",
-                    if (jsonNode.has("description")) jsonNode["description"].asText() else "",
-                    jsonNode["type"].asText()
-                )
-            } else {
-                throw NotFoundException.withMissingResource(id, "Database")
-            }
-        }
+                    catalog.name,
+                    catalog.description ?: "",
+                    catalog.type ?: ""
+        )
     }
 
     fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String?>?) {
@@ -204,23 +177,23 @@ class CatalogService @Autowired constructor(
 
     private fun setFieldForUser(userId: String, fieldId: String, fieldValue: Any) {
 
-        dbService.acquireDatabase().use {
-            val user = getUser(userId)
+        val user = userRepo.findByUserId(userId)
 
-            val catUserRef: ObjectNode
-            val id: String?
-            if (user == null) {
-                catUserRef = ObjectMapper().createObjectNode()
-                catUserRef.put("userId", userId)
-                id = null
-            } else {
-                catUserRef = user as ObjectNode
-                id = dbService.getRecordId(catUserRef)
-                dbService.removeInternalFields(catUserRef)
+        if (user.data == null) {
+            user.data = EmbeddedMap().apply {
+                put(fieldId, fieldValue)
             }
-            catUserRef.putPOJO(fieldId, fieldValue)
-            dbService.save(UserInfoType::class, id, catUserRef.toString())
+        } else {
+            user.data?.put(fieldId, fieldValue)
         }
+
+        userRepo.save(user)
+    }
+
+    fun initializeCodelists(catalogId: String, type: String, codelistId: String? = null) {
+        this.catalogProfiles
+            .find { it.identifier == type }
+            ?.initCatalogCodelists(catalogId, codelistId)
     }
 
     fun getUser(userId: String): JsonNode? {

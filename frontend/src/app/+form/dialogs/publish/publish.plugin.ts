@@ -23,6 +23,7 @@ import {Control} from '@ngneat/forms-manager/lib/types';
 export class PublishPlugin extends Plugin {
   id = 'plugin.publish';
   _name = 'Publish Plugin';
+  group = 'Toolbar';
   defaultActive = true;
 
   eventPublishId = 'PUBLISH';

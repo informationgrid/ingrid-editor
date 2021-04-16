@@ -3,6 +3,7 @@ import {GroupService} from './services/role/group.service';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {BehaviourService} from './services/behavior/behaviour.service';
+import {CodelistService} from './services/codelist/codelist.service';
 
 @Component({
   selector: 'ige-root',
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit {
   // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
 
   constructor(private behaviourService: BehaviourService/*for initialization!*/,
+              private codelistService: CodelistService,
               registry: MatIconRegistry, domSanitizer: DomSanitizer,
               private roleService: GroupService) {
 
@@ -31,6 +33,11 @@ export class AppComponent implements OnInit {
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icon-button.svg'));
     registry.addSvgIconSet(domSanitizer.bypassSecurityTrustResourceUrl('assets/images/banner.svg'));
 
+    // TODO: requested codelists by document types are stored in codelist store, however catalog codelists
+    //       are found in a separate part. Moreover when opening the codelist admin page, all codelists are
+    //       loaded and replaced in store overwriting catalog codelists
+    //       Catalog Codelists should be loaded initially into the correct store!
+    codelistService.fetchCatalogCodelists();
   }
 
   ngOnInit() {

@@ -1,20 +1,40 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close data-cy="dlg-close">
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Eintrag bearbeiten</span>
+    </h2>
+</div>
 <mat-dialog-content fxLayout="column">
-    <mat-form-field class="example-full-width">
+    <mat-form-field appearance="outline">
         <mat-label>Id</mat-label>
         <input matInput igeFocus [(ngModel)]="model.id">
     </mat-form-field>
-    <mat-form-field class="example-full-width">
-        <mat-label>Titel</mat-label>
-        <input matInput [(ngModel)]="model.value">
+    <mat-form-field appearance="outline">
+        <mat-label>Beschreibung</mat-label>
+        <textarea matInput [(ngModel)]="model.description"></textarea>
     </mat-form-field>
-    <mat-form-field class="example-full-width">
+    <mat-form-field appearance="outline">
         <mat-label>Data</mat-label>
-        <input matInput placeholder='{\"url\":\"https://xxx\"}' [(ngModel)]="model.data">
+        <input matInput placeholder='{"url":"https://xxx"}' [(ngModel)]="model.data">
     </mat-form-field>
+    <div *ngFor="let field of fields; let i = index" fxLayout="row" fxLayoutGap="20px">
+        <mat-form-field appearance="outline">
+            <mat-label>Schlüssel</mat-label>
+            <input matInput [(ngModel)]="field.key">
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlex>
+            <mat-label>Titel</mat-label>
+            <input matInput [(ngModel)]="field.value">
+        </mat-form-field>
+        <button mat-icon-button (click)="removeEntry(i)"><mat-icon>clear</mat-icon></button>
+    </div>
+    <ige-add-button (add)="addEntry()"></ige-add-button>
 </mat-dialog-content>
 
 <mat-dialog-actions>
     <button mat-flat-button mat-dialog-close>Abbrechen</button>
     <div fxFlex></div>
-    <button mat-flat-button color="primary" [matDialogClose]="model">Ändern</button>
+    <button mat-flat-button color="primary" (click)="closeWithResult()">Ändern</button>
 </mat-dialog-actions>

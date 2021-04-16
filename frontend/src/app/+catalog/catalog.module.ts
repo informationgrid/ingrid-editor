@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {routing} from './catalog.routing';
 import {CatalogService} from './services/catalog.service';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatListModule} from '@angular/material/list';
@@ -22,15 +22,17 @@ import {CatalogSettingsComponent} from './catalog-settings.component';
 import {FilterSelectModule} from '../shared/filter-select/filter-select.module';
 import {UpdateCodelistComponent} from './codelists/update-codelist/update-codelist.component';
 import {FormFieldsModule} from '../form-fields/form-fields.module';
+import {PageTemplateModule} from '../shared/page-template/page-template.module';
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    FlexLayoutModule,
-    MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        FlexLayoutModule,
+        MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
+        routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule, PageTemplateModule, MatMenuModule
+    ],
   providers: [
     CatalogService
   ],

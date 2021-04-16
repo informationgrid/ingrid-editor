@@ -86,8 +86,9 @@ describe('Search', function () {
   it('should switch to research page after click "Erweiterte Suche" and show all documents/addresses', () => {
     DashboardPage.search('t');
     cy.get('a').contains('Erweiterte Suche').click();
-    cy.get('div').contains('Die Suchergebnisseite ist gerade in der Entwicklung.');
-    // cy.url().should('include', '/research');
+    cy.url().should('include', '/research');
+    // check result table for at least 5 hits
+    cy.get('.mat-row').should('have.length.at.least', 5);
   });
 
   xit('should switch to research page and filter by all documents/addresses', () => {});

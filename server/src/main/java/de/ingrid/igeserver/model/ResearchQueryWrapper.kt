@@ -7,10 +7,6 @@ data class ResearchQueryWrapper(
     val type: String,
     val title: String,
     val description: String,
-    val definition: ResearchSavedQuery
-)
-
-data class ResearchSavedQuery(
     val term: String,
     val model: JsonNode,
     val parameter: JsonNode

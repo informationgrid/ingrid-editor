@@ -2,10 +2,10 @@ import {Injectable} from '@angular/core';
 import {CodelistDataService} from './codelist-data.service';
 import {Codelist, CodelistBackend, CodelistEntry, CodelistEntryBackend} from '../../store/codelist/codelist.model';
 import {CodelistStore} from '../../store/codelist/codelist.store';
-import {Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {buffer, distinct, filter, map, switchMap, tap} from 'rxjs/operators';
-import {arrayAdd} from '@datorama/akita';
+import {arrayUpdate} from '@datorama/akita';
 
 export interface SelectOption {
   label: string;
@@ -28,13 +28,13 @@ export class CodelistService {
     }
 
     return codelist.entries
-      .map(entry => ({label: entry.value, value: entry.id} as SelectOption))
-      .sort((a, b) => a.label.localeCompare(b.label));
+      .map(entry => ({label: entry.fields['de'], value: entry.id} as SelectOption))
+      .sort((a, b) => a.label?.localeCompare(b.label));
   };
 
-  static getLocalisedValue(locals: any) {
+  /*static getLocalisedValue(locals: any) {
     return locals.de || locals.name;
-  }
+  }*/
 
   constructor(private store: CodelistStore,
               private dataService: CodelistDataService) {
@@ -84,6 +84,7 @@ export class CodelistService {
     return codelists.map(codelist => ({
       id: codelist.id,
       name: codelist.name,
+      description: codelist.description,
       entries: this.prepareEntries(codelist.entries)
     }));
   }
@@ -91,7 +92,9 @@ export class CodelistService {
   private prepareEntries(entries: CodelistEntryBackend[]): CodelistEntry[] {
     return entries.map(entry => ({
         id: entry.id,
-        value: CodelistService.getLocalisedValue(entry.localisations)
+        description: entry.description,
+        fields: entry.localisations,
+        data: entry.data
       })
     );
   }
@@ -105,47 +108,63 @@ export class CodelistService {
   }
 
   mapToOptions(codelists: Codelist[]): SelectOption[] {
-    return codelists.map(cl => {
-      return {
+    return codelists
+      .map(cl => ({
         value: cl.id,
         label: cl.name
-      };
-    });
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }
 
-  getCatalogCodelists(): void {
-    this.store.update({
-      catalogCodelists: [{
-        id: '1',
-        name: 'meine Codeliste',
-        entries: [{
-          id: '10',
-          value: 'aaa'
-        }, {
-          id: '11',
-          value: 'bbb'
-        }]
-      }, {
-        id: '2',
-        name: 'andere Codeliste',
-        entries: [{
-          id: '20',
-          value: 'xxx'
-        }, {
-          id: '21',
-          value: 'yyy'
-        }]
-      }, {
-        id: '3',
-        name: 'noch eine Codeliste',
-        entries: []
-      }]
-    });
+  fetchCatalogCodelists(): void {
+    this.dataService.getCatalogCodelists()
+      .pipe(
+        map(codelists => this.prepareCodelists(codelists)),
+        tap(codelists => this.store.update({
+          catalogCodelists: codelists
+        }))
+      ).subscribe();
   }
 
-  addCatalogCodelist(codelist: Codelist) {
-    this.store.update(({catalogCodelists}) => ({
-      catalogCodelists: arrayAdd(catalogCodelists, codelist)
-    }))
+  updateCodelist(codelist: Codelist): Observable<any> {
+
+    const backendCodelist = this.prepareForBackend(codelist);
+    return this.dataService.updateCodelist(backendCodelist)
+      .pipe(
+        tap(() => this.store.update(({catalogCodelists}) => ({
+            catalogCodelists: arrayUpdate(catalogCodelists, codelist.id, codelist)
+          }))
+        )
+      );
+
+  }
+
+  private prepareForBackend(codelist: Codelist): CodelistBackend {
+    return {
+      id: codelist.id,
+      name: codelist.name,
+      description: codelist.description,
+      entries: this.prepareEntriesForBackend(codelist.entries)
+    };
+  }
+
+  private prepareEntriesForBackend(entries: CodelistEntry[]): CodelistEntryBackend[] {
+    return entries.map(entry => ({
+      id: entry.id,
+      description: entry.description,
+      data: entry.data,
+      localisations: entry.fields
+    }));
+  }
+
+  resetCodelist(id: string) {
+    return this.dataService.resetCodelist(id)
+      .pipe(
+        map(codelist => this.prepareCodelists([codelist])[0]),
+        tap(codelist => this.store.update(({catalogCodelists}) => ({
+            catalogCodelists: arrayUpdate(catalogCodelists, id, codelist)
+          }))
+        )
+      );
   }
 }

@@ -1,14 +1,11 @@
-export interface SavedQuery {
+export interface Query {
+  id?: string;
+  type?: 'facet' | 'sql';
+  name: string;
+  description: string;
   term: string;
   model: any;
   parameter: any;
-
-}
-
-export interface Query {
-  id: string;
-  type: string;
-  title: string;
-  description: string;
-  definition: SavedQuery;
+  modified?: any;
+  sql?: string;
 }

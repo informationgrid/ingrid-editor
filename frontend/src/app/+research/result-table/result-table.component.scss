@@ -1,0 +1,62 @@
+@import "src/variables";
+
+:host {
+  overflow: auto;
+}
+
+
+.result-table-header {
+  height: 49px;
+  background-color: #FFFFFF;
+  position: relative;
+  text-align: center;
+
+  mat-divider {
+    height: 36px;
+  }
+
+  .result {
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.4px;
+    line-height: 49px;
+    color: $ige-primary;
+
+    display: inline-block;
+    /* text-align: left; */
+    margin: auto;
+    width: 50%;
+  }
+
+  .result-buttons {
+    display: flex;
+    position: absolute;
+    top: 6px;
+    right: 0;
+    text-align: left;
+  }
+}
+
+/*.settings button {
+  visibility: hidden;
+}
+.mat-row:hover .settings button {
+  visibility: visible;
+}*/
+
+.thin-column {
+  width: 1px;
+}
+
+.mat-row {
+  .settings button {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+}

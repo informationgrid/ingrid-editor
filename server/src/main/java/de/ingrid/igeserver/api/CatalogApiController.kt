@@ -15,7 +15,7 @@ class CatalogApiController : CatalogApi {
 
     @Autowired
     private lateinit var dbService: DBApi
-
+    
     @Autowired
     private lateinit var catalogService: CatalogService
 
@@ -29,6 +29,8 @@ class CatalogApiController : CatalogApi {
     @AuditLog(action="create_catalog")
     override fun createCatalog(settings: Catalog): ResponseEntity<String> {
         val catalogId = dbService.createCatalog(settings)
+
+        catalogService.initializeCodelists(catalogId!!, settings.type)
         return ResponseEntity.ok().body("{ \"catalogId\": \"$catalogId\"}")
     }
 

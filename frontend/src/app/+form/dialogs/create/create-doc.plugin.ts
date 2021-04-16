@@ -24,6 +24,7 @@ export interface DocType {
 export class CreateDocumentPlugin extends Plugin {
   id = 'plugin.newDoc';
   _name = 'Neues Dokument Plugin';
+  group = 'Toolbar';
   defaultActive = true;
 
   constructor(private toolbarService: FormToolbarService,

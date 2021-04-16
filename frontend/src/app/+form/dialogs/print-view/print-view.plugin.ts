@@ -12,7 +12,9 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 export class PrintViewPlugin extends Plugin {
   id = 'plugin.printView';
   _name = 'Print View Plugin';
+  group = 'Toolbar';
   defaultActive = true;
+
   private treeQuery: TreeQuery | AddressTreeQuery;
 
   constructor(private toolbarService: FormToolbarService,

@@ -1,0 +1,23 @@
+<div class="padding" fxLayout="column" fxFlex>
+    <mat-form-field appearance="outline" class="width-100">
+        <textarea matInput rows="5" placeholder="SELECT * FROM ..." [(ngModel)]="sqlValue"></textarea>
+    </mat-form-field>
+
+    <div>
+        <span [matMenuTriggerFor]="examples">Beispiele</span>
+        <mat-menu #examples="matMenu">
+            <button mat-menu-item (click)="updateSql(0)">Alle Adressen, die "test" im Titel beinhalten</button>
+            <button mat-menu-item (click)="updateSql(1)">Alle Dokumente, mit Kategorie "Luft- und Raumfahrt"
+            </button>
+        </mat-menu>
+
+        <div fxFlex></div>
+        <button mat-flat-button color="primary"
+                [disabled]="!sqlValue"
+                (click)="query.emit(sqlValue)">Suchen</button>
+    </div>
+
+    <div class="content">
+        <ng-content></ng-content>
+    </div>
+</div>

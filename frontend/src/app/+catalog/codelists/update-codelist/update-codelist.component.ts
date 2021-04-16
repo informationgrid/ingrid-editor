@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CodelistEntry} from '../../../store/codelist/codelist.model';
 
 @Component({
@@ -8,13 +8,34 @@ import {CodelistEntry} from '../../../store/codelist/codelist.model';
   styleUrls: ['./update-codelist.component.scss']
 })
 export class UpdateCodelistComponent implements OnInit {
-  model: any = {};
+  model: CodelistEntry;
+  fields: any[];
 
-  constructor(@Inject(MAT_DIALOG_DATA) public entry: CodelistEntry) {
+  constructor(@Inject(MAT_DIALOG_DATA) public entry: CodelistEntry,
+              private dialogRef: MatDialogRef<UpdateCodelistComponent>) {
     this.model = {...entry};
+    this.fields = Object.keys(entry.fields).map(key => ({
+      key: key,
+      value: entry.fields[key]
+    }));
   }
 
   ngOnInit(): void {
   }
 
+  addEntry() {
+    this.fields.push({});
+  }
+
+  closeWithResult() {
+    this.model.fields = this.fields.reduce((previousValue, currentValue) => {
+      previousValue[currentValue.key] = currentValue.value;
+      return previousValue;
+    }, {});
+    this.dialogRef.close(this.model);
+  }
+
+  removeEntry(index: number) {
+    this.fields.splice(index, 1);
+  }
 }

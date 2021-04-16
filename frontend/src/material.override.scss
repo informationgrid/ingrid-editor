@@ -40,6 +40,7 @@
 // align text in buttons centered with icon
 .mat-button-wrapper {
   text-transform: uppercase;
+  letter-spacing: 1.25px;
 
   mat-icon + span {
     display: inline-block;
@@ -171,4 +172,12 @@ mat-checkbox .mat-checkbox-layout .mat-checkbox-label {
 
 :-moz-placeholder { /* Firefox 4 - 18 */
   opacity: 1;
+}
+
+/* Table */
+.mat-table {
+  th.mat-header-cell:last-of-type, td.mat-cell:last-of-type {
+    padding-right: 12px;
+    text-align: end;
+  }
 }

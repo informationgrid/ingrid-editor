@@ -12,6 +12,7 @@ export interface SpatialLocation {
   type: SpatialLocationType,
   value?: SpatialBoundingBox,
   wkt?: string;
+  limitTypes?: SpatialLocationType[]
 }
 
 export interface SpatialLocationWithColor extends SpatialLocation {

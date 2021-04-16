@@ -4,14 +4,14 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
-import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.profiles.CatalogProfile
-import org.hibernate.exception.GenericJDBCException
 import org.hibernate.jpa.QueryHints
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
 import javax.persistence.EntityManager
 
 @Service
@@ -28,10 +28,10 @@ class ResearchService {
 
     private val specialFilter = arrayOf("selectPublished", "selectLatest")
 
-    fun createFacetDefinitions(catalogType: String): Array<FacetGroup> {
+    fun createFacetDefinitions(catalogType: String): Facets {
         return profiles
-            .find { it.identifier == catalogType }
-            ?.getFacetDefinitions() ?: emptyArray()
+            .find { it.identifier == catalogType }!!
+            .let { Facets(it.getFacetDefinitionsForAddresses(), it.getFacetDefinitionsForDocuments()) }
 
     }
 
@@ -60,7 +60,7 @@ class ResearchService {
         val whereFilter = determineWhereQuery(dbId, query)
 
         return """
-                SELECT DISTINCT document1.*
+                SELECT DISTINCT document1.*, document_wrapper.draft
                 FROM catalog, document_wrapper
                 $stateCondition
                 $jsonSearch
@@ -71,16 +71,17 @@ class ResearchService {
 
     private fun determineWhereQuery(dbId: String, query: ResearchQuery): String {
         val catalogFilter = createCatalogFilter(dbId);
-        
-        val termSearch = if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%')"
+
+        val termSearch =
+            if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%')"
 
         val filter = convertQuery(query.clauses)
-        
+
         return if (termSearch.isBlank() && filter == null) {
-            "WHERE $catalogFilter" 
+            "WHERE $catalogFilter"
         } else if (termSearch.isBlank()) {
             "WHERE $catalogFilter AND $filter"
-        } else if (filter == null){
+        } else if (filter == null) {
             "WHERE $catalogFilter AND $termSearch"
         } else {
             "WHERE $catalogFilter AND $filter AND $termSearch"
@@ -88,9 +89,9 @@ class ResearchService {
     }
 
     private fun createCatalogFilter(dbId: String): String {
-        
+
         return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$dbId'"
-        
+
     }
 
     private fun determineJsonSearch(term: String?): String {
@@ -175,6 +176,7 @@ class ResearchService {
             .addScalar("type")
             .addScalar("created")
             .addScalar("modified")
+            .addScalar("draft")
             .resultList
     }
 
@@ -186,22 +188,54 @@ class ResearchService {
             val node: ObjectNode = item[0] as ObjectNode
             node.put("title", item[1] as? String)
             node.put("uuid", item[2] as? String)
-            node.put("created", item[4] as? String)
-            node.put("modified", item[5] as? String)
+            node.put("_type", item[3] as? String)
+            node.put("_created", (item[4] as? Date).toString())
+            node.put("_modified", (item[5] as? Date).toString())
+            node.put(
+                "_state",
+                if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value
+            )
         }
         array.addAll(jsonNodes)
         return array
     }
 
-    fun querySql(sqlQuery: String): ResearchResponse {
+    fun querySql(dbId: String, sqlQuery: String): ResearchResponse {
 
         try {
-            val result = sendQuery(sqlQuery, emptyList())
+            val catalogQuery = restrictQueryOnCatalog(dbId, sqlQuery)
+            val result = sendQuery(catalogQuery, emptyList())
 
             return ResearchResponse(result.size, mapResult(result))
-        } catch (error: GenericJDBCException) {
-            throw NotFoundException.withMissingResource(error.localizedMessage, "SQL")
+        } catch (error: Exception) {
+            throw ClientException.withReason(
+                (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage
+            )
         }
+    }
+
+    private fun restrictQueryOnCatalog(dbId: String, sqlQuery: String): String {
+
+        val catalogFilter = createCatalogFilter(dbId)
+
+        val fromIndex = sqlQuery.indexOf("FROM")
+        val whereIndex = sqlQuery.indexOf("WHERE")
+
+        if (fromIndex == -1) {
+            throw ClientException.withReason("Query must contain 'FROM' statement")
+        }
+
+        return when (whereIndex) {
+            -1 -> """
+                ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
+                WHERE $catalogFilter
+                """.trimIndent()
+            else -> """
+                ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
+                $catalogFilter AND 
+                ${sqlQuery.substring(whereIndex + 6)}""".trimIndent()
+        }
+
     }
 
 }

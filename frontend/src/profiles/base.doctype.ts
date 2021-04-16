@@ -1,15 +1,18 @@
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {Doctype} from '../app/services/formular/doctype';
-import {Observable} from 'rxjs';
+import {merge, Observable} from 'rxjs';
 import {CodelistService, SelectOption} from '../app/services/codelist/codelist.service';
-import {map} from 'rxjs/operators';
+import {filter, map, tap} from 'rxjs/operators';
 import {CodelistQuery} from '../app/store/codelist/codelist.query';
 
 export abstract class BaseDoctype implements Doctype {
 
   fields = <FormlyFieldConfig[]>[
     {
-      key: 'title'
+      key: 'title',
+      templateOptions: {
+        label: 'Titel'
+      }
     },
     {
       key: '_id'
@@ -18,10 +21,19 @@ export abstract class BaseDoctype implements Doctype {
       key: '_parent'
     },
     {
-      key: '_type'
+      key: '_type',
+      templateOptions: {
+        label: 'Typ'
+      }
     },
     {
       key: '_created'
+    },
+    {
+      key: '_modified',
+      templateOptions: {
+        label: 'Aktualität'
+      }
     },
     {
       key: '_version'
@@ -50,7 +62,7 @@ export abstract class BaseDoctype implements Doctype {
 
 
   getCodelistForSelectWithEmtpyOption(codelistId: number): Observable<SelectOption[]> {
-    return this.getCodelistForSelect(codelistId).pipe(map(cl => [{label: '', value: undefined}].concat(cl)))
+    return this.getCodelistForSelect(codelistId).pipe(map(cl => [{label: '', value: undefined}].concat(cl)));
   }
 
 
@@ -58,11 +70,16 @@ export abstract class BaseDoctype implements Doctype {
 
     this.codelistService.byId(codelistId + '');
 
-    return this.codelistQuery.selectEntity(codelistId)
-      .pipe(
-        map(CodelistService.mapToSelectSorted)
-      );
-
+    return merge(
+      this.codelistQuery.selectEntity(codelistId),
+      this.codelistQuery.selectCatalogCodelist(codelistId + '').pipe(tap(console.log))
+    ).pipe(
+      filter(codelist => codelist),
+      map(CodelistService.mapToSelectSorted)
+    );
+    /*return this.codelistQuery.selectEntity(codelistId).pipe(
+      map(CodelistService.mapToSelectSorted)
+    );*/
   }
 
   init(help: string[]) {
@@ -109,7 +126,10 @@ export abstract class BaseDoctype implements Doctype {
       }
 
       if (fieldKey) {
-        this.fieldsMap.push({value: fieldKey, label: field.templateOptions?.externalLabel});
+        this.fieldsMap.push({
+          value: fieldKey,
+          label: field.templateOptions?.externalLabel || field.templateOptions?.label
+        });
       }
     });
   }

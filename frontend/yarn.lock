@@ -2220,6 +2220,11 @@
     "@material/feature-targeting" "^10.0.0"
     "@material/theme" "^10.0.0"
 
+"@ngneat/dirty-check-forms@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@ngneat/dirty-check-forms/-/dirty-check-forms-1.1.0.tgz#ab6f593654eaa8dcacf59fde38104a6827797b4c"
+  integrity sha512-Ak6SUMUV2oFlaylhUnar1yT4ahmq3Y2mHrd9uQHesE0iUZWfQTrIN07kMtwyT2JXR/x4RqdAmvp/+IJ+QlUPGg==
+
 "@ngneat/forms-manager@^2.3.0":
   version "2.3.0"
   resolved "https://nexus.informationgrid.eu/repository/npm-group/@ngneat/forms-manager/-/forms-manager-2.3.0.tgz#154f671c1ef2a8a4df591c5aa396eae63fa17f52"
@@ -4510,6 +4515,11 @@ critters@0.0.7:
     parse5 "^6.0.1"
     parse5-htmlparser2-tree-adapter "^6.0.1"
     pretty-bytes "^5.3.0"
+
+cronstrue@^1.111.0:
+  version "1.111.0"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/cronstrue/-/cronstrue-1.111.0.tgz#689b358c9ac6ae6b6352043339c3207122b2e602"
+  integrity sha512-XuZj3jHp3p3r6OXo8yuhjO0n6UEj9qEtpSzVg9ruKhpV5pBJZCqZwpaApqRV0nW+AJLiAB+3OSPEWcFlzIM25g==
 
 cross-spawn@^6.0.0:
   version "6.0.5"

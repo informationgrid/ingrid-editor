@@ -1,85 +1,26 @@
-<mat-tab-group [animationDuration]="'0ms'">
+<page-template [title]="title">
+    <ng-container help>
+        Sie haben hier die Möglichkeit bestehende Codelisten anzupassen. Diese Änderungen sind nur in diesem Katalog
+        sichtbar. Wenn diese Änderungen auch in anderen Katalogen oder im Portal verwendet werden sollen, dann muss
+        dies im Codelist-Repository geschehen.
+    </ng-container>
 
-    <!-- System behaviours -->
-    <mat-tab label="System">
-        <mat-card *ngFor="let plugin of plugins">
-            <form [formGroup]="behaviourFields[plugin.id].form">
-                <mat-card-title>
-                    <mat-checkbox [formControl]="behaviourFields[plugin.id].active"
-                                  (change)="updateFieldState(plugin, $event.checked)"></mat-checkbox>
-                    <span class="title">
-                        {{plugin.name}}
-                        <span *ngIf="behaviourFields[plugin.id].modified">(modified)</span>
-                    </span>
-                </mat-card-title>
+    <div main fxLayout="column" fxFlex>
+        <div fxLayoutAlign="end end" class="buttons">
+            <button mat-stroked-button color="primary" (click)="save()"
+                    [disabled]="hasInvalidForm()">Speichern
+            </button>
+        </div>
 
-                <mat-card-content>
-                    <div [innerHTML]="plugin.description"></div>
+        <div class="scrollable">
+            <div *ngFor="let item of plugins | keyvalue" class="section">
+                <div class="section-title">{{item.key}}</div>
+                <ige-behaviour-item *ngFor="let plugin of item.value"
+                                    [title]="plugin.name"
+                                    [description]="plugin.description"
+                                    [control]="fields[plugin.id]"></ige-behaviour-item>
 
-                    <ng-container *ngIf="behaviourFields[plugin.id].fields.length > 0">
-                        <formly-form [form]="behaviourFields[plugin.id].form"
-                                     [fields]="behaviourFields[plugin.id].fields"
-                                     [model]="behaviourFields[plugin.id].data"></formly-form>
-                    </ng-container>
-                </mat-card-content>
-            </form>
-        </mat-card>
-
-        <button mat-stroked-button color="primary" (click)="save()"
-                [disabled]="hasInvalidForm()">Speichern
-        </button>
-    </mat-tab>
-
-    <!-- Form behaviours -->
-    <mat-tab label="Formular">
-        <mat-card *ngFor="let plugin of formPlugins">
-            <form [formGroup]="formBehaviourFields[plugin.id].form">
-                <mat-card-title>
-                    <mat-checkbox [formControl]="formBehaviourFields[plugin.id].active"
-                                  (change)="updateFormFieldState(plugin, $event.checked)"></mat-checkbox>
-                    <span class="title">
-                        {{plugin.name}}
-                        <span *ngIf="formBehaviourFields[plugin.id].modified">(modified)</span>
-                    </span>
-                </mat-card-title>
-
-                <mat-card-content>
-                    <div [innerHTML]="plugin.description"></div>
-
-                    <ng-container *ngIf="formBehaviourFields[plugin.id].fields.length > 0">
-                        <formly-form [form]="formBehaviourFields[plugin.id].form"
-                                     [fields]="formBehaviourFields[plugin.id].fields"
-                                     [model]="formBehaviourFields[plugin.id].data"></formly-form>
-                    </ng-container>
-                </mat-card-content>
-            </form>
-        </mat-card>
-        <button mat-stroked-button color="primary" (click)="save()"
-                [disabled]="hasInvalidForm()">Speichern
-        </button>
-    </mat-tab>
-
-    <!-- Behaviours for each profile -->
-    <!--<mat-tab *ngFor="let key of behavioursLabel" label="Profil: {{key}}">
-        <ng-container [formGroup]="behaviourForm">
-            <mat-card *ngFor="let behaviour of behaviours[key]">
-                <mat-card-header>
-                    <label class="custom-control custom-checkbox">
-                        <ige-checkbox #checkBehave
-                                      [label]="behaviour.title"
-                                      [formControlName]="behaviour.id"
-                                      (click)="toggleBehaviour(checkBehave.value, checkBehave.checked)"
-                        ></ige-checkbox>
-                    </label>
-                    &lt;!&ndash;<span class="fa pull-right clickable" (click)="toggleField(behaviour)"
-                          [class.fa-chevron-up]="behaviour._state === 'expanded'"
-                          [class.fa-chevron-down]="behaviour._state === 'collapsed'"
-                    ></span>&ndash;&gt;
-                </mat-card-header>
-                <mat-card-content>&lt;!&ndash; [@openClose]="behaviour._state">&ndash;&gt;
-                    <p>{{behaviour.description}}</p>
-                </mat-card-content>
-            </mat-card>
-        </ng-container>
-    </mat-tab>-->
-</mat-tab-group>
+            </div>
+        </div>
+    </div>
+</page-template>

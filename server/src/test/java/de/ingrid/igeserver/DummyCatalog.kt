@@ -13,7 +13,14 @@ class DummyCatalog : CatalogProfile {
     override val description: String?
         get() = TODO("Not yet implemented")
 
-    override fun getFacetDefinitions(): Array<FacetGroup> {
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         TODO("Not yet implemented")
+    }
+
+    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
+        TODO("Not yet implemented")
+    }
+
+    override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
     }
 }

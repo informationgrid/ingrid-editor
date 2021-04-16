@@ -4,7 +4,7 @@ import {DocumentService} from '../../services/document/document.service';
 import {Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {debounceTime} from 'rxjs/operators';
+import {debounceTime, map} from 'rxjs/operators';
 
 @UntilDestroy()
 @Component({
@@ -31,7 +31,8 @@ export class QuickSearchComponent implements OnInit {
     this.query.valueChanges
       .pipe(
         untilDestroyed(this),
-        debounceTime(300)
+        debounceTime(300),
+        map((query: string) => encodeURI(query))
       )
       .subscribe(query => this.search(query));
   }

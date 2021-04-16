@@ -1,12 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {CodelistService, SelectOption} from '../../services/codelist/codelist.service';
 import {Codelist, CodelistEntry} from '../../store/codelist/codelist.model';
-import {throwError} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {debounceTime, delay, map, tap} from 'rxjs/operators';
 import {CodelistQuery} from '../../store/codelist/codelist.query';
 import {MatDialog} from '@angular/material/dialog';
 import {UpdateCodelistComponent} from './update-codelist/update-codelist.component';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
+import {FormControl} from '@angular/forms';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-catalog-codelists',
   templateUrl: './catalog-codelists.component.html',
@@ -14,14 +17,29 @@ import {UpdateCodelistComponent} from './update-codelist/update-codelist.compone
 })
 export class CatalogCodelistsComponent implements OnInit {
 
-  catalogCodelists = this.codelistQuery.catalogCodelists$;
+  hasCatalogCodelists = this.codelistQuery.hasCatalogCodelists$;
+  catalogCodelists = this.codelistQuery.catalogCodelists$
+    .pipe(
+      map(codelists => this.codelistService.mapToOptions(codelists)),
+      delay(0), // set initial value in next rendering cycle!
+      tap(options => this.setInitialValue(options))
+    );
 
-  codelists = this.codelistQuery.selectAll()
-    .pipe(map(codelists => this.codelistService.mapToOptions(codelists)));
+  private setInitialValue(options: SelectOption[]) {
+    if (options?.length > 0) {
+      if (this.selectedCodelist) {
+        this.initialValue = options.find(option => option.value === this.selectedCodelist.id);
+      } else {
+        this.initialValue = options[0];
+      }
+      this.selectCodelist(this.initialValue);
+    }
+  }
 
-  entries: CodelistEntry[];
-  selectedCodelist: Codelist[] = [];
-  disableSyncButton = false;
+  selectedCodelist: Codelist;
+  initialValue: SelectOption;
+  descriptionCtrl = new FormControl();
+  showSavedState = false;
 
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery,
@@ -29,45 +47,80 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.codelistService.getAll();
-    // TODO: should this be called initially on App-Load?
-    this.codelistService.getCatalogCodelists();
-  }
-
-  updateCodelists() {
-
-    this.disableSyncButton = true;
-    this.codelistService.update()
-      .pipe(catchError(e => this.handleSyncError(e)))
-      .subscribe(codelists => this.disableSyncButton = false);
-
-  }
-
-  /*selectedCodelist(value: string) {
-    this.entries = this.codelistQuery.getEntity(value).entries;
-  }*/
-
-  private handleSyncError(e: any) {
-    console.error(e);
-    this.disableSyncButton = false;
-    return throwError(e);
-  }
-
-  codelistLabelFormat(option: SelectOption) {
-    return `${option.value} - ${option.label}`
-  }
-
-  addCodelist(selectedValue: SelectOption) {
-    const codelist = this.codelistQuery.getEntity(selectedValue.value);
-    this.codelistService.addCatalogCodelist(codelist);
+    this.descriptionCtrl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(1000)
+      ).subscribe(text => this.save());
   }
 
   editCodelist(entry: CodelistEntry) {
+    const oldId = entry.id;
     this.dialog.open(UpdateCodelistComponent, {
-      minWidth: 300,
+      minWidth: 400,
+      disableClose: true,
       data: entry
     }).afterClosed().subscribe(result => {
+      if (!result) return;
+      const index = this.selectedCodelist.entries
+        .findIndex(e => e.id === oldId);
+      const other = JSON.parse(JSON.stringify(this.selectedCodelist));
+      other.entries.splice(index, 1, result);
+      this.save(other);
+    });
+  }
 
-    })
+  removeCodelist(entry: CodelistEntry) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: <ConfirmDialogData>{
+        message: `Möchten Sie den Codelist-Eintrag "${entry.fields['de']}" wirklich löschen:`,
+        title: 'Löschen',
+        buttons: [
+          {text: 'Abbrechen'},
+          {text: 'Löschen', alignRight: true, id: 'confirm', emphasize: true}
+        ]
+      }
+    }).afterClosed().subscribe(result => {
+      if (!result) return;
+      const oldId = entry.id;
+      const index = this.selectedCodelist.entries
+        .findIndex(e => e.id === oldId);
+      const other = JSON.parse(JSON.stringify(this.selectedCodelist));
+      other.entries.splice(index, 1);
+      this.save(other);
+    });
+  }
+
+  selectCodelist(option: SelectOption) {
+    this.selectedCodelist = this.codelistQuery.getCatalogCodelist(option.value);
+    this.descriptionCtrl.setValue(this.selectedCodelist.description, {emitEvent: false});
+  }
+
+  resetCodelist() {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: <ConfirmDialogData>{
+        message: `Möchten Sie die Codeliste wirklich zurücksetzen?`,
+        title: 'Zurücksetzen',
+        buttons: [
+          {text: 'Abbrechen'},
+          {text: 'Zurücksetzen', alignRight: true, id: 'confirm', emphasize: true}
+        ]
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.codelistService.resetCodelist(this.selectedCodelist.id).subscribe();
+      }
+    });
+  }
+
+  save(codelist?: Codelist) {
+    const patchValue = codelist || <Codelist>{
+      ...this.selectedCodelist,
+      description: this.descriptionCtrl.value
+    };
+
+    this.codelistService.updateCodelist(patchValue).subscribe();
+    this.showSavedState = true;
+    setTimeout(() => this.showSavedState = false, 3000);
   }
 }
