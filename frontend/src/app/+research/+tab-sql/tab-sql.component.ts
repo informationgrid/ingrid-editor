@@ -27,28 +27,4 @@ export class TabSqlComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  updateSql(index: number) {
-    if (index === 0) {
-      this.sqlValue = `SELECT document1.*, document_wrapper.draft
-                       FROM document_wrapper
-                              JOIN document document1 ON
-                         CASE
-                           WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-                           ELSE document_wrapper.draft = document1.id
-                           END
-                       WHERE document1.type = 'AddressDoc'
-                         AND LOWER(title) LIKE '%test%'`;
-    } else if (index === 1) {
-      this.sqlValue = `SELECT document1.*, document_wrapper.draft
-                       FROM document_wrapper
-                              JOIN document document1 ON
-                         CASE
-                           WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-                           ELSE document_wrapper.draft = document1.id
-                           END
-                       WHERE document1.type = 'mCloudDoc'
-                         AND data -> 'mCloudCategories' @> '"aviation"'`;
-    }
-  }
-
 }

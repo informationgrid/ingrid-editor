@@ -4,13 +4,6 @@
     </mat-form-field>
 
     <div>
-        <span [matMenuTriggerFor]="examples">Beispiele</span>
-        <mat-menu #examples="matMenu">
-            <button mat-menu-item (click)="updateSql(0)">Alle Adressen, die "test" im Titel beinhalten</button>
-            <button mat-menu-item (click)="updateSql(1)">Alle Dokumente, mit Kategorie "Luft- und Raumfahrt"
-            </button>
-        </mat-menu>
-
         <div fxFlex></div>
         <button mat-flat-button color="primary"
                 [disabled]="!sqlValue"

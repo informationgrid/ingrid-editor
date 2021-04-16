@@ -32,6 +32,7 @@ import {QueryManagerComponent} from './+query-manager/query-manager.component';
 import {CardBoxModule} from '../shared/card-box/card-box.module';
 import {SharedPipesModule} from '../directives/shared-pipes.module';
 import {PageTemplateModule} from '../shared/page-template/page-template.module';
+import {MatChipsModule} from '@angular/material/chips';
 
 
 @NgModule({
@@ -63,7 +64,8 @@ import {PageTemplateModule} from '../shared/page-template/page-template.module';
         AddButtonModule,
         CardBoxModule,
         SharedPipesModule,
-        PageTemplateModule
+        PageTemplateModule,
+        MatChipsModule
     ],
   providers: [{
     provide: MatPaginatorIntl, useValue: new IgePagingIntl()

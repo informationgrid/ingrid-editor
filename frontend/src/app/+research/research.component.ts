@@ -119,6 +119,29 @@ export class ResearchComponent implements OnInit {
       }
     }
   */
+  sqlExamples = [{
+    label: 'Adressen, mit Titel "test"',
+    value: `SELECT document1.*, document_wrapper.draft
+            FROM document_wrapper
+                   JOIN document document1 ON
+              CASE
+                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
+                ELSE document_wrapper.draft = document1.id
+                END
+            WHERE document1.type = 'AddressDoc'
+              AND LOWER(title) LIKE '%test%'`
+  }, {
+    label: 'Dokumente "Luft- und Raumfahrt"',
+    value: `SELECT document1.*, document_wrapper.draft
+            FROM document_wrapper
+                   JOIN document document1 ON
+              CASE
+                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
+                ELSE document_wrapper.draft = document1.id
+                END
+            WHERE document1.type = 'mCloudDoc'
+              AND data -> 'mCloudCategories' @> '"aviation"'`
+  }];
 
   loadQuery(id: string) {
     let entity: Query = JSON.parse(JSON.stringify(this.queryQuery.getEntity(id)));

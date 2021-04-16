@@ -10,7 +10,8 @@
             <div main fxFlex fxLayout="column">
 
                 <div fxLayout="row" class="white-bg">
-                    <mat-form-field appearance="outline" style="min-width: 220px" class="straight-border-right prefix-text">
+                    <mat-form-field appearance="outline" style="min-width: 220px"
+                                    class="straight-border-right prefix-text">
                         <span matPrefix class="prefix">Suche nach:</span>
                         <mat-select (selectionChange)="changeSearchClass()" [(ngModel)]="searchClass">
                             <mat-option value="selectDocuments">Dokumente</mat-option>
@@ -19,9 +20,11 @@
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="width-100 straight-border-left">
-<!--                        <mat-label>Suche</mat-label>-->
-                        <input matInput placeholder="Begriff, ID oder feldbezogene Suche eingeben ..." [formControl]="query">
-                        <mat-hint>Für feldbezogene Suche den Feldtitel im Format "title: suchbegriff" eingeben</mat-hint>
+                        <!--                        <mat-label>Suche</mat-label>-->
+                        <input matInput placeholder="Begriff, ID oder feldbezogene Suche eingeben ..."
+                               [formControl]="query">
+                        <mat-hint>Für feldbezogene Suche den Feldtitel im Format "title: suchbegriff" eingeben
+                        </mat-hint>
                     </mat-form-field>
                 </div>
 
@@ -35,10 +38,18 @@
 
     <mat-tab label="SQL Suche">
         <page-template title="SQL Suche">
-            <p help>Hilfetext ...</p>
+            <div help>
+                <p>Hier können Sie komplexe SQL Anfragen abschicken, wenn die erweiterte Suche nicht ausreicht.</p>
+                <p>Hier sind ein paar Beispiele:</p>
+                <mat-chip-list>
+                    <mat-chip *ngFor="let example of sqlExamples"
+                              (click)="sqlQuery = example.value">{{example.label}}</mat-chip>
+                </mat-chip-list>
+            </div>
 
             <ige-tab-sql main (query)="queryBySQL($event)" fxFlex [sqlValue]="sqlQuery">
-                <ige-result-table *ngIf="!error" [result]="result" (save)="saveQuery({sql: sqlQuery}, true)"></ige-result-table>
+                <ige-result-table *ngIf="!error" [result]="result"
+                                  (save)="saveQuery({sql: sqlQuery}, true)"></ige-result-table>
 
                 <div *ngIf="error" class="error-container">
                     <div class="error-box">
@@ -56,7 +67,10 @@
 
     <mat-tab label="Gespeicherte Suchen">
         <page-template title="Gespeicherte Suchen">
-            <p help>Hilfetext ...</p>
+            <div help>
+                <p>Hilfetext, in dem die Favoriten-Funktion der Suche erläutert wird.</p>
+                <p>Ihre Suchanfragen können Sie einfach durch Klick auf das Stern-Icon abspeichern. Sie finden die Funktion rechts über der Ergebnisliste.</p>
+            </div>
 
             <ige-query-manager main (selection)="loadQuery($event)"></ige-query-manager>
         </page-template>
