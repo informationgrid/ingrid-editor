@@ -36,7 +36,7 @@ class CatalogService @Autowired constructor(
 
         val userData = userRepo.findByUserId(userId).data ?: throw NotFoundException.withMissingUserCatalog(userId)
 
-        val currentCatalogId = when (userData.containsKey("currentCatalogId")) {
+        val currentCatalogId = when (userData.containsKey("currentCatalogId") && userData["currentCatalogId"] != null) {
             true -> userData["currentCatalogId"].toString()
             else -> null
         }
@@ -56,14 +56,14 @@ class CatalogService @Autowired constructor(
 
     fun getCatalogsForUser(userId: String): Set<String> {
 
-        val userData = userRepo.findByUserId(userId).data
+        val userData = userRepo.findByUserId(userId)
 
         return if (userData == null) {
             log.error("The user '$userId' does not seem to be assigned to any database.")
             HashSet()
         } else {
-            val catalogIds = userData["catalogIds"]
-            return if (catalogIds == null) HashSet() else (catalogIds as List<String>).toSet()
+            val catalogIds = userData.getCatalogIds()
+            return catalogIds.toSet()
         }
     }
 
@@ -83,6 +83,7 @@ class CatalogService @Autowired constructor(
 
         val catalog = catalogRepo.findByIdentifier(id)
 
+        // TODO: use entity for JSON transformation
         return Catalog(
             id,
             catalog.name,
