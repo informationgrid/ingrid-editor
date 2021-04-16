@@ -11,6 +11,7 @@ import {SaveQueryDialogComponent} from './save-query-dialog/save-query-dialog.co
 import {Query} from '../store/query/query.model';
 import {MatDialog} from '@angular/material/dialog';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
 
 @UntilDestroy()
 @Component({
@@ -202,5 +203,15 @@ export class ResearchComponent implements OnInit {
         parameter: this.filter.fieldsWithParameters
       };
 
+  }
+
+  removeDataset(uuid: string) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: <ConfirmDialogData>{
+        title: 'Noch nicht implementiert',
+        message: 'Diese Funktion ist noch nicht umgesetzt',
+        buttons: [{text: 'Abbruch'}]
+      }
+    }).afterClosed().subscribe();
   }
 }
