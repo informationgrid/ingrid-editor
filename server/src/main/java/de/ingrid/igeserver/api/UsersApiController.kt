@@ -118,15 +118,15 @@ class UsersApiController : UsersApi {
         } catch (ex: NotFoundException) { null }
 
         val userInfo = UserInfo(
-                userId = user.login,
-                name =  user.firstName + ' ' + user.lastName,
-                lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
-                firstName = user.firstName,
-                assignedCatalogs = assignedCatalogs,
-                roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?),
-                currentCatalog = catalog,
-                version = getVersion(),
-                lastLogin = lastLogin
+            userId = user.login,
+            name = user.firstName + ' ' + user.lastName,
+            lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
+            firstName = user.firstName,
+            assignedCatalogs = assignedCatalogs,
+            roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?),
+            currentCatalog = catalog,
+            version = getVersion(),
+            lastLogin = lastLogin
         )
         return ResponseEntity.ok(userInfo)
     }

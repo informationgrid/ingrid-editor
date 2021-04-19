@@ -2,7 +2,6 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedMap
@@ -34,7 +33,7 @@ class CatalogService @Autowired constructor(
 
     fun getCurrentCatalogForUser(userId: String): String {
 
-        val userData = userRepo.findByUserId(userId).data ?: throw NotFoundException.withMissingUserCatalog(userId)
+        val userData = userRepo.findByUserId(userId)?.data ?: throw NotFoundException.withMissingUserCatalog(userId)
 
         val currentCatalogId = when (userData.containsKey("currentCatalogId") && userData["currentCatalogId"] != null) {
             true -> userData["currentCatalogId"].toString()
@@ -69,7 +68,7 @@ class CatalogService @Autowired constructor(
 
     fun getRecentLoginsForUser(userId: String): MutableList<Date> {
 
-        val userData = userRepo.findByUserId(userId).data
+        val userData = userRepo.findByUserId(userId)?.data
 
         return if (userData == null) {
             log.error("The user '$userId' does not seem to be assigned to any database.")
@@ -107,6 +106,11 @@ class CatalogService @Autowired constructor(
     private fun setFieldForUser(userId: String, fieldId: String, fieldValue: Any) {
 
         val user = userRepo.findByUserId(userId)
+        
+        if (user == null) {
+            log.warn("Tried setting user info for one that does not exist: $userId")
+            return
+        }
 
         if (user.data == null) {
             user.data = EmbeddedMap().apply {

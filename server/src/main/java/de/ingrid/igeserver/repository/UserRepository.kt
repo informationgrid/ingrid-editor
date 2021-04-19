@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface UserRepository : JpaRepository<UserInfo, Int> {
     // TODO: implement caching
     //    @Cacheable
-    fun findByUserId(userId: String): UserInfo
+    fun findByUserId(userId: String): UserInfo?
 }
