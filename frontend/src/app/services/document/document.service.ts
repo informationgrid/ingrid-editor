@@ -234,22 +234,24 @@ export class DocumentService {
       );
   }
 
-  delete(ids: string[], isAddress: boolean): void {
+  delete(ids: string[], isAddress: boolean): Promise<void> {
 
-    this.dataService.delete(ids)
-      .subscribe(res => {
-        console.log('ok', res);
-        const data = ids.map(id => {
-          return {id: id};
-        });
-        this.datasetsChanged$.next({
-          type: UpdateType.Delete,
-          // @ts-ignore
-          data: data
-        });
+    return new Promise(resolve => {
+      this.dataService.delete(ids)
+        .subscribe(res => {
+          const data = ids.map(id => {
+            return {id: id};
+          });
+          this.datasetsChanged$.next({
+            type: UpdateType.Delete,
+            // @ts-ignore
+            data: data
+          });
 
-        this.updateStoreAfterDelete(ids, isAddress);
-      });
+          this.updateStoreAfterDelete(ids, isAddress);
+          resolve();
+        });
+    });
   }
 
   revert(id: string, isAddress: boolean): Observable<any> {
@@ -435,7 +437,7 @@ export class DocumentService {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     let entities = store.getValue().entities;
-    const parents = ids.map(id => entities[id]._parent);
+    const parents = ids.map(id => entities[id]?._parent);
 
     store.remove(ids);
 

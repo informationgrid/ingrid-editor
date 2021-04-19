@@ -12,6 +12,7 @@ import {Query} from '../store/query/query.model';
 import {MatDialog} from '@angular/material/dialog';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
+import {DocumentService} from '../services/document/document.service';
 
 @UntilDestroy()
 @Component({
@@ -43,6 +44,7 @@ export class ResearchComponent implements OnInit {
               private router: Router,
               private dialog: MatDialog,
               private researchService: ResearchService,
+              private documentService: DocumentService,
               private profileService: ProfileService,
               private queryQuery: QueryQuery) {
   }
@@ -205,13 +207,28 @@ export class ResearchComponent implements OnInit {
 
   }
 
-  removeDataset(uuid: string) {
+  removeDataset(hit: any) {
+    console.log(hit);
     this.dialog.open(ConfirmDialogComponent, {
       data: <ConfirmDialogData>{
-        title: 'Noch nicht implementiert',
-        message: 'Diese Funktion ist noch nicht umgesetzt',
-        buttons: [{text: 'Abbruch'}]
+        title: 'Löschen',
+        message: `Wollen Sie den Datensatz ${hit.title} wirklich löschen?`,
+        buttons: [
+          {text: 'Abbruch'},
+          {text: 'Löschen', alignRight: true, id: 'confirm', emphasize: true}
+        ]
       }
-    }).afterClosed().subscribe();
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.documentService.delete([hit.uuid], this.isAddress(hit))
+          .then(() => this.startSearch());
+      }
+    });
+  }
+
+  private isAddress(hit: any): boolean {
+
+    return (hit._category === 'address');
+
   }
 }
