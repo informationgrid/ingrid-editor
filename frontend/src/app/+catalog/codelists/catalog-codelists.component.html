@@ -41,6 +41,10 @@
                     <textarea matInput name="description" [formControl]="descriptionCtrl"></textarea>
                 </mat-form-field>
 
+                <div>
+                    <div fxFlex></div>
+                    <button mat-flat-button color="primary" (click)="addCodelist()">Hinzufügen</button>
+                </div>
                 <mat-list class="hover-list">
                     <mat-list-item *ngFor="let entry of selectedCodelist.entries">
                         <mat-icon mat-list-icon>list</mat-icon>
