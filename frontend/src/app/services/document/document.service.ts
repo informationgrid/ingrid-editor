@@ -54,29 +54,25 @@ export class DocumentService {
 
   find(query: string, size = 10, address = false): Observable<SearchResult> {
     // TODO: use general sort filter
+    const encodedQuery = encodeURI(query);
     return this.http.get<ServerSearchResult>(
-      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}&address=${address}`)
+      `${this.configuration.backendUrl}datasets?query=${encodedQuery}&sort=title&size=${size}&address=${address}`)
       .pipe(
-        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result))
-        // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       );
   }
 
   findRecent(): void {
     this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC&size=5`)
       .pipe(
-        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result)),
         tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
-        // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       ).subscribe();
   }
 
   findRecentAddresses(): Observable<DocumentAbstract[]> {
     return  this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&address=true&sort=_modified&sortOrder=DESC&size=5`)
       .pipe(
-        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result).hits),
         // TODO create and use latestAddresses Sessionstore
         // tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
