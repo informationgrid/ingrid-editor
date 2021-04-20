@@ -32,7 +32,6 @@ export class FacetsComponent implements AfterViewInit {
   set forAddresses(addresses: boolean) {
     this._forAddresses = addresses;
     if (this.allFacets) {
-      // this._model = {};
       this.updateFilterGroup();
     }
   }

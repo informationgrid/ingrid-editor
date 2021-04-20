@@ -3,6 +3,7 @@ import {QueryQuery} from '../../store/query/query.query';
 import {ResearchService} from '../research.service';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
+import {Query} from '../../store/query/query.model';
 
 @Component({
   selector: 'ige-query-manager',
@@ -14,9 +15,7 @@ export class QueryManagerComponent implements OnInit {
   @Output() selection = new EventEmitter<string>();
 
 
-  systemQueries = this.queryQuery.selectAll();
-
-  userQueries = [];
+  userQueries = this.queryQuery.selectAll();
 
   constructor(private queryQuery: QueryQuery,
               private dialog: MatDialog,
@@ -45,5 +44,9 @@ export class QueryManagerComponent implements OnInit {
 
   load(id: string) {
     this.selection.emit(id);
+  }
+
+  getIdentifier(index, item: Query) {
+    return item.id;
   }
 }

@@ -1,4 +1,4 @@
-<mat-tab-group animationDuration="0" [dynamicHeight]="true" class="page-tabs" [(selectedIndex)]="selectedIndex">
+<mat-tab-group animationDuration="0" [dynamicHeight]="true" class="page-tabs" [(selectedIndex)]="selectedIndex" (selectedIndexChange)="handleTabChange($event)">
 
     <mat-tab label="Erweiterte Suche">
         <page-template title="Erweiterte Suche">
@@ -13,7 +13,7 @@
                     <mat-form-field appearance="outline" style="min-width: 220px"
                                     class="straight-border-right prefix-text">
                         <span matPrefix class="prefix">Suche nach:</span>
-                        <mat-select (selectionChange)="changeSearchClass()" [(ngModel)]="searchClass">
+                        <mat-select (selectionChange)="changeSearchClass($event.value)" [(ngModel)]="searchClass">
                             <mat-option value="selectDocuments">Dokumente</mat-option>
                             <mat-option value="selectAddresses">Adressen</mat-option>
                         </mat-select>
@@ -44,13 +44,13 @@
                 <p>Hier sind ein paar Beispiele:</p>
                 <mat-chip-list>
                     <mat-chip *ngFor="let example of sqlExamples"
-                              (click)="sqlQuery = example.value">{{example.label}}</mat-chip>
+                              (click)="updateSqlQueryState(example.value)">{{example.label}}</mat-chip>
                 </mat-chip-list>
             </div>
 
-            <ige-tab-sql main (query)="queryBySQL($event)" fxFlex [sqlValue]="sqlQuery">
+            <ige-tab-sql main (query)="updateSqlQueryState($event)" fxFlex>
                 <ige-result-table *ngIf="!error" [result]="result"
-                                  (save)="saveQuery({sql: sqlQuery}, true)"></ige-result-table>
+                                  (save)="saveQuery(true)"></ige-result-table>
 
                 <div *ngIf="error" class="error-container">
                     <div class="error-box">
@@ -67,14 +67,17 @@
     </mat-tab>
 
     <mat-tab label="Gespeicherte Suchen">
-        <page-template title="Gespeicherte Suchen">
-            <div help>
-                <p>Hilfetext, in dem die Favoriten-Funktion der Suche erläutert wird.</p>
-                <p>Ihre Suchanfragen können Sie einfach durch Klick auf das Stern-Icon abspeichern. Sie finden die Funktion rechts über der Ergebnisliste.</p>
-            </div>
+        <!-- Lazy Load Tab -->
+<!--        <ng-template matTabContent>-->
+            <page-template title="Gespeicherte Suchen">
+                <div help>
+                    <p>Hilfetext, in dem die Favoriten-Funktion der Suche erläutert wird.</p>
+                    <p>Ihre Suchanfragen können Sie einfach durch Klick auf das Stern-Icon abspeichern. Sie finden die Funktion rechts über der Ergebnisliste.</p>
+                </div>
 
-            <ige-query-manager main (selection)="loadQuery($event)"></ige-query-manager>
-        </page-template>
+                <ige-query-manager main (selection)="loadQuery($event)"></ige-query-manager>
+            </page-template>
+<!--        </ng-template>-->
     </mat-tab>
 </mat-tab-group>
 

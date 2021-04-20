@@ -1,6 +1,6 @@
 <ige-card-box label="Ihre Suchanfragen" data-cy="card-saved-queries">
     <mat-selection-list [multiple]="false" class="doc-item dense with-menu">
-        <mat-list-option *ngFor="let query of systemQueries | async" (click)="load(query.id)">
+        <mat-list-option *ngFor="let query of userQueries | async; trackBy: getIdentifier" (click)="load(query.id)">
 
             <mat-icon mat-list-icon>star_outline</mat-icon>
             <div>

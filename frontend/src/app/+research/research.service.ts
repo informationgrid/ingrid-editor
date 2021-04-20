@@ -4,9 +4,10 @@ import {ConfigService, Configuration} from '../services/config/config.service';
 import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {QueryStore} from '../store/query/query.store';
-import {Query} from '../store/query/query.model';
+import {FacetQuery, SqlQuery} from '../store/query/query.model';
 import {BackendQuery} from './backend-query.model';
 import {BackendStoreQuery} from './backend-store-query.model';
+import {ProfileService} from '../services/profile.service';
 
 export interface QuickFilter {
   id: string;
@@ -43,6 +44,7 @@ export class ResearchService {
 
   constructor(private http: HttpClient,
               configService: ConfigService,
+              private profileService: ProfileService,
               private queryStore: QueryStore) {
     this.configuration = configService.getConfiguration();
   }
@@ -71,11 +73,17 @@ export class ResearchService {
 
   search(term: string, model: any, fieldsWithParameters: { [x: string]: any[] }): Observable<ResearchResponse> {
     const backendQuery = new BackendQuery(term, model, fieldsWithParameters);
-    return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/query`, backendQuery.get());
+    return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/query`, backendQuery.get())
+      .pipe(
+        map(result => this.mapDocumentIcons(result))
+      );
   }
 
   searchBySQL(sql: string): Observable<ResearchResponse> {
-    return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/querySql`, sql);
+    return this.http.post<ResearchResponse>(`${this.configuration.backendUrl}search/querySql`, sql)
+      .pipe(
+        map(result => this.mapDocumentIcons(result))
+      );
   }
 
   fetchQueries(): void {
@@ -86,7 +94,7 @@ export class ResearchService {
       ).subscribe();
   }
 
-  saveQuery(newQuery: Query): Observable<Query> {
+  saveQuery(newQuery: SqlQuery | FacetQuery): Observable<SqlQuery | FacetQuery> {
     return this.http.post<BackendStoreQuery>(`${this.configuration.backendUrl}search`, this.convertToBackendQuery(newQuery))
       .pipe(
         map(response => this.convertToFrontendQuery(response)),
@@ -94,21 +102,31 @@ export class ResearchService {
       );
   }
 
-  convertToFrontendQuery(query: BackendStoreQuery): Query {
-    return {
+  convertToFrontendQuery(query: BackendStoreQuery): SqlQuery | FacetQuery {
+    const base = {
       id: query.id,
       type: query.category,
       name: query.name,
       description: query.description,
-      term: query.settings.term,
-      model: query.settings.model,
-      parameter: query.settings.parameters,
-      modified: query.modified,
-      sql: query.settings.sql
+      modified: query.modified
     };
+
+    if (query.category === 'facet') {
+      return <FacetQuery>{
+        ...base,
+        term: query.settings.term,
+        model: query.settings.model,
+        parameter: query.settings.parameters
+
+      };
+    } else {
+      return <SqlQuery>{
+        sql: query.settings.sql
+      };
+    }
   }
 
-  convertToBackendQuery(query: Query): BackendStoreQuery {
+  convertToBackendQuery(query: SqlQuery | FacetQuery): BackendStoreQuery {
     return {
       id: query.id,
       name: query.name,
@@ -118,7 +136,7 @@ export class ResearchService {
     };
   }
 
-  private createSettings(query: Query) {
+  private createSettings(query: SqlQuery | FacetQuery) {
     return query.type === 'facet' ? {
       term: query.term,
       model: query.model,
@@ -126,6 +144,13 @@ export class ResearchService {
     } : {
       sql: query.sql
     };
+  }
+
+  private mapDocumentIcons(data: ResearchResponse): ResearchResponse {
+    data.hits.forEach(hit => {
+      hit.icon = this.profileService.getDocumentIcon(hit);
+    });
+    return data;
   }
 
   removeQuery(id: string) {

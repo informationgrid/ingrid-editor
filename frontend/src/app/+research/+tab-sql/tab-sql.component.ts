@@ -1,5 +1,8 @@
-import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {QueryQuery} from '../../store/query/query.query';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'ige-tab-sql',
   templateUrl: './tab-sql.component.html',
@@ -7,24 +10,24 @@ import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
 })
 export class TabSqlComponent implements OnInit {
 
-  _sql: string;
-  @Input()
-  set sqlValue(value: string) {
-    this._sql = value;
-    if (value) {
-      this.query.emit(value);
-    }
-  }
-  get sqlValue() {
-    return this._sql;
-  }
+  sql: string;
 
   @Output() query = new EventEmitter();
 
 
-  constructor() { }
+  constructor(private queryQuery: QueryQuery) {
+  }
 
   ngOnInit(): void {
+    // init to last session state
+    const state = this.queryQuery.getValue().ui.sql;
+    this.sql = state.query;
+
+    this.queryQuery.sqlSelect$
+      .pipe(untilDestroyed(this))
+      .subscribe(state => {
+        this.sql = state.query;
+      });
   }
 
 }
