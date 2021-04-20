@@ -117,10 +117,10 @@ export class ResearchService {
         term: query.settings.term,
         model: query.settings.model,
         parameter: query.settings.parameters
-
       };
     } else {
       return <SqlQuery>{
+        ...base,
         sql: query.settings.sql
       };
     }
