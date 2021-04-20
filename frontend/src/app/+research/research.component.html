@@ -1,4 +1,4 @@
-<mat-tab-group animationDuration="0" [dynamicHeight]="true" class="page-tabs" [(selectedIndex)]="selectedIndex" (selectedIndexChange)="handleTabChange($event)">
+<mat-tab-group animationDuration="0" [dynamicHeight]="true" class="page-tabs" [selectedIndex]="selectedIndex | async" (selectedIndexChange)="handleTabChange($event)">
 
     <mat-tab label="Erweiterte Suche">
         <page-template title="Erweiterte Suche">

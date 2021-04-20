@@ -668,6 +668,7 @@ ige-side-menu {
 
 mat-selection-list.with-menu .mat-list-text {
   align-items: center;
+  flex-direction: row !important;
 
   .menu-button {
     margin-left: 40px;

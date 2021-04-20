@@ -23,15 +23,13 @@ import {ShortResultInfo} from './result-table/result-table.component';
 })
 export class ResearchComponent implements OnInit {
 
-  selectedIndex = 0;
+  selectedIndex = this.queryQuery.select( state => state.ui.currentTabIndex);
 
   query = new FormControl('');
 
   totalHits: number = 0;
 
   searchClass: 'selectDocuments' | 'selectAddresses';
-
-  sqlQuery = '';
 
   filter: FacetUpdate;
   result: ResearchResponse;
@@ -168,10 +166,10 @@ export class ResearchComponent implements OnInit {
     let entity: SqlQuery | FacetQuery = JSON.parse(JSON.stringify(this.queryQuery.getEntity(id)));
 
     if (entity.type === 'facet') {
-      this.selectedIndex = 0;
       this.queryStore.update((state => ({
           ui: {
             ...state.ui,
+            currentTabIndex: 0,
             search: {
               category: (<FacetQuery>entity).model.type,
               query: (<FacetQuery>entity).term,
@@ -184,10 +182,10 @@ export class ResearchComponent implements OnInit {
         }))
       );
     } else {
-      this.selectedIndex = 1;
       this.queryStore.update((state => ({
           ui: {
             ...state.ui,
+            currentTabIndex: 1,
             sql: {
               query: (<SqlQuery>entity).sql
             }
@@ -298,6 +296,13 @@ export class ResearchComponent implements OnInit {
   }
 
   handleTabChange(index: number) {
+    this.queryStore.update(state => ({
+      ui: {
+        ...state.ui,
+        currentTabIndex: index
+      }
+    }));
+
     if (index === 0) {
       this.startSearch();
     } else if (index === 1) {

@@ -5,6 +5,7 @@ import {FacetUpdate} from '../../+research/facets/facets.component';
 
 export interface QueryState extends EntityState<Query> {
   ui: {
+    currentTabIndex: number;
     search: {
       category: 'selectDocuments' | 'selectAddresses'
       query: string;
@@ -19,6 +20,7 @@ export interface QueryState extends EntityState<Query> {
 export function createInitialState(): QueryState {
   return {
     ui: {
+      currentTabIndex: 0,
       search: {
         category: 'selectDocuments',
         query: '',
