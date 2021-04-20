@@ -76,9 +76,7 @@ export class DocumentService {
         map(result => this.mapSearchResults(result).hits),
         // TODO create and use latestAddresses Sessionstore
         // tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
-        // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       )
-      //.subscribe();
   }
 
   getChildren(parentId: string, isAddress?: boolean): Observable<DocumentAbstract[]> {
@@ -95,7 +93,6 @@ export class DocumentService {
       store.set(docs);
     } else {
       store.add(docs);
-      // this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
     }
   }
 
