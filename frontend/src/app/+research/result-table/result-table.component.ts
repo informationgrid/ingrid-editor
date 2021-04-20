@@ -6,6 +6,11 @@ import {MatPaginator} from '@angular/material/paginator';
 import {SelectOption} from '../../services/codelist/codelist.service';
 import {ProfileService} from '../../services/profile.service';
 
+export interface ShortResultInfo {
+  uuid: string;
+  isAddress: boolean;
+}
+
 @Component({
   selector: 'ige-result-table',
   templateUrl: './result-table.component.html',
@@ -23,7 +28,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   };
 
   @Output() save = new EventEmitter<void>();
-  @Output() open = new EventEmitter<string>();
+  @Output() open = new EventEmitter<ShortResultInfo>();
   @Output() remove = new EventEmitter<any>();
   @Output() export = new EventEmitter<string>();
 
@@ -54,4 +59,10 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  openDataset(element) {
+    this.open.emit({
+      uuid: element.uuid,
+      isAddress: element._category === "address"
+    });
+  }
 }

@@ -50,6 +50,7 @@
 
             <ige-tab-sql main (query)="updateSqlQueryState($event)" fxFlex>
                 <ige-result-table *ngIf="!error" [result]="result"
+                                  (open)="loadDataset($event)"
                                   (save)="saveQuery(true)"></ige-result-table>
 
                 <div *ngIf="error" class="error-container">

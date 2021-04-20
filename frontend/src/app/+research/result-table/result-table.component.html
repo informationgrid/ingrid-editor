@@ -63,7 +63,7 @@
                 </button>
                 <mat-menu #moreResult>
                     <button mat-menu-item disabled>Vorschau</button>
-                    <button mat-menu-item (click)="open.emit(element.uuid)">Öffnen</button>
+                    <button mat-menu-item (click)="openDataset(element)">Öffnen</button>
                     <button mat-menu-item disabled>Exportieren</button>
                     <button mat-menu-item (click)="remove.emit(element)">Löschen</button>
                 </mat-menu>
@@ -72,7 +72,7 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-            (click)="open.emit(row.uuid)"></tr>
+            (click)="openDataset(row)"></tr>
     </table>
     <mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>
 <!--</div>-->

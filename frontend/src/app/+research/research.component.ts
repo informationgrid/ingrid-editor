@@ -13,6 +13,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
 import {DocumentService} from '../services/document/document.service';
 import {QueryState, QueryStore} from '../store/query/query.store';
+import {ShortResultInfo} from './result-table/result-table.component';
 
 @UntilDestroy()
 @Component({
@@ -214,8 +215,8 @@ export class ResearchComponent implements OnInit {
       });
   }
 
-  loadDataset(uuid: string) {
-    this.router.navigate(['/form', {id: uuid}]);
+  loadDataset(info: ShortResultInfo) {
+    this.router.navigate([info.isAddress ? '/address' : '/form', {id: info.uuid}]);
   }
 
   changeSearchClass(value: string) {
