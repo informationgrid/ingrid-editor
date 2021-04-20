@@ -5,12 +5,13 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {LeafletService} from '../formly/types/map/leaflet.service';
 import {ProfileService} from '../services/profile.service';
 import {MatDialogModule} from '@angular/material/dialog';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 describe('ResearchComponent', () => {
   let spectator: Spectator<ResearchComponent>;
   const createComponent = createComponentFactory({
     component: ResearchComponent,
-    imports: [RouterTestingModule, MatDialogModule],
+    imports: [RouterTestingModule, MatDialogModule, HttpClientTestingModule],
     declarations: [],
     componentMocks: [],
     /*providers: [mockProvider(ResearchService, {
