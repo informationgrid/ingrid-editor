@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ResearchResponse, ResearchService} from './research.service';
-import {debounceTime, tap} from 'rxjs/operators';
+import {debounceTime, distinct, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
 import {FacetUpdate} from './facets/facets.component';
@@ -14,6 +14,7 @@ import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/conf
 import {DocumentService} from '../services/document/document.service';
 import {QueryState, QueryStore} from '../store/query/query.store';
 import {ShortResultInfo} from './result-table/result-table.component';
+import {logAction} from '@datorama/akita';
 
 @UntilDestroy()
 @Component({
@@ -55,21 +56,27 @@ export class ResearchComponent implements OnInit {
       .pipe(
         untilDestroyed(this),
         debounceTime(300),
-        tap(value => this.queryStore.update((state => ({
-            ui: {
-              ...state.ui,
-              search: {
-                ...state.ui.search,
-                query: value
+        tap(value => {
+          logAction('query changed');
+          this.queryStore.update((state => ({
+              ui: {
+                ...state.ui,
+                search: {
+                  ...state.ui.search,
+                  query: value
+                }
               }
-            }
-          }))
-        ))
+            }))
+          )
+        })
       ).subscribe();
 
     this.queryQuery.searchSelect$
-      .pipe(untilDestroyed(this))
-      .subscribe(state => this.startSearch());
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(200),
+        distinct()
+      ).subscribe((state) => this.startSearch());
 
     this.queryQuery.sqlSelect$
       .pipe(untilDestroyed(this))
@@ -78,6 +85,7 @@ export class ResearchComponent implements OnInit {
   }
 
   updateFilter(info: FacetUpdate) {
+    logAction('Update filter');
     this.queryStore.update((state => ({
       ui: {
         ...state.ui,
@@ -165,6 +173,7 @@ export class ResearchComponent implements OnInit {
   loadQuery(id: string) {
     let entity: SqlQuery | FacetQuery = JSON.parse(JSON.stringify(this.queryQuery.getEntity(id)));
 
+    logAction('Load query');
     if (entity.type === 'facet') {
       this.queryStore.update((state => ({
           ui: {
@@ -220,6 +229,7 @@ export class ResearchComponent implements OnInit {
   changeSearchClass(value: string) {
     this.filter.model = {};
 
+    logAction('Change search class');
     this.queryStore.update((state => ({
         ui: {
           ...state.ui,
@@ -284,6 +294,7 @@ export class ResearchComponent implements OnInit {
   }
 
   updateSqlQueryState(value: string) {
+    logAction('SQL Query');
     this.queryStore.update((state => ({
       ui: {
         ...state.ui,
@@ -296,18 +307,13 @@ export class ResearchComponent implements OnInit {
   }
 
   handleTabChange(index: number) {
+    logAction('Tab change');
     this.queryStore.update(state => ({
       ui: {
         ...state.ui,
         currentTabIndex: index
       }
     }));
-
-    if (index === 0) {
-      this.startSearch();
-    } else if (index === 1) {
-      this.queryBySQL();
-    }
   }
 
   private prepareFacetModel(state: QueryState) {
@@ -318,11 +324,16 @@ export class ResearchComponent implements OnInit {
   }
 
   private updateControlsFromState(state: QueryState, queryOverride?: string, typeOverride?: 'selectDocuments' | 'selectAddresses') {
-    this.query.setValue(queryOverride ?? state.ui.search.query);
+    this.query.setValue(queryOverride ?? state.ui.search.query, {emitEvent: false});
     this.searchClass = typeOverride ?? state.ui.search.category;
-    this.filter = {
-      model: JSON.parse(JSON.stringify(state.ui.search.facets.model)),
-      fieldsWithParameters: {...state.ui.search.facets.fieldsWithParameters}
-    };
+    this.filter = JSON.parse(JSON.stringify(state.ui.search.facets));
+  }
+
+  startSearchByTab(index: number) {
+    if (index === 0) {
+      this.startSearch();
+    } else if (index === 1) {
+      this.queryBySQL();
+    }
   }
 }
