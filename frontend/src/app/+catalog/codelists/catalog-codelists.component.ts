@@ -54,18 +54,27 @@ export class CatalogCodelistsComponent implements OnInit {
       ).subscribe(text => this.save());
   }
 
-  editCodelist(entry: CodelistEntry) {
-    const oldId = entry.id;
+  editCodelist(entry?: CodelistEntry) {
+    const oldId = entry?.id;
+    const editEntry = entry ? entry : {
+      fields: {}
+    }
     this.dialog.open(UpdateCodelistComponent, {
       minWidth: 400,
       disableClose: true,
-      data: entry
+      data: editEntry
     }).afterClosed().subscribe(result => {
       if (!result) return;
-      const index = this.selectedCodelist.entries
-        .findIndex(e => e.id === oldId);
       const other = JSON.parse(JSON.stringify(this.selectedCodelist));
-      other.entries.splice(index, 1, result);
+
+      if (entry) {
+        const index = this.selectedCodelist.entries
+          .findIndex(e => e.id === oldId);
+        other.entries.splice(index, 1, result);
+      } else {
+        other.entries.push(result);
+      }
+
       this.save(other);
     });
   }
@@ -122,5 +131,9 @@ export class CatalogCodelistsComponent implements OnInit {
     this.codelistService.updateCodelist(patchValue).subscribe();
     this.showSavedState = true;
     setTimeout(() => this.showSavedState = false, 3000);
+  }
+
+  addCodelist() {
+    this.editCodelist();
   }
 }

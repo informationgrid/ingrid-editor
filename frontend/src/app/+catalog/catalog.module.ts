@@ -24,6 +24,7 @@ import {UpdateCodelistComponent} from './codelists/update-codelist/update-codeli
 import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {PageTemplateModule} from '../shared/page-template/page-template.module';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatChipsModule} from '@angular/material/chips';
 
 @NgModule({
     imports: [
@@ -31,7 +32,7 @@ import {MatMenuModule} from '@angular/material/menu';
         FormsModule,
         FlexLayoutModule,
         MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-        routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule, PageTemplateModule, MatMenuModule
+        routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule, PageTemplateModule, MatMenuModule, MatChipsModule
     ],
   providers: [
     CatalogService

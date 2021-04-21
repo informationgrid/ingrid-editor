@@ -29,6 +29,25 @@
                 <div class="star">*</div>
             </div>
         </div>
+
+        <div>
+            Beispiele:
+            <mat-chip-list>
+                <mat-chip (click)="cronField.setValue('0 */10 * * * *')">Alle 10 Minuten</mat-chip>
+                <mat-chip (click)="cronField.setValue('0 0 3 * * *')">Täglich um 3 Uhr</mat-chip>
+                <mat-chip (click)="cronField.setValue('0 */30 * * * *')">Alle 30 Minuten</mat-chip>
+                <mat-chip (click)="cronField.setValue('0 0 8,11 * * 1-5')">Mo-Fr 8 und 11 Uhr</mat-chip>
+            </mat-chip-list>
+        </div>
+
+        <p>
+            Weitere Information über die Verwendung des Cron-Ausdrucks kann hier nachgelesen werden:
+            <a target="_blank" href="https://de.wikipedia.org/wiki/Cron">Link</a>
+        </p>
+        <p>
+            Der Cron-Ausdruck beinhaltet zusätzlich die Einstellung von Sekunden, um eine genauere Ausführung zu
+            definieren.
+        </p>
     </ng-container>
 
     <div main fxLayout="column" fxFlex>

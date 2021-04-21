@@ -21,18 +21,22 @@ export class FacetsComponent implements AfterViewInit {
 
   _model: any = {};
   @Input() set model(value: any) {
-    this._model = value;
+    this._model = JSON.parse(JSON.stringify(value));
   };
 
+  _parameter: any;
   @Input() set parameter(value: any) {
-    this.updateSpatialFromModel(value);
+    this._parameter = value;
+    if (this.isInitialized) {
+      // delay update for other inputs to be present
+      setTimeout(() => this.updateSpatialFromModel(value));
+    }
   }
 
   @Input()
   set forAddresses(addresses: boolean) {
     this._forAddresses = addresses;
     if (this.allFacets) {
-      // this._model = {};
       this.updateFilterGroup();
     }
   }
@@ -58,6 +62,7 @@ export class FacetsComponent implements AfterViewInit {
   notExpanded: any = {};
   location: SpatialLocation;
   private boxes: Rectangle[];
+  private isInitialized = false;
 
   constructor(private dialog: MatDialog,
               private researchService: ResearchService,
@@ -69,7 +74,10 @@ export class FacetsComponent implements AfterViewInit {
       .pipe(
         tap(filters => this.allFacets = filters),
         tap(() => this.updateFilterGroup()),
-        tap(() => this.sendUpdate())
+        tap(() => {
+          this.isInitialized = true;
+          this.updateSpatialFromModel(this._parameter);
+        })
       ).subscribe();
   }
 
@@ -92,16 +100,20 @@ export class FacetsComponent implements AfterViewInit {
       this._model[group.id] = {};
       if (group.selection === 'RADIO') {
         this._model[group.id] = group.filter[0].id;
-      } else if (group.selection === 'SPATIAL') {
-        this.spatialFilterId = group.filter[0].id;
       }
     });
+  }
+
+  private determineSpatialFilterId(filters: FacetGroup[]) {
+    return filters
+      .find(group => group.selection === 'SPATIAL')
+      ?.filter[0]?.id;
   }
 
   sendUpdate() {
     this.update.emit({
       model: this._model,
-      fieldsWithParameters: this.fieldsWithParameters
+      fieldsWithParameters: {...this.fieldsWithParameters}
     });
   }
 
@@ -109,7 +121,7 @@ export class FacetsComponent implements AfterViewInit {
     const data: Partial<SpatialLocation> = location ?? {
       limitTypes: ['free'],
       type: 'free'
-    }
+    };
 
     this.dialog.open(SpatialDialogComponent, {
       data: data
@@ -124,9 +136,6 @@ export class FacetsComponent implements AfterViewInit {
   }
 
   private updateSpatial(location: SpatialLocation) {
-    if (this.boxes) {
-      this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.boxes);
-    }
 
     this.location = location;
 
@@ -141,6 +150,21 @@ export class FacetsComponent implements AfterViewInit {
       location.value.lon2
     ];
 
+    this.updateMap(location);
+
+    this.sendUpdate();
+  }
+
+  private updateMap(location: SpatialLocation) {
+    if (!this.leafletReference) {
+      console.log('Map not initialized yet ... try again updating spatial');
+      setTimeout(() => this.updateMap(location), 100);
+      return;
+    }
+
+    if (this.boxes) {
+      this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.boxes);
+    }
     this.boxes = this.leafletService.drawSpatialRefs(this.leafletReference, [{
       value: location.value,
       type: location.type,
@@ -148,8 +172,6 @@ export class FacetsComponent implements AfterViewInit {
       color: this.leafletService.getColor(0),
       indexNumber: 0
     }]);
-
-    this.sendUpdate();
   }
 
   removeLocation() {
@@ -157,17 +179,22 @@ export class FacetsComponent implements AfterViewInit {
     delete this.fieldsWithParameters.spatial;
     delete this._model.spatial[this.spatialFilterId];
     this.leafletService.removeDrawnBoundingBoxes(this.leafletReference, this.boxes);
+    this.boxes = null;
 
     this.sendUpdate();
   }
 
   private updateFilterGroup() {
     const filter = this.allFacets[this._forAddresses ? 'addresses' : 'documents'];
+    this.spatialFilterId = this.determineSpatialFilterId(filter);
     this.setDefaultModel(filter);
     this.filterGroup = filter;
 
     if (filter.some(f => f.selection === 'SPATIAL')) {
-      setTimeout(() => this.initLeaflet(), 200);
+      setTimeout(() => {
+        this.initLeaflet();
+        this.updateSpatialFromModel(this._parameter);
+      }, 200);
     }
   }
 
@@ -182,10 +209,10 @@ export class FacetsComponent implements AfterViewInit {
       return <SpatialLocation>{
         type: 'free',
         value: {
-          lon1: coords[0],
-          lat1: coords[1],
-          lon2: coords[2],
-          lat2: coords[3]
+          lat1: coords[0],
+          lon1: coords[1],
+          lat2: coords[2],
+          lon2: coords[3]
         }
       };
     })[0];

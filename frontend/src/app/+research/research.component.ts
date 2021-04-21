@@ -1,16 +1,20 @@
 import {Component, OnInit} from '@angular/core';
 import {ResearchResponse, ResearchService} from './research.service';
-import {debounceTime, map} from 'rxjs/operators';
-import {ProfileService} from '../services/profile.service';
+import {debounceTime, distinct, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
 import {FacetUpdate} from './facets/facets.component';
 import {QueryQuery} from '../store/query/query.query';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SaveQueryDialogComponent} from './save-query-dialog/save-query-dialog.component';
-import {Query} from '../store/query/query.model';
+import {FacetQuery, SqlQuery} from '../store/query/query.model';
 import {MatDialog} from '@angular/material/dialog';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
+import {DocumentService} from '../services/document/document.service';
+import {QueryState, QueryStore} from '../store/query/query.store';
+import {ShortResultInfo} from './result-table/result-table.component';
+import {logAction} from '@datorama/akita';
 
 @UntilDestroy()
 @Component({
@@ -20,7 +24,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 })
 export class ResearchComponent implements OnInit {
 
-  selectedIndex = 0;
+  selectedIndex = this.queryQuery.select( state => state.ui.currentTabIndex);
 
   query = new FormControl('');
 
@@ -28,12 +32,7 @@ export class ResearchComponent implements OnInit {
 
   searchClass: 'selectDocuments' | 'selectAddresses';
 
-  sqlQuery = '';
-
-  filter: FacetUpdate = {
-    model: {},
-    fieldsWithParameters: {}
-  };
+  filter: FacetUpdate;
   result: ResearchResponse;
 
   error: string = null;
@@ -42,63 +41,91 @@ export class ResearchComponent implements OnInit {
               private router: Router,
               private dialog: MatDialog,
               private researchService: ResearchService,
-              private profileService: ProfileService,
+              private documentService: DocumentService,
+              private queryStore: QueryStore,
               private queryQuery: QueryQuery) {
   }
 
   ngOnInit() {
-    this.query.setValue(this.route.snapshot.params.q ?? '');
-    this.searchClass = this.route.snapshot.params.type ?? 'selectDocuments';
+    let state = this.queryQuery.getValue();
+    this.updateControlsFromState(state, this.route.snapshot.params.q, this.route.snapshot.params.type);
 
     this.researchService.fetchQueries();
 
     this.query.valueChanges
       .pipe(
         untilDestroyed(this),
-        debounceTime(300)
-      )
-      .subscribe(query => this.startSearch());
+        debounceTime(300),
+        tap(value => {
+          logAction('query changed');
+          this.queryStore.update((state => ({
+              ui: {
+                ...state.ui,
+                search: {
+                  ...state.ui.search,
+                  query: value
+                }
+              }
+            }))
+          )
+        })
+      ).subscribe();
+
+    this.queryQuery.searchSelect$
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(200),
+        distinct()
+      ).subscribe((state) => this.startSearch());
+
+    this.queryQuery.sqlSelect$
+      .pipe(untilDestroyed(this))
+      .subscribe(state => this.queryBySQL());
 
   }
 
   updateFilter(info: FacetUpdate) {
-    this.filter = info;
-    this.startSearch();
+    logAction('Update filter');
+    this.queryStore.update((state => ({
+      ui: {
+        ...state.ui,
+        search: {
+          ...state.ui.search,
+          facets: info
+        }
+      }
+    })));
   }
 
   startSearch() {
+    const state = this.queryQuery.getValue();
+
     // complete model with other parameters
-    this.filter.model.type = this.searchClass;
+    const model = this.prepareFacetModel(state);
 
     setTimeout(() => {
       // this.applyImplicitFilter(this.model);
       return this.researchService.search(
-        this.query.value,
-        this.filter.model,
-        this.filter.fieldsWithParameters
-      ).pipe(
-        map(result => this.mapDocumentIcons(result))
+        state.ui.search.query,
+        model,
+        state.ui.search.facets.fieldsWithParameters
       ).subscribe(result => this.updateHits(result));
     });
   }
 
-  queryBySQL(sql: string) {
+  queryBySQL() {
     this.error = null;
+    const sql = this.queryQuery.getValue().ui.sql.query;
+    if (sql.trim() === '') {
+      this.updateHits({hits: [], totalHits: 0});
+      return;
+    }
 
     this.researchService.searchBySQL(sql)
-      .pipe(
-        map(result => this.mapDocumentIcons(result))
-      ).subscribe(
-      result => this.updateHits(result),
-      (error: HttpErrorResponse) => this.error = error.error.errorText
-    );
-  }
-
-  private mapDocumentIcons(data: ResearchResponse): ResearchResponse {
-    data.hits.forEach(hit => {
-      hit.icon = this.profileService.getDocumentIcon(hit);
-    });
-    return data;
+      .subscribe(
+        result => this.updateHits(result),
+        (error: HttpErrorResponse) => this.error = error.error.errorText
+      );
   }
 
   private updateHits(result: ResearchResponse) {
@@ -119,19 +146,64 @@ export class ResearchComponent implements OnInit {
       }
     }
   */
+  sqlExamples = [{
+    label: 'Adressen, mit Titel "test"',
+    value: `SELECT document1.*, document_wrapper.*
+            FROM document_wrapper
+                   JOIN document document1 ON
+              CASE
+                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
+                ELSE document_wrapper.draft = document1.id
+                END
+            WHERE document1.type = 'AddressDoc'
+              AND LOWER(title) LIKE '%test%'`
+  }, {
+    label: 'Dokumente "Luft- und Raumfahrt"',
+    value: `SELECT document1.*, document_wrapper.*
+            FROM document_wrapper
+                   JOIN document document1 ON
+              CASE
+                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
+                ELSE document_wrapper.draft = document1.id
+                END
+            WHERE document1.type = 'mCloudDoc'
+              AND data -> 'mCloudCategories' @> '"aviation"'`
+  }];
 
   loadQuery(id: string) {
-    let entity: Query = JSON.parse(JSON.stringify(this.queryQuery.getEntity(id)));
+    let entity: SqlQuery | FacetQuery = JSON.parse(JSON.stringify(this.queryQuery.getEntity(id)));
 
+    logAction('Load query');
     if (entity.type === 'facet') {
-      this.selectedIndex = 0;
-      this.filter.model = {...this.getFacetModel(), ...entity.model};
-      this.filter.fieldsWithParameters = {...entity.parameter};
-      this.query.setValue(entity.term);
+      this.queryStore.update((state => ({
+          ui: {
+            ...state.ui,
+            currentTabIndex: 0,
+            search: {
+              category: (<FacetQuery>entity).model.type,
+              query: (<FacetQuery>entity).term,
+              facets: {
+                model: {...this.getFacetModel(), ...(<FacetQuery>entity).model},
+                fieldsWithParameters: (<FacetQuery>entity).parameter
+              }
+            }
+          }
+        }))
+      );
     } else {
-      this.selectedIndex = 1;
-      this.sqlQuery = entity.sql;
+      this.queryStore.update((state => ({
+          ui: {
+            ...state.ui,
+            currentTabIndex: 1,
+            sql: {
+              query: (<SqlQuery>entity).sql
+            }
+          }
+        }))
+      );
     }
+
+    this.updateControlsFromState(this.queryQuery.getValue())
   }
 
   private getFacetModel(): any {
@@ -140,44 +212,128 @@ export class ResearchComponent implements OnInit {
       : this.researchService.facetModel.addresses;
   }
 
-  saveQuery(data?: any, asSql = false) {
+  saveQuery(asSql = false) {
     this.dialog.open(SaveQueryDialogComponent).afterClosed()
       .subscribe(response => {
         if (response) {
-          this.researchService.saveQuery(this.prepareQuery(response, data, asSql))
+          this.researchService.saveQuery(this.prepareQuery(response, asSql))
             .subscribe();
         }
       });
   }
 
-  loadDataset(uuid: string) {
-    this.router.navigate(['/form', {id: uuid}]);
+  loadDataset(info: ShortResultInfo) {
+    this.router.navigate([info.isAddress ? '/address' : '/form', {id: info.uuid}]);
   }
 
-  changeSearchClass() {
+  changeSearchClass(value: string) {
     this.filter.model = {};
-    this.startSearch();
+
+    logAction('Change search class');
+    this.queryStore.update((state => ({
+        ui: {
+          ...state.ui,
+          search: {
+            ...state.ui.search,
+            category: value
+          }
+        }
+      }))
+    );
   }
 
-  private prepareQuery(response: any, data: any, asSql: boolean) {
+  private prepareQuery(response: any, asSql: boolean): SqlQuery | FacetQuery {
+    const state = this.queryQuery.getValue();
     let base = {
       id: null,
       name: response.name,
       description: response.description
     };
-    return asSql
-      ? {
+
+    if (asSql) {
+      return {
         ...base,
-        ...data,
+        sql: state.ui.sql.query,
         type: 'sql'
       }
-      : {
+    } else {
+      const model = this.prepareFacetModel(state);
+      return {
         ...base,
         type: 'facet',
-        term: this.query.value,
-        model: this.filter.model,
-        parameter: this.filter.fieldsWithParameters
+        term: state.ui.search.query,
+        model: model,
+        parameter: state.ui.search.facets.fieldsWithParameters
       };
+    }
+  }
 
+  removeDataset(hit: any) {
+    console.log(hit);
+    this.dialog.open(ConfirmDialogComponent, {
+      data: <ConfirmDialogData>{
+        title: 'Löschen',
+        message: `Wollen Sie den Datensatz ${hit.title} wirklich löschen?`,
+        buttons: [
+          {text: 'Abbruch'},
+          {text: 'Löschen', alignRight: true, id: 'confirm', emphasize: true}
+        ]
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.documentService.delete([hit.uuid], this.isAddress(hit))
+          .then(() => this.startSearch());
+      }
+    });
+  }
+
+  private isAddress(hit: any): boolean {
+
+    return (hit._category === 'address');
+
+  }
+
+  updateSqlQueryState(value: string) {
+    logAction('SQL Query');
+    this.queryStore.update((state => ({
+      ui: {
+        ...state.ui,
+        sql: {
+          ...state.ui.sql,
+          query: value
+        }
+      }
+    })));
+  }
+
+  handleTabChange(index: number) {
+    logAction('Tab change');
+    this.queryStore.update(state => ({
+      ui: {
+        ...state.ui,
+        currentTabIndex: index
+      }
+    }));
+  }
+
+  private prepareFacetModel(state: QueryState) {
+    return {
+      ...state.ui.search.facets.model,
+      type: state.ui.search.category
+    };
+  }
+
+  private updateControlsFromState(state: QueryState, queryOverride?: string, typeOverride?: 'selectDocuments' | 'selectAddresses') {
+    this.query.setValue(queryOverride ?? state.ui.search.query, {emitEvent: false});
+    this.searchClass = typeOverride ?? state.ui.search.category;
+    this.filter = JSON.parse(JSON.stringify(state.ui.search.facets));
+  }
+
+  startSearchByTab(index: number) {
+    if (index === 0) {
+      this.startSearch();
+    } else if (index === 1) {
+      this.queryBySQL();
+    }
   }
 }

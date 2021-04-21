@@ -54,35 +54,29 @@ export class DocumentService {
 
   find(query: string, size = 10, address = false): Observable<SearchResult> {
     // TODO: use general sort filter
+    const encodedQuery = encodeURI(query);
     return this.http.get<ServerSearchResult>(
-      `${this.configuration.backendUrl}datasets?query=${query}&sort=title&size=${size}&address=${address}`)
+      `${this.configuration.backendUrl}datasets?query=${encodedQuery}&sort=title&size=${size}&address=${address}`)
       .pipe(
-        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result))
-        // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       );
   }
 
   findRecent(): void {
     this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC&size=5`)
       .pipe(
-        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result)),
         tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
-        // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       ).subscribe();
   }
 
   findRecentAddresses(): Observable<DocumentAbstract[]> {
     return  this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&address=true&sort=_modified&sortOrder=DESC&size=5`)
       .pipe(
-        // map(json => json.filter(item => item && item._type !== 'FOLDER')),
         map(result => this.mapSearchResults(result).hits),
         // TODO create and use latestAddresses Sessionstore
         // tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
-        // catchError( err => this.errorService.handleOwn( 'Could not query documents', err ) )
       )
-      //.subscribe();
   }
 
   getChildren(parentId: string, isAddress?: boolean): Observable<DocumentAbstract[]> {
@@ -99,7 +93,6 @@ export class DocumentService {
       store.set(docs);
     } else {
       store.add(docs);
-      // this.treeStore.setExpandedNodes([...previouseExpandState, nodeId]);
     }
   }
 
@@ -234,22 +227,24 @@ export class DocumentService {
       );
   }
 
-  delete(ids: string[], isAddress: boolean): void {
+  delete(ids: string[], isAddress: boolean): Promise<void> {
 
-    this.dataService.delete(ids)
-      .subscribe(res => {
-        console.log('ok', res);
-        const data = ids.map(id => {
-          return {id: id};
-        });
-        this.datasetsChanged$.next({
-          type: UpdateType.Delete,
-          // @ts-ignore
-          data: data
-        });
+    return new Promise(resolve => {
+      this.dataService.delete(ids)
+        .subscribe(res => {
+          const data = ids.map(id => {
+            return {id: id};
+          });
+          this.datasetsChanged$.next({
+            type: UpdateType.Delete,
+            // @ts-ignore
+            data: data
+          });
 
-        this.updateStoreAfterDelete(ids, isAddress);
-      });
+          this.updateStoreAfterDelete(ids, isAddress);
+          resolve();
+        });
+    });
   }
 
   revert(id: string, isAddress: boolean): Observable<any> {
@@ -435,7 +430,7 @@ export class DocumentService {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     let entities = store.getValue().entities;
-    const parents = ids.map(id => entities[id]._parent);
+    const parents = ids.map(id => entities[id]?._parent);
 
     store.remove(ids);
 

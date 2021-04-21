@@ -7,5 +7,5 @@ import org.springframework.stereotype.Component
 class Persons : QuickFilter() {
     override val id = "selectPersons"
     override val label = "Person"
-    override val filter = "(category = 'address') AND ((data ->> 'organization') = '') IS NOT FALSE"
+    override val filter = "category = 'address' AND document_wrapper.type != 'FOLDER' AND ((data ->> 'organization') = '') IS NOT FALSE"
 }
