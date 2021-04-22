@@ -94,12 +94,16 @@ class KeycloakService : UserManagementService {
     }
 
     private fun getUsersWithRole(roles: RolesResource, roleName: String, ignoreUsers: Set<User> = emptySet()): List<User> {
-        val users = roles[roleName].roleUserMembers
-            .filter {user -> ignoreUsers.none {ignore -> user.username == ignore.login } }
-            .map { user -> mapUser(user) }
-
-        users.forEach { user -> user.role = roleName }
-        return users
+        try {
+            val users = roles[roleName].roleUserMembers
+                .filter {user -> ignoreUsers.none {ignore -> user.username == ignore.login } }
+                .map { user -> mapUser(user) }
+            users.forEach { user -> user.role = roleName }
+            return users
+        } catch (e: javax.ws.rs.NotFoundException) {
+            log.warn("No users found with role '$roleName'")
+            return emptyList()
+        }
     }
 
     private fun initClient(principal: Principal?): KeycloakCloseableClient {
