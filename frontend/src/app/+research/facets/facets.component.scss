@@ -1,7 +1,8 @@
 @import "src/variables";
 
 :host {
-  overflow: auto;
+  // overflow leads to scrollbars in firefox when switching to tab search with a remembered location
+  //overflow: auto;
 }
 
 .main-section-title {

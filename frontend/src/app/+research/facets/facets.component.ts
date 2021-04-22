@@ -6,12 +6,14 @@ import {LeafletService} from '../../formly/types/map/leaflet.service';
 import {MatDialog} from '@angular/material/dialog';
 import {SpatialDialogComponent} from '../../formly/types/map/spatial-dialog/spatial-dialog.component';
 import {SpatialLocation} from '../../formly/types/map/spatial-list/spatial-list.component';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 export interface FacetUpdate {
   model: any;
   fieldsWithParameters: { [x: string]: any[] }
 }
 
+@UntilDestroy()
 @Component({
   selector: 'ige-facets',
   templateUrl: './facets.component.html',
@@ -32,6 +34,8 @@ export class FacetsComponent implements AfterViewInit {
       setTimeout(() => this.updateSpatialFromModel(value));
     }
   }
+
+  @Input() refreshView: EventEmitter<void>;
 
   @Input()
   set forAddresses(addresses: boolean) {
@@ -79,6 +83,16 @@ export class FacetsComponent implements AfterViewInit {
           this.updateSpatialFromModel(this._parameter);
         })
       ).subscribe();
+
+    if (this.refreshView) {
+      this.refreshView
+        .pipe(untilDestroyed(this))
+        .subscribe(() => {
+          // @ts-ignore
+          (<Map>this.leafletReference)._onResize();
+          setTimeout(() => this.updateMap(this.convertParameterToLocation(this._parameter)));
+        });
+    }
   }
 
   initLeaflet() {
@@ -199,12 +213,17 @@ export class FacetsComponent implements AfterViewInit {
   }
 
   private updateSpatialFromModel(parameter: any) {
+    const location = this.convertParameterToLocation(parameter);
+    this.updateSpatial(location);
+  }
+
+  private convertParameterToLocation(parameter: any): SpatialLocation {
+
     if (!parameter || Object.keys(parameter).length === 0) {
-      this.updateSpatial(null);
-      return;
+      return null;
     }
 
-    const location = Object.keys(parameter).map(key => {
+    return Object.keys(parameter).map(key => {
       const coords = parameter[key];
       return <SpatialLocation>{
         type: 'free',
@@ -216,6 +235,5 @@ export class FacetsComponent implements AfterViewInit {
         }
       };
     })[0];
-    this.updateSpatial(location);
   }
 }

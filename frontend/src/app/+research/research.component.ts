@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit} from '@angular/core';
 import {ResearchResponse, ResearchService} from './research.service';
 import {debounceTime, distinct, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -36,6 +36,8 @@ export class ResearchComponent implements OnInit {
   result: ResearchResponse;
 
   error: string = null;
+
+  facetViewRefresher = new EventEmitter<void>();
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -314,6 +316,9 @@ export class ResearchComponent implements OnInit {
         currentTabIndex: index
       }
     }));
+    if (index === 0) {
+      this.facetViewRefresher.emit();
+    }
   }
 
   private prepareFacetModel(state: QueryState) {

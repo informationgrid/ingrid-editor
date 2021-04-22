@@ -43,7 +43,7 @@
 
     <div *ngIf="group.selection === 'SPATIAL'" [class.invisible]="notExpanded[group.id]" style="flex-direction: column">
         <div #leafletDlg fxFlex></div>
-        <div *ngIf="location" class="location" fxFlex>
+        <div *ngIf="location" class="location">
             <div>
                 <span>{{location.title}}</span>
                 <p>L1: {{location.value.lat1 | number:'.6'}}° B1: {{location.value.lon1 | number:'.6'}}°</p>
