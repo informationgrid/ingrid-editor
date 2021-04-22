@@ -3,7 +3,6 @@ import {ConfigService, Configuration} from '../config/config.service';
 import {IgeDocument} from '../../models/ige-document';
 import {Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {DocumentAbstract} from '../../store/document/document.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,25 +11,13 @@ export class DocumentDataService {
   private configuration: Configuration;
 
   constructor(private http: HttpClient, configService: ConfigService) {
-
-    configService.$userInfo.subscribe(info => {
-      if (info.assignedCatalogs.length > 0) {
-
-        /*configService.promiseProfilePackageLoaded.then(() => {
-          this.titleFields = configService.getTitleFields().join(',');
-        });*/
-      }
-      this.configuration = configService.getConfiguration();
-    });
+    configService.$userInfo.subscribe(() => this.configuration = configService.getConfiguration());
   }
 
   getChildren(parentId: string, isAddress = false): Observable<any[]> {
     const params = this.createGetChildrenParams(parentId, isAddress);
     const url = `${this.configuration.backendUrl}tree/children` + params;
-    return this.http.get<any[]>(url)
-      .pipe(
-        // catchError( (err) => this.errorService.handle( err ) )
-      );
+    return this.http.get<any[]>(url);
   }
 
   load(id: string, address = false): Observable<IgeDocument> {
