@@ -20,7 +20,7 @@
                         matTooltip="Speichern"
                         [matTooltipShowDelay]="1000"
                         (click)="saveUser()"
-                        [disabled]="form.invalid">
+                        [disabled]="form?.invalid">
                     Speichern
                 </button>
                 <button class="btnAddUser" mat-flat-button color="primary"
@@ -97,7 +97,7 @@
             <mat-form-field appearance="outline">
                 <mat-label>Email</mat-label>
                 <input matInput autocomplete="off" formControlName="email" type="email" required>
-                <mat-error *ngIf="form.get('email').invalid">{{getEmailErrorMessage()}}</mat-error>
+                <mat-error *ngIf="form?.get('email')?.invalid">{{getEmailErrorMessage()}}</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">

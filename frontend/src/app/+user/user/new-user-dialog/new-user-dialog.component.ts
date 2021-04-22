@@ -29,7 +29,7 @@ export class NewUserDialogComponent implements OnInit {
     this.initRoles();
 
     this.form = new FormGroup({
-      role: new FormControl(this.roles[0].value, Validators.required),
+      role: new FormControl('', Validators.required),
       user: new FormControl('', Validators.required)
     });
 
