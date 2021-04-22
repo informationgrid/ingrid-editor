@@ -63,7 +63,7 @@ export class DocumentService {
   }
 
   findRecent(): void {
-    this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&sort=_modified&sortOrder=DESC&size=5`)
+    this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&sort=modified&sortOrder=DESC&size=5`)
       .pipe(
         map(result => this.mapSearchResults(result)),
         tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
@@ -71,7 +71,7 @@ export class DocumentService {
   }
 
   findRecentAddresses(): Observable<DocumentAbstract[]> {
-    return  this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&address=true&sort=_modified&sortOrder=DESC&size=5`)
+    return  this.http.get<ServerSearchResult>(`${this.configuration.backendUrl}datasets?query=&address=true&sort=modified&sortOrder=DESC&size=5`)
       .pipe(
         map(result => this.mapSearchResults(result).hits),
         // TODO create and use latestAddresses Sessionstore

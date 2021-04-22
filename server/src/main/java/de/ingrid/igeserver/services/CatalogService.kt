@@ -41,7 +41,7 @@ class CatalogService @Autowired constructor(
             else -> {
                 // ... or first catalog, if existing
                 val catalogIds = userData.catalogIds
-                if (catalogIds == null || catalogIds.size == 0) {
+                if (catalogIds == null || catalogIds.isEmpty()) {
                     throw NotFoundException.withMissingUserCatalog(userId)
                 }
                 catalogIds[0]
@@ -51,14 +51,13 @@ class CatalogService @Autowired constructor(
 
     fun getCatalogsForUser(userId: String): Set<String> {
 
-        val userData = userRepo.findByUserId(userId).data
+        val user = userRepo.findByUserId(userId)
 
-        return if (userData == null) {
+        return if (user.getCatalogIds().isEmpty()) {
             log.error("The user '$userId' does not seem to be assigned to any database.")
             HashSet()
         } else {
-            val catalogIds = userData.catalogIds
-            return if (catalogIds == null) HashSet() else (catalogIds as List<String>).toSet()
+            user.getCatalogIds().toSet()
         }
     }
 

@@ -10,6 +10,8 @@ import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -235,53 +237,32 @@ class DatasetsApiController @Autowired constructor(
     override fun find(
         principal: Principal?,
         query: String?,
-        size: Int?,
+        size: Int,
         sort: String?,
         sortOrder: String?,
         forAddress: Boolean
     ): ResponseEntity<SearchResult<JsonNode>> {
 
-//        var docs: FindAllResults
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val category = if (forAddress) "address" else "data"
 
-        /*val queryOptions = QueryOptions(
-                queryType = QueryType.LIKE,
-                queryOperator = QueryOperator.AND
+        val sortDirection = if (sortOrder == "asc") Sort.Direction.ASC else Sort.Direction.DESC
+        val sortColumn = "document1.$sort"
+        val docs2 = docWrapperRepo.findComplex(
+            catalogId,
+            category,
+            query ?: "test",
+            PageRequest.of(
+                0,
+                size,
+                Sort.by(sortDirection, sortColumn)
+            )
         )
-        val queryMap = listOf(
-                Pair(listOf(
-                        QueryField("catalog.identifier", dbId),
-                        QueryField(FIELD_CATEGORY, " =", cat),
-                        QueryField("draft.title", query  ?: "")
-                ), queryOptions),
-                Pair(listOf(
-                        QueryField("catalog.identifier", dbId),
-                        QueryField(FIELD_CATEGORY, " =", cat),
-                        QueryField("draft", null),
-                        QueryField("published.title", query  ?: "")
-                ), queryOptions)
-        )
-
-        val findOptions = FindOptions(
-                queryOperator = QueryOperator.OR,
-                size = size,
-                sortField = sort,
-                sortOrder = sortOrder,
-                resolveReferences = true)
-        docs = dbService.findAllExt(DocumentWrapperType::class, queryMap, findOptions)
-        */
-//        val docs = docWrapperRepo.findLatestInTitle(catalogId, category, query)
-        var docs2 = docWrapperRepo.findLatestInTitle2(catalogId)
-        if (size != null) {
-            // TODO: use size in query!
-            docs2 = docs2.take(size)
-        }
 
         val searchResult = SearchResult<JsonNode>()
-        searchResult.totalHits = docs2.size.toLong() // docs.totalHits
-        searchResult.hits = docs2
+        searchResult.totalHits = docs2.totalElements
+        searchResult.hits = docs2.content
             .map { doc -> documentService.getLatestDocument(doc) }
             .map { doc -> documentService.convertToJsonNode(doc) }
         return ResponseEntity.ok(searchResult)
@@ -292,34 +273,13 @@ class DatasetsApiController @Autowired constructor(
         id: String,
         publish: Boolean?
     ): ResponseEntity<JsonNode> {
-/*
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val query = listOf(QueryField(FIELD_ID, id))
-        val findOptions = FindOptions(
-            queryType = QueryType.EXACT,
-            resolveReferences = true
-        )*/
-//        val docs = dbService.findAll(DocumentWrapperType::class, query, findOptions)
-/*
-        val doc = when (wrapper.draft) {
-            null -> {
-                wrapper.published?.state = "P"
-                wrapper.published
-            }
-            else -> {
-                wrapper.draft?.state = "B"
-                wrapper.draft
-            }
-        }*/
+
         val wrapper = docWrapperRepo.findByUuid(id)
 
-//        return if (docs.totalHits > 0) {
         val doc = documentService.getLatestDocument(wrapper)
         val jsonDoc = documentService.convertToJsonNode(doc)
         return ResponseEntity.ok(jsonDoc)
-//        } else {
-//            throw NotFoundException.withMissingResource(id, DocumentWrapperType::class.simpleName)
-//        }
+
     }
 
     @ExperimentalStdlibApi
