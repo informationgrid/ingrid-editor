@@ -54,7 +54,7 @@ export class DocumentService {
 
   find(query: string, size = 10, address = false): Observable<SearchResult> {
     // TODO: use general sort filter
-    const encodedQuery = encodeURI(query);
+    const encodedQuery = encodeURI(query).replace(/#/g, '%23');
     return this.http.get<ServerSearchResult>(
       `${this.configuration.backendUrl}datasets?query=${encodedQuery}&sort=title&size=${size}&address=${address}`)
       .pipe(
