@@ -1,8 +1,6 @@
 import {PermissionsShowComponent} from './permissions-show.component';
 import {createComponentFactory, Spectator} from '@ngneat/spectator';
 import {MatDialogModule} from '@angular/material/dialog';
-import {Permission, PermissionType, User} from '../../user';
-import {FilterPipe} from '../../../directives/filter.pipe';
 
 describe('PermissionsShowComponent', () => {
 
@@ -10,7 +8,7 @@ describe('PermissionsShowComponent', () => {
   const createHost = createComponentFactory({
     component: PermissionsShowComponent,
     imports: [MatDialogModule],
-    declarations: [FilterPipe],
+    declarations: [],
     mocks: [],
     detectChanges: false
   });
@@ -24,7 +22,7 @@ describe('PermissionsShowComponent', () => {
   });
 
   it('should show permissions grouped by their types', () => {
-    const user = <User>{
+    /*const user = <User>{
       permissions: [
         {type: PermissionType.PAGE, value: 'Dashboard'},
         {type: PermissionType.PAGE, value: 'Import'},
@@ -33,7 +31,7 @@ describe('PermissionsShowComponent', () => {
         {type: PermissionType.ADDRESSES, value: 'WRITE_2345'}
       ]
     };
-    spectator.setInput('user', user);
+    spectator.setInput('user', user);*/
     expect(spectator.queryAll('.permission').length).toBe(5);
 
     expect(spectator.queryAll('.permissions .page .permission').length).toBe(2);
