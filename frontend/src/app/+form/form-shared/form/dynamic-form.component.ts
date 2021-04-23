@@ -14,7 +14,7 @@ import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
 import {ModalService} from '../../../services/modal/modal.service';
-import {Role} from '../../../models/user-role';
+import {Group} from '../../../models/user-group';
 import {IgeDocument} from '../../../models/ige-document';
 import {FormUtils} from '../../form.utils';
 import {TreeQuery} from '../../../store/tree/tree.query';
@@ -70,7 +70,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   error = false;
   model: IgeDocument | any = {};
 
-  userRoles: Role[];
+  userRoles: Group[];
 
   paddingWithHeader: string;
 
@@ -331,7 +331,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   // TODO: extract to permission service class
   hasPermission(data: any): boolean {
     // TODO: check all roles
-    if (this.userRoles.length > 0) {
+    /*if (this.userRoles.length > 0) {
       const attr = this.userRoles[0].attributes;
       const docIDs = this.userRoles[0].datasets.map(dataset => dataset.id);
       // TODO: show why we don't have permission by remembering failed rule
@@ -339,7 +339,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       const permissionByDatasetId = !docIDs || docIDs.length === 0 || docIDs.some(id => data._id === id);
 
       return permissionByAttribute && permissionByDatasetId;
-    }
+    }*/
     // TODO: implement correct permission handling
     return true;
   }

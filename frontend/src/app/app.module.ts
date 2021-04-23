@@ -162,6 +162,9 @@ export function ConfigLoader(configService: ConfigService) {
         hasBackdrop: true
       }
     },
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {panelClass: 'mat-dialog-override'}
+    },
 
     {
       provide: NG_FORMS_MANAGER_CONFIG,

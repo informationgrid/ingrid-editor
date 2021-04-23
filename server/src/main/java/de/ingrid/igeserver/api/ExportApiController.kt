@@ -32,7 +32,7 @@ class ExportApiController : ExportApi {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         // TODO: option to export addresses too?
-        var result: String? = ""
+        var result = ""
         dbService.acquireCatalog(dbId).use {
             val doc = documentService.getWrapperByDocumentId(data.id, true)
             if (doc != null) {

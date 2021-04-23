@@ -1,10 +1,21 @@
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.api.ConflictException
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.extension.pipe.Message.Companion.dateService
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.EmbeddedMap
+import de.ingrid.igeserver.model.QueryField
+import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.FindOptions
+import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.model.meta.UserInfoType
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.UserRepository
@@ -15,9 +26,11 @@ import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
 import kotlin.collections.HashSet
+import kotlin.collections.HashMap
 
 @Service
 class CatalogService @Autowired constructor(
+    private val dbService: DBApi,
     private val catalogRepo: CatalogRepository,
     private val userRepo: UserRepository,
     private val authUtils: AuthUtils,
@@ -42,7 +55,7 @@ class CatalogService @Autowired constructor(
 
         return when (currentCatalogId != null && currentCatalogId.trim() != "") {
             true -> currentCatalogId
-            else -> {
+             else -> {
                 // ... or first catalog, if existing
                 val catalogIds = userData["catalogIds"] as List<String>?
                 if (catalogIds == null || catalogIds.size == 0) {
@@ -78,11 +91,63 @@ class CatalogService @Autowired constructor(
             ?.toMutableList() ?: mutableListOf()
     }
 
+    fun getUserCreationDate(userId: String): Date {
+        dbService.acquireDatabase().use {
+            val user = getUser(userId)
+            if (user == null) {
+                log.error("The user '$userId' does not seem to be assigned to any database.")
+                throw NotFoundException.withMissingUserCatalog(userId)
+            }
+
+            return Date(1000 * (user["creationDate"]?.asLong() ?: 0))
+        }
+    }
+
+    fun getUserModificationDate(userId: String): Date {
+        dbService.acquireDatabase().use {
+            val user = getUser(userId)
+            if (user == null) {
+                log.error("The user '$userId' does not seem to be assigned to any database.")
+                throw NotFoundException.withMissingUserCatalog(userId)
+            }
+
+            return Date(1000 * (user["modificationDate"]?.asLong() ?: 0))
+        }
+    }
+
+    fun getGroupsForUser(userId: String): List<String> {
+        dbService.acquireDatabase().use {
+            val user = getUser(userId)
+            if (user == null) {
+                log.error("The user '$userId' does not seem to be assigned to any database.")
+                throw NotFoundException.withMissingUserCatalog(userId)
+            }
+
+            val groupsByCatalog = user["groups"]
+            val groups = groupsByCatalog?.get(dbService.currentCatalog) as ArrayNode?
+            return groups?.mapNotNull { it.asText() } ?: emptyList()
+        }
+    }
+
+    fun getAllGroupsForUser(userId: String): HashMap<String, List<String>> {
+        dbService.acquireDatabase().use {
+            val user = getUser(userId)
+            if (user == null) {
+                log.error("The user '$userId' does not seem to be assigned to any database.")
+                throw NotFoundException.withMissingUserCatalog(userId)
+            }
+
+            val map = hashMapOf<String, List<String>>()
+            user["groups"]?.fields()
+                ?.forEachRemaining { map[it.key] = it.value.mapNotNull { group -> group.asText() } }
+            return map
+        }
+    }
+
     fun getCatalogById(id: String): Catalog {
 
         val catalog = catalogRepo.findByIdentifier(id)
 
-        // TODO: use entity for JSON transformation
         return Catalog(
             id,
             catalog.name,
@@ -103,10 +168,16 @@ class CatalogService @Autowired constructor(
         return catalogProfiles
     }
 
+    fun setGroupsForUser(userId: String, groups: List<String>) {
+        val allGroupsForUser = getAllGroupsForUser(userId)
+        allGroupsForUser[dbService.currentCatalog!!] = groups
+        this.setFieldForUser(userId, "groups", allGroupsForUser as Any)
+    }
+
     private fun setFieldForUser(userId: String, fieldId: String, fieldValue: Any) {
 
         val user = userRepo.findByUserId(userId)
-        
+
         if (user == null) {
             log.warn("Tried setting user info for one that does not exist: $userId")
             return
@@ -127,6 +198,68 @@ class CatalogService @Autowired constructor(
         this.catalogProfiles
             .find { it.identifier == type }
             ?.initCatalogCodelists(catalogId, codelistId)
+    }
+
+    fun getUser(userId: String): JsonNode? {
+        val query = listOf(QueryField("userId", userId))
+        val findOptions = FindOptions(
+            queryType = QueryType.EXACT,
+            resolveReferences = false
+        )
+        val list = dbService.findAll(UserInfoType::class, query, findOptions)
+        return if (list.totalHits == 0L) {
+            log.error("The user '$userId' does not seem to be assigned to any catalog.")
+            null
+        } else {
+            list.hits[0]
+        }
+    }
+
+    fun convertUserIdToDB_ID(userId: String): String? {
+        return getUser(userId)?.let { dbService.getRecordId(it) }
+    }
+
+    fun createUser(user: User) {
+
+        dbService.acquireDatabase().use {
+            val userFromDB = getUser(user.login)
+            if (userFromDB == null) {
+                val node = jacksonObjectMapper().createObjectNode().apply {
+                    put("userId", user.login)
+                    set<ArrayNode>("groups", jacksonObjectMapper().createArrayNode())
+                }
+
+                dbService.save(UserInfoType::class, null, node.toString())
+            }
+            setFieldForUser(user.login, "creationDate", Date(dateService?.now()?.toEpochSecond() ?: 0))
+            setFieldForUser(user.login, "modificationDate", Date(dateService?.now()?.toEpochSecond() ?: 0))
+            setGroupsForUser(user.login, user.groups.toList())
+        }
+
+    }
+
+    fun deleteUser(userId: String) {
+
+        dbService.acquireDatabase().use {
+            dbService.remove(UserInfoType::class, userId)
+        }
+
+    }
+
+    fun updateUser(user: User) {
+
+        dbService.acquireDatabase().use {
+            val userFromDB = getUser(user.login)
+                ?: throw ConflictException.withReason("Cannot update user '${user.login}'. User not found.")
+            val node = jacksonObjectMapper().createObjectNode().apply {
+                put("userId", user.login)
+                set<ArrayNode>("groups", jacksonObjectMapper().createArrayNode())
+            }
+            dbService.save(UserInfoType::class, dbService.getRecordId(userFromDB), node.toString())
+            setGroupsForUser(user.login, user.groups.toList())
+            setFieldForUser(user.login, "modificationDate", Date(dateService?.now()?.toEpochSecond() ?: 0))
+        }
+
     }
 
     companion object {

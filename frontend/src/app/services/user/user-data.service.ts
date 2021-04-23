@@ -1,6 +1,5 @@
 import {Observable} from 'rxjs';
-import {User} from '../../+user/user';
-import {map} from 'rxjs/operators';
+import {BackendUser, User} from '../../+user/user';
 import {ConfigService, Configuration} from '../config/config.service';
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
@@ -16,66 +15,35 @@ export class UserDataService {
     this.configuration = configService.getConfiguration();
   }
 
-  getUsers(): Observable<User[]> {
-    return this.http.get( this.configuration.backendUrl + 'users' )
-      .pipe(
-        map( (json: any[]) => {
-          const result: User[] = [];
-          json.forEach( item => {
-            result.push( {
-              id: item.id,
-              login: item.login,
-              firstName: item.firstName,
-              lastName: item.lastName,
-              roles: item.roles,
-              attributes: item.attributes
-            } );
-          } );
-          return result;
-        } )
-      );
+  getUsers(): Observable<BackendUser[]> {
+    return this.http.get<BackendUser[]>(this.configuration.backendUrl + 'users');
   }
 
-  saveUser(user: User): Observable<User> {
-    return this.http.put<User>( this.configuration.backendUrl + 'users/' + user.login, user )
-      .pipe(
-        // catchError( err => this.errorService.handle( err ) )
-      );
+  saveUser(user: User): Observable<BackendUser> {
+    return this.http.put<BackendUser>(this.configuration.backendUrl + 'users/' + user.login, user);
   }
 
-  createUser(user: User): Observable<User> {
-    return this.http.post<User>( this.configuration.backendUrl + 'users/' + user.login, user )
-      .pipe(
-        // catchError( err => this.errorService.handle( err ) )
-      );
+  createUser(user: User, isNewExternalUser: boolean): Observable<BackendUser> {
+    return this.http.post<BackendUser>(`${this.configuration.backendUrl}users?newExternalUser=${isNewExternalUser}`, user);
   }
 
   deleteUser(login: string): Observable<any> {
-    return this.http.delete( this.configuration.backendUrl + 'users/' + login )
-      .pipe(
-        // catchError( err => this.errorService.handle( err ) )
-      );
+    return this.http.delete(this.configuration.backendUrl + 'users/' + login);
   }
 
-
-
-  getUser(id: string): Observable<User> {
-    return this.http.get( this.configuration.backendUrl + 'users/' + id )
-      .pipe(
-        map( (json: any) => {
-          return {
-            id: json.id,
-            login: json.login,
-            firstName: json.firstName,
-            lastName: json.lastName,
-            roles: json.roles,
-            attributes: json.attributes
-          };
-        } )
-      );
+  getUser(id: string): Observable<BackendUser> {
+    return this.http.get<BackendUser>(this.configuration.backendUrl + 'users/' + id);
   }
 
   getAssignedUsers(dbId: string): Observable<string[]> {
-    return this.http.get<string[]>( this.configuration.backendUrl + 'info/assignedUsers/' + dbId );
+    return this.http.get<string[]>(this.configuration.backendUrl + 'info/assignedUsers/' + dbId);
+  }
+
+  getExternalUsers() {
+    return this.http.get<BackendUser[]>(this.configuration.backendUrl + 'externalUsers');
+  }
+
+  sendPasswordChangeRequest(login: string) {
+    return this.http.post<void>(this.configuration.backendUrl + 'externalUsers/requestPasswordChange/' + login, null);
   }
 }

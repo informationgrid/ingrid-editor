@@ -12,6 +12,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.annotation.SchedulingConfigurer
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
@@ -23,6 +24,7 @@ import java.util.concurrent.ScheduledFuture
 
 
 @Component
+@Profile("elasticsearch")
 class IndexingTask @Autowired constructor(
         private val indexService: IndexService,
         private val esIndexManager: IndexManager,

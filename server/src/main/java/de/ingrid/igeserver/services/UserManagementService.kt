@@ -6,13 +6,21 @@ import java.security.Principal
 import java.util.*
 
 interface UserManagementService {
-    fun getUsers(principal: Principal?): List<User>
+    fun getUsersWithIgeRoles(principal: Principal?): Set<User>
+    fun getUsers(principal: Principal?): Set<User>
 
-    fun getLatestLoginDate(principal: Principal?, login: String): Date
+    fun getLatestLoginDate(principal: Principal?, login: String): Date?
 
     fun getUser(principal: Principal?, login: String): User
     fun getRoles(principal: KeycloakAuthenticationToken?): Set<String>?
     fun getName(principal: KeycloakAuthenticationToken?): String?
 
     fun getCurrentPrincipal(): Principal?
+    fun userExists(principal: Principal, userId: String): Boolean
+    fun createUser(principal: Principal, user: User)
+    fun updateUser(principal: Principal, user: User)
+    fun requestPasswordChange(principal: Principal?, id: String)
+
+    fun removeRoles(principal: Principal?, userId: String, roles: List<String>)
+    fun addRoles(principal: Principal?, userLogin: String, roles: List<String>)
 }

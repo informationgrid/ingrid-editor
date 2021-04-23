@@ -9,6 +9,10 @@ import {CdkDragDrop} from '@angular/cdk/drag-drop';
 })
 export class RepeatComponent extends FieldArrayType implements OnInit {
 
+  constructor() {
+    super();
+  }
+
   ngOnInit(): void {
 
     /**

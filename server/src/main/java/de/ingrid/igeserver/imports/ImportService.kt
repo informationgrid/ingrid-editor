@@ -6,6 +6,7 @@ import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_ID
+import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -26,7 +27,7 @@ class ImportService {
     lateinit var dbService: DBApi
 
     fun importFile(dbId: String, file: MultipartFile): Pair<JsonNode, String> {
-        val type = file.contentType
+        val type = file.contentType ?: ContentType.TEXT_PLAIN.mimeType!!
         val fileContent = String(file.bytes, Charset.defaultCharset())
         val importer = factory.getImporter(type, fileContent)
 

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.*
 
 @Configuration
-@ComponentScan(basePackages = ["de.ingrid.igeserver", "de.ingrid.elasticsearch"])
+@ComponentScan(basePackages = ["de.ingrid.igeserver"])
 class BeansConfiguration {
     @Value("\${codelist.url:http://localhost:9000}")
     private val codelistUrl: String? = null

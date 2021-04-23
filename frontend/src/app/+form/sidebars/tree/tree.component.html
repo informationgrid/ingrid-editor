@@ -71,6 +71,7 @@
                        [class.expanded]="treeControl.isExpanded(node)"
                        [class.rootNode]="node.level === 0"
                        [class.afterExpanded]="node.afterExpanded"
+                       [class.disabled]="disabledCondition(node)"
                        [class.folder]="node.type === 'FOLDER'">
             <div style="width: 100%;">
                 <div fxLayout="row">

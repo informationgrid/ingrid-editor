@@ -9,7 +9,7 @@ export class UserMockService {
       firstName: 'Herbert',
       lastName: 'Meier',
       login: 'hm',
-      roles: [],
+      role: 'md-admin',
       attributes: []
     }
   ];

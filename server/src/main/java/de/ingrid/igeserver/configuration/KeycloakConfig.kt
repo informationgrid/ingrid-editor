@@ -116,8 +116,8 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
     /**
      * Secure appropriate endpoints
      */
-    override fun configure(http: HttpSecurity) {
-        var http = http
+    override fun configure(httpSec: HttpSecurity) {
+        var http = httpSec
         super.configure(http)
         if (developmentMode) {
             log.info("======================================================")

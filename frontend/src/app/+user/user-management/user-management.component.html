@@ -1,14 +1,19 @@
-<mat-tab-group [animationDuration]="'0ms'">
+<mat-tab-group class="page-tabs" [animationDuration]="'0ms'" (selectedIndexChange)="currentTab = $event" [selectedIndex]="currentTab">
 
-    <mat-tab label="Benutzer">
+    <mat-tab label="Nutzer">
         <ige-user-manager></ige-user-manager>
     </mat-tab>
 
-    <mat-tab label="Rollen">
+    <mat-tab label="Gruppen">
         <!-- Lazy load tab content to correctly initialize split component -->
         <ng-template matTabContent>
-            <role-gui (onRoleChange)="updateRoles($event)"></role-gui>
+            <ige-group-manager></ige-group-manager>
         </ng-template>
     </mat-tab>
 
 </mat-tab-group>
+
+<!--<div style="position:absolute; right: 0; top: 6px; z-index: 1000">
+    <button mat-button (click)="remove()" [disabled]="!canDelete()">Löschen</button>
+    <button mat-button color="primary" (click)="save()" [disabled]="!canSave">Speichern</button>
+</div>-->

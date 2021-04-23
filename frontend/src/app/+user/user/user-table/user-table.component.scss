@@ -1,0 +1,19 @@
+@import "src/variables";
+
+.selected {
+  background: $ige-mark-color;
+}
+
+
+.thin-column {
+  width: 1px;
+}
+
+td {
+  font-weight: 500;
+}
+
+.td-subtitle {
+  font-weight: normal;
+  color: $ige-hint-color;
+}

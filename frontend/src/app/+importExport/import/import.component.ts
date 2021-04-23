@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {ImportExportService} from '../import-export-service';
 import {ConfigService} from '../../services/config/config.service';
-import {ErrorService} from '../../services/error.service';
 
 @Component({
   selector: 'ige-import',
@@ -29,8 +28,7 @@ export class ImportComponent implements OnInit {
   analyzedData: any;
   importFileErrorMessage: any;
 
-  constructor(private importExportService: ImportExportService, config: ConfigService,
-              private errorService: ErrorService) {
+  constructor(private importExportService: ImportExportService, config: ConfigService) {
 
     // this.uploader = new FileUploader({url: config.getConfiguration().backendUrl + '/upload'});
     this.uploadUrl = config.getConfiguration().backendUrl + '/upload';

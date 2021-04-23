@@ -1,36 +1,50 @@
 import {Injectable} from '@angular/core';
-import {ConfigService, Configuration} from '../config/config.service';
-import {ErrorService} from '../error.service';
-import {User} from '../../+user/user';
-import {HttpClient} from '@angular/common/http';
+import {FrontendUser, User} from '../../+user/user';
 import {Observable} from 'rxjs';
 import {UserDataService} from './user-data.service';
+import {map} from 'rxjs/operators';
+import {SelectOption} from '../codelist/codelist.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private configuration: Configuration;
 
-  constructor(private http: HttpClient, private configService: ConfigService,
-              private errorService: ErrorService, private dataService: UserDataService) {
-    this.configuration = configService.getConfiguration();
+  availableRoles: SelectOption[] = [
+    {label: 'Katalog-Administrator', value: 'cat-admin'},
+    {label: 'Metadaten-Administrator', value: 'md-admin'},
+    {label: 'Autor', value: 'author'}
+  ];
+
+  constructor(private dataService: UserDataService) {
   }
 
-  getUsers(): Observable<User[]> {
-    return this.dataService.getUsers();
+  getUsers(): Observable<FrontendUser[]> {
+    return this.dataService.getUsers()
+      .pipe(
+        map((json: any[]) => json.map(item => new FrontendUser(item)))
+      );
   }
 
-  getUser(login: string): Observable<User> {
-    return this.dataService.getUser(login);
+  getUser(login: string): Observable<FrontendUser> {
+    return this.dataService.getUser(login)
+      .pipe(
+        map(user => new FrontendUser(user))
+      );
   }
 
-  saveUser(user: User): Observable<User> {
-    return this.dataService.saveUser(user);
+  updateUser(user: User): Observable<FrontendUser> {
+    return this.dataService.saveUser(user)
+      .pipe(
+        map(u => new FrontendUser(u))
+      );
   }
 
-  createUser(user: User): Observable<User> {
-    return this.dataService.createUser(user);
+  createUser(user: User, isNewExternalUser: boolean): Observable<FrontendUser> {
+    return this.dataService.createUser(user, isNewExternalUser)
+      .pipe(
+        map(u => new FrontendUser(u))
+      );
   }
 
   deleteUser(login: string): Observable<any> {
@@ -39,5 +53,13 @@ export class UserService {
 
   getAssignedUsers(dbId: string) {
     return this.dataService.getAssignedUsers(dbId);
+  }
+
+  getExternalUsers(): Observable<FrontendUser[]> {
+    return this.dataService.getExternalUsers();
+  }
+
+  sendPasswordChangeRequest(login: string) {
+    return this.dataService.sendPasswordChangeRequest(login);
   }
 }

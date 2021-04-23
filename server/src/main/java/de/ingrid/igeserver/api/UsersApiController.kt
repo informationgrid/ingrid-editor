@@ -14,12 +14,10 @@ import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
-import org.keycloak.representations.AccessTokenResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -53,43 +51,80 @@ class UsersApiController : UsersApi {
     @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
     private val developmentMode = false
 
-    override fun createUser(id: String, user: User1): ResponseEntity<Void> {
+    override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<Void> {
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        // do some magic!
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        dbService.acquireCatalog(dbId).use {
+            val userExists = keycloakService.userExists(principal, user.login)
+            if (userExists && newExternalUser) {
+                throw ConflictException.withReason("User already Exists with login ${user.login}")
+            }
+
+            when (userExists) {
+                true -> keycloakService.addRoles(principal, user.login, listOf(user.role))
+                false -> keycloakService.createUser(principal, user)
+            }
+
+            catalogService.createUser(user)
+
+            return ResponseEntity.ok().build()
+        }
     }
 
-    override fun deleteUser(id: String): ResponseEntity<Void> {
+    override fun deleteUser(principal: Principal?, userId: String): ResponseEntity<Void> {
 
-        // do some magic!
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        dbService.acquireCatalog(dbId).use {
+            catalogService.deleteUser(userId)
+            keycloakService.removeRoles(principal, userId, listOf("cat-admin", "md-admin", "author"))
+            return ResponseEntity.ok().build()
+        }
+
     }
 
-    fun get(): ResponseEntity<Void> {
+    override fun getUser(principal: Principal?, userId: String): ResponseEntity<User> {
 
-        // do some magic!
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        dbService.acquireCatalog(dbId).use {
+            val user = keycloakService.getUser(principal, userId)
+            user.latestLogin = keycloakService.getLatestLoginDate(principal, userId);
+            user.groups = catalogService.getGroupsForUser(userId)
+            user.creationDate = catalogService.getUserCreationDate(userId)
+            user.modificationDate = catalogService.getUserModificationDate(userId)
+            //TODO implement manager and standin
+            user.manager = "ige"
+            user.standin = "herbert"
+
+            return ResponseEntity.ok(user)
+        }
+
     }
 
-    override fun getUser(principal: Principal?, id: String): ResponseEntity<User> {
-
-        val user = keycloakService.getUser(principal, id)
-        return ResponseEntity.ok(user)
-    }
-
-    override fun list(principal: Principal?, res: AccessTokenResponse): ResponseEntity<List<User>> {
+    override fun list(principal: Principal?): ResponseEntity<List<User>> {
 
         if (principal == null && !developmentMode) {
             throw UnauthenticatedException.withUser("")
         }
-        val users = keycloakService.getUsers(principal)
-        return ResponseEntity.ok(users)
+
+        val users = keycloakService.getUsersWithIgeRoles(principal)
+
+        // remove users that are not added this instance
+        val filteredUsers = users.filter { catalogService.getUser(it.login) != null }
+
+        return ResponseEntity.ok(filteredUsers)
     }
 
-    override fun updateUser(id: String, user: User): ResponseEntity<Void> {
+    override fun updateUser(principal: Principal?, id: String, user: User): ResponseEntity<Void> {
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        // do some magic!
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        dbService.acquireCatalog(dbId).use {
+            keycloakService.updateUser(principal!!, user)
+            catalogService.updateUser(user)
+            return ResponseEntity.ok().build()
+        }
+
     }
 
     override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
@@ -115,7 +150,9 @@ class UsersApiController : UsersApi {
         val catalog: Catalog? = try {
             val currentCatalogForUser = catalogService.getCurrentCatalogForUser(user.login)
             catalogService.getCatalogById(currentCatalogForUser)
-        } catch (ex: NotFoundException) { null }
+        } catch (ex: NotFoundException) {
+            null
+        }
 
         val userInfo = UserInfo(
             userId = user.login,
@@ -131,55 +168,64 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(userInfo)
     }
 
-    private fun getLastLogin(principal: Principal?, userId: String): Date {
+    private fun getLastLogin(principal: Principal?, userId: String): Date? {
         val lastLoginKeyCloak = keycloakService.getLatestLoginDate(principal, userId)
-        var recentLogins = catalogService.getRecentLoginsForUser(userId)
-        when (recentLogins.size) {
-            0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
-            1 -> recentLogins.add(lastLoginKeyCloak)
-            else -> {
-                if (recentLogins.size > 2) {
-                    logger.warn("More than two recent logins received! Using last 2 values")
-                    recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
-                }
+        if (lastLoginKeyCloak != null ){
+            var recentLogins = catalogService.getRecentLoginsForUser(userId)
+            when (recentLogins.size) {
+                0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
+                1 -> recentLogins.add(lastLoginKeyCloak)
+                else -> {
+                    if (recentLogins.size > 2) {
+                        logger.warn("More than two recent logins received! Using last 2 values")
+                        recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
+                    }
 
-                //only update if most recent dates are not equal
-                if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
-                    recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
+                    //only update if most recent dates are not equal
+                    if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
+                        recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
+                    }
                 }
             }
+            catalogService.setRecentLoginsForUser(userId, recentLogins.toTypedArray())
+            return recentLogins[0]
         }
-        catalogService.setRecentLoginsForUser(userId, recentLogins.toTypedArray())
-        return recentLogins[0]
+        return null
     }
 
     private fun getVersion(): Version {
-        return Version(buildInfo?.version, Date.from(buildInfo?.time), gitInfo?.commitId)
+        return Version(
+            buildInfo?.version,
+            if (buildInfo != null) Date.from(buildInfo?.time) else null,
+            gitInfo?.commitId
+        )
     }
 
     override fun setCatalogAdmin(
-            principal: Principal?,
-            info: CatalogAdmin): ResponseEntity<UserInfo?> {
+        principal: Principal?,
+        info: CatalogAdmin
+    ): ResponseEntity<UserInfo?> {
 
         val userIds = info.userIds
         if (userIds.isEmpty()) {
             throw InvalidParameterException.withInvalidParameters("info.userIds")
         }
 
-        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase().use {
             logger.info("Parameter: $info")
             val catalogName = info.catalogName
             userIds.forEach { addOrUpdateCatalogAdmin(catalogName, it) }
         }
-        return ResponseEntity.ok(null)
+        return ResponseEntity.ok().build()
     }
 
     private fun addOrUpdateCatalogAdmin(catalogName: String, userId: String) {
 
         val query = listOf(QueryField("userId", userId))
         val findOptions = FindOptions(
-                queryType = QueryType.EXACT,
-                resolveReferences = false)
+            queryType = QueryType.EXACT,
+            resolveReferences = false
+        )
         val list = dbService.findAll(UserInfoType::class, query, findOptions)
 
         val isNewEntry = list.totalHits == 0L
@@ -217,11 +263,12 @@ class UsersApiController : UsersApi {
     override fun assignedUsers(principal: Principal?, id: String): ResponseEntity<List<String>> {
 
         val result: MutableList<String> = ArrayList()
-        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase().use {
             val query = listOf(QueryField("catalogIds", id))
             val findOptions = FindOptions(
-                    queryType = QueryType.CONTAINS,
-                    resolveReferences = false)
+                queryType = QueryType.CONTAINS,
+                resolveReferences = false
+            )
             val info = dbService.findAll(UserInfoType::class, query, findOptions)
             info.hits.forEach { result.add(it["userId"].asText()) }
         }
@@ -231,17 +278,22 @@ class UsersApiController : UsersApi {
     override fun switchCatalog(principal: Principal?, catalogId: String): ResponseEntity<Void> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        dbService.acquireDatabase(DBApi.DATABASE.USERS.dbName).use {
+        dbService.acquireDatabase().use {
             val query = listOf(QueryField("userId", userId))
             val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false)
+                queryType = QueryType.EXACT,
+                resolveReferences = false
+            )
             val info = dbService.findAll(UserInfoType::class, query, findOptions)
             val objectNode = when (info.totalHits) {
                 0L -> ObjectMapper().createObjectNode()
                 1L -> (info.hits[0] as ObjectNode)
                 else -> {
-                    throw PersistenceException.withMultipleEntities(userId, UserInfoType::class.simpleName, dbService.currentCatalog)
+                    throw PersistenceException.withMultipleEntities(
+                        userId,
+                        UserInfoType::class.simpleName,
+                        dbService.currentCatalog
+                    )
                 }
             }.put("currentCatalogId", catalogId)
 
@@ -254,5 +306,27 @@ class UsersApiController : UsersApi {
         // nothing to do here since session already is refreshed by http request
 
         return ResponseEntity.ok().build()
+    }
+
+    override fun listExternal(principal: Principal?): ResponseEntity<List<User>> {
+
+        if (principal == null && !developmentMode) {
+            throw UnauthenticatedException.withUser("")
+        }
+
+        val users = keycloakService.getUsers(principal)
+
+        // remove users that are already present in this instance
+        val filteredUsers = users.filter { catalogService.getUser(it.login) == null }
+
+        return ResponseEntity.ok(filteredUsers)
+
+    }
+
+    override fun requestPasswordChange(principal: Principal?, id: String): ResponseEntity<Void> {
+
+        keycloakService.requestPasswordChange(principal, id)
+        return ResponseEntity.ok().build()
+
     }
 }

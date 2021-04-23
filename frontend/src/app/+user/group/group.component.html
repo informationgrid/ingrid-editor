@@ -1,0 +1,63 @@
+<as-split>
+
+    <!-- TODO: restrict role permission to groups! A simple user must not change his own role to admin!!! -->
+
+    <!-- GROUP LIST -->
+    <as-split-area [size]="25" id="sidebarRoles" class="container">
+        <mat-selection-list #groupList [formControl]="selectedGroup" multiple="false" (selectionChange)="loadGroup($event.options[0].value)">
+            <mat-list-option *ngFor="let group of groups" [value]="group.id">
+                <h4 mat-line>{{group.name}}</h4>
+            </mat-list-option>
+        </mat-selection-list>
+        <div class="text-center">
+            <button mat-icon-button (click)="addGroup()">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+    </as-split-area>
+
+    <!-- GROUP DETAIL -->
+    <as-split-area [size]="75" id="formRoles" class="container-fluid">
+        <div style="padding: 20px">
+            <div *ngIf="!groupList.selectedOptions.isEmpty() || isNewGroup; else noGroup" fxLayout="column"
+                 [formGroup]="form">
+                <div>
+                    <button mat-button
+                            (click)="deleteGroup(selectedGroup.value)">Löschen
+                    </button>
+                    <div fxFlex></div>
+                    <button mat-stroked-button color="primary"
+                            (click)="saveGroup()"
+                            [disabled]="form.invalid || !(isDirty$ | async)">Speichern
+                    </button>
+                </div>
+                <!-- TITLE -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name">
+                    <mat-error *ngIf="form.get('name').errors?.forbiddenName">Es gibt bereits eine Gruppe mit diesem Namen</mat-error>
+                </mat-form-field>
+
+                <!-- DESCRIPTION -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Beschreibung</mat-label>
+                    <textarea matInput formControlName="description"></textarea>
+                </mat-form-field>
+
+                <mat-divider style="margin: 5px 0 20px;"></mat-divider>
+
+                <ige-permissions formControlName="permissions"></ige-permissions>
+
+                <!-- NO GROUP SELECTED -->
+            </div>
+
+            <ng-template #noGroup>
+                Keine Gruppe ausgewählt. Bitte eine auswählen oder neue erstellen.
+            </ng-template>
+
+            <!--            <pre>{{form.value | json}}</pre>-->
+        </div>
+    </as-split-area>
+</as-split>
+
+

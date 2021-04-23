@@ -2220,6 +2220,11 @@
     "@material/feature-targeting" "^10.0.0"
     "@material/theme" "^10.0.0"
 
+"@ngneat/dirty-check-forms@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@ngneat/dirty-check-forms/-/dirty-check-forms-1.1.0.tgz#ab6f593654eaa8dcacf59fde38104a6827797b4c"
+  integrity sha512-Ak6SUMUV2oFlaylhUnar1yT4ahmq3Y2mHrd9uQHesE0iUZWfQTrIN07kMtwyT2JXR/x4RqdAmvp/+IJ+QlUPGg==
+
 "@ngneat/forms-manager@^2.3.0":
   version "2.3.0"
   resolved "https://nexus.informationgrid.eu/repository/npm-group/@ngneat/forms-manager/-/forms-manager-2.3.0.tgz#154f671c1ef2a8a4df591c5aa396eae63fa17f52"

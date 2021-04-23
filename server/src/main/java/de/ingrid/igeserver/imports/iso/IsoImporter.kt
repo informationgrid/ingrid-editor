@@ -33,7 +33,7 @@ class IsoImporter : IgeImporter {
         val mapper = ObjectMapper()
         val node = mapper.createObjectNode()
         node.put("_id", md.fieldIdentifier)
-        node.put("metadataLanguage", md.language)
+        node.put("metadataLanguage", md.getLanguage())
         return node
     }
 }

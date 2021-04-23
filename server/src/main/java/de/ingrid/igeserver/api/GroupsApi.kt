@@ -17,40 +17,83 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import java.security.Principal
 import javax.validation.Valid
 
 @Tag(name = "Groups", description = "the groups API")
 interface GroupsApi {
     @Operation(description = "Creates a new group. If group with a given login already exists an error will be returned.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Group was successfully updated"), ApiResponse(responseCode = "400", description = "A group with the given login does not exist and cannot be updated")])
-    @RequestMapping(value = ["/groups/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Group was successfully updated"
+        ), ApiResponse(
+            responseCode = "400",
+            description = "A group with the given login does not exist and cannot be updated"
+        )]
+    )
+    @RequestMapping(
+        value = ["/groups"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        method = [RequestMethod.POST]
+    )
     fun createGroup(
-            @Parameter(description = "The unique id of the user.", required = true) @PathVariable("id") id: String,
-            @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
+        principal: Principal?,
+        @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
     ): ResponseEntity<Void>
 
     @Operation(description = "Delete a group with a given ID. If group with a given id does not exists an error will be returned.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Group was successfully deleted"), ApiResponse(responseCode = "400", description = "A group with the given id does not exist and cannot be deleted")])
-    @RequestMapping(value = ["/groups/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.DELETE])
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Group was successfully deleted"
+        ), ApiResponse(
+            responseCode = "400",
+            description = "A group with the given id does not exist and cannot be deleted"
+        )]
+    )
+    @RequestMapping(
+        value = ["/groups/{id}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        method = [RequestMethod.DELETE]
+    )
     fun deleteGroup(
-            @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: String): ResponseEntity<Void>
+        principal: Principal?,
+        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: String
+    ): ResponseEntity<Void>
 
     @Operation(description = "Get the group with the given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the group")])
-    @RequestMapping(value = ["/groups/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
+    @RequestMapping(
+        value = ["/groups/{id}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        method = [RequestMethod.GET]
+    )
     fun getGroup(
-            @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: String): ResponseEntity<String>
+        principal: Principal?,
+        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: String
+    ): ResponseEntity<Group>
 
     @Operation(description = "")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of groups")])
     @RequestMapping(value = ["/groups"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
-    fun listGroups(): ResponseEntity<String>
+    fun listGroups(principal: Principal?): ResponseEntity<List<Group>>
 
     @Operation(description = "Updates a group. If group could not be found an error will be returned.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Group was successfully created"), ApiResponse(responseCode = "400", description = "A group already exists with the given login")])
-    @RequestMapping(value = ["/groups/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.PUT])
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Group was successfully created"
+        ), ApiResponse(responseCode = "400", description = "A group already exists with the given login")]
+    )
+    @RequestMapping(
+        value = ["/groups/{id}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        method = [RequestMethod.PUT]
+    )
     fun updateGroup(
-            @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: String,
-            @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
-    ): ResponseEntity<Void>
+        principal: Principal?,
+        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: String,
+        @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
+    ): ResponseEntity<Group>
 }

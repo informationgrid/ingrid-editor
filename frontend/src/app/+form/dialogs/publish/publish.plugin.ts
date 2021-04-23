@@ -28,6 +28,8 @@ export class PublishPlugin extends Plugin {
 
   eventPublishId = 'PUBLISH';
   eventRevertId = 'REVERT';
+  eventPlanPublishId = 'PLAN';
+  eventUnpublishId = 'UNPUBLISH';
 
   formIsValid = false;
 
@@ -57,13 +59,22 @@ export class PublishPlugin extends Plugin {
 
     this.formToolbarService.addButton({
       id: 'toolBtnPublish', label: 'Veröffentlichen',
-      eventId: this.eventPublishId, pos: 25, align: 'right', active: false, isPrimary: true
-    });
-
-    // add button to toolbar for revert action
-    this.formToolbarService.addButton({
-      id: 'toolBtnRevert', tooltip: 'Auf letzte Veröffentlichung zurücksetzen', matSvgVariable: 'Aenderungen-verwerfen',
-      eventId: this.eventRevertId, pos: 90, active: true
+      eventId: this.eventPublishId, pos: 25, align: 'right', active: false, isPrimary: true,
+      menu: [
+        {
+          eventId: this.eventPlanPublishId,
+          label: 'Planen',
+          active: false,
+        }, {
+          eventId: this.eventRevertId,
+          label: 'Auf letzte Veröffentlichung zurücksetzen',
+          active: true,
+        }, {
+          eventId: this.eventUnpublishId,
+          label: 'Veröffentlichung zurückziehen',
+          active: false,
+        },
+        ]
     });
 
     // add event handler for revert
@@ -163,7 +174,6 @@ export class PublishPlugin extends Plugin {
 
     this.formToolbarService.removeButton('toolBtnPublishSeparator');
     this.formToolbarService.removeButton('toolBtnPublish');
-    this.formToolbarService.removeButton('toolBtnRevert');
   }
 
   /**
@@ -175,7 +185,7 @@ export class PublishPlugin extends Plugin {
       this.addressTreeQuery.openedDocument$
     ).subscribe(loadedDocument => {
       this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null && loadedDocument._type !== 'FOLDER');
-      this.formToolbarService.setButtonState('toolBtnRevert', loadedDocument !== null && loadedDocument._state === 'PW');
+      this.formToolbarService.setMenuItemStateOfButton('toolBtnPublish', this.eventRevertId,loadedDocument !== null && loadedDocument._state === 'PW');
     });
 
   }

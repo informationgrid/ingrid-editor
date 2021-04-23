@@ -12,7 +12,7 @@ import javax.persistence.*
 class UserInfo : EntityWithEmbeddedMap() {
 
     @Column(nullable = false)
-    val userId: String? = null
+    var userId: String? = null
 
     /**
      * Assigned catalogs relation (many-to-many)

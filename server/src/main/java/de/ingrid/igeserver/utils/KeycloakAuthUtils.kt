@@ -20,7 +20,7 @@ class KeycloakAuthUtils : AuthUtils {
         return if (principal is KeycloakAuthenticationToken) {
             principal.account.principal.name
         } else {
-            (principal as KeycloakPrincipal<KeycloakSecurityContext>).keycloakSecurityContext.token.preferredUsername
+            (principal as KeycloakPrincipal<*>).keycloakSecurityContext.token.preferredUsername
         }
     }
 }

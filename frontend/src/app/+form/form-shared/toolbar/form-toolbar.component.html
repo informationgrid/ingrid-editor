@@ -72,11 +72,8 @@
                     </button>
 
                     <mat-menu #publishMenu="matMenu">
-                      <button mat-menu-item disabled [attr.data-cy]="'toolbar_publish_later'">
-                        <span>Planen</span>
-                      </button>
-                      <button mat-menu-item disabled [attr.data-cy]="'toolbar_publish_revert'">
-                        <span>Zurücknehmen</span>
+                      <button *ngFor="let menuItem of button.menu" mat-menu-item [disabled]="!menuItem.active" [attr.data-cy]="'toolbar_' + menuItem.eventId" (click)="sendEvent(menuItem.eventId)">
+                        <span>{{menuItem.label}}</span>
                       </button>
                     </mat-menu>
                 </ng-container>

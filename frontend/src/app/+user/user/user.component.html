@@ -1,49 +1,118 @@
-<as-split>
-    <as-split-area [visible]="show" [size]="25" id="sidebarUser" class="split-pane-content-primary container">
-        <mat-selection-list #usersList multiple="false">
-            <mat-list-option *ngFor="let user of users" [class.disabled]="user === selectedUser"
-                           (click)="loadUser(user)">
-                <h4 mat-line>{{user.login}}</h4>
-            </mat-list-option>
-        </mat-selection-list>
-        <div class="text-center">
-            <button mat-icon-button (click)="addUser()">
-                <mat-icon>add</mat-icon>
-            </button>
-        </div>
-    </as-split-area>
-    <as-split-area [visible]="show" [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
-        <form (ngSubmit)="onSubmit()" #userForm="ngForm" fxLayout="column">
-            <mat-form-field>
-                <input matInput placeholder="Login" #loginRef type="text" [disabled]="!isNewUser" required autocomplete="off"
-                       name="login"
-                       [(ngModel)]="selectedUser.login">
-            </mat-form-field>
-            <mat-form-field>
-                <input matInput placeholder="Vorname" autocomplete="off" [(ngModel)]="selectedUser.firstName"
-                       name="firstName">
-            </mat-form-field>
-            <mat-form-field>
-                <input matInput placeholder="Nachname" autocomplete="off" [(ngModel)]="selectedUser.lastName"
-                       name="lastName">
-            </mat-form-field>
-            <mat-form-field>
-                <input matInput placeholder="Passwort" type="password" autocomplete="new-password"
-                       [required]="isNewUser"
-                       name="password"
-                       [(ngModel)]="selectedUser.password">
-            </mat-form-field>
-            <div>
-                <label>Rechte</label>
-                <button mat-button (click)="choosePermissions()">Auswählen</button>
-            </div>
+<div class="user-management-header">
+    <h1>Nutzer {{users ? "(" + users.length + ")" : ""}}</h1>
+    <mat-toolbar>
+        <mat-toolbar-row>
+            <ng-container>
+                <!--            Searchfield-->
+                <mat-form-field #userSearch class="search" appearance="outline" data-cy="tree-search-field">
+                    <mat-icon *ngIf="searchQuery?.length === 0" class="passive" matPrefix>search</mat-icon>
+                    <input #search matInput placeholder="Suchen" aria-label="Search" (input)="onSearchChange($event.target.value)">
+                    <button *ngIf="searchQuery?.length > 0" mat-icon-button matSuffix class="close" (click)="search.value = ''; searchQuery = ''"  data-cy="clear-tree-search-field">
+                        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+                    </button>
+                </mat-form-field>
+            </ng-container>
+            <div fxFlex></div>
 
-            <button mat-button [disabled]="!userForm.form.valid"
-                    (click)="saveUser(selectedUser)">Speichern
-            </button>
-            <button mat-button [disabled]="isNewUser || usersList.selectedOptions.isEmpty()"
-                    (click)="deleteUser(selectedUser.login)">Löschen
-            </button>
+            <span class="save-buttons">
+                <button mat-stroked-button *ngIf="selectedUser || isNewUser;"
+                        attr.data-cy="toolbar_save_user"
+                        matTooltip="Speichern"
+                        [matTooltipShowDelay]="1000"
+                        (click)="saveUser()"
+                        [disabled]="form?.invalid">
+                    Speichern
+                </button>
+                <button class="btnAddUser" mat-flat-button color="primary"
+                        [mat-menu-trigger-for]="userAddMenu"
+                        attr.data-cy="toolbar_add_user"
+                        matTooltip="Nutzer hinzufügen"
+                        [matTooltipShowDelay]="1000">
+                    <mat-icon>person_add</mat-icon> Hinzufügen
+                </button>
+                <mat-menu #userAddMenu="matMenu">
+                    <button type="button" mat-menu-item (click)="showExternalUsersDialog()">Keycloak Benutzer importieren
+                    </button>
+                    <button type="button" mat-menu-item (click)="initNewKeycloakUser()">Neuen Keycloak Benutzer anlegen
+                    </button>
+                </mat-menu>
+        </span>
+        </mat-toolbar-row>
+    </mat-toolbar>
+</div>
+<as-split>
+    <as-split-area [size]="25" id="sidebarUser" class="split-pane-content-primary container">
+        <user-table [query]="searchQuery" [users]="users" (onUserSelect)="selectedUser = $event; loadUser($event.login)"></user-table>
+    </as-split-area>
+    <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
+        <form *ngIf="selectedUser || isNewUser; else noUser" fxLayout="column"
+              [formGroup]="form"
+              style="padding: 20px">
+            <div class="user-title">
+                <div class="document-type">
+                    <mat-icon>{{getRoleIcon(this.form.get('role').value)}}</mat-icon>
+                </div>
+
+                <span fxFlex class="label" [class.editable]="false">
+                    <span>{{form.get('login')?.value || 'Kein Titel'}}</span>
+                </span>
+
+                <button mat-icon-button class="dark menu-button" [class.expanded]="showMore" (click)="toggleMoreInfo()">
+                    <mat-icon class="animated">keyboard_arrow_down</mat-icon>
+                </button>
+                <button mat-icon-button class="menu dark menu-button" [matMenuTriggerFor]="userMoreMenu">
+                    <mat-icon svgIcon="Mehr"></mat-icon>
+                </button>
+                <mat-menu #userMoreMenu="matMenu">
+                    <button mat-menu-item color="warn" (click)="changePassword()">Passwort ändern</button>
+                    <button mat-menu-item
+                            (click)="deleteUser(selectedUser.login)">Löschen</button>
+                </mat-menu>
+            </div>
+            <user-header-more [showMore]="showMore" [user]="selectedUser" [admins]="admins" [allUsers]="users"
+                              [form]="form"></user-header-more>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Login</mat-label>
+                <input matInput #loginRef formControlName="login" autocomplete="off" required>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Rolle</mat-label>
+                <mat-select formControlName="role" required>
+                    <mat-option *ngFor="let role of roles" [value]="role.value">
+                        {{role.label}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div fxLayout="row" fxLayoutGap="20px">
+                <mat-form-field appearance="outline" style="width: 100%">
+                    <mat-label>Vorname</mat-label>
+                    <input matInput autocomplete="off" formControlName="firstName" required>
+                </mat-form-field>
+                <mat-form-field appearance="outline" style="width: 100%">
+                    <mat-label>Nachname</mat-label>
+                    <input matInput autocomplete="off" formControlName="lastName" required>
+                </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput autocomplete="off" formControlName="email" type="email" required>
+                <mat-error *ngIf="form?.get('email')?.invalid">{{getEmailErrorMessage()}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Gruppen</mat-label>
+                <mat-select multiple formControlName="groups">
+                    <mat-option *ngFor="let group of groups | async" [value]="group.id">
+                        {{group.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
         </form>
+
+        <ng-template #noUser>
+            Keinen Benutzer ausgewählt. Bitte einen auswählen oder einen neuen erstellen.
+        </ng-template>
     </as-split-area>
 </as-split>
