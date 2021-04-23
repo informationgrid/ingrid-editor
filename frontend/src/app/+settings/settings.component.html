@@ -2,14 +2,20 @@
                [selectedIndex]="tabIndex"
                (selectedIndexChange)="updateRoute($event)">
     <mat-tab label="Allgemein">
-        <general-settings></general-settings>
+        <page-template title="Allgemein">
+            <general-settings main></general-settings>
+        </page-template>
     </mat-tab>
 
     <mat-tab label="Codelist Repository">
-        <ige-codelists></ige-codelists>
+        <page-template title="Codelist Repository">
+            <ige-codelists main></ige-codelists>
+        </page-template>
     </mat-tab>
 
     <mat-tab label="Katalogverwaltung">
-        <ige-catalog-management></ige-catalog-management>
+        <page-template title="Katalogverwaltung">
+            <ige-catalog-management main></ige-catalog-management>
+        </page-template>
     </mat-tab>
 </mat-tab-group>

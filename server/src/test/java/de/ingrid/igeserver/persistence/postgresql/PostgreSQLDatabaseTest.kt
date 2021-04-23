@@ -27,6 +27,7 @@ import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 import java.time.LocalDateTime
 import java.time.Month
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -698,7 +699,14 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
 
     @Test
     fun `creating a catalog`() {
-        val settings = Catalog(null, "Test Catalog 3", "Test Catalog 3 description", "mcloud")
+        val settings = Catalog(
+            null,
+            "Test Catalog 3",
+            "Test Catalog 3 description",
+            "mcloud",
+            OffsetDateTime.now(),
+            OffsetDateTime.now()
+        )
         val oldCount = dbService.findAll(CatalogInfoType::class).size
 
         val catalogId = dbService.createCatalog(settings)
@@ -731,7 +739,14 @@ class PostgreSQLDatabaseTest : AnnotationSpec() {
     @Test
     fun `updating a catalog`() {
         val catalogId = 100
-        val settings = Catalog("test_catalog", "Test Catalog 2", "Test Catalog 2 description", "uvp")
+        val settings = Catalog(
+            "test_catalog",
+            "Test Catalog 2",
+            "Test Catalog 2 description",
+            "uvp",
+            OffsetDateTime.now(),
+            OffsetDateTime.now()
+        )
         val oldCount = dbService.findAll(CatalogInfoType::class).size
 
         dbService.updateCatalog(settings)

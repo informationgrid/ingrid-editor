@@ -19,8 +19,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.scheduling.config.ScheduledTaskRegistrar
 import org.springframework.scheduling.support.CronTrigger
 import org.springframework.stereotype.Component
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
+import kotlin.concurrent.schedule
 
 
 @Component
@@ -128,14 +130,16 @@ class IndexingTask @Autowired constructor(
     // check out here: https://stackoverflow.com/questions/39152599/interrupt-spring-scheduler-task-before-next-invocation
     override fun configureTasks(taskRegistrar: ScheduledTaskRegistrar) {
 
-        // get index configurations from all catalogs
-        getIndexConfigurations()
+        Timer("IgeTasks", false).schedule(10000) {
+            // get index configurations from all catalogs
+            getIndexConfigurations()
                 .filter { !it.cron.isEmpty() }
                 .forEach { config ->
                     val future = addSchedule(config)
                     config.future = future
                     scheduledFutures.add(config)
                 }
+        }
 
     }
 

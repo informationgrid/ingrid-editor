@@ -152,7 +152,10 @@ class CatalogService @Autowired constructor(
             id,
             catalog.name,
             catalog.description ?: "",
-            catalog.type ?: ""
+            catalog.type ?: "",
+            catalog.created,
+            catalog.modified
+            
         )
     }
 

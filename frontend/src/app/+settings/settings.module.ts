@@ -25,6 +25,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {AddButtonModule} from '../shared/add-button/add-button.module';
 import {NewCatalogDialogModule} from './catalog-management/new-catalog/new-catalog-dialog.module';
 import {MatMenuModule} from '@angular/material/menu';
+import {PageTemplateModule} from '../shared/page-template/page-template.module';
 
 
 @NgModule({
@@ -32,12 +33,12 @@ import {MatMenuModule} from '@angular/material/menu';
     CatalogManagementComponent,
     CatalogDetailComponent,
     AddUserDialogComponent],
-  imports: [
-    CommonModule, MatTabsModule,
-    routing, MatCheckboxModule, MatFormFieldModule, MatInputModule, FlexModule, MatCardModule, MatButtonModule, MatTableModule, MatSortModule,
-    FilterSelectModule, MatIconModule, MatDialogModule, MatListModule, FormsModule, MatProgressSpinnerModule, AddButtonModule,
-    NewCatalogDialogModule, MatMenuModule
-  ]
+    imports: [
+        CommonModule, MatTabsModule,
+        routing, MatCheckboxModule, MatFormFieldModule, MatInputModule, FlexModule, MatCardModule, MatButtonModule, MatTableModule, MatSortModule,
+        FilterSelectModule, MatIconModule, MatDialogModule, MatListModule, FormsModule, MatProgressSpinnerModule, AddButtonModule,
+        NewCatalogDialogModule, MatMenuModule, PageTemplateModule
+    ]
 })
 export class SettingsModule {
 }

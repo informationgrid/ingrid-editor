@@ -4,6 +4,9 @@ export class Catalog {
   description: string;
   type: string;
   adminUser: string;
+  created: Date;
+  modified: Date;
+  countDocuments: number;
 
   static prepareForBackend(catalog: Catalog): any {
     return {
@@ -20,5 +23,7 @@ export class Catalog {
     this.description = dataFromServer.description;
     this.type = dataFromServer.type;
     this.adminUser = dataFromServer.adminUser;
+    this.created = dataFromServer.created;
+    this.modified = dataFromServer.modified;
   }
 }

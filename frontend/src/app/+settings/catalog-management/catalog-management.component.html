@@ -3,6 +3,13 @@
     ausführen.
 </p>
 
+<div>
+    <div fxFlex></div>
+    <div>
+        <button mat-flat-button color="primary" (click)="showCreateCatalogDialog()">Hinzufügen</button>
+    </div>
+</div>
+
 <div class="section-title">Aktiver Katalog</div>
 <div fxLayout="row wrap" fxLayoutGap="24px">
     <div fxFlex="25" class="catalog-wrapper">
@@ -21,7 +28,8 @@
 
             <mat-card-title>{{catalog.label}}</mat-card-title>
             <mat-card-content>
-<!--                Admin: xxx-->
+                <div [title]="catalog.modified | date:'dd.LL.yyyy HH:mm'">Geändert: {{catalog.modified | date:'dd.MM.yyyy'}}</div>
+                <div>Anzahl der Dokumente: {{catalog.countDocuments}}</div>
             </mat-card-content>
         </mat-card>
     </div>
@@ -53,6 +61,4 @@
 
     <mat-spinner *ngIf="showSpinner" diameter="50"></mat-spinner>
 </div>
-
-<ige-add-button (add)="showCreateCatalogDialog()"></ige-add-button>
 

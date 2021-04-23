@@ -4,6 +4,7 @@ import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.model.Catalog
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,10 +19,18 @@ class CatalogApiController : CatalogApi {
     
     @Autowired
     private lateinit var catalogService: CatalogService
+    
+    @Autowired
+    private lateinit var documentService: DocumentService
 
     override fun catalogs(): ResponseEntity<List<Catalog>> {
         val catalogs = dbService.catalogs
-                .map { catalogService.getCatalogById(it) }
+            .map { catalogService.getCatalogById(it) }
+            .map { catalog -> 
+                val statistic = documentService.getDocumentStatistic()
+                catalog.countDocuments = statistic.totalNum.toInt()
+                catalog
+            }
 
         return ResponseEntity.ok().body(catalogs)
     }
