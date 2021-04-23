@@ -1,9 +1,10 @@
 import {Component} from '@angular/core';
-import {FieldArrayType} from '@ngx-formly/core';
+import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ChipDialogComponent, ChipDialogData} from './chip-dialog/chip-dialog.component';
 import {FormControl} from '@angular/forms';
 import {ConfirmDialogComponent, ConfirmDialogData} from "../../../dialogs/confirm/confirm-dialog.component";
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'ige-repeat-chip',
@@ -86,5 +87,11 @@ export class RepeatChipComponent extends FieldArrayType {
         } as ConfirmDialogData
       });
     }
+  }
+
+  drop(event: CdkDragDrop<FormlyFieldConfig>) {
+    const item = this.model[event.previousIndex];
+    this.remove(event.previousIndex);
+    this.add(event.currentIndex, item);
   }
 }

@@ -1,7 +1,13 @@
 .address-cards {
+  cursor: move;
   padding-bottom: 14px;
 
   .address-card-wrapper {
     min-width: 240px;
   }
+
+}
+
+.cdk-drag-preview {
+  box-shadow: none;
 }

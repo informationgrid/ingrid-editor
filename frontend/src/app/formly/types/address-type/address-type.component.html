@@ -1,7 +1,10 @@
 <ige-form-error *ngIf="formControl.invalid && !formControl.hasError('required')">{{getFirstError()}}</ige-form-error>
 
-<div *ngIf="addresses.length > 0" fxLayout="row wrap" fxLayoutGap="24px grid" class="address-cards">
-    <div *ngFor="let address of addresses; let i = index" fxFlex="50" class="address-card-wrapper">
+<div *ngIf="addresses.length > 0" fxLayout="row wrap" fxLayoutGap="24px grid" class="address-cards"
+     cdkDropList
+     cdkDropListOrientation="horizontal"
+     (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let address of addresses; let i = index" fxFlex="50" class="address-card-wrapper" cdkDrag>
         <ige-address-card (edit)="editAddress(address, i)"
                           (remove)="removeAddress(address)"
                           (gotoAddress)="gotoAddress(address)"

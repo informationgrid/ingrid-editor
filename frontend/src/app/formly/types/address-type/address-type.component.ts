@@ -7,6 +7,8 @@ import {distinctUntilChanged, filter} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {FormlyFieldConfig} from '@ngx-formly/core';
 
 @UntilDestroy()
 @Component({
@@ -109,5 +111,9 @@ export class AddressTypeComponent extends FieldType implements OnInit {
   getFirstError() {
     return Object.values(this.formControl.errors)
       .map(error => error.message)[0];
+  }
+
+  drop(event: CdkDragDrop<FormlyFieldConfig>) {
+    moveItemInArray(this.addresses, event.previousIndex, event.currentIndex);
   }
 }

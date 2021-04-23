@@ -24,7 +24,7 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
   displayedColumns: string[];
   selection = new SelectionModel<any>(true, []);
   batchMode = false;
-  dragDisabled = true;
+  dragDisabled = false;
 
   private profile: string;
   private docType: string;

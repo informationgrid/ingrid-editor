@@ -1,10 +1,17 @@
 <ige-form-error *ngIf="formControl.invalid && formControl.errors && !formControl.hasError('required')">Dieser Fehler bezieht sich auf die gesamten Einträge {{formControl.errors | json}}</ige-form-error>
 
-<div *ngFor="let field of field.fieldGroup; let i = index;" class="display-flex">
-    <formly-field [field]="field" class="flex-1"></formly-field>
-    <button [disabled]="to.minLength && i < to.minLength" mat-icon-button class="close" (click)="remove(i)">
-        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-    </button>
+<div cdkDropList
+     cdkDropListOrientation="vertical"
+     (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let field of field.fieldGroup; let i = index;" class="display-flex" cdkDrag>
+        <mat-icon cdkDragHandle>
+            drag_indicator
+        </mat-icon>
+        <formly-field [field]="field" class="flex-1"></formly-field>
+        <button [disabled]="to.minLength && i < to.minLength" mat-icon-button class="close" (click)="remove(i)">
+            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+        </button>
+    </div>
 </div>
 
 <ige-add-button (add)="add()"

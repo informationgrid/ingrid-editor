@@ -1,24 +1,38 @@
 @import "src/variables";
 
-mat-list {
-  padding-bottom: 6px;
+.component-list {
+  max-width: 100%;
+  //border: solid 1px #ccc;
+  min-height: 36px;
+  display: block;
+  background: white;
+  //border-radius: 4px;
+  overflow: hidden;
+}
 
-  .mat-list-item {
-    font-size: 16px;
-    height: 36px;
+.list-item {
+  height: 36px;
+  padding: 0 10px 0 15px;
+  //color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+  font-size: 16px;
 
+  .mat-icon-button {
+    display: none;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+  }
+
+  &:hover {
     .mat-icon-button {
-      display: none;
-      width: 24px;
-      height: 24px;
-      margin-right: -8px;
-      line-height: 24px;
-    }
-
-    &:hover {
-      .mat-icon-button {
-        display: block;
-      }
+      display: block;
     }
   }
 }

@@ -7,6 +7,7 @@
   .mat-list-item {
     border-bottom: 2px solid #fff;
     height: auto;
+    cursor: move;
 
     ::ng-deep .mat-list-item-content {
       padding-top: 12px;

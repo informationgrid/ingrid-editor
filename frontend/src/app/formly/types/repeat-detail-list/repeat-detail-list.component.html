@@ -1,5 +1,9 @@
-<mat-list>
-    <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" class="clickable small-padding-right" [class.image]="to.asImage">
+<mat-list cdkDropList
+          cdkDropListOrientation="vertical"
+          (cdkDropListDropped)="drop($event)">
+    <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" cdkDrag
+                   class="clickable small-padding-right"
+                   [class.image]="to.asImage">
 
         <div *ngIf="to.asImage" mat-list-avatar class="avatar"
              [style.background-image]="'url(' + model[i].description + ')'">
@@ -24,6 +28,8 @@
             <button mat-menu-item (click)="editItem(i)">Bearbeiten</button>
             <button mat-menu-item (click)="remove(i)">Entfernen</button>
         </mat-menu>
+
+        <div *cdkDragPreview class="drag-preview"></div>
     </mat-list-item>
 </mat-list>
 

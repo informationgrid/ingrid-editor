@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {FieldArrayType} from '@ngx-formly/core';
+import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'ige-repeat',
@@ -44,5 +45,11 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
     }
     // }, 0);
 
+  }
+
+  drop(event: CdkDragDrop<FormlyFieldConfig>) {
+    const item = this.model[event.previousIndex];
+    this.remove(event.previousIndex);
+    this.add(event.currentIndex, item);
   }
 }

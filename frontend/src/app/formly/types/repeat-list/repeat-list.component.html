@@ -1,15 +1,17 @@
-<mat-list *ngIf="field.fieldGroup.length > 0" dense>
-    <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" class="clickable">
-
-        <h3 *ngIf="to.codelistId" matLine>{{model[i] | codelist:to.codelistId | async}}</h3>
-        <h3 *ngIf="!to.codelistId" matLine>{{model[i] | selectOption:to.options | async}}</h3>
-
+<div *ngIf="field.fieldGroup.length > 0" class="component-list"
+          cdkDropList
+          cdkDropListOrientation="vertical"
+          (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let field of field.fieldGroup; let i = index;" cdkDrag class="clickable list-item">
+<!--        {{model[i] | selectOption:to.options | async}}-->
+        <span *ngIf="to.codelistId">{{model[i] | codelist:to.codelistId | async}}</span>
+        <span *ngIf="!to.codelistId">{{model[i] | selectOption:to.options | async}}</span>
         <button type="button" mat-icon-button class="close gray" (click)="removeItem(i)">
             <mat-icon svgIcon="Entfernen"></mat-icon>
         </button>
 
-    </mat-list-item>
-</mat-list>
+    </div>
+</div>
 
 <mat-form-field *ngIf="to.asSelect; else templateAutocomplete" appearance="outline" class="width-100">
     <mat-select [placeholder]="to.placeholder" (valueChange)="addToList($event)" [formControl]="inputControl">

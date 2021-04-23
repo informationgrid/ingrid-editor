@@ -1,11 +1,12 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {FieldArrayType} from '@ngx-formly/core';
+import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
 import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {filter, map, startWith, take, tap} from 'rxjs/operators';
 import {merge, Observable, Subject} from 'rxjs';
 import {SelectOption} from '../../../services/codelist/codelist.service';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 @UntilDestroy()
 @Component({
@@ -114,5 +115,11 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       this.inputControl.enable();
     }
 
+  }
+
+  drop(event: CdkDragDrop<FormlyFieldConfig>) {
+    const item = this.model[event.previousIndex];
+    this.remove(event.previousIndex);
+    this.add(event.currentIndex, item);
   }
 }

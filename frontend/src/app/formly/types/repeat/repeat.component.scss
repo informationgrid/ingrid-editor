@@ -6,6 +6,15 @@
   margin-top: 3px;
 }
 
+.cdk-drag-handle {
+  cursor: move;
+  margin-top: 12px;
+}
+
+.cdk-drag-preview {
+  background-color: #FFFFFF;
+}
+
 ::ng-deep ige-repeat {
   .mat-icon-button[disabled][disabled] {
     opacity: 0;

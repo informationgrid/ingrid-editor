@@ -1,7 +1,7 @@
 @import "src/variables";
 
 .mat-column-_actions_, .mat-column-_select_ {
-  width: 36px;
+  width: 56px;
   flex: unset;
 }
 
@@ -47,4 +47,9 @@ mat-row, mat-header-row {
 ige-add-button {
   display: block;
   margin: 11px 0;
+}
+
+.cdk-drag-handle {
+  cursor: move;
+  padding: 0 10px;
 }

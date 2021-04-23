@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
 import {MatDialog} from '@angular/material/dialog';
 import {FormDialogComponent, FormDialogData} from '../table/form-dialog/form-dialog.component';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 interface Item {
   type?: string;
@@ -68,4 +69,9 @@ export class RepeatDetailListComponent extends FieldArrayType implements OnInit 
       })
   }
 
+  drop(event: CdkDragDrop<FormlyFieldConfig>) {
+    const item = this.model[event.previousIndex];
+    this.remove(event.previousIndex);
+    this.add(event.currentIndex, item);
+  }
 }

@@ -25,6 +25,7 @@
   border-radius: 4px;
   background-color: $ige-background;
   pointer-events: initial !important;
+  cursor: move;
 
   &:focus:after, /* press */
   &:hover:after {
