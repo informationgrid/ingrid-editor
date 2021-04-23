@@ -22,7 +22,7 @@ class CatalogApiController : CatalogApi {
     override fun catalogs(): ResponseEntity<List<Catalog>> {
         val catalogs = catalogService.getCatalogs()
             .map { catalog ->
-                val statistic = documentService.getDocumentStatistic()
+                val statistic = documentService.getDocumentStatistic(catalog.identifier)
                 catalog.countDocuments = statistic.totalNum.toInt()
                 catalog
             }

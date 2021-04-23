@@ -3,8 +3,12 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.UserRepository
@@ -73,57 +77,40 @@ class CatalogService @Autowired constructor(
             ?.toMutableList() ?: mutableListOf()
     }
 
-    fun getUserCreationDate(userId: String): Date {
-        dbService.acquireDatabase().use {
-            val user = getUser(userId)
-            if (user == null) {
-                log.error("The user '$userId' does not seem to be assigned to any database.")
-                throw NotFoundException.withMissingUserCatalog(userId)
-            }
+    fun getUser(userId: String): UserInfo {
+        return userRepo.findByUserId(userId)
+    }
 
-            return Date(1000 * (user["creationDate"]?.asLong() ?: 0))
+    fun getUserCreationDate(userId: String): Date {
+        val user = getUser(userId)
+        if (user == null) {
+            log.error("The user '$userId' does not seem to be assigned to any database.")
+            throw NotFoundException.withMissingUserCatalog(userId)
         }
+
+        return Date(1000 * (user.data?.creationDate?.time ?: 0))
     }
 
     fun getUserModificationDate(userId: String): Date {
-        dbService.acquireDatabase().use {
-            val user = getUser(userId)
-            if (user == null) {
-                log.error("The user '$userId' does not seem to be assigned to any database.")
-                throw NotFoundException.withMissingUserCatalog(userId)
-            }
-
-            return Date(1000 * (user["modificationDate"]?.asLong() ?: 0))
+        val user = getUser(userId)
+        if (user == null) {
+            log.error("The user '$userId' does not seem to be assigned to any database.")
+            throw NotFoundException.withMissingUserCatalog(userId)
         }
+
+        return Date(1000 * (user.data?.modificationDate?.time ?: 0))
     }
 
-    fun getGroupsForUser(userId: String): List<String> {
-        dbService.acquireDatabase().use {
-            val user = getUser(userId)
-            if (user == null) {
-                log.error("The user '$userId' does not seem to be assigned to any database.")
-                throw NotFoundException.withMissingUserCatalog(userId)
-            }
-
-            val groupsByCatalog = user["groups"]
-            val groups = groupsByCatalog?.get(dbService.currentCatalog) as ArrayNode?
-            return groups?.mapNotNull { it.asText() } ?: emptyList()
+    fun getGroupsForUser(userId: String, catalogId: String): List<String> {
+        val user = getUser(userId)
+        if (user == null) {
+            log.error("The user '$userId' does not seem to be assigned to any database.")
+            throw NotFoundException.withMissingUserCatalog(userId)
         }
-    }
 
-    fun getAllGroupsForUser(userId: String): HashMap<String, List<String>> {
-        dbService.acquireDatabase().use {
-            val user = getUser(userId)
-            if (user == null) {
-                log.error("The user '$userId' does not seem to be assigned to any database.")
-                throw NotFoundException.withMissingUserCatalog(userId)
-            }
-
-            val map = hashMapOf<String, List<String>>()
-            user["groups"]?.fields()
-                ?.forEachRemaining { map[it.key] = it.value.mapNotNull { group -> group.asText() } }
-            return map
-        }
+        val groupsByCatalog = user.data?.groups
+        val groups = groupsByCatalog?.get(catalogId)
+        return groups ?: emptyList()
     }
 
     fun getCatalogById(id: String): Catalog {
@@ -193,6 +180,52 @@ class CatalogService @Autowired constructor(
 
         val catalog = getCatalogById(name)
         catalogRepo.delete(catalog)
+    }
+
+    fun createUser(catalogId: String, userModel: User) {
+
+        val user = convertUser(catalogId, userModel)
+        val userFromDB = getUser(user.userId)
+        user.id = userFromDB.id
+        user.data?.creationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
+        user.data?.modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
+        userRepo.save(user)
+
+    }
+
+    private fun convertUser(catalogId: String, user: User): UserInfo {
+        val dbUser = try { getUser(user.login) } catch (e: Exception) { UserInfo()}
+        return dbUser.apply { 
+            userId = user.login
+            if (data == null) {
+                data = UserInfoData(
+                    emptyList(),
+                    emptyList(),
+                    null,
+                    null,
+                    null,
+                    mutableMapOf()
+                )
+            }
+            data!!.groups?.set(catalogId, user.groups)
+        }
+    }
+
+    fun deleteUser(userId: String) {
+
+        userRepo.deleteByUserId(userId)
+
+    }
+
+    fun updateUser(catalogId: String, userModel: User) {
+
+        val user = convertUser(catalogId, userModel)
+        val userFromDB = getUser(user.userId)
+        user.id = userFromDB.id
+        user.data?.modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
+        user.data?.groups = userFromDB.data?.groups
+        userRepo.save(user)
+
     }
 
     companion object {

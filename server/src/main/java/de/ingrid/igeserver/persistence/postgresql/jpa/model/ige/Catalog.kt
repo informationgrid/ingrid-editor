@@ -2,12 +2,19 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.utils.SpringContext
 import org.hibernate.annotations.NamedQueries
 import org.hibernate.annotations.NamedQuery
 import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
 import java.util.*
 import javax.persistence.*
+import kotlin.jvm.Transient
 
 @Entity
 @Table(name="catalog")
@@ -55,6 +62,9 @@ class Catalog {
     @Column(name = "settings", columnDefinition = "jsonb")
     var settings: CatalogSettings? = null
 
+    @Transient
+    var countDocuments: Int = 0
+    
     @PrePersist
     fun setPersistDate() {
         created = dateService?.now()

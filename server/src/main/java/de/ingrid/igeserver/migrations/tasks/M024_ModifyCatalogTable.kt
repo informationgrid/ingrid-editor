@@ -10,12 +10,9 @@ import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
-class M023_ModifyCatalogTable : MigrationBase("0.23") {
+class M024_ModifyCatalogTable : MigrationBase("0.24") {
 
     private var log = logger()
-
-    @Autowired
-    lateinit var docService: DocumentService
 
     @Autowired
     lateinit var entityManager: EntityManager

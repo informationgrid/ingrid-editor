@@ -5,7 +5,7 @@
  */
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.Group
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse

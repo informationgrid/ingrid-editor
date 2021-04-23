@@ -1,15 +1,23 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
-import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
+import javax.persistence.EntityManager
 
 @Service
 class `M019-1_AdaptUserInfoTable` : MigrationBase("0.19.1") {
 
     private var log = logger()
+
+    @Autowired
+    lateinit var entityManager: EntityManager
+
+    @Autowired
+    private lateinit var transactionManager: PlatformTransactionManager
 
     private val sql = """
             CREATE TABLE IF NOT EXISTS manager (
@@ -27,12 +35,9 @@ class `M019-1_AdaptUserInfoTable` : MigrationBase("0.19.1") {
             );
     """.trimIndent()
 
-    @Autowired
-    lateinit var dbService: DBApi
-
     override fun exec() {
-        dbService.acquireDatabase().use {
-            dbService.execSQL(sql)
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(sql)
         }
     }
 

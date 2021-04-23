@@ -13,4 +13,6 @@ interface UserRepository : JpaRepository<UserInfo, Int> {
     // TODO: implement
     @Query("SELECT u FROM UserInfo u")
     fun findAllByCatalogId(catalogId: String): List<UserInfo>
+    
+    fun deleteByUserId(userId: String)
 }

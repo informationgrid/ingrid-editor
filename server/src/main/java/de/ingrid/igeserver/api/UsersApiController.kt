@@ -51,53 +51,47 @@ class UsersApiController : UsersApi {
     private val developmentMode = false
 
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<Void> {
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        dbService.acquireCatalog(dbId).use {
-            val userExists = keycloakService.userExists(principal, user.login)
-            if (userExists && newExternalUser) {
-                throw ConflictException.withReason("User already Exists with login ${user.login}")
-            }
-
-            when (userExists) {
-                true -> keycloakService.addRoles(principal, user.login, listOf(user.role))
-                false -> keycloakService.createUser(principal, user)
-            }
-
-            catalogService.createUser(user)
-
-            return ResponseEntity.ok().build()
+        val userExists = keycloakService.userExists(principal, user.login)
+        if (userExists && newExternalUser) {
+            throw ConflictException.withReason("User already Exists with login ${user.login}")
         }
+
+        when (userExists) {
+            true -> keycloakService.addRoles(principal, user.login, listOf(user.role))
+            false -> keycloakService.createUser(principal, user)
+        }
+
+        catalogService.createUser(catalogId, user)
+
+        return ResponseEntity.ok().build()
     }
 
     override fun deleteUser(principal: Principal?, userId: String): ResponseEntity<Void> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        dbService.acquireCatalog(dbId).use {
-            catalogService.deleteUser(userId)
-            keycloakService.removeRoles(principal, userId, listOf("cat-admin", "md-admin", "author"))
-            return ResponseEntity.ok().build()
-        }
+        catalogService.deleteUser(userId)
+        keycloakService.removeRoles(principal, userId, listOf("cat-admin", "md-admin", "author"))
+        return ResponseEntity.ok().build()
 
     }
 
     override fun getUser(principal: Principal?, userId: String): ResponseEntity<User> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        dbService.acquireCatalog(dbId).use {
-            val user = keycloakService.getUser(principal, userId)
-            user.latestLogin = keycloakService.getLatestLoginDate(principal, userId);
-            user.groups = catalogService.getGroupsForUser(userId)
-            user.creationDate = catalogService.getUserCreationDate(userId)
-            user.modificationDate = catalogService.getUserModificationDate(userId)
-            //TODO implement manager and standin
-            user.manager = "ige"
-            user.standin = "herbert"
+        val user = keycloakService.getUser(principal, userId)
+        user.latestLogin = keycloakService.getLatestLoginDate(principal, userId);
+        user.groups = catalogService.getGroupsForUser(userId, catalogId)
+        user.creationDate = catalogService.getUserCreationDate(userId)
+        user.modificationDate = catalogService.getUserModificationDate(userId)
+        //TODO implement manager and standin
+        user.manager = "ige"
+        user.standin = "herbert"
 
-            return ResponseEntity.ok(user)
-        }
+        return ResponseEntity.ok(user)
 
     }
 
@@ -116,13 +110,11 @@ class UsersApiController : UsersApi {
     }
 
     override fun updateUser(principal: Principal?, id: String, user: User): ResponseEntity<Void> {
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        dbService.acquireCatalog(dbId).use {
-            keycloakService.updateUser(principal!!, user)
-            catalogService.updateUser(user)
-            return ResponseEntity.ok().build()
-        }
+        keycloakService.updateUser(principal!!, user)
+        catalogService.updateUser(catalogId, user)
+        return ResponseEntity.ok().build()
 
     }
 
@@ -231,7 +223,10 @@ class UsersApiController : UsersApi {
                 data = UserInfoData(
                     emptyList(),
                     emptyList(),
-                    null
+                    null,
+                    null,
+                    null,
+                    mutableMapOf()
                 )
             }
         } else {
