@@ -12,7 +12,7 @@ data class User(
     val email: String,
     var role: String = "",
     var manager: String = "",
-    var standin: String = "",
+    var standin: String?,
     var groups: List<String> = emptyList(),
     var creationDate: Date = Date(0),
     var modificationDate: Date = Date(0),

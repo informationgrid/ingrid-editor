@@ -176,7 +176,8 @@ class KeycloakService : UserManagementService {
             firstName = user.firstName ?: "",
             lastName = user.lastName ?: "",
             email = user.email ?: "",
-            latestLogin = null
+            latestLogin = null,
+            standin = null
 //            role = user.realmRoles?.get(0) ?: "" // TODO: get interesting role, like author, md-admin or cat-admin
         )
     }

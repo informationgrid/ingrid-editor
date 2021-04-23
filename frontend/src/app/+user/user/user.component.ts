@@ -127,7 +127,7 @@ export class UserComponent implements OnInit {
   }
 
   private addUser(initial: any) {
-    const newUser = initial.user ?? {groups: []};
+    const newUser = initial.user ?? {groups: [], manager: 'TODO'};
     newUser.role = initial.role ?? '';
     this.isNewUser = true;
     this.form.reset(newUser);
