@@ -59,12 +59,12 @@ class IndexService @Autowired constructor(
     fun updateConfig(catalogId: String, cronPattern: String) {
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        catalog.settings = CatalogSettings(cronPattern)
+// TODO:        catalog.settings = CatalogSettings(cronPattern)
         catalogRepo.save(catalog)
 
     }
 
-    fun getConfig(catalogId: String): String? = catalogRepo.findByIdentifier(catalogId).settings?.indexCronPattern
+    fun getConfig(catalogId: String): String? = null // TODO: catalogRepo.findByIdentifier(catalogId).settings?.indexCronPattern
 
 /*
     private fun getVersion(wrapper: JsonNode, options: IndexOptions): JsonNode {

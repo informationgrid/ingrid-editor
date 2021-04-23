@@ -176,12 +176,13 @@ class IndexingTask @Autowired constructor(
 
     private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? {
 
-        val cron = catalog.settings?.indexCronPattern
+        return null // TODO:
+        /*val cron = catalog.settings?.indexCronPattern
         return if (cron == null) {
             null
         } else {
             IndexConfig(catalog.identifier, cron)
-        }
+        }*/
 
     }
 

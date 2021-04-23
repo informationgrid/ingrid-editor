@@ -44,7 +44,7 @@ class Catalog {
     @Column
     var description: String? = null
 
-    @Column
+/*    @Column
     @JsonSerialize(using= DateSerializer::class)
     @JsonDeserialize(using= DateDeserializer::class)
     var created: OffsetDateTime? = null
@@ -52,20 +52,20 @@ class Catalog {
     @Column
     @JsonSerialize(using= DateSerializer::class)
     @JsonDeserialize(using= DateDeserializer::class)
-    var modified: OffsetDateTime? = null
+    var modified: OffsetDateTime? = null*/
 
     @ManyToMany(mappedBy="catalogs", fetch= FetchType.LAZY)
     @JsonIgnore
     var users: MutableSet<UserInfo> = LinkedHashSet<UserInfo>()
 
-    @Type(type = "jsonb")
+/*    @Type(type = "jsonb")
     @Column(name = "settings", columnDefinition = "jsonb")
-    var settings: CatalogSettings? = null
+    var settings: CatalogSettings? = null*/
 
     @Transient
     var countDocuments: Int = 0
     
-    @PrePersist
+/*    @PrePersist
     fun setPersistDate() {
         created = dateService?.now()
         modified = created
@@ -74,7 +74,7 @@ class Catalog {
     @PreUpdate
     fun setUpdateDate() {
         modified = dateService?.now()
-    }
+    }*/
     
     companion object {
         private val dateService: DateService? by lazy {
