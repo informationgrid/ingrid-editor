@@ -1,44 +1,48 @@
 package de.ingrid.igeserver.index
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
-import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
+import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class IndexService @Autowired constructor(private val dbService: DBApi, private val exportService: ExportService, private val documentService: DocumentService) {
+class IndexService @Autowired constructor(
+    private val catalogRepo: CatalogRepository,
+    private val docWrapperRepo: DocumentWrapperRepository,
+    private val exportService: ExportService,
+    private val documentService: DocumentService
+) {
 
     private val log = logger()
 
     val INDEX_PUBLISHED_DOCUMENTS = { format: String ->
         val onlyPublishedDocs = listOf(
-                QueryField(FIELD_PUBLISHED, null, true),
-                QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value)
+            QueryField(FIELD_PUBLISHED, null, true),
+            QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value)
         )
 
         IndexOptions(onlyPublishedDocs, format)
     }
     val INDEX_SINGLE_PUBLISHED_DOCUMENT = { format: String, uuid: String ->
         val singlePublishedDoc = listOf(
-                QueryField(FIELD_PUBLISHED, null, true),
-                QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value),
-                QueryField(FIELD_ID, uuid)
+            QueryField(FIELD_PUBLISHED, null, true),
+            QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value),
+            QueryField(FIELD_ID, uuid)
         )
 
         IndexOptions(singlePublishedDoc, format)
     }
 
-    fun start(options: IndexOptions): List<Any> {
+    fun start(catalogId: String, options: IndexOptions): List<Any> {
 
-        val queryOptions = FindOptions(queryOperator = options.queryOperator, resolveReferences = true)
-        val docsToIndex = dbService.findAll(DocumentWrapperType::class, options.dbFilter, queryOptions)
-        if (docsToIndex.totalHits == 0L) {
+        val docsToIndex = docWrapperRepo.findAllByCatalog_Identifier(catalogId)
+        if (docsToIndex.isEmpty()) {
             log.warn("No documents found for indexing")
             return emptyList()
         }
@@ -46,26 +50,21 @@ class IndexService @Autowired constructor(private val dbService: DBApi, private 
         val exporter = exportService.getExporter(options.exportFormat)
 
         val onlyPublished = options.documentState == FIELD_PUBLISHED
-        return docsToIndex.hits
-                .map { documentService.getLatestDocument(it, onlyPublished) }
-                .map { exporter.run(it) }
+        return docsToIndex
+            .map { documentService.getLatestDocument(it, onlyPublished) }
+            .map { exporter.run(it) }
 
     }
 
-    fun updateConfig(cronPattern: String) {
+    fun updateConfig(catalogId: String, cronPattern: String) {
 
-        val info = this.dbService.findAll(CatalogInfoType::class)[0] as ObjectNode
-        info.put("cron", cronPattern)
-        dbService.save(CatalogInfoType::class, dbService.getRecordId(info), info.toString())
-
-    }
-
-    fun getConfig(): String? {
-
-        val info = this.dbService.findAll(CatalogInfoType::class)[0] as ObjectNode
-        return info.get("cron")?.asText()
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        catalog.settings = CatalogSettings(cronPattern)
+        catalogRepo.save(catalog)
 
     }
+
+    fun getConfig(catalogId: String): String? = catalogRepo.findByIdentifier(catalogId).settings?.indexCronPattern
 
 /*
     private fun getVersion(wrapper: JsonNode, options: IndexOptions): JsonNode {

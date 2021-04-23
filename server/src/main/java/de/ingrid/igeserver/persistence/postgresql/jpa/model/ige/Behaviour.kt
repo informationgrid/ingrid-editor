@@ -2,31 +2,32 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityWithEmbeddedMap
+import org.hibernate.annotations.Type
 import javax.persistence.*
-import kotlin.jvm.Transient
 
-@NoArgs
 @Entity
-@Table(name="behaviour")
-class Behaviour : EntityWithEmbeddedMap(), EntityWithCatalog {
+@Table(name = "behaviour")
+class Behaviour {
 
-    @Column(nullable=false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
+    var id: Int? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "catalog_id", nullable = false)
+    @JsonIgnore
+    var catalog: Catalog? = null
+
+    @Column(nullable = false, unique = true)
     @JsonProperty("_id")
     var name: String? = null
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     var active: Boolean? = null
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="catalog_id", nullable=false)
-    @JsonIgnore
-    override var catalog: Catalog? = null
+    @Type(type = "jsonb")
+    @Column(name = "data", columnDefinition = "jsonb")
+    var data: Map<String, *>? = null
 
-    @Transient
-    @JsonIgnore
-    override var unwrapData: Boolean = false
-        get() = false // make sure to return false (default value did not work after fresh rebuild)
 }

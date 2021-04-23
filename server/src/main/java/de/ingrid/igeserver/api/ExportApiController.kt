@@ -2,7 +2,6 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.model.ExportRequestParameter
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
@@ -19,9 +18,6 @@ class ExportApiController : ExportApi {
     private lateinit var exportService: ExportService
 
     @Autowired
-    private lateinit var dbService: DBApi
-
-    @Autowired
     private lateinit var documentService: DocumentService
 
     @Autowired
@@ -32,16 +28,12 @@ class ExportApiController : ExportApi {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         // TODO: option to export addresses too?
-        var result = ""
-        dbService.acquireCatalog(dbId).use {
-            val doc = documentService.getWrapperByDocumentId(data.id, true)
-            if (doc != null) {
-                val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
+        var result: String? = ""
+        val doc = documentService.getWrapperByDocumentId(data.id, true)
+        val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
 
-                val exporter = exportService.getExporter(data.exportFormat)
-                result = exporter.run(docVersion) as String
-            }
-        }
+        val exporter = exportService.getExporter(data.exportFormat)
+        result = exporter.run(docVersion) as String
         return ResponseEntity.ok(result)
     }
 

@@ -1,29 +1,32 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.*
-import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.EntityWithEmbeddedMap
-import java.util.*
+import com.fasterxml.jackson.databind.node.ObjectNode
+import org.hibernate.annotations.Type
 import javax.persistence.*
 
-@NoArgs
 @Entity
-@Table(name="user_info")
-class UserInfo : EntityWithEmbeddedMap() {
+@Table(name = "user_info")
+class UserInfo {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
+    var id: Int? = null
 
     @Column(nullable = false)
-    var userId: String? = null
+    lateinit var userId: String
 
     /**
      * Assigned catalogs relation (many-to-many)
      * NOTE Since the JSON representation contains catalog identifiers ('catalogIds') only, we need
      * to map them manually to catalog instances for persistence
      */
-    @ManyToMany(cascade=[CascadeType.ALL], fetch=FetchType.EAGER)
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(
-            name="catalog_user_info",
-            joinColumns=[JoinColumn(name="user_info_id")],
-            inverseJoinColumns=[JoinColumn(name="catalog_id")]
+        name = "catalog_user_info",
+        joinColumns = [JoinColumn(name = "user_info_id")],
+        inverseJoinColumns = [JoinColumn(name = "catalog_id")]
     )
     @JsonAlias("catalogIds") // hint for model registry
     @JsonIgnore
@@ -47,7 +50,7 @@ class UserInfo : EntityWithEmbeddedMap() {
      * to map it manually to the catalog instance for persistence
      */
     @ManyToOne
-    @JoinColumn(name="cur_catalog_id")
+    @JoinColumn(name = "cur_catalog_id")
     @JsonAlias("curCatalog") // hint for model registry
     @JsonIgnore
     var curCatalog: Catalog? = null
@@ -64,9 +67,15 @@ class UserInfo : EntityWithEmbeddedMap() {
         return this.curCatalogId
     }
 
+    @Type(type = "jsonb")
+    @Column(name = "data", columnDefinition = "jsonb")
+    var data: UserInfoData? = null
+
+/*
+    */
     /**
      * Resolve catalog entities from catalog identifiers
-     */
+     *//*
     override fun beforePersist(entityManager: EntityManager) {
         curCatalog = Catalog.getByIdentifier(entityManager, curCatalogId)
 
@@ -91,18 +100,20 @@ class UserInfo : EntityWithEmbeddedMap() {
         }
     }
 
+    */
     /**
      * Detach catalogs
-     */
+     *//*
     override fun beforeRemove(entityManager: EntityManager) {
         catalogs.forEach {
             this.catalogs.remove(it)
         }
     }
 
+    */
     /**
      * Resolve catalog database ids from catalog identifiers
-     */
+     *//*
     override fun mapQueryValue(field: String, value: String?, entityManager: EntityManager): Any? {
         if (value == null) return null
         return when (field) {
@@ -117,5 +128,5 @@ class UserInfo : EntityWithEmbeddedMap() {
             }
             else -> value
         }
-    }
+    }*/
 }

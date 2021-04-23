@@ -9,18 +9,19 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
-import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
-import de.ingrid.igeserver.services.FIELD_ID
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
+import org.springframework.data.domain.Example
 import org.springframework.stereotype.Component
 
 @Component
@@ -30,13 +31,13 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     val log = logger()
 
     @Autowired
+    lateinit var docWrapperRepo: DocumentWrapperRepository
+    
+    @Autowired
     lateinit var indexService: IndexService
 
     @Autowired
     lateinit var indexManager: IndexManager
-
-    @Autowired
-    lateinit var db: DBApi
 
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
@@ -49,8 +50,8 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
 
-        val docId = payload.document[FIELD_ID].asText()
-        val docType = payload.document[FIELD_DOCUMENT_TYPE].asText()
+        val docId = payload.document.uuid
+        val docType = payload.document.type
 
         when (docType) {
             "mCloudDoc" -> indexMCloudDoc(context, docId)
@@ -71,9 +72,13 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         val options = FindOptions(
             queryType = QueryType.EXACT,
             resolveReferences = true)
-        val docsWithReferences = db.findAll(DocumentWrapperType::class, query, options)
 
-        docsWithReferences.hits.forEach { indexMCloudDoc(context, it[FIELD_ID].asText()) }
+        val exampleWrapper = DocumentWrapper().apply { published = Document().apply { 
+            data.put("addresses", jacksonObjectMapper().createObjectNode().put("ref", docId)) 
+        } }
+        val docsWithReferences = docWrapperRepo.findAll(Example.of(exampleWrapper))
+
+        docsWithReferences.forEach { indexMCloudDoc(context, it.uuid) }
 
     }
 
@@ -93,7 +98,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         indexInfo.toAlias = elasticsearchAlias
         indexInfo.docIdField = "uuid"
 
-        val export = indexService.start(indexService.INDEX_SINGLE_PUBLISHED_DOCUMENT("portal", docId))
+        val export = indexService.start(context.catalogId, indexService.INDEX_SINGLE_PUBLISHED_DOCUMENT("portal", docId))
 
         if (export.isNotEmpty()) {
             log.debug("Exported document: " + export[0])

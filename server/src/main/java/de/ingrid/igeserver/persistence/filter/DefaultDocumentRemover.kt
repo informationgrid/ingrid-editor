@@ -20,7 +20,7 @@ class DefaultDocumentRemover : Filter<PreDeletePayload> {
         get() = PROFILES
 
     override fun invoke(payload: PreDeletePayload, context: Context): PreDeletePayload {
-        val docId = payload.document[FIELD_ID].asText();
+        val docId = payload.document.uuid
 
         context.addMessage(Message(this, "Process document data '$docId' before delete"))
 

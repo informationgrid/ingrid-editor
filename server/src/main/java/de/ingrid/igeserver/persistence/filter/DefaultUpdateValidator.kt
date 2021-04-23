@@ -1,13 +1,11 @@
 package de.ingrid.igeserver.persistence.filter
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.model.document.DocumentType
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.repository.DocumentRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -25,14 +23,14 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
         get() = PROFILES
 
     @Autowired
-    private lateinit var dbService: DBApi
+    private lateinit var documentRepo: DocumentRepository
 
     override fun invoke(payload: PreUpdatePayload, context: Context): PreUpdatePayload {
-        val docId = payload.document[FIELD_ID].asText();
+        val docId = payload.document.uuid
 
         context.addMessage(Message(this, "Validate document data '$docId' before update"))
 
-        checkForPublishedConcurrency(payload.wrapper, payload.document.get(FIELD_VERSION)?.asInt())
+        checkForPublishedConcurrency(payload.wrapper, payload.document.version)
 
         return payload
     }
@@ -41,16 +39,18 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
      * Throw an exception if we want to save a draft version with a version number lower than
      * the current published version.
      */
-    private fun checkForPublishedConcurrency(wrapper: ObjectNode, version: Int?) {
+    private fun checkForPublishedConcurrency(wrapper: DocumentWrapper, version: Int?) {
 
-        val draft = wrapper.get(FIELD_DRAFT)
-        val publishedDBID = wrapper.get(FIELD_PUBLISHED).asText()
+        val draft = wrapper.draft
+        val publishedDBID = wrapper.published?.id
 
-        if (draft.isNull && publishedDBID != null) {
-            val publishedDoc = dbService.find(DocumentType::class, publishedDBID)
-            val publishedVersion = publishedDoc?.get("@version")?.asInt()
+        if (draft == null && publishedDBID != null) {
+//            val publishedDoc = dbService.find(DocumentType::class, publishedDBID)
+            val publishedDoc = documentRepo.findById(publishedDBID).get()
+            val publishedVersion = publishedDoc.version
             if (version != null && publishedVersion != null && publishedVersion > version) {
-                throw ConcurrentModificationException.withConflictingResource(publishedDBID, publishedDoc.get("@version").asInt(), version)
+                throw ConcurrentModificationException.withConflictingResource(publishedDBID.toString(),
+                    publishedDoc.version!!, version)
             }
         }
     }

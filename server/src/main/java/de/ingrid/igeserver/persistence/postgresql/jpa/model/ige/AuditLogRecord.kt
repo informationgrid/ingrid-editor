@@ -1,33 +1,31 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import de.ingrid.igeserver.annotations.NoArgs
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.impl.AbstractEntityWithEmbeddedData
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import de.ingrid.igeserver.persistence.postgresql.model.meta.AuditLogRecordData
 import org.hibernate.annotations.Type
+import org.hibernate.annotations.TypeDef
 import javax.persistence.*
 
-@NoArgs
 @Entity
-@Table(name="audit_log")
-class AuditLogRecord : AbstractEntityWithEmbeddedData<AuditLogRecordData>() {
+@Table(name = "audit_log")
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType::class)
+class AuditLogRecord {
 
-    @Type(type="embeddedData")
-    @Column(name="message", columnDefinition="jsonb")
-    override var data: AuditLogRecordData? = null
-        set(value) {
-            type = value?.typeColumnValue
-            field = value
-        }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
+    var id: Int? = null
 
-    @Column(nullable=false)
-    @JsonProperty("_type")
-    override var type: String? = null
+    @Type(type = "jsonb")
+    @Column(name = "message", columnDefinition = "jsonb")
+    var data: AuditLogRecordData? = null
 
     @Column
     var file: String? = null
 
-    @Column(name="class")
+    @Column(name = "class")
     @JsonProperty("class")
     var clazz: String? = null
 

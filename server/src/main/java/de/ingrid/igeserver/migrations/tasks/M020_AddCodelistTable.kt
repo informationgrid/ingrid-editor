@@ -1,12 +1,14 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
-import de.ingrid.igeserver.persistence.postgresql.PostgreSQLAccess
+import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
+import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
@@ -21,8 +23,8 @@ class M020_AddCodelistTable : MigrationBase("0.20") {
     lateinit var entityManager: EntityManager
 
     @Autowired
-    lateinit var dbService: PostgreSQLAccess
-
+    private lateinit var transactionManager: PlatformTransactionManager
+    
     @Autowired
     lateinit var catalogService: CatalogService
 
@@ -42,16 +44,14 @@ class M020_AddCodelistTable : MigrationBase("0.20") {
     """.trimIndent()
 
     override fun exec() {
-        dbService.getTransaction().use {
+        ClosableTransaction(transactionManager).use {
             log.info("Create table codelist")
             entityManager.createNativeQuery(sql).executeUpdate()
         }
 
-        dbService.catalogs.forEach { catalog ->
-            dbService.acquireCatalog(catalog.identifier!!).use {
-                log.info("Migrate catalog codelists for catalog: ${catalog.name}")
-                catalogService.initializeCodelists(catalog.identifier!!, catalog.type!!)
-            }
+        catalogService.getCatalogs().forEach { catalog ->
+            log.info("Migrate catalog codelists for catalog: ${catalog.name}")
+            catalogService.initializeCodelists(catalog.identifier, catalog.type)
         }
 
     }

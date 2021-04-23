@@ -1,15 +1,12 @@
 package de.ingrid.igeserver.migrations
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.persistence.DBApi
-import de.ingrid.igeserver.persistence.model.meta.CatalogInfoType
-import de.ingrid.igeserver.persistence.model.meta.VersionInfoType
+import de.ingrid.igeserver.repository.VersionInfoRepository
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Service
-import java.util.function.Consumer
+import javax.persistence.EntityManager
 
 @Service
 class Migration : ApplicationRunner {
@@ -17,10 +14,13 @@ class Migration : ApplicationRunner {
     private var log = logger()
 
     @Autowired
-    private lateinit var dbService: DBApi
+    lateinit var migrationStrategies: List<MigrationStrategy>
+    
+    @Autowired
+    lateinit var versionRepo: VersionInfoRepository
 
     @Autowired
-    lateinit var migrationStrategies: List<MigrationStrategy>
+    lateinit var entityManager: EntityManager
 
     /**
      * Install migrations after spring application context is initialized
@@ -56,18 +56,14 @@ class Migration : ApplicationRunner {
 
 
     private fun getVersion(): String {
-        dbService.acquireDatabase().use {
-            val info = dbService.find(VersionInfoType::class, "1")
-            return info?.get("value")?.asText() ?: "0"
-        }
+            val info = versionRepo.findById(1).get()
+            return info.value ?: "0"
     }
 
     private fun setVersion(version: String) {
-        dbService.acquireDatabase().use {
-            val info = dbService.find(VersionInfoType::class, "1") as ObjectNode
-            info.put("value", version)
-            dbService.save(VersionInfoType::class, "1", info.toString())
-        }
+            val info = versionRepo.findById(1).get()
+            info.value = version
+            versionRepo.save(info)
     }
 
     private fun setupVersioning() {
@@ -79,9 +75,7 @@ class Migration : ApplicationRunner {
             );
             INSERT INTO version_info (id, key, value) VALUES (1, 'schema_version', '0') ON CONFLICT DO NOTHING; 
         """.trimIndent()
-        dbService.acquireDatabase().use {
-            dbService.execSQL(sql)
-        }
+        entityManager.createNativeQuery(sql)
 
     }
 }

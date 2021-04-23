@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.SearchResult
 import io.swagger.v3.oas.annotations.Operation
@@ -24,10 +23,10 @@ interface DatasetsApi {
     fun find(
             principal: Principal?,
             @Parameter(description = "Find datasets by a search query.") @RequestParam(value = "query", required = false) query: String?,
-            @Parameter(description = "Define the maximum number of returned documents.", allowEmptyValue = true) @RequestParam(value = "size", required = false) size: Int?,
+            @Parameter(description = "Define the maximum number of returned documents.", allowEmptyValue = true) @RequestParam(value = "size", required = false) size: Int = 10,
             @Parameter(description = "Sort by a given field.") @RequestParam(value = "sort", required = false) sort: String?,
             @Parameter(description = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") sortOrder: String?,
-            @Parameter(description = "Search in addresses.") @RequestParam(value = "address", required = false) forAddress: Boolean): ResponseEntity<SearchResult<ObjectNode>>
+            @Parameter(description = "Search in addresses.") @RequestParam(value = "address", required = false) forAddress: Boolean): ResponseEntity<SearchResult<JsonNode>>
 
     @PostMapping(value = ["/datasets"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Create a complete dataset")
@@ -69,7 +68,7 @@ interface DatasetsApi {
     fun getChildren(
             principal: Principal?,
             @Parameter(description = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) parentId: String?,
-            @Parameter(description = "Define if we want to have addresses or documents.") @RequestParam(value = "address", required = false) isAddress: Boolean): ResponseEntity<List<ObjectNode>>
+            @Parameter(description = "Define if we want to have addresses or documents.") @RequestParam(value = "address", required = false) isAddress: Boolean): ResponseEntity<List<JsonNode>>
 
     @Operation(description = "Retrieve a dataset by a given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The dataset with the given ID."), ApiResponse(responseCode = "500", description = "Unexpected error")])

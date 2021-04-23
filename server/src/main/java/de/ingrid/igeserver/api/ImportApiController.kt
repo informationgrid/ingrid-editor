@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.ImportAnalyzeInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,7 +28,7 @@ class ImportApiController @Autowired constructor(private val importService: Impo
         return ResponseEntity.ok(info)
     }
 
-    private fun createInfo(importerName: String, result: JsonNode): ImportAnalyzeInfo {
+    private fun createInfo(importerName: String, result: Document): ImportAnalyzeInfo {
         val info = ImportAnalyzeInfo()
         info.importType = importerName
         info.numDocuments = 1

@@ -1,15 +1,23 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
-import de.ingrid.igeserver.persistence.DBApi
+import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
+import javax.persistence.EntityManager
 
 @Service
 class M019_CreatePermissionGroupTable : MigrationBase("0.19") {
 
     private var log = logger()
+
+    @Autowired
+    lateinit var entityManager: EntityManager
+
+    @Autowired
+    private lateinit var transactionManager: PlatformTransactionManager
 
     private val sql = """
         CREATE SEQUENCE permission_group_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1;
@@ -26,12 +34,9 @@ class M019_CreatePermissionGroupTable : MigrationBase("0.19") {
         ) WITH (oids = false);
     """.trimIndent()
 
-    @Autowired
-    lateinit var dbService: DBApi
-
     override fun exec() {
-        dbService.acquireDatabase().use {
-            dbService.execSQL(sql)
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(sql)
         }
     }
 

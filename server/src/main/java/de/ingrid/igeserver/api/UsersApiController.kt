@@ -1,14 +1,13 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.persistence.DBApi
 import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.QueryType
-import de.ingrid.igeserver.persistence.model.meta.UserInfoType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
+import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
@@ -34,7 +33,7 @@ class UsersApiController : UsersApi {
     private lateinit var catalogService: CatalogService
 
     @Autowired
-    private lateinit var dbService: DBApi
+    private lateinit var userRepo: UserRepository
 
     @Autowired
     private lateinit var keycloakService: UserManagementService
@@ -127,7 +126,7 @@ class UsersApiController : UsersApi {
 
     }
 
-    override fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo> {
+    override fun currentUserInfo(principal: Principal?): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val user = keycloakService.getUser(principal, userId)
@@ -135,7 +134,8 @@ class UsersApiController : UsersApi {
         val lastLogin = this.getLastLogin(principal, user.login)
         val dbIds = catalogService.getCatalogsForUser(user.login)
         val dbIdsValid: MutableSet<String> = HashSet()
-        val assignedCatalogs: MutableList<Catalog> = ArrayList()
+        val assignedCatalogs: MutableList<Catalog> =
+            ArrayList()
         for (dbId in dbIds) {
             val catalogById = catalogService.getCatalogById(dbId)
             assignedCatalogs.add(catalogById)
@@ -154,7 +154,7 @@ class UsersApiController : UsersApi {
             null
         }
 
-        val userInfo = UserInfo(
+        val userInfo = de.ingrid.igeserver.model.UserInfo(
             userId = user.login,
             name = user.firstName + ' ' + user.lastName,
             lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
@@ -204,102 +204,86 @@ class UsersApiController : UsersApi {
     override fun setCatalogAdmin(
         principal: Principal?,
         info: CatalogAdmin
-    ): ResponseEntity<UserInfo?> {
+    ): ResponseEntity<de.ingrid.igeserver.model.UserInfo?> {
 
         val userIds = info.userIds
         if (userIds.isEmpty()) {
             throw InvalidParameterException.withInvalidParameters("info.userIds")
         }
 
-        dbService.acquireDatabase().use {
-            logger.info("Parameter: $info")
-            val catalogName = info.catalogName
-            userIds.forEach { addOrUpdateCatalogAdmin(catalogName, it) }
-        }
-        return ResponseEntity.ok().build()
+        logger.info("Parameter: $info")
+        val catalogName = info.catalogName
+        userIds.forEach { addOrUpdateCatalogAdmin(catalogName, it) }
+        return ResponseEntity.ok(null)
     }
 
-    private fun addOrUpdateCatalogAdmin(catalogName: String, userId: String) {
+    private fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
 
-        val query = listOf(QueryField("userId", userId))
-        val findOptions = FindOptions(
-            queryType = QueryType.EXACT,
-            resolveReferences = false
-        )
-        val list = dbService.findAll(UserInfoType::class, query, findOptions)
+        var user = userRepo.findByUserId(userIdent)
 
-        val isNewEntry = list.totalHits == 0L
+        val isNewEntry = user == null
         val objectMapper = ObjectMapper()
         val catalogIds: MutableSet<String> = HashSet()
-        val catInfo: ObjectNode
 
         if (isNewEntry) {
-            catInfo = objectMapper.createObjectNode()
-            catInfo.put("userId", userId)
-            catInfo.put("catalogIds", objectMapper.createArrayNode())
+            user = UserInfo().apply {
+                userId = userIdent
+                data = UserInfoData(
+                    emptyList(),
+                    emptyList(),
+                    null
+                )
+            }
         } else {
-            catInfo = list.hits[0] as ObjectNode
             // make list to hashset
-            catInfo.put("catalogIds", catInfo["catalogIds"])
+//            user.data.put("catalogIds", catInfo["catalogIds"])
         }
-        val catalogIdsArray = catInfo["catalogIds"] as ArrayNode
-        for (jsonNode in catalogIdsArray) {
-            catalogIds.add(jsonNode.asText())
-        }
-
+        val catalogIdsArray = user.data?.catalogIds?.toHashSet() ?: HashSet()
+        
         // update catadmin in catalog Info
         catalogIds.add(catalogName)
 
-        val arrayNode = objectMapper.createArrayNode()
-        catalogIds.forEach { arrayNode.add(it) }
-        catInfo.replace("catalogIds", arrayNode)
-        var recordId: String? = null
-        if (!isNewEntry) {
-            recordId = dbService.getRecordId(catInfo)
-        }
-        dbService.save(UserInfoType::class, recordId, catInfo.toString())
+        user.data?.catalogIds = catalogIds.toList()
+        userRepo.save(user)
     }
 
     override fun assignedUsers(principal: Principal?, id: String): ResponseEntity<List<String>> {
 
         val result: MutableList<String> = ArrayList()
-        dbService.acquireDatabase().use {
-            val query = listOf(QueryField("catalogIds", id))
-            val findOptions = FindOptions(
-                queryType = QueryType.CONTAINS,
-                resolveReferences = false
-            )
-            val info = dbService.findAll(UserInfoType::class, query, findOptions)
-            info.hits.forEach { result.add(it["userId"].asText()) }
-        }
+        val query = listOf(QueryField("catalogIds", id))
+        val findOptions = FindOptions(
+            queryType = QueryType.CONTAINS,
+            resolveReferences = false
+        )
+//            val info = dbService.findAll(UserInfoType::class, query, findOptions)
+        // TODO: migrate
+        val info = userRepo.findAllByCatalogId(id)
+
+        info.forEach { result.add(it.userId) }
         return ResponseEntity.ok(result)
     }
 
     override fun switchCatalog(principal: Principal?, catalogId: String): ResponseEntity<Void> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        dbService.acquireDatabase().use {
-            val query = listOf(QueryField("userId", userId))
-            val findOptions = FindOptions(
-                queryType = QueryType.EXACT,
-                resolveReferences = false
-            )
-            val info = dbService.findAll(UserInfoType::class, query, findOptions)
-            val objectNode = when (info.totalHits) {
-                0L -> ObjectMapper().createObjectNode()
-                1L -> (info.hits[0] as ObjectNode)
-                else -> {
-                    throw PersistenceException.withMultipleEntities(
-                        userId,
-                        UserInfoType::class.simpleName,
-                        dbService.currentCatalog
-                    )
-                }
-            }.put("currentCatalogId", catalogId)
 
-            dbService.save(UserInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
-            return ResponseEntity.ok().build()
-        }
+        val user = userRepo.findByUserId(userId)
+        /*val objectNode = when (info.totalHits) {
+            0L -> ObjectMapper().createObjectNode()
+            1L -> (info.hits[0] as ObjectNode)
+            else -> {
+                throw PersistenceException.withMultipleEntities(
+                    userId,
+                    UserInfoType::class.simpleName,
+                    dbService.currentCatalog
+                )
+            }
+        }.put("currentCatalogId", catalogId)*/
+        user.data?.currentCatalogId = catalogId
+
+//        dbService.save(UserInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
+        userRepo.save(user)
+        return ResponseEntity.ok().build()
     }
 
     override fun refreshSession(): ResponseEntity<Void> {
