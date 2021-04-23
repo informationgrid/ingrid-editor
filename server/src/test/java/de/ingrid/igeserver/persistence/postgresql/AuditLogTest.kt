@@ -5,6 +5,7 @@ import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryOperator
 import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
+import de.ingrid.igeserver.repository.AuditLogRepository
 import de.ingrid.igeserver.services.AuditLogger
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.spring.SpringListener
@@ -26,32 +27,22 @@ class AuditLogTest : AnnotationSpec() {
 
     @Autowired
     private lateinit var auditLog: AuditLogger
-
+    
     @Autowired
-    private lateinit var dbService: PostgreSQLDatabase
+    private lateinit var auditRepo: AuditLogRepository
 
     @Test
     fun `logging a message`() {
 
-        val oldCount = dbService.findAll(AuditLogRecordType::class).size
+        val oldCount = auditRepo.count()
 
         auditLog.log("category", "action", "target", null, "audit.data-history")
 
-        Assertions.assertThat(dbService.findAll(AuditLogRecordType::class).size).isEqualTo(oldCount + 1)
+        Assertions.assertThat(auditRepo.count()).isEqualTo(oldCount + 1)
 
-        val queryMap = listOfNotNull(
-                QueryField("logger", "audit.data-history"),
-                QueryField("target", "target")
-        ).toList()
+        val result = auditRepo.findAllByLoggerAndData_Target("audit.data-history", "target")
 
-        val result = dbService.acquireDatabase("is_not_used_by_postgresql").use {
-            val findOptions = FindOptions(
-                    queryOperator = QueryOperator.AND
-            )
-            dbService.findAll(AuditLogRecordType::class, queryMap, findOptions)
-        }
-
-        Assertions.assertThat(result.totalHits).isEqualTo(1)
-        Assertions.assertThat(result.hits[0].get("target")?.textValue()).isEqualTo("target")
+        Assertions.assertThat(result.size).isEqualTo(1)
+        Assertions.assertThat(result[0].data?.target).isEqualTo("target")
     }
 }

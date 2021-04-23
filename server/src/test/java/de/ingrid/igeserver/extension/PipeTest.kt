@@ -43,7 +43,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadUpdate(data)
-            val context = DefaultContext(null)
+            val context = DefaultContext("", null)
 
             val result = updatePipe.runFilters(payload, context)
 
@@ -68,7 +68,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
-            val context = DefaultContext(null)
+            val context = DefaultContext("", null)
 
             val result = publishPipe.runFilters(payload, context)
 
@@ -92,7 +92,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadCreate(data)
-            val context = DefaultContext(null)
+            val context = DefaultContext("", null)
 
             val result = createPipe.runFilters(payload, context)
 
@@ -113,7 +113,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
-            val context = DefaultContext("profileA")
+            val context = DefaultContext("", "profileA")
 
             val result = publishPipe.runFilters(payload, context)
 
@@ -140,7 +140,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
-            val context = DefaultContext(null)
+            val context = DefaultContext("", null)
 
             val result = publishPipe.runFilters(payload, context)
 

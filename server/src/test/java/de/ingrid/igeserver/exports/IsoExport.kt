@@ -2,6 +2,7 @@ package de.ingrid.igeserver.exports
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.exports.iso19115.Iso19115Exporter
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import io.kotest.core.spec.style.AnnotationSpec
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert.assertThat
@@ -16,10 +17,11 @@ class IsoExport : AnnotationSpec() {
 
     @Test
     fun normalExport() {
-        val json =
-            "{\"title\": \"Test Export 1\", \"description\": \"This is the description of the exported document\"}"
-        val jsonNode = ObjectMapper().readTree(json)
-        val result = (exporter.run(jsonNode) as String).replace("\n\\s+".toRegex(), "")
+        val doc = Document().apply { 
+            title = "Test Export 1"
+            data.put("description", "This is the description of the exported document")
+        }
+        val result = (exporter.run(doc) as String).replace("\n\\s+".toRegex(), "")
         assertThat(
             result, CoreMatchers.containsString(
                 "<gmd:title>" +
@@ -38,9 +40,13 @@ class IsoExport : AnnotationSpec() {
 
     @Test
     fun anchorLink() {
-        val json = "{ \"keywords\": [{ \"name\": \"test-keyword 1\", \"link\": \"http://abc.de/xyz\"}]}"
+        val json = "[{ \"name\": \"test-keyword 1\", \"link\": \"http://abc.de/xyz\"}]"
         val jsonNode = ObjectMapper().readTree(json)
-        val result = (exporter.run(jsonNode) as String).replace("\n\\s+".toRegex(), "")
+        val doc = Document().apply {
+            title = "Test Export 1"
+            data.put("keywords", jsonNode)
+        }
+        val result = (exporter.run(doc) as String).replace("\n\\s+".toRegex(), "")
         assertThat(
             result, CoreMatchers.containsString(
                 "<gmx:Anchor xlink:href=\"http://abc.de/xyz\">test-keyword 1</gmx:Anchor>"
