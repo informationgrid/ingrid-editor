@@ -40,9 +40,9 @@ class AuditLogTest : AnnotationSpec() {
 
         Assertions.assertThat(auditRepo.count()).isEqualTo(oldCount + 1)
 
-        val result = auditRepo.findAllByLoggerAndData_Target("audit.data-history", "target")
+        val result = auditRepo.findAllByLogger("audit.data-history").filter { it.message?.target == "target" }
 
         Assertions.assertThat(result.size).isEqualTo(1)
-        Assertions.assertThat(result[0].data?.target).isEqualTo("target")
+        Assertions.assertThat(result[0].message?.target).isEqualTo("target")
     }
 }
