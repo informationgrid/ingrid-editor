@@ -75,7 +75,7 @@ class Migration : ApplicationRunner {
             );
             INSERT INTO version_info (id, key, value) VALUES (1, 'schema_version', '0') ON CONFLICT DO NOTHING; 
         """.trimIndent()
-        entityManager.createNativeQuery(sql)
+        entityManager.createNativeQuery(sql).executeUpdate()
 
     }
 }
