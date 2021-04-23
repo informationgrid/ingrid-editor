@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface AuditLogRepository : JpaRepository<AuditLogRecord, Int> {
     
-    fun findAllByLoggerAndData_Target(logger: String, data_target: String): List<AuditLogRecord>
+    fun findAllByLogger(logger: String): List<AuditLogRecord>
 }

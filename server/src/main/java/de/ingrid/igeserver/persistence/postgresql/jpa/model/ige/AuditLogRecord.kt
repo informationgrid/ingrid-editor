@@ -20,7 +20,7 @@ class AuditLogRecord {
 
     @Type(type = "jsonb")
     @Column(name = "message", columnDefinition = "jsonb")
-    var data: AuditLogRecordData? = null
+    var message: AuditLogRecordData? = null
 
     @Column
     var file: String? = null
