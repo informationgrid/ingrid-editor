@@ -151,11 +151,11 @@ class CatalogService @Autowired constructor(
     }
 
     fun createCatalog(catalog: Catalog): Catalog {
-        val id = catalog.name.toLowerCase().replace(" ".toRegex(), "_")
-        if (!catalogExists(id)) {
+        catalog.identifier = catalog.name.toLowerCase().replace(" ".toRegex(), "_")
+        if (!catalogExists(catalog.identifier)) {
             return catalogRepo.save(catalog)
         }
-        return getCatalogById(id)
+        return getCatalogById(catalog.identifier)
     }
 
     private fun catalogExists(name: String): Boolean {
