@@ -25,5 +25,6 @@ export class Catalog {
     this.adminUser = dataFromServer.adminUser;
     this.created = dataFromServer.created;
     this.modified = dataFromServer.modified;
+    this.countDocuments = dataFromServer.countDocuments;
   }
 }
