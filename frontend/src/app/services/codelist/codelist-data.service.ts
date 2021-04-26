@@ -43,6 +43,6 @@ export class CodelistDataService {
   }
 
   resetCodelist(id: string) {
-    return this.http.delete<CodelistBackend>(this.configuration.backendUrl + 'codelist/manage/' + id);
+    return this.http.delete<CodelistBackend[]>(this.configuration.backendUrl + 'codelist/manage/' + id);
   }
 }

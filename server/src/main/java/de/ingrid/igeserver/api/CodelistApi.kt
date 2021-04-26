@@ -51,7 +51,7 @@ interface CodelistApi {
     @DeleteMapping(value = ["/manage/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun resetCatalogCodelist(
         principal: Principal?,
-        @Parameter() @PathVariable id: String
-    ): ResponseEntity<CodeList>
+        @Parameter() @PathVariable id: String?
+    ): ResponseEntity<List<CodeList>>
 
 }

@@ -117,7 +117,7 @@ export class CatalogCodelistsComponent implements OnInit {
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        this.codelistService.resetCodelist(this.selectedCodelist.id).subscribe();
+        this.codelistService.resetCodelist(this.selectedCodelist?.id ?? null).subscribe();
       }
     });
   }

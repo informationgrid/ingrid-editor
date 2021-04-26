@@ -51,15 +51,21 @@ class CodelistApiController : CodelistApi {
     }
 
     @Transactional
-    override fun resetCatalogCodelist(principal: Principal?, id: String): ResponseEntity<CodeList> {
+    override fun resetCatalogCodelist(principal: Principal?, id: String?): ResponseEntity<List<CodeList>> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val catalog = catalogService.getCatalogById(catalogId)
         
-        catalogService.initializeCodelists(catalogId, catalog.type, id)
+        val ident = if (id == "null") null else id
+        catalogService.initializeCodelists(catalogId, catalog.type, ident)
         
-        val response = handler.getCatalogCodelists(catalogId)
-            .find { it.id == id }
+        val response = if (ident == null) {
+            handler.getCatalogCodelists(catalogId)
+        } else {
+            listOfNotNull(
+                handler.getCatalogCodelists(catalogId).find { it.id == id }
+            )
+        }
         
         return ResponseEntity.ok(response)
         

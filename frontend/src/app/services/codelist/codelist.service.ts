@@ -5,7 +5,7 @@ import {CodelistStore} from '../../store/codelist/codelist.store';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {buffer, distinct, filter, map, switchMap, tap} from 'rxjs/operators';
-import {arrayUpdate} from '@datorama/akita';
+import {applyTransaction, arrayUpdate, arrayUpsert} from '@datorama/akita';
 
 export interface SelectOption {
   label: string;
@@ -160,11 +160,18 @@ export class CodelistService {
   resetCodelist(id: string) {
     return this.dataService.resetCodelist(id)
       .pipe(
-        map(codelist => this.prepareCodelists([codelist])[0]),
-        tap(codelist => this.store.update(({catalogCodelists}) => ({
-            catalogCodelists: arrayUpdate(catalogCodelists, id, codelist)
-          }))
-        )
+        map(codelists => this.prepareCodelists(codelists)),
+        tap(codelists => this.updateStore(codelists))
       );
+  }
+
+  private updateStore(codelists: Codelist[]) {
+    applyTransaction(() => {
+      codelists.forEach(codelist => {
+        this.store.update(({catalogCodelists}) => ({
+          catalogCodelists: arrayUpsert(catalogCodelists, codelist.id, codelist)
+        }));
+      });
+    });
   }
 }
