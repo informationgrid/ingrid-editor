@@ -48,12 +48,12 @@ class M020_AddCodelistTable : MigrationBase("0.20") {
             log.info("Create table codelist")
             entityManager.createNativeQuery(sql).executeUpdate()
         }
+    }
 
+    override fun postExec() {
         catalogService.getCatalogs().forEach { catalog ->
             log.info("Migrate catalog codelists for catalog: ${catalog.name}")
             catalogService.initializeCodelists(catalog.identifier, catalog.type)
         }
-
     }
-
 }

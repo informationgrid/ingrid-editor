@@ -122,8 +122,10 @@ class UsersApiController : UsersApi {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val user = keycloakService.getUser(principal, userId)
+        
+        val roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?)
 
-        val lastLogin = this.getLastLogin(principal, user.login)
+        val lastLogin = this.getLastLogin(principal, user.login, roles)
         val dbIds = catalogService.getCatalogsForUser(user.login)
         val dbIdsValid: MutableSet<String> = HashSet()
         val assignedCatalogs: MutableList<Catalog> =
@@ -146,13 +148,13 @@ class UsersApiController : UsersApi {
             null
         }
 
-        val userInfo = de.ingrid.igeserver.model.UserInfo(
+        val userInfo = UserInfo(
             userId = user.login,
             name = user.firstName + ' ' + user.lastName,
             lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
             firstName = user.firstName,
             assignedCatalogs = assignedCatalogs,
-            roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?),
+            roles = roles,
             currentCatalog = catalog,
             version = getVersion(),
             lastLogin = lastLogin
@@ -160,10 +162,10 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(userInfo)
     }
 
-    private fun getLastLogin(principal: Principal?, userId: String): Date? {
-        val lastLoginKeyCloak = keycloakService.getLatestLoginDate(principal, userId)
+    private fun getLastLogin(principal: Principal?, userIdent: String, roles: Set<String>?): Date? {
+        val lastLoginKeyCloak = keycloakService.getLatestLoginDate(principal, userIdent)
         if (lastLoginKeyCloak != null ){
-            var recentLogins = catalogService.getRecentLoginsForUser(userId)
+            var recentLogins = catalogService.getRecentLoginsForUser(userIdent)
             when (recentLogins.size) {
                 0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
                 1 -> recentLogins.add(lastLoginKeyCloak)
@@ -179,7 +181,15 @@ class UsersApiController : UsersApi {
                     }
                 }
             }
-            catalogService.setRecentLoginsForUser(userId, recentLogins.toTypedArray())
+            var user = userRepo.findByUserId(userIdent)
+            if (user == null && catalogService.isSuperAdmin(roles)) {
+                user = UserInfo().apply { 
+                    userId = userIdent
+                    data = UserInfoData() }
+            }
+            if (user != null) {
+                catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
+            }
             return recentLogins[0]
         }
         return null
@@ -215,7 +225,7 @@ class UsersApiController : UsersApi {
 
         val isNewEntry = user == null
         val objectMapper = ObjectMapper()
-        val catalogIds: MutableSet<String> = HashSet()
+        var catalogIds: MutableSet<String> = HashSet()
 
         if (isNewEntry) {
             user = UserInfo().apply {
@@ -232,13 +242,13 @@ class UsersApiController : UsersApi {
         } else {
             // make list to hashset
 //            user.data.put("catalogIds", catInfo["catalogIds"])
+            catalogIds = user?.data?.catalogIds?.toHashSet() ?: HashSet()
         }
-        val catalogIdsArray = user.data?.catalogIds?.toHashSet() ?: HashSet()
         
         // update catadmin in catalog Info
         catalogIds.add(catalogName)
 
-        user.data?.catalogIds = catalogIds.toList()
+        user?.data?.catalogIds = catalogIds.toList()
         userRepo.save(user)
     }
 
@@ -274,7 +284,7 @@ class UsersApiController : UsersApi {
                 )
             }
         }.put("currentCatalogId", catalogId)*/
-        user.data?.currentCatalogId = catalogId
+        user?.data?.currentCatalogId = catalogId
 
 //        dbService.save(UserInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
         userRepo.save(user)

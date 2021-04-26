@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 interface UserRepository : JpaRepository<UserInfo, Int> {
     // TODO: implement caching
     @Cacheable(value = ["user"])
-    fun findByUserId(userId: String): UserInfo
+    fun findByUserId(userId: String): UserInfo?
     
     // TODO: implement
     @Query("SELECT u FROM UserInfo u")

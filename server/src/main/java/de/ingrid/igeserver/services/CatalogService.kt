@@ -2,6 +2,7 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.model.User
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
+import kotlin.collections.HashSet
 
 @Service
 class CatalogService @Autowired constructor(
@@ -36,7 +38,7 @@ class CatalogService @Autowired constructor(
 
     fun getCurrentCatalogForUser(userId: String): String {
 
-        val userData = userRepo.findByUserId(userId).data ?: throw NotFoundException.withMissingUserCatalog(userId)
+        val userData = userRepo.findByUserId(userId)?.data ?: throw NotFoundException.withMissingUserCatalog(userId)
 
         val currentCatalogId = userData.currentCatalogId
 
@@ -57,17 +59,17 @@ class CatalogService @Autowired constructor(
 
         val user = userRepo.findByUserId(userId)
 
-        return if (user.getCatalogIds().isEmpty()) {
+        return if (user?.data?.catalogIds?.isEmpty() == true) {
             log.error("The user '$userId' does not seem to be assigned to any database.")
             HashSet()
         } else {
-            user.getCatalogIds().toSet()
+            user?.data?.catalogIds?.toSet() ?: HashSet()
         }
     }
 
     fun getRecentLoginsForUser(userId: String): MutableList<Date> {
 
-        val userData = userRepo.findByUserId(userId).data
+        val userData = getUser(userId)?.data
 
         return if (userData == null) {
             log.error("The user '$userId' does not seem to be assigned to any database.")
@@ -77,7 +79,7 @@ class CatalogService @Autowired constructor(
             ?.toMutableList() ?: mutableListOf()
     }
 
-    fun getUser(userId: String): UserInfo {
+    fun getUser(userId: String): UserInfo? {
         return userRepo.findByUserId(userId)
     }
 
@@ -121,14 +123,17 @@ class CatalogService @Autowired constructor(
 
     fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String>?) {
         val user = userRepo.findByUserId(userId)
-        user.data?.catalogIds = assignedCatalogs?.toList()
+        user?.data?.catalogIds = assignedCatalogs?.toList() ?: emptyList()
         userRepo.save(user)
     }
 
-    fun setRecentLoginsForUser(userId: String, recentLogins: Array<Date>) {
-        val user = userRepo.findByUserId(userId)
+    fun setRecentLoginsForUser(user: UserInfo, recentLogins: Array<Date>) {
         user.data?.recentLogins = recentLogins.map { it.time }
         userRepo.save(user)
+    }
+
+    fun isSuperAdmin(roles: Set<String>?): Boolean {
+        return roles?.contains("admin") ?: false
     }
 
     fun getAvailableCatalogs(): List<CatalogProfile> {
@@ -186,7 +191,7 @@ class CatalogService @Autowired constructor(
 
         val user = convertUser(catalogId, userModel)
         val userFromDB = getUser(user.userId)
-        user.id = userFromDB.id
+        user.id = userFromDB?.id
         user.data?.creationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
         user.data?.modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
         userRepo.save(user)
@@ -195,7 +200,7 @@ class CatalogService @Autowired constructor(
 
     private fun convertUser(catalogId: String, user: User): UserInfo {
         val dbUser = try { getUser(user.login) } catch (e: Exception) { UserInfo()}
-        return dbUser.apply { 
+        return dbUser?.apply {
             userId = user.login
             if (data == null) {
                 data = UserInfoData(
@@ -208,7 +213,7 @@ class CatalogService @Autowired constructor(
                 )
             }
             data!!.groups?.set(catalogId, user.groups)
-        }
+        } ?: throw ClientException.withReason("Could not convert user. Does the user exist?")
     }
 
     fun deleteUser(userId: String) {
@@ -221,9 +226,9 @@ class CatalogService @Autowired constructor(
 
         val user = convertUser(catalogId, userModel)
         val userFromDB = getUser(user.userId)
-        user.id = userFromDB.id
+        user.id = userFromDB?.id
         user.data?.modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
-        user.data?.groups = userFromDB.data?.groups
+        user.data?.groups = userFromDB?.data?.groups ?: hashMapOf()
         userRepo.save(user)
 
     }

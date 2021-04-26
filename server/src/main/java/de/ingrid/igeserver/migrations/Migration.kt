@@ -17,7 +17,7 @@ class Migration : ApplicationRunner {
 
     @Autowired
     lateinit var migrationStrategies: List<MigrationStrategy>
-    
+
     @Autowired
     lateinit var versionRepo: VersionInfoRepository
 
@@ -44,13 +44,33 @@ class Migration : ApplicationRunner {
             return
         }
 
-        strategies.forEach { strategy ->
-            log.info("Executing strategy: ${strategy.version}")
-            strategy.exec()
+        var lastSuccessfulMigration: Version? = null
+        try {
+            // first execute all migrations
+            strategies.forEach { strategy ->
+                log.info("Executing strategy: ${strategy.version}")
+                strategy.exec()
+                lastSuccessfulMigration = strategy.version
+            }
+            
+            // second execute all post migrations which need the latest database model
+            strategies.forEach { strategy ->
+                log.info("Executing post strategy: ${strategy.version}")
+                strategy.postExec()
+            }
+        } catch (e: Exception) {
+            log.error("There was an error during migration")
+            setVersionSafe(lastSuccessfulMigration)
+            throw e
         }
 
-        val latestVersion = strategies[strategies.size - 1].version
-        setVersion(latestVersion.version)
+        setVersionSafe(lastSuccessfulMigration)
+    }
+
+    private fun setVersionSafe(lastSuccessfulMigration: Version?) {
+        if (lastSuccessfulMigration != null) {
+            setVersion(lastSuccessfulMigration!!.version)
+        }
     }
 
     private fun getStrategiesAfter(version: String): List<MigrationStrategy> {
@@ -61,14 +81,14 @@ class Migration : ApplicationRunner {
 
 
     private fun getVersion(): String {
-            val info = versionRepo.findById(1).get()
-            return info.value ?: "0"
+        val info = versionRepo.findById(1).get()
+        return info.value ?: "0"
     }
 
     private fun setVersion(version: String) {
-            val info = versionRepo.findById(1).get()
-            info.value = version
-            versionRepo.save(info)
+        val info = versionRepo.findById(1).get()
+        info.value = version
+        versionRepo.save(info)
     }
 
     private fun setupVersioning() {
