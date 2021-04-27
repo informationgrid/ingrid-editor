@@ -27,6 +27,7 @@ export class CodelistsComponent implements OnInit {
 
   disableSyncButton = false;
   showTable = false;
+  showMore = false;
 
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery) {

@@ -1,50 +1,44 @@
-<mat-card>
-    <mat-card-content>
-        Die Codelisten werden von einem zentralen Repository verwaltet und werden mit dem IGE-NG synchronisiert.
-    </mat-card-content>
-
-    <mat-card-actions>
-        <button mat-stroked-button color="primary" (click)="updateCodelists()" [disabled]="disableSyncButton">
-            Codelisten synchronisieren
+<div class="header">
+    <div>
+        Letzte Synchronisation erfolgte am ...
+        <button mat-icon-button class="dark menu-button" [class.expanded]="showMore" (click)="showMore = !showMore">
+            <mat-icon class="animated">keyboard_arrow_down</mat-icon>
         </button>
-    </mat-card-actions>
-</mat-card>
+    </div>
+    <div fxFlex></div>
+    <div>
+        <button mat-flat-button color="primary" (click)="updateCodelists()" [disabled]="disableSyncButton">
+            Synchronisieren
+        </button>
+    </div>
+</div>
 
+<ige-filter-select [options]="codelists"
+                   [labelFormat]="codelistLabelFormat"
+                   placeholder="Codeliste auswählen"
+                   (reset)="resetInput()"
+                   (optionSelect)="updateCodelistTable($event)"></ige-filter-select>
 
-<mat-card>
-    <mat-card-title>Codelisten</mat-card-title>
+<table mat-table [dataSource]="codelistDatasource" matSort [class.invisible]="!showTable" class="width-100">
 
-    <mat-card-content>
+    <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Id</th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+    </ng-container>
 
-        <ige-filter-select [options]="codelists"
-                           [labelFormat]="codelistLabelFormat"
-                           placeholder="Codeliste"
-                           (reset)="resetInput()"
-                           (optionSelect)="updateCodelistTable($event)"></ige-filter-select>
+    <ng-container matColumnDef="value">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Wert</th>
+        <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+    </ng-container>
 
-        <table mat-table [dataSource]="codelistDatasource" matSort [class.invisible]="!showTable" class="width-100">
+    <ng-container matColumnDef="data">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Data</th>
+        <td mat-cell *matCellDef="let element"> {{element.data}} </td>
+    </ng-container>
 
-            <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Id</th>
-                <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-            </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-            <ng-container matColumnDef="value">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Wert</th>
-                <td mat-cell *matCellDef="let element"> {{element.value}} </td>
-            </ng-container>
+</table>
 
-            <ng-container matColumnDef="data">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Data</th>
-                <td mat-cell *matCellDef="let element"> {{element.data}} </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-        </table>
-
-        <div *ngIf="!showTable">Wählen Sie eine Codeliste aus</div>
-
-    </mat-card-content>
-</mat-card>
+<div *ngIf="!showTable">Wählen Sie eine Codeliste aus</div>
