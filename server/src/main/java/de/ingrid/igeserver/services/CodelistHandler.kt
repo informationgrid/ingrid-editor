@@ -40,6 +40,7 @@ class CodelistHandler @Autowired constructor(
                     id = it.identifier
                     name = it.name
                     description = it.description
+                    defaultEntry = it.defaultEntry
                     entries = it.data?.map { entry -> CodeListEntry().apply {
                         id = entry.get("id").asText()
                         description = if (entry.get("description") == null || entry.get("description").isNull) null else entry.get("description").asText()

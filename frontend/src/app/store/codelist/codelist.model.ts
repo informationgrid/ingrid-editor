@@ -3,6 +3,7 @@ export interface Codelist {
   name: string;
   description?: string;
   entries: CodelistEntry[];
+  default: string;
 }
 
 export interface CodelistEntry {

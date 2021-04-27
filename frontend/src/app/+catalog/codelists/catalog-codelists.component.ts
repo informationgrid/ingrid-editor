@@ -58,7 +58,7 @@ export class CatalogCodelistsComponent implements OnInit {
     const oldId = entry?.id;
     const editEntry = entry ? entry : {
       fields: {}
-    }
+    };
     this.dialog.open(UpdateCodelistComponent, {
       minWidth: 400,
       disableClose: true,
@@ -135,5 +135,17 @@ export class CatalogCodelistsComponent implements OnInit {
 
   addCodelist() {
     this.editCodelist();
+  }
+
+  setAsDefault(entry: CodelistEntry) {
+    const other = JSON.parse(JSON.stringify(this.selectedCodelist));
+    other.default = entry.id;
+    this.selectedCodelist = other;
+  }
+
+  removeDefault() {
+    const other = JSON.parse(JSON.stringify(this.selectedCodelist));
+    other.default = null;
+    this.selectedCodelist = other;
   }
 }

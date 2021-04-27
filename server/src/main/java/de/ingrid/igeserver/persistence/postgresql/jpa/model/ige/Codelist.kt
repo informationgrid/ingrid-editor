@@ -34,5 +34,8 @@ class Codelist {
     @JoinColumn(name = "catalog_id", nullable = false)
     @JsonIgnore
     var catalog: Catalog? = null
+    
+    @Column
+    var defaultEntry: String? = null
 
 }

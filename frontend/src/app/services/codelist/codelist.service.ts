@@ -85,7 +85,8 @@ export class CodelistService {
       id: codelist.id,
       name: codelist.name,
       description: codelist.description,
-      entries: this.prepareEntries(codelist.entries)
+      entries: this.prepareEntries(codelist.entries),
+      default: codelist.defaultEntry
     }));
   }
 
@@ -144,7 +145,8 @@ export class CodelistService {
       id: codelist.id,
       name: codelist.name,
       description: codelist.description,
-      entries: this.prepareEntriesForBackend(codelist.entries)
+      entries: this.prepareEntriesForBackend(codelist.entries),
+      defaultEntry: codelist.default
     };
   }
 

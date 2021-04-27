@@ -24,6 +24,20 @@
   background-color: #FFFFFF;
 }
 
-.reset-button {
+.header-button {
   padding: 6px 0 0 12px;
+}
+
+.default {
+  background-color: $ige-mark-color;
+
+  &:hover {
+    background-color: darken($ige-mark-color, 5%) !important;
+  }
+}
+
+.default-item {
+  font-size: 14px;
+  color: $ige-primary;
+  padding-right: 16px;
 }
