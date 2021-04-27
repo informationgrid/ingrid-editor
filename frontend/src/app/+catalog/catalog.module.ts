@@ -25,15 +25,17 @@ import {FormFieldsModule} from '../form-fields/form-fields.module';
 import {PageTemplateModule} from '../shared/page-template/page-template.module';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatChipsModule} from '@angular/material/chips';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        FormsModule,
-        FlexLayoutModule,
-        MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-        routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule, PageTemplateModule, MatMenuModule, MatChipsModule
-    ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FlexLayoutModule,
+    MatSnackBarModule,
+    MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
+    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule, PageTemplateModule, MatMenuModule, MatChipsModule
+  ],
   providers: [
     CatalogService
   ],

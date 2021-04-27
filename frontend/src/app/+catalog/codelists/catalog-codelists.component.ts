@@ -1,15 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {CodelistService, SelectOption} from '../../services/codelist/codelist.service';
 import {Codelist, CodelistEntry} from '../../store/codelist/codelist.model';
-import {debounceTime, delay, map, tap} from 'rxjs/operators';
+import {delay, map, tap} from 'rxjs/operators';
 import {CodelistQuery} from '../../store/codelist/codelist.query';
 import {MatDialog} from '@angular/material/dialog';
 import {UpdateCodelistComponent} from './update-codelist/update-codelist.component';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
 import {FormControl} from '@angular/forms';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
-@UntilDestroy()
 @Component({
   selector: 'ige-catalog-codelists',
   templateUrl: './catalog-codelists.component.html',
@@ -25,33 +24,17 @@ export class CatalogCodelistsComponent implements OnInit {
       tap(options => this.setInitialValue(options))
     );
 
-  private setInitialValue(options: SelectOption[]) {
-    if (options?.length > 0) {
-      if (this.selectedCodelist) {
-        this.initialValue = options.find(option => option.value === this.selectedCodelist.id);
-      } else {
-        this.initialValue = options[0];
-      }
-      this.selectCodelist(this.initialValue);
-    }
-  }
-
   selectedCodelist: Codelist;
   initialValue: SelectOption;
   descriptionCtrl = new FormControl();
-  showSavedState = false;
 
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery,
+              private _snackBar: MatSnackBar,
               private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
-    this.descriptionCtrl.valueChanges
-      .pipe(
-        untilDestroyed(this),
-        debounceTime(1000)
-      ).subscribe(text => this.save());
   }
 
   editCodelist(entry?: CodelistEntry) {
@@ -75,7 +58,7 @@ export class CatalogCodelistsComponent implements OnInit {
         other.entries.push(result);
       }
 
-      this.save(other);
+      this.selectedCodelist = other;
     });
   }
 
@@ -96,7 +79,7 @@ export class CatalogCodelistsComponent implements OnInit {
         .findIndex(e => e.id === oldId);
       const other = JSON.parse(JSON.stringify(this.selectedCodelist));
       other.entries.splice(index, 1);
-      this.save(other);
+      this.selectedCodelist = other;
     });
   }
 
@@ -123,15 +106,16 @@ export class CatalogCodelistsComponent implements OnInit {
     });
   }
 
-  save(codelist?: Codelist) {
-    const patchValue = codelist || <Codelist>{
+  save() {
+    const patchValue = <Codelist>{
       ...this.selectedCodelist,
       description: this.descriptionCtrl.value
     };
 
-    this.codelistService.updateCodelist(patchValue).subscribe();
-    this.showSavedState = true;
-    setTimeout(() => this.showSavedState = false, 3000);
+    this.codelistService.updateCodelist(patchValue)
+      .pipe(
+        tap(() => this._snackBar.open('Codeliste gespeichert'))
+      ).subscribe();
   }
 
   addCodelist() {
@@ -148,5 +132,16 @@ export class CatalogCodelistsComponent implements OnInit {
     const other = JSON.parse(JSON.stringify(this.selectedCodelist));
     other.default = null;
     this.selectedCodelist = other;
+  }
+
+  private setInitialValue(options: SelectOption[]) {
+    if (options?.length > 0) {
+      if (this.selectedCodelist) {
+        this.initialValue = options.find(option => option.value === this.selectedCodelist.id);
+      } else {
+        this.initialValue = options[0];
+      }
+      this.selectCodelist(this.initialValue);
+    }
   }
 }

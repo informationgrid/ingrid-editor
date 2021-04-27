@@ -51,6 +51,7 @@ import {TimePipe} from './directives/time.pipe';
 import {FormFieldsModule} from './form-fields/form-fields.module';
 import {AnimationWrapper, AnimationWrapperComponent} from './animation-wrapper.component';
 import {NG_FORMS_MANAGER_CONFIG, NgFormsManagerConfig} from '@ngneat/forms-manager';
+import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material/snack-bar';
 
 registerLocaleData(de);
 
@@ -164,6 +165,9 @@ export function ConfigLoader(configService: ConfigService) {
     },
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {panelClass: 'mat-dialog-override'}
+    },
+    {
+      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2000}
     },
 
     {
