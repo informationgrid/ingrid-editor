@@ -102,6 +102,7 @@ export class CatalogCodelistsComponent implements OnInit {
 
   selectCodelist(option: SelectOption) {
     this.selectedCodelist = this.codelistQuery.getCatalogCodelist(option.value);
+    this.selectedCodelist.entries.sort((a,b) => a.id.localeCompare(b.id));
     this.descriptionCtrl.setValue(this.selectedCodelist.description, {emitEvent: false});
   }
 
