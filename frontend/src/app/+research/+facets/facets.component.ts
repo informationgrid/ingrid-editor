@@ -90,7 +90,11 @@ export class FacetsComponent implements AfterViewInit {
         .subscribe(() => {
           // @ts-ignore
           (<Map>this.leafletReference)._onResize();
-          setTimeout(() => this.updateMap(this.convertParameterToLocation(this._parameter)));
+          if (Object.keys(this._parameter).length > 0) {
+            setTimeout(() => this.updateMap(this.convertParameterToLocation(this._parameter)));
+          } else {
+            setTimeout(() => this.leafletService.zoomToInitialBox(this.leafletReference));
+          }
         });
     }
   }

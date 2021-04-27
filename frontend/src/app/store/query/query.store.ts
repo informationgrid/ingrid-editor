@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {EntityState, EntityStore, StoreConfig} from '@datorama/akita';
 import {Query} from './query.model';
-import {FacetUpdate} from '../../+research/facets/facets.component';
+import {FacetUpdate} from '../../+research/+facets/facets.component';
 
 export interface QueryState extends EntityState<Query> {
   ui: {

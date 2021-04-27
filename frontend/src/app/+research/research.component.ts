@@ -3,7 +3,7 @@ import {ResearchResponse, ResearchService} from './research.service';
 import {debounceTime, distinct, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormControl} from '@angular/forms';
-import {FacetUpdate} from './facets/facets.component';
+import {FacetUpdate} from './+facets/facets.component';
 import {QueryQuery} from '../store/query/query.query';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SaveQueryDialogComponent} from './save-query-dialog/save-query-dialog.component';

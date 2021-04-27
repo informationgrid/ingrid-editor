@@ -1,15 +1,3 @@
-<!--
-<div class="main-section-title">Suchen nach</div>
-<mat-button-toggle-group (change)="sendUpdate()" fxFlexAlign="start" [(ngModel)]="model.type">
-    <mat-button-toggle value="selectDocuments">Dokument</mat-button-toggle>
-    <mat-button-toggle value="selectAddresses">Addresse</mat-button-toggle>
-</mat-button-toggle-group>
-
-<div class="main-section-title filter-title">Filter</div>
-
-<mat-divider></mat-divider>
--->
-
 <div *ngFor="let group of filterGroup" fxLayout="column" fxLayoutGap="10px">
     <div class="section">
         <div class="section-title">{{group.label}}</div>
