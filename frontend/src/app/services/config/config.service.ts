@@ -27,7 +27,7 @@ export interface UserInfo {
   lastLogin?: Date;
   version: Version;
 
-  useElasticsearch: boolean;
+  useElasticsearch?: boolean;
 }
 
 @Injectable({

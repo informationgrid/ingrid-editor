@@ -21,7 +21,7 @@ describe('PermissionsShowComponent', () => {
     expect(spectator).toBeTruthy();
   });
 
-  it('should show permissions grouped by their types', () => {
+  xit('should show permissions grouped by their types', () => {
     /*const user = <User>{
       permissions: [
         {type: PermissionType.PAGE, value: 'Dashboard'},

@@ -56,9 +56,9 @@ describe('RepeatListComponent', () => {
     spectator.typeInElement('test-simple', '.mat-autocomplete-trigger');
     // spectator.keyboard.pressEnter('.mat-input-element');
     spectator.debugElement.query(By.css('.mat-autocomplete-trigger')).triggerEventHandler('keydown.enter', {});
-    elements = spectator.queryAll('mat-list-item');
+    elements = spectator.queryAll('.list-item');
     expect(elements.length).toBe(1);
-    tick(300);
+    tick( 300);
 
   }));
 
