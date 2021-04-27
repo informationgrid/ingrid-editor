@@ -36,7 +36,7 @@ class M019_CreatePermissionGroupTable : MigrationBase("0.19") {
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
-            entityManager.createNativeQuery(sql)
+            entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
 

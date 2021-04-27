@@ -37,7 +37,7 @@ class `M019-1_AdaptUserInfoTable` : MigrationBase("0.19.1") {
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
-            entityManager.createNativeQuery(sql)
+            entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
 

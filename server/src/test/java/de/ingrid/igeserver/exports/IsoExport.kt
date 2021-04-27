@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.exports
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.iso19115.Iso19115Exporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import io.kotest.core.spec.style.AnnotationSpec
@@ -19,7 +20,9 @@ class IsoExport : AnnotationSpec() {
     fun normalExport() {
         val doc = Document().apply { 
             title = "Test Export 1"
-            data.put("description", "This is the description of the exported document")
+            data = jacksonObjectMapper().createObjectNode().apply {
+                put("description", "This is the description of the exported document")
+            }
         }
         val result = (exporter.run(doc) as String).replace("\n\\s+".toRegex(), "")
         assertThat(
@@ -44,7 +47,9 @@ class IsoExport : AnnotationSpec() {
         val jsonNode = ObjectMapper().readTree(json)
         val doc = Document().apply {
             title = "Test Export 1"
-            data.put("keywords", jsonNode)
+            data = jacksonObjectMapper().createObjectNode().apply {
+                put("keywords", jsonNode)
+            }
         }
         val result = (exporter.run(doc) as String).replace("\n\\s+".toRegex(), "")
         assertThat(

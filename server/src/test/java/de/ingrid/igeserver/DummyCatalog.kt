@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service
 @Service
 class DummyCatalog : CatalogProfile {
     override val identifier: String
-        get() = TODO("Not yet implemented")
+        get() = "DUMMY"
     override val title: String
-        get() = TODO("Not yet implemented")
+        get() = "DUMMY Catalog"
     override val description: String?
-        get() = TODO("Not yet implemented")
+        get() = "This catalog is only used for test purpose"
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         TODO("Not yet implemented")

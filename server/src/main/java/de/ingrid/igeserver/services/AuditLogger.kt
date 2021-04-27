@@ -65,14 +65,7 @@ class AuditLogger {
                 if (from != null) QueryField("message.time", " >=", from.format(ISO_LOCAL_DATE)) else null,
                 if (to != null) QueryField("message.time", " <=", to.plusDays(1).format(ISO_LOCAL_DATE)) else null
         ).toList()
-
-            val findOptions = FindOptions(
-                    queryType = QueryType.EXACT,
-                    resolveReferences = false,
-                    queryOperator = QueryOperator.AND,
-                    sortField = sort,
-                    sortOrder = sortOrder
-            )
+        
             val result = auditLogRepo.findAll()
             return FindAllResults(result.size.toLong(), emptyList()) // TODO: migrate
     }

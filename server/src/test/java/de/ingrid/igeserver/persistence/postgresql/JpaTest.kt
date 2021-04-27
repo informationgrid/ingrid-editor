@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.persistence.postgresql
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.IgeServer
@@ -44,6 +45,7 @@ class JpaTest : AnnotationSpec() {
         }
             val doc = Document().apply {
                 title = "Test Document"
+                type = "AddressDoc"
                 data = address
                 catalog = cat
             }
@@ -73,9 +75,9 @@ class JpaTest : AnnotationSpec() {
 
             val addressData = loadedDoc.data
             assertThat(addressData).isNotNull
-            assertThat(addressData.get("firstName")).isEqualTo("Petra")
-            assertThat(addressData.get("lastName")).isEqualTo("Mustermann")
-            assertThat(addressData.get("company")).isEqualTo("LWL-Schulverwaltung Münster")
+            assertThat(addressData.get("firstName").asText()).isEqualTo("Petra")
+            assertThat(addressData.get("lastName").asText()).isEqualTo("Mustermann")
+            assertThat(addressData.get("company").asText()).isEqualTo("LWL-Schulverwaltung Münster")
     }
 
     @Test
@@ -88,9 +90,10 @@ class JpaTest : AnnotationSpec() {
         em.persist(cat)
 
         val address = mapOf("firstName" to "Petra", "lastName" to "Mustermann", "company" to "LWL-Schulverwaltung Münster")
-        val addressJson = jacksonObjectMapper().readTree(address.toString())
+        val addressJson = jacksonObjectMapper().convertValue(address, JsonNode::class.java)
         val doc = Document().apply {
             title = "Test Document"
+            type = "AddressDoc"
             data = addressJson as ObjectNode
             catalog = cat
         }
@@ -113,16 +116,16 @@ class JpaTest : AnnotationSpec() {
         val loadedDoc = em.find(Document::class.java, doc.id)
         assertThat(loadedDoc?.id).isEqualTo(doc.id)
         assertThat(loadedDoc?.title).isEqualTo("Test Document")
-        assertThat(loadedDoc?.type).isEqualTo("")
+        assertThat(loadedDoc?.type).isEqualTo("AddressDoc")
         assertThat(loadedDoc?.catalog).isEqualTo(loadedCat)
         assertThat(loadedDoc?.created).isNotNull
         assertThat(loadedDoc?.modified).isEqualTo(loadedDoc?.created)
 
-        val addressData = loadedDoc.data as Map<*, *>
+        val addressData = loadedDoc.data as ObjectNode
         assertThat(addressData).isNotNull
-        assertThat(addressData["firstName"]).isEqualTo("Petra")
-        assertThat(addressData["lastName"]).isEqualTo("Mustermann")
-        assertThat(addressData["company"]).isEqualTo("LWL-Schulverwaltung Münster")
+        assertThat(addressData.get("firstName").asText()).isEqualTo("Petra")
+        assertThat(addressData.get("lastName").asText()).isEqualTo("Mustermann")
+        assertThat(addressData.get("company").asText()).isEqualTo("LWL-Schulverwaltung Münster")
     }
 
     @Test
@@ -141,6 +144,7 @@ class JpaTest : AnnotationSpec() {
         }
         val doc = Document().apply {
             title = "Test Document"
+            type = "AddressDoc"
             data = address
             catalog = cat
         }
@@ -166,9 +170,9 @@ class JpaTest : AnnotationSpec() {
 
         val addressData = loadedDoc.data
         assertThat(addressData).isNotNull
-        assertThat(addressData.get("firstName")).isEqualTo("Petra")
-        assertThat(addressData.get("lastName")).isEqualTo("Mustermann")
-        assertThat(addressData.get("company")).isEqualTo("LWL-Schulverwaltung Münster")
+        assertThat(addressData.get("firstName").asText()).isEqualTo("Petra")
+        assertThat(addressData.get("lastName").asText()).isEqualTo("Mustermann")
+        assertThat(addressData.get("company").asText()).isEqualTo("LWL-Schulverwaltung Münster")
 
         val q2 = em.createNativeQuery("SELECT * FROM document d JOIN catalog c ON d.catalog_id = c.id WHERE c.type = :type")
                 .unwrap(NativeQuery::class.java)
