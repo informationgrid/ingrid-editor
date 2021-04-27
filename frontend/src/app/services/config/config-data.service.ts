@@ -27,7 +27,8 @@ export class ConfigDataService {
           currentCatalog: json.currentCatalog ? new Catalog(json.currentCatalog) : {},
           catalogProfile: json.catalogProfile,
           version: json.version,
-          lastLogin: new Date(json.lastLogin)
+          lastLogin: new Date(json.lastLogin),
+          useElasticsearch: json.useElasticsearch
         } as UserInfo;
       })
       .catch((e: IgeException | string) => {
@@ -53,7 +54,8 @@ export class ConfigDataService {
           userId: undefined,
           catalogProfile: undefined,
           currentCatalog: undefined,
-          version: undefined
+          version: undefined,
+          useElasticsearch: false
         };
       });
   }

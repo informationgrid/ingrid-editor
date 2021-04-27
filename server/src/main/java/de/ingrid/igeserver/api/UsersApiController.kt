@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
+import org.springframework.core.env.Environment
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -40,6 +41,9 @@ class UsersApiController : UsersApi {
 
     @Autowired
     private lateinit var authUtils: AuthUtils
+
+    @Autowired
+    private lateinit var env: Environment
 
     @Autowired(required = false)
     private var buildInfo: BuildProperties? = null
@@ -157,7 +161,8 @@ class UsersApiController : UsersApi {
             roles = roles,
             currentCatalog = catalog,
             version = getVersion(),
-            lastLogin = lastLogin
+            lastLogin = lastLogin,
+            useElasticsearch = env.activeProfiles.contains("elasticsearch") 
         )
         return ResponseEntity.ok(userInfo)
     }

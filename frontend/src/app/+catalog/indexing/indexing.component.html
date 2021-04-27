@@ -1,6 +1,8 @@
 <page-template title="Indizierung">
 
     <ng-container help>
+        <p>Hier wird festgelegt in welchen Zeitabständen der Katalog indiziert werden soll. Für die Definition des
+            Intervalls wird der Cron Ausdruck verwendet.</p>
         <p>Ein Cron Ausdruck ist folgendermaßen aufgebaut:</p>
 
         <div class="cron-explain">
@@ -50,8 +52,8 @@
         </p>
     </ng-container>
 
-    <div main fxLayout="column" fxFlex>
-        <div fxLayoutAlign="end end">
+    <div main fxLayout="column" fxFlex *ngIf="isActivated; else noElasticsearch">
+        <div class="header" fxLayoutAlign="end end">
             <button mat-flat-button color="primary" (click)="index()">Indizieren</button>
         </div>
 
@@ -65,5 +67,9 @@
             <button mat-stroked-button (click)="updatePattern(cronField.value)" [disabled]="!valid">Übernehmen</button>
         </div>
     </div>
+
+    <ng-template #noElasticsearch>
+        Elasticsearch ist nicht im Backend aktiviert, welches für die Indizierung benötigt wird.
+    </ng-template>
 
 </page-template>

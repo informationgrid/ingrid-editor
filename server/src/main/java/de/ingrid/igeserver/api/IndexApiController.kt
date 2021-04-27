@@ -15,7 +15,7 @@ import java.security.Principal
 @Profile("elasticsearch")
 @RestController
 @RequestMapping(path = ["/api"])
-class IndexApiController @Autowired constructor(private val catalogService: CatalogService, private val indexService: IndexService, private val indexingTask: IndexingTask) : IndexApi {
+class IndexApiController @Autowired constructor(private val indexService: IndexService, private val indexingTask: IndexingTask) : IndexApi {
     override fun startIndexing(principal: Principal?, options: IndexRequestOptions): ResponseEntity<Void> {
 
         indexingTask.startIndexing(options.catalogId, options.format)

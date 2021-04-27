@@ -11,6 +11,7 @@ data class UserInfo(val userId: String? = null,
                     val roles: Set<String>?, 
                     val currentCatalog: Catalog?, 
                     val version: Version,
-                    val lastLogin: Date?)
+                    val lastLogin: Date?,
+                    val useElasticsearch: Boolean?)
 
 data class Version(val version: String?, val date: Date?, val commitId: String?)
