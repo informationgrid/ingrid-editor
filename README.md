@@ -31,6 +31,15 @@ a docker image, which itself is in a docker container. To build the image execut
 
 > docker push docker-registry.wemove.com/postgres-ige-ng-test
 
+The schema and some example data can be generated automatically by editing the file 
+`server/src/develop/resources/application-dev.properties` setting the property:
+```properties
+spring.jpa.hibernate.ddl-auto=create
+```
+When starting the server the schema should be created and the file `import.sql` should be imported.
+Afterwards you should set the property back to `none`, to prevent recreation of the schema, which removes
+all data from the database.
+
 ### Start the client and server
 For IntelliJ configuration see the section below.
 
@@ -60,7 +69,7 @@ For the client just run `npm start` in the frontend directory. When developing f
   * **NOTE** Java 11 SDK is required
   * Right click file *server/src/main/java/de/ingrid/igeserver/IgeServer.kt* > Run
   * Run > Edit Configurations > Kotlin > IgeServerKt
-    * VM options: `-Dspring.profiles.active=default,dev,mcloud,postgresql` 
+    * VM options: `-Dspring.profiles.active=dev,mcloud,postgresql,elasticsearch` 
     * Shorten Commandline: JAR manifest
     * JRE: *path/to/java-11-jdk*
 * Install **frontend packages** 
@@ -76,7 +85,7 @@ For the client just run `npm start` in the frontend directory. When developing f
       * Interpreter path: *empty*
     * *ultimate edition* npm
       * It just works (Andre)
-
+  
  You are all set. Run server and frontend with the appropriate run configuration.
 
 ## Apache Configuration
