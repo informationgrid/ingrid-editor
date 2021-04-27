@@ -18,6 +18,26 @@ class AssignmentKey : Serializable {
 
     @Column(name="user_id")
     var userId: Int = 0
+    
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AssignmentKey
+
+        if (catalogId != other.catalogId) return false
+        if (managerId != other.managerId) return false
+        if (userId != other.userId) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = catalogId
+        result = 31 * result + managerId
+        result = 31 * result + userId
+        return result
+    }
 }
 
 @NoArgs
