@@ -59,6 +59,7 @@ export class CatalogCodelistsComponent implements OnInit {
       }
 
       this.selectedCodelist = other;
+      this.sortCodelist(this.selectedCodelist);
     });
   }
 
@@ -85,8 +86,15 @@ export class CatalogCodelistsComponent implements OnInit {
 
   selectCodelist(option: SelectOption) {
     this.selectedCodelist = this.codelistQuery.getCatalogCodelist(option.value);
-    this.selectedCodelist.entries.sort((a,b) => a.id.localeCompare(b.id));
+    const other = JSON.parse(JSON.stringify(this.selectedCodelist));
+    this.sortCodelist(other);
+    this.selectedCodelist = other;
     this.descriptionCtrl.setValue(this.selectedCodelist.description, {emitEvent: false});
+  }
+
+  private sortCodelist(codelist: Codelist) {
+    codelist.entries
+      .sort((a, b) => a.id.localeCompare(b.id));
   }
 
   resetCodelist() {
@@ -124,13 +132,7 @@ export class CatalogCodelistsComponent implements OnInit {
 
   setAsDefault(entry: CodelistEntry) {
     const other = JSON.parse(JSON.stringify(this.selectedCodelist));
-    other.default = entry.id;
-    this.selectedCodelist = other;
-  }
-
-  removeDefault() {
-    const other = JSON.parse(JSON.stringify(this.selectedCodelist));
-    other.default = null;
+    other.default = entry?.id ?? null;
     this.selectedCodelist = other;
   }
 

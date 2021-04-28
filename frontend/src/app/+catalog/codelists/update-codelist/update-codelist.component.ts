@@ -10,10 +10,12 @@ import {CodelistEntry} from '../../../store/codelist/codelist.model';
 export class UpdateCodelistComponent implements OnInit {
   model: CodelistEntry;
   fields: any[];
+  isNew = true;
 
   constructor(@Inject(MAT_DIALOG_DATA) public entry: CodelistEntry,
               private dialogRef: MatDialogRef<UpdateCodelistComponent>) {
     this.model = {...entry};
+    this.isNew = entry.id === undefined;
     this.fields = Object.keys(entry.fields).map(key => ({
       key: key,
       value: entry.fields[key]

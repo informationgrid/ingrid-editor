@@ -1,0 +1,63 @@
+@import "src/variables";
+
+.entry-list {
+
+  display: block;
+  padding-top: 12px;
+
+  .mat-expansion-panel-header-description {
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .mat-expansion-panel-header-title {
+    align-items: center;
+
+    mat-icon {
+      margin-right: 24px;
+    }
+  }
+
+  .mat-expansion-panel {
+    border-radius: 0;
+  }
+
+  mat-expansion-panel-header {
+    height: 60px;
+    padding-right: 0;
+  }
+  .mat-expansion-panel:first-of-type, .mat-expansion-panel:last-of-type {
+    border-radius: 0 !important;
+  }
+}
+
+.default {
+  background-color: $ige-mark-color;
+
+  &:hover {
+    background-color: darken($ige-mark-color, 5%) !important;
+  }
+}
+
+.default-item {
+  font-size: 14px;
+  color: $ige-primary;
+  padding-right: 16px;
+}
+
+.identifier {
+  color: $ige-comment-color;
+  font-size: 16px;
+}
+.name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.expander {
+  transition: all 0.2s linear;
+
+  &.expanded {
+    transform: scale(1,-1);
+  }
+}

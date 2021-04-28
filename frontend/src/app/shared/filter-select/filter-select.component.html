@@ -5,9 +5,12 @@
            matInput
            [formControl]="control"
            [matAutocomplete]="auto">
-    <button *ngIf="control.value?.length > 0" mat-icon-button matSuffix class="close" (click)="resetInput()">
-        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-    </button>
+        <button *ngIf="control.value?.length > 0" mat-icon-button matSuffix class="close" (click)="resetInput()">
+            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+        </button>
+        <!--<div matSuffix class="arrow-wrapper">
+            <div class="arrow"></div>
+        </div>-->
     <mat-autocomplete autoActiveFirstOption  #auto="matAutocomplete" (optionSelected)="updateSelection($event.option.value)">
         <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
             {{labelFormat(option)}}

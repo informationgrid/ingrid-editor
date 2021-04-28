@@ -26,6 +26,7 @@ import {AddButtonModule} from '../shared/add-button/add-button.module';
 import {NewCatalogDialogModule} from './catalog-management/new-catalog/new-catalog-dialog.module';
 import {MatMenuModule} from '@angular/material/menu';
 import {PageTemplateModule} from '../shared/page-template/page-template.module';
+import {CodelistPresenterModule} from '../shared/codelist-presenter/codelist-presenter.module';
 
 
 @NgModule({
@@ -37,7 +38,7 @@ import {PageTemplateModule} from '../shared/page-template/page-template.module';
         CommonModule, MatTabsModule,
         routing, MatCheckboxModule, MatFormFieldModule, MatInputModule, FlexModule, MatCardModule, MatButtonModule, MatTableModule, MatSortModule,
         FilterSelectModule, MatIconModule, MatDialogModule, MatListModule, FormsModule, MatProgressSpinnerModule, AddButtonModule,
-        NewCatalogDialogModule, MatMenuModule, PageTemplateModule
+        NewCatalogDialogModule, MatMenuModule, PageTemplateModule, CodelistPresenterModule
     ]
 })
 export class SettingsModule {

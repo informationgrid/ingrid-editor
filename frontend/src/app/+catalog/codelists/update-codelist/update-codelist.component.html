@@ -36,5 +36,5 @@
 <mat-dialog-actions>
     <button mat-flat-button mat-dialog-close>Abbrechen</button>
     <div fxFlex></div>
-    <button mat-flat-button color="primary" (click)="closeWithResult()">Ändern</button>
+    <button mat-flat-button color="primary" (click)="closeWithResult()">{{isNew ? 'Hinzufügen' : 'Ändern'}}</button>
 </mat-dialog-actions>

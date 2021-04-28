@@ -28,6 +28,7 @@ export class CodelistsComponent implements OnInit {
   disableSyncButton = false;
   showTable = false;
   showMore = false;
+  selectedCodelist: Codelist;
 
   constructor(private codelistService: CodelistService,
               private codelistQuery: CodelistQuery) {
@@ -64,13 +65,11 @@ export class CodelistsComponent implements OnInit {
 
   updateCodelistTable(option: SelectOption) {
     if (!option) {
-      this.codelistDatasource.data = [];
+      this.selectedCodelist = null;
       return;
     }
 
-    let entity = this.codelistQuery.getEntity(option.value);
-    this.codelistDatasource.data = entity.entries;
-    this.showTable = true;
+    this.selectedCodelist = this.codelistQuery.getEntity(option.value);
   }
 
   resetInput() {

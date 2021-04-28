@@ -5,39 +5,7 @@
   padding-top: 1px;
 }
 
-.save-info {
-  padding: 20px;
-  color: $ige-comment-color;
-  text-align: center;
-}
-
-.identifier {
-  color: $ige-comment-color;
-}
-
-.codelist-title {
-  font-size: 16px !important;
-  font-weight: 500 !important;
-}
-
-.mat-list-item {
-  background-color: #FFFFFF;
-}
-
 .header-button {
   padding: 6px 0 0 12px;
 }
 
-.default {
-  background-color: $ige-mark-color;
-
-  &:hover {
-    background-color: darken($ige-mark-color, 5%) !important;
-  }
-}
-
-.default-item {
-  font-size: 14px;
-  color: $ige-primary;
-  padding-right: 16px;
-}

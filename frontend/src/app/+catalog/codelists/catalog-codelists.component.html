@@ -55,41 +55,11 @@
                     <div fxFlex></div>
                     <button mat-stroked-button color="primary" (click)="addCodelist()">Hinzufügen</button>
                 </div>
-                <mat-list class="hover-list">
-                    <mat-list-item *ngFor="let entry of selectedCodelist.entries" [class.default]="selectedCodelist.default === entry.id">
-                        <mat-icon mat-list-icon>list</mat-icon>
-                        <p mat-line class="identifier">
-                            {{entry.id}}
-                        </p>
-                        <p mat-line class="codelist-title">
-                            {{entry.fields['de']}}
-                        </p>
-                        <div fxFlex></div>
 
-                        <div *ngIf="selectedCodelist.default === entry.id" class="default-item">Defaultwert</div>
-
-                        <button mat-icon-button class="menu-button" [matMenuTriggerFor]="codelistMenu">
-                            <mat-icon svgIcon="Mehr"></mat-icon>
-                        </button>
-                        <mat-menu #codelistMenu="matMenu">
-                            <button mat-menu-item (click)="editCodelist(entry)">
-                                Bearbeiten
-                            </button>
-                            <button *ngIf="selectedCodelist.default !== entry.id" mat-menu-item (click)="setAsDefault(entry)">
-                                Als Defaultwert übernehmen
-                            </button>
-                            <button *ngIf="selectedCodelist.default === entry.id" mat-menu-item (click)="removeDefault()">
-                                Defaultwert entfernen
-                            </button>
-                            <button mat-menu-item (click)="removeCodelist(entry)">
-                                Löschen
-                            </button>
-                        </mat-menu>
-
-                        <mat-divider></mat-divider>
-
-                    </mat-list-item>
-                </mat-list>
+                <ige-codelist-presenter [codelist]="selectedCodelist"
+                                        (edit)="editCodelist($event)"
+                                        (remove)="removeCodelist($event)"
+                                        (setDefault)="setAsDefault($event)"></ige-codelist-presenter>
             </div>
         </ng-container>
     </div>

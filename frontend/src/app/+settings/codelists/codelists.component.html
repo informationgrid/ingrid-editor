@@ -13,32 +13,13 @@
     </div>
 </div>
 
-<ige-filter-select [options]="codelists"
+<ige-filter-select [options]="codelists" class="white-bg"
                    [labelFormat]="codelistLabelFormat"
-                   placeholder="Codeliste auswählen"
+                   placeholder="Codeliste wählen..."
                    (reset)="resetInput()"
                    (optionSelect)="updateCodelistTable($event)"></ige-filter-select>
 
-<table mat-table [dataSource]="codelistDatasource" matSort [class.invisible]="!showTable" class="width-100">
+<div>{{selectedCodelist?.description}}</div>
 
-    <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Id</th>
-        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="value">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Wert</th>
-        <td mat-cell *matCellDef="let element"> {{element.value}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="data">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Data</th>
-        <td mat-cell *matCellDef="let element"> {{element.data}} </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-</table>
-
-<div *ngIf="!showTable">Wählen Sie eine Codeliste aus</div>
+<ige-codelist-presenter [codelist]="selectedCodelist"
+                        [hideMenu]="true"></ige-codelist-presenter>

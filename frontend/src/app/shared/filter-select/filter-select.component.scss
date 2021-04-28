@@ -3,3 +3,15 @@
   height: 20px !important;
   font-size: 0 !important;
 }
+
+.arrow-wrapper {
+  display: inline-block;
+  .arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid;
+    margin: 0 4px;
+  }
+}
