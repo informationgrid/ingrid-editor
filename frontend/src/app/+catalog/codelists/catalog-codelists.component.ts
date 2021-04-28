@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CodelistService, SelectOption} from '../../services/codelist/codelist.service';
 import {Codelist, CodelistEntry} from '../../store/codelist/codelist.model';
-import {delay, map, tap} from 'rxjs/operators';
+import {delay, filter, map, tap} from 'rxjs/operators';
 import {CodelistQuery} from '../../store/codelist/codelist.query';
 import {MatDialog} from '@angular/material/dialog';
 import {UpdateCodelistComponent} from './update-codelist/update-codelist.component';
@@ -37,8 +37,12 @@ export class CatalogCodelistsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  addCodelist() {
+    this.editCodelist();
+  }
+
   editCodelist(entry?: CodelistEntry) {
-    const oldId = entry?.id;
+    const oldId = entry?.id ?? null;
     const editEntry = entry ? entry : {
       fields: {}
     };
@@ -46,21 +50,12 @@ export class CatalogCodelistsComponent implements OnInit {
       minWidth: 400,
       disableClose: true,
       data: editEntry
-    }).afterClosed().subscribe(result => {
-      if (!result) return;
-      const other = JSON.parse(JSON.stringify(this.selectedCodelist));
-
-      if (entry) {
-        const index = this.selectedCodelist.entries
-          .findIndex(e => e.id === oldId);
-        other.entries.splice(index, 1, result);
-      } else {
-        other.entries.push(result);
-      }
-
-      this.selectedCodelist = other;
-      this.sortCodelist(this.selectedCodelist);
-    });
+    }).afterClosed()
+      .pipe(
+        filter(result => result),
+        tap(result => this.modifyCodelistEntry(oldId, result)),
+        tap(() => this.save())
+      ).subscribe();
   }
 
   removeCodelist(entry: CodelistEntry) {
@@ -73,15 +68,12 @@ export class CatalogCodelistsComponent implements OnInit {
           {text: 'Löschen', alignRight: true, id: 'confirm', emphasize: true}
         ]
       }
-    }).afterClosed().subscribe(result => {
-      if (!result) return;
-      const oldId = entry.id;
-      const index = this.selectedCodelist.entries
-        .findIndex(e => e.id === oldId);
-      const other = JSON.parse(JSON.stringify(this.selectedCodelist));
-      other.entries.splice(index, 1);
-      this.selectedCodelist = other;
-    });
+    }).afterClosed()
+      .pipe(
+        filter(result => result),
+        tap(() => this.removeEntryFromCodelist(entry)),
+        tap(() => this.save())
+      ).subscribe();
   }
 
   selectCodelist(option: SelectOption) {
@@ -92,9 +84,9 @@ export class CatalogCodelistsComponent implements OnInit {
     this.descriptionCtrl.setValue(this.selectedCodelist.description, {emitEvent: false});
   }
 
-  private sortCodelist(codelist: Codelist) {
-    codelist.entries
-      .sort((a, b) => a.id.localeCompare(b.id));
+  setAsDefault(entry: CodelistEntry) {
+    this.selectedCodelist.default = entry?.id ?? null;
+    this.save();
   }
 
   resetCodelist() {
@@ -115,25 +107,34 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   save() {
-    const patchValue = <Codelist>{
-      ...this.selectedCodelist,
-      description: this.descriptionCtrl.value
-    };
-
-    this.codelistService.updateCodelist(patchValue)
+    this.codelistService.updateCodelist(this.selectedCodelist)
       .pipe(
         tap(() => this._snackBar.open('Codeliste gespeichert'))
       ).subscribe();
   }
 
-  addCodelist() {
-    this.editCodelist();
+  private modifyCodelistEntry(oldId: string, result) {
+    if (oldId === null) {
+      this.selectedCodelist.entries.push(result);
+    } else {
+      const index = this.selectedCodelist.entries
+        .findIndex(e => e.id === oldId);
+      this.selectedCodelist.entries.splice(index, 1, result);
+    }
+
+    this.sortCodelist(this.selectedCodelist);
   }
 
-  setAsDefault(entry: CodelistEntry) {
-    const other = JSON.parse(JSON.stringify(this.selectedCodelist));
-    other.default = entry?.id ?? null;
-    this.selectedCodelist = other;
+  private removeEntryFromCodelist(entry: CodelistEntry) {
+    const oldId = entry.id;
+    const index = this.selectedCodelist.entries
+      .findIndex(e => e.id === oldId);
+    this.selectedCodelist.entries.splice(index, 1);
+  }
+
+  private sortCodelist(codelist: Codelist) {
+    codelist.entries
+      .sort((a, b) => a.id.localeCompare(b.id));
   }
 
   private setInitialValue(options: SelectOption[]) {

@@ -35,21 +35,13 @@
                         (click)="resetCodelist()">Zurücksetzen
                 </button>
             </div>
-            <div class="header-button">
-                <button mat-button mat-flat-button color="primary"
-                        (click)="save()">Speichern
-                </button>
-            </div>
         </div>
 
         <ng-container *ngIf="(hasCatalogCodelists | async) === true">
 
             <div *ngIf="selectedCodelist" class="entries-container">
 
-                <mat-form-field appearance="outline" class="width-100 white-bg">
-                    <mat-label>Beschreibung</mat-label>
-                    <textarea matInput name="description" [formControl]="descriptionCtrl"></textarea>
-                </mat-form-field>
+                <div>{{selectedCodelist.description}}</div>
 
                 <div>
                     <div fxFlex></div>
