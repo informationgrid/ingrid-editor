@@ -31,13 +31,19 @@ export class HeaderMoreComponent implements OnInit {
   @Input() admins: FrontendUser[];
   @Input() form: FormGroup;
   @Input() showMore = false;
+  standinUsers: String[];
 
   constructor(private profileQuery: ProfileQuery) {
   }
 
   ngOnInit() {
+    this.standinUsers = this.getStandinUsers()
   }
 
+  getStandinUsers(): String[]{
+    // TODO implement
+    return ["User1","user2"]
+  }
 
   getCreationDate() {
     // TODO implement

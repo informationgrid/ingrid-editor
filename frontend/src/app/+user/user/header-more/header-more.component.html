@@ -12,26 +12,20 @@
         <div>Geändert am</div>
         <div *ngIf="user.modificationDate"><span [title]="user.modificationDate | date:'long'">{{user.modificationDate | date:'dd.MM.yyyy'}}</span></div>
     </div>
-    <div fxLayout="row">
+    <div *ngIf="user.manager" fxLayout="row">
         <div>Verantwortlich</div>
-        <div>{{user.manager ? user.manager : "N/A"}}</div>
+        <div>{{user.manager}}</div>
     </div>
-    <div fxLayout="row">
+    <div *ngIf="standinUsers?.length" fxLayout="row">
         <div>Vertritt</div>
-        <div>???</div>
+        <div>
+            <mat-chip-list><mat-chip *ngFor="let standUser of standinUsers">{{standUser}}</mat-chip></mat-chip-list>
+        </div>
     </div>
-    <div fxLayout="row">
+    <div *ngIf="user.standin" fxLayout="row">
         <div>Wird vertreten von</div>
-        <mat-form-field appearance="outline">
-            <mat-label>Wird vertreten von</mat-label>
-            <mat-select formControlName="standin" >
-                <mat-option *ngFor="let admin of admins" [value]="admin.login">
-                    {{admin.login}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+        <div>{{user.standin}}</div>
     </div>
-
     <div fxLayout="row" class="padding-below">
         <div>ID/login</div>
         <div>{{user.login}}</div>
