@@ -3,6 +3,8 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.*
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.EntityWithCatalog
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import javax.persistence.*
 import java.io.Serializable
 
@@ -51,6 +53,7 @@ class CatalogManagerAssignment : EntityWithCatalog  {
     @ManyToOne(fetch=FetchType.LAZY)
     @MapsId("catalogId")
     @JoinColumn(name="catalog_id", nullable=false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     override var catalog: Catalog? = null
 

@@ -1,7 +1,8 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.*
-import com.fasterxml.jackson.databind.node.ObjectNode
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
 import javax.persistence.*
 
@@ -28,9 +29,9 @@ class UserInfo {
         joinColumns = [JoinColumn(name = "user_info_id")],
         inverseJoinColumns = [JoinColumn(name = "catalog_id")]
     )
-    @JsonAlias("catalogIds") // hint for model registry
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    var catalogs: MutableSet<Catalog> = LinkedHashSet<Catalog>()
+    var catalogs: MutableSet<Catalog> = LinkedHashSet()
 
     @Transient
     @JsonSetter("catalogIds")
@@ -51,7 +52,7 @@ class UserInfo {
      */
     @ManyToOne
     @JoinColumn(name = "cur_catalog_id")
-    @JsonAlias("curCatalog") // hint for model registry
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var curCatalog: Catalog? = null
 

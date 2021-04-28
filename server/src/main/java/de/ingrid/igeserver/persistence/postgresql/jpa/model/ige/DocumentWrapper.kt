@@ -1,6 +1,8 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.*
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.util.*
 import javax.persistence.*
 
@@ -15,6 +17,7 @@ class DocumentWrapper {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "catalog_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var catalog: Catalog? = null
 
@@ -37,6 +40,7 @@ class DocumentWrapper {
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="parent_id", nullable=true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonAlias("_parent") // hint for model registry
     @JsonIgnore
     var parent: DocumentWrapper? = null

@@ -8,8 +8,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
-import org.hibernate.annotations.NamedQueries
-import org.hibernate.annotations.NamedQuery
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
 import java.util.*
@@ -18,11 +18,6 @@ import kotlin.jvm.Transient
 
 @Entity
 @Table(name="catalog")
-@NamedQueries(
-    NamedQuery(
-        name="Catalog_FindByIdentifier", query="from Catalog where identifier = :identifier"
-    )
-)
 class Catalog {
 
     @Id
@@ -55,6 +50,7 @@ class Catalog {
     var modified: OffsetDateTime? = null
 
     @ManyToMany(mappedBy="catalogs", fetch= FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var users: MutableSet<UserInfo> = LinkedHashSet<UserInfo>()
 
@@ -79,15 +75,6 @@ class Catalog {
     companion object {
         private val dateService: DateService? by lazy {
             SpringContext.getBean(DateService::class.java)
-        }
-        /**
-         * Retrieve a catalog instance by it's identifier
-         */
-        fun getByIdentifier(entityManager: EntityManager, identifier: String?): Catalog? {
-            if (identifier == null) return null
-
-            return entityManager.createNamedQuery("Catalog_FindByIdentifier", Catalog::class.java).
-            setParameter("identifier", identifier).singleResult
         }
     }
 

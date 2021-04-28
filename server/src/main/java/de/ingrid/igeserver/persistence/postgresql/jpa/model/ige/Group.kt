@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.model.meta.PermissionsData
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
 import javax.persistence.*
 
@@ -23,6 +25,7 @@ class Group {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="catalog_id", nullable=false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var catalog: Catalog? = null
 
