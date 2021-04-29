@@ -2,13 +2,13 @@
                [selectedIndex]="tabIndex"
                (selectedIndexChange)="updateRoute($event)">
     <mat-tab label="Allgemein">
-        <page-template title="Allgemein">
+        <page-template label="Allgemein">
             <general-settings main></general-settings>
         </page-template>
     </mat-tab>
 
     <mat-tab label="Codelist Repository">
-        <page-template title="Codelist Repository">
+        <page-template label="Codelist Repository">
             <div help>
                 Die Codelisten werden von einem zentralen Repository verwaltet und werden mit dem IGE NG synchronisiert.
             </div>
@@ -17,7 +17,7 @@
     </mat-tab>
 
     <mat-tab label="Katalogverwaltung">
-        <page-template title="Katalogverwaltung">
+        <page-template label="Katalogverwaltung">
             <div help>Auf dieser Seite können die Kataloge verwaltet werden.</div>
             <ige-catalog-management main></ige-catalog-management>
         </page-template>
