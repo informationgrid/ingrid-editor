@@ -215,7 +215,10 @@ export class ResearchComponent implements OnInit {
   }
 
   saveQuery(asSql = false) {
-    this.dialog.open(SaveQueryDialogComponent).afterClosed()
+    this.dialog.open(SaveQueryDialogComponent, {
+      hasBackdrop: true,
+      maxWidth: 600
+    }).afterClosed()
       .subscribe(response => {
         if (response) {
           this.researchService.saveQuery(this.prepareQuery(response, asSql))
