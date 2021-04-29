@@ -608,6 +608,10 @@ ige-side-menu {
       height: 6px;
     }
   }
+
+  & > .mat-tab-body-wrapper {
+    flex: 1;
+  }
 }
 
 /* LEAFLET */

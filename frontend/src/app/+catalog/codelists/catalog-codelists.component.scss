@@ -1,11 +1,18 @@
 @import "src/variables";
 
-.entries-container {
-  overflow: auto;
-  padding-top: 1px;
+:host {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 .header-button {
   padding: 6px 0 0 12px;
 }
 
+ige-codelist-presenter {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: 12px;
+}

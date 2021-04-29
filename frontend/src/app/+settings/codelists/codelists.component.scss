@@ -2,7 +2,6 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 20px;
 }
 
 .mat-card {
@@ -16,4 +15,10 @@
 
 ige-filter-select {
   margin-top: 53px;
+}
+
+ige-codelist-presenter {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }

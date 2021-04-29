@@ -4,10 +4,7 @@
 </p>
 
 <div class="header">
-    <div fxFlex></div>
-    <div>
-        <button mat-flat-button color="primary" (click)="showCreateCatalogDialog()">Hinzufügen</button>
-    </div>
+    <button mat-flat-button color="primary" (click)="showCreateCatalogDialog()">Hinzufügen</button>
 </div>
 
 <div>
@@ -34,8 +31,7 @@
 
     <div class="section-title">Weitere Kataloge</div>
     <div fxLayout="row wrap" fxLayoutGap="48px grid">
-        <div *ngFor="let cat of nonActiveCatalogs | async; trackBy:trackByCatalogId" fxFlex="25"
-             class="catalog-wrapper">
+        <div *ngFor="let cat of nonActiveCatalogs | async; trackBy:trackByCatalogId" class="catalog-wrapper" >
             <mat-card class="hover-elevate" [class.selected]="cat.id === currentCatalog">
                 <div class="card-header">
                     <mat-icon>article</mat-icon>
@@ -60,7 +56,12 @@
 
 <ng-template #catContent let-cat="cat">
     <mat-card-title>{{cat.label}}</mat-card-title>
-    <mat-card-subtitle>Erstellt am {{ cat.created | date:'dd.LL.yyyy HH:mm'}}</mat-card-subtitle>
+    <mat-card-subtitle *ngIf="cat.lastDocModification">
+        Letzte Änderung am {{ cat.lastDocModification | date:'dd.LL.yyyy HH:mm'}}
+    </mat-card-subtitle>
+    <mat-card-subtitle *ngIf="!cat.lastDocModification">
+        Erstellt am {{ cat.created | date:'dd.LL.yyyy HH:mm'}}
+    </mat-card-subtitle>
     <mat-card-content>
         <div class="content">{{cat.countDocuments | number}} Datensätze</div>
     </mat-card-content>

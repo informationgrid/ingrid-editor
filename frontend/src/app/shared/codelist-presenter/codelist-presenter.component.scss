@@ -2,9 +2,6 @@
 
 .entry-list {
 
-  display: block;
-  padding-top: 12px;
-
   .mat-expansion-panel-header-description {
     justify-content: flex-end;
     align-items: center;
@@ -60,4 +57,8 @@
   &.expanded {
     transform: scale(1,-1);
   }
+}
+
+.virtual-viewport {
+  height: 100%;
 }

@@ -11,13 +11,18 @@ import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
+import javax.persistence.criteria.*
 
 @Service
 class DocumentService : MapperService() {
@@ -70,7 +75,7 @@ class DocumentService : MapperService() {
      * Get the DocumentWrapper with the given document uuid
      */
     fun getWrapperByDocumentId(id: String, withReferences: Boolean): DocumentWrapper {
-        
+
         return docWrapperRepo.findByUuid(id)
 
     }
@@ -134,7 +139,7 @@ class DocumentService : MapperService() {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
-        
+
         val document = convertToDocument(data)
 
         // run pre-create pipe(s)
@@ -162,7 +167,7 @@ class DocumentService : MapperService() {
         // also run update pipes!
         val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
         val latestDocument = getLatestDocumentVersion(postWrapper, false)
-         
+
         return convertToJsonNode(latestDocument)
     }
 
@@ -170,22 +175,22 @@ class DocumentService : MapperService() {
      * Map data-field from entity to root
      */
     fun convertToJsonNode(document: Document): JsonNode {
-        
+
         val node = jacksonObjectMapper().convertValue(document, ObjectNode::class.java)
         val data = node.remove("data")
         data.fields().forEach { entry ->
             node.replace(entry.key, entry.value)
         }
         return node
-        
+
     }
 
     fun convertToDocument(docJson: JsonNode): Document {
 
         val titleString = docJson.get("title").asText()
-        
-        return Document().apply { 
-            title= titleString
+
+        return Document().apply {
+            title = titleString
             type = docJson.get(FIELD_DOCUMENT_TYPE).asText()
             version = docJson.get(FIELD_VERSION)?.asInt()
             if (docJson.has(FIELD_ID)) {
@@ -193,7 +198,7 @@ class DocumentService : MapperService() {
             }
             data = removeInternalFields(docJson as ObjectNode)
         }
-        
+
     }
 
     private fun removeInternalFields(node: ObjectNode): ObjectNode {
@@ -218,12 +223,12 @@ class DocumentService : MapperService() {
 
         // save document with same ID or new one, if no draft version exists (because the last version is published)
         val dbId = preUpdatePayload.wrapper.draft?.id
-        val createdDate = preUpdatePayload.wrapper.draft?.created ?: preUpdatePayload.wrapper.published?.created 
+        val createdDate = preUpdatePayload.wrapper.draft?.created ?: preUpdatePayload.wrapper.published?.created
 
         // set server side fields from previous document version
         preUpdatePayload.document.id = dbId
         preUpdatePayload.document.created = createdDate
-        
+
         val updatedDoc = docRepo.save(preUpdatePayload.document)
 
         // update wrapper to document association
@@ -280,7 +285,7 @@ class DocumentService : MapperService() {
 
         // run pre-delete pipe(s)
         val wrapper = getWrapperByDocumentId(id, true)
-        
+
         val data = getLatestDocumentVersion(wrapper, false)
         val docTypeName = data.type!!
         val docType = getDocumentType(docTypeName)
@@ -313,7 +318,7 @@ class DocumentService : MapperService() {
         assert(wrapper.draft != null && wrapper.published != null)
 
         wrapper.draft = null
-        val updatedWrapper = docWrapperRepo.save( wrapper)
+        val updatedWrapper = docWrapperRepo.save(wrapper)
 
         val publishedDoc = updatedWrapper.published!!
         publishedDoc.state = DocumentState.PUBLISHED.value
@@ -324,17 +329,6 @@ class DocumentService : MapperService() {
     fun getDocumentStatistic(catalogId: String): StatisticResponse {
 
         // TODO: filter by not marked deleted
-
-        val allDocumentPublishedQuery = listOf(
-            QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value),
-            QueryField(FIELD_PUBLISHED, null, true)
-        )
-
-        val allDocumentDraftsQuery = listOf(
-            QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value),
-            QueryField(FIELD_DOCUMENT_TYPE, DocumentCategory.FOLDER.value, true),
-            QueryField(FIELD_DRAFT, null, true)
-        )
 
         val allData = docWrapperRepo.findAllByCatalog_IdentifierAndCategory(catalogId, DocumentCategory.DATA.value)
         val allDataDrafts = docWrapperRepo.findAllDrafts(catalogId)
@@ -414,5 +408,105 @@ class DocumentService : MapperService() {
         }
 
         return docData
+    }
+
+    fun find(
+        catalogId: String,
+        category: String = "data",
+        query: List<QueryField> = emptyList(),
+        pageRequest: PageRequest = PageRequest.of(0, 10)
+    ): Page<DocumentWrapper> {
+
+        /*val filter = DocumentWrapper().apply {
+            this.catalog = catalogRepo.findByIdentifier(catalogId)
+            this.category = category
+        }*/
+
+        val spec1 = hasTitle(catalogId, category, query)
+        return docWrapperRepo.findAll(spec1, pageRequest)
+
+        /*return docWrapperRepo.findComplex(
+            catalogId,
+            category,
+            query,
+            pageRequest
+        )*/
+
+    }
+
+    fun hasTitle(catalog: String, category: String, queryFields: List<QueryField>): Specification<DocumentWrapper> {
+        return Specification<DocumentWrapper> { wrapper, cq, cb ->
+            val catalogWrapper = wrapper.join<DocumentWrapper, Catalog>("catalog")
+
+//            cb.selectCase<Any>().when(cb.isNull(wrapper.get<Document>("draft")), 1)
+
+            val drafts = wrapper.join<DocumentWrapper, Document>("draft", JoinType.LEFT)
+            val published = wrapper.join<DocumentWrapper, Document?>("published", JoinType.LEFT)
+
+            cq.orderBy(
+                listOf(
+                    cb.desc(drafts.get<String>("modified")),
+                    cb.desc(published.get<String>("modified"))
+                )
+            )
+
+            val preds = queryFields
+                .map { queryField -> createPredicateForField(cb, drafts, published, queryField) }
+
+            cb.and(
+                cb.equal(catalogWrapper.get<String>("identifier"), catalog),
+                cb.equal(wrapper.get<String>("category"), category),
+                cb.and(
+                    *preds.toTypedArray()
+                )
+            )
+
+        }
+    }
+
+    private fun createPredicateForField(
+        cb: CriteriaBuilder,
+        drafts: Join<DocumentWrapper, Document>,
+        published: Join<DocumentWrapper, Document>,
+        queryField: QueryField
+    ): Predicate? {
+        if (queryField.field == "title" || queryField.field == "type") {
+            return if (queryField.invert) {
+                cb.or(
+                    cb.not(cb.like(cb.lower(drafts.get(queryField.field)), "%${queryField.value}%")),
+                    cb.not(cb.like(cb.lower(published.get(queryField.field)), "%${queryField.value}%"))
+                )
+            } else {
+                cb.or(
+                    cb.like(cb.lower(drafts.get(queryField.field)), "%${queryField.value}%"),
+                    cb.like(cb.lower(published.get(queryField.field)), "%${queryField.value}%")
+                )
+            }
+        } else {
+            return if (queryField.invert) {
+                cb.or(
+                    cb.not(cb.equal(createJsonExtract(cb, drafts, queryField.field), queryField.value)),
+                    cb.not(cb.equal(createJsonExtract(cb, published, queryField.field), queryField.value))
+                )
+            } else {
+                cb.or(
+                    cb.equal(createJsonExtract(cb, drafts, queryField.field), queryField.value),
+                    cb.equal(createJsonExtract(cb, published, queryField.field), queryField.value)
+                )
+            }
+        }
+    }
+
+    private fun createJsonExtract(
+        cb: CriteriaBuilder,
+        docJoin: Join<DocumentWrapper, Document>,
+        field: String
+    ): Expression<String>? {
+        return cb.function(
+            "jsonb_extract_path_text",
+            String::class.java,
+            docJoin.get<String>("data"),
+            cb.literal(field)
+        )
     }
 }

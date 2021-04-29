@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.CopyOptions
+import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -248,21 +249,24 @@ class DatasetsApiController @Autowired constructor(
         val category = if (forAddress) "address" else "data"
 
         val sortDirection = if (sortOrder == "asc") Sort.Direction.ASC else Sort.Direction.DESC
-        val sortColumn = "document1.$sort"
-        val docs2 = docWrapperRepo.findComplex(
+        val sortColumn = "draft.$sort"
+        val theQuery = if (query == null) emptyList() else {
+            listOf(QueryField("title", query))
+        }
+        val docs = documentService.find(
             catalogId,
             category,
-            query ?: "test",
+            theQuery,
             PageRequest.of(
                 0,
-                size,
-                Sort.by(sortDirection, sortColumn)
+                size
+//                Sort.by(sortDirection, sortColumn)
             )
         )
 
         val searchResult = SearchResult<JsonNode>()
-        searchResult.totalHits = docs2.totalElements
-        searchResult.hits = docs2.content
+        searchResult.totalHits = docs.totalElements
+        searchResult.hits = docs.content
             .map { doc -> documentService.getLatestDocument(doc) }
             .map { doc -> documentService.convertToJsonNode(doc) }
         return ResponseEntity.ok(searchResult)
