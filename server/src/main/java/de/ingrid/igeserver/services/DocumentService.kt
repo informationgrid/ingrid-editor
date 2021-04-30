@@ -194,7 +194,7 @@ class DocumentService : MapperService() {
             title = titleString
             type = docJson.get(FIELD_DOCUMENT_TYPE).asText()
             version = docJson.get(FIELD_VERSION)?.asInt()
-            if (docJson.has(FIELD_ID)) {
+            if (docJson.hasNonNull(FIELD_ID)) {
                 uuid = docJson.get(FIELD_ID).asText()
             }
             data = removeInternalFields(docJson as ObjectNode)

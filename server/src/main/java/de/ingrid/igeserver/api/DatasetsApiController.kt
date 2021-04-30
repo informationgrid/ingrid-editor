@@ -6,7 +6,6 @@ import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.QueryType
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import java.util.*
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -116,7 +114,6 @@ class DatasetsApiController @Autowired constructor(
         }
 
         val docJson = documentService.convertToJsonNode(doc)
-        // TODO: add new parent to document
         (docJson as ObjectNode).put(FIELD_PARENT, options.destId)
 
         return createCopyAndHandleSubTree(catalogId, docJson, options, documentService.isAddress(wrapper))
@@ -128,46 +125,41 @@ class DatasetsApiController @Autowired constructor(
         options: CopyOptions,
         isAddress: Boolean
     ): JsonNode {
-        val origParentId = doc[FIELD_ID]
+        val origParentId = doc[FIELD_ID].asText()
 
         // when we copy the node, then we also have to reset the id
-        (doc as ObjectNode).put(FIELD_ID, UUID.randomUUID().toString()) // (FIELD_ID, null as String?)
+        (doc as ObjectNode).put(FIELD_ID, null as String?)
 
         val copiedParent = documentService.createDocument(catalogId, doc, isAddress, false) as ObjectNode
 
-        // TODO: migrate
-        /*if (options.includeTree) {
-            val count = handleCopySubTree(catalogId, doc, origParentId, options, isAddress)
+        if (options.includeTree) {
+            val count = handleCopySubTree(catalogId, copiedParent, origParentId, options, isAddress)
             copiedParent.put(FIELD_HAS_CHILDREN, count > 0)
-        }*/
+        }
 
         return copiedParent
     }
 
     private fun handleCopySubTree(
         catalogId: String,
-        parent: Document,
+        parent: JsonNode,
         origParentId: String,
         options: CopyOptions,
         isAddress: Boolean
     ): Long {
 
         // get all children of parent and save those recursively
-        val parentId = parent.uuid
+        val parentId = parent.get(FIELD_ID)?.asText()
         val docs = documentService.findChildrenDocs(catalogId, origParentId, isAddress)
 
         docs.hits.forEach { child ->
 
-//            val id = doc.get(FIELD_ID).asText()
-//            val child = documentService.getWrapperByDocumentId(id, true)
-            // TODO: migrate
-/*
             child.let {
-                val childVersion = documentService.getLatestDocument(it, false, false)
-                childVersion.put(FIELD_PARENT, parentId)
+                val childDoc = documentService.getLatestDocument(it, false, false)
+                val childVersion = (documentService.convertToJsonNode(childDoc) as ObjectNode)
+                    .put(FIELD_PARENT, parentId)
                 createCopyAndHandleSubTree(catalogId, childVersion, options, isAddress)
             }
-*/
 
         }
         return docs.totalHits

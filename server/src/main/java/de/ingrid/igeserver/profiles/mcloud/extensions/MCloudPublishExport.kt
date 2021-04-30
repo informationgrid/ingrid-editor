@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -18,6 +19,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
+import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
@@ -53,10 +55,14 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         val docId = payload.document.uuid
         val docType = payload.document.type
 
-        when (docType) {
-            "mCloudDoc" -> indexMCloudDoc(context, docId)
-            "AddressDoc" -> indexReferencesMCloudDocs(context, docId)
-            else -> return payload
+        try {
+            when (docType) {
+                "mCloudDoc" -> indexMCloudDoc(context, docId)
+                "AddressDoc" -> indexReferencesMCloudDocs(context, docId)
+                else -> return payload
+            }
+        } catch (ex: NoNodeAvailableException) {
+            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
         }
 
         return payload
