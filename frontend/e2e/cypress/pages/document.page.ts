@@ -43,7 +43,7 @@ export class DocumentPage extends BasePage {
     NewFolder: '[data-cy=toolbar_CREATE_FOLDER]',
     // Preview: '[data-cy=toolbar_PRINT]',
     Copy: '[data-cy=toolbar_COPY]',
-    Revert: '[data-cy=toolbar_REVERT]',
+    // Revert: '[data-cy=toolbar_REVERT]',
     Delete: '[data-cy=toolbar_DELETE]',
     Previous: '[data-cy=toolbar_HISTORY_PREVIOUS]',
     Next: '[data-cy=toolbar_HISTORY_NEXT]',
