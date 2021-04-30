@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -68,12 +69,13 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity.ok(node)
     }
 
+    @Transactional
     override fun deleteById(principal: Principal?, ids: Array<String>): ResponseEntity<String> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         for (id in ids) {
             // TODO: remove references to document!?
-            documentService.deleteRecursively(dbId, id)
+            documentService.deleteRecursively(catalogId, id)
         }
         return ResponseEntity.ok().build()
     }
