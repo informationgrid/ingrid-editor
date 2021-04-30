@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.mcloud.extensions
 
 import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
@@ -13,10 +14,10 @@ import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
-import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
@@ -34,9 +35,12 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
 
     @Autowired
     lateinit var docWrapperRepo: DocumentWrapperRepository
-    
+
     @Autowired
     lateinit var indexService: IndexService
+
+    @Autowired
+    lateinit var documentService: DocumentService
 
     @Autowired
     lateinit var indexManager: IndexManager
@@ -73,18 +77,23 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         context.addMessage(Message(this, "Index documents with referenced address ${docId} to Elasticsearch"))
 
         val query = listOf(
-            QueryField("published.addresses.ref", docId)
+            QueryField("addresses.ref", docId)
         )
-        val options = FindOptions(
-            queryType = QueryType.EXACT,
-            resolveReferences = true)
 
-        val exampleWrapper = DocumentWrapper().apply { published = Document().apply { 
-            data.put("addresses", jacksonObjectMapper().createObjectNode().put("ref", docId)) 
-        } }
-        val docsWithReferences = docWrapperRepo.findAll(Example.of(exampleWrapper))
+        /*val exampleWrapper = DocumentWrapper().apply {
+            published = Document().apply {
+                data = jacksonObjectMapper().createObjectNode().apply {
+                    put("addresses",
+                        jacksonObjectMapper().createObjectNode().apply {
+                            put("ref", docId)
+                        })
+                }
+            }
+        }*/
+//        val docsWithReferences = docWrapperRepo.findAll(Example.of(exampleWrapper))
+        val docsWithReferences = documentService.find(context.catalogId, "data", query)
 
-        docsWithReferences.forEach { indexMCloudDoc(context, it.uuid) }
+        docsWithReferences.content.forEach { indexMCloudDoc(context, it.uuid) }
 
     }
 
@@ -104,7 +113,8 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         indexInfo.toAlias = elasticsearchAlias
         indexInfo.docIdField = "uuid"
 
-        val export = indexService.start(context.catalogId, indexService.INDEX_SINGLE_PUBLISHED_DOCUMENT("portal", docId))
+        val export =
+            indexService.start(context.catalogId, indexService.INDEX_SINGLE_PUBLISHED_DOCUMENT("portal", docId))
 
         if (export.isNotEmpty()) {
             log.debug("Exported document: " + export[0])
@@ -120,8 +130,8 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     private fun convertToElasticDocument(doc: Any): ElasticDocument? {
 
         return jacksonObjectMapper()
-                .enable(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS)
-                .readValue(doc as String, ElasticDocument::class.java)
+            .enable(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS)
+            .readValue(doc as String, ElasticDocument::class.java)
 
     }
 }

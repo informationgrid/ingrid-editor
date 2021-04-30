@@ -1,8 +1,6 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.model.document.DocumentWrapperType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -23,8 +21,7 @@ class IndexService @Autowired constructor(
 
     val INDEX_PUBLISHED_DOCUMENTS = { format: String ->
         val onlyPublishedDocs = listOf(
-            QueryField(FIELD_PUBLISHED, null, true),
-            QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value)
+            QueryField(FIELD_PUBLISHED, null, true)
         )
 
         IndexOptions(onlyPublishedDocs, format)
@@ -32,8 +29,7 @@ class IndexService @Autowired constructor(
     val INDEX_SINGLE_PUBLISHED_DOCUMENT = { format: String, uuid: String ->
         val singlePublishedDoc = listOf(
             QueryField(FIELD_PUBLISHED, null, true),
-            QueryField(FIELD_CATEGORY, DocumentCategory.DATA.value),
-            QueryField(FIELD_ID, uuid)
+            QueryField("uuid", uuid)
         )
 
         IndexOptions(singlePublishedDoc, format)
@@ -41,7 +37,9 @@ class IndexService @Autowired constructor(
 
     fun start(catalogId: String, options: IndexOptions): List<Any> {
 
-        val docsToIndex = docWrapperRepo.findAllByCatalog_Identifier(catalogId)
+        // TODO: Request all results or use paging
+        val docsToIndex = documentService.find(catalogId, "data", options.dbFilter)
+//        val docsToIndex = docWrapperRepo.findAllByCatalog_Identifier(catalogId)
         if (docsToIndex.isEmpty()) {
             log.warn("No documents found for indexing")
             return emptyList()
@@ -50,7 +48,7 @@ class IndexService @Autowired constructor(
         val exporter = exportService.getExporter(options.exportFormat)
 
         val onlyPublished = options.documentState == FIELD_PUBLISHED
-        return docsToIndex
+        return docsToIndex.content
             .map { documentService.getLatestDocument(it, onlyPublished) }
             .map { exporter.run(it) }
 

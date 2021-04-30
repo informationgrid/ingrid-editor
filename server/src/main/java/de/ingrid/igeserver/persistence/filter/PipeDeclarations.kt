@@ -1,7 +1,5 @@
 package de.ingrid.igeserver.persistence.filter
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.extension.pipe.Payload
 import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.persistence.model.EntityType

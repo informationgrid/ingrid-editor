@@ -2,17 +2,13 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.*
-import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.AuditLogRecord
+import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.repository.AuditLogRepository
 import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 
 /**
  * AuditLogger writes structured audit messages to a Log4j logger

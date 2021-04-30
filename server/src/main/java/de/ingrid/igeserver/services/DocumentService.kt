@@ -483,6 +483,12 @@ class DocumentService : MapperService() {
                     cb, queryField, handleComparisonType(cb, queryField, published)
                 )
             )
+        } else if (queryField.field == "published" && queryField.value == null) {
+            return if (queryField.invert) {
+                cb.isNotNull(published)
+            } else {
+                cb.isNull(published)
+            }
         } else {
             return cb.or(
                 handleNot(
@@ -520,11 +526,13 @@ class DocumentService : MapperService() {
         docJoin: Join<DocumentWrapper, Document>,
         field: String
     ): Expression<String>? {
+        val literals = field.split(".").map { cb.literal(it) }
+        
         return cb.function(
             "jsonb_extract_path_text",
             String::class.java,
             docJoin.get<String>("data"),
-            cb.literal(field)
+            *literals.toTypedArray()
         )
     }
 }
