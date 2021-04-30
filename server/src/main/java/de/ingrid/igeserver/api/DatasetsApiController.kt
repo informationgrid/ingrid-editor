@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
+import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
@@ -253,7 +254,7 @@ class DatasetsApiController @Autowired constructor(
         val sortDirection = if (sortOrder == "asc") Sort.Direction.ASC else Sort.Direction.DESC
         val sortColumn = "draft.$sort"
         val theQuery = if (query == null) emptyList() else {
-            listOf(QueryField("title", query))
+            listOf(QueryField("title", null, QueryType.LIKE, query))
         }
         val docs = documentService.find(
             catalogId,

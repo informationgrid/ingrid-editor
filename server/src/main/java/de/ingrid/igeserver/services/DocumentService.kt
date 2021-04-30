@@ -9,6 +9,7 @@ import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -422,7 +423,7 @@ class DocumentService : MapperService() {
             this.category = category
         }*/
 
-        val spec1 = hasTitle(catalogId, category, query)
+        val spec1 = getSearchSpecification(catalogId, category, query)
         return docWrapperRepo.findAll(spec1, pageRequest)
 
         /*return docWrapperRepo.findComplex(
@@ -434,24 +435,26 @@ class DocumentService : MapperService() {
 
     }
 
-    fun hasTitle(catalog: String, category: String, queryFields: List<QueryField>): Specification<DocumentWrapper> {
+    fun getSearchSpecification(
+        catalog: String,
+        category: String,
+        queryFields: List<QueryField>
+    ): Specification<DocumentWrapper> {
         return Specification<DocumentWrapper> { wrapper, cq, cb ->
             val catalogWrapper = wrapper.join<DocumentWrapper, Catalog>("catalog")
 
-//            cb.selectCase<Any>().when(cb.isNull(wrapper.get<Document>("draft")), 1)
-
-            val drafts = wrapper.join<DocumentWrapper, Document>("draft", JoinType.LEFT)
+            val draft = wrapper.join<DocumentWrapper, Document>("draft", JoinType.LEFT)
             val published = wrapper.join<DocumentWrapper, Document?>("published", JoinType.LEFT)
 
             cq.orderBy(
                 listOf(
-                    cb.desc(drafts.get<String>("modified")),
+                    cb.desc(draft.get<String>("modified")),
                     cb.desc(published.get<String>("modified"))
                 )
             )
 
             val preds = queryFields
-                .map { queryField -> createPredicateForField(cb, drafts, published, queryField) }
+                .map { queryField -> createPredicateForField(cb, draft, published, queryField) }
 
             cb.and(
                 cb.equal(catalogWrapper.get<String>("identifier"), catalog),
@@ -466,34 +469,49 @@ class DocumentService : MapperService() {
 
     private fun createPredicateForField(
         cb: CriteriaBuilder,
-        drafts: Join<DocumentWrapper, Document>,
+        draft: Join<DocumentWrapper, Document>,
         published: Join<DocumentWrapper, Document>,
         queryField: QueryField
     ): Predicate? {
+
         if (queryField.field == "title" || queryField.field == "type") {
-            return if (queryField.invert) {
-                cb.or(
-                    cb.not(cb.like(cb.lower(drafts.get(queryField.field)), "%${queryField.value}%")),
-                    cb.not(cb.like(cb.lower(published.get(queryField.field)), "%${queryField.value}%"))
+            return cb.or(
+                handleNot(
+                    cb, queryField, handleComparisonType(cb, queryField, draft)
+                ),
+                handleNot(
+                    cb, queryField, handleComparisonType(cb, queryField, published)
                 )
-            } else {
-                cb.or(
-                    cb.like(cb.lower(drafts.get(queryField.field)), "%${queryField.value}%"),
-                    cb.like(cb.lower(published.get(queryField.field)), "%${queryField.value}%")
-                )
-            }
+            )
         } else {
-            return if (queryField.invert) {
-                cb.or(
-                    cb.not(cb.equal(createJsonExtract(cb, drafts, queryField.field), queryField.value)),
-                    cb.not(cb.equal(createJsonExtract(cb, published, queryField.field), queryField.value))
+            return cb.or(
+                handleNot(
+                    cb, queryField, handleComparisonTypeJson(cb, queryField, draft)
+                ),
+                handleNot(
+                    cb, queryField, handleComparisonTypeJson(cb, queryField, published)
                 )
-            } else {
-                cb.or(
-                    cb.equal(createJsonExtract(cb, drafts, queryField.field), queryField.value),
-                    cb.equal(createJsonExtract(cb, published, queryField.field), queryField.value)
-                )
-            }
+            )
+        }
+    }
+
+    private fun handleNot(cb: CriteriaBuilder, queryField: QueryField, predicate: Predicate?): Predicate? {
+        return if (queryField.invert) cb.not(predicate) else predicate
+    }
+    
+    private fun handleComparisonType(cb: CriteriaBuilder, queryField: QueryField, docJoin: Join<DocumentWrapper, Document>): Predicate? {
+        val value = queryField.value?.toLowerCase()
+        return when (queryField.queryType) {
+            QueryType.EXACT -> cb.equal(cb.lower(docJoin.get(queryField.field)), value)
+            else -> cb.like(cb.lower(docJoin.get(queryField.field)), "%$value%")
+        }
+    }    
+    
+    private fun handleComparisonTypeJson(cb: CriteriaBuilder, queryField: QueryField, docJoin: Join<DocumentWrapper, Document>): Predicate? {
+        val value = queryField.value?.toLowerCase()
+        return when (queryField.queryType) {
+            QueryType.EXACT -> cb.equal(cb.lower(createJsonExtract(cb, docJoin, queryField.field)), value)
+            else -> cb.like(cb.lower(createJsonExtract(cb, docJoin, queryField.field)), "%$value%")
         }
     }
 

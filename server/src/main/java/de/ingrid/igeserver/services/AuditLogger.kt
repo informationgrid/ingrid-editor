@@ -57,14 +57,15 @@ class AuditLogger {
      */
     fun find(logger: String?, id: String?, user: String?, action: String?, from: LocalDate?, to: LocalDate?,
              sort: String?, sortOrder: String?) : FindAllResults {
-        val queryMap = listOfNotNull(
+        // TODO: migrate
+        /*val queryMap = listOfNotNull(
                 if (!logger.isNullOrEmpty()) QueryField("logger", logger) else null,
                 if (!id.isNullOrEmpty()) QueryField("message.target", id) else null,
                 if (!user.isNullOrEmpty()) QueryField("message.actor", user) else null,
                 if (!action.isNullOrEmpty()) QueryField("message.action", action) else null,
                 if (from != null) QueryField("message.time", " >=", from.format(ISO_LOCAL_DATE)) else null,
                 if (to != null) QueryField("message.time", " <=", to.plusDays(1).format(ISO_LOCAL_DATE)) else null
-        ).toList()
+        ).toList()*/
         
             val result = auditLogRepo.findAll()
             return FindAllResults(result.size.toLong(), emptyList()) // TODO: migrate
