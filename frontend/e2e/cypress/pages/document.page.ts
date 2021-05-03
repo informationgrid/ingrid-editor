@@ -113,16 +113,7 @@ export class DocumentPage extends BasePage {
       addresses: [
         {
           type: '10',
-          ref: {
-            _type: 'AddressDoc',
-            title: 'Published Testorganization',
-            _parent: null,
-            firstName: '',
-            lastName: '',
-            organization: 'Published Testorganization',
-            contact: [{ type: '1', connection: '03351464321653' }],
-            _state: 'P'
-          }
+          ref: '214ca5bf-da1b-4003-b7b6-e73a2ef0ec10'
         }
       ],
       usage: 'Nutzungshinweise',
