@@ -14,16 +14,11 @@ describe('Behaviours', () => {
     cy.get(BehavioursPage.CatalogsTabmenu.Codelisten).click();
     cy.get('div.left-side').contains('Katalogspezifische Codelisten');
     cy.get('mat-form-field mat-select').contains('Kategorien');
-    BehavioursPage.checkPageContains('mat-list',['Luft- und Raumfahrt', 'Klima und Wetter', 'Infrastruktur', 'Bahn', 'Straßen', 'Wasserstraßen und Gewässer'] );
+    BehavioursPage.checkPageContains('ige-catalog-codelists',['Klima und Wetter'] );
 
     cy.get(BehavioursPage.CatalogsTabmenu.Formulare).click();
     cy.get('div.left-side').contains('Formularkonfiguration');
-    BehavioursPage.checkPageContains('ige-behaviour-item',['Toolbar Zustände wenn Mehrfachauswahl im Baum', 'Nur leere Ordner löschen',
-      'Anzeige JSON Formular', 'Publish Plugin', 'Neues Dokument Plugin', 'Save Plugin', 'Folder Plugin', 'Copy Cut Paste', 'Delete Docs Plugin', 'History Plugin'] );
-
-    cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
-    cy.get('div.left-side').contains('Katalogverhalten');
-    BehavioursPage.checkPageContains('ige-behaviour-item',['Template für die Generierung des Adressen-Titels', 'Session Timeout Dauer', 'Sortierung des Baums nach Dokumententyp'] );
+    BehavioursPage.checkPageContains('ige-behaviour-item',['Publish Plugin'] );
   });
 
   describe('System', () => {
