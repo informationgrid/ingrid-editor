@@ -39,7 +39,6 @@ class IndexService @Autowired constructor(
 
         // TODO: Request all results or use paging
         val docsToIndex = documentService.find(catalogId, "data", options.dbFilter)
-//        val docsToIndex = docWrapperRepo.findAllByCatalog_Identifier(catalogId)
         if (docsToIndex.isEmpty()) {
             log.warn("No documents found for indexing")
             return emptyList()

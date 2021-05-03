@@ -24,7 +24,8 @@ import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
-import org.springframework.data.domain.Example
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
 
 @Component
@@ -44,6 +45,9 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
 
     @Autowired
     lateinit var indexManager: IndexManager
+
+    @Autowired
+    lateinit var jdbcTemplate: JdbcTemplate
 
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
@@ -76,24 +80,12 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     private fun indexReferencesMCloudDocs(context: Context, docId: String) {
         context.addMessage(Message(this, "Index documents with referenced address ${docId} to Elasticsearch"))
 
-        val query = listOf(
-            QueryField("addresses.ref", docId)
+        // get uuids from documents that reference the address
+        val docsWithReferences = jdbcTemplate.queryForList<String>(
+            "SELECT uuid FROM document where '$docId' = jsonb_extract_path_text(jsonb_extract_path(data, 'addresses') -> 0, 'ref')"
         )
-
-        /*val exampleWrapper = DocumentWrapper().apply {
-            published = Document().apply {
-                data = jacksonObjectMapper().createObjectNode().apply {
-                    put("addresses",
-                        jacksonObjectMapper().createObjectNode().apply {
-                            put("ref", docId)
-                        })
-                }
-            }
-        }*/
-//        val docsWithReferences = docWrapperRepo.findAll(Example.of(exampleWrapper))
-        val docsWithReferences = documentService.find(context.catalogId, "data", query)
-
-        docsWithReferences.content.forEach { indexMCloudDoc(context, it.uuid) }
+        
+        docsWithReferences.forEach { indexMCloudDoc(context, it) }
 
     }
 

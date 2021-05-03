@@ -418,20 +418,8 @@ class DocumentService : MapperService() {
         pageRequest: PageRequest = PageRequest.of(0, 10)
     ): Page<DocumentWrapper> {
 
-        /*val filter = DocumentWrapper().apply {
-            this.catalog = catalogRepo.findByIdentifier(catalogId)
-            this.category = category
-        }*/
-
-        val spec1 = getSearchSpecification(catalogId, category, query)
-        return docWrapperRepo.findAll(spec1, pageRequest)
-
-        /*return docWrapperRepo.findComplex(
-            catalogId,
-            category,
-            query,
-            pageRequest
-        )*/
+        val specification = getSearchSpecification(catalogId, category, query)
+        return docWrapperRepo.findAll(specification, pageRequest)
 
     }
 
@@ -474,7 +462,7 @@ class DocumentService : MapperService() {
         queryField: QueryField
     ): Predicate? {
 
-        if (queryField.field == "title" || queryField.field == "type") {
+        if (queryField.field == "title" || queryField.field == "type" || queryField.field == "uuid") {
             return cb.or(
                 handleNot(
                     cb, queryField, handleComparisonType(cb, queryField, draft)
