@@ -1,9 +1,9 @@
 @import "src/variables";
 
 :host {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
+  //display: flex;
+  //flex: 1;
+  //flex-direction: column;
 }
 
 .header-button {
@@ -15,4 +15,5 @@ ige-codelist-presenter {
   flex-direction: column;
   flex: 1;
   padding-top: 12px;
+  //height: 100%;
 }

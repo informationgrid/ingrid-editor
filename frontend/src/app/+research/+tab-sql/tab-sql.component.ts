@@ -14,6 +14,31 @@ export class TabSqlComponent implements OnInit {
 
   @Output() query = new EventEmitter();
 
+  sqlExamples = [{
+    label: 'Adressen, mit Titel "test"',
+    value: `SELECT document1.*, document_wrapper.*
+            FROM document_wrapper
+                   JOIN document document1 ON
+              CASE
+                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
+                ELSE document_wrapper.draft = document1.id
+                END
+            WHERE document1.type = 'AddressDoc'
+              AND LOWER(title) LIKE '%test%'`
+  }, {
+    label: 'Dokumente "Luft- und Raumfahrt"',
+    value: `SELECT document1.*, document_wrapper.*
+            FROM document_wrapper
+                   JOIN document document1 ON
+              CASE
+                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
+                ELSE document_wrapper.draft = document1.id
+                END
+            WHERE document1.type = 'mCloudDoc'
+              AND data -> 'mCloudCategories' @> '"aviation"'`
+  }];
+
+
 
   constructor(private queryQuery: QueryQuery) {
   }

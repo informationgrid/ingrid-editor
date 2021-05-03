@@ -1,6 +1,6 @@
-<cdk-virtual-scroll-viewport itemSize="60" class="virtual-viewport">
+<!--<cdk-virtual-scroll-viewport itemSize="60" class="virtual-viewport">-->
     <mat-accordion *ngIf="_codelist" class="entry-list">
-        <mat-expansion-panel *cdkVirtualFor="let entry of _codelist.entries" hideToggle
+        <mat-expansion-panel *ngFor="let entry of _codelist.entries" hideToggle
                              [class.default]="_codelist.default === entry.id"
                              (opened)="showMore[entry.id] = true"
                              (closed)="showMore[entry.id] = false">
@@ -58,4 +58,4 @@
 
         </mat-expansion-panel>
     </mat-accordion>
-</cdk-virtual-scroll-viewport>
+<!--</cdk-virtual-scroll-viewport>-->

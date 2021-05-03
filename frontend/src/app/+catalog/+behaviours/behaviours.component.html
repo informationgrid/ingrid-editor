@@ -1,17 +1,19 @@
 <page-template [label]="title">
-    <ng-container help>
+    <ng-container left-side>
         Sie haben hier die Möglichkeit bestehende Codelisten anzupassen. Diese Änderungen sind nur in diesem Katalog
         sichtbar. Wenn diese Änderungen auch in anderen Katalogen oder im Portal verwendet werden sollen, dann muss
         dies im Codelist-Repository geschehen.
     </ng-container>
 
-    <div main fxLayout="column" fxFlex>
+    <div main-header fxLayout="column" fxFlex>
         <div fxLayoutAlign="end end" class="buttons">
             <button mat-flat-button color="primary" (click)="save()"
                     [disabled]="hasInvalidForm()">Speichern
             </button>
         </div>
+    </div>
 
+    <div main-content>
         <div class="scrollable">
             <div *ngFor="let item of plugins | keyvalue" class="section">
                 <div class="section-title">{{item.key}}</div>

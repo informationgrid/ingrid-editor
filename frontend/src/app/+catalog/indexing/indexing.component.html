@@ -1,8 +1,8 @@
 <page-template label="Indizierung">
 
-    <ng-container help>
-        <p>Hier wird festgelegt in welchen Zeitabständen der Katalog indiziert werden soll. Für die Definition des
-            Intervalls wird der Cron Ausdruck verwendet.</p>
+    <ng-container left-side>
+        <div>Hier wird festgelegt in welchen Zeitabständen der Katalog indiziert werden soll. Für die Definition des
+            Intervalls wird der Cron Ausdruck verwendet.</div>
         <p>Ein Cron Ausdruck ist folgendermaßen aufgebaut:</p>
 
         <div class="cron-explain">
@@ -52,12 +52,14 @@
         </p>
     </ng-container>
 
-    <div main fxLayout="column" fxFlex *ngIf="isActivated; else noElasticsearch">
+    <div main-header fxLayout="column" fxFlex *ngIf="isActivated; else noElasticsearch">
         <div class="header" fxLayoutAlign="end end">
             <button mat-flat-button color="primary" (click)="index()">Indizieren</button>
         </div>
+    </div>
 
-        <h3>Ausführungsintervall</h3>
+    <div main-content fxFlex>
+        <section>Ausführungsintervall</section>
         <div class="padding section">
             <mat-form-field class="width-100" appearance="outline">
                 <mat-label>Cron Ausdruck</mat-label>

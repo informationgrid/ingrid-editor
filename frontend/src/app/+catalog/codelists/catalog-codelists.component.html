@@ -1,38 +1,58 @@
-<p *ngIf="(hasCatalogCodelists | async) === false">
-    In diesem Katalog gibt es keine spezifischen Codelisten. Alle Codelisten können
-    über das zentrale Codelist-Repository verwaltet werden.
-</p>
+<page-template label="Katalogspezifische Codelisten">
+    <ng-container left-side>
+        <div>
+            Sie haben hier die Möglichkeit bestehende Codelisten anzupassen. Diese Änderungen sind nur in diesem
+            Katalog
+            sichtbar. Wenn diese Änderungen auch in anderen Katalogen oder im Portal verwendet werden sollen,
+            dann muss
+            dies im Codelist-Repository geschehen.
+        </div>
 
-<div fxLayout="row">
-    <!--<ige-filter-select #select [options]="catalogCodelists" fxFlex class="white-bg"
-                       [labelFormat]="codelistLabelFormat" (optionSelect)="selectCodelist($event)"
-                       placeholder="Codeliste"></ige-filter-select>-->
-    <mat-form-field appearance="outline" class="width-100 white-bg">
-        <mat-select #select (selectionChange)="selectCodelist($event.value)" [value]="initialValue">
-            <mat-option *ngFor="let codelist of catalogCodelists | async" [value]="codelist">
-                {{codelist.label}} ({{codelist.value}})
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+        <div>
+            Ein Codelisteneintrag kann optional als Defaultwert eingestellt werden. Bei einem neuen Dokument,
+            wird das
+            Feld, welches diese Codeliste verwendet, bereits den ausgewählten Eintrag vorausgewählt haben.
+        </div>
+    </ng-container>
 
-    <div class="header-button">
-        <button mat-button mat-stroked-button
-                (click)="resetCodelist()">Zurücksetzen
-        </button>
+    <div main-header fxLayout="row" fxFlex>
+        <p *ngIf="(hasCatalogCodelists | async) === false">
+            In diesem Katalog gibt es keine spezifischen Codelisten. Alle Codelisten können
+            über das zentrale Codelist-Repository verwaltet werden.
+        </p>
+
+        <!--<ige-filter-select #select [options]="catalogCodelists" fxFlex class="white-bg"
+                           [labelFormat]="codelistLabelFormat" (optionSelect)="selectCodelist($event)"
+                           placeholder="Codeliste"></ige-filter-select>-->
+        <mat-form-field appearance="outline" class="width-100 white-bg">
+            <mat-select (selectionChange)="selectCodelist($event.value)" [value]="initialValue">
+                <mat-option *ngFor="let codelist of catalogCodelists | async" [value]="codelist">
+                    {{codelist.label}} ({{codelist.value}})
+                </mat-option>
+            </mat-select>
+            <mat-hint>{{selectedCodelist?.description}}</mat-hint>
+        </mat-form-field>
+
+        <div class="header-button">
+            <button mat-button mat-stroked-button
+                    (click)="resetCodelist()">Zurücksetzen
+            </button>
+        </div>
     </div>
-</div>
 
-<ng-container *ngIf="(hasCatalogCodelists | async) === true">
+    <div main-content *ngIf="(hasCatalogCodelists | async) === true" fxFlex>
 
-    <div>{{selectedCodelist?.description}}</div>
+        <div fxLayoutAlign="end end">
+            <button mat-stroked-button color="primary" (click)="addCodelist()">Hinzufügen</button>
+        </div>
 
-    <div>
-        <div fxFlex></div>
-        <button mat-stroked-button color="primary" (click)="addCodelist()">Hinzufügen</button>
+        <ige-codelist-presenter [codelist]="selectedCodelist"
+                                (edit)="editCodelist($event)"
+                                (remove)="removeCodelist($event)"
+                                (setDefault)="setAsDefault($event)"></ige-codelist-presenter>
     </div>
+</page-template>
 
-    <ige-codelist-presenter [codelist]="selectedCodelist"
-                            (edit)="editCodelist($event)"
-                            (remove)="removeCodelist($event)"
-                            (setDefault)="setAsDefault($event)"></ige-codelist-presenter>
-</ng-container>
+
+
+

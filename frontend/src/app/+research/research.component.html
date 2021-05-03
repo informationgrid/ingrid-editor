@@ -4,13 +4,13 @@
 
     <mat-tab label="Erweiterte Suche">
         <page-template label="Erweiterte Suche">
-            <ige-facets help [model]="filter.model"
+            <ige-facets left-side [model]="filter.model"
                         [parameter]="filter.fieldsWithParameters"
                         [forAddresses]="searchClass === 'selectAddresses'"
                         [refreshView]="facetViewRefresher"
                         (update)="updateFilter($event)"></ige-facets>
 
-            <div main fxFlex fxLayout="column">
+            <div main-header fxFlex fxLayout="column">
 
                 <div fxLayout="row" class="white-bg">
                     <mat-form-field appearance="outline" style="min-width: 220px"
@@ -31,6 +31,9 @@
                     </mat-form-field>
                 </div>
 
+            </div>
+
+            <div main-content fxFlex>
                 <ige-result-table [result]="result"
                                   (open)="loadDataset($event)"
                                   (remove)="removeDataset($event)"
@@ -41,44 +44,33 @@
     </mat-tab>
 
     <mat-tab label="SQL Suche">
-        <page-template label="SQL Suche">
-            <div help>
-                <p>Hier können Sie komplexe SQL Anfragen abschicken, wenn die erweiterte Suche nicht ausreicht.</p>
-                <p>Hier sind ein paar Beispiele:</p>
-                <mat-chip-list>
-                    <mat-chip *ngFor="let example of sqlExamples"
-                              (click)="updateSqlQueryState(example.value)">{{example.label}}</mat-chip>
-                </mat-chip-list>
-            </div>
+        <ige-tab-sql (query)="updateSqlQueryState($event)" fxFlex>
+            <ige-result-table *ngIf="!error" [result]="result"
+                              (open)="loadDataset($event)"
+                              (save)="saveQuery(true)"></ige-result-table>
 
-            <ige-tab-sql main (query)="updateSqlQueryState($event)" fxFlex>
-                <ige-result-table *ngIf="!error" [result]="result"
-                                  (open)="loadDataset($event)"
-                                  (save)="saveQuery(true)"></ige-result-table>
-
-                <div *ngIf="error" class="error-container">
-                    <div class="error-box">
-                        Die SQL-Anfrage enthält einen Fehler
-                    </div>
-                    <div class="icon">
-                        <mat-icon>error_outline</mat-icon>
-                    </div>
-                    <p class="message">Bitte korrigieren Sie Ihre Anfrage</p>
-                    <div>{{error}}</div>
+            <div *ngIf="error" class="error-container">
+                <div class="error-box">
+                    Die SQL-Anfrage enthält einen Fehler
                 </div>
-            </ige-tab-sql>
-        </page-template>
+                <div class="icon">
+                    <mat-icon>error_outline</mat-icon>
+                </div>
+                <p class="message">Bitte korrigieren Sie Ihre Anfrage</p>
+                <div>{{error}}</div>
+            </div>
+        </ige-tab-sql>
     </mat-tab>
 
     <mat-tab label="Gespeicherte Suchen">
         <!-- Lazy Load Tab -->
 <!--        <ng-template matTabContent>-->
             <page-template label="Gespeicherte Suchen">
-                <div help>
-                    <p>Hier können sie Ihre zuvor gespeicherten Suchanfragen wieder laden.</p>
+                <div left-side>
+                    Hier können sie Ihre zuvor gespeicherten Suchanfragen wieder laden.
                 </div>
 
-                <ige-query-manager main (selection)="loadQuery($event)"></ige-query-manager>
+                <ige-query-manager main-content (selection)="loadQuery($event)"></ige-query-manager>
             </page-template>
 <!--        </ng-template>-->
     </mat-tab>

@@ -3,23 +3,15 @@
                (selectedIndexChange)="updateRoute($event)">
     <mat-tab label="Allgemein">
         <page-template label="Allgemein">
-            <general-settings main></general-settings>
+            <general-settings main-header fxFlex></general-settings>
         </page-template>
     </mat-tab>
 
     <mat-tab label="Codelist Repository">
-        <page-template label="Codelist Repository">
-            <div help>
-                Die Codelisten werden von einem zentralen Repository verwaltet und werden mit dem IGE NG synchronisiert.
-            </div>
-            <ige-codelists main></ige-codelists>
-        </page-template>
+        <ige-codelists></ige-codelists>
     </mat-tab>
 
     <mat-tab label="Katalogverwaltung">
-        <page-template label="Katalogverwaltung">
-            <div help>Auf dieser Seite können die Kataloge verwaltet werden.</div>
-            <ige-catalog-management main></ige-catalog-management>
-        </page-template>
+        <ige-catalog-management></ige-catalog-management>
     </mat-tab>
 </mat-tab-group>
