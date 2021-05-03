@@ -1,10 +1,6 @@
 package de.ingrid.igeserver.persistence.postgresql
 
 import de.ingrid.igeserver.IgeServer
-import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryOperator
-import de.ingrid.igeserver.persistence.model.meta.AuditLogRecordType
 import de.ingrid.igeserver.repository.AuditLogRepository
 import de.ingrid.igeserver.services.AuditLogger
 import io.kotest.core.spec.style.AnnotationSpec
