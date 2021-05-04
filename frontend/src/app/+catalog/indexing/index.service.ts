@@ -2,6 +2,13 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ConfigService, Configuration} from '../../services/config/config.service';
 import {Catalog} from '../services/catalog.model';
+import {BehaviorSubject} from 'rxjs';
+import {tap} from 'rxjs/operators';
+
+export interface LogResult {
+  lastIndexedDate: Date,
+  log: string[]
+}
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +17,7 @@ export class IndexService {
 
   private configuration: Configuration;
   private catalog: Catalog;
+  lastLog$ = new BehaviorSubject<LogResult>(null);
 
   constructor(private http: HttpClient, configService: ConfigService) {
     this.configuration = configService.getConfiguration();
@@ -32,5 +40,12 @@ export class IndexService {
 
   getCronPattern() {
     return this.http.get<any>(this.configuration.backendUrl + 'index/config/' + this.catalog.id);
+  }
+
+  fetchLastLog() {
+    return this.http.get<LogResult>(this.configuration.backendUrl + 'index/log')
+      .pipe(
+        tap(response => this.lastLog$.next(response))
+      ).subscribe();
   }
 }

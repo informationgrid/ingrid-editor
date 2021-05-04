@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.profiles.mcloud.extensions
 
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
@@ -10,12 +9,7 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.index.IndexService
-import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.utils.ElasticDocument
@@ -106,7 +100,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         indexInfo.docIdField = "uuid"
 
         val export =
-            indexService.start(context.catalogId, indexService.INDEX_SINGLE_PUBLISHED_DOCUMENT("portal", docId))
+            indexService.export(context.catalogId, indexService.INDEX_SINGLE_PUBLISHED_DOCUMENT("portal", docId))
 
         if (export.isNotEmpty()) {
             log.debug("Exported document: " + export[0])

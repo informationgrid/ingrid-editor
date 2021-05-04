@@ -77,8 +77,9 @@ class IndexingTask @Autowired constructor(
         indexInfo.toType = "base"
         indexInfo.toAlias = elasticsearchAlias
         indexInfo.docIdField = "uuid"
-        
-        indexService.start(catalogId, indexService.INDEX_PUBLISHED_DOCUMENTS(format))
+
+        indexService
+            .export(catalogId, indexService.INDEX_PUBLISHED_DOCUMENTS(format))
             .forEach { indexManager.update(indexInfo, convertToElasticDocument(it), false) }
 
 

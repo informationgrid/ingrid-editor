@@ -2,7 +2,8 @@
 
     <ng-container left-side>
         <div>Hier wird festgelegt in welchen Zeitabständen der Katalog indiziert werden soll. Für die Definition des
-            Intervalls wird der Cron Ausdruck verwendet.</div>
+            Intervalls wird der Cron Ausdruck verwendet.
+        </div>
         <p>Ein Cron Ausdruck ist folgendermaßen aufgebaut:</p>
 
         <div class="cron-explain">
@@ -54,7 +55,7 @@
 
     <div main-header fxFlex *ngIf="isActivated; else noElasticsearch" fxLayoutAlign="center center">
         <div>
-            Letzte Synchronisation erfolgte am ...
+            Letzte Indizierung erfolgte am {{(lastLog|async)?.lastIndexedDate | date:'dd.LL.yyyy HH:mm'}}
             <button mat-icon-button class="dark menu-button" [class.expanded]="showMore" (click)="showMore = !showMore">
                 <mat-icon class="animated">keyboard_arrow_down</mat-icon>
             </button>
@@ -68,7 +69,9 @@
     </div>
 
     <div *ngIf="showMore" status class="status">
-        Letzte Information ...
+        <div>
+            <div *ngFor="let line of (lastLog | async).log">{{line}}</div>
+        </div>
     </div>
 
     <div main-content fxFlex>

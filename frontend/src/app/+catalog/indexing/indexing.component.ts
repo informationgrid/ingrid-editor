@@ -20,6 +20,8 @@ export class IndexingComponent implements OnInit {
   isActivated: boolean;
   showMore = false;
 
+  lastLog = this.indexService.lastLog$;
+
   constructor(private indexService: IndexService, private configService: ConfigService) {
     this.isActivated = configService.$userInfo.value.useElasticsearch;
   }
@@ -31,6 +33,8 @@ export class IndexingComponent implements OnInit {
 
     this.indexService.getCronPattern()
       .subscribe(config => this.cronField.setValue(config.cronPattern));
+
+    this.indexService.fetchLastLog();
 
     this.cronField.valueChanges
       .pipe(untilDestroyed(this))

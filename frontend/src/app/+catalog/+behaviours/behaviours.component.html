@@ -5,15 +5,15 @@
         dies im Codelist-Repository geschehen.
     </ng-container>
 
-    <div main-header fxLayout="column" fxFlex>
-        <div fxLayoutAlign="end end" class="buttons">
+    <div main-header fxLayout="column" fxFlex fxLayoutAlign="center start">
+        <div>
             <button mat-flat-button color="primary" (click)="save()"
                     [disabled]="hasInvalidForm()">Speichern
             </button>
         </div>
     </div>
 
-    <div main-content>
+    <div main-content fxFlex>
         <div class="scrollable">
             <div *ngFor="let item of plugins | keyvalue" class="section">
                 <div class="section-title">{{item.key}}</div>

@@ -35,7 +35,7 @@ class IndexService @Autowired constructor(
         IndexOptions(singlePublishedDoc, format)
     }
 
-    fun start(catalogId: String, options: IndexOptions): List<Any> {
+    fun export(catalogId: String, options: IndexOptions): List<Any> {
 
         // TODO: Request all results or use paging
         val docsToIndex = documentService.find(catalogId, "data", options.dbFilter)
@@ -49,6 +49,7 @@ class IndexService @Autowired constructor(
         val onlyPublished = options.documentState == FIELD_PUBLISHED
         return docsToIndex.content
             .map { documentService.getLatestDocument(it, onlyPublished) }
+            .onEach { log.debug("Exporting document: ${it.uuid}") }
             .map { exporter.run(it) }
 
     }
