@@ -3,7 +3,7 @@
         Die Codelisten werden von einem zentralen Repository verwaltet und werden mit dem IGE NG synchronisiert.
     </div>
 
-    <div main-header fxFlex style="align-items: center">
+    <div main-header fxFlex fxLayoutAlign="center center">
         <div>
             Letzte Synchronisation erfolgte am ...
             <button mat-icon-button class="dark menu-button" [class.expanded]="showMore" (click)="showMore = !showMore">
@@ -29,7 +29,7 @@
                            (reset)="resetInput()"
                            (optionSelect)="updateCodelistTable($event)"></ige-filter-select>
 
-        <div>{{selectedCodelist?.description}}</div>
+        <div class="description">{{selectedCodelist?.description}}</div>
 
         <ige-codelist-presenter [codelist]="selectedCodelist"
                                 [hideMenu]="true"></ige-codelist-presenter>

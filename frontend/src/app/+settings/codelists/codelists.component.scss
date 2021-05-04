@@ -1,20 +1,9 @@
+@import "src/variables";
+
 :host {
   display: flex;
   flex: 1;
   flex-direction: column;
-}
-
-.mat-card {
-  margin-bottom: 24px;
-}
-
-.entries {
-  overflow: auto;
-  max-height: 300px;
-}
-
-ige-filter-select {
-  margin-top: 53px;
 }
 
 ige-codelist-presenter {
@@ -23,7 +12,8 @@ ige-codelist-presenter {
   flex: 1;
 }
 
-.status {
-  padding: 30px;
-  background-color: rgb(223, 223, 223);
+.description {
+  color: $ige-comment-color;
+  font-size: 14px;
+  padding-bottom: 12px;
 }
