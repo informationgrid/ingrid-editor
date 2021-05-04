@@ -47,7 +47,7 @@ For IntelliJ configuration see the section below.
 
 You can also run the server from command line:
 
-> ./gradlew bootRun --args='--spring.profiles.active=default,dev,mcloud'
+> ./gradlew bootRun --args='--spring.profiles.active=dev,mcloud,elasticsearch'
 
 With the following command a jar is generated, which contains the whole server including
 optimized frontend application: 
@@ -69,7 +69,7 @@ For the client just run `npm start` in the frontend directory. When developing f
   * **NOTE** Java 11 SDK is required
   * Right click file *server/src/main/java/de/ingrid/igeserver/IgeServer.kt* > Run
   * Run > Edit Configurations > Kotlin > IgeServerKt
-    * VM options: `-Dspring.profiles.active=dev,mcloud,postgresql,elasticsearch` 
+    * VM options: `-Dspring.profiles.active=dev,mcloud,elasticsearch` 
     * Shorten Commandline: JAR manifest
     * JRE: *path/to/java-11-jdk*
 * Install **frontend packages** 
@@ -146,4 +146,5 @@ In your docker-compose file you would then use for your app the environment vari
 ## Add a new keycloak user
 
 When adding a new keycloak user, make sure to assign the correct roles: admin, superadmin
-Do not forget to assign the client-roles as well: realm-management -> view-users (or manage-users)
+Do not forget to assign the client-roles as well: realm-management -> view-users (or manage-users) and view-real (for 
+using user-management page).

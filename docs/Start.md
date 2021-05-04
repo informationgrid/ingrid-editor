@@ -33,8 +33,14 @@ Services are annotated with `@Service` or `@Component` which makes them availabl
 
 The persistence layer of IGE Server consists of the following main **interfaces** (located in the `de.ingrid.igeserver.persistence` package and it's sub-packages):
 
-- `DBApi` defines the **main entry point** to persistency. It provides access to the specific persistency implementation used in the application (e.g. `de.ingrid.igeserver.persistence.postgresql.PostgreSQLDatabase` for PostgreSQL databases). The methods defined in this interface use generic `JsonNode` instances to **transfer data** between database and application.
-- `EntityType` is the base interface for all **persistent types**. This could be general domain specific types like `AddressType`, profile specific types like `MCloudType`  or meta types like `UserInfoType` that are used internally only. Services will use these interfaces to specify the type of data send or expected in the `JsonNode` instances transferred at the `DBApi` interface. The interface also callbacks for **entity lifecycle events** (like creation or deletion). Each persistency implementation will provide it's own implementations for these methods if required (e.g. the entity type classes for PostgreSQL reside in the `de.ingrid.igeserver.persistence.postgresql.model` package).
+- `Repositories` define the access layer to the database. These are offered by Spring Data and can be easily extended with
+  additional functionality, often without writing any SQL.
+- `EntityType` is the base interface for all **document types**. This could be general domain specific types like 
+  `AddressType` or profile specific types like `MCloudType`.
+  Services will use these interfaces to execute additional tasks that only the document type itself knows how to handle.
+  If a document has references to another document or address, then it's his responsibility to handle the resolution of
+  the references, since this data cannot be stored in a relational manner, due to the fact that each document has it's
+  own schema.
 
 ### Extensions
 
@@ -278,9 +284,9 @@ An example of how to add a new profile can be found in FAQ.md.
 
 #### Document types
 
-A profile can contain one or more document/entity types. Each document type contains of a definition of fields for the form
-in the frontend and a definition in the backend. The definition should contain information about how to resolve references
-to other addresses/documents. 
+A profile can contain one or more document/entity types. Each document type contains a definition of fields for the form
+in the frontend and a definition in the backend. The definition in the backend should contain information about how to 
+resolve references to other addresses/documents. 
 
 Moreover each type can control its publication and do some validations by overriding the `onPublish`-function
 
@@ -321,15 +327,12 @@ implements one of the provided interfaces, e.g. `DCAT` then the same template ca
 
 ## Database
 
-The database-system is [PostgreSQL](https://www.postgresql.org/), which is a NoSQL database which supports transaction.
-It's used as an embedded database, so that there's no need to install or configure another database. Since OrientDB 
-supports transactions, it's possible to execute big tasks on the database, with the possibility to rollback to the state
-before the task.
+The database-system is [PostgreSQL](https://www.postgresql.org/), which is a relational database with support for JSON fields.
+Moreover it supports transaction, so that every (batch of) operation can be rolled back to the previous state.
 
 ### Data model
 
-Each catalog is a separate database. Another database `IgeUsers` is used to manage users and their permissions to access
-a catalog.
+All data is held in a single database. That means that all documents of all catalogs are united in that single database.
 
 The data model is shown here:
 
@@ -340,22 +343,24 @@ being published it's removed from the draft-field and put into the published-fie
 been in the published-field, it's moved to the archive-field, which can contain a number of documents.
 
 A `Document` can be any kind of data, which has at least a title, the document type and the creation and modification date.
-Since it's a NoSQL database, the document can be extended without any schema changes and migrations. By just defining a
+Since Postgres supports NoSQL, the document can be extended without any schema changes and migrations. By just defining a
 new field, it's automatically stored in the document table.
 
-The `Info` contains information about the catalog itself. It can also store settings, like a time pattern for indexing.
+The `Catalog` contains information about the catalog itself. It can also store settings, like a time pattern for indexing.
 
-The `Behaviours` store the state of a behaviour, which can be changed in the catalog settings of the IGE-NG. A behaviour
-can be active or inactive. It can also contain optional parameters for easier configuration and more flexibility.
+The `Behaviour` stores the state of a behaviour, which can be changed in the catalog settings of the IGE-NG. A behaviour
+can be active or inactive. It can also contain optional parameters for more flexibility.
 
 ### Migrations
 
-When a migration is necessary, it has to be executed for every catalog. Tools like [Flyway](https://flywaydb.org/) won't help much, since we 
-would need to know, which catalogs/databases exist. Therefore a migration works like this:
+Whenever it's neccessary to update the schema of the database or do some data modifications, you are in need of a migration.
+To create a new migration task you need to do the following:
 
-* create a new service which extends `MigrationBase`
+* create a new service in `de.ingrid.igeserver.migrations.tasks` which extends `MigrationBase`
 * set new version in `MigrationBase`-constructor
 * implement `exec()`-function to run migration for each database
+
+More information can be found in the FAQ.md.
 
 <details>
   <summary>Example</summary>

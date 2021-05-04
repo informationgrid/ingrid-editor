@@ -26,10 +26,48 @@ currently implemented doctypes.
 
 ## Backend
 
-In the backend create a new package under `de/ingrid/igeserver/profiles/<profile-name>`. Inside the 
-types-package create a new interface of your type which extends `EntityType`. The implementation needs
-to extend from `PostgreSQLEntityType`. Have a look at `PMCloudType.kt`.
+In the backend create a new package under `de/ingrid/igeserver/profiles/<profile-name>`. Here all supported
+document types are created.
+Inside the types-package create for each document type a new class which extends from `EntityType`.
+There you can set the ID, in which profiles the document should be available and how internal references are
+resolved. Those references can be for example an address, which is referenced by a document. Only the document
+itself knows how to handle these references. For this you can override the following functions:
 
+```kotlin
+/**
+ * Extract referenced documents/addresses and replace them with their ID
+ */
+fun pullReferences(doc: Document): List<Document>
+
+/**
+ * Replace document/address references with their latest version
+ */
+fun updateReferences(doc: Document, onlyPublished: Boolean)
+```
+
+There are also other functions where we can hook into, to react on certain events:
+
+```kotlin
+/**
+ * Persistence hook called when an instance of this type is created
+ */
+open fun onCreate(doc: Document) {}
+
+/**
+ * Persistence hook called when an instance of this type is updated
+ */
+open fun onUpdate(doc: Document) {}
+
+/**
+ * Persistence hook called when an instance of this type is published
+ */
+open fun onPublish(doc: Document) {}
+
+/**
+ * Persistence hook called when an instance of this type is deleted
+ */
+open fun onDelete(doc: Document) {}
+```
 ### Profile definition file
 
 Every profile has definition file, which contains configurations for the specific profile.
@@ -64,6 +102,7 @@ class MCloudProfile : CatalogProfile {
   
 }
 ```
+</details>
 
 ### Export
 
