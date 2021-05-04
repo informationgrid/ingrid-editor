@@ -82,7 +82,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
 
         // get uuids from documents that reference the address
         val docsWithReferences = jdbcTemplate.queryForList<String>(
-            "SELECT uuid FROM document where '$docId' = jsonb_extract_path_text(jsonb_extract_path(data, 'addresses') -> 0, 'ref')"
+            "SELECT DISTINCT uuid FROM document WHERE (data->'addresses' @> '[{\"ref\": \"$docId\"}]')"
         )
         
         docsWithReferences.forEach { indexMCloudDoc(context, it) }
