@@ -13,7 +13,8 @@ class AuditLogRecordData(
     val actor: String? = null,
     val time: String? = null,
     val target: String? = null,
-    val data: JsonNode? = null
+    val data: JsonNode? = null,
+    val record_type: String? = null
 ) {
 
     companion object {

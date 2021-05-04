@@ -18,6 +18,10 @@ class AuditLogRecord {
     @JsonIgnore
     var id: Int? = null
 
+    @Column(nullable=false)
+    @JsonProperty("_type")
+    var type: String? = null
+
     @Type(type = "jsonb")
     @Column(name = "message", columnDefinition = "jsonb")
     var message: AuditLogRecordData? = null

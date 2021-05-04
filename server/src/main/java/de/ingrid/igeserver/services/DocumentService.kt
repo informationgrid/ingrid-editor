@@ -85,11 +85,11 @@ class DocumentService : MapperService() {
         return docWrapperRepo.countByParent_Uuid(doc.uuid) > 0
     }
 
-    fun findChildrenDocs(catalogId: String, parentId: String?, isAddress: Boolean): FindAllResults {
+    fun findChildrenDocs(catalogId: String, parentId: String?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
 
-    fun findChildren(catalogId: String, parentId: String?, docCat: DocumentCategory? = null): FindAllResults {
+    fun findChildren(catalogId: String, parentId: String?, docCat: DocumentCategory? = null): FindAllResults<DocumentWrapper> {
         val queryMap = mutableListOf(
             QueryField(FIELD_PARENT, parentId),
             QueryField("catalog.identifier", catalogId)

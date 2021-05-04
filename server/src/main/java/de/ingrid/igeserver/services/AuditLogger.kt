@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.AuditLogRecord
 import de.ingrid.igeserver.repository.AuditLogRepository
 import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
@@ -52,7 +53,7 @@ class AuditLogger {
      * NOTE This method only retrieves log messages that are persisted in the database
      */
     fun find(logger: String?, id: String?, user: String?, action: String?, from: LocalDate?, to: LocalDate?,
-             sort: String?, sortOrder: String?) : FindAllResults {
+             sort: String?, sortOrder: String?) : FindAllResults<AuditLogRecord> {
         // TODO: migrate
         /*val queryMap = listOfNotNull(
                 if (!logger.isNullOrEmpty()) QueryField("logger", logger) else null,
@@ -64,7 +65,7 @@ class AuditLogger {
         ).toList()*/
         
             val result = auditLogRepo.findAll()
-            return FindAllResults(result.size.toLong(), emptyList()) // TODO: migrate
+            return FindAllResults(result.size.toLong(), result.toList()) // TODO: migrate
     }
 
     /**
