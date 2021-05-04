@@ -13,8 +13,11 @@
             <textarea matInput rows="4" placeholder="SELECT * FROM ..." [(ngModel)]="sql"></textarea>
         </mat-form-field>
 
-        <div>
+        <div fxLayoutGap="12px">
             <div fxFlex></div>
+            <button mat-stroked-button color="primary"
+                    [disabled]="sql.length === 0"
+                    (click)="query.emit('')">Entfernen</button>
             <button mat-flat-button color="primary"
                     [disabled]="!sql"
                     (click)="query.emit(sql)">Suchen</button>
