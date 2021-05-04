@@ -3,8 +3,6 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.model.Behaviour
-import org.springframework.stereotype.Component
 
 open class MapperService {
 
@@ -14,8 +12,4 @@ open class MapperService {
         return mapper.readTree(json)
     }
 
-    fun getJsonNodeFromClass(clazz: Behaviour): String {
-        val objectMapper = jacksonObjectMapper()
-        return objectMapper.writeValueAsString(clazz)
-    }
 }

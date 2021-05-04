@@ -1,11 +1,8 @@
-package de.ingrid.igeserver.model
+package de.ingrid.igeserver.model.validation
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.annotations.PublishedLink
-import de.ingrid.igeserver.model.DocUVP
-import java.lang.StringBuilder
-import java.util.*
 import javax.validation.constraints.NotNull
 
 /**

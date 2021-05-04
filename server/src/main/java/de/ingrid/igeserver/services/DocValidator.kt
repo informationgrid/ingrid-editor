@@ -2,8 +2,7 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.model.DocUVP
-import org.springframework.stereotype.Service
+import de.ingrid.igeserver.model.validation.DocUVP
 import javax.validation.ConstraintViolation
 import javax.validation.Validation
 import javax.validation.Validator
