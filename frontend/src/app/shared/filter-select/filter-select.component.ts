@@ -14,6 +14,7 @@ export class FilterSelectComponent implements OnInit {
   @Input() options: Observable<SelectOption[]>;
   @Input() labelFormat: (value: SelectOption) => string = (value) => value.label;
   @Input() placeholder: string;
+  @Input() hintText: string;
 
   @Output() optionSelect = new EventEmitter<SelectOption>();
   @Output() reset = new EventEmitter<string>();

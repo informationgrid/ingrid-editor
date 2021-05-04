@@ -87,6 +87,7 @@ class MCloudProfile : CatalogProfile {
             identifier = "20000"
             catalog = catalogRef
             name = "mCLOUD Kategorien"
+            description = "Dies sind die Kategorien, die innerhalb von mCLOUD verwendet werden"
             data = jacksonObjectMapper().createArrayNode().apply {
                 add(toCodelistEntry("railway", "Bahn"))
                 add(toCodelistEntry("waters", "Wasserstraßen und Gewässer"))
@@ -100,6 +101,7 @@ class MCloudProfile : CatalogProfile {
             identifier = "20001"
             catalog = catalogRef
             name = "OpenData Kategorien"
+            description = "Dies sind die Kategorien, die im OpenData Kontext verwendet werden"
             data = jacksonObjectMapper().createArrayNode().apply {
                 add(toCodelistEntry("SOCI", "Bevölkerung und Gesellschaft"))
                 add(toCodelistEntry("EDUC", "Bildung, Kultur und Sport"))

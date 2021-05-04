@@ -52,9 +52,9 @@
             </mat-expansion-panel-header>
 
             <div>{{entry.description}}</div>
-            <div>{{entry.data}}</div>
+            <div>data: {{entry.data}}</div>
 
-            <div *ngFor="let entryField of entryFields[entry.id]">{{entryField[0]}} - {{entryField[1]}}</div>
+            <div *ngFor="let entryField of entryFields[entry.id]">{{entryField[0]}}: {{entryField[1]}}</div>
 
         </mat-expansion-panel>
     </mat-accordion>

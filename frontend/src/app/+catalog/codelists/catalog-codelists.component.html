@@ -15,16 +15,13 @@
         </div>
     </ng-container>
 
-    <div main-header fxLayout="row" fxFlex>
+    <div main-header fxLayout="row" fxLayoutAlign="center" fxFlex>
         <p *ngIf="(hasCatalogCodelists | async) === false">
             In diesem Katalog gibt es keine spezifischen Codelisten. Alle Codelisten können
             über das zentrale Codelist-Repository verwaltet werden.
         </p>
 
-        <!--<ige-filter-select #select [options]="catalogCodelists" fxFlex class="white-bg"
-                           [labelFormat]="codelistLabelFormat" (optionSelect)="selectCodelist($event)"
-                           placeholder="Codeliste"></ige-filter-select>-->
-        <mat-form-field appearance="outline" class="width-100 white-bg">
+        <mat-form-field appearance="outline" class="white-bg" style="flex: 1; max-width: 600px">
             <mat-select (selectionChange)="selectCodelist($event.value)" [value]="initialValue">
                 <mat-option *ngFor="let codelist of catalogCodelists | async" [value]="codelist">
                     {{codelist.label}} ({{codelist.value}})
@@ -32,18 +29,13 @@
             </mat-select>
             <mat-hint>{{selectedCodelist?.description}}</mat-hint>
         </mat-form-field>
-
-        <div class="header-button">
-            <button mat-button mat-stroked-button
-                    (click)="resetCodelist()">Zurücksetzen
-            </button>
-        </div>
     </div>
 
     <div main-content *ngIf="(hasCatalogCodelists | async) === true" fxFlex>
 
-        <div fxLayoutAlign="end end">
-            <button mat-stroked-button color="primary" (click)="addCodelist()">Hinzufügen</button>
+        <div fxLayoutAlign="end end" fxLayoutGap="12px">
+            <button mat-flat-button mat-stroked-button (click)="resetCodelist()">Zurücksetzen</button>
+            <button mat-flat-button color="primary" (click)="addCodelist()">Hinzufügen</button>
         </div>
 
         <ige-codelist-presenter [codelist]="selectedCodelist"

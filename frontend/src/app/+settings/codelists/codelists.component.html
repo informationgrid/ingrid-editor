@@ -23,13 +23,14 @@
     </div>
 
     <div main-content fxFlex>
-        <ige-filter-select [options]="codelists" class="white-bg"
-                           [labelFormat]="codelistLabelFormat"
-                           placeholder="Codeliste wählen..."
-                           (reset)="resetInput()"
-                           (optionSelect)="updateCodelistTable($event)"></ige-filter-select>
-
-        <div class="description">{{selectedCodelist?.description}}</div>
+        <div fxLayoutAlign="center" >
+            <ige-filter-select [options]="codelists" class="white-bg" style="flex: 1; max-width: 600px"
+                               [labelFormat]="codelistLabelFormat"
+                               [hintText]="selectedCodelist?.description"
+                               placeholder="Codeliste wählen..."
+                               (reset)="resetInput()"
+                               (optionSelect)="updateCodelistTable($event)"></ige-filter-select>
+        </div>
 
         <ige-codelist-presenter [codelist]="selectedCodelist"
                                 [hideMenu]="true"></ige-codelist-presenter>
