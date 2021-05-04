@@ -18,6 +18,7 @@ export class IndexingComponent implements OnInit {
   hint: string;
   valid = true;
   isActivated: boolean;
+  showMore = false;
 
   constructor(private indexService: IndexService, private configService: ConfigService) {
     this.isActivated = configService.$userInfo.value.useElasticsearch;
