@@ -11,18 +11,30 @@ describe('Behaviours', () => {
   });
 
   it('should show multiple system and form behaviours', () => {
-    cy.get(BehavioursPage.CatalogsTabmenu.Codelisten).click();
-    cy.get('div.left-side').contains('Katalogspezifische Codelisten');
-    cy.get('mat-form-field mat-select').contains('Kategorien');
-    BehavioursPage.checkPageContains('ige-catalog-codelists',['Klima und Wetter'] );
+    cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
+    cy.get('div.left-side').contains('Katalogverhalten');
+    BehavioursPage.checkElementContainsSomething();
 
     cy.get(BehavioursPage.CatalogsTabmenu.Formulare).click();
     cy.get('div.left-side').contains('Formularkonfiguration');
-    BehavioursPage.checkPageContains('ige-behaviour-item',['Publish Plugin'] );
+    BehavioursPage.checkElementContainsSomething();
   });
 
   describe('System', () => {
-    xit('should change the session timeout behaviour', () => {});
+    it('should change the session timeout behaviour', () => {
+      cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
+      BehavioursPage.checkTimeoutIs('30');
+      BehavioursPage.setCatalogSetting('Session Timeout Dauer', true);
+      BehavioursPage.setCatalogInputbox('Session Timeout Dauer','600');
+      BehavioursPage.saveCatalogSetting();
+      BehavioursPage.checkTimeoutIs('10');
+      BehavioursPage.setCatalogInputbox('Session Timeout Dauer','6000');
+      BehavioursPage.saveCatalogSetting();
+      BehavioursPage.checkTimeoutIs('100');
+      BehavioursPage.setCatalogSetting('Session Timeout Dauer', false);
+      BehavioursPage.saveCatalogSetting();
+      BehavioursPage.checkTimeoutIs('30');
+    });
 
     xit('should change the sorting of the tree', () => {});
 
