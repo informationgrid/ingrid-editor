@@ -4,6 +4,7 @@ import cronstrue from 'cronstrue/i18n';
 import {FormControl} from '@angular/forms';
 import {ConfigService} from '../../services/config/config.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {RxStompService} from '@stomp/ng2-stompjs';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
@@ -23,11 +24,13 @@ export class IndexingComponent implements OnInit {
   showMore = false;
 
   lastLog = this.indexService.lastLog$;
+  private receivedMessages: any[] = [];
 
   constructor(private indexService: IndexService,
               private configService: ConfigService,
               private clipboard: Clipboard,
-              private snackBar: MatSnackBar) {
+              private snackBar: MatSnackBar,
+              private rxStompService: RxStompService) {
     this.isActivated = configService.$userInfo.value.useElasticsearch;
   }
 
@@ -35,6 +38,13 @@ export class IndexingComponent implements OnInit {
     if (!this.isActivated) {
       return;
     }
+
+    this.rxStompService.watch('/topic/indexStatus')
+      .pipe(untilDestroyed(this))
+      .subscribe((message: any) => {
+        this.receivedMessages.push(message.body);
+        console.log(message.body);
+      });
 
     this.indexService.getCronPattern()
       .subscribe(config => this.cronField.setValue(config.cronPattern));

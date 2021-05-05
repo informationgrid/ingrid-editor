@@ -52,6 +52,8 @@ import {FormFieldsModule} from './form-fields/form-fields.module';
 import {AnimationWrapper, AnimationWrapperComponent} from './animation-wrapper.component';
 import {NG_FORMS_MANAGER_CONFIG, NgFormsManagerConfig} from '@ngneat/forms-manager';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material/snack-bar';
+import {InjectableRxStompConfig, RxStompService, rxStompServiceFactory} from '@stomp/ng2-stompjs';
+import {igeStompConfig} from './ige-stomp.config';
 
 registerLocaleData(de);
 
@@ -175,6 +177,17 @@ export function ConfigLoader(configService: ConfigService) {
       useValue: new NgFormsManagerConfig({
         debounceTime: 0 // defaults to 300
       })
+    },
+
+    // WebSocket
+    {
+      provide: InjectableRxStompConfig,
+      useValue: igeStompConfig,
+    },
+    {
+      provide: RxStompService,
+      useFactory: rxStompServiceFactory,
+      deps: [InjectableRxStompConfig],
     },
 
     // PLUGINS
