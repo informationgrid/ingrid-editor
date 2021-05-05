@@ -32,7 +32,7 @@ class AuditLogTest : AnnotationSpec() {
 
         val oldCount = auditRepo.count()
 
-        auditLog.log("category", "action", "target")
+        auditLog.log("category", "action", "target", null, "audit.data-history")
 
         Assertions.assertThat(auditRepo.count()).isEqualTo(oldCount + 1)
 

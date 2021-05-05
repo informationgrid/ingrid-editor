@@ -3,6 +3,8 @@ package de.ingrid.igeserver.imports.iso
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.ige.api.IgeImporter
+import de.ingrid.igeserver.exports.iso.CharacterString
+import de.ingrid.igeserver.exports.iso.CodelistAttributes
 import de.ingrid.igeserver.exports.iso.Metadata
 import org.apache.logging.log4j.kotlin.logger
 import java.io.StringReader

@@ -65,7 +65,7 @@ class AuditLogger {
         ).toList()*/
         
             val result = auditLogRepo.findAll()
-            return FindAllResults(result.size.toLong(), result.toList()) // TODO: migrate
+            return FindAllResults(result.size.toLong(), result.toList())
     }
 
     /**

@@ -1,20 +1,19 @@
 package de.ingrid.igeserver.exports.iso
 
+import javax.xml.bind.annotation.XmlAccessType
+import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAttribute
 import javax.xml.bind.annotation.XmlElement
 
-class ResponsibleParty {
-    @XmlAttribute
-    var uuid: String? = null
-    private val individualName: String? = null
-    private val organisationName: String? = null
-    private val positionName: String? = null
-
-    @XmlElement(name = "contactInfo")
-    var contactInfo: ContactInfo? = null
-
-    @XmlElement(name = "role")
-    private var role: RoleCode? = null
+@XmlAccessorType(XmlAccessType.FIELD)
+data class ResponsibleParty(
+    @XmlAttribute var uuid: String? = null,
+    val individualName: String? = null,
+    val organisationName: String? = null,
+    val positionName: String? = null,
+    @XmlElement(name = "contactInfo") var contactInfo: ContactInfo? = null,
+    @XmlElement(name = "role") var role: RoleCode? = null
+) {
     fun setRole(codelistAttr: CodelistAttributes?) {
         role = RoleCode()
         role!!.codelist = codelistAttr
