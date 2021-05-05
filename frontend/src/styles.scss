@@ -616,11 +616,10 @@ ige-side-menu {
   .status {
     padding: 30px;
     background-color: rgb(223, 223, 223);
-    max-height: 300px;
 
-    & > div {
+    .log {
       overflow: auto;
-      height: 100%;
+      max-height: 300px;
     }
   }
 }

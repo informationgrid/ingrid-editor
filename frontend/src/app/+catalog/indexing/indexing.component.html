@@ -69,7 +69,13 @@
     </div>
 
     <div *ngIf="showMore" status class="status">
-        <div>
+        <div fxLayoutAlign="end end" style="padding-bottom: 24px">
+            <div class="extra-large-spacing link-text">
+                <a href="#" (click)="copyContent($event)">Kopieren</a>
+            </div>
+        </div>
+
+        <div class="log">
             <div *ngFor="let line of (lastLog | async).log">{{line}}</div>
         </div>
     </div>

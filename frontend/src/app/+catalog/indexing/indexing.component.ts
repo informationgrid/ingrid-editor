@@ -4,6 +4,8 @@ import cronstrue from 'cronstrue/i18n';
 import {FormControl} from '@angular/forms';
 import {ConfigService} from '../../services/config/config.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Clipboard} from '@angular/cdk/clipboard';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @UntilDestroy()
 @Component({
@@ -22,7 +24,10 @@ export class IndexingComponent implements OnInit {
 
   lastLog = this.indexService.lastLog$;
 
-  constructor(private indexService: IndexService, private configService: ConfigService) {
+  constructor(private indexService: IndexService,
+              private configService: ConfigService,
+              private clipboard: Clipboard,
+              private snackBar: MatSnackBar) {
     this.isActivated = configService.$userInfo.value.useElasticsearch;
   }
 
@@ -72,5 +77,12 @@ export class IndexingComponent implements OnInit {
         message: 'Ungültiger Ausdruck'
       };
     }
+  }
+
+  copyContent(event: MouseEvent) {
+    event.preventDefault();
+
+    this.clipboard.copy(this.lastLog.value.log.join('\n'));
+    this.snackBar.open('Log in Zwischenablage kopiert');
   }
 }
