@@ -26,6 +26,10 @@
   .mat-expansion-panel:first-of-type, .mat-expansion-panel:last-of-type {
     border-radius: 0 !important;
   }
+
+  .content {
+    padding-left: 48px;
+  }
 }
 
 .default {

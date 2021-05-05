@@ -6,7 +6,7 @@
                              (closed)="showMore[entry.id] = false">
             <mat-expansion-panel-header>
                 <mat-panel-title>
-                    <mat-icon mat-list-icon>list</mat-icon>
+                    <mat-icon svgIcon="codelist"></mat-icon>
                     <div>
                         <div class="identifier">{{entry.id}}</div>
                         <div class="name">
@@ -51,10 +51,12 @@
                 </mat-panel-description>
             </mat-expansion-panel-header>
 
-            <div>{{entry.description}}</div>
-            <div>data: {{entry.data}}</div>
+            <div class="content">
+                <div>{{entry.description}}</div>
+                <div>data: {{entry.data}}</div>
 
-            <div *ngFor="let entryField of entryFields[entry.id]">{{entryField[0]}}: {{entryField[1]}}</div>
+                <div *ngFor="let entryField of entryFields[entry.id]">{{entryField[0]}}: {{entryField[1]}}</div>
+            </div>
 
         </mat-expansion-panel>
     </mat-accordion>

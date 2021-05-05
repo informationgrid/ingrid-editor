@@ -24,7 +24,7 @@
 
     <div main-content fxFlex>
         <div fxLayoutAlign="center" >
-            <ige-filter-select [options]="codelists" class="white-bg" style="flex: 1; max-width: 600px"
+            <ige-filter-select [options]="codelists" class="white-bg" style="flex: 1; max-width: 460px"
                                [labelFormat]="codelistLabelFormat"
                                [hintText]="selectedCodelist?.description"
                                placeholder="Codeliste wählen..."
@@ -34,6 +34,11 @@
 
         <ige-codelist-presenter [codelist]="selectedCodelist"
                                 [hideMenu]="true"></ige-codelist-presenter>
+
+        <div *ngIf="!selectedCodelist" fxLayoutAlign="center" style="padding-top: 60px">
+            <img src="assets/icons/codelist-repository.png" alt="codelist-repo">
+        </div>
+
     </div>
 </page-template>
 

@@ -15,23 +15,28 @@
         </div>
     </ng-container>
 
-    <div main-header fxLayout="row" fxLayoutAlign="center" fxFlex>
-        <p *ngIf="(hasCatalogCodelists | async) === false">
-            In diesem Katalog gibt es keine spezifischen Codelisten. Alle Codelisten können
-            über das zentrale Codelist-Repository verwaltet werden.
-        </p>
+    <div main-header fxLayout="column" fxLayoutAlign="center center" fxFlex>
+        <ng-container *ngIf="(hasCatalogCodelists | async) === false; else showSelecter">
+            <div>In diesem Katalog liegen keine spezifischen Codelisten vor.</div>
+            <div>Alle Codelisten können über das zentrale Codelist-Repository verwaltet werden.</div>
+            <div style="padding-top: 24px">
+                <button mat-flat-button mat-stroked-button (click)="resetCodelist()">Zurücksetzen</button>
+            </div>
+        </ng-container>
 
-        <mat-form-field appearance="outline" class="white-bg" style="flex: 1; max-width: 600px">
-            <mat-select (selectionChange)="selectCodelist($event.value)" [value]="initialValue">
-                <mat-option *ngFor="let codelist of catalogCodelists | async" [value]="codelist">
-                    {{codelist.label}} ({{codelist.value}})
-                </mat-option>
-            </mat-select>
-            <mat-hint>{{selectedCodelist?.description}}</mat-hint>
-        </mat-form-field>
+        <ng-template #showSelecter>
+            <mat-form-field appearance="outline" class="white-bg" style="flex: 1; max-width: 600px">
+                <mat-select (selectionChange)="selectCodelist($event.value)" [value]="initialValue">
+                    <mat-option *ngFor="let codelist of catalogCodelists | async" [value]="codelist">
+                        {{codelist.label}} ({{codelist.value}})
+                    </mat-option>
+                </mat-select>
+                <mat-hint>{{selectedCodelist?.description}}</mat-hint>
+            </mat-form-field>
+        </ng-template>
     </div>
 
-    <div main-content *ngIf="(hasCatalogCodelists | async) === true" fxFlex>
+    <div main-content *ngIf="(hasCatalogCodelists | async) === true; else showLogo" fxFlex>
 
         <div fxLayoutAlign="end end" fxLayoutGap="12px">
             <button mat-flat-button mat-stroked-button (click)="resetCodelist()">Zurücksetzen</button>
@@ -42,7 +47,14 @@
                                 (edit)="editCodelist($event)"
                                 (remove)="removeCodelist($event)"
                                 (setDefault)="setAsDefault($event)"></ige-codelist-presenter>
+
     </div>
+
+    <ng-template #showLogo>
+        <div *ngIf="!selectedCodelist" fxFlex fxLayoutAlign="center center">
+            <img src="assets/icons/catalog-codelist.png" alt="codelist-repo">
+        </div>
+    </ng-template>
 </page-template>
 
 
