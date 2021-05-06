@@ -84,13 +84,14 @@ class UsersApiController : UsersApi {
 
     override fun getUser(principal: Principal?, userId: String): ResponseEntity<User> {
 
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-
         val user = keycloakService.getUser(principal, userId)
+        val frontendUser = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+
         user.latestLogin = keycloakService.getLatestLoginDate(principal, userId);
-        user.groups = catalogService.getGroupsForUser(userId, catalogId)
-        user.creationDate = catalogService.getUserCreationDate(userId)
-        user.modificationDate = catalogService.getUserModificationDate(userId)
+        user.groups = frontendUser.groups.map { it.id!! }
+        user.creationDate = frontendUser.data?.creationDate ?: Date(0)
+        user.modificationDate = frontendUser.data?.modificationDate ?: Date(0)
+
         //TODO implement manager and standin
         user.manager = "ige"
         user.standin = "herbert"
@@ -116,7 +117,7 @@ class UsersApiController : UsersApi {
     override fun updateUser(principal: Principal?, id: String, user: User): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        keycloakService.updateUser(principal!!, user)
+        keycloakService.updateUser(principal, user)
         catalogService.updateUser(catalogId, user)
         return ResponseEntity.ok().build()
 
@@ -126,7 +127,7 @@ class UsersApiController : UsersApi {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val user = keycloakService.getUser(principal, userId)
-        
+
         val roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?)
 
         val lastLogin = this.getLastLogin(principal, user.login, roles)
@@ -162,14 +163,14 @@ class UsersApiController : UsersApi {
             currentCatalog = catalog,
             version = getVersion(),
             lastLogin = lastLogin,
-            useElasticsearch = env.activeProfiles.contains("elasticsearch") 
+            useElasticsearch = env.activeProfiles.contains("elasticsearch")
         )
         return ResponseEntity.ok(userInfo)
     }
 
     private fun getLastLogin(principal: Principal?, userIdent: String, roles: Set<String>?): Date? {
         val lastLoginKeyCloak = keycloakService.getLatestLoginDate(principal, userIdent)
-        if (lastLoginKeyCloak != null ){
+        if (lastLoginKeyCloak != null) {
             var recentLogins = catalogService.getRecentLoginsForUser(userIdent)
             when (recentLogins.size) {
                 0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
@@ -188,9 +189,10 @@ class UsersApiController : UsersApi {
             }
             var user = userRepo.findByUserId(userIdent)
             if (user == null && catalogService.isSuperAdmin(roles)) {
-                user = UserInfo().apply { 
+                user = UserInfo().apply {
                     userId = userIdent
-                    data = UserInfoData() }
+                    data = UserInfoData()
+                }
             }
             if (user != null) {
                 catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
@@ -229,27 +231,18 @@ class UsersApiController : UsersApi {
         var user = userRepo.findByUserId(userIdent)
 
         val isNewEntry = user == null
-        val objectMapper = ObjectMapper()
         var catalogIds: MutableSet<String> = HashSet()
 
         if (isNewEntry) {
             user = UserInfo().apply {
                 userId = userIdent
-                data = UserInfoData(
-                    emptyList(),
-                    emptyList(),
-                    null,
-                    null,
-                    null,
-                    mutableMapOf()
-                )
+                data = UserInfoData()
             }
         } else {
             // make list to hashset
-//            user.data.put("catalogIds", catInfo["catalogIds"])
             catalogIds = user?.data?.catalogIds?.toHashSet() ?: HashSet()
         }
-        
+
         // update catadmin in catalog Info
         catalogIds.add(catalogName)
 
@@ -277,21 +270,10 @@ class UsersApiController : UsersApi {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
 
-        val user = userRepo.findByUserId(userId)
-        /*val objectNode = when (info.totalHits) {
-            0L -> ObjectMapper().createObjectNode()
-            1L -> (info.hits[0] as ObjectNode)
-            else -> {
-                throw PersistenceException.withMultipleEntities(
-                    userId,
-                    UserInfoType::class.simpleName,
-                    dbService.currentCatalog
-                )
-            }
-        }.put("currentCatalogId", catalogId)*/
-        user?.data?.currentCatalogId = catalogId
+        val user = userRepo.findByUserId(userId)?.apply {
+            curCatalog = catalogService.getCatalogById(catalogId)
+        } ?: throw NotFoundException.withMissingUserCatalog(userId)
 
-//        dbService.save(UserInfoType::class, dbService.getRecordId(objectNode), objectNode.toString())
         userRepo.save(user)
         return ResponseEntity.ok().build()
     }

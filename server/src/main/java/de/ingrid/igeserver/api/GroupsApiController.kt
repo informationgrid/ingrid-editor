@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
+import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,24 +15,26 @@ import java.security.Principal
 @RequestMapping(path = ["/api"])
 class GroupsApiController @Autowired constructor(
     private val catalogService: CatalogService,
-    private val groupService: GroupService
+    private val groupService: GroupService,
+    private val authUtils: AuthUtils
 ) : GroupsApi {
 
     override fun createGroup(principal: Principal?, group: Group): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-
+        
         groupService.create(catalogId, group)
         return ResponseEntity(HttpStatus.OK)
     }
 
-    override fun deleteGroup(principal: Principal?, id: String): ResponseEntity<Void> {
+    override fun deleteGroup(principal: Principal?, id: Int): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        
 
         groupService.remove(catalogId, id)
         return ResponseEntity(HttpStatus.OK)
     }
 
-    override fun getGroup(principal: Principal?, id: String): ResponseEntity<Group> {
+    override fun getGroup(principal: Principal?, id: Int): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         return when (val group = groupService.get(catalogId, id)) {
@@ -47,7 +50,7 @@ class GroupsApiController @Autowired constructor(
         return ResponseEntity.ok(groups)
     }
 
-    override fun updateGroup(principal: Principal?, id: String, group: Group): ResponseEntity<Group> {
+    override fun updateGroup(principal: Principal?, id: Int, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         return when (val updatedGroup = groupService.update(catalogId, id, group)) {

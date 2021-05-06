@@ -8,7 +8,6 @@ interface GroupRepository : JpaRepository<Group, Int> {
     
     fun findAllByCatalog_Identifier(catalog_identifier: String, sort: Sort = Sort.by(Sort.Direction.ASC, "name")): List<Group>
     
-    fun findAllByCatalog_IdentifierAndIdentifier(catalog_identifier: String, identifier: String): Group
+    fun findAllByCatalog_IdentifierAndId(catalog_identifier: String, id: Int): Group
     
-    fun deleteByIdentifier(identifier: String)
 }
