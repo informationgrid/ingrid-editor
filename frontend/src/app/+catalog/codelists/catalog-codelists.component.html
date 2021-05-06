@@ -25,18 +25,22 @@
         </ng-container>
 
         <ng-template #showSelecter>
-            <mat-form-field appearance="outline" class="white-bg" style="flex: 1; max-width: 600px">
+            <mat-form-field appearance="outline" class="white-bg" style="flex: 1; width: 600px">
                 <mat-select (selectionChange)="selectCodelist($event.value)" [value]="initialValue">
                     <mat-option *ngFor="let codelist of catalogCodelists | async" [value]="codelist">
                         {{codelist.label}} ({{codelist.value}})
                     </mat-option>
                 </mat-select>
-                <mat-hint>{{selectedCodelist?.description}}</mat-hint>
             </mat-form-field>
         </ng-template>
     </div>
 
     <div main-content *ngIf="(hasCatalogCodelists | async) === true; else showLogo" fxFlex>
+
+        <div *ngIf="selectedCodelist?.description" class="description">
+            <div class="section-title">Beschreibung</div>
+            <div>{{selectedCodelist?.description}}</div>
+        </div>
 
         <div fxLayoutAlign="end end" fxLayoutGap="12px">
             <button mat-flat-button mat-stroked-button (click)="resetCodelist()">Zurücksetzen</button>
