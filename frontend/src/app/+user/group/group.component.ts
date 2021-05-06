@@ -28,7 +28,6 @@ export class GroupComponent implements OnInit {
 
   initialValue = {
     id: null,
-    _type: '',
     name: '',
     description: '',
     permissions: new Permissions()
@@ -46,7 +45,6 @@ export class GroupComponent implements OnInit {
 
     this.form = this.fb.group({
       id: [],
-      _type: [],
       name: ['', this.forbiddenNameValidator()],
       description: [],
       permissions: []
@@ -70,7 +68,8 @@ export class GroupComponent implements OnInit {
   addGroup() {
     this.isNewGroup = true;
     this.form.setValue(this.initialValue);
-    this.state$.next(this.initialValue);
+    // make sure change detection works after setting state first time
+    setTimeout(() => this.state$.next(JSON.parse(JSON.stringify(this.initialValue))));
   }
 
   loadGroup(id: string) {
@@ -107,6 +106,7 @@ export class GroupComponent implements OnInit {
         this.isNewGroup = false;
         this.fetchGroups()
           .pipe(tap(() => this.form.markAsPristine()))
+          .pipe(tap(() => this.state$.next(group)))
           .subscribe();
       }, (err: any) => {
         if (err.status === 406) {
@@ -145,7 +145,10 @@ export class GroupComponent implements OnInit {
 
   forbiddenNameValidator(): ValidatorFn {
     return (control: AbstractControl) => {
-      const forbidden = this.groups.filter(group => group.name === control.value).length > 0;
+      const forbidden = this.groups
+        .filter(group => group.name === control.value && group.id !== this.selectedGroup.value[0])
+        .length > 0;
+
       return forbidden ? {forbiddenName: {value: control.value}} : null;
     };
   }
