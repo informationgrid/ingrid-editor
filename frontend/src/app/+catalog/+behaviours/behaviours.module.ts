@@ -29,8 +29,7 @@ import { BehaviourItemComponent } from './behaviour-item/behaviour-item.componen
   ],
   exports: [
     BehavioursComponent
-  ],
-  entryComponents: []
+  ]
 })
 export class BehavioursModule {
 }
