@@ -78,6 +78,9 @@ export class GroupComponent implements OnInit {
     this.form.disable();
     this.groupService.getGroup(id)
       .subscribe(fetchedGroup => {
+        if (!fetchedGroup.permissions) {
+          fetchedGroup.permissions = new Permissions()
+        }
         this.form.reset(fetchedGroup);
         this.form.enable();
         // we need to make a general object of the group in order to compare
