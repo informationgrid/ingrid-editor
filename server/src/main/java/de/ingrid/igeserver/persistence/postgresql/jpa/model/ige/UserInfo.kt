@@ -33,6 +33,12 @@ class UserInfo {
     @JsonIgnore
     var catalogs: MutableSet<Catalog> = LinkedHashSet()
     
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    var role: Role? = null
+    
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_group",
@@ -50,7 +56,7 @@ class UserInfo {
     @JsonGetter("catalogIds")
     fun getCatalogIds(): Array<String> {
         if (this.catalogIds == null) {
-            this.catalogIds = catalogs.mapNotNull { it.identifier }.toTypedArray()
+            this.catalogIds = catalogs.map { it.identifier }.toTypedArray()
         }
         return this.catalogIds!!
     }

@@ -91,6 +91,7 @@ class UsersApiController : UsersApi {
         user.groups = frontendUser.groups.map { it.id!! }
         user.creationDate = frontendUser.data?.creationDate ?: Date(0)
         user.modificationDate = frontendUser.data?.modificationDate ?: Date(0)
+        user.role = frontendUser.role?.name ?: ""
 
         //TODO implement manager and standin
         user.manager = "ige"

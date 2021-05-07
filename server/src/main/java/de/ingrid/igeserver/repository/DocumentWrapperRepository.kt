@@ -59,7 +59,5 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     fun countByParent_Uuid(parent_uuid: String): Long
 
     fun deleteByUuid(uuid: String)
-
-//    fun getChildren(catalogId: String, parentId: String?)
-
+    
 }

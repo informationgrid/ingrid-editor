@@ -16,7 +16,7 @@
 
             <span class="save-buttons">
                 <button mat-stroked-button *ngIf="selectedUser || isNewUser;"
-                        attr.data-cy="toolbar_save_user"
+                        data-cy="toolbar_save_user"
                         matTooltip="Speichern"
                         [matTooltipShowDelay]="1000"
                         (click)="saveUser()"
@@ -25,7 +25,7 @@
                 </button>
                 <button class="btnAddUser" mat-flat-button color="primary"
                         [mat-menu-trigger-for]="userAddMenu"
-                        attr.data-cy="toolbar_add_user"
+                        data-cy="toolbar_add_user"
                         matTooltip="Nutzer hinzufügen"
                         [matTooltipShowDelay]="1000">
                     <mat-icon>person_add</mat-icon> Hinzufügen

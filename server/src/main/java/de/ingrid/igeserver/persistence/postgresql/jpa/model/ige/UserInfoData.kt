@@ -8,6 +8,5 @@ data class UserInfoData(
     var recentLogins: List<Long> = emptyList(),
     var catalogIds: List<String> = emptyList(),
     var creationDate: Date? = null,
-    var modificationDate: Date? = null,
-    var groups: MutableMap<String, List<String>> = mutableMapOf()
+    var modificationDate: Date? = null
 )

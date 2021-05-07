@@ -11,6 +11,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
+import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -25,6 +26,7 @@ class CatalogService @Autowired constructor(
     private val catalogRepo: CatalogRepository,
     private val userRepo: UserRepository,
     private val groupRepo: GroupRepository,
+    private val roleRepo: RoleRepository,
     private val authUtils: AuthUtils,
     private val catalogProfiles: List<CatalogProfile>
 ) {
@@ -183,6 +185,7 @@ class CatalogService @Autowired constructor(
             }
             
             groups = mergeGroups(catalogId, groups, user)
+            role = roleRepo.findByName(user.role)
         }
     }
 
