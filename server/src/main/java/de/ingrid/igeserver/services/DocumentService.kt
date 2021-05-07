@@ -81,10 +81,6 @@ class DocumentService : MapperService() {
 
     }
 
-    fun determineHasChildren(doc: DocumentWrapper): Boolean {
-        return docWrapperRepo.countByParent_Uuid(doc.uuid) > 0
-    }
-
     fun findChildrenDocs(catalogId: String, parentId: String?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }

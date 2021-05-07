@@ -224,7 +224,7 @@ class DatasetsApiController @Autowired constructor(
         val childDocs = docs.hits
             .map { doc ->
                 val latest = documentService.getLatestDocument(doc, resolveLinks = false)
-                latest.data.put(FIELD_HAS_CHILDREN, documentService.determineHasChildren(doc))
+                latest.data.put(FIELD_HAS_CHILDREN, doc.countChildren > 0)
                 documentService.convertToJsonNode(latest)
             }
         return ResponseEntity.ok(childDocs)

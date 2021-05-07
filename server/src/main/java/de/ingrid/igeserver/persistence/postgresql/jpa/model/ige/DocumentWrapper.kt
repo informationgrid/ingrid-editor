@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.*
+import org.hibernate.annotations.Formula
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import java.util.*
@@ -129,4 +130,7 @@ class DocumentWrapper {
         }
         return this.archiveIds!!
     }
+
+    @Formula(value = "(select count(dw.id) from document_wrapper dw where dw.parent_id = id)")
+    var countChildren: Int = 0
 }
