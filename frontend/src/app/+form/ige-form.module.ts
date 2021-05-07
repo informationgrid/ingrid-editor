@@ -46,8 +46,7 @@ import {VersionConflictDialogComponent} from './dialogs/version-conflict-dialog/
   ],
   providers: [
     NominatimService],
-  exports: [RouterModule, FormsModule, ScrollToDirective],
-  entryComponents: [PasteDialogComponent, IsoViewComponent, PrintViewDialogComponent]
+  exports: [RouterModule, FormsModule, ScrollToDirective]
 })
 export class IgeFormModule {
 }

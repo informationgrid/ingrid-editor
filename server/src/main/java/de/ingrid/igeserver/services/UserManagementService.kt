@@ -18,7 +18,7 @@ interface UserManagementService {
     fun getCurrentPrincipal(): Principal?
     fun userExists(principal: Principal, userId: String): Boolean
     fun createUser(principal: Principal, user: User)
-    fun updateUser(principal: Principal, user: User)
+    fun updateUser(principal: Principal?, user: User)
     fun requestPasswordChange(principal: Principal?, id: String)
 
     fun removeRoles(principal: Principal?, userId: String, roles: List<String>)

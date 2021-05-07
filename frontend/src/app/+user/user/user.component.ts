@@ -40,6 +40,7 @@ export class UserComponent implements OnInit {
   selectedUser: User;
   showMore = false;
   searchQuery: string;
+  isLoading = false;
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
@@ -83,6 +84,7 @@ export class UserComponent implements OnInit {
   }
 
   loadUser(login: string) {
+    this.isLoading = true;
     this.isNewUser = false;
     this.form.disable();
     this.userService.getUser(login)
@@ -103,6 +105,7 @@ export class UserComponent implements OnInit {
     this.form.get('role').disable();
     this.form.reset(mergedUser);
     this.state$.next(mergedUser);
+    this.isLoading=false;
   }
 
   showExternalUsersDialog() {
@@ -220,11 +223,11 @@ export class UserComponent implements OnInit {
   getRoleIcon(role: string) {
     switch (true) {
       case role === 'cat-admin':
-        return 'engineering'
+        return 'catalog-admin'
       case role.includes('admin'):
-        return 'supervisor_account'
+        return 'meta-admin'
       default:
-        return 'person'
+        return 'author'
 
     }
   }

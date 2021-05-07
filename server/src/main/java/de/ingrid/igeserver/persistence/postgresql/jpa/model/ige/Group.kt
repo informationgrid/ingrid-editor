@@ -16,18 +16,18 @@ class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("db_id")
     var id: Int? = null
-    
-    @Column(nullable=false)
-    @JsonProperty("id")
-    var identifier: String? = null
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="catalog_id", nullable=false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var catalog: Catalog? = null
+    
+    @ManyToMany(mappedBy = "groups", fetch=FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    var user: Set<UserInfo> = HashSet()
 
     @Column(nullable=false)
     var name: String? = null
@@ -37,9 +37,7 @@ class Group {
 
     @Type(type="jsonb")
     @Column(name="permissions", columnDefinition="jsonb")
+    @JsonProperty("permissions")
     var data: PermissionsData? = null
 
-    @Column(nullable=false)
-    @JsonProperty("_type")
-    var type: String? = null
 }

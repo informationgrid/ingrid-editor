@@ -230,7 +230,7 @@ class KeycloakService : UserManagementService {
 
     }
 
-    override fun updateUser(principal: Principal, user: User) {
+    override fun updateUser(principal: Principal?, user: User) {
 
         initClient(principal).use { client ->
             val kcUser = getKeycloakUser(principal, user.login)

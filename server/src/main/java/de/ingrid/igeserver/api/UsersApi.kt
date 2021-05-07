@@ -149,7 +149,7 @@ interface UsersApi {
     fun assignedUsers(
         principal: Principal?,
         @Parameter(
-            description = "The database id to query the assigned users from.",
+            description = "The catalog id to query the assigned users from.",
             required = true
         ) @PathVariable("id") id: String
     ): ResponseEntity<List<String>>

@@ -127,7 +127,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     DateRangeTypeComponent,
     RepeatDetailListComponent
   ],
-  entryComponents: [ContextHelpComponent],
   exports: [
     ReactiveFormsModule, FormsModule,
     FormlyModule,

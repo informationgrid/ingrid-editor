@@ -1,37 +1,26 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
+import de.ingrid.igeserver.repository.UserRepository
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 @Service
-class GroupService @Autowired constructor(private val groupRepo: GroupRepository) {
+class GroupService @Autowired constructor(
+    private val groupRepo: GroupRepository,
+    private val catalogRepo: CatalogRepository,
+    private val userRepo: UserRepository
+) {
 
     private val log = logger()
 
     fun create(catalogId: String, group: Group) {
-        group.identifier = getUniqueGroupId(catalogId, group)
-
+        group.catalog = catalogRepo.findByIdentifier(catalogId)
         groupRepo.save(group)
-    }
-
-    private fun getUniqueGroupId(catalogId: String, group: Group): String {
-
-        var id = group.name
-            ?.toLowerCase()
-            ?.filter { !it.isWhitespace() }!!
-
-        val origId = id
-        var counter = 1
-        while (exists(catalogId, id)) {
-            id = "${origId}_${counter++}"
-        }
-
-        return id
-
     }
 
     fun getAll(catalogId: String): List<Group> {
@@ -40,27 +29,30 @@ class GroupService @Autowired constructor(private val groupRepo: GroupRepository
 
     }
 
-    fun exists(catalogId: String, id: String): Boolean {
+    fun exists(catalogId: String, id: Int): Boolean {
         return get(catalogId, id) != null
     }
 
-    fun get(catalogId: String, id: String): Group? {
+    fun get(catalogId: String, id: Int): Group? {
 
-        return groupRepo.findAllByCatalog_IdentifierAndIdentifier(catalogId, id)
+        return groupRepo.findAllByCatalog_IdentifierAndId(catalogId, id)
 
     }
 
-    fun update(catalogId: String, id: String, group: Group): Group {
+    fun update(catalogId: String, id: Int, group: Group): Group {
 
         val oldGroup = get(catalogId, id)
-        group.id = oldGroup?.id
+        group.apply {
+            this.id = oldGroup?.id
+            catalog = oldGroup?.catalog
+        }
         return groupRepo.save(group)
 
     }
 
-    fun remove(catalogId: String, id: String) {
+    fun remove(catalogId: String, id: Int) {
 
-        groupRepo.deleteByIdentifier(id)
+        groupRepo.deleteById(id)
 
     }
 

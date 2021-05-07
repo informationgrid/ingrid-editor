@@ -13,7 +13,7 @@ data class User(
     var role: String = "",
     var manager: String = "",
     var standin: String?,
-    var groups: List<String> = emptyList(),
+    var groups: List<Int> = emptyList(),
     var creationDate: Date = Date(0),
     var modificationDate: Date = Date(0),
     var latestLogin: Date?,

@@ -32,6 +32,22 @@ class UserInfo {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var catalogs: MutableSet<Catalog> = LinkedHashSet()
+    
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    var role: Role? = null
+    
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_group",
+        joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false, updatable = false)],
+        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false, updatable = false)]
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    var groups: MutableSet<Group> = LinkedHashSet()
 
     @Transient
     @JsonSetter("catalogIds")
@@ -40,7 +56,7 @@ class UserInfo {
     @JsonGetter("catalogIds")
     fun getCatalogIds(): Array<String> {
         if (this.catalogIds == null) {
-            this.catalogIds = catalogs.mapNotNull { it.identifier }.toTypedArray()
+            this.catalogIds = catalogs.map { it.identifier }.toTypedArray()
         }
         return this.catalogIds!!
     }
@@ -72,62 +88,4 @@ class UserInfo {
     @Column(name = "data", columnDefinition = "jsonb")
     var data: UserInfoData? = null
 
-/*
-    */
-    /**
-     * Resolve catalog entities from catalog identifiers
-     *//*
-    override fun beforePersist(entityManager: EntityManager) {
-        curCatalog = Catalog.getByIdentifier(entityManager, curCatalogId)
-
-        // update many to many relation to catalogs, since user is the owner of the
-        // relation it is sufficient to maintain this relation end only
-        val detached = if (entityManager.contains(this)) {
-            entityManager.detach(this)
-            true
-        } else false
-        catalogs.clear()
-        catalogIds?.forEach {catalogId ->
-            Catalog.getByIdentifier(entityManager, catalogId)?.let { catalog ->
-                run {
-                    if (!catalogs.any { c -> c.id == catalog.id }) {
-                        catalogs.add(catalog)
-                    }
-                }
-            }
-        }
-        if (detached) {
-            entityManager.merge(this)
-        }
-    }
-
-    */
-    /**
-     * Detach catalogs
-     *//*
-    override fun beforeRemove(entityManager: EntityManager) {
-        catalogs.forEach {
-            this.catalogs.remove(it)
-        }
-    }
-
-    */
-    /**
-     * Resolve catalog database ids from catalog identifiers
-     *//*
-    override fun mapQueryValue(field: String, value: String?, entityManager: EntityManager): Any? {
-        if (value == null) return null
-        return when (field) {
-            "curCatalog" -> Catalog.getByIdentifier(entityManager, value.trim())?.id
-            "catalogIds" -> {
-                val ids = value.split(',').mapNotNull { identifier ->
-                    // we expect catalog identifiers in queries
-                    val catalog = Catalog.getByIdentifier(entityManager, identifier.trim())
-                    catalog?.id
-                }
-                ids
-            }
-            else -> value
-        }
-    }*/
 }

@@ -11,7 +11,6 @@ describe('ResearchService', () => {
     service: ResearchService,
     imports: [HttpClientTestingModule, MatDialogModule],
     providers: [],
-    entryComponents: [],
     mocks: [ConfigService, ProfileService]
   });
 

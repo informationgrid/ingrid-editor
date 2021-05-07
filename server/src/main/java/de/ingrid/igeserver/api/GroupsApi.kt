@@ -59,7 +59,7 @@ interface GroupsApi {
     )
     fun deleteGroup(
         principal: Principal?,
-        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: String
+        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int
     ): ResponseEntity<Void>
 
     @Operation(description = "Get the group with the given ID.")
@@ -71,7 +71,7 @@ interface GroupsApi {
     )
     fun getGroup(
         principal: Principal?,
-        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: String
+        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int
     ): ResponseEntity<Group>
 
     @Operation(description = "")
@@ -93,7 +93,7 @@ interface GroupsApi {
     )
     fun updateGroup(
         principal: Principal?,
-        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: String,
+        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int,
         @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
     ): ResponseEntity<Group>
 }

@@ -26,28 +26,30 @@ import {MatTableModule} from "@angular/material/table";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatSortModule} from "@angular/material/sort";
 import {MatChipsModule} from "@angular/material/chips";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
-    imports: [
-        CommonModule,
-        routing,
-        AngularSplitModule,
-        SharedModule,
-        MatTabsModule,
-        MatFormFieldModule,
-        MatDialogModule,
-        FormsModule,
-        MatSlideToggleModule,
-        ReactiveFormsModule,
-        MatMenuModule,
-        MatSelectModule,
-        MatToolbarModule,
-        FormSharedModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
-        MatChipsModule
-    ],
+  imports: [
+    CommonModule,
+    routing,
+    AngularSplitModule,
+    SharedModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatDialogModule,
+    FormsModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+    MatMenuModule,
+    MatSelectModule,
+    MatToolbarModule,
+    FormSharedModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatChipsModule,
+    MatProgressSpinnerModule
+  ],
   declarations: [
     UserComponent, GroupComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent,
     PermissionsShowComponent, TreePermissionComponent, NewUserDialogComponent, HeaderMoreComponent, UserTableComponent]

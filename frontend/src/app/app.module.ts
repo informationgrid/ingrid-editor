@@ -195,8 +195,7 @@ export function ConfigLoader(configService: ConfigService) {
 
   ], // additional providers
 
-  bootstrap: [AppComponent],
-  entryComponents: [ErrorDialogComponent, ConfirmDialogComponent]
+  bootstrap: [AppComponent]
 })
 
 export class AppModule {

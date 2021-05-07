@@ -26,10 +26,14 @@
         <div fxLayoutAlign="center" >
             <ige-filter-select [options]="codelists" class="white-bg" style="flex: 1; max-width: 460px"
                                [labelFormat]="codelistLabelFormat"
-                               [hintText]="selectedCodelist?.description"
                                placeholder="Codeliste wählen..."
                                (reset)="resetInput()"
                                (optionSelect)="updateCodelistTable($event)"></ige-filter-select>
+        </div>
+
+        <div *ngIf="selectedCodelist?.description" class="description">
+            <div class="section-title">Beschreibung</div>
+            <div>{{selectedCodelist?.description}}</div>
         </div>
 
         <ige-codelist-presenter [codelist]="selectedCodelist"
