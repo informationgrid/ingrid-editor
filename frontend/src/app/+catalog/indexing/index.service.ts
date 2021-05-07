@@ -43,7 +43,7 @@ export class IndexService {
   }
 
   fetchLastLog() {
-    return this.http.get<LogResult>(this.configuration.backendUrl + 'index/log')
+    return this.http.get<any>(this.configuration.backendUrl + 'index/log')
       .pipe(
         tap(response => this.lastLog$.next(response))
       ).subscribe();

@@ -1,12 +1,18 @@
 package de.ingrid.igeserver.index
 
+import de.ingrid.igeserver.api.messaging.IndexMessage
+import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ExportService
+import de.ingrid.igeserver.services.FIELD_PUBLISHED
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 
 @Service
@@ -35,34 +41,46 @@ class IndexService @Autowired constructor(
         IndexOptions(singlePublishedDoc, format)
     }
 
-    fun export(catalogId: String, options: IndexOptions): List<Any> {
-
-        // TODO: Request all results or use paging
-        val docsToIndex = documentService.find(catalogId, "data", options.dbFilter)
-        if (docsToIndex.isEmpty()) {
-            log.warn("No documents found for indexing")
-            return emptyList()
-        }
-
-        val exporter = exportService.getExporter(options.exportFormat)
-
-        val onlyPublished = options.documentState == FIELD_PUBLISHED
-        return docsToIndex.content
-            .map { documentService.getLatestDocument(it, onlyPublished) }
-            .onEach { log.debug("Exporting document: ${it.uuid}") }
-            .map { exporter.run(it) }
-
+    fun getSinglePublishedDocument(catalogId: String, format: String, uuid: String): Document {
+        return documentService.find(catalogId, "data", INDEX_SINGLE_PUBLISHED_DOCUMENT(format, uuid).dbFilter)
+            .map { documentService.getLatestDocument(it, true) }
+            .first()
     }
+
+    fun getPublishedDocuments(catalogId: String, format: String): Page<Document> {
+        // TODO: Request all results or use paging
+        val docsToIndex = documentService.find(catalogId, "data", INDEX_PUBLISHED_DOCUMENTS(format).dbFilter)
+            .map { documentService.getLatestDocument(it, true) }
+
+        return if (docsToIndex.isEmpty) {
+            log.warn("No documents found for indexing")
+            Page.empty()
+        } else {
+            docsToIndex
+        }
+    }
+
+    fun getExporter(exportFormat: String): IgeExporter = exportService.getExporter(exportFormat)
 
     fun updateConfig(catalogId: String, cronPattern: String) {
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        catalog.settings = CatalogSettings(cronPattern)
+        if (catalog.settings == null) {
+            catalog.settings = CatalogSettings(cronPattern)
+        } else {
+            catalog.settings!!.indexCronPattern = cronPattern
+        }
         catalogRepo.save(catalog)
 
     }
 
     fun getConfig(catalogId: String): String? = catalogRepo.findByIdentifier(catalogId).settings?.indexCronPattern
+
+    fun getLastLog(catalogId: String): IndexMessage? {
+
+        return catalogRepo.findByIdentifier(catalogId)
+            .settings?.lastLogSummary
+    }
 
 /*
     private fun getVersion(wrapper: JsonNode, options: IndexOptions): JsonNode {

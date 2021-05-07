@@ -84,6 +84,8 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     }
 
     private fun indexMCloudDoc(context: Context, docId: String) {
+        
+        // TODO: use IndexingTask.updateDocument or service?
 
         context.addMessage(Message(this, "Index document ${docId} to Elasticsearch"))
         // TODO: Refactor
@@ -99,15 +101,12 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         indexInfo.toAlias = elasticsearchAlias
         indexInfo.docIdField = "uuid"
 
-        val export =
-            indexService.export(context.catalogId, indexService.INDEX_SINGLE_PUBLISHED_DOCUMENT("portal", docId))
+        val exporter = indexService.getExporter("portal")
+        val doc = indexService.getSinglePublishedDocument(context.catalogId, "portal", docId)
+        val export = exporter.run(doc)
 
-        if (export.isNotEmpty()) {
-            log.debug("Exported document: " + export[0])
-            indexManager.update(indexInfo, convertToElasticDocument(export[0]), false)
-        } else {
-            log.warn("Problem exporting document: $docId")
-        }
+        log.debug("Exported document: " + export)
+        indexManager.update(indexInfo, convertToElasticDocument(export), false)
 
     }
 

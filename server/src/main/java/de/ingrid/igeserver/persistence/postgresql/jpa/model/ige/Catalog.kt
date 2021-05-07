@@ -56,7 +56,7 @@ class Catalog {
 
     @Type(type = "jsonb")
     @Column(name = "settings", columnDefinition = "jsonb")
-    var settings: CatalogSettings? = null
+    var settings: CatalogSettings? = CatalogSettings()
     
     @PrePersist
     fun setPersistDate() {

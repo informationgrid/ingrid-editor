@@ -7,6 +7,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {RxStompService} from '@stomp/ng2-stompjs';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {map} from 'rxjs/operators';
 
 @UntilDestroy()
 @Component({
@@ -23,8 +24,7 @@ export class IndexingComponent implements OnInit {
   isActivated: boolean;
   showMore = false;
 
-  lastLog = this.indexService.lastLog$;
-  private receivedMessages: any[] = [];
+  liveImportMessage: any;
 
   constructor(private indexService: IndexService,
               private configService: ConfigService,
@@ -40,11 +40,16 @@ export class IndexingComponent implements OnInit {
     }
 
     this.rxStompService.watch('/topic/indexStatus')
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        map(msg => JSON.parse(msg.body))
+      )
       .subscribe((message: any) => {
-        this.receivedMessages.push(message.body);
-        console.log(message.body);
+        this.liveImportMessage = message;
+        console.log(message);
       });
+
+    this.indexService.lastLog$.subscribe(log => this.liveImportMessage = log);
 
     this.indexService.getCronPattern()
       .subscribe(config => this.cronField.setValue(config.cronPattern));
@@ -92,7 +97,7 @@ export class IndexingComponent implements OnInit {
   copyContent(event: MouseEvent) {
     event.preventDefault();
 
-    this.clipboard.copy(this.lastLog.value.log.join('\n'));
+    this.clipboard.copy(JSON.stringify(this.liveImportMessage));
     this.snackBar.open('Log in Zwischenablage kopiert');
   }
 }

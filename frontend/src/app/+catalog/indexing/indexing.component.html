@@ -55,7 +55,8 @@
 
     <div main-header fxFlex *ngIf="isActivated; else noElasticsearch" fxLayoutAlign="center center">
         <div>
-            Letzte Indizierung erfolgte am {{(lastLog|async)?.lastIndexedDate | date:'dd.LL.yyyy HH:mm'}}
+            <span *ngIf="!liveImportMessage">Letzte Indizierung erfolgte am {{(lastLog|async)?.lastIndexedDate | date:'dd.LL.yyyy HH:mm'}}</span>
+            <span *ngIf="liveImportMessage">Laufende Indizierung seit: {{liveImportMessage.startTime | date:'dd.LL.yyyy HH:mm:ss'}}</span>
             <button mat-icon-button class="dark menu-button" [class.expanded]="showMore" (click)="showMore = !showMore">
                 <mat-icon class="animated">keyboard_arrow_down</mat-icon>
             </button>
@@ -76,7 +77,7 @@
         </div>
 
         <div class="log">
-            <div *ngFor="let line of (lastLog | async).log">{{line}}</div>
+            <div><pre>{{liveImportMessage | json}}</pre></div>
         </div>
     </div>
 

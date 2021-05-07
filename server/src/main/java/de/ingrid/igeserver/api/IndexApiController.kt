@@ -1,9 +1,11 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.model.IndexRequestOptions
 import de.ingrid.igeserver.model.LogResponse
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -17,6 +19,7 @@ import java.time.OffsetDateTime
 @RestController
 @RequestMapping(path = ["/api"])
 class IndexApiController @Autowired constructor(
+    private val catalogService: CatalogService,
     private val indexService: IndexService,
     private val indexingTask: IndexingTask
 ) : IndexApi {
@@ -41,31 +44,10 @@ class IndexApiController @Autowired constructor(
 
     }
 
-    override fun getLog(principal: Principal?): ResponseEntity<LogResponse> {
+    override fun getLog(principal: Principal?): ResponseEntity<IndexMessage> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val message = indexService.getLastLog(catalogId)
 
-        val log = listOf(
-            "Logzeile 1",
-            "Logzeile 2",
-            "Logzeile 3",
-            "Logzeile 4",
-            "Logzeile 5",
-            "Logzeile 6",
-            "Logzeile 7",
-            "Logzeile 8",
-            "Logzeile 9",
-            "Logzeile 10",
-            "Logzeile 11",
-            "Logzeile 12",
-            "Logzeile 13",
-            "Logzeile 14",
-            "Logzeile 15",
-            "Logzeile 16",
-            "Logzeile 17",
-            "Logzeile 18",
-            "Logzeile 19",
-            "Logzeile 20"
-        )
-
-        return ResponseEntity.ok(LogResponse(OffsetDateTime.now(), log))
+        return ResponseEntity.ok(message)
     }
 }

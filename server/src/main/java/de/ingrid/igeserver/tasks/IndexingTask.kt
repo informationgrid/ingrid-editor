@@ -5,9 +5,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
+import de.ingrid.igeserver.api.messaging.IndexMessage
+import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.index.IndexService
-import de.ingrid.igeserver.migrations.Migration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
@@ -30,8 +32,8 @@ import kotlin.concurrent.schedule
 @Component
 @Profile("elasticsearch")
 class IndexingTask @Autowired constructor(
-    private val migration: Migration, // make sure to run all migrations first
     private val indexService: IndexService,
+    private val notify: IndexingNotifier,
     private val esIndexManager: IndexManager,
     private val catalogRepo: CatalogRepository,
 ) : SchedulingConfigurer, DisposableBean {
@@ -58,7 +60,9 @@ class IndexingTask @Autowired constructor(
      */
     fun startIndexing(catalogId: String, format: String) {
         log.debug("Starting Indexing - Task for $catalogId")
-
+        
+        val message = IndexMessage()
+        notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
 
         // needed information:
         //   database/catalog
@@ -78,23 +82,52 @@ class IndexingTask @Autowired constructor(
         indexInfo.toAlias = elasticsearchAlias
         indexInfo.docIdField = "uuid"
 
-        indexService
-            .export(catalogId, indexService.INDEX_PUBLISHED_DOCUMENTS(format))
-            .forEach { indexManager.update(indexInfo, convertToElasticDocument(it), false) }
+        // TODO: support profile specific configuration which documents to be published
+        val exporter = indexService.getExporter(format)
+        
+        // TODO: use paging to get all documents
+        val docsToPublish = indexService.getPublishedDocuments(catalogId, format)
+        message.numDocuments = docsToPublish.totalElements.toInt()
+        
+        docsToPublish.content
+            .onEachIndexed { index, _ -> 
+                log.info("start $index")
+                notify.sendMessage(message.apply { this.progressDocuments = index + 1 }) }
+            .map {
+                log.info("export")
+                exporter.run(it)
+            }
+            .onEach {
+                log.info("write to Elasticsearch")
+                indexManager.update(indexInfo, convertToElasticDocument(it), false)
+            }
 
+        notify.sendMessage(message.apply { this.message = "Post Phase" })
 
         // post phase
         indexPostPhase(elasticsearchAlias, info.first, info.second)
 
-
         log.debug("Indexing finished")
+        notify.sendMessage(message.apply { 
+            this.endTime = Date()
+            this.message = "Indexing finished"
+        })
+        
+        // save last indexing information to database for this catalog to get this in frontend
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        if (catalog.settings == null) {
+            catalog.settings = CatalogSettings(lastLogSummary = message)
+        } else {
+            catalog.settings?.lastLogSummary = message
+        }
+        catalogRepo.save(catalog)
     }
 
     /**
      * Indexing of a single document into an Elasticsearch index.
      */
     // TODO: implement
-    fun updateDocument(database: String, format: String, docId: String) {
+    fun updateDocument(catalog: String, format: String, docId: String) {
 
     }
 
