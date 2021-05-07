@@ -13,7 +13,30 @@ td {
   font-weight: 500;
 }
 
+table {
+  cursor: pointer;
+}
+
 .td-subtitle {
   font-weight: normal;
   color: $ige-hint-color;
+}
+
+.legend {
+  color: $ige-comment-color;
+  padding-left: 12px;
+  span {
+    vertical-align: super;
+    padding-right: 4px;
+  }
+  ::ng-deep svg path {
+    fill: $ige-comment-color;
+  }
+}
+
+tr button {
+  visibility: hidden;
+}
+tr:hover button {
+  visibility: visible;
 }

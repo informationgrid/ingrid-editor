@@ -31,9 +31,9 @@
                     <mat-icon>person_add</mat-icon> Hinzufügen
                 </button>
                 <mat-menu #userAddMenu="matMenu">
-                    <button type="button" mat-menu-item (click)="showExternalUsersDialog()">Keycloak Benutzer importieren
+                    <button type="button" mat-menu-item (click)="showExternalUsersDialog()">Benutzer importieren
                     </button>
-                    <button type="button" mat-menu-item (click)="initNewKeycloakUser()">Neuen Keycloak Benutzer anlegen
+                    <button type="button" mat-menu-item (click)="initNewKeycloakUser()">Neuen Benutzer anlegen
                     </button>
                 </mat-menu>
         </span>
@@ -44,13 +44,15 @@
     <as-split-area [size]="25" id="sidebarUser" class="split-pane-content-primary container">
         <user-table [query]="searchQuery" [users]="users" (onUserSelect)="selectedUser = $event; loadUser($event.login)"></user-table>
     </as-split-area>
-    <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid">
-        <form *ngIf="selectedUser || isNewUser; else noUser" fxLayout="column"
+    <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid" style="display: block;">
+        <form *ngIf="(selectedUser || isNewUser) && !isLoading; else noUserOrLoading" fxLayout="column"
               [formGroup]="form"
               style="padding: 20px">
             <div class="user-title">
                 <div class="document-type">
-                    <mat-icon>{{getRoleIcon(this.form.get('role').value)}}</mat-icon>
+<!--                    <mat-icon>{{getRoleIcon(this.form.get('role').value)}}</mat-icon>-->
+                    <mat-icon [svgIcon]="getRoleIcon(this.form.get('role').value)"></mat-icon>
+
                 </div>
 
                 <span fxFlex class="label" [class.editable]="false">
@@ -110,9 +112,17 @@
             </mat-form-field>
 
         </form>
-
-        <ng-template #noUser>
-            Keinen Benutzer ausgewählt. Bitte einen auswählen oder einen neuen erstellen.
+        <ng-template #noUserOrLoading>
+<!--                <div *ngIf="!isLoading ; else loading" fxFlex fxLayout="column" fxLayoutAlign="center center">-->
+                <div *ngIf="!isLoading ; else loading" fxLayout="column" fxLayoutAlign="center center">
+                    <div><img src="assets/icons/user-management.png" alt="user-management"></div>
+                <div class="no-selection-text">Wählen Sie einen Eintrag aus, um Nutzerdaten anzuzeigen oder Änderungen durchzuführen.</div>
+                </div>
         </ng-template>
+        <ng-template #loading>
+            <!--        <ngx-skeleton-loader  coun  t="5" [theme]="{ 'border-radius': '0', height: '50px'}"></ngx-skeleton-loader>-->
+            <mat-spinner style="margin:100px auto;"></mat-spinner>
+        </ng-template>
+
     </as-split-area>
 </as-split>

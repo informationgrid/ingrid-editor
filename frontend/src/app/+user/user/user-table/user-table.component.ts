@@ -85,11 +85,11 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   getRoleIcon(role: string) {
     switch (true) {
       case role === 'cat-admin':
-        return 'engineering'
+        return 'catalog-admin'
       case role.includes('admin'):
-        return 'supervisor_account'
+        return 'meta-admin'
       default:
-        return 'person'
+        return 'author'
 
     }
   }
