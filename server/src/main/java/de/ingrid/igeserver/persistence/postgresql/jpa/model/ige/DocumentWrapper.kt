@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.*
+import de.ingrid.igeserver.services.DocumentService
 import org.hibernate.annotations.Formula
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
@@ -133,4 +134,17 @@ class DocumentWrapper {
 
     @Formula(value = "(select count(dw.id) from document_wrapper dw where dw.parent_id = id)")
     var countChildren: Int = 0
+    
+    @Transient
+    fun getState(): String {
+        val hasDraft = draft != null
+        val hasPublished = published != null
+        return if (hasPublished && hasDraft) {
+            DocumentService.DocumentState.PUBLISHED.value + DocumentService.DocumentState.DRAFT.value
+        } else if (hasPublished) {
+            DocumentService.DocumentState.PUBLISHED.value
+        } else {
+            DocumentService.DocumentState.DRAFT.value
+        }
+    }
 }

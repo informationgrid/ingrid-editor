@@ -361,21 +361,9 @@ class DocumentService : MapperService() {
             wrapper.draft
         }
 
-        objectNode!!.state = if (onlyPublished) DocumentState.PUBLISHED.value else determineState(wrapper)
+        objectNode!!.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
 
         return objectNode
-    }
-
-    private fun determineState(wrapper: DocumentWrapper): String {
-        val draft = wrapper.draft != null
-        val published = wrapper.published != null
-        return if (published && draft) {
-            DocumentState.PUBLISHED.value + DocumentState.DRAFT.value
-        } else if (published) {
-            DocumentState.PUBLISHED.value
-        } else {
-            DocumentState.DRAFT.value
-        }
     }
 
     private fun prepareDocument(
