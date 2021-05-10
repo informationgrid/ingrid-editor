@@ -6,8 +6,14 @@ import {BehaviorSubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 export interface LogResult {
-  lastIndexedDate: Date,
-  log: string[]
+  startTime: Date;
+  endTime: Date;
+  numDocuments: number;
+  numAddresses: number;
+  progressDocuments: number;
+  progressAddresses: number;
+  message: string;
+  errors: string[];
 }
 
 @Injectable({

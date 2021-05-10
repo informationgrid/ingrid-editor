@@ -7,6 +7,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
 import de.ingrid.igeserver.services.FIELD_PUBLISHED
@@ -41,15 +42,15 @@ class IndexService @Autowired constructor(
         IndexOptions(singlePublishedDoc, format)
     }
 
-    fun getSinglePublishedDocument(catalogId: String, format: String, uuid: String): Document {
-        return documentService.find(catalogId, "data", INDEX_SINGLE_PUBLISHED_DOCUMENT(format, uuid).dbFilter)
+    fun getSinglePublishedDocument(catalogId: String, category: DocumentCategory, format: String, uuid: String): Document {
+        return documentService.find(catalogId, category.value, INDEX_SINGLE_PUBLISHED_DOCUMENT(format, uuid).dbFilter)
             .map { documentService.getLatestDocument(it, true) }
             .first()
     }
 
-    fun getPublishedDocuments(catalogId: String, format: String): Page<Document> {
+    fun getPublishedDocuments(catalogId: String, category: String, format: String): Page<Document> {
         // TODO: Request all results or use paging
-        val docsToIndex = documentService.find(catalogId, "data", INDEX_PUBLISHED_DOCUMENTS(format).dbFilter)
+        val docsToIndex = documentService.find(catalogId, category, INDEX_PUBLISHED_DOCUMENTS(format).dbFilter)
             .map { documentService.getLatestDocument(it, true) }
 
         return if (docsToIndex.isEmpty) {
@@ -60,7 +61,7 @@ class IndexService @Autowired constructor(
         }
     }
 
-    fun getExporter(exportFormat: String): IgeExporter = exportService.getExporter(exportFormat)
+    fun getExporter(category: DocumentCategory, exportFormat: String): IgeExporter = exportService.getExporter(category, exportFormat)
 
     fun updateConfig(catalogId: String, cronPattern: String) {
 

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {IndexService} from './index.service';
+import {IndexService, LogResult} from './index.service';
 import cronstrue from 'cronstrue/i18n';
 import {FormControl} from '@angular/forms';
 import {ConfigService} from '../../services/config/config.service';
@@ -8,6 +8,7 @@ import {RxStompService} from '@stomp/ng2-stompjs';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {map} from 'rxjs/operators';
+import {merge, Observable} from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -24,7 +25,13 @@ export class IndexingComponent implements OnInit {
   isActivated: boolean;
   showMore = false;
 
-  liveImportMessage: any;
+  liveImportMessage: Observable<LogResult> = merge(
+    this.indexService.lastLog$,
+    this.rxStompService.watch('/topic/indexStatus')
+      .pipe(
+        map(msg => JSON.parse(msg.body))
+      )
+  );
 
   constructor(private indexService: IndexService,
               private configService: ConfigService,
@@ -38,18 +45,6 @@ export class IndexingComponent implements OnInit {
     if (!this.isActivated) {
       return;
     }
-
-    this.rxStompService.watch('/topic/indexStatus')
-      .pipe(
-        untilDestroyed(this),
-        map(msg => JSON.parse(msg.body))
-      )
-      .subscribe((message: any) => {
-        this.liveImportMessage = message;
-        console.log(message);
-      });
-
-    this.indexService.lastLog$.subscribe(log => this.liveImportMessage = log);
 
     this.indexService.getCronPattern()
       .subscribe(config => this.cronField.setValue(config.cronPattern));
@@ -99,5 +94,10 @@ export class IndexingComponent implements OnInit {
 
     this.clipboard.copy(JSON.stringify(this.liveImportMessage));
     this.snackBar.open('Log in Zwischenablage kopiert');
+  }
+
+  deactivateIndexing() {
+    this.updatePattern('');
+    this.cronField.setValue('');
   }
 }

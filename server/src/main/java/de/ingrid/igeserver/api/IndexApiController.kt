@@ -4,7 +4,6 @@ import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.model.IndexRequestOptions
-import de.ingrid.igeserver.model.LogResponse
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import java.time.OffsetDateTime
 
 @Profile("elasticsearch")
 @RestController
@@ -33,7 +31,7 @@ class IndexApiController @Autowired constructor(
     override fun setConfig(principal: Principal?, config: IndexConfigOptions): ResponseEntity<Void> {
 
         indexService.updateConfig(config.catalogId, config.cronPattern)
-        indexingTask.updateTaskTrigger(config.catalogId, config.cronPattern)
+        indexingTask.updateTaskTrigger(config.catalogId, "portal", config.cronPattern)
 
         return ResponseEntity.ok().build()
     }

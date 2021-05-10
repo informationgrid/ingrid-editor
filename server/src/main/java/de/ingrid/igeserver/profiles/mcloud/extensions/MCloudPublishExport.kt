@@ -11,6 +11,7 @@ import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
@@ -78,13 +79,13 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         val docsWithReferences = jdbcTemplate.queryForList<String>(
             "SELECT DISTINCT uuid FROM document WHERE (data->'addresses' @> '[{\"ref\": \"$docId\"}]')"
         )
-        
+
         docsWithReferences.forEach { indexMCloudDoc(context, it) }
 
     }
 
     private fun indexMCloudDoc(context: Context, docId: String) {
-        
+
         // TODO: use IndexingTask.updateDocument or service?
 
         context.addMessage(Message(this, "Index document ${docId} to Elasticsearch"))
@@ -101,8 +102,8 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
         indexInfo.toAlias = elasticsearchAlias
         indexInfo.docIdField = "uuid"
 
-        val exporter = indexService.getExporter("portal")
-        val doc = indexService.getSinglePublishedDocument(context.catalogId, "portal", docId)
+        val exporter = indexService.getExporter(DocumentCategory.DATA, "portal")
+        val doc = indexService.getSinglePublishedDocument(context.catalogId, DocumentCategory.DATA, "portal", docId)
         val export = exporter.run(doc)
 
         log.debug("Exported document: " + export)

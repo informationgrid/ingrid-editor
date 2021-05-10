@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.exports
 
 import de.ingrid.igeserver.configuration.ConfigurationException
+import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -10,9 +11,9 @@ class ExporterFactory @Autowired constructor(val exporterList: List<IgeExporter>
         get() = exporterList
                 .map { exporter: IgeExporter -> exporter.typeInfo }
 
-    fun getExporter(format: String): IgeExporter {
+    fun getExporter(category: DocumentCategory, format: String): IgeExporter {
         try {
-            return exporterList.first { exporter: IgeExporter -> format == exporter.typeInfo.type }
+            return exporterList.first { exporter: IgeExporter -> category == exporter.typeInfo.category && format == exporter.typeInfo.type }
         } catch (e: NoSuchElementException) {
             throw ConfigurationException.withReason("No exporter found for format '$format'.")
         }

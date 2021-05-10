@@ -5,6 +5,7 @@ import com.mitchellbosecke.pebble.PebbleEngine
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
 import java.io.StringWriter
 import java.io.Writer
@@ -81,6 +82,6 @@ class Iso19115Exporter : IgeExporter {
     }
 
     init {
-        info = ExportTypeInfo("iso19115", "ISO-19115", "Export in das ISO-19115 Format", "text/xml", "xml", listOf("ingrid"))
+        info = ExportTypeInfo(DocumentCategory.DATA, "iso19115", "ISO-19115", "Export in das ISO-19115 Format", "text/xml", "xml", listOf("ingrid"))
     }
 }

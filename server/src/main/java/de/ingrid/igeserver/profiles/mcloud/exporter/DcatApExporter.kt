@@ -7,6 +7,7 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel
+import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.io.StringWriter
@@ -19,18 +20,20 @@ class DcatApExporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
         get() {
             return ExportTypeInfo(
-                    "mcloudDcat",
-                    "mCLOUD DCAT-AP.de",
-                    "Export von mCLOUD Datensätzen ins DCAT-AP.de Format.",
-                    "text/xml",
-                    "xml",
-                    listOf("mcloud"))
+                DocumentCategory.DATA,
+                "mcloudDcat",
+                "mCLOUD DCAT-AP.de",
+                "Export von mCLOUD Datensätzen ins DCAT-AP.de Format.",
+                "text/xml",
+                "xml",
+                listOf("mcloud")
+            )
         }
 
     override fun run(jsonData: Document): Any {
         val engine = PebbleEngine.Builder()
-                .newLineTrimming(false)
-                .build()
+            .newLineTrimming(false)
+            .build()
 
         val compiledTemplate = engine.getTemplate("templates/export/mcloud/dcat.peb")
 
