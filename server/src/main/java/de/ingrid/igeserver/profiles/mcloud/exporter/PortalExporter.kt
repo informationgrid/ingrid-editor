@@ -1,12 +1,12 @@
 package de.ingrid.igeserver.profiles.mcloud.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.mitchellbosecke.pebble.PebbleEngine
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel
+import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -20,19 +20,23 @@ class PortalExporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
         get() {
             return ExportTypeInfo(
-                    "portal",
-                    "mCLOUD Portal",
-                    "Export der Daten für die weitere Verwendung im Liferay Portal und Exporter.",
-                    MediaType.APPLICATION_JSON_VALUE,
-                    "json",
-                    listOf("mcloud"))
+                DocumentCategory.DATA,
+                "portal",
+                "mCLOUD Portal",
+                "Export der Adressen für die weitere Verwendung im Liferay Portal und Exporter.",
+                MediaType.APPLICATION_JSON_VALUE,
+                "json",
+                listOf("mcloud")
+            )
         }
 
     override fun run(jsonData: Document): Any {
         val engine = PebbleEngine.Builder()
-                .newLineTrimming(false)
-                .build()
+            .newLineTrimming(false)
+            .build()
 
+        // TODO: should we handle export of addresses here too, instead of having another class
+        //       Then we don't need to define info in ExportTypeInfo! 
         val compiledTemplate = engine.getTemplate("templates/export/mcloud/portal.peb")
 
         val writer: Writer = StringWriter()

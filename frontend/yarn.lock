@@ -2425,6 +2425,27 @@
     semver "7.3.4"
     semver-intersect "1.4.0"
 
+"@stomp/ng2-stompjs@^8.0.0":
+  version "8.0.0"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/@stomp/ng2-stompjs/-/ng2-stompjs-8.0.0.tgz#7404aa699fb9fcf089f50633136a743b31b5cea9"
+  integrity sha512-1TTwdK7aUaRLfewG2FOqd3ZeIyIchKwOBzJytvUckjrBbpdeAXLXY0mCBFczoY16fSsxiAnZfJffFicStD+Dug==
+  dependencies:
+    "@stomp/rx-stomp" "^1.0.0 >=1.0.1"
+    tslib "^1.9.0"
+
+"@stomp/rx-stomp@^1.0.0 >=1.0.1":
+  version "1.1.2"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/@stomp/rx-stomp/-/rx-stomp-1.1.2.tgz#0d6beaf6ee87b99b276d5711b315d7d5d099c74c"
+  integrity sha512-RG6QsalsnpGC6qJT727PTe33azu9NvSwfMWQhoxOm4Ii2f8TAbNLVUBv0+WvgXGxiPREoqw5a0v5jwwrS+yMNQ==
+  dependencies:
+    "@stomp/stompjs" "^6.0.0 >=6.1.0"
+    angular2-uuid "^1.1.1"
+
+"@stomp/stompjs@^6.0.0 >=6.1.0":
+  version "6.1.0"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/@stomp/stompjs/-/stompjs-6.1.0.tgz#b77ca240775a7a34289b2c09618e256be761d142"
+  integrity sha512-Bt+whL0V51rSKP35OkgM1yeVu/usunpz5l1VYuoWw8mGsDMNd3W3FpWa4/4eis6QfXO3uteNGfyE21XWn0pGAQ==
+
 "@testing-library/dom@7.26.5":
   version "7.26.5"
   resolved "https://nexus.informationgrid.eu/repository/npm-group/@testing-library/dom/-/dom-7.26.5.tgz#804a74fc893bf6da1a7970dbca7b94c2bbfe983d"
@@ -3009,6 +3030,11 @@ angular-split@^5.0.0:
   integrity sha512-V7m/mdp31189EGeVRw5j6MOfb8EiYoDqr8XTay4D7GcCpEm2+7oHD1n6eWbCvQMuRb8X3ZfP2pZNDmJs8bLaAg==
   dependencies:
     tslib "^2.0.0"
+
+angular2-uuid@^1.1.1:
+  version "1.1.1"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/angular2-uuid/-/angular2-uuid-1.1.1.tgz#72f03cd532b7f40032eb1ecfb9f8457384be956e"
+  integrity sha1-cvA81TK39AAy6x7PufhFc4S+lW4=
 
 ansi-colors@4.1.1, ansi-colors@^4.1.1:
   version "4.1.1"

@@ -6,8 +6,14 @@ import {BehaviorSubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 export interface LogResult {
-  lastIndexedDate: Date,
-  log: string[]
+  startTime: Date;
+  endTime: Date;
+  numDocuments: number;
+  numAddresses: number;
+  progressDocuments: number;
+  progressAddresses: number;
+  message: string;
+  errors: string[];
 }
 
 @Injectable({
@@ -43,7 +49,7 @@ export class IndexService {
   }
 
   fetchLastLog() {
-    return this.http.get<LogResult>(this.configuration.backendUrl + 'index/log')
+    return this.http.get<any>(this.configuration.backendUrl + 'index/log')
       .pipe(
         tap(response => this.lastLog$.next(response))
       ).subscribe();

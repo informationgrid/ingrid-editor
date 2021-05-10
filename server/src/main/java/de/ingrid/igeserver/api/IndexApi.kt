@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.model.IndexRequestOptions
 import de.ingrid.igeserver.model.LogResponse
@@ -43,5 +44,5 @@ interface IndexApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @GetMapping(value = ["/index/log"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getLog(principal: Principal?): ResponseEntity<LogResponse>
+    fun getLog(principal: Principal?): ResponseEntity<IndexMessage>
 }

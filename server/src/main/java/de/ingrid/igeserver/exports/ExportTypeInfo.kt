@@ -1,6 +1,9 @@
 package de.ingrid.igeserver.exports
 
+import de.ingrid.igeserver.services.DocumentCategory
+
 /**
+ * @param category the category (data/address) of the exporter
  * @param type the ID of the exporter
  * @param name the display name of the exporter
  * @param description a description for the exporter
@@ -8,4 +11,4 @@ package de.ingrid.igeserver.exports
  * @param profiles in which profiles can this exporter be used
  *
  */
-data class ExportTypeInfo(val type: String, val name: String, val description: String, val dataType: String, val fileExtension: String, val profiles: List<String>)
+data class ExportTypeInfo(val category: DocumentCategory, val type: String, val name: String, val description: String, val dataType: String, val fileExtension: String, val profiles: List<String>)

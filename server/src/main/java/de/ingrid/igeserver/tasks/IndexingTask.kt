@@ -5,10 +5,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
+import de.ingrid.igeserver.api.messaging.IndexMessage
+import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.index.IndexService
-import de.ingrid.igeserver.migrations.Migration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.DisposableBean
@@ -30,8 +33,8 @@ import kotlin.concurrent.schedule
 @Component
 @Profile("elasticsearch")
 class IndexingTask @Autowired constructor(
-    private val migration: Migration, // make sure to run all migrations first
     private val indexService: IndexService,
+    private val notify: IndexingNotifier,
     private val esIndexManager: IndexManager,
     private val catalogRepo: CatalogRepository,
 ) : SchedulingConfigurer, DisposableBean {
@@ -59,42 +62,87 @@ class IndexingTask @Autowired constructor(
     fun startIndexing(catalogId: String, format: String) {
         log.debug("Starting Indexing - Task for $catalogId")
 
+        val message = IndexMessage()
+        notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
+        val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
 
-        // needed information:
-        //   database/catalog
-        //   indexingMethod: ibus or elasticsearch direct
-        //   indexName
+        categories.forEach { category ->
+            // needed information:
+            //   database/catalog
+            //   indexingMethod: ibus or elasticsearch direct
+            //   indexName
 
-        // pre phase
-        val info = indexPrePhase(elasticsearchAlias)
+            // pre phase
+            val info = indexPrePhase(elasticsearchAlias)
 
-        // iterate over all documents
-        // TODO: dynamically get target to send exported documents
+            // iterate over all documents
+            // TODO: dynamically get target to send exported documents
 
-        // TODO: configure index name
-        val indexInfo = IndexInfo()
-        indexInfo.realIndexName = info.second
-        indexInfo.toType = "base"
-        indexInfo.toAlias = elasticsearchAlias
-        indexInfo.docIdField = "uuid"
+            // TODO: configure index name
+            val indexInfo = IndexInfo()
+            indexInfo.realIndexName = info.second
+            indexInfo.toType = "base"
+            indexInfo.toAlias = elasticsearchAlias
+            indexInfo.docIdField = "uuid"
 
-        indexService
-            .export(catalogId, indexService.INDEX_PUBLISHED_DOCUMENTS(format))
-            .forEach { indexManager.update(indexInfo, convertToElasticDocument(it), false) }
+            // TODO: support profile specific configuration which documents to be published
+            val exporter = indexService.getExporter(category, format)
 
+            // TODO: use paging to get all documents
+            val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format)
+            if (category == DocumentCategory.DATA) {
+                message.numDocuments = docsToPublish.totalElements.toInt()
+            } else {
+                message.numAddresses = docsToPublish.totalElements.toInt()
+            }
 
-        // post phase
-        indexPostPhase(elasticsearchAlias, info.first, info.second)
+            docsToPublish.content
+                .onEachIndexed { index, _ ->
+                    log.info("start $index")
+                    Thread.sleep(1000);
+                    if (category == DocumentCategory.DATA) {
+                        notify.sendMessage(message.apply { this.progressDocuments = index + 1 })
+                    } else {
+                        notify.sendMessage(message.apply { this.progressAddresses = index + 1 })
+                    }
+                }
+                .map {
+                    log.info("export")
+                    exporter.run(it)
+                }
+                .onEach {
+                    log.info("write to Elasticsearch")
+                    indexManager.update(indexInfo, convertToElasticDocument(it), false)
+                }
 
+            notify.sendMessage(message.apply { this.message = "Post Phase" })
+
+            // post phase
+            indexPostPhase(elasticsearchAlias, info.first, info.second)
+
+        }
 
         log.debug("Indexing finished")
+        notify.sendMessage(message.apply {
+            this.endTime = Date()
+            this.message = "Indexing finished"
+        })
+
+        // save last indexing information to database for this catalog to get this in frontend
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        if (catalog.settings == null) {
+            catalog.settings = CatalogSettings(lastLogSummary = message)
+        } else {
+            catalog.settings?.lastLogSummary = message
+        }
+        catalogRepo.save(catalog)
     }
 
     /**
      * Indexing of a single document into an Elasticsearch index.
      */
     // TODO: implement
-    fun updateDocument(database: String, format: String, docId: String) {
+    fun updateDocument(catalog: String, format: String, docId: String) {
 
     }
 
@@ -149,10 +197,12 @@ class IndexingTask @Autowired constructor(
 
     private fun addSchedule(config: IndexConfig): ScheduledFuture<*>? {
         val trigger = CronTrigger(config.cron)
-        return scheduler.schedule(Runnable { startIndexing(config.catalogId, "portal") }, trigger)
+        return scheduler.schedule({
+            startIndexing(config.catalogId, "portal")
+        }, trigger)
     }
 
-    fun updateTaskTrigger(database: String, cronPattern: String) {
+    fun updateTaskTrigger(database: String, exportFormat: String, cronPattern: String) {
 
         val schedule = scheduledFutures.find { it.catalogId == database }
         schedule?.future?.cancel(false)
@@ -160,7 +210,7 @@ class IndexingTask @Autowired constructor(
         if (cronPattern.isEmpty()) {
             log.info("Indexing Task for '$database' disabled")
         } else {
-            val config = IndexConfig(database, cronPattern)
+            val config = IndexConfig(database, exportFormat, cronPattern)
             val newFuture = addSchedule(config)
             config.future = newFuture
             scheduledFutures.add(config)
@@ -181,7 +231,7 @@ class IndexingTask @Autowired constructor(
         return if (cron == null) {
             null
         } else {
-            IndexConfig(catalog.identifier, cron)
+            IndexConfig(catalog.identifier, "portal", cron)
         }
 
     }
@@ -200,6 +250,7 @@ class IndexingTask @Autowired constructor(
 
 data class IndexConfig(
     val catalogId: String,
+    val exportFormat: String,
     val cron: String,
     var future: ScheduledFuture<*>? = null,
     val onStartup: Boolean = false

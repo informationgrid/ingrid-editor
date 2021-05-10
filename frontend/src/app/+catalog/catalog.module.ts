@@ -27,6 +27,8 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {CodelistPresenterModule} from '../shared/codelist-presenter/codelist-presenter.module';
+import {LogResultComponent} from './indexing/log-result/log-result.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
   imports: [
@@ -36,12 +38,12 @@ import {CodelistPresenterModule} from '../shared/codelist-presenter/codelist-pre
     CodelistPresenterModule,
     MatSnackBarModule,
     MatCardModule, MatButtonModule, MatListModule, MatProgressSpinnerModule, MatDialogModule, MatInputModule,
-    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule, PageTemplateModule, MatMenuModule, MatChipsModule
+    routing, MatIconModule, MatTabsModule, MatSelectModule, BehavioursModule, SharedModule, FilterSelectModule, FormFieldsModule, ReactiveFormsModule, PageTemplateModule, MatMenuModule, MatChipsModule, MatProgressBarModule
   ],
   providers: [
     CatalogService
   ],
-  declarations: [CatalogSettingsComponent, CatalogCodelistsComponent, IndexingComponent, UpdateCodelistComponent],
+  declarations: [CatalogSettingsComponent, CatalogCodelistsComponent, IndexingComponent, UpdateCodelistComponent, LogResultComponent],
   exports: [RouterModule]
 })
 export class CatalogModule {
