@@ -12,7 +12,7 @@ describe('CatalogService', () => {
     imports: [HttpClientTestingModule],
     providers: [
       mockProvider(ConfigService, {
-        getConfiguration: () => new Configuration('/keycloak', '/api', null)
+        getConfiguration: () => new Configuration('/keycloak', '/api', null, null)
       })
     ],
     mocks: [Router, CatalogDataService]
