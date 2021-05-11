@@ -85,8 +85,8 @@ class DatasetsApiController @Autowired constructor(
         options: CopyOptions
     ): ResponseEntity<List<JsonNode>> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val results = ids.map { id -> handleCopy(dbId, id, options) }
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val results = ids.map { id -> handleCopy(catalogId, id, options) }
         return ResponseEntity.ok(results)
     }
 
@@ -96,10 +96,8 @@ class DatasetsApiController @Autowired constructor(
         options: CopyOptions
     ): ResponseEntity<Void> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-//            dbService.beginTransaction()
-        ids.forEach { id -> handleMove(dbId, id, options) }
-//            dbService.commitTransaction()
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        ids.forEach { id -> handleMove(catalogId, id, options) }
         return ResponseEntity(HttpStatus.OK)
     }
 
@@ -127,8 +125,11 @@ class DatasetsApiController @Autowired constructor(
     ): JsonNode {
         val origParentId = doc[FIELD_ID].asText()
 
-        // when we copy the node, then we also have to reset the id
-        (doc as ObjectNode).put(FIELD_ID, null as String?)
+        val objectNode = doc as ObjectNode
+        
+        // remove fields that shouldn't be persisted
+        // also copied docs need new ID
+        listOf(FIELD_ID, FIELD_STATE, FIELD_HAS_CHILDREN).forEach { objectNode.remove(it) }
 
         val copiedParent = documentService.createDocument(catalogId, doc, isAddress, false) as ObjectNode
 
@@ -286,8 +287,6 @@ class DatasetsApiController @Autowired constructor(
         principal: Principal?,
         id: String
     ): ResponseEntity<List<String>> {
-
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         var parentId: String = id
         val path: MutableList<String> = ArrayList()
