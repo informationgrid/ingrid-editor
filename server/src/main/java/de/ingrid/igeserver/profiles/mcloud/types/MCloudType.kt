@@ -55,7 +55,7 @@ class MCloudType : EntityType() {
                 address.path("ref").path("_id").asText()
             }
             try {
-                val wrapper = docService.getWrapperByDocumentId(wrapperId, true)
+                val wrapper = docService.getWrapperByDocumentId(wrapperId)
                 val latestDocument = docService.getLatestDocument(wrapper, onlyPublished)
                 val latestDocumentJson = docService.convertToJsonNode(latestDocument)
                 (address as ObjectNode).replace("ref", latestDocumentJson)

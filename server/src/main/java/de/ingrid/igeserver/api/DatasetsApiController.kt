@@ -105,7 +105,7 @@ class DatasetsApiController @Autowired constructor(
 
     private fun handleCopy(catalogId: String, id: String, options: CopyOptions): JsonNode {
 
-        val wrapper = documentService.getWrapperByDocumentId(id, true)
+        val wrapper = documentService.getWrapperByDocumentId(id)
 
         val doc = documentService.getLatestDocument(wrapper, false, false)
 
@@ -167,7 +167,7 @@ class DatasetsApiController @Autowired constructor(
 
     private fun handleMove(catalogId: String, id: String, options: CopyOptions) {
 
-        val wrapper = documentService.getWrapperByDocumentId(id, true)
+        val wrapper = documentService.getWrapperByDocumentId(id)
         val doc = documentService.getLatestDocument(wrapper, false, true)
 
         if (id == options.destId) {
@@ -184,7 +184,7 @@ class DatasetsApiController @Autowired constructor(
         documentService.updateDocument(catalogId, id, doc, published)
 
         // updateWrapper
-        val wrapperWithLinks = documentService.getWrapperByDocumentId(id, false)
+        val wrapperWithLinks = documentService.getWrapperByDocumentId(id)
         wrapperWithLinks.parent = if (options.destId == null) null else docWrapperRepo.findByUuid(options.destId)
         docWrapperRepo.save(wrapperWithLinks)
     }
@@ -294,7 +294,7 @@ class DatasetsApiController @Autowired constructor(
         path.add(id)
 
         while (true) {
-            val doc = documentService.getWrapperByDocumentId(parentId, false) ?: break
+            val doc = documentService.getWrapperByDocumentId(parentId)
             val nextParentId = doc.parent?.uuid
             if (nextParentId != null) {
                 path.add(nextParentId)

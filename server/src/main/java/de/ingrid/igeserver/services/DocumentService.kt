@@ -75,7 +75,7 @@ class DocumentService : MapperService() {
     /**
      * Get the DocumentWrapper with the given document uuid
      */
-    fun getWrapperByDocumentId(id: String, withReferences: Boolean): DocumentWrapper {
+    fun getWrapperByDocumentId(id: String): DocumentWrapper {
 
         return docWrapperRepo.findByUuid(id)
 
@@ -201,7 +201,7 @@ class DocumentService : MapperService() {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
 
         // run pre-update pipe(s)
-        val wrapper = getWrapperByDocumentId(id, false)
+        val wrapper = getWrapperByDocumentId(id)
         val docType = getDocumentType(wrapper.type!!)
         val preUpdatePayload = PreUpdatePayload(docType, data, wrapper)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
@@ -274,7 +274,7 @@ class DocumentService : MapperService() {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
 
         // run pre-delete pipe(s)
-        val wrapper = getWrapperByDocumentId(id, true)
+        val wrapper = getWrapperByDocumentId(id)
 
         val data = getLatestDocumentVersion(wrapper, false)
         val docTypeName = data.type!!
@@ -302,7 +302,7 @@ class DocumentService : MapperService() {
     fun revertDocument(catalogId: String, id: String): Document {
 
         // remove draft version
-        val wrapper = getWrapperByDocumentId(id, false)
+        val wrapper = getWrapperByDocumentId(id)
 
         // check if draft and published field are filled
         assert(wrapper.draft != null && wrapper.published != null)
