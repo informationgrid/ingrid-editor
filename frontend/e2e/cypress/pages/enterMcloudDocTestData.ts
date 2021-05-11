@@ -150,8 +150,9 @@ export class enterMcloudDocTestData {
 
   static setTimeReference(date: Date = new Date(2020, 1, 11), choose: string = 'Erstellung') {
     cy.get('[data-cy="Zeitbezug der Ressource"]').contains('Hinzufügen').click();
-    // cy.get('[data-cy="Zeitbezug der Ressource"]').contains('Datum').parents('.mat-form-field').type(date);
-    cy.get('[data-cy=\'Zeitbezug der Ressource\'] ige-repeat mat-form-field').contains('Typ').click({force: true});
+    // check if 'Hinzufügen'-Button is clicked and to slow it down for the next step
+    cy.get('[data-cy="Zeitbezug der Ressource"] [svgicon=Entfernen]').should('not.be.disabled');
+    cy.get('[data-cy="Zeitbezug der Ressource"] ige-repeat mat-form-field').contains('Typ').click({force: true});
     cy.get('.mat-option-text').contains(choose).click();
     this.selectDate('[data-cy="Zeitbezug der Ressource"]', date, choose);
   }
