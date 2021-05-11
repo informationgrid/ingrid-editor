@@ -1,10 +1,8 @@
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.UserRepository
@@ -132,36 +130,16 @@ class UsersApiController : UsersApi {
         val roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?)
 
         val lastLogin = this.getLastLogin(principal, user.login, roles)
-        val dbIds = catalogService.getCatalogsForUser(user.login)
-        val dbIdsValid: MutableSet<String> = HashSet()
-        val assignedCatalogs: MutableList<Catalog> =
-            ArrayList()
-        for (dbId in dbIds) {
-            val catalogById = catalogService.getCatalogById(dbId)
-            assignedCatalogs.add(catalogById)
-            dbIdsValid.add(dbId)
-        }
-
-        // clean up catalog association if one was deleted?
-        if (dbIds.size != assignedCatalogs.size) {
-            catalogService.setCatalogIdsForUser(user.login, dbIdsValid)
-        }
-
-        val catalog: Catalog? = try {
-            val currentCatalogForUser = catalogService.getCurrentCatalogForUser(user.login)
-            catalogService.getCatalogById(currentCatalogForUser)
-        } catch (ex: NotFoundException) {
-            null
-        }
+        val dbUser = catalogService.getUser(userId)
 
         val userInfo = UserInfo(
             userId = user.login,
             name = user.firstName + ' ' + user.lastName,
             lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
             firstName = user.firstName,
-            assignedCatalogs = assignedCatalogs,
+            assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
             roles = roles,
-            currentCatalog = catalog,
+            currentCatalog = dbUser?.curCatalog,
             version = getVersion(),
             lastLogin = lastLogin,
             useElasticsearch = env.activeProfiles.contains("elasticsearch")
@@ -232,22 +210,19 @@ class UsersApiController : UsersApi {
         var user = userRepo.findByUserId(userIdent)
 
         val isNewEntry = user == null
-        var catalogIds: MutableSet<String> = HashSet()
+        val catalog = catalogService.getCatalogById(catalogName)
 
         if (isNewEntry) {
             user = UserInfo().apply {
                 userId = userIdent
                 data = UserInfoData()
+                catalogs.add(catalog)
             }
         } else {
             // make list to hashset
-            catalogIds = user?.data?.catalogIds?.toHashSet() ?: HashSet()
+            user?.catalogs?.add(catalog)
         }
 
-        // update catadmin in catalog Info
-        catalogIds.add(catalogName)
-
-        user?.data?.catalogIds = catalogIds.toList()
         userRepo.save(user)
     }
 

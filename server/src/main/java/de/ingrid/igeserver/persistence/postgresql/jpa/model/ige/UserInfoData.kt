@@ -6,7 +6,6 @@ import java.util.*
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class UserInfoData(
     var recentLogins: List<Long> = emptyList(),
-    var catalogIds: List<String> = emptyList(),
     var creationDate: Date? = null,
     var modificationDate: Date? = null
 )

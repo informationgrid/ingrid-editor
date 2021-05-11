@@ -52,26 +52,13 @@ class CatalogService @Autowired constructor(
 
     private fun getFirstAssignedCatalog(user: UserInfo): String {
         // ... or first catalog, if existing
-        val newCurrentCatalog =
-            user.data?.catalogIds?.first() ?: throw NotFoundException.withMissingUserCatalog(user.userId)
+        val newCurrentCatalog = user.catalogs.first()
 
         // save first catalog as current catalog
-        user.curCatalog = getCatalogById(newCurrentCatalog)
+        user.curCatalog = newCurrentCatalog
         userRepo.save(user)
 
-        return newCurrentCatalog
-    }
-
-    fun getCatalogsForUser(userId: String): Set<String> {
-
-        val user = userRepo.findByUserId(userId)
-
-        return if (user?.data?.catalogIds?.isEmpty() == true) {
-            log.error("The user '$userId' does not seem to be assigned to any database.")
-            HashSet()
-        } else {
-            user?.data?.catalogIds?.toSet() ?: HashSet()
-        }
+        return newCurrentCatalog.identifier
     }
 
     fun getRecentLoginsForUser(userId: String): MutableList<Date> {
@@ -94,12 +81,6 @@ class CatalogService @Autowired constructor(
 
         return catalogRepo.findByIdentifier(id)
 
-    }
-
-    fun setCatalogIdsForUser(userId: String, assignedCatalogs: Set<String>?) {
-        val user = userRepo.findByUserId(userId)
-        user?.data?.catalogIds = assignedCatalogs?.toList() ?: emptyList()
-        userRepo.save(user)
     }
 
     fun setRecentLoginsForUser(user: UserInfo, recentLogins: Array<Date>) {
