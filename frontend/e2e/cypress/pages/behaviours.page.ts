@@ -10,8 +10,8 @@ export class BehavioursPage extends BasePage {
     });
   }
 
-  static checkElementContainsSomething(cssItem: string = '.content div.scrollable') {
-    cy.get(cssItem).should('not.empty');
+  static checkElementContainsSomething(cssItem: string = 'ige-behaviour-item') {
+    cy.get(cssItem).should('be.visible');
   }
 
   static saveCatalogSetting(){
