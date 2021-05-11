@@ -59,6 +59,10 @@ export class McloudDoctype extends BaseDoctype {
           needPublisher: {
             expression: ctrl => ctrl.value ? ctrl.value.some(row => row.type === '10') : false,
             message: 'Es muss ein Herausgeber als Adresse angegeben sein'
+          },
+          publisherPublished: {
+            expression: ctrl => ctrl.value ? ctrl.value.every(row => row.ref._state === 'P') : false,
+            message: 'Alle Adressen müssen veröffentlicht sein'
           }
         }
       }]
