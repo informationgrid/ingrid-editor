@@ -1,5 +1,6 @@
 {
   "backendUrl": "/api/",
+  "brokerUrl": null,
   "featureFlags": {
     "AP3": true,
     "AP4": false,

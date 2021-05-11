@@ -5,7 +5,7 @@ import {Catalog} from '../../+catalog/services/catalog.model';
 import {coerceArray} from '@datorama/akita';
 
 export class Configuration {
-  constructor(public keykloakBaseUrl: string, public backendUrl: string, public featureFlags: any) {
+  constructor(public keykloakBaseUrl: string, public backendUrl: string, public featureFlags: any, public brokerUrl: string) {
   }
 }
 

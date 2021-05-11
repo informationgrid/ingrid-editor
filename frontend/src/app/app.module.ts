@@ -53,7 +53,7 @@ import {AnimationWrapper, AnimationWrapperComponent} from './animation-wrapper.c
 import {NG_FORMS_MANAGER_CONFIG, NgFormsManagerConfig} from '@ngneat/forms-manager';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material/snack-bar';
 import {InjectableRxStompConfig, RxStompService, rxStompServiceFactory} from '@stomp/ng2-stompjs';
-import {igeStompConfig} from './ige-stomp.config';
+import {IgeStompConfig} from './ige-stomp.config';
 
 registerLocaleData(de);
 
@@ -182,7 +182,8 @@ export function ConfigLoader(configService: ConfigService) {
     // WebSocket
     {
       provide: InjectableRxStompConfig,
-      useValue: igeStompConfig,
+      useClass: IgeStompConfig,
+      deps: [ConfigService]
     },
     {
       provide: RxStompService,
