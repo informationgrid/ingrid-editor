@@ -180,12 +180,21 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       this.activeId.next(node.id);
     });
 
-    this.session.showJSONView$
-      .pipe(untilDestroyed(this))
-      .subscribe(show => this.showJson = show);
-
+    this.handleJsonViewPlugin();
 
     this.handleServerSideValidationErrors();
+  }
+
+  private handleJsonViewPlugin() {
+    const jsonViewIsActive = this.formPlugins.plugins
+      .find(p => p.id === 'plugin.show.json')
+      .isActive;
+
+    if (jsonViewIsActive) {
+      this.session.showJSONView$
+        .pipe(untilDestroyed(this))
+        .subscribe(show => this.showJson = show);
+    }
   }
 
   private initializeFormStore() {
