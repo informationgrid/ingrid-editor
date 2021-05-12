@@ -5,11 +5,13 @@ export class UserMockService {
 
   private mockUsers: User[] = [
     {
-      id: '1',
+      // id: '1',
       firstName: 'Herbert',
       lastName: 'Meier',
       login: 'hm',
       role: 'md-admin',
+      creationDate: new Date(),
+      modificationDate: new Date(),
       attributes: []
     }
   ];

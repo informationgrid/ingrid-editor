@@ -50,7 +50,7 @@ export class TreeModeToolbarBehaviour extends Plugin {
     }
 
     this.toolbarService.buttons
-      .forEach(button => this.toolbarService.setButtonState(button.id, this.previousState.find(prev => prev.id === button.id).active));
+      .forEach(button => this.toolbarService.setButtonState(button.id, this.previousState.find(prev => prev.id === button.id)?.active));
 
   }
 
