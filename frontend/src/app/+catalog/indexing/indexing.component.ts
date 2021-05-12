@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {IndexService, LogResult} from './index.service';
 import cronstrue from 'cronstrue/i18n';
 import {FormControl} from '@angular/forms';
@@ -17,6 +17,8 @@ import {merge, Observable} from 'rxjs';
   styleUrls: ['./indexing.component.scss']
 })
 export class IndexingComponent implements OnInit {
+
+  @ViewChild('indexContent') indexContent: ElementRef<HTMLElement>;
 
   cronField = new FormControl();
 
@@ -92,7 +94,7 @@ export class IndexingComponent implements OnInit {
   copyContent(event: MouseEvent) {
     event.preventDefault();
 
-    this.clipboard.copy(JSON.stringify(this.liveImportMessage));
+    this.clipboard.copy(this.indexContent.nativeElement.innerText);
     this.snackBar.open('Log in Zwischenablage kopiert');
   }
 
