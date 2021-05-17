@@ -16,7 +16,8 @@ export class BasePage {
     Recherche: 'ige-side-menu a:nth-child(4)',
     NutzerUndRechte: 'ige-side-menu a:nth-child(5)',
     ImportExport: 'ige-side-menu a:nth-child(6)',
-    Katalogverwaltung: 'ige-side-menu a:nth-child(7)'
+    Katalogverwaltung: 'ige-side-menu a:nth-child(7)',
+    Skalieren: 'ige-side-menu a:nth-child(9)'
   };
 
   static CatalogsTabmenu: Record<string, string> = {
