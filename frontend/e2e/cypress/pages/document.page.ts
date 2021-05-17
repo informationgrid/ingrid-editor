@@ -154,7 +154,6 @@ export class DocumentPage extends BasePage {
     const json = {
       _hasChildren: false,
       _parent: 'a0df9837-512a-4594-b2ef-2814f7c55c81',
-      // _parent: null,
       _type: 'TestDoc',
       title: title,
       _state: 'W',

@@ -10,29 +10,28 @@ export class BehavioursPage extends BasePage {
     });
   }
 
-  static checkElementContainsSomething(cssItem: string = 'ige-behaviour-item') {
-    cy.get(cssItem).should('be.visible');
-  }
-
   static saveCatalogSetting(){
     cy.get('button').contains('Speichern').click();
   }
 
-  static setCatalogSetting(title: string, state: boolean){
-    if (state){
-      BehavioursPage.getSwitchState(title, !state)
-      BehavioursPage.toggleCatalogSetting(title)
-    } else {
-      BehavioursPage.toggleCatalogSetting(title)
-    }
+  static setCatalogSetting(title: string, switchStateTo: boolean){
+    cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
+    cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
+    BehavioursPage.toggleCatalogSetting(title, switchStateTo);
   }
 
   private static getSwitchState(title: string, state: boolean){
     return BehavioursPage.getCatalogCheckbox(title).find('[aria-checked="' + state + '"]');
   }
 
-  private static toggleCatalogSetting(title: string) {
-    return BehavioursPage.getCatalogCheckbox(title).click();
+  private static toggleCatalogSetting(title: string, switchStateTo: boolean) {
+    if (switchStateTo){
+      this.getSwitchState(title, false)
+      return BehavioursPage.getCatalogCheckbox(title).click();
+    } else if (!switchStateTo){
+      this.getSwitchState(title, true)
+      return BehavioursPage.getCatalogCheckbox(title).click();
+    }
   }
 
   private static getCatalogCheckbox(title: string){
@@ -46,4 +45,9 @@ export class BehavioursPage extends BasePage {
   static checkTimeoutIs(timeout: string){
     cy.get('ige-session-timeout-info').contains(timeout);
   }
+
+  static setAndSaveCatalogSettings(catalogTitle: string, switchStateTo: boolean){
+    this.setCatalogSetting(catalogTitle, switchStateTo);
+    BehavioursPage.saveCatalogSetting();
+  };
 }

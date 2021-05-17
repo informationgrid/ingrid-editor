@@ -15,11 +15,11 @@ describe('Behaviours', () => {
   it('should show multiple system and form behaviours', () => {
     cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
     cy.get('div.left-side').contains('Katalogverhalten');
-    BehavioursPage.checkElementContainsSomething();
+    cy.get('ige-behaviour-item').should('be.visible');
 
     cy.get(BehavioursPage.CatalogsTabmenu.Formulare).click();
     cy.get('div.left-side').contains('Formularkonfiguration');
-    BehavioursPage.checkElementContainsSomething();
+    cy.get('ige-behaviour-item').should('be.visible');
   });
 
   describe('System', () => {
@@ -36,36 +36,28 @@ describe('Behaviours', () => {
     });
 
     it('should change the sorting of the tree', () => {
-      const testDocTitle = 'AAA_testDocForSortingCheck_API';
-      const mCloudDocTitle = 'ZZZ_mCloudDocForSortingCheck_API';
+      const firstDoc = 'AAA_testDocForSortingCheck_API';
+      const lastDoc = 'ZZZ_mCloudDocForSortingCheck_API';
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      DocumentPage.CreateFullMcloudDocumentWithAPI(mCloudDocTitle, false);
-      DocumentPage.CreateTestDocumentWithAPI(testDocTitle, false);
+      DocumentPage.CreateTestDocumentWithAPI(firstDoc, false);
+      DocumentPage.CreateFullMcloudDocumentWithAPI(lastDoc, false);
 
-      Tree.openNode(['Neue Testdokumente', mCloudDocTitle]);
-      Tree.selectNodeAndCheckPath(mCloudDocTitle, ['Daten', 'Neue Testdokumente']);
+      Tree.openNode(['Neue Testdokumente', lastDoc]);
       cy.get('[data-mat-icon-name="Fachaufgabe"]').should('be.visible');
-
-      Tree.selectNodeAndCheckPath(testDocTitle, ['Daten', 'Neue Testdokumente']);
+      Tree.selectNodeAndCheckPath(firstDoc, ['Daten', 'Neue Testdokumente']);
       cy.get('[data-mat-icon-name="Geodatendienst"]').should('be.visible');
-      // check first element contains ZZZ before changing sorting of the tree
-      cy.get('mat-tree-node> div > span').first().contains(testDocTitle);
+      // check first element contains AAA before changing sorting of the tree
+      cy.get('mat-tree-node> div > span').first().contains(firstDoc);
 
-      cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
-      cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
-      BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
-      BehavioursPage.saveCatalogSetting();
+      BehavioursPage.setAndSaveCatalogSettings('Sortierung des Baums nach Dokumententyp', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      Tree.openNode(['Neue Testdokumente', mCloudDocTitle]);
+      Tree.openNode(['Neue Testdokumente',lastDoc]);
       // check first element contains ZZZ after changing sorting of the tree
-      cy.get('mat-tree-node> div > span').first().contains(mCloudDocTitle);
+      cy.get('mat-tree-node> div > span').first().contains(lastDoc);
 
-      cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
-      cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
-      BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);
-      BehavioursPage.saveCatalogSetting();
+      BehavioursPage.setAndSaveCatalogSettings('Sortierung des Baums nach Dokumententyp', false);
     });
 
     xit('should change the template for the address generation', () => {});
