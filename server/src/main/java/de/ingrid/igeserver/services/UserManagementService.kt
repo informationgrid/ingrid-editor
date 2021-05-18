@@ -2,16 +2,19 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.User
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
+import java.io.Closeable
 import java.security.Principal
 import java.util.*
 
 interface UserManagementService {
     fun getUsersWithIgeRoles(principal: Principal?): Set<User>
     fun getUsers(principal: Principal?): Set<User>
+    
+    fun getClient(principal: Principal?): Closeable
 
-    fun getLatestLoginDate(principal: Principal?, login: String): Date?
+    fun getLatestLoginDate(client: Closeable, login: String): Date?
 
-    fun getUser(principal: Principal?, login: String): User
+    fun getUser(client: Closeable, login: String): User
     fun getRoles(principal: KeycloakAuthenticationToken?): Set<String>?
     fun getName(principal: KeycloakAuthenticationToken?): String?
 

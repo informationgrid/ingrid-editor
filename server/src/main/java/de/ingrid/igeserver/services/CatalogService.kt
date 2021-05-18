@@ -73,6 +73,10 @@ class CatalogService @Autowired constructor(
             .toMutableList()
     }
 
+    fun getUserOfCatalog(catalogId: String): List<UserInfo> {
+        return userRepo.findAllByCatalogId(catalogId)
+    }
+
     fun getUser(userId: String): UserInfo? {
         return userRepo.findByUserId(userId)
     }

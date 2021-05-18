@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.*
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -72,29 +74,43 @@ class UsersApiController : UsersApi {
 
     override fun deleteUser(principal: Principal?, userId: String): ResponseEntity<Void> {
 
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-
         catalogService.deleteUser(userId)
         keycloakService.removeRoles(principal, userId, listOf("cat-admin", "md-admin", "author"))
         return ResponseEntity.ok().build()
 
     }
 
+    @ExperimentalTime
     override fun getUser(principal: Principal?, userId: String): ResponseEntity<User> {
 
-        val user = keycloakService.getUser(principal, userId)
-        val frontendUser = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+        var user: User
+        val durationALl = measureTime {
+            keycloakService.getClient(principal).use { client ->
 
-        user.latestLogin = keycloakService.getLatestLoginDate(principal, userId);
-        user.groups = frontendUser.groups.map { it.id!! }
-        user.creationDate = frontendUser.data?.creationDate ?: Date(0)
-        user.modificationDate = frontendUser.data?.modificationDate ?: Date(0)
-        user.role = frontendUser.role?.name ?: ""
+                val durationGetUser = measureTime {
+                    user = keycloakService.getUser(client, userId)
+                }
+                val frontendUser =
+                    userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
 
-        //TODO implement manager and standin
-        user.manager = "ige"
-        user.standin = "herbert"
+                val durationGetLatestLoginDate = measureTime {
+                    user.latestLogin = keycloakService.getLatestLoginDate(client, userId)
+                }
+                user.groups = frontendUser.groups.map { it.id!! }
+                user.creationDate = frontendUser.data?.creationDate ?: Date(0)
+                user.modificationDate = frontendUser.data?.modificationDate ?: Date(0)
+                user.role = frontendUser.role?.name ?: ""
 
+                //TODO implement manager and standin
+                user.manager = "ige"
+                user.standin = "herbert"
+
+                logger.info("getUser: $durationGetUser")
+                logger.info("getLatestLoginDate: $durationGetLatestLoginDate")
+            }
+        }
+
+        logger.info("all: $durationALl")
         return ResponseEntity.ok(user)
 
     }
@@ -104,11 +120,13 @@ class UsersApiController : UsersApi {
         if (principal == null && !developmentMode) {
             throw UnauthenticatedException.withUser("")
         }
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val users = keycloakService.getUsersWithIgeRoles(principal)
-
-        // remove users that are not added this instance
-        val filteredUsers = users.filter { catalogService.getUser(it.login) != null }
+        val catalogUsers = catalogService.getUserOfCatalog(catalogId)
+        val filteredUsers = users
+            .filter { user -> catalogUsers.any { it.userId == user.login } }
+            .onEach { user -> user.role = catalogUsers.find { it.userId == user.login }?.role?.name ?: "" }
 
         return ResponseEntity.ok(filteredUsers)
     }
@@ -125,60 +143,64 @@ class UsersApiController : UsersApi {
     override fun currentUserInfo(principal: Principal?): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        val user = keycloakService.getUser(principal, userId)
+        keycloakService.getClient(principal).use { client ->
+            val user = keycloakService.getUser(client, userId)
 
-        val roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?)
+            val roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?)
 
-        val lastLogin = this.getLastLogin(principal, user.login, roles)
-        val dbUser = catalogService.getUser(userId)
+            val lastLogin = this.getLastLogin(principal, user.login, roles)
+            val dbUser = catalogService.getUser(userId)
 
-        val userInfo = UserInfo(
-            userId = user.login,
-            name = user.firstName + ' ' + user.lastName,
-            lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
-            firstName = user.firstName,
-            assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
-            roles = roles,
-            currentCatalog = dbUser?.curCatalog,
-            version = getVersion(),
-            lastLogin = lastLogin,
-            useElasticsearch = env.activeProfiles.contains("elasticsearch")
-        )
-        return ResponseEntity.ok(userInfo)
+            val userInfo = UserInfo(
+                userId = user.login,
+                name = user.firstName + ' ' + user.lastName,
+                lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
+                firstName = user.firstName,
+                assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
+                roles = roles,
+                currentCatalog = dbUser?.curCatalog,
+                version = getVersion(),
+                lastLogin = lastLogin,
+                useElasticsearch = env.activeProfiles.contains("elasticsearch")
+            )
+            return ResponseEntity.ok(userInfo)
+        }
     }
 
     private fun getLastLogin(principal: Principal?, userIdent: String, roles: Set<String>?): Date? {
-        val lastLoginKeyCloak = keycloakService.getLatestLoginDate(principal, userIdent)
-        if (lastLoginKeyCloak != null) {
-            var recentLogins = catalogService.getRecentLoginsForUser(userIdent)
-            when (recentLogins.size) {
-                0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
-                1 -> recentLogins.add(lastLoginKeyCloak)
-                else -> {
-                    if (recentLogins.size > 2) {
-                        logger.warn("More than two recent logins received! Using last 2 values")
-                        recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
-                    }
+        keycloakService.getClient(principal).use { client ->
+            val lastLoginKeyCloak = keycloakService.getLatestLoginDate(client, userIdent)
+            if (lastLoginKeyCloak != null) {
+                var recentLogins = catalogService.getRecentLoginsForUser(userIdent)
+                when (recentLogins.size) {
+                    0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
+                    1 -> recentLogins.add(lastLoginKeyCloak)
+                    else -> {
+                        if (recentLogins.size > 2) {
+                            logger.warn("More than two recent logins received! Using last 2 values")
+                            recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
+                        }
 
-                    //only update if most recent dates are not equal
-                    if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
-                        recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
+                        //only update if most recent dates are not equal
+                        if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
+                            recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
+                        }
                     }
                 }
-            }
-            var user = userRepo.findByUserId(userIdent)
-            if (user == null && catalogService.isSuperAdmin(roles)) {
-                user = UserInfo().apply {
-                    userId = userIdent
-                    data = UserInfoData()
+                var user = userRepo.findByUserId(userIdent)
+                if (user == null && catalogService.isSuperAdmin(roles)) {
+                    user = UserInfo().apply {
+                        userId = userIdent
+                        data = UserInfoData()
+                    }
                 }
+                if (user != null) {
+                    catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
+                }
+                return recentLogins[0]
             }
-            if (user != null) {
-                catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
-            }
-            return recentLogins[0]
+            return null
         }
-        return null
     }
 
     private fun getVersion(): Version {
@@ -236,7 +258,7 @@ class UsersApiController : UsersApi {
         )
 //            val info = dbService.findAll(UserInfoType::class, query, findOptions)
         // TODO: migrate
-        val info = userRepo.findAllByCatalogId(id)
+        val info = catalogService.getUserOfCatalog(id)
 
         info.forEach { result.add(it.userId) }
         return ResponseEntity.ok(result)

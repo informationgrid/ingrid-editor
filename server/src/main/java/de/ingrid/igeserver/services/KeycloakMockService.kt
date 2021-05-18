@@ -6,8 +6,15 @@ import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
+import java.io.Closeable
 import java.security.Principal
 import java.util.*
+
+class DummyClient : Closeable {
+    override fun close() {
+        // do nothing
+    }
+}
 
 @Service
 @Profile("dev")
@@ -38,7 +45,7 @@ class KeycloakMockService : UserManagementService {
         TODO("Not yet implemented")
     }
 
-    override fun getLatestLoginDate(principal: Principal?, login: String): Date? {
+    override fun getLatestLoginDate(principal: Closeable, login: String): Date? {
         return Date()
     }
 
@@ -50,7 +57,11 @@ class KeycloakMockService : UserManagementService {
         return "$mockedFirstName $mockedLastName"
     }
 
-    override fun getUser(principal: Principal?, login: String): User {
+    override fun getClient(principal: Principal?): Closeable {
+        return DummyClient()
+    }
+
+    override fun getUser(principal: Closeable, login: String): User {
         return User(
             mockedLogin,
             mockedFirstName,
