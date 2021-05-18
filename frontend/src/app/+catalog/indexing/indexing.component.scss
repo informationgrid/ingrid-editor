@@ -34,3 +34,17 @@ section {
 .menu-button {
   margin-left: 10px;
 }
+
+.status {
+  position: relative;
+
+  .copy-button-area {
+    position: absolute;
+    right: 24px;
+    display: none;
+  }
+
+  &:hover .copy-button-area {
+    display: block;
+  }
+}
