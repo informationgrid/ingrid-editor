@@ -48,7 +48,8 @@ export class DocumentPage extends BasePage {
     Previous: '[data-cy=toolbar_HISTORY_PREVIOUS]',
     Next: '[data-cy=toolbar_HISTORY_NEXT]',
     Save: '[data-cy=toolbar_SAVE]',
-    Publish: '[data-cy=toolbar_PUBLISH]'
+    Publish: '[data-cy=toolbar_PUBLISH]',
+    JSON: '[data-cy=toolbar_SHOW_JSON]'
   };
 
   static AddAddressDialog = class {
