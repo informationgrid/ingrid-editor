@@ -1,8 +1,6 @@
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
@@ -10,9 +8,23 @@ import de.ingrid.igeserver.profiles.CatalogProfile
 import org.hibernate.jpa.QueryHints
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import java.security.Principal
 import java.util.*
 import javax.persistence.EntityManager
+
+
+data class Result(
+    val title: String?,
+    val uuid: String?,
+    val _type: String?,
+    val _created: Date?,
+    val _modified: Date?,
+    val _state: String?,
+    val _category: String?,
+    var hasWritePermission: Boolean?
+)
 
 @Service
 class ResearchService {
@@ -26,6 +38,9 @@ class ResearchService {
     @Autowired
     private lateinit var profiles: List<CatalogProfile>
 
+    @Autowired
+    private lateinit var aclService: IgeAclService
+
     private val specialFilter = arrayOf("selectPublished", "selectLatest")
 
     fun createFacetDefinitions(catalogType: String): Facets {
@@ -35,14 +50,29 @@ class ResearchService {
 
     }
 
-    fun query(dbId: String, query: ResearchQuery): ResearchResponse {
+    fun query(principal: Principal?, dbId: String, query: ResearchQuery): ResearchResponse {
 
         val sql = createQuery(dbId, query)
         val parameters = getParameters(query)
 
         val result = sendQuery(sql, parameters)
+        val map = mapResult(result)
+        val filtered = filterResultsByPermission(principal as Authentication, map.toMutableList())
 
-        return ResearchResponse(result.size, mapResult(result))
+        return ResearchResponse(result.size, filtered)
+    }
+
+    private fun filterResultsByPermission(authentication: Authentication, result: MutableList<Result>): List<Result> {
+        return result.mapNotNull {
+            val info = aclService.getPermissionInfo(authentication, it.uuid!!)
+            val mapped = if (info.canRead) {
+                it.hasWritePermission = info.canWrite
+                it
+            } else {
+                null
+            }
+            mapped
+        }
     }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
@@ -160,7 +190,7 @@ class ResearchService {
 
     }
 
-    private fun sendQuery(sql: String, parameter: List<Any>): List<Any> {
+    private fun sendQuery(sql: String, parameter: List<Any>): List<Array<Any>> {
         val nativeQuery = entityManager.createNativeQuery(sql)
 
         for ((index, it) in parameter.withIndex()) {
@@ -178,28 +208,25 @@ class ResearchService {
             .addScalar("modified")
             .addScalar("draft")
             .addScalar("category")
-            .resultList
+            .resultList as List<Array<Any>>
     }
 
-    private fun mapResult(result: List<Any>): ArrayNode {
-        val array = jacksonObjectMapper().createArrayNode()
-        val jsonNodes = result.map {
+    private fun mapResult(result: List<Any>): List<Result> {
+        return result.map {
             val item = it as Array<out Any>
 //            val node = jacksonObjectMapper().createObjectNode()
             val node: ObjectNode = item[0] as ObjectNode
-            node.put("title", item[1] as? String)
-            node.put("uuid", item[2] as? String)
-            node.put("_type", item[3] as? String)
-            node.put("_created", (item[4] as? Date).toString())
-            node.put("_modified", (item[5] as? Date).toString())
-            node.put(
-                "_state",
-                if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value
+            Result(
+                title = item[1] as? String,
+                uuid = item[2] as? String,
+                _type = item[3] as? String,
+                _created = item[4] as? Date,
+                _modified = item[5] as? Date,
+                _state = if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value,
+                _category = (item[7] as? String),
+                hasWritePermission = false
             )
-            node.put("_category", (item[7] as? String))
         }
-        array.addAll(jsonNodes)
-        return array
     }
 
     fun querySql(dbId: String, sqlQuery: String): ResearchResponse {

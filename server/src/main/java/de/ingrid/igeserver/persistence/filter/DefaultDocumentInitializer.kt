@@ -68,7 +68,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
         val parentId = payload.document.data["_parent"]
         val parentRef = when (parentId == null || parentId.isNull) {
             true -> null
-            else -> docWrapperRepo.findByUuid(parentId.asText())
+            else -> docWrapperRepo.findById(parentId.asText())
         }
         val documentType = payload.document.type
 
@@ -76,7 +76,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
             catalog = catalogRef
             draft = null
             published = null
-            uuid = payload.document.uuid
+            id = payload.document.uuid
             parent = parentRef
             type = documentType
             category = payload.category

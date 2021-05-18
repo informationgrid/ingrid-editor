@@ -46,6 +46,7 @@
                        [class.selected]="isSelected(node)"
                        [class.active]="node._id === activeNodeId"
                        [class.hide]="showOnlyFolders"
+                       [class.readonly]="!node.hasWritePermission"
                        [class.rootNode]="node.level === 0"
                        [class.afterExpanded]="node.afterExpanded"
                        [class.disabled]="disabledCondition(node)">
@@ -69,6 +70,7 @@
                        [class.selected]="isSelected(node)"
                        [class.active]="node._id === activeNodeId"
                        [class.expanded]="treeControl.isExpanded(node)"
+                       [class.readonly]="!node.hasWritePermission"
                        [class.rootNode]="node.level === 0"
                        [class.afterExpanded]="node.afterExpanded"
                        [class.disabled]="disabledCondition(node)"

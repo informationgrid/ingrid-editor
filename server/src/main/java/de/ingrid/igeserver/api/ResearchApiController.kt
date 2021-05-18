@@ -49,7 +49,7 @@ class ResearchApiController @Autowired constructor(
     override fun search(principal: Principal?, query: ResearchQuery): ResponseEntity<ResearchResponse> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val result = researchService.query(dbId, query)
+        val result = researchService.query(principal, dbId, query)
         return ResponseEntity.ok(result)
 
     }

@@ -55,4 +55,9 @@
     cursor: pointer;
   }
 
+  &.readonly .mat-cell {
+    color: $ige-comment-color;
+    font-style: italic;
+  }
+
 }

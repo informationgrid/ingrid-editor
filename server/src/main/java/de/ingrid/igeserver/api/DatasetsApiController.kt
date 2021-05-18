@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -41,8 +42,10 @@ class DatasetsApiController @Autowired constructor(
         publish: Boolean
     ): ResponseEntity<JsonNode> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val resultDoc = documentService.createDocument(dbId, data, address, publish)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val parent = data.get(FIELD_PARENT)
+        val parentId = if (parent.isNull) null else parent.asText() 
+         val resultDoc = documentService.createDocument(catalogId, data, parentId, address, publish)
         return ResponseEntity.ok(resultDoc)
     }
 
@@ -131,7 +134,7 @@ class DatasetsApiController @Autowired constructor(
         // also copied docs need new ID
         listOf(FIELD_ID, FIELD_STATE, FIELD_HAS_CHILDREN).forEach { objectNode.remove(it) }
 
-        val copiedParent = documentService.createDocument(catalogId, doc, isAddress, false) as ObjectNode
+        val copiedParent = documentService.createDocument(catalogId, doc, origParentId, isAddress, false) as ObjectNode
 
         if (options.includeTree) {
             val count = handleCopySubTree(catalogId, copiedParent, origParentId, options, isAddress)
@@ -186,7 +189,7 @@ class DatasetsApiController @Autowired constructor(
 
         // updateWrapper
         val wrapperWithLinks = documentService.getWrapperByDocumentId(id)
-        wrapperWithLinks.parent = if (options.destId == null) null else docWrapperRepo.findByUuid(options.destId)
+        wrapperWithLinks.parent = if (options.destId == null) null else docWrapperRepo.findById(options.destId)
         docWrapperRepo.save(wrapperWithLinks)
     }
 
@@ -208,7 +211,7 @@ class DatasetsApiController @Autowired constructor(
         } else {
             val result = mutableListOf(id)
             docs.hits.forEach { doc ->
-                result.addAll(getAllDescendantIds(catalogId, doc.uuid))
+                result.addAll(getAllDescendantIds(catalogId, doc.id))
             }
             result
         }
@@ -274,7 +277,7 @@ class DatasetsApiController @Autowired constructor(
         publish: Boolean?
     ): ResponseEntity<JsonNode> {
 
-        val wrapper = docWrapperRepo.findByUuid(id)
+        val wrapper = documentService.getWrapperByDocumentId(id);
 
         val doc = documentService.getLatestDocument(wrapper)
         val jsonDoc = documentService.convertToJsonNode(doc)
@@ -293,8 +296,13 @@ class DatasetsApiController @Autowired constructor(
         path.add(id)
 
         while (true) {
-            val doc = documentService.getWrapperByDocumentId(parentId)
-            val nextParentId = doc.parent?.uuid
+            val doc = try {
+                documentService.getWrapperByDocumentId(parentId)
+            } catch (ex: AccessDeniedException) {
+                log.warn("Parent '$parentId' could not be fetched because of missing access rights")
+                break
+            }
+            val nextParentId = doc.parent?.id
             if (nextParentId != null) {
                 path.add(nextParentId)
                 parentId = nextParentId

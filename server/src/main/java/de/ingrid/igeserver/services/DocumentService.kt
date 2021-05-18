@@ -22,6 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.security.access.prepost.PostAuthorize
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.acls.domain.BasePermission
+import org.springframework.security.acls.domain.ObjectIdentityImpl
+import org.springframework.security.acls.jdbc.JdbcMutableAclService
+import org.springframework.security.acls.model.AclService
+import org.springframework.security.acls.model.Permission
 import org.springframework.stereotype.Service
 import javax.persistence.criteria.*
 
@@ -67,6 +74,9 @@ class DocumentService : MapperService() {
     @Autowired
     private lateinit var postDeletePipe: PostDeletePipe
 
+    @Autowired
+    private lateinit var aclService: JdbcMutableAclService
+
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),
         DRAFT("W")
@@ -77,20 +87,23 @@ class DocumentService : MapperService() {
      */
     fun getWrapperByDocumentId(id: String): DocumentWrapper {
 
-        return docWrapperRepo.findByUuid(id)
-
+        val doc = docWrapperRepo.findById(id)
+//        val acl = aclService.readAclById(ObjectIdentityImpl(DocumentWrapper::class.java, id))
+//        val hasWritePermission = acl.isGranted(listOf(BasePermission.WRITE))
+//        doc.hasWritePermission = hasWritePermission
+        return doc
     }
 
     fun findChildrenDocs(catalogId: String, parentId: String?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
 
-    fun findChildren(catalogId: String, parentId: String?, docCat: DocumentCategory? = null): FindAllResults<DocumentWrapper> {
+    fun findChildren(catalogId: String, parentId: String?, docCat: DocumentCategory = DocumentCategory.DATA): FindAllResults<DocumentWrapper> {
 
-        val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_UuidAndCategory(
+        val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(
             catalogId,
             parentId,
-            docCat?.value ?: "data"
+            docCat.value
         ) 
         return FindAllResults(
             docs.size.toLong(),
@@ -120,9 +133,14 @@ class DocumentService : MapperService() {
         return checkNotNull(documentTypes.find { it.className == docType })
     }
 
+    // TODO: make use of create action only, write is only temporary
+    @PreAuthorize(
+        "hasPermission(#parentId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper','CREATE') || " +
+                "hasPermission(#parentId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun createDocument(
         catalogId: String,
         data: JsonNode,
+        parentId: String?,
         address: Boolean = false,
         publish: Boolean = false
     ): JsonNode {
@@ -144,6 +162,17 @@ class DocumentService : MapperService() {
             preCreatePayload.wrapper.published = newDocument
         } else {
             preCreatePayload.wrapper.draft = newDocument
+        }
+
+        // first create permission ACL
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, document.uuid)
+        val acl = aclService.createAcl(objIdentity)
+        val parent = preCreatePayload.wrapper.parent
+        if (parent != null) {
+            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parent.id)
+            val parentAcl = aclService.readAclById(parentObjIdentity)
+            acl.setParent(parentAcl)
+            aclService.updateAcl(acl)
         }
 
         // save wrapper
@@ -284,14 +313,14 @@ class DocumentService : MapperService() {
         preDeletePipe.runFilters(preDeletePayload, filterContext)
 
         findChildrenDocs(catalogId, id, isAddress(wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.uuid)
+            deleteRecursively(catalogId, it.id)
         }
 
         // remove all document versions which have the same ID
         docRepo.deleteAllByUuid(id)
 
         // remove the wrapper
-        docWrapperRepo.deleteByUuid(id)
+        docWrapperRepo.deleteById(id)
 
         // run post-delete pipe(s)
         val postDeletePayload = PostDeletePayload(docType, preDeletePayload.document, preDeletePayload.wrapper)
@@ -351,7 +380,7 @@ class DocumentService : MapperService() {
     private fun getLatestDocumentVersion(wrapper: DocumentWrapper, onlyPublished: Boolean): Document {
 
         if (onlyPublished && wrapper.published == null) {
-            throw NotFoundException.withMissingPublishedVersion(wrapper.uuid)
+            throw NotFoundException.withMissingPublishedVersion(wrapper.id)
         }
 
         // TODO: check if isNull function really works or if we need a null comparison
@@ -359,9 +388,10 @@ class DocumentService : MapperService() {
             wrapper.published
         } else {
             wrapper.draft
-        }
+        }!!
 
-        objectNode!!.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
+        objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
+        objectNode.hasWritePermission = wrapper.hasWritePermission
 
         return objectNode
     }

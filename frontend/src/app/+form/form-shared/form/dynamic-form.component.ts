@@ -292,9 +292,24 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
     // comes a bit later
     setTimeout(() => this.activeId.next(id));
 
+    let previousDocId = this.form.value._id;
+
     this.documentService.load(id, this.address)
       .pipe(untilDestroyed(this))
-      .subscribe(doc => this.updateFormWithData(doc));
+      .subscribe(
+        doc => this.updateFormWithData(doc),
+        error => {
+          if (error.error.errorText === 'Access is denied') {
+            // select previous document
+            const target = this.address ? '/address' : '/form'
+            if (previousDocId) {
+              this.router.navigate([target, {id: previousDocId}]);
+            } else {
+              this.router.navigate([target]);
+            }
+          }
+          throw error;
+        });
   }
 
   private updateFormWithData(data) {

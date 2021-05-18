@@ -13,9 +13,10 @@ import javax.persistence.*
 class DocumentWrapper {
 
     @Id
+    @Column(name= "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    var id: Int? = null
+    var dbId: Int? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "catalog_id", nullable = false)
@@ -23,9 +24,10 @@ class DocumentWrapper {
     @JsonIgnore
     var catalog: Catalog? = null
 
-    @Column(nullable=false)
+    // must be named "id" since getId() method is used for ACL permissions!
+    @Column(name="uuid", nullable=false)
     @JsonProperty("_id")
-    var uuid: String = UUID.randomUUID().toString()
+    var id: String = UUID.randomUUID().toString()
 
     @Column(nullable=false)
     @JsonProperty("_type")
@@ -54,7 +56,7 @@ class DocumentWrapper {
     @JsonGetter("_parent")
     fun getParentUuid(): String? {
         if (this.parentUuid == null) {
-            this.parentUuid = parent?.uuid
+            this.parentUuid = parent?.id
         }
         return this.parentUuid
     }
@@ -147,4 +149,7 @@ class DocumentWrapper {
             DocumentService.DocumentState.DRAFT.value
         }
     }
+
+    @Transient
+    var hasWritePermission: Boolean = false
 }

@@ -25,6 +25,8 @@ export class IgeDocument {
   // the state which can be "W" (working), "P" (published) and "PW" (working after published)
   _state?: DocumentState;
 
+  hasWritePermission?: boolean;
+
   // profile specific fields
   [x: string]: any;
 

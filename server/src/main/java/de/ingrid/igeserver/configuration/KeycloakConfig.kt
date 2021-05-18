@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.configuration
 
+import de.ingrid.igeserver.configuration.acl.MyAuthenticationProvider
 import org.apache.logging.log4j.LogManager
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
@@ -67,6 +69,9 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         }
     }
 
+    @Autowired
+    lateinit var myAuthenticationProvider: MyAuthenticationProvider
+
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
      */
@@ -75,10 +80,11 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         // check out: https://www.thomasvitale.com/spring-security-keycloak/
         val grantedAuthorityMapper = SimpleAuthorityMapper()
         grantedAuthorityMapper.setPrefix("ROLE_")
-        val keycloakAuthenticationProvider = keycloakAuthenticationProvider()
+        val keycloakAuthenticationProvider = myAuthenticationProvider
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(grantedAuthorityMapper)
         auth.authenticationProvider(keycloakAuthenticationProvider)
     }
+
 
     /**
      * Provide a session authentication strategy bean which should be of type

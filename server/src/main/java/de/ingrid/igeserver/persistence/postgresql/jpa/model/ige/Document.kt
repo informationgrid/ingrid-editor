@@ -86,4 +86,7 @@ class Document {
             SpringContext.getBean(DateService::class.java)
         }
     }
+
+    @Transient
+    var hasWritePermission: Boolean = false
 }

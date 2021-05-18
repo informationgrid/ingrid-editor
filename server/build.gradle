@@ -66,6 +66,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.security:spring-security-acl'
     compile 'org.springframework.boot:spring-boot-starter-validation'
 
     // Jackson
@@ -108,6 +109,7 @@ dependencies {
     testImplementation "io.kotest:kotest-extensions-spring:$kotest_version" // to wire dependencies using Spring
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 
     // iBus communication
     implementation('de.ingrid:ingrid-elasticsearch-tools:5.6.0')

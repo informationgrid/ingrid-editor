@@ -1,13 +1,11 @@
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
@@ -16,7 +14,12 @@ import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.acls.domain.*
+import org.springframework.security.acls.jdbc.JdbcMutableAclService
+import org.springframework.security.acls.model.MutableAcl
+import org.springframework.security.acls.model.Permission
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.*
 import kotlin.collections.HashSet
@@ -28,6 +31,7 @@ class CatalogService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val roleRepo: RoleRepository,
     private val authUtils: AuthUtils,
+    private val aclService: JdbcMutableAclService,
     private val catalogProfiles: List<CatalogProfile>
 ) {
 
@@ -71,6 +75,10 @@ class CatalogService @Autowired constructor(
         } else userData.recentLogins
             .map { Date(it) }
             .toMutableList()
+    }
+    
+    fun getUserOfCatalog(catalogId: String): List<UserInfo> {
+        return userRepo.findAllByCatalogId(catalogId)
     }
 
     fun getUser(userId: String): UserInfo? {
@@ -166,7 +174,7 @@ class CatalogService @Autowired constructor(
             }
             
             groups = mergeGroups(catalogId, groups, user)
-            role = roleRepo.findByName(user.role)
+            role = if (user.role.isNotEmpty()) roleRepo.findByName(user.role) else null
         }
     }
 
@@ -193,14 +201,47 @@ class CatalogService @Autowired constructor(
 
     }
 
+    @Transactional
     fun updateUser(catalogId: String, userModel: User) {
 
 //        val userFromDB = getUser(userModel.login) ?: throw NotFoundException.withMissingUserCatalog(userModel.login)
         val user = convertUser(catalogId, userModel)
 //        user.id = userFromDB.id
+
+        updateAcl(user.groups)
         
         userRepo.save(user)
 
+    }
+
+    private fun updateAcl(groups: MutableSet<Group>) {
+
+        groups.forEach { group ->
+            group.data?.documents?.forEach {
+                val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
+                val acl: MutableAcl = try {
+                    aclService.readAclById(objIdentity) as MutableAcl
+                } catch (ex: org.springframework.security.acls.model.NotFoundException) {
+                    aclService.createAcl(objIdentity)
+                }
+
+                val sid = GrantedAuthoritySid("GROUP_${group.name}")
+                val permission: Permission = determinePermission(it)
+
+                acl.insertAce(acl.entries.size, permission, sid, true)
+                aclService.updateAcl(acl)
+            }
+        }
+
+
+    }
+
+    private fun determinePermission(docPermission: JsonNode): Permission {
+        return when(docPermission.get("permission").asText()) {
+            "writeSubTree" -> BasePermission.WRITE
+            "writeDataset" -> BasePermission.WRITE
+            else -> BasePermission.READ
+        }
     }
 
 }

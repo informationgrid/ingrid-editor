@@ -106,7 +106,8 @@ export class DocumentService {
         _hasChildren: doc._hasChildren,
         _parent: parentId,
         _type: doc._type,
-        _modified: doc._modified
+        _modified: doc._modified,
+        hasWritePermission: doc.hasWritePermission ?? false
       };
     });
   }

@@ -39,7 +39,7 @@ class UserInfo {
     @JsonIgnore
     var role: Role? = null
     
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_group",
         joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false, updatable = false)],
