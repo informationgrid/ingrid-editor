@@ -38,7 +38,7 @@ class KeycloakService : UserManagementService {
         const val EMAIL_VALID_IN_SECONDS = 172800
     }
 
-    private class KeycloakCloseableClient(val client: Keycloak, private val realm: String) : Closeable {
+    class KeycloakCloseableClient(val client: Keycloak, private val realm: String) : Closeable {
 
         fun realm(): RealmResource {
             return client.realm(realm)
@@ -68,11 +68,7 @@ class KeycloakService : UserManagementService {
         try {
             initClient(principal).use {
                 val roles = it.realm().roles()
-                val catAdmins = getUsersWithRole(roles, "cat-admin")
-                val mdAdmins = getUsersWithRole(roles, "md-admin", catAdmins.toSet())
-                val authors = getUsersWithRole(roles, "author", (catAdmins union mdAdmins))
-
-                return (catAdmins union mdAdmins union authors)
+                return getUsersWithRole(roles, "ige-user").toSet()
             }
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to retrieve users.", e)
@@ -107,63 +103,53 @@ class KeycloakService : UserManagementService {
     }
 
     private fun initClient(principal: Principal?): KeycloakCloseableClient {
-        val keycloakPrincipal = principal as KeycloakAuthenticationToken?
-        val tokenString = keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
+        var client: Keycloak
+        val durationStart = Date()
+            val keycloakPrincipal = principal as KeycloakAuthenticationToken?
+            val tokenString = keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
 
-        val client = KeycloakBuilder.builder()
-            .serverUrl(keycloakUrl)
-            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-            .realm(keycloakRealm)
-            .clientId(keycloakClientId)
-            .clientSecret(keycloakSecret)
-            .authorization(tokenString)
-            .resteasyClient(ResteasyClientBuilder().connectionPoolSize(10).build())
-            .build()
-
+            client = KeycloakBuilder.builder()
+                .serverUrl(keycloakUrl)
+                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+                .realm(keycloakRealm)
+                .clientId(keycloakClientId)
+                .clientSecret(keycloakSecret)
+                .authorization(tokenString)
+                .resteasyClient(ResteasyClientBuilder().connectionPoolSize(10).build())
+                .build()
+            
+        val end = Date()
+        log.info("Client init: ${end.time - durationStart.time}")
         return KeycloakCloseableClient(client, keycloakRealm)
     }
-
-    override fun getUser(principal: Principal?, login: String): User {
-        val user = getKeycloakUser(principal, login)
-        initClient(principal).use {
-            val realmRoles = it.realm().users().get(user.id).roles().realmLevel().listAll()
-            val isCatAdmin = realmRoles.any { role -> role.name == "cat-admin" }
-            val isMdAdmin = realmRoles.any { role -> role.name == "md-admin" }
-            val isAuthor = realmRoles.any { role -> role.name == "author" }
-
-            val mappedUser = mapUser(user)
-            mappedUser.role = when {
-                isCatAdmin -> "cat-admin"
-                isMdAdmin -> "md-admin"
-                isAuthor -> "author"
-                else -> ""
-            }
-            return mappedUser
-        }
+    
+    override fun getClient(principal: Principal?): KeycloakCloseableClient {
+        return initClient(principal)
     }
 
-    private fun getKeycloakUser(principal: Principal?, username: String): UserRepresentation {
+    override fun getUser(client: Closeable, login: String): User {
+        val user = getKeycloakUser(client, login)
+        return mapUser(user)
+    }
+
+    private fun getKeycloakUser(client: Closeable, username: String): UserRepresentation {
         try {
-            initClient(principal).use {
-                return it.realm().users()
-                    .search(username, true)[0]
-            }
+            return (client as KeycloakCloseableClient).realm().users()
+                .search(username, true)
+                .first()
         } catch (e: Exception) {
             throw UnauthenticatedException.withUser(username, e)
         }
     }
 
-    override fun getLatestLoginDate(principal: Principal?, login: String): Date? {
-        val userId = getKeycloakUser(principal, login).id
+    override fun getLatestLoginDate(client: Closeable, login: String): Date? {
         try {
-
-            initClient(principal).use {
-                val userSessions = it.realm().users()[userId].userSessions
-                if (userSessions.isEmpty()){
-                    return null
-                } else{
-                    return Date(userSessions.last().start)
-                }
+            val userId = getKeycloakUser(client, login).id
+            val userSessions = (client as KeycloakCloseableClient).realm().users()[userId].userSessions
+            return if (userSessions.isEmpty()){
+                null
+            } else{
+                Date(userSessions.last().start)
             }
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to get latest login date for '$login'.", e)
@@ -233,7 +219,7 @@ class KeycloakService : UserManagementService {
     override fun updateUser(principal: Principal?, user: User) {
 
         initClient(principal).use { client ->
-            val kcUser = getKeycloakUser(principal, user.login)
+            val kcUser = getKeycloakUser(client, user.login)
             mapToKeycloakUser(user, kcUser)
 
             client.realm().users().get(kcUser.id).update(kcUser)
@@ -301,9 +287,9 @@ class KeycloakService : UserManagementService {
 
     }
 
-    private fun getRoleRepresentations(client: KeycloakCloseableClient, roles: List<String>): List<RoleRepresentation> {
+    private fun getRoleRepresentations(client: Closeable, roles: List<String>): List<RoleRepresentation> {
 
-        return client.realm().roles().list()
+        return (client as KeycloakCloseableClient).realm().roles().list()
             .filter { roles.contains(it.name) }
 
     }
