@@ -438,10 +438,22 @@ describe('Tree', () => {
   });
 
   describe('Multi-Selection', () => {
-    xit('should show a checkbox for each node when edit mode is enabled and hide them if disabled', () => {});
+    it('should show a checkbox for each node when edit mode is enabled and hide them if disabled', () => {
+      cy.get('mat-tree-node .mat-checkbox-layout').should('not.exist');
+      cy.get('[data-mat-icon-name=edit_mode]').click();
+      cy.get('mat-tree-node .mat-checkbox-layout').should('be.visible');
+      cy.get('[data-mat-icon-name=Entfernen]').click();
+      cy.get('mat-tree-node .mat-checkbox-layout').should('not.exist');
+    });
 
-    xit('should preselect the opened document', () => {
-      // checkbox must be ticked
+    it('should preselect the opened document', () => {
+      const testDoc = 'Preselected TestDoc';
+
+      DocumentPage.CreateTestDocumentWithAPI(testDoc, false);
+      Tree.openNode(['Neue Testdokumente', testDoc]);
+      cy.get(DocumentPage.title).contains(testDoc);
+      cy.get('[data-mat-icon-name=edit_mode]').click();
+      cy.get('mat-tree-node .mat-checkbox-checked').parent().contains(testDoc);
     });
 
     xit('should only allow options to cut, copy and delete nodes in multi select mode', () => {
