@@ -14,22 +14,18 @@ export class BehavioursPage extends BasePage {
     cy.get('button').contains('Speichern').click();
   }
 
-  static setCatalogSetting(title: string, switchStateTo: boolean){
+  static setCatalogSetting(title: string, shallBeActivated: boolean){
     cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
     cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
-    BehavioursPage.toggleCatalogSetting(title, switchStateTo);
+    BehavioursPage.toggleCatalogSetting(title, shallBeActivated);
   }
 
-  private static getSwitchState(title: string, state: boolean){
-    return BehavioursPage.getCatalogCheckbox(title).find('[aria-checked="' + state + '"]');
-  }
+  private static toggleCatalogSetting(title: string, shallBeActivated: boolean) {
+    const isActive = BehavioursPage.getCatalogCheckbox(title).find('[aria-checked="' + !shallBeActivated + '"]');
 
-  private static toggleCatalogSetting(title: string, switchStateTo: boolean) {
-    if (switchStateTo){
-      this.getSwitchState(title, false)
+    if (shallBeActivated && isActive){
       return BehavioursPage.getCatalogCheckbox(title).click();
-    } else if (!switchStateTo){
-      this.getSwitchState(title, true)
+    } else if (!shallBeActivated && isActive){
       return BehavioursPage.getCatalogCheckbox(title).click();
     }
   }
@@ -39,15 +35,15 @@ export class BehavioursPage extends BasePage {
   }
 
   static setCatalogInputbox(title: string, seconds: string){
-    BehavioursPage.getSwitchState(title, true)
+    BehavioursPage.getCatalogCheckbox(title).find('[aria-checked="true"]');
     return cy.get('mat-card').find('mat-card-title').contains(title).parent().parent().parent().find('mat-card-content').clear().type(seconds);
   }
   static checkTimeoutIs(timeout: string){
     cy.get('ige-session-timeout-info').contains(timeout);
   }
 
-  static setAndSaveCatalogSettings(catalogTitle: string, switchStateTo: boolean){
-    this.setCatalogSetting(catalogTitle, switchStateTo);
+  static setAndSaveCatalogSettings(catalogTitle: string, shallBeActivated: boolean){
+    this.setCatalogSetting(catalogTitle, shallBeActivated);
     BehavioursPage.saveCatalogSetting();
   };
 }
