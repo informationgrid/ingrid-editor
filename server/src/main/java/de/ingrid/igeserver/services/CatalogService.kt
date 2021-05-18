@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.*
-import kotlin.collections.HashSet
 
 @Service
 class CatalogService @Autowired constructor(
@@ -76,7 +75,7 @@ class CatalogService @Autowired constructor(
             .map { Date(it) }
             .toMutableList()
     }
-    
+
     fun getUserOfCatalog(catalogId: String): List<UserInfo> {
         return userRepo.findAllByCatalogId(catalogId)
     }
@@ -172,7 +171,7 @@ class CatalogService @Autowired constructor(
                     modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
                 )
             }
-            
+
             groups = mergeGroups(catalogId, groups, user)
             role = if (user.role.isNotEmpty()) roleRepo.findByName(user.role) else null
         }
@@ -209,7 +208,7 @@ class CatalogService @Autowired constructor(
 //        user.id = userFromDB.id
 
         updateAcl(user.groups)
-        
+
         userRepo.save(user)
 
     }
@@ -226,9 +225,8 @@ class CatalogService @Autowired constructor(
                 }
 
                 val sid = GrantedAuthoritySid("GROUP_${group.name}")
-                val permission: Permission = determinePermission(it)
 
-                acl.insertAce(acl.entries.size, permission, sid, true)
+                addACEs(acl, it, sid)
                 aclService.updateAcl(acl)
             }
         }
@@ -236,11 +234,26 @@ class CatalogService @Autowired constructor(
 
     }
 
-    private fun determinePermission(docPermission: JsonNode): Permission {
-        return when(docPermission.get("permission").asText()) {
-            "writeSubTree" -> BasePermission.WRITE
-            "writeDataset" -> BasePermission.WRITE
-            else -> BasePermission.READ
+    private fun addACEs(acl: MutableAcl, docPermission: JsonNode, sid: GrantedAuthoritySid) {
+        // write complete new acl entries for this object 
+        removeEntries(acl)
+        
+        determinePermission(docPermission)
+            .forEach {
+                acl.insertAce(acl.entries.size, it, sid, true)
+            }
+    }
+
+    private fun removeEntries(acl: MutableAcl) {
+        // remove always the first element until empty
+        while(acl.entries.isNotEmpty()) { acl.deleteAce(0) }
+    }
+
+    private fun determinePermission(docPermission: JsonNode): List<Permission> {
+        return when (docPermission.get("permission").asText()) {
+            "writeSubTree" -> listOf(BasePermission.READ, BasePermission.WRITE)
+            "writeDataset" -> listOf(BasePermission.READ, BasePermission.WRITE)
+            else -> listOf(BasePermission.READ)
         }
     }
 
