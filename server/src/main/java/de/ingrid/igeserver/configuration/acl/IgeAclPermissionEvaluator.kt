@@ -2,6 +2,7 @@ package de.ingrid.igeserver.configuration.acl
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.apache.logging.log4j.kotlin.logger
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount
 import org.springframework.core.log.LogMessage
 import org.springframework.security.acls.AclPermissionEvaluator
 import org.springframework.security.acls.domain.*
@@ -23,11 +24,14 @@ class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvalua
     private val permissionFactory: PermissionFactory = DefaultPermissionFactory()
 
     override fun hasPermission(
-        authentication: Authentication?,
+        authentication: Authentication,
         targetId: Serializable?,
         targetType: String?,
         permission: Any?
     ): Boolean {
+        if (hasAdminRole(authentication)) {
+            return true
+        }
         return super.hasPermission(authentication, targetId, targetType, permission)
     }
 
@@ -35,8 +39,18 @@ class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvalua
         if (domainObject == null) {
             return false
         }
+        
+        if (hasAdminRole(authentication)) {
+            return true
+        }
+
         val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(domainObject)
         return checkPermission(authentication, objectIdentity, permission, domainObject)
+    }
+
+    private fun hasAdminRole(authentication: Authentication): Boolean {
+        val roles = (authentication.details as SimpleKeycloakAccount).roles
+        return roles.contains("adminX") || roles.contains("cat-adminX")
     }
 
     private fun checkPermission(authentication: Authentication, oid: ObjectIdentity, permission: Any, domainObject: Any): Boolean {

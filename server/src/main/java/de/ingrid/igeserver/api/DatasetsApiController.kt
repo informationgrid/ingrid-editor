@@ -29,7 +29,8 @@ class DatasetsApiController @Autowired constructor(
     private val authUtils: AuthUtils,
     private val catalogService: CatalogService,
     private val docWrapperRepo: DocumentWrapperRepository,
-    private val documentService: DocumentService
+    private val documentService: DocumentService,
+    private val aclService: IgeAclService
 ) : DatasetsApi {
 
     private val log = logger()
@@ -250,11 +251,8 @@ class DatasetsApiController @Autowired constructor(
         isAddress: Boolean,
     ): List<DocumentWrapper> {
         
-        return userGroups
-            ?.map {group -> if (isAddress) group.data?.addresses else group.data?.documents }
-            ?.map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asText() }.orEmpty() }
-            ?.flatten()
-            ?.map { uuid -> documentService.getWrapperByDocumentId(uuid) } ?: emptyList()
+        return aclService.getDatasetUuidsFromGroups(userGroups!!, isAddress) 
+            .map { uuid -> documentService.getWrapperByDocumentId(uuid) }
         
     }
 

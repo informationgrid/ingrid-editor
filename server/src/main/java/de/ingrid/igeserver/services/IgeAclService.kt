@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.acls.domain.ObjectIdentityImpl
@@ -15,10 +16,9 @@ data class PermissionInfo(
 )
 
 @Service
-class IgeAclService {
-
-    @Autowired
-    lateinit var aclService: AclService
+class IgeAclService @Autowired constructor(
+    val aclService: AclService
+) {
 
     fun getPermissionInfo(authentication: Authentication, uuid: String): PermissionInfo {
         return try {
@@ -34,6 +34,13 @@ class IgeAclService {
         } catch (nfe: NotFoundException) {
             PermissionInfo()
         }
+    }
+    
+    fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<String> {
+        return groups
+            .map {group -> if (isAddress) group.data?.addresses else group.data?.documents }
+            .map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asText() }.orEmpty() }
+            .flatten()
     }
 
     private fun isAllowed(acl: Acl, permission: Permission, sids: List<Sid>): Boolean {

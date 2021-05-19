@@ -49,7 +49,10 @@ class ResearchApiController @Autowired constructor(
     override fun search(principal: Principal, query: ResearchQuery): ResponseEntity<ResearchResponse> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val result = researchService.query(principal, dbId, query)
+        val userName = authUtils.getUsernameFromPrincipal(principal)
+        val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
+        
+        val result = researchService.query(principal, userGroups, dbId, query)
         return ResponseEntity.ok(result)
 
     }

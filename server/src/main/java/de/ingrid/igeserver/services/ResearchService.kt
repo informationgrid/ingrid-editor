@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.profiles.CatalogProfile
 import org.hibernate.jpa.QueryHints
 import org.hibernate.query.NativeQuery
@@ -50,16 +51,17 @@ class ResearchService {
 
     }
 
-    fun query(principal: Principal?, dbId: String, query: ResearchQuery): ResearchResponse {
+    fun query(principal: Principal?, groups: Set<Group>, dbId: String, query: ResearchQuery): ResearchResponse {
 
-        val sql = createQuery(dbId, query)
+        val groupIds = aclService.getDatasetUuidsFromGroups(groups, false)
+        val sql = createQuery(dbId, query, groupIds)
         val parameters = getParameters(query)
 
         val result = sendQuery(sql, parameters)
         val map = mapResult(result)
-        val filtered = filterResultsByPermission(principal as Authentication, map.toMutableList())
+//        val filtered = filterResultsByPermission(principal as Authentication, map.toMutableList())
 
-        return ResearchResponse(result.size, filtered)
+        return ResearchResponse(result.size, map)
     }
 
     private fun filterResultsByPermission(authentication: Authentication, result: MutableList<Result>): List<Result> {
@@ -83,15 +85,15 @@ class ResearchService {
             ?.flatten() ?: emptyList()
     }
 
-    private fun createQuery(dbId: String, query: ResearchQuery): String {
+    private fun createQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
 
         val stateCondition = determineStateQuery(query.clauses)
         val jsonSearch = determineJsonSearch(query.term)
-        val whereFilter = determineWhereQuery(dbId, query)
+        val whereFilter = determineWhereQuery(dbId, query, groupDocUuids)
 
         return """
                 SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.category
-                FROM catalog, document_wrapper
+                FROM catalog, acl_object_identity, document_wrapper
                 $stateCondition
                 $jsonSearch
                 $whereFilter
@@ -99,8 +101,10 @@ class ResearchService {
             """
     }
 
-    private fun determineWhereQuery(dbId: String, query: ResearchQuery): String {
-        val catalogFilter = createCatalogFilter(dbId);
+    private fun determineWhereQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
+        val catalogFilter = createCatalogFilter(dbId)
+        val permissionFilter = " AND document_wrapper.uuid=acl_object_identity.object_id_identity AND (document_wrapper.uuid = ANY(('{${groupDocUuids.joinToString(",")}}')) OR ('{${groupDocUuids.joinToString(",")}}') && acl_object_identity.path)"
+        val catalogAndPermissionFilter = catalogFilter + permissionFilter
 
         val termSearch =
             if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%')"
@@ -108,13 +112,13 @@ class ResearchService {
         val filter = convertQuery(query.clauses)
 
         return if (termSearch.isBlank() && filter == null) {
-            "WHERE $catalogFilter"
+            "WHERE $catalogAndPermissionFilter"
         } else if (termSearch.isBlank()) {
-            "WHERE $catalogFilter AND $filter"
+            "WHERE $catalogAndPermissionFilter AND $filter"
         } else if (filter == null) {
-            "WHERE $catalogFilter AND $termSearch"
+            "WHERE $catalogAndPermissionFilter AND $termSearch"
         } else {
-            "WHERE $catalogFilter AND $filter AND $termSearch"
+            "WHERE $catalogAndPermissionFilter AND $filter AND $termSearch"
         }
     }
 

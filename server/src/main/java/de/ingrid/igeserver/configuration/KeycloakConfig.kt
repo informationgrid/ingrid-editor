@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.configuration
 
 import de.ingrid.igeserver.configuration.acl.MyAuthenticationProvider
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter
 import org.keycloak.adapters.springsecurity.filter.KeycloakSecurityContextRequestFilter
@@ -22,13 +22,19 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
-import javax.servlet.*
+import javax.servlet.Filter
+import javax.servlet.FilterChain
+import javax.servlet.ServletRequest
+import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Profile("!dev")
 @KeycloakConfiguration
 internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
+
+    val log = logger()
+
     @Value("\${app.enable-csrf:false}")
     var csrfEnabled = false
 
@@ -40,9 +46,10 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
 
     inner class RequestResponseLoggingFilter : Filter {
         override fun doFilter(
-                request: ServletRequest,
-                response: ServletResponse,
-                chain: FilterChain) {
+            request: ServletRequest,
+            response: ServletResponse,
+            chain: FilterChain
+        ) {
             val req = request as HttpServletRequest
             val res = response as HttpServletResponse
 
@@ -123,11 +130,11 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
     override fun configure(httpSec: HttpSecurity) {
         var http = httpSec
         super.configure(http)
-        
+
         http = if (csrfEnabled) {
             http.csrf()
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    .and() // make cookies readable within JS
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and() // make cookies readable within JS
         } else {
             http.csrf().disable()
         }
@@ -136,21 +143,18 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         }
         if (!httpsEnabled) {
             http = http.requiresChannel()
-                    .anyRequest()
-                    .requiresSecure()
-                    .and()
+                .anyRequest()
+                .requiresSecure()
+                .and()
         }
         http
-                .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
-                .authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .anonymous().disable() // force login when keycloak session timeouts because of inactivity
-                .logout()
-                .permitAll()
+            .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
+            .authorizeRequests()
+            .anyRequest().authenticated()
+            .and()
+            .anonymous().disable() // force login when keycloak session timeouts because of inactivity
+            .logout()
+            .permitAll()
     }
 
-    companion object {
-        private val log = LogManager.getLogger(KeycloakConfig::class.java)
-    }
 }

@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.configuration
 
-import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -19,8 +18,6 @@ import javax.servlet.http.HttpServletResponse
 @Profile("dev")
 @KeycloakConfiguration
 internal class KeycloakMockConfig : KeycloakConfig() {
-
-    val log = logger()
 
     @Autowired
     private val authenticationProviderMock: AuthenticationProviderMock? = null

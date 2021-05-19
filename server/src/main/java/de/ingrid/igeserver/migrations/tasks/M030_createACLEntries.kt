@@ -25,7 +25,7 @@ class M030_createACLEntries : MigrationBase("0.30") {
     private val insertSql = """
         INSERT INTO acl_object_identity
             (object_id_class, object_id_identity,
-             parent_object, owner_sid, entries_inheriting)
+             parent_object, owner_sid, entries_inheriting, path)
             VALUES
     """.trimIndent()
 
@@ -36,23 +36,25 @@ class M030_createACLEntries : MigrationBase("0.30") {
             
             parentIds.forEach { uuid ->
                 entityManager
-                    .createNativeQuery("$insertSql (1, '$uuid', null, 1, true)")
+                    .createNativeQuery("$insertSql (1, '$uuid', null, 1, true, null)")
                     .executeUpdate()
-                addChildren(uuid as String)
+                addChildren(uuid as String, mutableListOf())
             }
         }
     }
 
-    private fun addChildren(uuid: String) {
+    private fun addChildren(uuid: String, previousUuids: MutableList<String>) {
 
+        previousUuids.add(uuid)
         val childrenIds = entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is not null and dw.parent.id is '$uuid'").resultList
         val parentDbId = entityManager.createNativeQuery("SELECT id FROM acl_object_identity where object_id_identity = '$uuid'").resultList.get(0)
 
         childrenIds.forEach { childUuid ->
             entityManager
-                .createNativeQuery("$insertSql (1, '$childUuid', $parentDbId, 1, true)")
+                .createNativeQuery("$insertSql (1, '$childUuid', $parentDbId, 1, true, '{${previousUuids.joinToString()}}')")
                 .executeUpdate()
-            addChildren(childUuid as String)
+            
+            addChildren(childUuid as String, previousUuids)
         }
         
         
