@@ -25,12 +25,12 @@ interface ExportApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @PostMapping(value = ["/export"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE])
     fun export(
-            principal: Principal?,
+            principal: Principal,
             @Parameter(description = "The dataset to be exported.", required = true) @RequestBody data: @Valid ExportRequestParameter): ResponseEntity<String?>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The supported types for export."), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @GetMapping(value = ["/export"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun exportTypes(
-            principal: Principal?,
+            principal: Principal,
             @Parameter(description = "The catalog profile to get the supported export types from.") @RequestParam(value = "profile") profile: String): ResponseEntity<List<ExportTypeInfo>>
 }

@@ -20,7 +20,7 @@ interface DataHistoryApi {
     @Operation(description = "Get the previous versions of datasets which match the given parameters. The results can also be sorted.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets found")])
     fun find(
-            principal: Principal?,
+            principal: Principal,
             @Parameter(description = "Restrict the result to versions of the dataset with the specified id.") @RequestParam(value = "id", required = false) id: String?,
             @Parameter(description = "Restrict the result to versions created by the specified user.") @RequestParam(value = "user", required = false) user: String?,
             @Parameter(description = "Restrict the result to versions created by the specified action.") @RequestParam(value = "action", required = false) action: String?,

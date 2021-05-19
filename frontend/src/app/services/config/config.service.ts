@@ -58,6 +58,10 @@ export class ConfigService {
 
   }
 
+  dummyLoginForDevelopment() {
+    return this.dataService.dummyLoginForDevelopment()
+  }
+
   // TODO: refactor to fetchCurrentUserInfo()
   getCurrentUserInfo(): Promise<UserInfo> {
     return this.dataService.getCurrentUserInfo()

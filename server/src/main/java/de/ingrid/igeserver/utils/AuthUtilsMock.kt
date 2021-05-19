@@ -17,4 +17,8 @@ class AuthUtilsMock : AuthUtils {
         return mockedLogin
     }
 
+    override fun containsRole(principal: Principal?, role: String): Boolean {
+        return true
+    }
+
 }

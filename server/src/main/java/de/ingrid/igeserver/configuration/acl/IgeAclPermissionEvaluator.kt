@@ -7,6 +7,7 @@ import org.springframework.security.acls.AclPermissionEvaluator
 import org.springframework.security.acls.domain.*
 import org.springframework.security.acls.model.*
 import org.springframework.security.core.Authentication
+import java.io.Serializable
 import java.util.*
 
 class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvaluator(aclService) {
@@ -21,6 +22,14 @@ class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvalua
 
     private val permissionFactory: PermissionFactory = DefaultPermissionFactory()
 
+    override fun hasPermission(
+        authentication: Authentication?,
+        targetId: Serializable?,
+        targetType: String?,
+        permission: Any?
+    ): Boolean {
+        return super.hasPermission(authentication, targetId, targetType, permission)
+    }
 
     override fun hasPermission(authentication: Authentication, domainObject: Any?, permission: Any): Boolean {
         if (domainObject == null) {

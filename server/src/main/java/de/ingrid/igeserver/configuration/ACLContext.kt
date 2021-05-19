@@ -1,7 +1,9 @@
 package de.ingrid.igeserver.configuration
 
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
+import de.ingrid.igeserver.configuration.acl.MockedPermissionEvaluator
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.cache.ehcache.EhCacheFactoryBean
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean
@@ -23,6 +25,10 @@ import javax.sql.DataSource
 @Configuration
 @EnableAutoConfiguration
 class ACLContext {
+
+    @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
+    var developmentMode = false
+    
     @Autowired
     var dataSource: DataSource? = null
 
@@ -61,7 +67,7 @@ class ACLContext {
     @Bean
     fun defaultMethodSecurityExpressionHandler(): MethodSecurityExpressionHandler? {
         val expressionHandler = DefaultMethodSecurityExpressionHandler()
-        val permissionEvaluator = IgeAclPermissionEvaluator(aclService())
+        val permissionEvaluator = if (developmentMode) MockedPermissionEvaluator() else IgeAclPermissionEvaluator(aclService())
         expressionHandler.setPermissionEvaluator(permissionEvaluator)
         expressionHandler.setPermissionCacheOptimizer(AclPermissionCacheOptimizer(aclService()))
         return expressionHandler

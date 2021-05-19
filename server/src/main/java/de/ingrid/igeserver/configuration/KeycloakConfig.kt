@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.context.annotation.Profile
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
@@ -26,11 +26,9 @@ import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+@Profile("!dev")
 @KeycloakConfiguration
 internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
-    @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
-    var developmentMode = false
-
     @Value("\${app.enable-csrf:false}")
     var csrfEnabled = false
 
@@ -125,39 +123,31 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
     override fun configure(httpSec: HttpSecurity) {
         var http = httpSec
         super.configure(http)
-        if (developmentMode) {
-            log.info("======================================================")
-            log.info("================== DEVELOPMENT MODE ==================")
-            log.info("======================================================")
-            http
-                    .csrf().disable()
-                    .authorizeRequests().anyRequest().permitAll()
+        
+        http = if (csrfEnabled) {
+            http.csrf()
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    .and() // make cookies readable within JS
         } else {
-            http = if (csrfEnabled) {
-                http.csrf()
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .and() // make cookies readable within JS
-            } else {
-                http.csrf().disable()
-            }
-            if (!corsEnabled) {
-                http = http.cors().disable()
-            }
-            if (!httpsEnabled) {
-                http = http.requiresChannel()
-                        .anyRequest()
-                        .requiresSecure()
-                        .and()
-            }
-            http
-                    .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
-                    .authorizeRequests()
-                    .anyRequest().authenticated()
-                    .and()
-                    .anonymous().disable() // force login when keycloak session timeouts because of inactivity
-                    .logout()
-                    .permitAll()
+            http.csrf().disable()
         }
+        if (!corsEnabled) {
+            http = http.cors().disable()
+        }
+        if (!httpsEnabled) {
+            http = http.requiresChannel()
+                    .anyRequest()
+                    .requiresSecure()
+                    .and()
+        }
+        http
+                .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
+                .authorizeRequests()
+                .anyRequest().authenticated()
+                .and()
+                .anonymous().disable() // force login when keycloak session timeouts because of inactivity
+                .logout()
+                .permitAll()
     }
 
     companion object {

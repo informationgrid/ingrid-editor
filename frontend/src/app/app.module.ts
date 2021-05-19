@@ -61,6 +61,7 @@ export function ConfigLoader(configService: ConfigService) {
   return () => {
 
     return configService.load(environment.configFile)
+      .then(() => configService.dummyLoginForDevelopment())
       .then(() => configService.getCurrentUserInfo())
       .then(userInfo => {
 

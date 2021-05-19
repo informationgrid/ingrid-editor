@@ -22,7 +22,7 @@ class CodelistApiController : CodelistApi {
     @Autowired
     private lateinit var catalogService: CatalogService
 
-    override fun getCodelistsByIds(principal: Principal?, ids: List<String>): ResponseEntity<List<CodeList>> {
+    override fun getCodelistsByIds(principal: Principal, ids: List<String>): ResponseEntity<List<CodeList>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val codelists = handler.getCodelists(ids)
 
@@ -32,7 +32,7 @@ class CodelistApiController : CodelistApi {
         return ResponseEntity.ok(codelists + catalogCodelists)
     }
 
-    override fun getCatalogCodelists(principal: Principal?): ResponseEntity<List<CodeList>> {
+    override fun getCatalogCodelists(principal: Principal): ResponseEntity<List<CodeList>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val findAll = handler.getCatalogCodelists(catalogId)
@@ -41,7 +41,7 @@ class CodelistApiController : CodelistApi {
     }
 
     override fun updateCatalogCodelist(
-        principal: Principal?,
+        principal: Principal,
         id: String,
         codelist: Codelist
     ): ResponseEntity<Codelist> {
@@ -51,7 +51,7 @@ class CodelistApiController : CodelistApi {
     }
 
     @Transactional
-    override fun resetCatalogCodelist(principal: Principal?, id: String?): ResponseEntity<List<CodeList>> {
+    override fun resetCatalogCodelist(principal: Principal, id: String?): ResponseEntity<List<CodeList>> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val catalog = catalogService.getCatalogById(catalogId)

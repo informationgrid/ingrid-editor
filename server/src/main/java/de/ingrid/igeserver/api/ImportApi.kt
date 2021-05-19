@@ -26,6 +26,6 @@ interface ImportApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @RequestMapping(value = ["/import"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     fun importDataset(
-            principal: Principal?,
+            principal: Principal,
             @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile): ResponseEntity<ImportAnalyzeInfo>
 }

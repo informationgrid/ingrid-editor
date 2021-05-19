@@ -88,5 +88,5 @@ class Document {
     }
 
     @Transient
-    var hasWritePermission: Boolean = false
+    var hasWritePermission: Boolean = true
 }

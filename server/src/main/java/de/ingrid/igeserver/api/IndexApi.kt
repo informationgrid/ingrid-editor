@@ -21,7 +21,7 @@ interface IndexApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @PostMapping(value = ["/index"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun startIndexing(
-            principal: Principal?,
+            principal: Principal,
             @Parameter(description = "The catalog ID for which the indexing process should be started", required = true)
             @RequestBody options: @Valid IndexRequestOptions): ResponseEntity<Void>
 
@@ -29,7 +29,7 @@ interface IndexApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @PostMapping(value = ["/index/config"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun setConfig(
-            principal: Principal?,
+            principal: Principal,
             @Parameter(description = "The catalog ID and the cron pattern for which the configuration is saved", required = true)
             @RequestBody config: @Valid IndexConfigOptions): ResponseEntity<Void>
 
@@ -37,12 +37,12 @@ interface IndexApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @GetMapping(value = ["/index/config/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getConfig(
-            principal: Principal?,
+            principal: Principal,
             @Parameter(description = "The catalog ID for which to get the configuration", required = true)
             @PathVariable id: String): ResponseEntity<IndexConfigOptions>
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @GetMapping(value = ["/index/log"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getLog(principal: Principal?): ResponseEntity<IndexMessage>
+    fun getLog(principal: Principal): ResponseEntity<IndexMessage>
 }

@@ -23,7 +23,7 @@ class ResearchApiController @Autowired constructor(
     val authUtils: AuthUtils
 ) : ResearchApi {
 
-    override fun load(principal: Principal?): ResponseEntity<List<Query>> {
+    override fun load(principal: Principal): ResponseEntity<List<Query>> {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
@@ -31,7 +31,7 @@ class ResearchApiController @Autowired constructor(
         return ResponseEntity.ok(queries)
     }
 
-    override fun save(principal: Principal?, query: Query): ResponseEntity<Query> {
+    override fun save(principal: Principal, query: Query): ResponseEntity<Query> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -41,12 +41,12 @@ class ResearchApiController @Autowired constructor(
 
     }
 
-    override fun delete(principal: Principal?, id: Int): ResponseEntity<Void> {
+    override fun delete(principal: Principal, id: Int): ResponseEntity<Void> {
         queryService.removeQueryForUser(id)
         return ResponseEntity.ok().build()
     }
 
-    override fun search(principal: Principal?, query: ResearchQuery): ResponseEntity<ResearchResponse> {
+    override fun search(principal: Principal, query: ResearchQuery): ResponseEntity<ResearchResponse> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         val result = researchService.query(principal, dbId, query)
@@ -54,14 +54,14 @@ class ResearchApiController @Autowired constructor(
 
     }
 
-    override fun searchSql(principal: Principal?, sqlQuery: String): ResponseEntity<ResearchResponse> {
+    override fun searchSql(principal: Principal, sqlQuery: String): ResponseEntity<ResearchResponse> {
         // TODO: check for invalid SQL commands (like DELETE, ...)
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         val result = researchService.querySql(dbId, sqlQuery)
         return ResponseEntity.ok(result)
     }
 
-    override fun getQuickFilter(principal: Principal?): ResponseEntity<Facets> {
+    override fun getQuickFilter(principal: Principal): ResponseEntity<Facets> {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         val dbType = catalogService.getCatalogById(dbId).type
 
@@ -69,7 +69,7 @@ class ResearchApiController @Autowired constructor(
         return ResponseEntity.ok(facets)
     }
 
-    override fun export(principal: Principal?): ResponseEntity<Any> {
+    override fun export(principal: Principal): ResponseEntity<Any> {
         TODO("Not yet implemented")
     }
 

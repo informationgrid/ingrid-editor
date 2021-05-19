@@ -1,10 +1,10 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.User
-import org.apache.logging.log4j.LogManager
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.io.Closeable
 import java.security.Principal
@@ -19,7 +19,7 @@ class DummyClient : Closeable {
 @Service
 @Profile("dev")
 class KeycloakMockService : UserManagementService {
-    private val log = LogManager.getLogger(KeycloakMockService::class.java)
+    private val log = logger()
 
     @Value("\${dev.user.roles:}")
     lateinit var mockedUserRoles: Array<String>
@@ -33,10 +33,22 @@ class KeycloakMockService : UserManagementService {
     @Value("\${dev.user.lastName:}")
     lateinit var mockedLastName: String
 
-    override fun getUsersWithIgeRoles(principal: Principal?): Set<User> {
+    override fun getUsersWithIgeRoles(principal: Principal): Set<User> {
         val mockUsers: MutableList<User> = ArrayList()
         val user =
-            User(mockedLogin, mockedFirstName, mockedLastName, "", "", "", "", emptyList(), Date(0), Date(0), Date(0))
+            User(
+                principal.name,
+                mockedFirstName,
+                mockedLastName,
+                "",
+                "",
+                "",
+                "",
+                emptyList(),
+                Date(0),
+                Date(0),
+                Date(0)
+            )
         mockUsers.add(user)
         return mockUsers.toSet()
     }
@@ -49,12 +61,12 @@ class KeycloakMockService : UserManagementService {
         return Date()
     }
 
-    override fun getRoles(principal: KeycloakAuthenticationToken?): Set<String> {
-        return HashSet(Arrays.asList(*mockedUserRoles))
+    override fun getRoles(principal: Authentication): Set<String> {
+        return principal.authorities.map { it.authority }.toSet()
     }
 
-    override fun getName(principal: KeycloakAuthenticationToken?): String {
-        return "$mockedFirstName $mockedLastName"
+    override fun getName(principal: Authentication): String {
+        return principal.name
     }
 
     override fun getClient(principal: Principal?): Closeable {

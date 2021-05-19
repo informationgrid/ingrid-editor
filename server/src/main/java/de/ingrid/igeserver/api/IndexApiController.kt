@@ -21,14 +21,14 @@ class IndexApiController @Autowired constructor(
     private val indexService: IndexService,
     private val indexingTask: IndexingTask
 ) : IndexApi {
-    override fun startIndexing(principal: Principal?, options: IndexRequestOptions): ResponseEntity<Void> {
+    override fun startIndexing(principal: Principal, options: IndexRequestOptions): ResponseEntity<Void> {
 
         indexingTask.startIndexing(options.catalogId, options.format)
 
         return ResponseEntity.ok().build()
     }
 
-    override fun setConfig(principal: Principal?, config: IndexConfigOptions): ResponseEntity<Void> {
+    override fun setConfig(principal: Principal, config: IndexConfigOptions): ResponseEntity<Void> {
 
         indexService.updateConfig(config.catalogId, config.cronPattern)
         indexingTask.updateTaskTrigger(config.catalogId, "portal", config.cronPattern)
@@ -36,13 +36,13 @@ class IndexApiController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
-    override fun getConfig(principal: Principal?, id: String): ResponseEntity<IndexConfigOptions> {
+    override fun getConfig(principal: Principal, id: String): ResponseEntity<IndexConfigOptions> {
 
         return ResponseEntity.ok(IndexConfigOptions(id, indexService.getConfig(id) ?: ""))
 
     }
 
-    override fun getLog(principal: Principal?): ResponseEntity<IndexMessage> {
+    override fun getLog(principal: Principal): ResponseEntity<IndexMessage> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val message = indexService.getLastLog(catalogId)
 

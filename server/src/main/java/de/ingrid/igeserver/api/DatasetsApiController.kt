@@ -6,6 +6,8 @@ import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
@@ -36,7 +38,7 @@ class DatasetsApiController @Autowired constructor(
      * Create dataset.
      */
     override fun createDataset(
-        principal: Principal?,
+        principal: Principal,
         data: JsonNode,
         address: Boolean,
         publish: Boolean
@@ -53,7 +55,7 @@ class DatasetsApiController @Autowired constructor(
      * Update dataset.
      */
     override fun updateDataset(
-        principal: Principal?,
+        principal: Principal,
         id: String,
         data: JsonNode,
         publish: Boolean,
@@ -72,7 +74,7 @@ class DatasetsApiController @Autowired constructor(
     }
 
     @Transactional
-    override fun deleteById(principal: Principal?, ids: Array<String>): ResponseEntity<String> {
+    override fun deleteById(principal: Principal, ids: Array<String>): ResponseEntity<String>{
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         for (id in ids) {
@@ -82,8 +84,9 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
+    @Transactional
     override fun copyDatasets(
-        principal: Principal?,
+        principal: Principal,
         ids: List<String>,
         options: CopyOptions
     ): ResponseEntity<List<JsonNode>> {
@@ -94,7 +97,7 @@ class DatasetsApiController @Autowired constructor(
     }
 
     override fun moveDatasets(
-        principal: Principal?,
+        principal: Principal,
         ids: List<String>,
         options: CopyOptions
     ): ResponseEntity<Void> {
@@ -218,14 +221,22 @@ class DatasetsApiController @Autowired constructor(
     }
 
     override fun getChildren(
-        principal: Principal?,
+        principal: Principal,
         parentId: String?,
         isAddress: Boolean
     ): ResponseEntity<List<JsonNode>> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val docs = documentService.findChildrenDocs(dbId, parentId, isAddress)
-        val childDocs = docs.hits
+        val isCatAdmin = authUtils.containsRole(principal, "cat-admin")
+        val children = if (!isCatAdmin && parentId == null) {
+            val userName = authUtils.getUsernameFromPrincipal(principal)
+            val userGroups = catalogService.getUser(userName)?.groups
+            getRootDocsFromGroup(userGroups, isAddress)
+        } else {
+            documentService.findChildrenDocs(dbId, parentId, isAddress).hits
+        }
+        
+        val childDocs = children
             .map { doc ->
                 val latest = documentService.getLatestDocument(doc, resolveLinks = false)
                 latest.data.put(FIELD_HAS_CHILDREN, doc.countChildren > 0)
@@ -234,8 +245,21 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity.ok(childDocs)
     }
 
+    private fun getRootDocsFromGroup(
+        userGroups: MutableSet<Group>?,
+        isAddress: Boolean,
+    ): List<DocumentWrapper> {
+        
+        return userGroups
+            ?.map {group -> if (isAddress) group.data?.addresses else group.data?.documents }
+            ?.map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asText() }.orEmpty() }
+            ?.flatten()
+            ?.map { uuid -> documentService.getWrapperByDocumentId(uuid) } ?: emptyList()
+        
+    }
+
     override fun find(
-        principal: Principal?,
+        principal: Principal,
         query: String?,
         size: Int,
         sort: String?,
@@ -272,7 +296,7 @@ class DatasetsApiController @Autowired constructor(
     }
 
     override fun getByID(
-        principal: Principal?,
+        principal: Principal,
         id: String,
         publish: Boolean?
     ): ResponseEntity<JsonNode> {
@@ -287,7 +311,7 @@ class DatasetsApiController @Autowired constructor(
 
     @ExperimentalStdlibApi
     override fun getPath(
-        principal: Principal?,
+        principal: Principal,
         id: String
     ): ResponseEntity<List<String>> {
 

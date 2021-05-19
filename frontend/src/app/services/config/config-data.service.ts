@@ -11,6 +11,12 @@ export class ConfigDataService {
       .then(response => JSON.parse(response));
   }
 
+  dummyLoginForDevelopment() {
+    return this.sendRequest('GET', '/login')
+      .then(response => console.log('Successfully created backend principal', response))
+      .catch(err => console.warn("typical login error during development"));
+  }
+
   getCurrentUserInfo(): Promise<UserInfo> {
     return this.sendRequest('GET', this.config.backendUrl + 'info/currentUser')
       // TODO: if database is not initialized then response is not JSON

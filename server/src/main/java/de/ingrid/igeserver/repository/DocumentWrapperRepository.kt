@@ -13,7 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 
 interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSpecificationExecutor<DocumentWrapper> {
 
-    @PostAuthorize("hasRole('admin') || hasPermission(returnObject, 'READ')")
+    @PostAuthorize("hasPermission(returnObject, 'READ')")
     fun findById(uuid: String): DocumentWrapper
 
     @PostFilter("hasPermission(filterObject, 'READ')")
