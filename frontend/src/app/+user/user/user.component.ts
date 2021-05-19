@@ -192,21 +192,6 @@ export class UserComponent implements OnInit {
     this.showMore = !this.showMore;
   }
 
-  changePassword() {
-    this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Passwortänderung anfordern',
-        message: 'Möchten Sie dem Benutzer eine Email mit der Aufforderung das Passwort zu ändern, zukommen lassen?'
-      }
-    })
-      .afterClosed().subscribe(response => {
-      if (response) {
-        this.userService.sendPasswordChangeRequest(this.form.getRawValue().login)
-          .subscribe();
-      }
-    });
-  }
-
   getEmailErrorMessage() {
     const email = this.form.get('email');
     if (email.hasError('required')) {
