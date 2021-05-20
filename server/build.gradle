@@ -34,6 +34,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.hibernate.orm'
 apply plugin: 'kotlin-noarg'
+apply plugin: 'kotlin-kapt'
 
 repositories {
     maven {
@@ -69,6 +70,10 @@ dependencies {
     implementation 'org.springframework.security:spring-security-acl'
     compile 'org.springframework.boot:spring-boot-starter-validation'
 
+    // spring properties metadata
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
+    
     // Jackson
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jackson_version"
