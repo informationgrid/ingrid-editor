@@ -12,11 +12,8 @@ import java.security.Principal
 @Profile("!dev")
 class KeycloakAuthUtils : AuthUtils {
 
-    override fun getUsernameFromPrincipal(principal: Principal?): String {
+    override fun getUsernameFromPrincipal(principal: Principal): String {
 
-        if (principal == null) {
-            throw ClientException.withReason("No principal specified in request.")
-        }
         return if (principal is KeycloakAuthenticationToken) {
             principal.account.principal.name
         } else {
@@ -24,10 +21,7 @@ class KeycloakAuthUtils : AuthUtils {
         }
     }
 
-    override fun containsRole(principal: Principal?, role: String): Boolean {
-        if (principal == null) {
-            throw ClientException.withReason("No principal specified in request.")
-        }
+    override fun containsRole(principal: Principal, role: String): Boolean {
         return (principal as KeycloakAuthenticationToken).authorities.contains(KeycloakRole("ROLE_$role"))
     }
 }

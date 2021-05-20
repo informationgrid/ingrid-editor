@@ -1,8 +1,10 @@
-package de.ingrid.igeserver.services
+package de.ingrid.igeserver.development
 
+import de.ingrid.igeserver.development.DevelopmentProperties
 import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.services.UserManagementService
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -21,40 +23,15 @@ class DummyClient : Closeable {
 class KeycloakMockService : UserManagementService {
     private val log = logger()
 
-    @Value("\${dev.user.roles:}")
-    lateinit var mockedUserRoles: Array<String>
-
-    @Value("\${dev.user.login:}")
-    lateinit var mockedLogin: String
-
-    @Value("\${dev.user.firstName:}")
-    lateinit var mockedFirstName: String
-
-    @Value("\${dev.user.lastName:}")
-    lateinit var mockedLastName: String
+    @Autowired
+    lateinit var config: DevelopmentProperties
 
     override fun getUsersWithIgeRoles(principal: Principal): Set<User> {
-        val mockUsers: MutableList<User> = ArrayList()
-        val user =
-            User(
-                principal.name,
-                mockedFirstName,
-                mockedLastName,
-                "",
-                "",
-                "",
-                "",
-                emptyList(),
-                Date(0),
-                Date(0),
-                Date(0)
-            )
-        mockUsers.add(user)
-        return mockUsers.toSet()
+        return config.logins.mapIndexed { index, _ -> mapUser(index)}.toSet()
     }
 
-    override fun getUsers(principal: Principal?): Set<User> {
-        TODO("Not yet implemented")
+    override fun getUsers(principal: Principal): Set<User> {
+        return getUsersWithIgeRoles(principal)
     }
 
     override fun getLatestLoginDate(principal: Closeable, login: String): Date? {
@@ -74,23 +51,26 @@ class KeycloakMockService : UserManagementService {
     }
 
     override fun getUser(principal: Closeable, login: String): User {
-        return User(
-            mockedLogin,
-            mockedFirstName,
-            mockedLastName,
-            "",
-            "",
-            "",
-            "",
-            emptyList(),
-            Date(0),
-            Date(0),
-            Date(0)
-        )
+        val index = config.logins.indexOf(login)
+        return mapUser(index)
     }
 
+    private fun mapUser(index: Int) = User(
+        config.logins[index],
+        config.firstName[index],
+        config.lastName[index],
+        "${config.firstName[index]}.${config.lastName[index]}@test.com",
+        "",
+        "",
+        "",
+        emptyList(),
+        Date(0),
+        Date(0),
+        Date(0)
+    )
+
     override fun getCurrentPrincipal(): Principal? {
-        return Principal { mockedLogin }
+        return Principal { config.logins[config.currentUser] }
     }
 
     override fun userExists(principal: Principal, userId: String): Boolean {

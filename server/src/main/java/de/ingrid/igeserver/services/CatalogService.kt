@@ -16,8 +16,10 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.acls.domain.*
 import org.springframework.security.acls.jdbc.JdbcMutableAclService
+import org.springframework.security.acls.model.AclService
 import org.springframework.security.acls.model.MutableAcl
 import org.springframework.security.acls.model.Permission
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
@@ -30,13 +32,13 @@ class CatalogService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val roleRepo: RoleRepository,
     private val authUtils: AuthUtils,
-    private val aclService: JdbcMutableAclService,
+    private val aclService: AclService,
     private val catalogProfiles: List<CatalogProfile>
 ) {
 
     private val log = logger()
 
-    fun getCurrentCatalogForPrincipal(principal: Principal?): String {
+    fun getCurrentCatalogForPrincipal(principal: Principal): String {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         return getCurrentCatalogForUser(userId)
     }
@@ -54,14 +56,12 @@ class CatalogService @Autowired constructor(
     }
 
     private fun getFirstAssignedCatalog(user: UserInfo): String {
-        // ... or first catalog, if existing
-        val newCurrentCatalog = user.catalogs.first()
 
         // save first catalog as current catalog
-        user.curCatalog = newCurrentCatalog
+        user.curCatalog = user.catalogs.firstOrNull() ?: throw NotFoundException.withMissingUserCatalog(user.userId)
         userRepo.save(user)
 
-        return newCurrentCatalog.identifier
+        return user.curCatalog!!.identifier
     }
 
     fun getRecentLoginsForUser(userId: String): MutableList<Date> {
@@ -131,7 +131,7 @@ class CatalogService @Autowired constructor(
     }
 
     fun updateCatalog(updatedCatalog: Catalog) {
-        if (updatedCatalog.id == null || !catalogExists(updatedCatalog.identifier)) {
+        if (!catalogExists(updatedCatalog.identifier)) {
             throw PersistenceException.withReason("Catalog '${updatedCatalog.id}' does not exist.")
         }
 
@@ -207,7 +207,7 @@ class CatalogService @Autowired constructor(
         val user = convertUser(catalogId, userModel)
 //        user.id = userFromDB.id
 
-        updateAcl(user.groups)
+//        updateAcl(user.groups)
 
         userRepo.save(user)
 
@@ -215,6 +215,8 @@ class CatalogService @Autowired constructor(
 
     private fun updateAcl(groups: MutableSet<Group>) {
 
+        aclService as JdbcMutableAclService
+        
         groups.forEach { group ->
             group.data?.documents?.forEach {
                 val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
@@ -236,7 +238,7 @@ class CatalogService @Autowired constructor(
 
     private fun addACEs(acl: MutableAcl, docPermission: JsonNode, sid: GrantedAuthoritySid) {
         // write complete new acl entries for this object 
-        removeEntries(acl)
+        // removeEntries(acl)
         
         determinePermission(docPermission)
             .forEach {

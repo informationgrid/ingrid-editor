@@ -10,7 +10,6 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
@@ -155,7 +154,8 @@ class UsersApiController : UsersApi {
                 lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
                 firstName = user.firstName,
                 assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
-                roles = roles,
+                role = dbUser?.role?.name,
+                groups = roles,
                 currentCatalog = dbUser?.curCatalog,
                 version = getVersion(),
                 lastLogin = lastLogin,

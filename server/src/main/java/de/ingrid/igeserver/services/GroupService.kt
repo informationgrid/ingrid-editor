@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -8,8 +9,13 @@ import de.ingrid.igeserver.repository.UserRepository
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
+import org.springframework.security.acls.domain.BasePermission
+import org.springframework.security.acls.domain.GrantedAuthoritySid
 import org.springframework.security.acls.domain.ObjectIdentityImpl
 import org.springframework.security.acls.jdbc.JdbcMutableAclService
+import org.springframework.security.acls.model.AclService
+import org.springframework.security.acls.model.MutableAcl
+import org.springframework.security.acls.model.Permission
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 class GroupService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val catalogRepo: CatalogRepository,
-    private val aclService: JdbcMutableAclService,
+    private val aclService: AclService,
     private val userRepo: UserRepository
 ) {
 
@@ -51,6 +57,7 @@ class GroupService @Autowired constructor(
 
     }
 
+    @Transactional
     fun update(catalogId: String, id: Int, group: Group): Group {
 
         val oldGroup = get(catalogId, id)
@@ -67,11 +74,43 @@ class GroupService @Autowired constructor(
     }
 
     private fun updateAcl(group: Group) {
+        aclService as JdbcMutableAclService
+        
         group.data?.documents?.forEach {
-//            val objectIdentity = ObjectIdentityImpl(DocumentWrapper::class.qualifiedName, it.get("uuid").asText())
-//            val acl = aclService.readAclById(objectIdentity)
-            // acl.entries[0].
+            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
+            val acl: MutableAcl = try {
+                aclService.readAclById(objIdentity) as MutableAcl
+            } catch (ex: org.springframework.security.acls.model.NotFoundException) {
+                aclService.createAcl(objIdentity)
+            }
 
+            val sid = GrantedAuthoritySid("GROUP_${group.name}")
+
+            addACEs(acl, it, sid)
+            aclService.updateAcl(acl)
+        }
+    }
+
+    private fun addACEs(acl: MutableAcl, docPermission: JsonNode, sid: GrantedAuthoritySid) {
+        // write complete new acl entries for this object 
+         removeEntries(acl)
+
+        determinePermission(docPermission)
+            .forEach {
+                acl.insertAce(acl.entries.size, it, sid, true)
+            }
+    }
+
+    private fun removeEntries(acl: MutableAcl) {
+        // remove always the first element until empty
+        while(acl.entries.isNotEmpty()) { acl.deleteAce(0) }
+    }
+
+    private fun determinePermission(docPermission: JsonNode): List<Permission> {
+        return when (docPermission.get("permission").asText()) {
+            "writeSubTree" -> listOf(BasePermission.READ, BasePermission.WRITE)
+            "writeDataset" -> listOf(BasePermission.READ, BasePermission.WRITE)
+            else -> listOf(BasePermission.READ)
         }
     }
 

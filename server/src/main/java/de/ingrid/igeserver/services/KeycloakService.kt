@@ -76,7 +76,7 @@ class KeycloakService : UserManagementService {
         }
     }
 
-    override fun getUsers(principal: Principal?): Set<User> {
+    override fun getUsers(principal: Principal): Set<User> {
 
         try {
             initClient(principal).use {

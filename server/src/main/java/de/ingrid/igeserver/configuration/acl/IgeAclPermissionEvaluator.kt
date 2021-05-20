@@ -2,7 +2,6 @@ package de.ingrid.igeserver.configuration.acl
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.apache.logging.log4j.kotlin.logger
-import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount
 import org.springframework.core.log.LogMessage
 import org.springframework.security.acls.AclPermissionEvaluator
 import org.springframework.security.acls.domain.*
@@ -49,8 +48,8 @@ class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvalua
     }
 
     private fun hasAdminRole(authentication: Authentication): Boolean {
-        val roles = (authentication.details as SimpleKeycloakAccount).roles
-        return roles.contains("adminX") || roles.contains("cat-adminX")
+        val roles = authentication.authorities.map { it.authority }
+        return roles.contains("ige-super-admin") || roles.contains("cat-admin")
     }
 
     private fun checkPermission(authentication: Authentication, oid: ObjectIdentity, permission: Any, domainObject: Any): Boolean {

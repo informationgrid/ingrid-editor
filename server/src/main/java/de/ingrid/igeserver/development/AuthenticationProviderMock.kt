@@ -1,7 +1,8 @@
-package de.ingrid.igeserver.configuration
+package de.ingrid.igeserver.development
 
+import de.ingrid.igeserver.repository.UserRepository
 import org.apache.http.auth.BasicUserPrincipal
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.AuthenticationProvider
@@ -17,31 +18,25 @@ import org.springframework.stereotype.Service
 @Service
 class AuthenticationProviderMock : AuthenticationProvider {
 
-    @Value("\${dev.user.roles:}")
-    lateinit var mockedUserRoles: Array<String>
-    
-    @Value("\${dev.user.groups:}")
-    lateinit var mockedUserGroups: Array<String>
+    @Autowired
+    lateinit var config: DevelopmentProperties
 
-    @Value("\${dev.user.login:}")
-    lateinit var mockedLogin: String
+    @Autowired
+    lateinit var userRepo: UserRepository
 
-    @Value("\${dev.user.firstName:}")
-    lateinit var mockedFirstName: String
-
-    @Value("\${dev.user.lastName:}")
-    lateinit var mockedLastName: String
-    
     override fun authenticate(authentication: Authentication?): Authentication {
 
-        val user = BasicUserPrincipal(mockedLogin)
-        val usernamePasswordAuthenticationToken =
-            UsernamePasswordAuthenticationToken(user, "", mockGrantedAuthorities())
-        return usernamePasswordAuthenticationToken
+        val userId = config.logins[config.currentUser]
+        val user = BasicUserPrincipal(userId)
+        val userDb = userRepo.findByUserId(userId)
+        val groups = userDb?.groups?.map { SimpleGrantedAuthority("GROUP_${it.name}") } ?: emptyList()
+        val roles = config.roles[config.currentUser].split(",").map { SimpleGrantedAuthority(it) }
+        return UsernamePasswordAuthenticationToken(user, "", groups + roles)
     }
 
     private fun mockGrantedAuthorities(): List<GrantedAuthority> {
-        return mockedUserGroups.map { SimpleGrantedAuthority("GROUP_$it") }
+        return config.groups[config.currentUser].split(",").map { SimpleGrantedAuthority("GROUP_$it") } +
+                config.roles[config.currentUser].split(",").map { SimpleGrantedAuthority(it) }
     }
 
     override fun supports(authentication: Class<*>?): Boolean {

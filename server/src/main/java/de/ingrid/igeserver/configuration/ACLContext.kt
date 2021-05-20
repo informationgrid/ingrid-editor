@@ -61,13 +61,13 @@ class ACLContext {
 
     @Bean
     fun aclAuthorizationStrategy(): AclAuthorizationStrategy {
-        return AclAuthorizationStrategyImpl(SimpleGrantedAuthority("ROLE_ADMIN"))
+        return AclAuthorizationStrategyImpl(SimpleGrantedAuthority("md-admin"))
     }
 
     @Bean
     fun defaultMethodSecurityExpressionHandler(): MethodSecurityExpressionHandler? {
         val expressionHandler = DefaultMethodSecurityExpressionHandler()
-        val permissionEvaluator = if (developmentMode) MockedPermissionEvaluator() else IgeAclPermissionEvaluator(aclService())
+        val permissionEvaluator = IgeAclPermissionEvaluator(aclService())
         expressionHandler.setPermissionEvaluator(permissionEvaluator)
         expressionHandler.setPermissionCacheOptimizer(AclPermissionCacheOptimizer(aclService()))
         return expressionHandler

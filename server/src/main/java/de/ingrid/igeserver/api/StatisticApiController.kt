@@ -19,7 +19,7 @@ class StatisticApiController : StatisticApi {
     @Autowired
     private lateinit var catalogService: CatalogService
 
-    override fun getStatistic(principal: Principal?): ResponseEntity<StatisticResponse> {
+    override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 

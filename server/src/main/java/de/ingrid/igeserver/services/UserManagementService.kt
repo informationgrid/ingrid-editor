@@ -9,7 +9,7 @@ import java.util.*
 
 interface UserManagementService {
     fun getUsersWithIgeRoles(principal: Principal): Set<User>
-    fun getUsers(principal: Principal?): Set<User>
+    fun getUsers(principal: Principal): Set<User>
     
     fun getClient(principal: Principal?): Closeable
 

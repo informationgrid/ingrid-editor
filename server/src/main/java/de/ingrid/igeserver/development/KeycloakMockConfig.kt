@@ -1,5 +1,7 @@
-package de.ingrid.igeserver.configuration
+package de.ingrid.igeserver.development
 
+import de.ingrid.igeserver.configuration.KeycloakConfig
+import de.ingrid.igeserver.development.AuthenticationProviderMock
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
