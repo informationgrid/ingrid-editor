@@ -259,4 +259,18 @@ class CatalogService @Autowired constructor(
         }
     }
 
+    fun getPermissions(principal: Authentication): List<String> {
+        val isMdAdmin = principal.authorities.any { it.authority == "md-admin"}
+        return if (isMdAdmin) {
+            listOf(
+                Permissions.manage_users.name,
+                Permissions.can_export.name,
+                Permissions.can_import.name,
+                Permissions.manage_catalog.name
+            )
+        } else {
+            listOf()
+        }
+    }
+
 }

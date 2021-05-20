@@ -13,7 +13,7 @@ export class ConfigDataService {
 
   dummyLoginForDevelopment() {
     return this.sendRequest('GET', '/login')
-      .then(response => console.log('Successfully created backend principal', response))
+      .then(response => console.log('Successfully created backend principal'))
       .catch(err => console.warn("typical login error during development"));
   }
 
@@ -23,19 +23,21 @@ export class ConfigDataService {
       //       change backend response or catch parse error
       .then(response => {
         const json = JSON.parse(response);
-        return {
+        return <UserInfo>{
           assignedCatalogs: json.assignedCatalogs,
           name: json.name,
           firstName: json.firstName,
           lastName: json.lastName,
-          roles: json.roles,
+          role: json.role,
+          groups: json.groups,
           userId: json.userId,
           currentCatalog: json.currentCatalog ? new Catalog(json.currentCatalog) : {},
           catalogProfile: json.catalogProfile,
           version: json.version,
           lastLogin: new Date(json.lastLogin),
-          useElasticsearch: json.useElasticsearch
-        } as UserInfo;
+          useElasticsearch: json.useElasticsearch,
+          permissions: json.permissions
+        };
       })
       .catch((e: IgeException | string) => {
         if (typeof e === 'string') {
@@ -51,17 +53,19 @@ export class ConfigDataService {
         } else {
           throw new Error(e.errorText);
         }
-        return {
+        return <UserInfo>{
           assignedCatalogs: [],
           name: undefined,
           firstName: undefined,
           lastName: undefined,
-          roles: [],
+          role: '',
+          groups: [],
           userId: undefined,
           catalogProfile: undefined,
           currentCatalog: undefined,
           version: undefined,
-          useElasticsearch: false
+          useElasticsearch: false,
+          permissions: []
         };
       });
   }

@@ -5,84 +5,95 @@ import {Catalog} from '../../+catalog/services/catalog.model';
 import {coerceArray} from '@datorama/akita';
 
 export class Configuration {
-  constructor(public keykloakBaseUrl: string, public backendUrl: string, public featureFlags: any, public brokerUrl: string) {
-  }
+    constructor(public keykloakBaseUrl: string, public backendUrl: string, public featureFlags: any, public brokerUrl: string) {
+    }
 }
 
 export interface Version {
-  version: string;
-  date: string;
-  commitId: string;
+    version: string;
+    date: string;
+    commitId: string;
 }
 
 export interface UserInfo {
-  userId: string;
-  name: string;
-  firstName: string;
-  lastName: string;
+    userId: string;
+    name: string;
+    firstName: string;
+    lastName: string;
 
-  assignedCatalogs: any[];
-  roles: string[];
-  currentCatalog: Catalog;
-  lastLogin?: Date;
-  version: Version;
+    assignedCatalogs: any[];
+    role: string;
+    groups: string[];
+    currentCatalog: Catalog;
+    lastLogin?: Date;
+    version: Version;
 
-  useElasticsearch?: boolean;
+    useElasticsearch?: boolean;
+    permissions: string[];
 }
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ConfigService {
 
-  private config: Configuration;
+    private config: Configuration;
 
-  $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
+    $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
 
-  private dataService: ConfigDataService;
-  private isAdministrator = false;
+    private dataService: ConfigDataService;
+    private isAdministrator = false;
 
-  constructor() {
-    this.dataService = new ConfigDataService();
-  }
+    constructor() {
+        this.dataService = new ConfigDataService();
+    }
 
-  load(url: string): Promise<Configuration> {
-    console.log('=== ConfigService ===');
+    load(url: string): Promise<Configuration> {
+        console.log('=== ConfigService ===');
 
-    return this.dataService.load(url)
-      .then(json => {
-        this.config = json;
-        this.dataService.config = this.config;
+        return this.dataService.load(url)
+            .then(json => {
+                this.config = json;
+                this.dataService.config = this.config;
+                return this.config;
+            });
+
+    }
+
+    dummyLoginForDevelopment() {
+        return this.dataService.dummyLoginForDevelopment()
+    }
+
+    // TODO: refactor to fetchCurrentUserInfo()
+    getCurrentUserInfo(): Promise<UserInfo> {
+        return this.dataService.getCurrentUserInfo()
+            .then(userInfo => {
+                this.$userInfo.next(userInfo);
+                this.isAdministrator = userInfo.groups && userInfo.groups.indexOf('ige-super-admin') !== -1;
+                return userInfo;
+            });
+    }
+
+
+    getConfiguration(): Configuration {
         return this.config;
-      });
+    }
 
-  }
+    isAdmin(): boolean {
+        return this.isAdministrator;
+    }
 
-  dummyLoginForDevelopment() {
-    return this.dataService.dummyLoginForDevelopment()
-  }
+    hasFlags(flags: string | string[]) {
+        const userFlags = this.config.featureFlags;
+        return coerceArray(flags).every(current => userFlags[current]);
+    }
 
-  // TODO: refactor to fetchCurrentUserInfo()
-  getCurrentUserInfo(): Promise<UserInfo> {
-    return this.dataService.getCurrentUserInfo()
-      .then(userInfo => {
-        this.$userInfo.next(userInfo);
-        this.isAdministrator = userInfo.roles && userInfo.roles.indexOf('admin') !== -1;
-        return userInfo;
-      });
-  }
-
-
-  getConfiguration(): Configuration {
-    return this.config;
-  }
-
-  isAdmin(): boolean {
-    return this.isAdministrator;
-  }
-
-  hasFlags(flags: string | string[]) {
-    const userFlags = this.config.featureFlags;
-    return coerceArray(flags).every(current => userFlags[current]);
-  }
+    hasPermission(neededPermission: string | string[]): boolean {
+        const user = this.$userInfo.getValue();
+        if (neededPermission instanceof Array) {
+            return user.permissions.filter(value => neededPermission.indexOf(value) !== -1).length > 0;
+        } else {
+            return !neededPermission || user.permissions.indexOf(<string>neededPermission) !== -1;
+        }
+    }
 }

@@ -36,7 +36,7 @@ export class NewUserDialogComponent implements OnInit {
   }
 
   private initRoles() {
-    const userRole = this.configService.$userInfo.value.roles[0];
+    const userRole = this.configService.$userInfo.value.role;
     switch (userRole) {
       case 'cat-admin':
         this.roles = this.userService.availableRoles;

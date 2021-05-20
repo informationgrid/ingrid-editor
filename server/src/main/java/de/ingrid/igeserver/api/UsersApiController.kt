@@ -159,7 +159,8 @@ class UsersApiController : UsersApi {
                 currentCatalog = dbUser?.curCatalog,
                 version = getVersion(),
                 lastLogin = lastLogin,
-                useElasticsearch = env.activeProfiles.contains("elasticsearch")
+                useElasticsearch = env.activeProfiles.contains("elasticsearch"),
+                permissions = catalogService.getPermissions(principal)
             )
             return ResponseEntity.ok(userInfo)
         }
