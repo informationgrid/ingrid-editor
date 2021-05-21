@@ -5,9 +5,11 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
+@Profile("dev")
 @Component
 class SetupDevelopUsers @Autowired constructor(
     val userRepo: UserRepository,
@@ -17,14 +19,17 @@ class SetupDevelopUsers @Autowired constructor(
     
     @PostConstruct
     fun init() {
-        val userExists = userRepo.findByUserId("userCat") != null
-        if (userExists) {
-            return
+        // delay initialization after all migrations
+        Timer("IgeTasks", false).schedule(10000) {
+            val userExists = userRepo.findByUserId("userCat") != null
+            if (userExists) {
+                return@schedule
+            }
+
+            createUser("userCat", "cat-admin")
+            createUser("userMD", "md-admin")
+            createUser("userAuthor", "author")
         }
-        
-        createUser("userCat", "cat-admin")
-        createUser("userMD", "md-admin")
-        createUser("userAuthor", "author")
     } 
     
     private fun createUser(login: String, role: String) {
