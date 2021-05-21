@@ -44,6 +44,10 @@ class M030_createACLEntries : MigrationBase("0.30") {
     private val updateWrapperPath = """
         UPDATE document_wrapper SET path=CAST(:path as text[]) WHERE uuid=:uuid
     """.trimIndent()
+    
+    private val updateSequences = """
+        ALTER SEQUENCE acl_sid_id_seq RESTART WITH 2;
+    """.trimIndent()
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
@@ -61,6 +65,10 @@ class M030_createACLEntries : MigrationBase("0.30") {
                     .executeUpdate()
                 addChildren(uuid as String, mutableListOf())
             }
+
+            entityManager
+                .createNativeQuery(updateSequences)
+                .executeUpdate()
         }
     }
 
