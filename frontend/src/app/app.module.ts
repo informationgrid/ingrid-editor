@@ -50,7 +50,6 @@ import {SessionTimeoutInfoComponent} from './main-header/session-timeout-info/se
 import {TimePipe} from './directives/time.pipe';
 import {FormFieldsModule} from './form-fields/form-fields.module';
 import {AnimationWrapper, AnimationWrapperComponent} from './animation-wrapper.component';
-import {NG_FORMS_MANAGER_CONFIG, NgFormsManagerConfig} from '@ngneat/forms-manager';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material/snack-bar';
 import {InjectableRxStompConfig, RxStompService, rxStompServiceFactory} from '@stomp/ng2-stompjs';
 import {IgeStompConfig} from './ige-stomp.config';
@@ -171,13 +170,6 @@ export function ConfigLoader(configService: ConfigService) {
     },
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2000}
-    },
-
-    {
-      provide: NG_FORMS_MANAGER_CONFIG,
-      useValue: new NgFormsManagerConfig({
-        debounceTime: 0 // defaults to 300
-      })
     },
 
     // WebSocket
