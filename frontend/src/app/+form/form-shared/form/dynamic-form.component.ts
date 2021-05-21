@@ -29,11 +29,11 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {BehaviorSubject, combineLatest, merge} from 'rxjs';
 import {ProfileQuery} from '../../../store/profile/profile.query';
 import {Behaviour} from '../../../services/behavior/behaviour';
-import {NgFormsManager} from '@ngneat/forms-manager';
 import {AuthService} from '../../../services/security/auth.service';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {TreeService} from '../../sidebars/tree/tree.service';
 import {ValidationError} from '../../../store/session.store';
+import {FormStateService} from "../../form-state.service";
 
 @UntilDestroy()
 @Component({
@@ -86,7 +86,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
   constructor(private formularService: FormularService, private formToolbarService: FormToolbarService,
               private formPlugins: FormPluginsService, // this needs to be here for instantiation!!!
               private documentService: DocumentService, private modalService: ModalService,
-              private formsManager: NgFormsManager,
+              public formStateService: FormStateService,
               private treeService: TreeService,
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
@@ -108,10 +108,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
     // reset selected documents if we revisit the page
     this.formularService.setSelectedDocuments([]);
-
-    // clean up form manager
-    this.formsManager.clear(this.formStateName);
-    this.formsManager.unsubscribe();
   }
 
   ngOnInit() {
@@ -124,9 +120,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       this.query = this.treeQuery;
     }
 
-    this.formsManager.valueChanges(this.formStateName)
-      .pipe(debounceTime(3000)) // send request 3s after last form change
-      .subscribe(() => this.auth.refreshSession().subscribe());
+    this.form.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(3000) // send request 3s after last form change
+      ).subscribe(() => this.auth.refreshSession().subscribe());
 
     this.initializeFormStore();
 
@@ -199,12 +197,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
   private initializeFormStore() {
 
-    this.formsManager.upsert(this.formStateName, this.form, {
-        withInitialValue: true
-      }
-    );
-
-    const shallOpenDoc = this.route.snapshot.params.id;
+    // TODO: check if this is still needed
+    /*const shallOpenDoc = this.route.snapshot.params.id;
     if (shallOpenDoc) {
       // FIXME: Workaround when we revisit page with a previously opened document, the form state is not updated correctly
       //        This might happen because of ngx-formly is building form after connected to formsManager!?
@@ -220,7 +214,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       };
 
       update(10);
-    }
+    }*/
   }
 
   private handleServerSideValidationErrors() {
@@ -273,7 +267,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
     if (id === undefined) {
       this.fields = [];
-      this.formsManager.clear(this.formStateName);
       this.activeId.next(null);
       this.documentService.updateOpenedDocumentInTreestore(null, this.address, true);
       return;
@@ -331,11 +324,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
       // switch to the right profile depending on the data
       if (needsProfileSwitch) {
-        this.form = new FormGroup({});
-        this.formsManager.upsert(this.formStateName, this.form, {
-            withInitialValue: true
-          }
-        );
         this.fields = this.switchProfile(profile);
         this.sections = this.formularService.getSectionsFromProfile(this.fields);
         this.hasOptionalFields = this.profileQuery.getProfile(profile).hasOptionalFields;
@@ -343,29 +331,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
       this.model = {...data};
       this.resetForm();
-      this.formsManager.setInitialValue(this.formStateName, data);
+      this.formStateService.updateForm(this.form);
       this.documentService.setDocLoadingState(false, this.address);
 
     } catch (ex) {
       console.error(ex);
       this.modalService.showJavascriptError(ex);
     }
-  }
-
-  // TODO: extract to permission service class
-  hasPermission(data: any): boolean {
-    // TODO: check all roles
-    /*if (this.userRoles.length > 0) {
-      const attr = this.userRoles[0].attributes;
-      const docIDs = this.userRoles[0].datasets.map(dataset => dataset.id);
-      // TODO: show why we don't have permission by remembering failed rule
-      const permissionByAttribute = !attr || attr.every(a => data[a.id] === a.value);
-      const permissionByDatasetId = !docIDs || docIDs.length === 0 || docIDs.some(id => data._id === id);
-
-      return permissionByAttribute && permissionByDatasetId;
-    }*/
-    // TODO: implement correct permission handling
-    return true;
   }
 
   /**

@@ -11,7 +11,6 @@
 
         <!-- The form -->
         <as-split-area #scrollForm [size]="100-sidebarWidth" id="form" class="form-content" cdkScrollable>
-
             <div *ngIf="isLoading" class="loading">
                 <div>Lade Dokument ...</div>
                 <mat-spinner [diameter]="30"></mat-spinner>
@@ -57,7 +56,6 @@
         </as-split-area>
 
         <as-split-area *ngIf="showJson">
-            Form is dirty: {{ form.dirty }} : {{ formsManager.getControl('document')?.dirty }} valid: {{form.valid}}
             <pre>
 {{model | json}}
            </pre>

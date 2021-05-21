@@ -9,9 +9,9 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {CreateNodeComponent, CreateOptions} from './create-node.component';
 import {filter, take} from 'rxjs/operators';
-import {NgFormsManager} from "@ngneat/forms-manager";
 import {DocumentService} from "../../../services/document/document.service";
 import {FormUtils} from "../../form.utils";
+import {FormStateService} from "../../form-state.service";
 
 export interface DocType {
   id: string,
@@ -33,7 +33,7 @@ export class CreateDocumentPlugin extends Plugin {
               private formularService: FormularService,
               private documentService: DocumentService,
               private messageService: MessageService,
-              private formsManager: NgFormsManager,
+              private formStateService: FormStateService,
               private dialog: MatDialog) {
     super();
 
@@ -75,7 +75,7 @@ export class CreateDocumentPlugin extends Plugin {
 
     if (selectedDoc) {
 
-      let handled = await FormUtils.handleDirtyForm(this.formsManager, this.documentService, this.dialog, this.forAddress);
+      let handled = await FormUtils.handleDirtyForm(this.formStateService.getForm(), this.documentService, this.dialog, this.forAddress);
 
       if (!handled) {
         return;

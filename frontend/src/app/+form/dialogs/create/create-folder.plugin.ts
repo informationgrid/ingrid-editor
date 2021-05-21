@@ -8,8 +8,8 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {filter, take} from 'rxjs/operators';
 import {FormUtils} from '../../form.utils';
 import {DocumentService} from '../../../services/document/document.service';
-import {NgFormsManager} from '@ngneat/forms-manager';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {FormStateService} from "../../form-state.service";
 
 @UntilDestroy()
 @Injectable()
@@ -29,7 +29,7 @@ export class CreateFolderPlugin extends Plugin {
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
               private documentService: DocumentService,
-              private formsManager: NgFormsManager,
+              private formStateService: FormStateService,
               private dialog: MatDialog) {
     super();
     this.isActive = true;
@@ -72,7 +72,7 @@ export class CreateFolderPlugin extends Plugin {
     // getFirstParentFolder would throw an error
     if (selectedDoc) {
 
-      let handled = await FormUtils.handleDirtyForm(this.formsManager, this.documentService, this.dialog, this.forAddress);
+      let handled = await FormUtils.handleDirtyForm(this.formStateService.getForm(), this.documentService, this.dialog, this.forAddress);
 
       if (!handled) {
         return;

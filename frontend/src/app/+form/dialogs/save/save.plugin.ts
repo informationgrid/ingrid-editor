@@ -10,12 +10,12 @@ import {MatDialog} from '@angular/material/dialog';
 import {merge} from 'rxjs';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {filter} from 'rxjs/operators';
-import {NgFormsManager} from '@ngneat/forms-manager';
 import {
   VersionConflictChoice,
   VersionConflictDialogComponent
 } from '../version-conflict-dialog/version-conflict-dialog.component';
 import {HttpErrorResponse} from '@angular/common/http';
+import {FormStateService} from "../../form-state.service";
 
 @Injectable()
 export class SavePlugin extends Plugin {
@@ -34,7 +34,7 @@ export class SavePlugin extends Plugin {
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
               private dialog: MatDialog,
-              private formsManager: NgFormsManager,
+              private formStateService: FormStateService,
               private documentService: DocumentService) {
     super();
   }
@@ -93,7 +93,7 @@ export class SavePlugin extends Plugin {
 
   private getForm() {
     const formDoc = this.forAddress ? 'address' : 'document';
-    return this.formsManager.getControl(formDoc);
+    return this.formStateService.getForm();
   }
 
   private save(formData: IgeDocument) {

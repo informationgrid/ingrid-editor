@@ -7,8 +7,8 @@ import {Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
 import {map, tap} from 'rxjs/operators';
 import {FormUtils} from '../../form.utils';
-import {NgFormsManager} from '@ngneat/forms-manager';
 import {MatDialog} from '@angular/material/dialog';
+import {FormStateService} from "../../form-state.service";
 
 @Component({
   selector: 'ige-folder-dashboard',
@@ -31,7 +31,7 @@ export class FolderDashboardComponent {
               private formToolbarService: FormToolbarService,
               private router: Router,
               private docService: DocumentService,
-              private formsManager: NgFormsManager,
+              private formStateService: FormStateService,
               private dialog: MatDialog) {
   }
 
@@ -57,7 +57,7 @@ export class FolderDashboardComponent {
 
   async openDocument(id: number | string) {
 
-    const handled = await FormUtils.handleDirtyForm(this.formsManager, this.docService, this.dialog, this.isAddress);
+    const handled = await FormUtils.handleDirtyForm(this.formStateService.getForm(), this.docService, this.dialog, this.isAddress);
 
     if (handled) {
       if (this.isAddress) {

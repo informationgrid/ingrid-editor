@@ -3,7 +3,7 @@ import {first} from 'rxjs/operators';
 import {DocumentService} from '../services/document/document.service';
 import {ConfirmDialogComponent, ConfirmDialogData} from '../dialogs/confirm/confirm-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import {NgFormsManager} from '@ngneat/forms-manager';
+import {FormGroup} from "@angular/forms";
 
 export class FormUtils {
   static addHotkeys(event: KeyboardEvent, service: FormToolbarService) {
@@ -16,9 +16,8 @@ export class FormUtils {
     }
   }
 
-  static async handleDirtyForm(formsManager: NgFormsManager, documentService: DocumentService, dialog: MatDialog, isAddress: boolean): Promise<boolean> {
+  static async handleDirtyForm(formControl: FormGroup, documentService: DocumentService, dialog: MatDialog, isAddress: boolean): Promise<boolean> {
     const type = isAddress ? 'address' : 'document';
-    let formControl = formsManager.getControl(type);
     const formHasChanged = formControl?.dirty;
     if (formHasChanged) {
       const form = formControl.value;
@@ -26,7 +25,7 @@ export class FormUtils {
       if (decision === 'save') {
         await documentService.save(form, false, isAddress);
       } else if (decision === 'discard') {
-        formsManager.clear(type);
+        formControl.reset();
       } else {
         //decision is 'Abbrechen'
         return false;

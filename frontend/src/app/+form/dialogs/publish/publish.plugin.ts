@@ -8,7 +8,6 @@ import {MessageService} from '../../../services/message.service';
 import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {merge, Subscription} from 'rxjs';
 import {IgeDocument} from '../../../models/ige-document';
-import {NgFormsManager} from '@ngneat/forms-manager';
 import {HttpErrorResponse} from '@angular/common/http';
 import {VersionConflictChoice, VersionConflictDialogComponent} from '../version-conflict-dialog/version-conflict-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
@@ -17,7 +16,8 @@ import {ErrorDialogComponent} from '../../../dialogs/error/error-dialog.componen
 import {IgeError} from '../../../models/ige-error';
 import {SessionStore} from '../../../store/session.store';
 import {ServerValidation} from '../../../server-validation.util';
-import {Control} from '@ngneat/forms-manager/lib/types';
+import {FormStateService} from "../../form-state.service";
+import {AbstractControl, FormGroup} from "@angular/forms";
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -44,7 +44,7 @@ export class PublishPlugin extends Plugin {
               private messageService: MessageService,
               private treeQuery: TreeQuery,
               private addressTreeQuery: AddressTreeQuery,
-              private formsManager: NgFormsManager,
+              private formStateService: FormStateService,
               private storageService: DocumentService) {
     super();
     this.isActive = true;
@@ -94,7 +94,7 @@ export class PublishPlugin extends Plugin {
 
   publish() {
     this.storageService.publishState$.next(true);
-    const formIsValid = this.formsManager.isValid(this.forAddress ? 'address' : 'document');
+    const formIsValid = this.formStateService.getForm().valid;
 
     if (formIsValid) {
       // show confirm dialog
@@ -121,7 +121,7 @@ export class PublishPlugin extends Plugin {
     }
   }
 
-  private calculateErrors(controls: { [p: string]: Control }) {
+  private calculateErrors(controls: { [p: string]: AbstractControl }) {
     return Object.keys(controls)
       .filter(key => controls[key].invalid);
   }
@@ -137,9 +137,9 @@ export class PublishPlugin extends Plugin {
     return form?.value;
   }
 
-  private getForm(): Control<any> {
+  private getForm(): FormGroup {
     const formDoc = this.forAddress ? 'address' : 'document';
-    return this.formsManager.getControl(formDoc);
+    return this.formStateService.getForm();
   }
 
   revert() {
