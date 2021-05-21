@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component
 @ConstructorBinding
 @ConfigurationProperties("dev.user")
 data class DevelopmentProperties(
-    val logins: List<String>,
-    val firstName: List<String>,
-    val lastName: List<String>,
+    val logins: List<String>?,
+    val firstName: List<String>?,
+    val lastName: List<String>?,
     val currentUser: Int = 0
 )

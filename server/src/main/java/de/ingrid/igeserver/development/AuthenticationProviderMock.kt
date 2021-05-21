@@ -5,6 +5,7 @@ import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
+import org.springframework.security.acls.model.NotFoundException
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -25,7 +26,10 @@ class AuthenticationProviderMock : AuthenticationProvider {
 
     override fun authenticate(authentication: Authentication?): Authentication {
 
-        val userId = config.logins[config.currentUser]
+        val userId = config.logins?.get(config.currentUser)
+        if (userId == null) {
+            throw NotFoundException("The user ${config.currentUser} could not be found in application-dev.properties")
+        }
         val user = BasicUserPrincipal(userId)
         val userDb = userRepo.findByUserId(userId)
         val groups = userDb?.groups?.map { SimpleGrantedAuthority("GROUP_${it.name}") } ?: emptyList()

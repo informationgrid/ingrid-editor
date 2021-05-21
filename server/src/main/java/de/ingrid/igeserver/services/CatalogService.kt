@@ -262,8 +262,8 @@ class CatalogService @Autowired constructor(
     }*/
 
     fun getPermissions(principal: Authentication): List<String> {
-        val isMdAdmin = principal.authorities.any { it.authority == "md-admin"}
-        val isCatAdmin = principal.authorities.any { it.authority == "cat-admin"}
+        val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
+        val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
         return if (isMdAdmin || isCatAdmin) {
             listOf(
                 Permissions.manage_users.name,

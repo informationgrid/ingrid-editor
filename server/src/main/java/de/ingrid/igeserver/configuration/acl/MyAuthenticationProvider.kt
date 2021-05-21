@@ -26,15 +26,35 @@ class MyAuthenticationProvider @Autowired constructor(val userRepository: UserRe
         val token = authentication as KeycloakAuthenticationToken
         val grantedAuthorities: MutableList<GrantedAuthority> = ArrayList()
 
+        // add keycloak roles
         for (role in token.account.roles) {
             grantedAuthorities.add(KeycloakRole("ROLE_$role"))
         }
 
-        // add groups
         val username = token.account.principal.name
-        userRepository.findByUserId(username)?.groups
+        val userDb = userRepository.findByUserId(username)
+        
+        // add groups
+        userDb?.groups
             ?.map { it.name }
             ?.forEach { grantedAuthorities.add(SimpleGrantedAuthority("GROUP_$it")) }
+
+        // add roles
+        val role = userDb?.role?.name
+        if (role != null) {
+            // add special role for administrators to allow group acl management
+            if (role == "cat-admin" || role == "md-admin") {
+                grantedAuthorities.addAll(
+                    listOf(
+                        SimpleGrantedAuthority(role),
+                        SimpleGrantedAuthority("ROLE_GROUP_MANAGER")
+                    )
+                )
+            } else {
+                grantedAuthorities.addAll(listOf(SimpleGrantedAuthority(role)))
+            }
+        }
+
 
         return KeycloakAuthenticationToken(token.account, token.isInteractive, grantedAuthorities)
 

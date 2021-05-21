@@ -34,21 +34,39 @@ class DocumentService @Autowired constructor(
     var userRepo: UserRepository,
     var docWrapperRepo: DocumentWrapperRepository,
     var catalogRepo: CatalogRepository,
-    var postPersistencePipe: PostPersistencePipe,
-    var preCreatePipe: PreCreatePipe,
-    var postCreatePipe: PostCreatePipe,
-    var preUpdatePipe: PreUpdatePipe,
-    var postUpdatePipe: PostUpdatePipe,
-    var prePublishPipe: PrePublishPipe,
-    var postPublishPipe: PostPublishPipe,
-    var preDeletePipe: PreDeletePipe,
-    var postDeletePipe: PostDeletePipe,
     var aclService: IgeAclService
 ) : MapperService() {
 
     // this must be initialized lazily because of cyclic dependencies otherwise
     @Autowired
     lateinit var documentTypes: List<EntityType>
+
+    @Autowired
+    private lateinit var postPersistencePipe: PostPersistencePipe
+
+    @Autowired
+    private lateinit var preCreatePipe: PreCreatePipe
+
+    @Autowired
+    private lateinit var postCreatePipe: PostCreatePipe
+
+    @Autowired
+    private lateinit var preUpdatePipe: PreUpdatePipe
+
+    @Autowired
+    private lateinit var postUpdatePipe: PostUpdatePipe
+
+    @Autowired
+    private lateinit var prePublishPipe: PrePublishPipe
+
+    @Autowired
+    private lateinit var postPublishPipe: PostPublishPipe
+
+    @Autowired
+    private lateinit var preDeletePipe: PreDeletePipe
+
+    @Autowired
+    private lateinit var postDeletePipe: PostDeletePipe
     
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),

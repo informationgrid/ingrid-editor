@@ -16,7 +16,7 @@ class AuthUtilsMock : AuthUtils {
 
     override fun getUsernameFromPrincipal(principal: Principal): String {
         // return a user for development when security is switched off
-        return config.logins[config.currentUser]
+        return config.logins?.get(config.currentUser) ?: "unknown"
     }
 
     override fun containsRole(principal: Principal, role: String): Boolean {
