@@ -18,65 +18,38 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
-import org.springframework.security.access.prepost.PostAuthorize
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.acls.domain.BasePermission
-import org.springframework.security.acls.domain.ObjectIdentityImpl
-import org.springframework.security.acls.jdbc.JdbcMutableAclService
-import org.springframework.security.acls.model.AclService
-import org.springframework.security.acls.model.Permission
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import javax.persistence.criteria.*
 
 @Service
-class DocumentService : MapperService() {
+class DocumentService @Autowired constructor(
+    var docRepo: DocumentRepository,
+    var userRepo: UserRepository,
+    var docWrapperRepo: DocumentWrapperRepository,
+    var catalogRepo: CatalogRepository,
+    var postPersistencePipe: PostPersistencePipe,
+    var preCreatePipe: PreCreatePipe,
+    var postCreatePipe: PostCreatePipe,
+    var preUpdatePipe: PreUpdatePipe,
+    var postUpdatePipe: PostUpdatePipe,
+    var prePublishPipe: PrePublishPipe,
+    var postPublishPipe: PostPublishPipe,
+    var preDeletePipe: PreDeletePipe,
+    var postDeletePipe: PostDeletePipe,
+    var aclService: IgeAclService
+) : MapperService() {
 
+    // this must be initialized lazily because of cyclic dependencies otherwise
     @Autowired
-    private lateinit var documentTypes: List<EntityType>
-
-    @Autowired
-    private lateinit var docRepo: DocumentRepository
-
-    @Autowired
-    private lateinit var docWrapperRepo: DocumentWrapperRepository
-
-    @Autowired
-    private lateinit var catalogRepo: CatalogRepository
-
-    @Autowired
-    private lateinit var postPersistencePipe: PostPersistencePipe
-
-    @Autowired
-    private lateinit var preCreatePipe: PreCreatePipe
-
-    @Autowired
-    private lateinit var postCreatePipe: PostCreatePipe
-
-    @Autowired
-    private lateinit var preUpdatePipe: PreUpdatePipe
-
-    @Autowired
-    private lateinit var postUpdatePipe: PostUpdatePipe
-
-    @Autowired
-    private lateinit var prePublishPipe: PrePublishPipe
-
-    @Autowired
-    private lateinit var postPublishPipe: PostPublishPipe
-
-    @Autowired
-    private lateinit var preDeletePipe: PreDeletePipe
-
-    @Autowired
-    private lateinit var postDeletePipe: PostDeletePipe
-
-    @Autowired
-    private lateinit var aclService: JdbcMutableAclService
-
+    lateinit var documentTypes: List<EntityType>
+    
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),
         DRAFT("W")
@@ -98,13 +71,17 @@ class DocumentService : MapperService() {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
 
-    fun findChildren(catalogId: String, parentId: String?, docCat: DocumentCategory = DocumentCategory.DATA): FindAllResults<DocumentWrapper> {
+    fun findChildren(
+        catalogId: String,
+        parentId: String?,
+        docCat: DocumentCategory = DocumentCategory.DATA
+    ): FindAllResults<DocumentWrapper> {
 
         val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(
             catalogId,
             parentId,
             docCat.value
-        ) 
+        )
         return FindAllResults(
             docs.size.toLong(),
             docs
@@ -136,7 +113,9 @@ class DocumentService : MapperService() {
     // TODO: make use of create action only, write is only temporary
     @PreAuthorize(
         "hasPermission(#parentId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper','CREATE') || " +
-                "hasPermission(#parentId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
+                "hasPermission(#parentId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')"
+    )
+    @Transactional
     fun createDocument(
         catalogId: String,
         data: JsonNode,
@@ -164,16 +143,8 @@ class DocumentService : MapperService() {
             preCreatePayload.wrapper.draft = newDocument
         }
 
-        // first create permission ACL
-        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, document.uuid)
-        val acl = aclService.createAcl(objIdentity)
-        val parent = preCreatePayload.wrapper.parent
-        if (parent != null) {
-            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parent.id)
-            val parentAcl = aclService.readAclById(parentObjIdentity)
-            acl.setParent(parentAcl)
-            aclService.updateAcl(acl)
-        }
+        // handle ACL
+        aclService.createAclForDocument(document.uuid, preCreatePayload.wrapper.parent?.id)
 
         // save wrapper
         val newWrapper = docWrapperRepo.save(preCreatePayload.wrapper)
@@ -451,13 +422,22 @@ class DocumentService : MapperService() {
             val preds = queryFields
                 .map { queryField -> createPredicateForField(cb, draft, published, queryField) }
 
-            cb.and(
+            val result = cb.and(
                 cb.equal(catalogWrapper.get<String>("identifier"), catalog),
                 cb.equal(wrapper.get<String>("category"), category),
                 cb.and(
                     *preds.toTypedArray()
                 )
             )
+
+            val userGroups = userRepo.findByUserId("")?.groups
+            if (userGroups != null) {
+                val isAddress = category == "address"
+                val datasetUuidsFromGroups = aclService.getDatasetUuidsFromGroups(userGroups, isAddress)
+                cb.equal(wrapper.get<String>("uuid"), datasetUuidsFromGroups)
+            }
+            
+            result
 
         }
     }
@@ -499,16 +479,24 @@ class DocumentService : MapperService() {
     private fun handleNot(cb: CriteriaBuilder, queryField: QueryField, predicate: Predicate?): Predicate? {
         return if (queryField.invert) cb.not(predicate) else predicate
     }
-    
-    private fun handleComparisonType(cb: CriteriaBuilder, queryField: QueryField, docJoin: Join<DocumentWrapper, Document>): Predicate? {
+
+    private fun handleComparisonType(
+        cb: CriteriaBuilder,
+        queryField: QueryField,
+        docJoin: Join<DocumentWrapper, Document>
+    ): Predicate? {
         val value = queryField.value?.toLowerCase()
         return when (queryField.queryType) {
             QueryType.EXACT -> cb.equal(cb.lower(docJoin.get(queryField.field)), value)
             else -> cb.like(cb.lower(docJoin.get(queryField.field)), "%$value%")
         }
-    }    
-    
-    private fun handleComparisonTypeJson(cb: CriteriaBuilder, queryField: QueryField, docJoin: Join<DocumentWrapper, Document>): Predicate? {
+    }
+
+    private fun handleComparisonTypeJson(
+        cb: CriteriaBuilder,
+        queryField: QueryField,
+        docJoin: Join<DocumentWrapper, Document>
+    ): Predicate? {
         val value = queryField.value?.toLowerCase()
         return when (queryField.queryType) {
             QueryType.EXACT -> cb.equal(cb.lower(createJsonExtract(cb, docJoin, queryField.field)), value)
@@ -522,7 +510,7 @@ class DocumentService : MapperService() {
         field: String
     ): Expression<String>? {
         val literals = field.split(".").map { cb.literal(it) }
-        
+
         return cb.function(
             "jsonb_extract_path_text",
             String::class.java,

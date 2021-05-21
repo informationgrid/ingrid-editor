@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 
@@ -30,13 +29,18 @@ class AuthenticationProviderMock : AuthenticationProvider {
         val user = BasicUserPrincipal(userId)
         val userDb = userRepo.findByUserId(userId)
         val groups = userDb?.groups?.map { SimpleGrantedAuthority("GROUP_${it.name}") } ?: emptyList()
-        val roles = config.roles[config.currentUser].split(",").map { SimpleGrantedAuthority(it) }
+        val role = userDb?.role?.name
+        val roles = if (role == null) {
+            emptyList()
+        } else {
+            // add special role for administrators to allow group acl management
+            if (role == "cat-admin" || role == "md-admin") {
+                listOf(SimpleGrantedAuthority(role), SimpleGrantedAuthority("ROLE_GROUP_MANAGER")) 
+            } else {
+                listOf(SimpleGrantedAuthority(role))
+            }
+        }
         return UsernamePasswordAuthenticationToken(user, "", groups + roles)
-    }
-
-    private fun mockGrantedAuthorities(): List<GrantedAuthority> {
-        return config.groups[config.currentUser].split(",").map { SimpleGrantedAuthority("GROUP_$it") } +
-                config.roles[config.currentUser].split(",").map { SimpleGrantedAuthority(it) }
     }
 
     override fun supports(authentication: Class<*>?): Boolean {

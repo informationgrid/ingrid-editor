@@ -41,7 +41,6 @@ class M029_ACLTables : MigrationBase("0.29") {
         	parent_object bigint,
         	owner_sid bigint,
         	entries_inheriting boolean not null,
-        	path text[],
         	constraint unique_uk_3 unique(object_id_class,object_id_identity),
         	constraint foreign_fk_1 foreign key(parent_object)references acl_object_identity(id),
         	constraint foreign_fk_2 foreign key(object_id_class)references acl_class(id),
@@ -61,6 +60,8 @@ class M029_ACLTables : MigrationBase("0.29") {
         	constraint foreign_fk_4 foreign key(acl_object_identity) references acl_object_identity(id),
         	constraint foreign_fk_5 foreign key(sid) references acl_sid(id)
         );
+        
+        alter table document_wrapper add path text[];
     """.trimIndent()
 
     override fun exec() {

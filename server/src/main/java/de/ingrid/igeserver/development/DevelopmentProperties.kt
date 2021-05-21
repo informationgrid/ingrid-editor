@@ -13,7 +13,5 @@ data class DevelopmentProperties(
     val logins: List<String>,
     val firstName: List<String>,
     val lastName: List<String>,
-    val roles: List<String>,
-    val groups: List<String>,
     val currentUser: Int = 0
 )

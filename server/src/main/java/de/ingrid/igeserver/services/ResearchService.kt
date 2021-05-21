@@ -93,7 +93,7 @@ class ResearchService {
 
         return """
                 SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.category
-                FROM catalog, acl_object_identity, document_wrapper
+                FROM catalog, document_wrapper
                 $stateCondition
                 $jsonSearch
                 $whereFilter
@@ -103,7 +103,12 @@ class ResearchService {
 
     private fun determineWhereQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
         val catalogFilter = createCatalogFilter(dbId)
-        val permissionFilter = " AND document_wrapper.uuid=acl_object_identity.object_id_identity AND (document_wrapper.uuid = ANY(('{${groupDocUuids.joinToString(",")}}')) OR ('{${groupDocUuids.joinToString(",")}}') && acl_object_identity.path)"
+        val groupDocUuidsString = groupDocUuids.joinToString(",")
+        // TODO: uuid IN (SELECT(unnest(dw.path))) might be more performant (https://coderwall.com/p/jmtskw/use-in-instead-of-any-in-postgresql)
+        val permissionFilter =
+            """ AND (document_wrapper.uuid = ANY(('{$groupDocUuidsString}')) 
+                    OR ('{$groupDocUuidsString}') && document_wrapper.path)
+            """.trimIndent()
         val catalogAndPermissionFilter = catalogFilter + permissionFilter
 
         val termSearch =

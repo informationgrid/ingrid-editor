@@ -82,5 +82,12 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
             category = payload.category
             archive = mutableSetOf()
         }
+
+        // add path info to created wrapper
+        if (parentRef?.path != null) {
+            payload.wrapper.path = listOf(*parentRef.path.toTypedArray()) + parentRef.id
+        } else if (parentRef != null) {
+            payload.wrapper.path = listOf(parentRef.id)
+        }
     }
 }

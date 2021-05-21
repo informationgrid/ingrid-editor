@@ -19,24 +19,45 @@ class M030_createACLEntries : MigrationBase("0.30") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-    private val sql = """
-        INSERT INTO acl_class (id, class, class_id_type) VALUES (1, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'java.lang.String');
-        """.trimIndent()
+    private val insertClass = """
+        INSERT INTO acl_class VALUES (1, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'java.lang.String')
+    """.trimIndent()
+    
+    private val insertSid = """
+        INSERT INTO acl_sid VALUES (1, true, 'ige')
+    """.trimIndent()
+    
+    private val insertRootSql = """
+        INSERT INTO acl_object_identity
+            (object_id_class, object_id_identity,
+             parent_object, owner_sid, entries_inheriting)
+            VALUES (1, :uuid, null, 1, true)
+    """.trimIndent()
+
     private val insertSql = """
         INSERT INTO acl_object_identity
             (object_id_class, object_id_identity,
-             parent_object, owner_sid, entries_inheriting, path)
-            VALUES
+             parent_object, owner_sid, entries_inheriting)
+            VALUES (1, :uuid, :parentId, 1, true)
+    """.trimIndent()
+
+    private val updateWrapperPath = """
+        UPDATE document_wrapper SET path=CAST(:path as text[]) WHERE uuid=:uuid
     """.trimIndent()
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
-            // entityManager.createNativeQuery(sql).executeUpdate()
-            val parentIds = entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is null").resultList
             
+            entityManager.createNativeQuery(insertClass).executeUpdate()
+            entityManager.createNativeQuery(insertSid).executeUpdate()
+            
+            val parentIds =
+                entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is null").resultList
+
             parentIds.forEach { uuid ->
                 entityManager
-                    .createNativeQuery("$insertSql (1, '$uuid', null, 1, true, null)")
+                    .createNativeQuery(insertRootSql)
+                    .setParameter("uuid", uuid)
                     .executeUpdate()
                 addChildren(uuid as String, mutableListOf())
             }
@@ -46,18 +67,30 @@ class M030_createACLEntries : MigrationBase("0.30") {
     private fun addChildren(uuid: String, previousUuids: MutableList<String>) {
 
         previousUuids.add(uuid)
-        val childrenIds = entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is not null and dw.parent.id is '$uuid'").resultList
-        val parentDbId = entityManager.createNativeQuery("SELECT id FROM acl_object_identity where object_id_identity = '$uuid'").resultList.get(0)
+        val childrenIds = entityManager
+            .createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is not null and dw.parent.id is '$uuid'")
+            .resultList
+        val parentDbId = entityManager
+            .createNativeQuery("SELECT id FROM acl_object_identity where object_id_identity = '$uuid'")
+            .resultList[0]
 
         childrenIds.forEach { childUuid ->
             entityManager
-                .createNativeQuery("$insertSql (1, '$childUuid', $parentDbId, 1, true, '{${previousUuids.joinToString()}}')")
+                .createNativeQuery(insertSql)
+                .setParameter("uuid", childUuid)
+                .setParameter("parentId", parentDbId)
                 .executeUpdate()
-            
+            entityManager
+                .createNativeQuery(updateWrapperPath)
+                .setParameter("path", "{${previousUuids.joinToString()}}")
+                .setParameter("uuid", childUuid)
+                .executeUpdate()
+
             addChildren(childUuid as String, previousUuids)
         }
-        
-        
+
+        // TODO: increase id generators for tables with inserted data
+
     }
 
 }

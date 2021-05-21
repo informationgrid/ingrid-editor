@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.configuration
 
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
-import de.ingrid.igeserver.configuration.acl.MockedPermissionEvaluator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -61,7 +60,7 @@ class ACLContext {
 
     @Bean
     fun aclAuthorizationStrategy(): AclAuthorizationStrategy {
-        return AclAuthorizationStrategyImpl(SimpleGrantedAuthority("md-admin"))
+        return AclAuthorizationStrategyImpl(SimpleGrantedAuthority("ROLE_GROUP_MANAGER"))
     }
 
     @Bean

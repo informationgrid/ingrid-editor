@@ -75,8 +75,10 @@ class GroupService @Autowired constructor(
 
     private fun updateAcl(group: Group) {
         aclService as JdbcMutableAclService
-        
-        group.data?.documents?.forEach {
+
+        val docs = group.data?.documents ?: emptyList()
+        val addresses = group.data?.addresses ?: emptyList()
+        (docs + addresses).forEach {
             val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
             val acl: MutableAcl = try {
                 aclService.readAclById(objIdentity) as MutableAcl

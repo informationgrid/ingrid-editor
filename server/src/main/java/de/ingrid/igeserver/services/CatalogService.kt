@@ -213,7 +213,7 @@ class CatalogService @Autowired constructor(
 
     }
 
-    private fun updateAcl(groups: MutableSet<Group>) {
+    /*private fun updateAcl(groups: MutableSet<Group>) {
 
         aclService as JdbcMutableAclService
         
@@ -257,11 +257,12 @@ class CatalogService @Autowired constructor(
             "writeDataset" -> listOf(BasePermission.READ, BasePermission.WRITE)
             else -> listOf(BasePermission.READ)
         }
-    }
+    }*/
 
     fun getPermissions(principal: Authentication): List<String> {
         val isMdAdmin = principal.authorities.any { it.authority == "md-admin"}
-        return if (isMdAdmin) {
+        val isCatAdmin = principal.authorities.any { it.authority == "cat-admin"}
+        return if (isMdAdmin || isCatAdmin) {
             listOf(
                 Permissions.manage_users.name,
                 Permissions.can_export.name,
