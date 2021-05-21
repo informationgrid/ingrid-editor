@@ -274,7 +274,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
     switch (updateInfo.type) {
       case UpdateType.New:
-        return this.addNewNode(updateInfo);
+        return this.addNewNodes(updateInfo);
       case UpdateType.Update:
         return this.dataSource.updateNode(updateInfo.data);
       case UpdateType.Delete:
@@ -309,7 +309,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.updateChildrenInfo(nodeInfo.parent);
   }
 
-  private async addNewNode(updateInfo: UpdateDatasetInfo) {
+  private async addNewNodes(updateInfo: UpdateDatasetInfo) {
 
     if (!updateInfo.doNotSelect) {
       this.activeNodeId = updateInfo.data[0].id + '';
@@ -332,11 +332,14 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.updateChildrenFromServer(updateInfo.parent, <string>updateInfo.data[0].id, updateInfo.doNotSelect);
 
     } else {
-      const newRootTreeNode = this.database.mapDocumentsToTreeNodes(updateInfo.data, 0);
-      this.dataSource.insertNodeInTree(newRootTreeNode[0], null);
-      if (!updateInfo.doNotSelect) {
-        this.updateNodePath(<string>updateInfo.data[0].id);
-      }
+      const newRootTreeNodes = this.database.mapDocumentsToTreeNodes(updateInfo.data, 0);
+
+      newRootTreeNodes.forEach(treeNode => {
+        this.dataSource.insertNodeInTree(treeNode, null);
+        if (!updateInfo.doNotSelect) {
+          this.updateNodePath(treeNode._id);
+        }
+      });
       this.scrollToActiveElement();
     }
 
@@ -626,7 +629,7 @@ export class TreeComponent implements OnInit, OnDestroy {
    */
 
   /** Toggle a leaf node selection */
-  nodeSelectionToggle(node: TreeNode, $event: MouseEvent|MatCheckboxChange): void {
+  nodeSelectionToggle(node: TreeNode, $event: MouseEvent | MatCheckboxChange): void {
     // mark all nodes in between the last selected node
     if ($event instanceof MouseEvent && $event.shiftKey) {
       this.toggleNodesInBetween(node);

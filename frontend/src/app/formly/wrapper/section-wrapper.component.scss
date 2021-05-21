@@ -8,7 +8,8 @@
 }
 
 .mat-divider {
-  margin: 30px -24px 30px -36px;
+  height: 30px;
+  margin: 30px -24px 0 -36px;
 }
 
 h3 {
@@ -16,10 +17,4 @@ h3 {
   margin-top: 0;
   font-weight: normal;
   font-size: 24px;
-}
-
-::ng-deep formly-field:last-of-type {
-  .mat-divider {
-    border-top-color: #fff !important;
-  }
 }

@@ -49,6 +49,7 @@ export class DocumentPage extends BasePage {
     Next: '[data-cy=toolbar_HISTORY_NEXT]',
     Save: '[data-cy=toolbar_SAVE]',
     Publish: '[data-cy=toolbar_PUBLISH]'
+    // JSON: '[data-cy=toolbar_SHOW_JSON]'
   };
 
   static AddAddressDialog = class {
@@ -158,57 +159,57 @@ export class DocumentPage extends BasePage {
       title: title,
       _state: 'W',
       _version: 1,
-      text: "Textfeld",
+      text: 'Textfeld',
       description: 'Beschreibung',
-      select: "5",
+      select: '5',
       checkbox: true,
       addresses: [
         {
-          type: "7",
+          type: '7',
           ref: {
-            title: "Published Testorganization",
-            _id: "214ca5bf-da1b-4003-b7b6-e73a2ef0ec10",
-            _type: "AddressDoc",
+            title: 'Published Testorganization',
+            _id: '214ca5bf-da1b-4003-b7b6-e73a2ef0ec10',
+            _type: 'AddressDoc',
             _version: 2,
-            _created: "2020-11-05T11:12:57.000248Z",
-            _modified: "2020-11-05T11:13:19.075264Z",
-            _state: "P",
+            _created: '2020-11-05T11:12:57.000248Z',
+            _modified: '2020-11-05T11:13:19.075264Z',
+            _state: 'P',
             contact: [
               {
-                type: "1",
-                connection: "03351464321653"
+                type: '1',
+                connection: '03351464321653'
               }
             ]
-          },
+          }
         }
       ],
-      multiChips: "84",
+      multiChips: '84',
       multiInputs: [
         {
-          "date": "2021-05-02T22:00:00.000Z",
-          "text": "typ"
+          date: '2021-05-02T22:00:00.000Z',
+          text: 'typ'
         }
       ],
-      multiChipsSimple: "RETURN",
+      multiChipsSimple: 'RETURN',
       repeatDetailListLink: [
         {
-          type: "link",
-          _type: "external",
-          title: "link",
-          description: "link.link"
+          type: 'link',
+          _type: 'external',
+          title: 'link',
+          description: 'link.link'
         }
       ],
       repeatDetailListImage: [
         {
-          type: "png",
-          title: "Image List",
+          type: 'png',
+          title: 'Image List',
           description: null
         }
       ]
     };
 
     cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=false&publish=${published}`, json);
-  };
+  }
 
   static CreateSpatialBboxWithAPI(title: string, published?: boolean) {
     const json = {

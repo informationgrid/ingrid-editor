@@ -115,6 +115,8 @@ class CatalogService @Autowired constructor(
 
     fun createCatalog(catalog: Catalog): Catalog {
         catalog.identifier = catalog.name.toLowerCase().replace(" ".toRegex(), "_")
+        // slash not valid as it makes problems in URLs
+        catalog.identifier = catalog.identifier.replace("/".toRegex(), "_")
         if (!catalogExists(catalog.identifier)) {
             return catalogRepo.save(catalog)
         }

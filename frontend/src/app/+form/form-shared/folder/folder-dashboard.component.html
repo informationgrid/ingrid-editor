@@ -9,7 +9,7 @@
     </button>
 </div>
 
-<div *ngIf="(childDocs$ | async)?.length">
+<div *ngIf="numChildren">
     <ige-card-box fxFlex label="Zuletzt bearbeitet im Ordner" data-cy="card-latest-docs">
         <ige-document-list-item [docs]="childDocs$"
                                 [hideDate]="false"
@@ -17,7 +17,7 @@
     </ige-card-box>
 </div>
 
-<div *ngIf="(childDocs$ | async)?.length === 0" class="banner text-center">
+<div *ngIf="numChildren === 0" class="banner text-center">
     <div class="circle-wrapper">
         <mat-icon [svgIcon]="isAddress ? 'image-banner-address' :'image-banner-dataset'"></mat-icon>
     </div>

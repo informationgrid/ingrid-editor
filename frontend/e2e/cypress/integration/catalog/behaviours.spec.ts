@@ -1,6 +1,7 @@
-import {BehavioursPage} from "../../pages/behaviours.page";
-import {DocumentPage} from "../../pages/document.page";
-import {Tree} from "../../pages/tree.partial";
+import { BehavioursPage } from '../../pages/behaviours.page';
+import { DocumentPage } from '../../pages/document.page';
+import { Tree } from '../../pages/tree.partial';
+import { Address, AddressPage } from '../../pages/address.page';
 
 describe('Behaviours', () => {
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe('Behaviours', () => {
       cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
       BehavioursPage.checkTimeoutIs('30');
       BehavioursPage.setCatalogSetting('Session Timeout Dauer', true);
-      BehavioursPage.setCatalogInputbox('Session Timeout Dauer','600');
+      BehavioursPage.setCatalogInputbox('Session Timeout Dauer', '600');
       BehavioursPage.saveCatalogSetting();
       BehavioursPage.checkTimeoutIs('10');
       BehavioursPage.setCatalogSetting('Session Timeout Dauer', false);
@@ -53,14 +54,33 @@ describe('Behaviours', () => {
       BehavioursPage.setAndSaveCatalogSettings('Sortierung des Baums nach Dokumententyp', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      Tree.openNode(['Neue Testdokumente',lastDoc]);
+      Tree.openNode(['Neue Testdokumente', lastDoc]);
       // check first element contains ZZZ after changing sorting of the tree
       cy.get('mat-tree-node> div > span').first().contains(lastDoc);
 
       BehavioursPage.setAndSaveCatalogSettings('Sortierung des Baums nach Dokumententyp', false);
     });
 
-    xit('should change the template for the address generation', () => {});
+    it('should change the template for the address generation', () => {
+      cy.get(DocumentPage.Sidemenu.Adressen).click();
+      AddressPage.createAddress(new Address('vor', 'nach', 'org'));
+      cy.get(DocumentPage.title).contains('org, nach, vor');
+
+      cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
+      cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
+      BehavioursPage.setCatalogSetting('Template für die Generierung des Adressen-Titels', true);
+      BehavioursPage.setCatalogInputbox('Template für die Generierung des Adressen-Titels', 'firstName');
+      BehavioursPage.saveCatalogSetting();
+
+      cy.get(DocumentPage.Sidemenu.Adressen).click();
+      AddressPage.createAddress(new Address('vor', 'nach', 'org'));
+      cy.get(DocumentPage.title).contains('vor');
+
+      cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
+      cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
+      BehavioursPage.setCatalogSetting('Template für die Generierung des Adressen-Titels', false);
+      BehavioursPage.saveCatalogSetting();
+    });
   });
 
   describe('Form', () => {

@@ -43,7 +43,4 @@ export class UserDataService {
     return this.http.get<BackendUser[]>(this.configuration.backendUrl + 'externalUsers');
   }
 
-  sendPasswordChangeRequest(login: string) {
-    return this.http.post<void>(this.configuration.backendUrl + 'externalUsers/requestPasswordChange/' + login, null);
-  }
 }

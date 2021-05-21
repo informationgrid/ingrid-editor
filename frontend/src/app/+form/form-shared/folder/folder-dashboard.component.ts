@@ -1,11 +1,11 @@
-import {Component, Input, OnChanges} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {TreeQuery} from '../../../store/tree/tree.query';
-import {Observable} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {FormToolbarService} from '../toolbar/form-toolbar.service';
 import {DocumentAbstract} from '../../../store/document/document.model';
 import {Router} from '@angular/router';
 import {DocumentService} from '../../../services/document/document.service';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {FormUtils} from '../../form.utils';
 import {NgFormsManager} from '@ngneat/forms-manager';
 import {MatDialog} from '@angular/material/dialog';
@@ -15,11 +15,17 @@ import {MatDialog} from '@angular/material/dialog';
   templateUrl: './folder-dashboard.component.html',
   styleUrls: ['./folder-dashboard.component.scss']
 })
-export class FolderDashboardComponent implements OnChanges {
+export class FolderDashboardComponent {
 
   @Input() isAddress = false;
-  @Input() parentId: string;
-  childDocs$: Observable<DocumentAbstract[]>;
+
+
+  @Input() set parentId(value: string) {
+    this.updateChildren(value);
+  }
+
+  childDocs$ = new BehaviorSubject<DocumentAbstract[]>([]);
+  numChildren: number;
 
   constructor(private treeQuery: TreeQuery,
               private formToolbarService: FormToolbarService,
@@ -29,15 +35,16 @@ export class FolderDashboardComponent implements OnChanges {
               private dialog: MatDialog) {
   }
 
-  ngOnChanges() {
+  updateChildren(parentId) {
     // TODO switch to user specific query
-    this.childDocs$ = this.docService.getChildren(this.parentId, this.isAddress)
+    this.docService.getChildren(parentId, this.isAddress)
       .pipe(
+        tap(children => this.numChildren = children.length),
         map(children => children
           .sort((c1, c2) => new Date(c2._modified).getTime() - new Date(c1._modified).getTime())
           .slice(0, 5)
         )
-      );
+      ).subscribe(result => this.childDocs$.next(result));
   }
 
   createNewFolder() {

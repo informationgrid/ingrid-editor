@@ -58,8 +58,5 @@ export class UserService {
   getExternalUsers(): Observable<FrontendUser[]> {
     return this.dataService.getExternalUsers();
   }
-
-  sendPasswordChangeRequest(login: string) {
-    return this.dataService.sendPasswordChangeRequest(login);
-  }
+  
 }
