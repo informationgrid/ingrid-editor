@@ -7,7 +7,9 @@ import de.ingrid.igeserver.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import java.util.*
 import javax.annotation.PostConstruct
+import kotlin.concurrent.schedule
 
 @Profile("dev")
 @Component
@@ -20,7 +22,7 @@ class SetupDevelopUsers @Autowired constructor(
     @PostConstruct
     fun init() {
         // delay initialization after all migrations
-        Timer("IgeTasks", false).schedule(10000) {
+        Timer("IgeTasks", false).schedule(5000) {
             val userExists = userRepo.findByUserId("userCat") != null
             if (userExists) {
                 return@schedule
