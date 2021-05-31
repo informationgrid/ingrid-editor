@@ -40,7 +40,7 @@ describe('Load addresses', () => {
 
   it('should open an address from a tree search result on form page', () => {
     DocumentPage.search('Testorganisation');
-    DocumentPage.getSearchResult().click();
+    DocumentPage.getSearchResult().contains('Testorganisation').click();
     cy.get(DocumentPage.title).should('have.text', 'Testorganisation');
   });
 
