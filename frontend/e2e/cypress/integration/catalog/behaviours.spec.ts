@@ -27,12 +27,9 @@ describe('Behaviours', () => {
     it('should change the session timeout behaviour', () => {
       cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
       BehavioursPage.checkTimeoutIs('30');
-      BehavioursPage.setCatalogSetting('Session Timeout Dauer', true);
-      BehavioursPage.setCatalogInputbox('Session Timeout Dauer','600');
-      BehavioursPage.saveCatalogSetting();
+      BehavioursPage.setInputAndSaveCatalogSettings('Session Timeout Dauer','600');
       BehavioursPage.checkTimeoutIs('10');
-      BehavioursPage.setCatalogSetting('Session Timeout Dauer', false);
-      BehavioursPage.saveCatalogSetting();
+      BehavioursPage.turnOffCatalogSettingAndSave('Session Timeout Dauer');
       BehavioursPage.checkTimeoutIs('30');
     });
 
@@ -68,18 +65,15 @@ describe('Behaviours', () => {
 
       cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
       cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
-      BehavioursPage.setCatalogSetting('Template für die Generierung des Adressen-Titels', true);
-      BehavioursPage.setCatalogInputbox('Template für die Generierung des Adressen-Titels','firstName');
-      BehavioursPage.saveCatalogSetting();
+      BehavioursPage.setInputAndSaveCatalogSettings('Template für die Generierung des Adressen-Titels','firstName');
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
-      AddressPage.createAddress(new Address('vor', 'nach', 'org'));
-      cy.get(DocumentPage.title).contains('vor');
+      cy.get('ige-sidebar').contains('vor').click();
+      cy.get(DocumentPage.title).contains('vor').should('not.contain', 'org, nach');
 
       cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
       cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
-      BehavioursPage.setCatalogSetting('Template für die Generierung des Adressen-Titels', false);
-      BehavioursPage.saveCatalogSetting();
+      BehavioursPage.turnOffCatalogSettingAndSave('Template für die Generierung des Adressen-Titels');
     });
   });
 

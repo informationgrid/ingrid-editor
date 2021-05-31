@@ -447,13 +447,9 @@ describe('Tree', () => {
     });
 
     it('should preselect the opened document', () => {
-      const testDoc = 'Preselected TestDoc';
-
-      DocumentPage.CreateTestDocumentWithAPI(testDoc, false);
-      Tree.openNode(['Neue Testdokumente', testDoc]);
-      cy.get(DocumentPage.title).contains(testDoc);
+      Tree.selectNodeAndCheckPath('Neue Testdokumente', ['Daten']);
       cy.get('[data-mat-icon-name=edit_mode]').click();
-      cy.get('mat-tree-node .mat-checkbox-checked').parent().contains(testDoc);
+      cy.get('mat-tree-node .mat-checkbox-checked').parent().contains('Neue Testdokumente');
     });
 
     xit('should only allow options to cut, copy and delete nodes in multi select mode', () => {

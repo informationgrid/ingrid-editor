@@ -34,9 +34,9 @@ export class BehavioursPage extends BasePage {
     return cy.get('mat-card').find('mat-card-title').contains(title).parent().parent().find('mat-slide-toggle');
   }
 
-  static setCatalogInputbox(title: string, seconds: string){
+  static setCatalogInputbox(title: string, input: string){
     BehavioursPage.getCatalogCheckbox(title).find('[aria-checked="true"]');
-    return cy.get('mat-card').find('mat-card-title').contains(title).parent().parent().parent().find('mat-card-content').clear().type(seconds);
+    return cy.get('mat-card').find('mat-card-title').contains(title).parent().parent().parent().find('mat-card-content').clear().type(input);
   }
   static checkTimeoutIs(timeout: string){
     cy.get('ige-session-timeout-info').contains(timeout);
@@ -46,4 +46,15 @@ export class BehavioursPage extends BasePage {
     this.setCatalogSetting(catalogTitle, shallBeActivated);
     BehavioursPage.saveCatalogSetting();
   };
+
+  static setInputAndSaveCatalogSettings(title:string, input:string){
+    BehavioursPage.setCatalogSetting(title, true);
+    BehavioursPage.setCatalogInputbox(title,input);
+    BehavioursPage.saveCatalogSetting();
+  }
+
+  static turnOffCatalogSettingAndSave (title: string){
+    BehavioursPage.setCatalogSetting(title, false);
+    BehavioursPage.saveCatalogSetting();
+  }
 }
