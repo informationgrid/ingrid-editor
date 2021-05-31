@@ -462,8 +462,31 @@ describe('Tree', () => {
 
     xit('should copy multiple selected nodes from different hierarchies into a folder', () => {});
 
-    xit('should move multiple selected nodes', () => {});
+    it('should move multiple selected nodes', () => {
+      const title = 'multi-select-testobject-1';
+      const title2 = 'multi-select-testobject-2';
 
-    xit('should delete multiple selected nodes', () => {});
+      DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
+      DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
+
+      Tree.openNode(['Neue Testdokumente'])
+      DocumentPage.multiSelectObject('mat-tree',[title, title2]);
+    });
+
+    it('should delete multiple selected nodes', () => {
+      const title = 'multi-select-testobject-1-to-delete';
+      const title2 = 'multi-select-testobject-2-to-delete';
+
+      DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
+      DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
+
+      Tree.openNode(['Neue Testdokumente', title])
+      DocumentPage.multiSelectObject('mat-tree',[title2]);
+
+      DocumentPage.deleteLoadedNode();
+      // check if multiple selected Docs were deleted
+      cy.get('mat-tree').contains(title).should('not.exist');
+      cy.get('mat-tree').contains(title2).should('not.exist');
+    });
   });
 });

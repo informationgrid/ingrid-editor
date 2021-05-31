@@ -399,4 +399,14 @@ export class DocumentPage extends BasePage {
   static checkURL(text: string) {
     cy.url().should('include', text);
   }
+
+  static multiSelectObject(cssItem:string, nodelist: string[]){
+    cy.get('[data-mat-icon-name=edit_mode]').click();
+    cy.get('mat-tree-node .mat-checkbox-layout').should('be.visible');
+
+    nodelist.forEach((node) => {
+      cy.get(cssItem).contains(node).click()
+      cy.get('mat-tree-node .mat-checkbox-checked').parent().contains(node);
+    });
+  }
 }
