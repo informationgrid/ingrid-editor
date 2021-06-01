@@ -59,17 +59,21 @@ describe('Behaviours', () => {
     });
 
     it('should change the template for the address generation', () => {
+      const firstName = 'Thomason';
+      const lastName = 'Schoofin';
+      const organizationName = 'Sportclub';
+
       cy.get(DocumentPage.Sidemenu.Adressen).click();
-      AddressPage.createAddress(new Address('vor', 'nach', 'org'));
-      cy.get(DocumentPage.title).contains('org, nach, vor');
+      AddressPage.createAddress(new Address(firstName, lastName, organizationName));
+      cy.get(DocumentPage.title).should('have.text',organizationName + ', ' + lastName + ', ' + firstName);
 
       cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
       cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
       BehavioursPage.setInputAndSaveCatalogSettings('Template für die Generierung des Adressen-Titels','firstName');
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
-      cy.get('ige-sidebar').contains('vor').click();
-      cy.get(DocumentPage.title).contains('vor').should('not.contain', 'org, nach');
+      cy.get('ige-sidebar').contains(firstName).click();
+      cy.get(DocumentPage.title).should('have.text', firstName).should('not.contain', organizationName + ', ' + lastName);
 
       cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
       cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
