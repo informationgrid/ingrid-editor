@@ -102,10 +102,10 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateFullMcloudDocumentWithAPI(title: string, published?: boolean) {
+  static CreateFullMcloudDocumentWithAPI(title: string, published?: boolean, parentNode = 'a0df9837-512a-4594-b2ef-2814f7c55c81') {
     const json = {
       _hasChildren: false,
-      _parent: 'a0df9837-512a-4594-b2ef-2814f7c55c81',
+      _parent: parentNode,
       _type: 'mCloudDoc',
       title: title,
       _state: 'W',

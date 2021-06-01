@@ -452,15 +452,39 @@ describe('Tree', () => {
       cy.get('mat-tree-node .mat-checkbox-checked').parent().contains('Neue Testdokumente');
     });
 
-    xit('should only allow options to cut, copy and delete nodes in multi select mode', () => {
-      // checkbox must be ticked
+    it('should only allow options to cut, copy and delete nodes in multi select mode', () => {
+      const title = 'multi-select-toolbar-testobject-1';
+      const title2 = 'multi-select-toolbar-testobject-2';
+
+      DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
+      DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
+
+      Tree.openNode(['Neue Testdokumente'])
+      DocumentPage.multiSelectObject('mat-tree',[title, title2]);
+
+      DocumentPage.checkOnlyActiveToolbarButtons(['Copy', 'Delete']);
     });
 
     xit('should automatically select all child nodes if an expanded folder was selected', () => {});
 
     xit('should automatically select all child nodes if an collapsed folder was selected', () => {});
 
-    xit('should copy multiple selected nodes from different hierarchies into a folder', () => {});
+    it('should copy multiple selected nodes from different hierarchies into a folder', () => {
+      const title = 'copy-multi-select-diff-hier-1';
+      const title2 = 'copy-multi-select-diff-hier-2';
+
+      // parent node is 'Neue Testdokumente'
+      DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
+      // parent node is 'Daten'
+      DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false, null);
+
+      Tree.openNode(['Neue Testdokumente', title])
+      DocumentPage.multiSelectObject('mat-tree',[title2]);
+      CopyCutUtils.copyObject(["Drag'n'Drop"]);
+
+      Tree.selectNodeAndCheckPath(title, ['Daten', "Drag'n'Drop"])
+      Tree.selectNodeAndCheckPath(title2, ['Daten', "Drag'n'Drop"])
+    });
 
     it('should move multiple selected nodes', () => {
       const title = 'multi-select-testobject-1';
