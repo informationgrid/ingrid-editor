@@ -1,60 +1,55 @@
-import { BasePage } from './base.page';
+import {BasePage, CatalogsTabmenu} from './base.page';
 import {DocumentPage} from "./document.page";
 
 export class BehavioursPage extends BasePage {
 
 
-  static checkPageContains(cssItem: string,wordlist: string[]) {
+  static checkPageContains(cssItem: string, wordlist: string[]) {
     wordlist.forEach(el => {
       cy.get(cssItem).contains(el);
     });
   }
 
-  static saveCatalogSetting(){
+  static saveCatalogSetting() {
     cy.get('button').contains('Speichern').click();
   }
 
-  static setCatalogSetting(title: string, shallBeActivated: boolean){
+  static openCatalogSettingsTab(tabmenu: CatalogsTabmenu) {
     cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
-    cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
-    BehavioursPage.toggleCatalogSetting(title, shallBeActivated);
+    cy.get('mat-tab-header div.mat-tab-label:nth-child(' + tabmenu + ')').click();
   }
 
-  private static toggleCatalogSetting(title: string, shallBeActivated: boolean) {
-    const isActive = BehavioursPage.getCatalogCheckbox(title).find('[aria-checked="' + !shallBeActivated + '"]');
-
-    if (shallBeActivated && isActive){
-      return BehavioursPage.getCatalogCheckbox(title).click();
-    } else if (!shallBeActivated && isActive){
-      return BehavioursPage.getCatalogCheckbox(title).click();
-    }
+  private static toggleCatalogSetting(title: string): void {
+    BehavioursPage.getCatalogCheckbox(title).click();
   }
 
-  private static getCatalogCheckbox(title: string){
+  private static getCatalogCheckbox(title: string) {
     return cy.get('mat-card').find('mat-card-title').contains(title).parent().parent().find('mat-slide-toggle');
   }
 
-  static setCatalogInputbox(title: string, input: string){
+  static setCatalogInputbox(title: string, input: string) {
     BehavioursPage.getCatalogCheckbox(title).find('[aria-checked="true"]');
     return cy.get('mat-card').find('mat-card-title').contains(title).parent().parent().parent().find('mat-card-content').clear().type(input);
   }
-  static checkTimeoutIs(timeout: string){
+
+  static checkTimeoutIs(timeout: string) {
     cy.get('ige-session-timeout-info').contains(timeout);
   }
 
-  static setAndSaveCatalogSettings(catalogTitle: string, shallBeActivated: boolean){
-    this.setCatalogSetting(catalogTitle, shallBeActivated);
-    BehavioursPage.saveCatalogSetting();
+  static setCatalogSetting(settingTitle: string, desiredState: boolean, save = true): void {
+    const toggleNeeded = BehavioursPage.getCatalogCheckbox(settingTitle).find('[aria-checked="' + !desiredState + '"]');
+
+    if (toggleNeeded)
+      this.toggleCatalogSetting(settingTitle);
+
+    if (save)
+      this.saveCatalogSetting();
   };
 
-  static setInputAndSaveCatalogSettings(title:string, input:string){
-    BehavioursPage.setCatalogSetting(title, true);
-    BehavioursPage.setCatalogInputbox(title,input);
-    BehavioursPage.saveCatalogSetting();
+  static setCatalogSettingInput(settingTitle: string, input: string) {
+    this.setCatalogSetting(settingTitle, true, false);
+    this.setCatalogInputbox(settingTitle, input);
+    this.saveCatalogSetting();
   }
 
-  static turnOffCatalogSettingAndSave (title: string){
-    BehavioursPage.setCatalogSetting(title, false);
-    BehavioursPage.saveCatalogSetting();
-  }
 }

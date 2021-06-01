@@ -19,11 +19,11 @@ export class BasePage {
     Katalogverwaltung: 'ige-side-menu a:nth-child(7)',
     Skalieren: 'ige-side-menu a:nth-child(9)'
   };
+}
 
-  static CatalogsTabmenu: Record<string, string> = {
-    Codelisten: 'mat-tab-header div.mat-tab-label:nth-child(1)',
-    Formulare: 'mat-tab-header div.mat-tab-label:nth-child(2)',
-    Katalogverhalten: 'mat-tab-header div.mat-tab-label:nth-child(3)',
-    Indizierung: 'mat-tab-header div.mat-tab-label:nth-child(4)'
-  };
+export enum CatalogsTabmenu {
+  Codelisten = 1,
+  Formulare,
+  Katalogverhalten,
+  Indizierung,
 }

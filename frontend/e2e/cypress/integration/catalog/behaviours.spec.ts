@@ -2,6 +2,7 @@ import {BehavioursPage} from "../../pages/behaviours.page";
 import {DocumentPage} from "../../pages/document.page";
 import {Tree} from "../../pages/tree.partial";
 import {Address, AddressPage} from "../../pages/address.page";
+import {CatalogsTabmenu} from "../../pages/base.page";
 
 describe('Behaviours', () => {
   beforeEach(() => {
@@ -14,22 +15,23 @@ describe('Behaviours', () => {
   });
 
   it('should show multiple system and form behaviours', () => {
-    cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
+    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
     cy.get('div.left-side').contains('Katalogverhalten');
     cy.get('ige-behaviour-item').should('be.visible');
 
-    cy.get(BehavioursPage.CatalogsTabmenu.Formulare).click();
+    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
     cy.get('div.left-side').contains('Formularkonfiguration');
     cy.get('ige-behaviour-item').should('be.visible');
   });
 
   describe('System', () => {
     it('should change the session timeout behaviour', () => {
-      cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
       BehavioursPage.checkTimeoutIs('30');
-      BehavioursPage.setInputAndSaveCatalogSettings('Session Timeout Dauer','600');
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
+      BehavioursPage.setCatalogSettingInput('Session Timeout Dauer','600');
       BehavioursPage.checkTimeoutIs('10');
-      BehavioursPage.turnOffCatalogSettingAndSave('Session Timeout Dauer');
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
+      BehavioursPage.setCatalogSetting('Session Timeout Dauer', false);
       BehavioursPage.checkTimeoutIs('30');
     });
 
@@ -48,14 +50,16 @@ describe('Behaviours', () => {
       // check first element contains AAA before changing sorting of the tree
       cy.get('mat-tree-node> div > span').first().contains(firstDoc);
 
-      BehavioursPage.setAndSaveCatalogSettings('Sortierung des Baums nach Dokumententyp', true);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
+      BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       Tree.openNode(['Neue Testdokumente',lastDoc]);
       // check first element contains ZZZ after changing sorting of the tree
       cy.get('mat-tree-node> div > span').first().contains(lastDoc);
 
-      BehavioursPage.setAndSaveCatalogSettings('Sortierung des Baums nach Dokumententyp', false);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
+      BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);
     });
 
     it('should change the template for the address generation', () => {
@@ -67,23 +71,35 @@ describe('Behaviours', () => {
       AddressPage.createAddress(new Address(firstName, lastName, organizationName));
       cy.get(DocumentPage.title).should('have.text',organizationName + ', ' + lastName + ', ' + firstName);
 
-      cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
-      cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
-      BehavioursPage.setInputAndSaveCatalogSettings('Template für die Generierung des Adressen-Titels','firstName');
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
+      BehavioursPage.setCatalogSettingInput('Template für die Generierung des Adressen-Titels','firstName');
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
       cy.get('ige-sidebar').contains(firstName).click();
       cy.get(DocumentPage.title).should('have.text', firstName).should('not.contain', organizationName + ', ' + lastName);
 
-      cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
-      cy.get(BehavioursPage.CatalogsTabmenu.Katalogverhalten).click();
-      BehavioursPage.turnOffCatalogSettingAndSave('Template für die Generierung des Adressen-Titels');
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten)
+      BehavioursPage.setCatalogSetting('Template für die Generierung des Adressen-Titels', false);
     });
   });
 
   describe('Form', () => {
-    xit('should toggle the JSON view of a document', () => {
-      // also test if button disappears when behaviour disabled
+    it('should toggle the JSON view of a document', () => {
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_SHOW_JSON]').should('not.exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Anzeige JSON Formular',true);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_SHOW_JSON]').should('be.visible');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Anzeige JSON Formular', false);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_SHOW_JSON]').should('not.exist');
+      cy.get('as-split-area'[2]).should('not.exist');
     });
 
     xit('should show and hide the publish button', () => {
